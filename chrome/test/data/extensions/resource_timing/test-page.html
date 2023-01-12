@@ -9,7 +9,6 @@
   Such resource should not trigger performance timeline resource timing entry.
   <script>
     const getResourceTimingEntryCount = () => {
-      console.log('getResourceTimingEntryCount');
       return performance.getEntriesByType('resource').filter(e => e.name.includes('24.png')).length;
     }
 

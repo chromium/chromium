@@ -12,6 +12,9 @@
       ]
     }
   ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "content_scripts": [
     {
       "js": [
@@ -23,6 +26,10 @@
     }
   ],
   "permissions": [
-    "tabs"
-  ]
+    "tabs",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

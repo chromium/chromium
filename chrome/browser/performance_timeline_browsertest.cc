@@ -5,8 +5,10 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/background_script_executor.h"
 
 namespace {
 
@@ -31,6 +33,11 @@ class PerformanceTimelineBrowserTest : public extensions::ExtensionBrowserTest {
         extension->GetResourceURL(extension->url(), "content_script.js")
             .spec());
     EXPECT_EQ(content::EvalJs(web_contents(), script_code).error, "");
+  }
+
+  int GetActiveTabId() {
+    auto* active_tab = browser()->tab_strip_model()->GetActiveWebContents();
+    return sessions::SessionTabHelper::IdForTab(active_tab).id();
   }
 };
 
@@ -90,4 +97,46 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineBrowserTest,
           "(async ()=>{return await getResourceTimingEntryCountAsync();})()")
           .ExtractInt(),
       1);
+}
+
+// The fetchResource function is injected by the extension and executed. The csp
+// world in this case is the Isolated world. No resource timing entry is
+// emitted.
+IN_PROC_BROWSER_TEST_F(PerformanceTimelineBrowserTest,
+                       ResouceTiming_FetchWithInjectedCode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("resource_timing/fetch_resource"));
+  ASSERT_TRUE(extension);
+
+  GURL test_url = embedded_test_server()->GetURL(
+      "/extensions/resource_timing/test-page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  // Fetch resource by injecting fetchResource function into tab and execute.
+  const int tab_id = GetActiveTabId();
+
+  std::string script =
+      R"((async () => {
+           let result = await chrome.scripting.executeScript(
+                   {
+                     target: {tabId: $1},
+                     func: fetchResource
+                   });
+           chrome.test.sendScriptResult(result[0].result);
+         })())";
+
+  script = content::JsReplace(script, tab_id);
+
+  base::Value result = extensions::BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), script,
+      extensions::BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+
+  ASSERT_TRUE(result.is_bool());
+  EXPECT_TRUE(result.GetBool());
+
+  // There should be 0 resource entry emitted.
+  EXPECT_EQ(content::EvalJs(web_contents(), "getResourceTimingEntryCount();")
+                .ExtractInt(),
+            0);
 }
