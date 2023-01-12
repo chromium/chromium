@@ -309,7 +309,32 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
   void RunGetRulesFunction(const Extension& extension,
                            RulesetScope scope,
                            base::Value* result) {
+    RunGetRulesFunction(extension, scope, absl::nullopt /* rule_ids */, result);
+  }
+
+  void RunGetRulesFunction(
+      const Extension& extension,
+      RulesetScope scope,
+      const absl::optional<const std::vector<int>>& rule_ids,
+      base::Value* result) {
     CHECK(result);
+
+    std::string json_args = "[]";
+
+    if (rule_ids) {
+      constexpr const char kParams[] = R"(
+        [{
+          "ruleIds": $1
+        }]
+      )";
+      base::Value::List rule_ids_value =
+          ListBuilder()
+              .Append(rule_ids.value().begin(), rule_ids.value().end())
+              .Build();
+
+      json_args = content::JsReplace(kParams, std::move(rule_ids_value));
+    }
+
     scoped_refptr<ExtensionFunction> function;
     switch (scope) {
       case RulesetScope::kDynamic:
@@ -325,7 +350,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     function->set_has_callback(true);
 
     auto result_ptr = api_test_utils::RunFunctionAndReturnSingleResult(
-        function.get(), "[]" /* args */, browser_context());
+        function.get(), json_args, browser_context());
     ASSERT_TRUE(result_ptr);
     ASSERT_TRUE(result_ptr->is_list());
     *result = std::move(*result_ptr);
@@ -1155,6 +1180,38 @@ TEST_P(SingleRulesetTest, SessionRules) {
                                     ::testing::Eq(std::cref(rule_2_value))));
   VerifyPublicRulesetIDs(*extension(),
                          {kDefaultRulesetID, dnr_api::SESSION_RULESET_ID});
+
+  // No rule ID filter specified, return all rules.
+  RunGetRulesFunction(*extension(), RulesetScope::kSession, absl::nullopt,
+                      &result);
+  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(
+                                    ::testing::Eq(std::cref(rule_1_value)),
+                                    ::testing::Eq(std::cref(rule_2_value))));
+  // Empty rule ID filter, return no rules.
+  RunGetRulesFunction(*extension(), RulesetScope::kSession,
+                      absl::make_optional<std::vector<int>>({}), &result);
+  EXPECT_THAT(result.GetList(), ::testing::IsEmpty());
+  // Rule ID filter includes both rules, return them both.
+  RunGetRulesFunction(*extension(), RulesetScope::kSession,
+                      absl::make_optional<std::vector<int>>({1, 2, 3, 4}),
+                      &result);
+  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(
+                                    ::testing::Eq(std::cref(rule_1_value)),
+                                    ::testing::Eq(std::cref(rule_2_value))));
+  // Rule ID filter only matches rule 1, return that.
+  RunGetRulesFunction(*extension(), RulesetScope::kSession,
+                      absl::make_optional<std::vector<int>>({1}), &result);
+  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(
+                                    ::testing::Eq(std::cref(rule_1_value))));
+  // Rule ID filter only matches rule 2, return that.
+  RunGetRulesFunction(*extension(), RulesetScope::kSession,
+                      absl::make_optional<std::vector<int>>({2}), &result);
+  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(
+                                    ::testing::Eq(std::cref(rule_2_value))));
+  // Rule ID filter doesn't match any rules, return no rules.
+  RunGetRulesFunction(*extension(), RulesetScope::kSession,
+                      absl::make_optional<std::vector<int>>({3}), &result);
+  EXPECT_THAT(result.GetList(), ::testing::IsEmpty());
 
   // No dynamic rules should be returned.
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);

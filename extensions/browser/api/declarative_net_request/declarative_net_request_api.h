@@ -15,6 +15,10 @@ namespace declarative_net_request {
 struct ReadJSONRulesResult;
 }  // namespace declarative_net_request
 
+namespace api::declarative_net_request::GetDynamicRules {
+struct Params;
+}
+
 class DeclarativeNetRequestUpdateDynamicRulesFunction
     : public ExtensionFunction {
  public:
@@ -46,6 +50,7 @@ class DeclarativeNetRequestGetDynamicRulesFunction : public ExtensionFunction {
 
  private:
   void OnDynamicRulesFetched(
+      std::unique_ptr<api::declarative_net_request::GetDynamicRules::Params>,
       declarative_net_request::ReadJSONRulesResult read_json_result);
 };
 

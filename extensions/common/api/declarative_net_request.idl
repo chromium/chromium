@@ -391,6 +391,12 @@ namespace declarativeNetRequest {
   };
 
   [noinline_doc]
+  dictionary GetRulesFilter {
+    // If specified, only rules with matching IDs are included.
+    long[]? ruleIds;
+  };
+
+  [noinline_doc]
   dictionary MatchedRuleInfo {
     MatchedRule rule;
 
@@ -611,10 +617,15 @@ namespace declarativeNetRequest {
         UpdateRuleOptions options,
         optional EmptyCallback callback);
 
-    // Returns the current set of dynamic rules for the extension.
+    // Returns the current set of dynamic rules for the extension. Callers can
+    // optionally filter the list of fetched rules by specifying a
+    // <code>filter</code>.
+    // |filter|: An object to filter the list of fetched rules.
     // |callback|: Called with the set of dynamic rules. An error might be
     // raised in case of transient internal errors.
-    [supportsPromises] static void getDynamicRules(GetRulesCallback callback);
+    [supportsPromises] static void getDynamicRules(
+        optional GetRulesFilter filter,
+        GetRulesCallback callback);
 
     // Modifies the current set of session scoped rules for the extension.
     // The rules with IDs listed in <code>options.removeRuleIds</code> are first
@@ -637,8 +648,13 @@ namespace declarativeNetRequest {
         optional EmptyCallback callback);
 
     // Returns the current set of session scoped rules for the extension.
+    // Callers can optionally filter the list of fetched rules by specifying a
+    // <code>filter</code>.
+    // |filter|: An object to filter the list of fetched rules.
     // |callback|: Called with the set of session scoped rules.
-    [supportsPromises] static void getSessionRules(GetRulesCallback callback);
+    [supportsPromises] static void getSessionRules(
+        optional GetRulesFilter filter,
+        GetRulesCallback callback);
 
     // Updates the set of enabled static rulesets for the extension. The
     // rulesets with IDs listed in <code>options.disableRulesetIds</code> are
@@ -682,8 +698,8 @@ namespace declarativeNetRequest {
         GetDisabledRuleIdsCallback callback);
 
     // Returns all rules matched for the extension. Callers can optionally
-    // filter the list of matched rules by specifying a |filter|. This method is
-    // only available to extensions with the
+    // filter the list of matched rules by specifying a <code>filter</code>.
+    // This method is only available to extensions with the
     // <code>declarativeNetRequestFeedback</code> permission or having the
     // <code>activeTab</code> permission granted for the <code>tabId</code>
     // specified in <code>filter</code>.
