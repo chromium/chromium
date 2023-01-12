@@ -64,6 +64,8 @@ class ProfileHelper
   // Returns the path that corresponds to the sign-in profile.
   static base::FilePath GetSigninProfileDir();
 
+  // DEPRECATED: Please use
+  // ash::BrowserContextHelper::GetSigninBrowserContext() instead.
   // Returns OffTheRecord profile for use during signing phase.
   static Profile* GetSigninProfile();
 
@@ -78,11 +80,14 @@ class ProfileHelper
   // Returns user profile dir in a format [u-user_id_hash].
   static base::FilePath GetUserProfileDir(const std::string& user_id_hash);
 
+  // DEPRECATED. Please use ash::IsSigninBrowserContext() instead.
   // Returns true if |profile| is the signin Profile. This can be used during
   // construction of the signin Profile to determine if that Profile is the
   // signin Profile.
   static bool IsSigninProfile(const Profile* profile);
 
+  // DEPRECATED. Please use ash::GetSigninBrowserContext() and see if it
+  // returns non-nullptr, instead.
   // Returns true if the signin profile has been initialized.
   static bool IsSigninProfileInitialized();
 
@@ -93,6 +98,7 @@ class ProfileHelper
   // screen.
   static base::FilePath GetLockScreenAppProfilePath();
 
+  // DEPRECATED. Please use ash::IsLockScreenAppBrowserContext() instead.
   // Returns whether |profile| is the lock screen app profile - the profile used
   // for launching platform apps that can display a window on top of the lock
   // screen.
@@ -103,10 +109,13 @@ class ProfileHelper
   // Returns the path that corresponds to the lockscreen profile.
   static base::FilePath GetLockScreenProfileDir();
 
+  // DEPRECATED. Please use
+  // ash::BrowserContextHelper::GetLockScreenBrowserContext() instead.
   // Returns OffTheRecord profile for use during online authentication on the
   // lock screen.
   static Profile* GetLockScreenProfile();
 
+  // DEPRECATED. Please use ash::IsLockScreenBrowserContext() instead.
   // Returns true if |profile| is the lockscreen profile.
   static bool IsLockScreenProfile(const Profile* profile);
 
@@ -120,12 +129,15 @@ class ProfileHelper
   // Returns true when |profile| is for an ephemeral user.
   static bool IsEphemeralUserProfile(const Profile* profile);
 
+  // DEPRECATED. Please use ash::IsUserBrowserContext() instead.
   // Returns true if profile or profile_path has corresponding chrome os user.
   // I.e. it is not one for internal use, such as sign-in or lockscreen etc.
   // Note: System and Guest Profiles are considered User profiles. To check on
   // that `Profile` specific method that checks the profile type should used
   // such as `Profile::IsRegularProfile()` or `Profile::IsSystemProfile()`.
   static bool IsUserProfile(const Profile* profile);
+
+  // DEPRECATED. Please use ash::IsUserBrowserContextBaseName() instead.
   static bool IsUserProfilePath(const base::FilePath& profile_path);
 
   // Returns active user profile dir in a format [u-$hash].

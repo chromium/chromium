@@ -58,6 +58,12 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
     virtual const base::FilePath* GetUserDataDir() = 0;
   };
 
+  // Legacy profile dir that was used when only one cryptohome has been mounted.
+  static const char kLegacyBrowserContextDirName[];
+
+  // This must be kept in sync with TestingProfile::kTestUserProfileDir.
+  static const char kTestUserBrowserContextDirName[];
+
   explicit BrowserContextHelper(std::unique_ptr<Delegate> delegate);
   BrowserContextHelper(const BrowserContextHelper&) = delete;
   BrowserContextHelper& operator=(const BrowserContextHelper&) = delete;
@@ -81,32 +87,6 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   // initialized. Otherwise, returns nullptr.
   content::BrowserContext* GetBrowserContextByUser(
       const user_manager::User* user);
-
-  // In ash-chrome, we have three special browser context instances
-  // (a.k.a. Profile).
-  // 1) Singin browser context, which is used on login screen.
-  // 2) Lock-screen-app browser context, which is used for launching platform
-  //    apps that can display windows on top of the lock screen.
-  // 3) Lock-screen browser context, which is used during online authentication
-  //    on the lock screen.
-
-  // Base name of the signin browser context.
-  static const char kSigninBrowserContextBaseName[];
-
-  // Base name of the lock-screen-app browser context.
-  static const char kLockScreenAppBrowserContextBaseName[];
-
-  // Base name of the lock-screen browser context.
-  static const char kLockScreenBrowserContextBaseName[];
-
-  // Hereafter, define two additional directory names, one for compatibility
-  // and the other for testing.
-
-  // Legacy profile dir that was used when only one cryptohome has been mounted.
-  static const char kLegacyBrowserContextDirName[];
-
-  // This must be kept in sync with TestingProfile::kTestUserProfileDir.
-  static const char kTestUserBrowserContextDirName[];
 
   // Returns user browser context dir in a format of "u-${user_id_hash}".
   static std::string GetUserBrowserContextDirName(

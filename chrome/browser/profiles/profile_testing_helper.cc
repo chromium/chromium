@@ -9,7 +9,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ProfileTestingHelper::ProfileTestingHelper()
@@ -52,43 +52,41 @@ void ProfileTestingHelper::SetUp() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  signin_profile_ = manager_.CreateTestingProfile(
-      ash::BrowserContextHelper::kSigninBrowserContextBaseName);
+  signin_profile_ =
+      manager_.CreateTestingProfile(ash::kSigninBrowserContextBaseName);
   ASSERT_TRUE(signin_profile_);
-  ASSERT_TRUE(ash::ProfileHelper::IsSigninProfile(signin_profile_));
-  ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(signin_profile_));
+  ASSERT_TRUE(ash::IsSigninBrowserContext(signin_profile_));
+  ASSERT_FALSE(ash::IsUserBrowserContext(signin_profile_));
   ASSERT_FALSE(signin_profile_->IsOffTheRecord());
   signin_profile_otr_ = signin_profile_->GetPrimaryOTRProfile(true);
   ASSERT_TRUE(signin_profile_otr_);
-  ASSERT_TRUE(ash::ProfileHelper::IsSigninProfile(signin_profile_otr_));
-  ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(signin_profile_otr_));
+  ASSERT_TRUE(ash::IsSigninBrowserContext(signin_profile_otr_));
+  ASSERT_FALSE(ash::IsUserBrowserContext(signin_profile_otr_));
   ASSERT_TRUE(signin_profile_otr_->IsOffTheRecord());
 
-  lockscreen_profile_ = manager_.CreateTestingProfile(
-      ash::BrowserContextHelper::kLockScreenBrowserContextBaseName);
+  lockscreen_profile_ =
+      manager_.CreateTestingProfile(ash::kLockScreenBrowserContextBaseName);
   ASSERT_TRUE(lockscreen_profile_);
-  ASSERT_TRUE(ash::ProfileHelper::IsLockScreenProfile(lockscreen_profile_));
-  ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(lockscreen_profile_));
+  ASSERT_TRUE(ash::IsLockScreenBrowserContext(lockscreen_profile_));
+  ASSERT_FALSE(ash::IsUserBrowserContext(lockscreen_profile_));
   ASSERT_FALSE(lockscreen_profile_->IsOffTheRecord());
   lockscreen_profile_otr_ = lockscreen_profile_->GetPrimaryOTRProfile(true);
   ASSERT_TRUE(lockscreen_profile_otr_);
-  ASSERT_TRUE(ash::ProfileHelper::IsLockScreenProfile(lockscreen_profile_otr_));
-  ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(lockscreen_profile_otr_));
+  ASSERT_TRUE(ash::IsLockScreenBrowserContext(lockscreen_profile_otr_));
+  ASSERT_FALSE(ash::IsUserBrowserContext(lockscreen_profile_otr_));
   ASSERT_TRUE(lockscreen_profile_otr_->IsOffTheRecord());
 
-  lockscreenapp_profile_ = manager_.CreateTestingProfile(
-      ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName);
+  lockscreenapp_profile_ =
+      manager_.CreateTestingProfile(ash::kLockScreenAppBrowserContextBaseName);
   ASSERT_TRUE(lockscreenapp_profile_);
-  ASSERT_TRUE(
-      ash::ProfileHelper::IsLockScreenAppProfile(lockscreenapp_profile_));
-  ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(lockscreenapp_profile_));
+  ASSERT_TRUE(ash::IsLockScreenAppBrowserContext(lockscreenapp_profile_));
+  ASSERT_FALSE(ash::IsUserBrowserContext(lockscreenapp_profile_));
   ASSERT_FALSE(lockscreenapp_profile_->IsOffTheRecord());
   lockscreenapp_profile_otr_ =
       lockscreenapp_profile_->GetPrimaryOTRProfile(true);
   ASSERT_TRUE(lockscreenapp_profile_otr_);
-  ASSERT_TRUE(
-      ash::ProfileHelper::IsLockScreenAppProfile(lockscreenapp_profile_otr_));
-  ASSERT_FALSE(ash::ProfileHelper::IsUserProfile(lockscreenapp_profile_otr_));
+  ASSERT_TRUE(ash::IsLockScreenAppBrowserContext(lockscreenapp_profile_otr_));
+  ASSERT_FALSE(ash::IsUserBrowserContext(lockscreenapp_profile_otr_));
   ASSERT_TRUE(lockscreenapp_profile_otr_->IsOffTheRecord());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

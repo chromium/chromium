@@ -34,7 +34,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -186,10 +186,9 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    profile_manager_.CreateTestingProfile(ash::kSigninBrowserContextBaseName);
     profile_manager_.CreateTestingProfile(
-        ash::BrowserContextHelper::kSigninBrowserContextBaseName);
-    profile_manager_.CreateTestingProfile(
-        ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName);
+        ash::kLockScreenAppBrowserContextBaseName);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

@@ -4,16 +4,15 @@
 
 #include "chrome/common/chrome_constants.h"
 
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome {
 
 TEST(ChromeConstants, InitialProfile) {
   // chrome::kInitialProfile must be exactly as same as
-  // ash::BrowserContextHelper::kSigninBrowserContextBaseName.
-  EXPECT_STREQ(chrome::kInitialProfile,
-               ash::BrowserContextHelper::kSigninBrowserContextBaseName);
+  // ash::kSigninBrowserContextBaseName.
+  EXPECT_STREQ(chrome::kInitialProfile, ash::kSigninBrowserContextBaseName);
 }
 
 }  // namespace chrome

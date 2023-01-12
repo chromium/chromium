@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -76,7 +76,7 @@ TEST(ScanServiceFactoryTest, OffTheRecordProfileHasService) {
 TEST(ScanServiceFactoryTest, SigninProfileNoService) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<Profile> signin_profile =
-      CreateProfile(ash::BrowserContextHelper::kSigninBrowserContextBaseName);
+      CreateProfile(ash::kSigninBrowserContextBaseName);
   EXPECT_EQ(nullptr,
             ScanServiceFactory::GetForBrowserContext(signin_profile.get()));
 }
@@ -84,8 +84,8 @@ TEST(ScanServiceFactoryTest, SigninProfileNoService) {
 // Test that the ScanService cannot be created on the lock screen.
 TEST(ScanServiceFactoryTest, LockScreenProfileNoService) {
   content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<Profile> lockscreen_profile = CreateProfile(
-      ash::BrowserContextHelper::kLockScreenAppBrowserContextBaseName);
+  std::unique_ptr<Profile> lockscreen_profile =
+      CreateProfile(ash::kLockScreenAppBrowserContextBaseName);
   EXPECT_EQ(nullptr,
             ScanServiceFactory::GetForBrowserContext(lockscreen_profile.get()));
 }

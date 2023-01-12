@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
 #include "base/files/file_path.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -258,15 +259,13 @@ TEST_F(BrowserContextHelperTest, GetSigninBrowserContext) {
 
   // Load the signin browser context.
   delegate_ptr->CreateBrowserContext(
-      delegate_ptr->GetUserDataDir()->Append(
-          BrowserContextHelper::kSigninBrowserContextBaseName),
+      delegate_ptr->GetUserDataDir()->Append(kSigninBrowserContextBaseName),
       /*is_off_the_record=*/false);
 
   // Then it should start returning the instance.
   auto* signin_browser_context = helper.GetSigninBrowserContext();
   ASSERT_TRUE(signin_browser_context);
-  EXPECT_EQ(BrowserContextHelper::kSigninBrowserContextBaseName,
-            signin_browser_context->GetPath().BaseName().value());
+  EXPECT_TRUE(IsSigninBrowserContext(signin_browser_context));
   EXPECT_TRUE(signin_browser_context->IsOffTheRecord());
 }
 
@@ -294,15 +293,13 @@ TEST_F(BrowserContextHelperTest, GetLockScreenBrowserContext) {
 
   // Load the lock screen browser context.
   delegate_ptr->CreateBrowserContext(
-      delegate_ptr->GetUserDataDir()->Append(
-          BrowserContextHelper::kLockScreenBrowserContextBaseName),
+      delegate_ptr->GetUserDataDir()->Append(kLockScreenBrowserContextBaseName),
       /*is_off_the_record=*/false);
 
   // Then it should start returning the instance.
   auto* lock_screen_browser_context = helper.GetLockScreenBrowserContext();
   ASSERT_TRUE(lock_screen_browser_context);
-  EXPECT_EQ(BrowserContextHelper::kLockScreenBrowserContextBaseName,
-            lock_screen_browser_context->GetPath().BaseName().value());
+  EXPECT_TRUE(IsLockScreenBrowserContext(lock_screen_browser_context));
   EXPECT_TRUE(lock_screen_browser_context->IsOffTheRecord());
 }
 

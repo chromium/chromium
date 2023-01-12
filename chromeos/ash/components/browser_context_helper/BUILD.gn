@@ -17,6 +17,8 @@ component("browser_context_helper") {
   sources = [
     "browser_context_helper.cc",
     "browser_context_helper.h",
+    "browser_context_types.cc",
+    "browser_context_types.h",
   ]
 }
 
@@ -30,5 +32,8 @@ source_set("unit_tests") {
     "//components/user_manager:test_support",
     "//content/test:test_support",
   ]
-  sources = [ "browser_context_helper_unittest.cc" ]
+  sources = [
+    "browser_context_helper_unittest.cc",
+    "browser_context_types_unittest.cc",
+  ]
 }

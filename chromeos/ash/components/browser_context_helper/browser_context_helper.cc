@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -34,6 +35,12 @@ bool ShouldAddBrowserContextDirPrefix(base::StringPiece user_id_hash) {
 }
 
 }  // namespace
+
+// static
+const char BrowserContextHelper::kLegacyBrowserContextDirName[] = "user";
+
+// static
+const char BrowserContextHelper::kTestUserBrowserContextDirName[] = "test-user";
 
 BrowserContextHelper::BrowserContextHelper(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
@@ -105,23 +112,6 @@ content::BrowserContext* BrowserContextHelper::GetBrowserContextByUser(
 
   return browser_context;
 }
-
-// static
-const char BrowserContextHelper::kSigninBrowserContextBaseName[] = "Default";
-
-// static
-const char BrowserContextHelper::kLockScreenAppBrowserContextBaseName[] =
-    "LockScreenAppsProfile";
-
-// static
-const char BrowserContextHelper::kLockScreenBrowserContextBaseName[] =
-    "LockScreenProfile";
-
-// static
-const char BrowserContextHelper::kLegacyBrowserContextDirName[] = "user";
-
-// static
-const char BrowserContextHelper::kTestUserBrowserContextDirName[] = "test-user";
 
 // static
 std::string BrowserContextHelper::GetUserBrowserContextDirName(

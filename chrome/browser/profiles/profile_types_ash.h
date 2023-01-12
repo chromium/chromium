@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_TYPES_ASH_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_TYPES_ASH_H_
 
+// DEPRECATED: please use
+// chromeos/ash/components/browser_context_helper/browser_context_types.h
+// in the new code.
+// TODO(crbug.com/1325210): Remove this file.
+
 class Profile;
 
 namespace base {
