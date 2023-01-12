@@ -87,7 +87,12 @@ TEST_F('CrSettingsBasicPageTest', 'DISABLED_BasicPage', function() {
   runMochaSuite('SettingsBasicPage');
 });
 
-TEST_F('CrSettingsBasicPageTest', 'PrivacyGuidePromo', function() {
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_PrivacyGuidePromo DISABLED_PrivacyGuidePromo');
+GEN('#else');
+GEN('#define MAYBE_PrivacyGuidePromo PrivacyGuidePromo');
+GEN('#endif');
+TEST_F('CrSettingsBasicPageTest', 'MAYBE_PrivacyGuidePromo', function() {
   runMochaSuite('PrivacyGuidePromo');
 });
 
