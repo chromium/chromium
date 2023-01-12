@@ -33,7 +33,11 @@ def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
     if running_unattended():
         with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
             run_ffx_command(('target', 'reboot'), target_id=target)
-        run_ffx_command(('target', 'wait', '-t', '180'), target)
+        wait_cmd = run_ffx_command(('target', 'wait', '-t', '180'),
+                                   target,
+                                   check=False)
+        if wait_cmd.returncode != 0:
+            return ('', '')
 
     info_cmd = run_ffx_command(('target', 'show', '--json'),
                                target_id=target,

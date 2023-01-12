@@ -208,6 +208,17 @@ class FlashDeviceTest(unittest.TestCase):
                                 should_pave=False)
         self.assertEqual(self._ffx_mock.call_count, 4)
 
+    def test_reboot_failure(self) -> None:
+        """Test update when |serial_num| is specified."""
+        self._ffx_mock.return_value.returncode = 1
+        with mock.patch('time.sleep'), \
+                mock.patch('os.path.exists', return_value=True), \
+                mock.patch('flash_device.running_unattended',
+                           return_value=True):
+            required, _ = flash_device.update_required('check',
+                                                       _TEST_IMAGE_DIR, None)
+            self.assertEqual(required, True)
+
     # pylint: disable=no-self-use
     def test_update_calls_paving_if_specified(self) -> None:
         """Test update calls pave if specified."""
