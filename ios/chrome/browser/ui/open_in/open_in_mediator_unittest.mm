@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/open_in/open_in_mediator.h"
 
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/open_in/open_in_toolbar.h"
@@ -43,6 +44,19 @@ class OpenInMediatorTest : public PlatformTest {
     return web_state;
   }
 
+  // Returns the potential OpenInToolbar subview of the given view.
+  OpenInToolbar* ToolbarInView(UIView* view) {
+    for (UIView* subview in view.subviews) {
+      if ([subview isKindOfClass:[OpenInToolbar class]]) {
+        return base::mac::ObjCCastStrict<OpenInToolbar>(subview);
+      }
+    }
+    return nil;
+  }
+
+  // Whether the given view has an OpenInToolbar as subview.
+  bool ViewContainsToolbar(UIView* view) { return ToolbarInView(view) != nil; }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
@@ -58,9 +72,7 @@ TEST_F(OpenInMediatorTest, EnableForWebState) {
                      withDocumentURL:GURL::EmptyGURL()
                    suggestedFileName:@""];
 
-  EXPECT_EQ(1U, web_state->GetView().subviews.count);
-  EXPECT_TRUE([web_state->GetView().subviews.firstObject
-      isKindOfClass:[OpenInToolbar class]]);
+  EXPECT_TRUE(ViewContainsToolbar(web_state->GetView()));
   [mediator_ disableAll];
 }
 
@@ -71,9 +83,9 @@ TEST_F(OpenInMediatorTest, DisableForWebState) {
   [mediator_ enableOpenInForWebState:web_state.get()
                      withDocumentURL:GURL::EmptyGURL()
                    suggestedFileName:@""];
-  ASSERT_EQ(1U, web_state->GetView().subviews.count);
+  ASSERT_TRUE(ViewContainsToolbar(web_state->GetView()));
   [mediator_ disableOpenInForWebState:web_state.get()];
-  EXPECT_FALSE(web_state->GetView().subviews.count);
+  EXPECT_FALSE(ViewContainsToolbar(web_state->GetView()));
   [mediator_ disableAll];
 }
 
@@ -83,29 +95,26 @@ TEST_F(OpenInMediatorTest, MultipleWebStates) {
   [mediator_ enableOpenInForWebState:web_state_1.get()
                      withDocumentURL:GURL::EmptyGURL()
                    suggestedFileName:@""];
-  EXPECT_EQ(1U, web_state_1->GetView().subviews.count);
-  UIView* open_in_view_1 = web_state_1->GetView().subviews.firstObject;
-  EXPECT_TRUE([open_in_view_1 isKindOfClass:[OpenInToolbar class]]);
+  EXPECT_TRUE(ViewContainsToolbar(web_state_1->GetView()));
 
   auto web_state_2 = CreateWebStateWithView();
   [mediator_ enableOpenInForWebState:web_state_2.get()
                      withDocumentURL:GURL::EmptyGURL()
                    suggestedFileName:@""];
+  EXPECT_TRUE(ViewContainsToolbar(web_state_2->GetView()));
 
-  EXPECT_EQ(1U, web_state_2->GetView().subviews.count);
-  UIView* open_in_view_2 = web_state_2->GetView().subviews.firstObject;
-  EXPECT_TRUE([open_in_view_2 isKindOfClass:[OpenInToolbar class]]);
-  EXPECT_NSNE(open_in_view_1, open_in_view_2);
+  EXPECT_NSNE(ToolbarInView(web_state_1->GetView()),
+              ToolbarInView(web_state_2->GetView()));
 
   // Verify that destroy will detach the OpenIn view from the WebState.
   [mediator_ destroyOpenInForWebState:web_state_1.get()];
-  EXPECT_FALSE(web_state_1->GetView().subviews.count);
+  EXPECT_FALSE(ViewContainsToolbar(web_state_1->GetView()));
 
   // Verify that destroying OpenIn for `web_state_1` doesn't affect
   // `web_state_2`.
-  EXPECT_EQ(1U, web_state_2->GetView().subviews.count);
+  EXPECT_TRUE(ViewContainsToolbar(web_state_2->GetView()));
 
   // Verify that calling disableAll remove any remaining views.
   [mediator_ disableAll];
-  EXPECT_FALSE(web_state_2->GetView().subviews.count);
+  EXPECT_FALSE(ViewContainsToolbar(web_state_2->GetView()));
 }

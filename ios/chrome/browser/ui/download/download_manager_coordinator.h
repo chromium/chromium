@@ -28,9 +28,6 @@ class DownloadTask;
 // stop method is called.
 @property(nonatomic) web::DownloadTask* downloadTask;
 
-// Controls the height of the bottom margin.
-@property(nonatomic) NSLayoutDimension* bottomMarginHeightAnchor;
-
 // Underlying UIViewController presented by this coordinator.
 @property(nonatomic, readonly) UIViewController* viewController;
 

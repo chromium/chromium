@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ui/download/legacy_download_manager_state_view.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -115,7 +117,6 @@ NSString* GetSizeString(long long size_in_bytes) {
 @implementation DownloadManagerViewController
 
 @synthesize delegate = _delegate;
-@synthesize bottomMarginHeightAnchor = _bottomMarginHeightAnchor;
 @synthesize background = _background;
 @synthesize downloadControlsRow = _downloadControlsRow;
 @synthesize installDriveControlsRow = _installDriveControlsRow;
@@ -215,16 +216,13 @@ NSString* GetSizeString(long long size_in_bytes) {
   ]];
 
   // bottom margin row constraints.
-  if (_bottomMarginHeightAnchor) {
-    [NSLayoutConstraint activateConstraints:@[
-      [bottomMarginGuide.heightAnchor
-          constraintEqualToAnchor:_bottomMarginHeightAnchor],
-    ]];
-  } else {
-    [NSLayoutConstraint activateConstraints:@[
-      [bottomMarginGuide.heightAnchor constraintEqualToConstant:0],
-    ]];
-  }
+  UILayoutGuide* secondaryToolbarGuide =
+      [self.layoutGuideCenter makeLayoutGuideNamed:kSecondaryToolbarGuide];
+  [self.view addLayoutGuide:secondaryToolbarGuide];
+  [NSLayoutConstraint activateConstraints:@[
+    [bottomMarginGuide.heightAnchor
+        constraintEqualToAnchor:secondaryToolbarGuide.heightAnchor],
+  ]];
 
   // close button constraints.
   [NSLayoutConstraint activateConstraints:@[

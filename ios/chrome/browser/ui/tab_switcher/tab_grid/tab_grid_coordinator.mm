@@ -1244,20 +1244,17 @@
 #pragma mark - SnackbarCoordinatorDelegate
 
 - (CGFloat)bottomOffsetForCurrentlyPresentedView {
-  UILayoutGuide* bottomToolbarGuide = nil;
+  NSString* bottomToolbarGuideName;
   if ([self.bvcContainer currentBVC]) {
     // Use the BVC bottom bar as the offset as it is currently presented.
-    bottomToolbarGuide =
-        [NamedGuide guideWithName:kSecondaryToolbarGuide
-                             view:self.bvcContainer.currentBVC.view];
+    bottomToolbarGuideName = kSecondaryToolbarGuide;
   } else {
     // The tab grid is being show so use tab grid bottom bar.
-    bottomToolbarGuide = [LayoutGuideCenterForBrowser(self.browser)
-        makeLayoutGuideNamed:kTabGridBottomToolbarGuide];
-    [self.baseViewController.view addLayoutGuide:bottomToolbarGuide];
+    bottomToolbarGuideName = kTabGridBottomToolbarGuide;
   }
-
-  return CGRectGetHeight(bottomToolbarGuide.layoutFrame);
+  UIView* bottomToolbar = [LayoutGuideCenterForBrowser(self.browser)
+      referencedViewUnderName:bottomToolbarGuideName];
+  return CGRectGetHeight(bottomToolbar.bounds);
 }
 
 @end

@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/download/activities/open_downloads_folder_activity.h"
 #import "ios/chrome/browser/ui/download/download_manager_mediator.h"
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -181,11 +182,6 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 
 @implementation DownloadManagerCoordinator
 
-@synthesize presenter = _presenter;
-@synthesize animatesPresentation = _animatesPresentation;
-@synthesize downloadTask = _downloadTask;
-@synthesize bottomMarginHeightAnchor = _bottomMarginHeightAnchor;
-
 - (void)dealloc {
   DCHECK(_stopped);
 }
@@ -196,7 +192,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 
   _viewController = [[DownloadManagerViewController alloc] init];
   _viewController.delegate = self;
-  _viewController.bottomMarginHeightAnchor = self.bottomMarginHeightAnchor;
+  _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _mediator.SetDownloadTask(_downloadTask);
   _mediator.SetConsumer(_viewController);
 

@@ -9,8 +9,9 @@
 
 #import "ios/chrome/browser/ui/download/download_manager_consumer.h"
 
-@class LegacyDownloadManagerStateView;
 @class DownloadManagerViewController;
+@class LayoutGuideCenter;
+@class LegacyDownloadManagerStateView;
 @class RadialProgressView;
 
 @protocol DownloadManagerViewControllerDelegate<NSObject>
@@ -41,8 +42,8 @@
 
 @property(nonatomic, weak) id<DownloadManagerViewControllerDelegate> delegate;
 
-// Controls the height of the bottom margin.
-@property(nonatomic) NSLayoutDimension* bottomMarginHeightAnchor;
+// The layout guide center to use to retrieve the bottom margin.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 @end
 

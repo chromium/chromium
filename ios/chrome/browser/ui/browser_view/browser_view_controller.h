@@ -31,9 +31,6 @@ class Browser;
 @protocol CRWResponderInputView;
 @class DefaultBrowserPromoNonModalScheduler;
 @protocol DefaultPromoNonModalPresentationDelegate;
-// TODO(crbug.com/1331229): Remove all use of the download manager coordinator
-// from BVC
-@class DownloadManagerCoordinator;
 class FullscreenController;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
@@ -55,14 +52,11 @@ class PrerenderService;
 @protocol IncognitoReauthCommands;
 
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-// TODO(crbug.com/1331229): Remove all use of the download manager coordinator
-// from BVC
 typedef struct {
   PrerenderService* prerenderService;
   BubblePresenter* bubblePresenter;
   ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
   PopupMenuCoordinator* popupMenuCoordinator;
-  DownloadManagerCoordinator* downloadManagerCoordinator;
   NewTabPageCoordinator* ntpCoordinator;
   LensCoordinator* lensCoordinator;
   PrimaryToolbarCoordinator* primaryToolbarCoordinator;

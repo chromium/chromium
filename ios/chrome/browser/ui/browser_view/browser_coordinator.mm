@@ -789,8 +789,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.toolbarAccessoryPresenter =
       _toolbarAccessoryPresenter;
   _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
-  _viewControllerDependencies.downloadManagerCoordinator =
-      self.downloadManagerCoordinator;
   _viewControllerDependencies.ntpCoordinator = _NTPCoordinator;
   _viewControllerDependencies.lensCoordinator = _lensCoordinator;
   _viewControllerDependencies.primaryToolbarCoordinator =
@@ -847,7 +845,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.bubblePresenter = nil;
   _viewControllerDependencies.toolbarAccessoryPresenter = nil;
   _viewControllerDependencies.popupMenuCoordinator = nil;
-  _viewControllerDependencies.downloadManagerCoordinator = nil;
   _viewControllerDependencies.ntpCoordinator = nil;
   _viewControllerDependencies.lensCoordinator = nil;
   _viewControllerDependencies.primaryToolbarCoordinator = nil;

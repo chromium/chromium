@@ -23,9 +23,10 @@
 
 namespace {
 
+// The toolbar's constants.
+const CGFloat kToolbarHeight = 49.0f;
 // The toolbar's open button constants.
 const CGFloat kOpenButtonTrailingPadding = 16.0f;
-const CGFloat kOpenButtonHeight = 49.0f;
 // The toolbar's border related constants.
 const CGFloat kTopBorderHeight = 0.5f;
 
@@ -39,9 +40,6 @@ const CGFloat kTopBorderHeight = 0.5f;
 
 // The line used as the border at the top of the toolbar.
 @property(nonatomic, strong, readonly) UIView* topBorder;
-
-// The bottomAnchor constraint of the openButton.
-@property(nonatomic, strong) NSLayoutConstraint* openButtonBottomConstraint;
 
 @end
 
@@ -60,24 +58,22 @@ const CGFloat kTopBorderHeight = 0.5f;
     [self addSubview:_topBorder];
 
     [NSLayoutConstraint activateConstraints:@[
-      [_openButton.trailingAnchor
-          constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
-                         constant:-kOpenButtonTrailingPadding],
+      [self.heightAnchor constraintEqualToConstant:kToolbarHeight],
+      [_openButton.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [_openButton.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
       [_openButton.leadingAnchor
           constraintGreaterThanOrEqualToAnchor:self.safeAreaLayoutGuide
                                                    .leadingAnchor
                                       constant:kOpenButtonTrailingPadding],
-      [_openButton.heightAnchor
-          constraintGreaterThanOrEqualToConstant:kOpenButtonHeight],
-      [_openButton.topAnchor
-          constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
+      [_openButton.trailingAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
+                         constant:-kOpenButtonTrailingPadding],
       [_topBorder.heightAnchor constraintEqualToConstant:kTopBorderHeight],
     ]];
 
     AddSameConstraintsToSides(
         _topBorder, self,
         LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
-    self.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return self;
 }
@@ -108,42 +104,6 @@ const CGFloat kTopBorderHeight = 0.5f;
   topBorder.translatesAutoresizingMaskIntoConstraints = NO;
 
   return topBorder;
-}
-
-// Helper to update constraints.
-- (void)updateToolbarConstraints {
-  if (!self.superview)
-    return;
-  NamedGuide* guide = [NamedGuide guideWithName:kSecondaryToolbarGuide
-                                           view:self];
-  [NSLayoutConstraint activateConstraints:@[
-    [self.leadingAnchor constraintEqualToAnchor:self.superview.leadingAnchor],
-    [self.trailingAnchor constraintEqualToAnchor:self.superview.trailingAnchor],
-    [self.bottomAnchor constraintEqualToAnchor:self.superview.bottomAnchor],
-  ]];
-
-  self.openButtonBottomConstraint.active = NO;
-  if (guide) {
-    self.openButtonBottomConstraint =
-        [self.openButton.bottomAnchor constraintEqualToAnchor:guide.topAnchor];
-  } else {
-    self.openButtonBottomConstraint = [self.openButton.bottomAnchor
-        constraintEqualToAnchor:self.superview.safeAreaLayoutGuide
-                                    .bottomAnchor];
-  }
-  self.openButtonBottomConstraint.active = YES;
-}
-
-#pragma mark UIView
-
-- (void)didMoveToSuperview {
-  [super didMoveToSuperview];
-  [self updateToolbarConstraints];
-}
-
-- (void)didMoveToWindow {
-  [super didMoveToWindow];
-  [self updateToolbarConstraints];
 }
 
 @end

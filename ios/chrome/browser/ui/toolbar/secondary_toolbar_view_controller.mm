@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view_controller.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,6 +18,9 @@
 - (void)loadView {
   self.view =
       [[SecondaryToolbarView alloc] initWithButtonFactory:self.buttonFactory];
+  DCHECK(self.layoutGuideCenter);
+  [self.layoutGuideCenter referenceView:self.view
+                              underName:kSecondaryToolbarGuide];
 }
 
 @end

@@ -21,13 +21,15 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/open_in/features.h"
 #import "ios/chrome/browser/ui/open_in/open_in_activity_delegate.h"
 #import "ios/chrome/browser/ui/open_in/open_in_activity_view_controller.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller_testing.h"
 #import "ios/chrome/browser/ui/open_in/open_in_histograms.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -254,6 +256,9 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   // Gesture recognizer to catch taps on the document.
   UITapGestureRecognizer* _tapRecognizer;
 
+  // Layout guide to position the toolbar.
+  UILayoutGuide* _layoutGuide;
+
   // Suggested filename for the document.
   NSString* _suggestedFilename;
 
@@ -304,6 +309,10 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
         initWithTarget:self
                 action:@selector(handleTapFrom:)];
     [_tapRecognizer setDelegate:self];
+    LayoutGuideCenter* layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
+    _layoutGuide =
+        [layoutGuideCenter makeLayoutGuideNamed:kSecondaryToolbarGuide];
+
     _sequencedTaskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     _previousScrollViewOffset = 0;
@@ -317,9 +326,23 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   _disabled = NO;
   _documentURL = GURL(documentURL);
   _suggestedFilename = suggestedFilename;
-  [self.baseView addGestureRecognizer:_tapRecognizer];
-  [self openInToolbar].alpha = 0.0f;
-  [self.baseView addSubview:[self openInToolbar]];
+
+  if (self.baseView) {
+    [self.baseView addGestureRecognizer:_tapRecognizer];
+    self.openInToolbar.alpha = 0.0f;
+    self.openInToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.baseView addSubview:self.openInToolbar];
+    [self.baseView addLayoutGuide:_layoutGuide];
+    [NSLayoutConstraint activateConstraints:@[
+      [self.openInToolbar.leadingAnchor
+          constraintEqualToAnchor:self.baseView.leadingAnchor],
+      [self.openInToolbar.trailingAnchor
+          constraintEqualToAnchor:self.baseView.trailingAnchor],
+      [self.openInToolbar.bottomAnchor
+          constraintEqualToAnchor:_layoutGuide.topAnchor],
+    ]];
+  }
+
   if (_webState)
     [[_webState->GetWebViewProxy() scrollViewProxy] addObserver:self];
 
@@ -329,13 +352,14 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 - (void)disable {
   _disabled = YES;
   [self removeOverlayedView];
-  [self openInToolbar].alpha = 0.0f;
+  self.openInToolbar.alpha = 0.0f;
   [_openInTimer invalidate];
   [self.baseView removeGestureRecognizer:_tapRecognizer];
+  [self.baseView removeLayoutGuide:_layoutGuide];
   if (_webState)
     [[_webState->GetWebViewProxy() scrollViewProxy] removeObserver:self];
   self.previousScrollViewOffset = 0;
-  [[self openInToolbar] removeFromSuperview];
+  [self.openInToolbar removeFromSuperview];
   _documentURL = GURL();
   _suggestedFilename = nil;
   _urlLoader.reset();
@@ -384,7 +408,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
     [_openInTimer invalidate];
   }
 
-  OpenInToolbar* openInToolbar = [self openInToolbar];
+  OpenInToolbar* openInToolbar = self.openInToolbar;
   if (!_isOpenInToolbarDisplayed) {
     [UIView animateWithDuration:kOpenInToolbarAnimationDuration
                      animations:^{
@@ -398,7 +422,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   if (!_openInToolbar)
     return;
   [_openInTimer invalidate];
-  UIView* openInToolbar = [self openInToolbar];
+  UIView* openInToolbar = self.openInToolbar;
   [UIView animateWithDuration:kOpenInToolbarAnimationDuration
                    animations:^{
                      [openInToolbar setAlpha:0.0];
@@ -415,8 +439,8 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   if (!_webState)
     return;
 
-  _anchorLocation = [[self openInToolbar] convertRect:view.frame
-                                               toView:self.baseView];
+  _anchorLocation = [self.openInToolbar convertRect:view.frame
+                                             toView:self.baseView];
   [_openInTimer invalidate];
 
   // Creating the directory can block the main thread, so perform it on a
@@ -676,8 +700,8 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   if ([gestureRecognizer.view isEqual:_overlayedView])
     return YES;
 
-  CGPoint location = [gestureRecognizer locationInView:[self openInToolbar]];
-  return ![[self openInToolbar] pointInside:location withEvent:nil];
+  CGPoint location = [gestureRecognizer locationInView:self.openInToolbar];
+  return ![self.openInToolbar pointInside:location withEvent:nil];
 }
 
 #pragma mark - CRWWebViewScrollViewProxyObserver

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_collapsing.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -77,18 +76,6 @@ const CGFloat kToolsMenuOffset = -7;
 
 - (CGSize)intrinsicContentSize {
   return CGSizeMake(UIViewNoIntrinsicMetric, kSecondaryToolbarHeight);
-}
-
-- (void)willMoveToWindow:(UIWindow*)newWindow {
-  [super willMoveToWindow:newWindow];
-  [NamedGuide guideWithName:kSecondaryToolbarGuide view:self].constrainedView =
-      nil;
-}
-
-- (void)didMoveToWindow {
-  [super didMoveToWindow];
-  [NamedGuide guideWithName:kSecondaryToolbarGuide view:self].constrainedView =
-      self;
 }
 
 #pragma mark - Setup
