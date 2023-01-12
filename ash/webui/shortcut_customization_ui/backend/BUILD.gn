@@ -10,6 +10,8 @@ static_library("backend") {
   sources = [
     "accelerator_configuration_provider.cc",
     "accelerator_configuration_provider.h",
+    "accelerator_layout_table.cc",
+    "accelerator_layout_table.h",
   ]
 
   deps = [

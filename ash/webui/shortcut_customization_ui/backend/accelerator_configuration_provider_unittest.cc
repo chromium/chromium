@@ -10,7 +10,6 @@
 #include <variant>
 #include <vector>
 
-#include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerator_configuration.h"
@@ -22,6 +21,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"

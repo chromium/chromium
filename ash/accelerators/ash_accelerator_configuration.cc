@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/constants/ash_features.h"

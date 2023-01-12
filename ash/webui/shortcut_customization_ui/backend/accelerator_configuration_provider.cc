@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
-#include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/shell.h"
+#include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"

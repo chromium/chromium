@@ -8,9 +8,9 @@
 #include <map>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
-#include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
+#include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
