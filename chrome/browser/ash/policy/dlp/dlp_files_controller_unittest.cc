@@ -241,10 +241,12 @@ class DlpFilesControllerTest : public testing::Test {
     chromeos::DlpClient::InitializeFake();
     chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
 
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr, temp_dir_.GetPath());
-    temp_dir_url_ = CreateFileSystemURL(temp_dir_.GetPath().value());
+    my_files_dir_ =
+        file_manager::util::GetMyFilesFolderForProfile(profile_.get());
+    ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
+    file_system_context_ =
+        storage::CreateFileSystemContextForTesting(nullptr, my_files_dir_);
+    my_files_dir_url_ = CreateFileSystemURL(my_files_dir_.value());
 
     ASSERT_TRUE(files_controller_);
     files_controller_->SetFileSystemContextForTesting(
@@ -328,17 +330,17 @@ class DlpFilesControllerTest : public testing::Test {
 
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
-  base::ScopedTempDir temp_dir_;
-  FileSystemURL temp_dir_url_;
+  base::FilePath my_files_dir_;
+  FileSystemURL my_files_dir_url_;
 };
 
 TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_DiffFileSystem) {
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -379,11 +381,11 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_DiffFileSystem) {
 
 TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_SameFileSystem) {
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -401,11 +403,11 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_SameFileSystem) {
 
 TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ClientNotRunning) {
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -437,11 +439,11 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ClientNotRunning) {
 
 TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ErrorResponse) {
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -484,16 +486,16 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ErrorResponse) {
 
 TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_Folder) {
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
 
-  std::vector<storage::FileSystemURL> transferred_files({temp_dir_url_});
+  std::vector<storage::FileSystemURL> transferred_files({my_files_dir_url_});
 
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
@@ -528,13 +530,13 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_Folder) {
 
 TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_MultiFolder) {
   base::ScopedTempDir sub_dir1;
-  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(temp_dir_.GetPath()));
+  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3),
       FileDaemonInfo(kInode4, sub_dir1.GetPath().AppendASCII(kFilePath4),
                      kExampleUrl4),
@@ -543,7 +545,7 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_MultiFolder) {
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
 
-  std::vector<storage::FileSystemURL> transferred_files({temp_dir_url_});
+  std::vector<storage::FileSystemURL> transferred_files({my_files_dir_url_});
 
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
@@ -578,15 +580,44 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_MultiFolder) {
   EXPECT_EQ(expected_restricted_files, future.Take());
 }
 
+TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ExternalFiles) {
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+  base::FilePath file_path1 = external_dir.GetPath().AppendASCII(kFilePath1);
+  ASSERT_TRUE(CreateDummyFile(file_path1));
+  auto file_url1 = CreateFileSystemURL(file_path1.value());
+  base::FilePath file_path2 = external_dir.GetPath().AppendASCII(kFilePath2);
+  ASSERT_TRUE(CreateDummyFile(file_path2));
+  auto file_url2 = CreateFileSystemURL(file_path2.value());
+
+  // Set CheckFilesTransfer response to restrict the files to verify that the
+  // files transfer is allowed because the files are from external file system.
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_url1.path().value());
+  check_files_transfer_response.add_files_paths(file_url2.path().value());
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  std::vector<FileSystemURL> transferred_files({file_url1, file_url2});
+  base::test::TestFuture<std::vector<FileSystemURL>> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDisallowedTransfers(transferred_files,
+                                            my_files_dir_url_, /*is_move=*/true,
+                                            future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::vector<FileSystemURL>(), future.Take());
+}
+
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -619,17 +650,17 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   ASSERT_TRUE(mount_points);
   ASSERT_TRUE(mount_points->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-      temp_dir_.GetPath()));
+      my_files_dir_));
   base::ScopedClosureRunner external_mount_points_revoker(
       base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
                      base::Unretained(mount_points)));
 
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -670,17 +701,17 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
   ASSERT_TRUE(mount_points);
   ASSERT_TRUE(mount_points->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-      temp_dir_.GetPath()));
+      my_files_dir_));
   base::ScopedClosureRunner external_mount_points_revoker(
       base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
                      base::Unretained(mount_points)));
 
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -718,19 +749,19 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MultiFolder) {
   ASSERT_TRUE(mount_points);
   ASSERT_TRUE(mount_points->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-      temp_dir_.GetPath()));
+      my_files_dir_));
   base::ScopedClosureRunner external_mount_points_revoker(
       base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
                      base::Unretained(mount_points)));
 
   base::ScopedTempDir sub_dir1;
-  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(temp_dir_.GetPath()));
+  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
   base::ScopedTempDir sub_dir2;
-  ASSERT_TRUE(sub_dir2.CreateUniqueTempDirUnderPath(temp_dir_.GetPath()));
+  ASSERT_TRUE(sub_dir2.CreateUniqueTempDirUnderPath(my_files_dir_));
   base::ScopedTempDir sub_dir2_1;
   ASSERT_TRUE(sub_dir2_1.CreateUniqueTempDirUnderPath(sub_dir2.GetPath()));
   base::ScopedTempDir sub_dir3;
-  ASSERT_TRUE(sub_dir3.CreateUniqueTempDirUnderPath(temp_dir_.GetPath()));
+  ASSERT_TRUE(sub_dir3.CreateUniqueTempDirUnderPath(my_files_dir_));
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, sub_dir1.GetPath().AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -774,11 +805,11 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MultiFolder) {
 
 TEST_F(DlpFilesControllerTest, GetDlpMetadata) {
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -815,11 +846,11 @@ TEST_F(DlpFilesControllerTest, GetDlpMetadata) {
 
 TEST_F(DlpFilesControllerTest, GetDlpMetadata_WithComponent) {
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -862,11 +893,11 @@ TEST_F(DlpFilesControllerTest, GetDlpMetadata_WithComponent) {
 
 TEST_F(DlpFilesControllerTest, GetDlpMetadata_WithDestination) {
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);
@@ -909,7 +940,7 @@ TEST_F(DlpFilesControllerTest, GetDlpMetadata_WithDestination) {
 TEST_F(DlpFilesControllerTest, GetDlpMetadata_FileNotAvailable) {
   ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
 
-  auto file_path = temp_dir_.GetPath().AppendASCII(kFilePath1);
+  auto file_path = my_files_dir_.AppendASCII(kFilePath1);
   ASSERT_TRUE(CreateDummyFile(file_path));
   auto file_url = CreateFileSystemURL(file_path.value());
   ASSERT_TRUE(file_url.is_valid());
@@ -1868,13 +1899,11 @@ TEST_F(DlpFilesTestWithMounts, FileCopyFromExternalTest) {
 }
 
 TEST_F(DlpFilesControllerTest, LocalFileCopyTest) {
-  base::FilePath src_file =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test"));
+  base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("test"));
   base::File(src_file, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)
       .Flush();
 
-  base::FilePath dest_file =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dest"));
+  base::FilePath dest_file = my_files_dir_.Append(FILE_PATH_LITERAL("dest"));
 
   auto source = storage::FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeLocal, src_file);
@@ -1951,13 +1980,11 @@ TEST_F(DlpFilesControllerTest, LocalFileCopyTest) {
 }
 
 TEST_F(DlpFilesControllerTest, CopyNoMetadataTest) {
-  base::FilePath src_file =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test"));
+  base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("test"));
   base::File(src_file, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)
       .Flush();
 
-  base::FilePath dest_file =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dest"));
+  base::FilePath dest_file = my_files_dir_.Append(FILE_PATH_LITERAL("dest"));
 
   auto source = storage::FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeLocal, src_file);
@@ -1993,13 +2020,11 @@ TEST_F(DlpFilesControllerTest, CopyNoMetadataTest) {
 }
 
 TEST_F(DlpFilesControllerTest, CopyEmptyMetadataTest) {
-  base::FilePath src_file =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test"));
+  base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("test"));
   base::File(src_file, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)
       .Flush();
 
-  base::FilePath dest_file =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dest"));
+  base::FilePath dest_file = my_files_dir_.Append(FILE_PATH_LITERAL("dest"));
 
   auto source = storage::FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeLocal, src_file);
@@ -2048,13 +2073,11 @@ TEST_F(DlpFilesControllerTest, CopyEmptyMetadataTest) {
 }
 
 TEST_F(DlpFilesControllerTest, CopyNoClientTest) {
-  base::FilePath src_file =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test"));
+  base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("test"));
   base::File(src_file, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)
       .Flush();
 
-  base::FilePath dest_file =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dest"));
+  base::FilePath dest_file = my_files_dir_.Append(FILE_PATH_LITERAL("dest"));
 
   auto source = storage::FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeLocal, src_file);
@@ -2139,11 +2162,11 @@ TEST_P(DlpFilesWarningDialogContentTest,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kRemovableMediaPath)));
   std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
+      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
                      kExampleUrl1),
-      FileDaemonInfo(kInode2, temp_dir_.GetPath().AppendASCII(kFilePath2),
+      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
                      kExampleUrl2),
-      FileDaemonInfo(kInode3, temp_dir_.GetPath().AppendASCII(kFilePath3),
+      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
                      kExampleUrl3)};
   std::vector<FileSystemURL> files_urls;
   AddFilesToDlpClient(std::move(files), files_urls);

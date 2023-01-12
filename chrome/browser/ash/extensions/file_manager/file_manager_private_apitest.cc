@@ -786,11 +786,17 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
 
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  base::FilePath my_files_dir_ =
+      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+
+    ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
+  }
+  AddLocalFileSystem(browser()->profile(), my_files_dir_);
 
   const char kTestFileName[] = "dlp_test_file.txt";
-  const base::FilePath test_file_path =
-      temp_dir_.GetPath().Append(kTestFileName);
+  const base::FilePath test_file_path = my_files_dir_.Append(kTestFileName);
 
   {
     base::ScopedAllowBlockingForTesting allow_io;

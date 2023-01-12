@@ -486,6 +486,17 @@ void ShowNotification(const std::string& notification_id,
                                            /*metadata=*/nullptr);
 }
 
+// Returns true if `file_path` is in My Files directory.
+bool IsInLocalFileSystem(const base::FilePath& file_path) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto my_files_folder =
+      file_manager::util::GetMyFilesFolderForProfile(profile);
+  if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 DlpFilesController::DlpFileMetadata::DlpFileMetadata(
@@ -1296,9 +1307,10 @@ void DlpFilesController::ContinueGetDisallowedTransfers(
   ::dlp::CheckFilesTransferRequest request;
   base::flat_map<std::string, storage::FileSystemURL> filtered_files;
   for (const auto& file : transferred_files) {
-    // If the file is in the same file system as the destination, no
-    // restrictions should be applied.
-    if (!file.IsInSameFileSystem(destination)) {
+    // If the file isn't in the local file system, or the file is in the same
+    // file system as the destination, no restrictions should be applied.
+    if (IsInLocalFileSystem(file.path()) &&
+        !file.IsInSameFileSystem(destination)) {
       auto file_path = file.path().value();
       filtered_files[file_path] = file;
       request.add_files_paths(file_path);
