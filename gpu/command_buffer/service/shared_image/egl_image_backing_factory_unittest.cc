@@ -43,6 +43,12 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#include <dawn/dawn_proc.h>
+#include <dawn/native/DawnNative.h>
+#include <dawn/webgpu_cpp.h>
+#endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+
 using testing::AtLeast;
 
 namespace gpu {
@@ -148,6 +154,54 @@ class EGLImageBackingFactoryThreadSafeTest
   viz::SharedImageFormat get_format() { return std::get<1>(GetParam()); }
 
  protected:
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  void CheckSkiaPixels(const Mailbox& mailbox,
+                       const gfx::Size& size,
+                       const std::vector<uint8_t> expected_color) {
+    auto skia_representation =
+        shared_image_representation_factory_->ProduceSkia(mailbox,
+                                                          context_state_);
+    ASSERT_NE(skia_representation, nullptr);
+
+    std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+        scoped_read_access =
+            skia_representation->BeginScopedReadAccess(nullptr, nullptr);
+    EXPECT_TRUE(scoped_read_access);
+
+    auto* promise_texture = scoped_read_access->promise_image_texture();
+    GrBackendTexture backend_texture = promise_texture->backendTexture();
+
+    EXPECT_TRUE(backend_texture.isValid());
+    EXPECT_EQ(size.width(), backend_texture.width());
+    EXPECT_EQ(size.height(), backend_texture.height());
+
+    // Create an Sk Image from GrBackendTexture.
+    auto sk_image = SkImage::MakeFromTexture(
+        context_state_->gr_context(), backend_texture, kTopLeft_GrSurfaceOrigin,
+        kRGBA_8888_SkColorType, kOpaque_SkAlphaType, nullptr);
+
+    const SkImageInfo dst_info =
+        SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
+                          kOpaque_SkAlphaType, nullptr);
+
+    const int num_pixels = size.width() * size.height();
+    std::vector<uint8_t> dst_pixels(num_pixels * 4);
+
+    // Read back pixels from Sk Image.
+    EXPECT_TRUE(sk_image->readPixels(dst_info, dst_pixels.data(),
+                                     dst_info.minRowBytes(), 0, 0));
+
+    for (int i = 0; i < num_pixels; i++) {
+      // Compare the pixel values.
+      const uint8_t* pixel = dst_pixels.data() + (i * 4);
+      EXPECT_EQ(pixel[0], expected_color[0]);
+      EXPECT_EQ(pixel[1], expected_color[1]);
+      EXPECT_EQ(pixel[2], expected_color[2]);
+      EXPECT_EQ(pixel[3], expected_color[3]);
+    }
+  }
+#endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
@@ -292,6 +346,105 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   EXPECT_EQ(dst_pixels[2], 0);
   EXPECT_EQ(dst_pixels[3], 255);
 }
+
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+// Test to check interaction between Dawn and skia GL representations.
+TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
+  if (!IsEglImageSupported()) {
+    return;
+  }
+
+  // Create a Dawm OpenGLES device.
+  dawn::native::Instance instance;
+  instance.DiscoverDefaultAdapters();
+
+  std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
+
+  // Using wgpu::BackendType::OpenGLES.
+  auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::OpenGLES,
+                                       [](dawn::native::Adapter adapter) {
+                                         wgpu::AdapterProperties properties;
+                                         adapter.GetProperties(&properties);
+                                         return properties.backendType;
+                                       });
+  ASSERT_NE(adapter_it, adapters.end());
+
+  dawn::native::DawnDeviceDescriptor device_descriptor;
+  // We need to request internal usage to be able to do operations with
+  // internal methods that would need specific usages.
+  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+
+  wgpu::Device device =
+      wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
+  DawnProcTable procs = dawn::native::GetProcs();
+  dawnProcSetProcs(&procs);
+
+  // Create a backing using mailbox.
+  const auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
+  const gfx::Size size(1, 1);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  const uint32_t usage =
+      SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  // Note that this backing is always thread safe by default even if it is not
+  // requested to be.
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, surface_handle, size, color_space,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      /* is_thread_safe=*/true);
+  ASSERT_NE(backing, nullptr);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_->Register(std::move(backing),
+                                      memory_type_tracker_.get());
+
+  // Clear the shared image to green using Dawn.
+  {
+    // Create a DawnImageRepresentation using WGPUBackendType_OpenGLES backend.
+    auto dawn_representation =
+        shared_image_representation_factory_->ProduceDawn(
+            mailbox, device.Get(), WGPUBackendType_OpenGLES, {});
+    ASSERT_TRUE(dawn_representation);
+
+    auto scoped_access = dawn_representation->BeginScopedAccess(
+        WGPUTextureUsage_RenderAttachment,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_access);
+
+    wgpu::Texture texture(scoped_access->texture());
+
+    wgpu::RenderPassColorAttachment color_desc;
+    color_desc.view = texture.CreateView();
+    color_desc.resolveTarget = nullptr;
+    color_desc.loadOp = wgpu::LoadOp::Clear;
+    color_desc.storeOp = wgpu::StoreOp::Store;
+    color_desc.clearValue = {0, 255, 0, 255};
+
+    wgpu::RenderPassDescriptor renderPassDesc = {};
+    renderPassDesc.colorAttachmentCount = 1;
+    renderPassDesc.colorAttachments = &color_desc;
+    renderPassDesc.depthStencilAttachment = nullptr;
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
+    pass.EndPass();
+    wgpu::CommandBuffer commands = encoder.Finish();
+
+    wgpu::Queue queue = device.GetQueue();
+    queue.Submit(1, &commands);
+  }
+
+  CheckSkiaPixels(mailbox, size, {0, 255, 0, 255});
+
+  // Shut down Dawn
+  device = wgpu::Device();
+  dawnProcSetProcs(nullptr);
+
+  factory_ref.reset();
+}
+#endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 
 CreateAndValidateSharedImageRepresentations::
     CreateAndValidateSharedImageRepresentations(

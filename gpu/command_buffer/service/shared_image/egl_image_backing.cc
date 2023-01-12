@@ -10,10 +10,15 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/shared_gl_fence_egl.h"
+
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#include "gpu/command_buffer/service/shared_image/dawn_egl_image_representation.h"
+#endif
 
 namespace gpu {
 
@@ -280,6 +285,31 @@ std::unique_ptr<SkiaImageRepresentation> EGLImageBacking::ProduceSkia(
                                              std::move(context_state), manager,
                                              this, tracker);
   }
+}
+
+std::unique_ptr<DawnImageRepresentation> EGLImageBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  if (backend_type == WGPUBackendType_OpenGLES) {
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
+    if (use_passthrough_) {
+      gl_representation = ProduceGLTexturePassthrough(manager, tracker);
+    } else {
+      gl_representation = ProduceGLTexture(manager, tracker);
+    }
+    {
+      AutoLock auto_lock(this);
+      return std::make_unique<DawnEGLImageRepresentation>(
+          std::move(gl_representation), egl_image_.get(), manager, this,
+          tracker, device);
+    }
+  }
+#endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  return nullptr;
 }
 
 bool EGLImageBacking::BeginWrite() {
