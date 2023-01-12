@@ -188,9 +188,7 @@ ManifestUpdateDataFetchCommand::ManifestUpdateDataFetchCommand(
     ManifestFetchCallback fetch_callback,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : WebAppCommandTemplate<AppLock>("ManifestUpdateDataFetchCommand"),
-      lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {app_id})),
+      lock_description_(std::make_unique<AppLockDescription>(app_id)),
       url_(url),
       app_id_(app_id),
       web_contents_(web_contents),

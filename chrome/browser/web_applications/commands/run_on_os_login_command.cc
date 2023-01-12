@@ -48,9 +48,7 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
     RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)
     : WebAppCommandTemplate<AppLock>("RunOnOsLoginCommand"),
-      lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {app_id})),
+      lock_description_(std::make_unique<AppLockDescription>(app_id)),
       app_id_(app_id),
       login_mode_(login_mode),
       set_or_sync_mode_(set_or_sync_mode),

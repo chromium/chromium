@@ -35,9 +35,7 @@ class TestUninstallAndReplaceJobCommand
       base::OnceCallback<void(bool uninstall_triggered)> on_complete)
       : WebAppCommandTemplate<AppLock>("TestUninstallAndReplaceJobCommand"),
         profile_(profile),
-        lock_description_(
-            std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-                base::flat_set<AppId>{to_app})),
+        lock_description_(std::make_unique<AppLockDescription>(to_app)),
         from_apps_(from_apps),
         to_app_(to_app),
         on_complete_(std::move(on_complete)) {}

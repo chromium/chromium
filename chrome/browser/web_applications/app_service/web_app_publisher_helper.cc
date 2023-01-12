@@ -1194,7 +1194,7 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
   }
   provider_->scheduler().ScheduleCallbackWithLock(
       "WebAppPublisherHelper::SetWindowMode",
-      std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id}),
+      std::make_unique<AppLockDescription>(app_id),
       base::BindOnce(
           [](AppId app_id, mojom::UserDisplayMode user_display_mode,
              AppLock& lock) {

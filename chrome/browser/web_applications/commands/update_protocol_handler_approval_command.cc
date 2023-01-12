@@ -31,9 +31,7 @@ UpdateProtocolHandlerApprovalCommand::UpdateProtocolHandlerApprovalCommand(
     ApiApprovalState approval_state,
     base::OnceClosure callback)
     : WebAppCommandTemplate<AppLock>("UpdateProtocolHandlerApprovalCommand"),
-      lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {app_id})),
+      lock_description_(std::make_unique<AppLockDescription>(app_id)),
       app_id_(app_id),
       protocol_scheme_(protocol_scheme),
       approval_state_(approval_state),

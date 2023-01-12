@@ -75,8 +75,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
                                            InstallIsolatedWebAppCommandError>)>
         callback)
     : WebAppCommandTemplate<AppLock>("InstallIsolatedWebAppCommand"),
-      lock_description_(std::make_unique<AppLockDescription>(
-          base::flat_set<AppId>{isolation_info.app_id()})),
+      lock_description_(
+          std::make_unique<AppLockDescription>(isolation_info.app_id())),
       isolation_info_(isolation_info),
       isolation_data_(isolation_data),
       web_contents_(std::move(web_contents)),

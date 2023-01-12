@@ -32,10 +32,8 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     OnceInstallCallback install_callback)
     : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
       profile_(profile),
-      lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {GenerateAppId(install_info->manifest_id,
-                             install_info->start_url)})),
+      lock_description_(std::make_unique<AppLockDescription>(
+          GenerateAppId(install_info->manifest_id, install_info->start_url))),
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
       install_info_(std::move(install_info)),
@@ -59,10 +57,8 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     const WebAppInstallParams& install_params)
     : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
       profile_(profile),
-      lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {GenerateAppId(install_info->manifest_id,
-                             install_info->start_url)})),
+      lock_description_(std::make_unique<AppLockDescription>(
+          GenerateAppId(install_info->manifest_id, install_info->start_url))),
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
       install_info_(std::move(install_info)),
@@ -94,10 +90,8 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     const std::vector<AppId>& apps_or_extensions_to_uninstall)
     : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
       profile_(profile),
-      lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {GenerateAppId(install_info->manifest_id,
-                             install_info->start_url)})),
+      lock_description_(std::make_unique<AppLockDescription>(
+          GenerateAppId(install_info->manifest_id, install_info->start_url))),
       app_id_(
           GenerateAppId(install_info->manifest_id, install_info->start_url)),
       install_info_(std::move(install_info)),

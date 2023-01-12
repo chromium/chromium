@@ -21,9 +21,7 @@ OsIntegrationSynchronizeCommand::OsIntegrationSynchronizeCommand(
     const AppId& app_id,
     base::OnceClosure synchronize_callback)
     : WebAppCommandTemplate<AppLock>("OsIntegrationSynchronizeCommand"),
-      app_lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {app_id})),
+      app_lock_description_(std::make_unique<AppLockDescription>(app_id)),
       app_id_(app_id),
       synchronize_callback_(std::move(synchronize_callback)) {}
 

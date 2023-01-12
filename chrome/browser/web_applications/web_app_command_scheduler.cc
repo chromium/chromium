@@ -551,8 +551,7 @@ void WebAppCommandScheduler::LaunchAppWithKeepAlives(
   // for this callback to be run with the WebAppUiManager being destructed.
   AppId app_id = params.app_id;
   ScheduleCallbackWithLock(
-      "LaunchApp",
-      std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id}),
+      "LaunchApp", std::make_unique<AppLockDescription>(app_id),
       base::BindOnce(&WebAppUiManager::LaunchWebApp,
                      base::Unretained(&provider_->ui_manager()),
                      std::move(params), launch_setting, std::ref(*profile_),

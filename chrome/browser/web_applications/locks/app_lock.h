@@ -26,7 +26,7 @@ class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
 
-// This locks the given app ids in the WebAppProvider system.
+// This locks the given app ID(s) in the WebAppProvider system.
 //
 // Locks can be acquired by using the `WebAppLockManager`. The lock is acquired
 // when the callback given to the WebAppLockManager is called. Destruction of
@@ -34,6 +34,7 @@ class WebAppUiManager;
 // acquired yet.
 class AppLockDescription : public LockDescription {
  public:
+  explicit AppLockDescription(const AppId& app_id);
   explicit AppLockDescription(base::flat_set<AppId> app_ids);
   ~AppLockDescription();
 };

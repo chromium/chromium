@@ -37,9 +37,7 @@ InstallPlaceholderCommand::InstallPlaceholderCommand(
     : WebAppCommandTemplate<AppLock>("InstallPlaceholderCommand"),
       profile_(profile),
       app_id_(GenerateAppId(/*manifest_id=*/"", install_options.install_url)),
-      lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {app_id_})),
+      lock_description_(std::make_unique<AppLockDescription>(app_id_)),
       install_options_(install_options),
       callback_(std::move(callback)),
       web_contents_(web_contents),

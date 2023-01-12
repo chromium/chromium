@@ -30,9 +30,7 @@ InstallAppLocallyCommand::InstallAppLocallyCommand(
     const AppId& app_id,
     base::OnceClosure install_callback)
     : WebAppCommandTemplate<AppLock>("InstallAppLocallyCommand"),
-      app_lock_description_(
-          std::make_unique<AppLockDescription, base::flat_set<AppId>>(
-              {app_id})),
+      app_lock_description_(std::make_unique<AppLockDescription>(app_id)),
       app_id_(app_id),
       install_callback_(std::move(install_callback)) {
   debug_log_.Set("app_id", app_id_);
