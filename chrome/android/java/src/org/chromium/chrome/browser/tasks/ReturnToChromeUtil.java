@@ -83,6 +83,7 @@ public final class ReturnToChromeUtil {
     private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
 
     private static boolean sGTSFirstMeaningfulPaintRecorded;
+    private static boolean sIsHomepagePolicyManagerInitializedRecorded;
 
     private ReturnToChromeUtil() {}
 
@@ -449,8 +450,11 @@ public final class ReturnToChromeUtil {
         if (IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeUtil.getTotalTabCount(tabModelSelector) <= 0) {
             boolean initialized = HomepagePolicyManager.isInitializedWithNative();
-            RecordHistogram.recordBooleanHistogram(
-                    "Startup.Android.IsHomepagePolicyManagerInitialized", initialized);
+            if (!sIsHomepagePolicyManagerInitializedRecorded) {
+                sIsHomepagePolicyManagerInitializedRecorded = true;
+                RecordHistogram.recordBooleanHistogram(
+                        "Startup.Android.IsHomepagePolicyManagerInitialized", initialized);
+            }
             if (initialized && useChromeHomepage()) return true;
         }
 
