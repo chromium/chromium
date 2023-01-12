@@ -131,6 +131,7 @@ public class PageZoomCoordinator {
             // Ensure that the user has set a zoom value during this session.
             double zoomValue = mMediator.latestZoomValue();
             if (zoomValue != 0.0) {
+                mMediator.logZoomLevelUKM(zoomValue);
                 PageZoomUma.logAppMenuSliderZoomLevelChangedHistogram();
                 PageZoomUma.logAppMenuSliderZoomLevelValueHistogram(zoomValue);
             }

@@ -149,6 +149,31 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.PageZoom">
+  <owner>aldietz@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks usage of Page Zoom on Chrome for Android. Recorded each time the
+    slider is dismissed if the user changed the zoom level on this page before
+    dismissal.
+  </summary>
+  <metric name="SliderZoomValue">
+    <summary>
+      For users who changed the individual zoom level on this page, tracks what
+      zoom level has been set on the page at slider dismissal. There may be
+      multiple instances where the slider is opened on the same page, so there
+      may be multiple values logged per page. The value will be an integer
+      between 25 and 500, inclusive, bucketed in intervals of 5.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics/>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Accessibility.Renderer">
   <owner>aleventhal@chromium.org</owner>
   <owner>nektar@chromium.org</owner>

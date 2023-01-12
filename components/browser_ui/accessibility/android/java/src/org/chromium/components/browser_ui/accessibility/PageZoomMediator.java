@@ -100,6 +100,13 @@ public class PageZoomMediator {
         return mLatestZoomValue;
     }
 
+    /**
+     * Logs UKM for the user changing the zoom level on the page from the slider.
+     */
+    protected void logZoomLevelUKM(double value) {
+        PageZoomMetrics.logZoomLevelUKM(mWebContents, value);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void handleDecreaseClicked(Void unused) {
         // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
