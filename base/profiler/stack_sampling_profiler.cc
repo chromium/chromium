@@ -765,7 +765,9 @@ bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||                     \
     (BUILDFLAG(IS_ANDROID) &&                                               \
-     (BUILDFLAG(ENABLE_ARM_CFI_TABLE) || defined(ARCH_CPU_ARM64)))
+     (BUILDFLAG(ENABLE_ARM_CFI_TABLE) || defined(ARCH_CPU_ARM64))) ||       \
+    (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) &&                  \
+     BUILDFLAG(IS_CHROMEOS_DEVICE))
 #if BUILDFLAG(IS_WIN)
   // Do not start the profiler when Application Verifier is in use; running them
   // simultaneously can cause crashes and has no known use case.
