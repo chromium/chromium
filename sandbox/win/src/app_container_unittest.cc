@@ -245,12 +245,11 @@ TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
   ASSERT_TRUE(ValidSecurityCapabilities(
       no_capabilities.get(), container->GetPackageSid(), capabilities));
 
-  ASSERT_TRUE(container->AddCapability(L"FakeCapability"));
+  container->AddCapability(L"FakeCapability");
   capabilities.push_back(
       base::win::Sid::FromNamedCapability(L"FakeCapability"));
 
-  ASSERT_TRUE(container->AddCapability(
-      base::win::WellKnownCapability::kInternetClient));
+  container->AddCapability(base::win::WellKnownCapability::kInternetClient);
   capabilities.emplace_back(base::win::WellKnownCapability::kInternetClient);
   const wchar_t kSddlSid[] = L"S-1-15-3-1";
   ASSERT_TRUE(container->AddCapabilitySddl(kSddlSid));
@@ -369,8 +368,7 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
   std::vector<base::win::Sid> capabilities;
   std::vector<base::win::Sid> impersonation_capabilities;
 
-  ASSERT_TRUE(container->AddCapability(
-      base::win::WellKnownCapability::kInternetClient));
+  container->AddCapability(base::win::WellKnownCapability::kInternetClient);
   capabilities.emplace_back(base::win::WellKnownCapability::kInternetClient);
   impersonation_capabilities.emplace_back(
       base::win::WellKnownCapability::kInternetClient);
@@ -379,12 +377,12 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
   ASSERT_TRUE(CompareSidVectors(container->GetImpersonationCapabilities(),
                                 impersonation_capabilities));
 
-  ASSERT_TRUE(container->AddImpersonationCapability(
-      base::win::WellKnownCapability::kPrivateNetworkClientServer));
+  container->AddImpersonationCapability(
+      base::win::WellKnownCapability::kPrivateNetworkClientServer);
   impersonation_capabilities.emplace_back(
       base::win::WellKnownCapability::kPrivateNetworkClientServer);
 
-  ASSERT_TRUE(container->AddImpersonationCapability(L"FakeCapability"));
+  container->AddImpersonationCapability(L"FakeCapability");
   impersonation_capabilities.push_back(
       base::win::Sid::FromNamedCapability(L"FakeCapability"));
 

@@ -4,13 +4,11 @@
 
 #include "sandbox/policy/win/sandbox_win.h"
 
-#include <algorithm>
+#include <set>
 #include <string>
 #include <vector>
 
 #include <windows.h>
-
-#include <sddl.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -21,7 +19,7 @@
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/win/security_util.h"
+#include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -29,7 +27,8 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
-#include "sandbox/policy/win/sandbox_test_utils.h"
+#include "sandbox/policy/win/lpac_capability.h"
+#include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
@@ -148,17 +147,61 @@ bool DropTempFileWithSecurity(
     base::FilePath* path) {
   if (!base::CreateTemporaryFileInDir(temp_dir.GetPath(), path))
     return false;
-  auto sddl = GetAccessAllowedForCapabilities(capabilities);
-  PSECURITY_DESCRIPTOR security_descriptor = nullptr;
-  if (!::ConvertStringSecurityDescriptorToSecurityDescriptorW(
-          sddl.c_str(), SDDL_REVISION_1, &security_descriptor, nullptr)) {
-    return false;
+
+  base::win::SecurityDescriptor sd;
+  CHECK(sd.SetDaclEntry(base::win::WellKnownSid::kWorld,
+                        base::win::SecurityAccessMode::kGrant, GENERIC_ALL, 0));
+  for (const std::wstring& capability : capabilities) {
+    CHECK(sd.SetDaclEntry(base::win::Sid::FromNamedCapability(capability),
+                          base::win::SecurityAccessMode::kGrant,
+                          GENERIC_READ | GENERIC_EXECUTE, 0));
   }
-  BOOL result = ::SetFileSecurityW(
-      path->value().c_str(), DACL_SECURITY_INFORMATION, security_descriptor);
-  ::LocalFree(security_descriptor);
-  return !!result;
+  sd.set_dacl_protected(true);
+  return sd.WriteToFile(*path, DACL_SECURITY_INFORMATION);
 }
+
+void AddSidsToSet(std::set<std::wstring>& sid_set,
+                  const std::vector<base::win::Sid>& sids) {
+  for (const base::win::Sid& sid : sids) {
+    sid_set.insert(*sid.ToSddlString());
+  }
+}
+
+void AddSidsToSet(std::set<std::wstring>& sid_set,
+                  const std::vector<std::wstring>& sids) {
+  AddSidsToSet(sid_set, base::win::Sid::FromNamedCapabilityVector(sids));
+}
+
+void CompareSidList(const std::set<std::wstring>& sid_set,
+                    const std::vector<base::win::Sid>& compare_sids) {
+  std::set<std::wstring> compare_set;
+  AddSidsToSet(compare_set, compare_sids);
+  EXPECT_EQ(sid_set, compare_set);
+}
+
+struct AppContainerProfileTest {
+  sandbox::mojom::Sandbox sandbox_type;
+  std::wstring package_sid;
+  bool lpac_enabled;
+  std::vector<std::wstring> capabilities;
+  std::vector<std::wstring> impersonation_capabilities;
+
+  void Check(AppContainerBase* profile,
+             const std::vector<std::wstring>& additional_capabilities) const {
+    EXPECT_EQ(package_sid, profile->GetPackageSid().ToSddlString());
+    EXPECT_EQ(profile->GetEnableLowPrivilegeAppContainer(), lpac_enabled);
+
+    std::set<std::wstring> base_caps;
+    AddSidsToSet(base_caps, capabilities);
+    AddSidsToSet(base_caps, additional_capabilities);
+    std::set<std::wstring> impersonation_caps(base_caps.begin(),
+                                              base_caps.end());
+    AddSidsToSet(impersonation_caps, impersonation_capabilities);
+
+    CompareSidList(base_caps, profile->GetCapabilities());
+    CompareSidList(impersonation_caps, profile->GetImpersonationCapabilities());
+  }
+};
 
 class SandboxWinTest : public ::testing::Test {
  public:
@@ -242,19 +285,62 @@ TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
 TEST_F(SandboxWinTest, AppContainerCheckProfile) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
+  constexpr wchar_t kInternetClient[] = L"internetClient";
+  constexpr wchar_t kPrivateNetworkClientServer[] =
+      L"privateNetworkClientServer";
+  constexpr wchar_t kEnterpriseAuthentication[] = L"enterpriseAuthentication";
+
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(
-      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
-  ASSERT_EQ(SBOX_ALL_OK, result);
-  ASSERT_NE(nullptr, profile);
-  absl::optional<base::win::Sid> package_sid = base::win::Sid::FromSddlString(
-      L"S-1-15-2-2402834154-1919024995-1520873375-1190013510-771931769-"
-      L"834570634-3212001585");
-  ASSERT_TRUE(package_sid);
-  EXPECT_EQ(package_sid, profile->GetPackageSid());
-  EXPECT_TRUE(profile->GetEnableLowPrivilegeAppContainer());
-  CheckCapabilities(profile.get(), {});
+  const AppContainerProfileTest kProfileTests[] = {
+      {sandbox::mojom::Sandbox::kGpu,
+       L"S-1-15-2-2402834154-1919024995-1520873375-1190013510-771931769-"
+       L"834570634-3212001585",
+       true,
+       {kLpacPnpNotifications, kLpacChromeInstallFiles, kRegistryRead},
+       {kChromeInstallFiles}},
+      {sandbox::mojom::Sandbox::kXrCompositing,
+       L"S-1-15-2-1030503276-452227668-393455601-3654269295-1389305662-"
+       L"158182952-2716868087",
+       false,
+       {kLpacPnpNotifications, kLpacChromeInstallFiles, kRegistryRead,
+        kChromeInstallFiles},
+       {}},
+      {sandbox::mojom::Sandbox::kMediaFoundationCdm,
+       L"S-1-15-2-3120300879-4058611061-160032764-3562819503-6834604-256341318-"
+       L"1442147363",
+       true,
+       {kInternetClient, kPrivateNetworkClientServer, kLpacChromeInstallFiles,
+        kRegistryRead, kLpacCom, kLpacIdentityServices, kLpacMedia,
+        kLpacPnPNotifications, kLpacServicesManagement, kLpacSessionManagement,
+        kLpacAppExperience, kLpacInstrumentation, kLpacCryptoServices,
+        kLpacEnterprisePolicyChangeNotifications, kMediaFoundationCdmFiles,
+        kMediaFoundationCdmData},
+       {}},
+      {sandbox::mojom::Sandbox::kNetwork,
+       L"S-1-15-2-1204153576-2881085000-2101973085-273300490-2415804912-"
+       L"3587146283-1585457728",
+       true,
+       {kInternetClient, kPrivateNetworkClientServer, kEnterpriseAuthentication,
+        kLpacIdentityServices, kLpacCryptoServices, kLpacChromeInstallFiles,
+        kRegistryRead},
+       {}},
+      {sandbox::mojom::Sandbox::kWindowsSystemProxyResolver,
+       L"S-1-15-2-1733900417-1595997880-1847635518-1308794714-877418578-"
+       L"3685220290-3324296907",
+       true,
+       {kInternetClient, kLpacServicesManagement,
+        kLpacEnterprisePolicyChangeNotifications, kLpacChromeInstallFiles,
+        kRegistryRead},
+       {}},
+  };
+  for (const AppContainerProfileTest& test : kProfileTests) {
+    scoped_refptr<AppContainerBase> profile;
+    ResultCode result = CreateAppContainerProfile(command_line, false,
+                                                  test.sandbox_type, &profile);
+    ASSERT_EQ(SBOX_ALL_OK, result);
+    ASSERT_NE(nullptr, profile);
+    test.Check(profile.get(), {});
+  }
 }
 
 TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
@@ -282,7 +368,14 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
       command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
-  CheckCapabilities(profile.get(), {L"cap1", L"cap2"});
+  const AppContainerProfileTest test{
+      sandbox::mojom::Sandbox::kGpu,
+      L"S-1-15-2-342359568-3976368142-3454201986-142512210-2527158890-"
+      L"3531919343-1556627910",
+      true,
+      {kLpacPnpNotifications, kLpacChromeInstallFiles, kRegistryRead},
+      {kChromeInstallFiles}};
+  test.Check(profile.get(), {L"cap1", L"cap2"});
 }
 
 // Disabled due to crbug.com/1210614

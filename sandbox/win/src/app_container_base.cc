@@ -194,14 +194,13 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
   return true;
 }
 
-bool AppContainerBase::AddCapability(const wchar_t* capability_name) {
-  return AddCapability(base::win::Sid::FromNamedCapability(capability_name),
-                       false);
+void AppContainerBase::AddCapability(const wchar_t* capability_name) {
+  AddCapability(base::win::Sid::FromNamedCapability(capability_name), false);
 }
 
-bool AppContainerBase::AddCapability(
+void AppContainerBase::AddCapability(
     base::win::WellKnownCapability capability) {
-  return AddCapability(base::win::Sid::FromKnownCapability(capability), false);
+  AddCapability(base::win::Sid::FromKnownCapability(capability), false);
 }
 
 bool AppContainerBase::AddCapabilitySddl(const wchar_t* sddl_sid) {
@@ -219,15 +218,14 @@ bool AppContainerBase::AddCapability(
   return true;
 }
 
-bool AppContainerBase::AddImpersonationCapability(
+void AppContainerBase::AddImpersonationCapability(
     const wchar_t* capability_name) {
-  return AddCapability(base::win::Sid::FromNamedCapability(capability_name),
-                       true);
+  AddCapability(base::win::Sid::FromNamedCapability(capability_name), true);
 }
 
-bool AppContainerBase::AddImpersonationCapability(
+void AppContainerBase::AddImpersonationCapability(
     base::win::WellKnownCapability capability) {
-  return AddCapability(base::win::Sid::FromKnownCapability(capability), true);
+  AddCapability(base::win::Sid::FromKnownCapability(capability), true);
 }
 
 bool AppContainerBase::AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) {

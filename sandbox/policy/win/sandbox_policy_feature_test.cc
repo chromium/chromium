@@ -82,8 +82,8 @@ void SandboxFeatureTest::ValidateAppContainerSettings(TargetConfig* config) {
     EXPECT_EQ(GetExpectedAppContainerType(),
               config->GetAppContainer()->GetAppContainerType());
 
-    EqualSidList(config->GetAppContainer()->GetCapabilities(),
-                 GetExpectedCapabilities());
+    EXPECT_EQ(config->GetAppContainer()->GetCapabilities(),
+              GetExpectedCapabilities());
   } else {
     EXPECT_EQ(config->GetAppContainer().get(), nullptr);
   }

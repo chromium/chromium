@@ -14,7 +14,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "sandbox/policy/win/sandbox_policy_feature_test.h"
-#include "sandbox/policy/win/sandbox_test_utils.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/sandbox_factory.h"

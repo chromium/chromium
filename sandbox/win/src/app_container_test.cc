@@ -168,17 +168,11 @@ ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
       base::win::WellKnownCapability::kEnterpriseAuthentication};
 
   for (const auto* cap : kBaseCapsSt) {
-    if (!app_container->AddCapability(cap)) {
-      DLOG(ERROR) << "AppContainerProfile::AddCapability() failed";
-      return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
-    }
+    app_container->AddCapability(cap);
   }
 
   for (const auto cap : kBaseCapsWK) {
-    if (!app_container->AddCapability(cap)) {
-      DLOG(ERROR) << "AppContainerProfile::AddCapability() failed";
-      return SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY;
-    }
+    app_container->AddCapability(cap);
   }
 
   app_container->SetEnableLowPrivilegeAppContainer(true);

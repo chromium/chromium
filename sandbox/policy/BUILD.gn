@@ -136,7 +136,6 @@ component("policy") {
   }
   if (is_win) {
     sources += [
-      "win/lpac_capability.cc",
       "win/lpac_capability.h",
       "win/sandbox_diagnostics.cc",
       "win/sandbox_diagnostics.h",
@@ -225,8 +224,6 @@ source_set("sandbox_test_utils") {
     sources = [
       "win/sandbox_policy_feature_test.cc",
       "win/sandbox_policy_feature_test.h",
-      "win/sandbox_test_utils.cc",
-      "win/sandbox_test_utils.h",
     ]
 
     deps = [

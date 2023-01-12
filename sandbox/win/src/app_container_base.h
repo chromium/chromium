@@ -35,11 +35,11 @@ class AppContainerBase final : public AppContainer {
                    DWORD desired_access,
                    DWORD* granted_access,
                    BOOL* access_status) override;
-  bool AddCapability(const wchar_t* capability_name) override;
-  bool AddCapability(base::win::WellKnownCapability capability) override;
+  void AddCapability(const wchar_t* capability_name) override;
+  void AddCapability(base::win::WellKnownCapability capability) override;
   bool AddCapabilitySddl(const wchar_t* sddl_sid) override;
-  bool AddImpersonationCapability(const wchar_t* capability_name) override;
-  bool AddImpersonationCapability(
+  void AddImpersonationCapability(const wchar_t* capability_name) override;
+  void AddImpersonationCapability(
       base::win::WellKnownCapability capability) override;
   bool AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) override;
   void SetEnableLowPrivilegeAppContainer(bool enable) override;
