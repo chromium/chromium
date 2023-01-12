@@ -307,7 +307,7 @@
       The content of pages you print is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
     </message>
     <message name="IDS_MANAGEMENT_FILE_TRANSFER_VISIBLE_DATA" desc="Description of the visible data for the file transfer scanning feature.">
-      Files you copy or move are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.
+      Files you copy or move are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies.
     </message>
     <message name="IDS_MANAGEMENT_SCREEN_CAPTURE_DATA" desc="Description of the visible data for the multi screen capture feature.">
       Applications authorized by your administrator can capture all screens attached to your device. This information can be processed locally or uploaded to your organization’s servers.
