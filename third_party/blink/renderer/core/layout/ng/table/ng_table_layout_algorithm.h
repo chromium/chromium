@@ -91,6 +91,8 @@ class CORE_EXPORT NGTableLayoutAlgorithm
       const NGTableBorders& table_borders,
       const LogicalSize& border_spacing);
 
+  LayoutUnit total_table_min_block_size_;
+
   // Set to true when we're re-laying out without repeating table headers and
   // footers.
   bool is_known_to_be_last_table_box_ = false;

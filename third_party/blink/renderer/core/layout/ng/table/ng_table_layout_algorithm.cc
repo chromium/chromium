@@ -754,23 +754,31 @@ void NGTableLayoutAlgorithm::ComputeRows(
   DCHECK_EQ(rows->size(), 0u);
   DCHECK_EQ(cell_block_constraints->size(), 0u);
 
-  // If this isn't the first fragment, avoid side-effects. We need to leave the
-  // NGLayoutResult vector in LayoutBox objects alone, since we're in the middle
-  // of building those.
-  absl::optional<NGDisableSideEffectsScope> disable_side_effects;
-  if (IsBreakInside(BreakToken()))
-    disable_side_effects.emplace();
-
-  const bool is_table_block_size_specified = !Style().LogicalHeight().IsAuto();
-  LayoutUnit total_table_block_size;
-  wtf_size_t section_index = 0;
-  for (auto it = grouped_children.begin(); it != grouped_children.end(); ++it) {
-    NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
-        *it, table_grid_inline_size, is_table_block_size_specified,
-        column_locations, table_borders, border_spacing.block_size,
-        section_index++, it.TreatAsTBody(), sections, rows,
-        cell_block_constraints);
-    total_table_block_size += sections->back().block_size;
+  const NGTableBreakTokenData* table_break_data = nullptr;
+  if (BreakToken()) {
+    table_break_data =
+        DynamicTo<NGTableBreakTokenData>(BreakToken()->TokenData());
+  }
+  if (table_break_data) {
+    DCHECK(IsBreakInside(BreakToken()));
+    *rows = table_break_data->rows;
+    *cell_block_constraints = table_break_data->cell_block_constraints;
+    *sections = table_break_data->sections;
+    total_table_min_block_size_ = table_break_data->total_table_min_block_size;
+  } else {
+    DCHECK_EQ(total_table_min_block_size_, LayoutUnit());
+    const bool is_table_block_size_specified =
+        !Style().LogicalHeight().IsAuto();
+    wtf_size_t section_index = 0;
+    for (auto it = grouped_children.begin(); it != grouped_children.end();
+         ++it) {
+      NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
+          *it, table_grid_inline_size, is_table_block_size_specified,
+          column_locations, table_borders, border_spacing.block_size,
+          section_index++, it.TreatAsTBody(), sections, rows,
+          cell_block_constraints);
+      total_table_min_block_size_ += sections->back().block_size;
+    }
   }
 
   LayoutUnit css_table_block_size;
@@ -809,7 +817,7 @@ void NGTableLayoutAlgorithm::ComputeRows(
     *minimal_table_grid_block_size = css_table_block_size;
     LayoutUnit distributable_block_size = std::max(
         LayoutUnit(), css_table_block_size - table_border_padding.BlockSum());
-    if (distributable_block_size > total_table_block_size) {
+    if (distributable_block_size > total_table_min_block_size_) {
       NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
           border_spacing.block_size, distributable_block_size, sections, rows);
     }
@@ -1597,7 +1605,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<NGTableBreakTokenData>(
-            container_builder_.GetBreakTokenData(),
+            container_builder_.GetBreakTokenData(), rows,
+            cell_block_constraints, sections, total_table_min_block_size_,
             consumed_table_box_block_size, has_entered_table_box,
             is_past_table_box));
   }
