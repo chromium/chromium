@@ -163,7 +163,13 @@ void ApplyDisableDownloadProvider(StartParams* params) {
 }
 
 void ApplyDisableUreadahed(StartParams* params) {
-  params->disable_ureadahead = IsUreadaheadDisabled();
+  // Host ureadahead generation implies disabling ureadahead.
+  params->disable_ureadahead =
+      IsUreadaheadDisabled() || IsHostUreadaheadGeneration();
+}
+
+void ApplyHostUreadahedGeneration(StartParams* params) {
+  params->host_ureadahead_generation = IsHostUreadaheadGeneration();
 }
 
 // Real Delegate implementation to connect Mojo.
@@ -509,6 +515,7 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   ApplyUsapProfile(system_memory_info_callback_, &params);
   ApplyDisableDownloadProvider(&params);
   ApplyDisableUreadahed(&params);
+  ApplyHostUreadahedGeneration(&params);
 
   client_->StartMiniArc(std::move(params),
                         base::BindOnce(&ArcSessionImpl::OnMiniInstanceStarted,

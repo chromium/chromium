@@ -122,6 +122,10 @@ bool IsArcVmDevConfIgnored();
 // parts. See also |GetArcVmUreadaheadMode|.
 bool IsUreadaheadDisabled();
 
+// Returns true in case host ureadahead generation is active in the current
+// session.
+bool IsHostUreadaheadGeneration();
+
 // Returns mode of operation for ureadahead during the ARCVM boot flow.
 // Valid modes are readahead, generate, or disabled.
 ArcVmUreadaheadMode GetArcVmUreadaheadMode();

@@ -157,6 +157,11 @@ bool IsUreadaheadDisabled() {
       ash::switches::kArcDisableUreadahead);
 }
 
+bool IsHostUreadaheadGeneration() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kArcHostUreadaheadGeneration);
+}
+
 ArcVmUreadaheadMode GetArcVmUreadaheadMode() {
   ArcVmUreadaheadMode mode = IsUreadaheadDisabled()
                                  ? ArcVmUreadaheadMode::DISABLED

@@ -175,6 +175,28 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_DisableUreadahead) {
   EXPECT_TRUE(request.disable_ureadahead());
 }
 
+TEST_F(ArcContainerClientAdapterTest,
+       StartArc_HostUreadaheadGenerationByDefault) {
+  StartParams start_params;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = ash::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_host_ureadahead_generation());
+  EXPECT_FALSE(request.host_ureadahead_generation());
+}
+
+TEST_F(ArcContainerClientAdapterTest, StartArc_HostUreadaheadGenerationSet) {
+  StartParams start_params;
+  start_params.host_ureadahead_generation = true;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = ash::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_host_ureadahead_generation());
+  EXPECT_TRUE(request.host_ureadahead_generation());
+}
+
 TEST_F(ArcContainerClientAdapterTest, ArcVmTTSCachingDefault) {
   StartParams start_params;
   client_adapter()->StartMiniArc(std::move(start_params),

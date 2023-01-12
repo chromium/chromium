@@ -901,6 +901,31 @@ TEST_F(ArcSessionImplTest, DisableUreadahead) {
       GetClient(arc_session.get())->last_start_params().disable_ureadahead);
 }
 
+// Test that validates ureadahead generation flag is not set by default.
+TEST_F(ArcSessionImplTest, HostUreadaheadGenerationDefault) {
+  auto arc_session = CreateArcSession();
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetClient(arc_session.get())
+                   ->last_start_params()
+                   .host_ureadahead_generation);
+}
+// Test that validates host ureadahead generation flag is set.
+TEST_F(ArcSessionImplTest, HostUreadaheadGenerationSet) {
+  base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(ash::switches::kArcHostUreadaheadGeneration);
+  auto arc_session = CreateArcSession();
+  arc_session->StartMiniInstance();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetClient(arc_session.get())
+                  ->last_start_params()
+                  .host_ureadahead_generation);
+  // Host ureadahead generation implies disabling ureadahead.
+  EXPECT_TRUE(
+      GetClient(arc_session.get())->last_start_params().disable_ureadahead);
+}
+
 // Test that validates TTS caching is disabled by default.
 TEST_F(ArcSessionImplTest, TTSCachingByDefault) {
   auto arc_session = CreateArcSession();

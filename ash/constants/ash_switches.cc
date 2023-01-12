@@ -112,7 +112,15 @@ const char kArcDisableTtsCache[] = "arc-disable-tts-cache";
 // Flag that disables ureadahead completely, including host and guest parts.
 // To enable only guest ureadahead, please use --arcvm-ureadahead-mode=readahead
 // in combination with this switch (see |kArcVmUreadaheadMode|).
+// TODO(b/264585671): Refactore this and |kArcHostUreadaheadGeneration| to
+// mode enum.
 const char kArcDisableUreadahead[] = "arc-disable-ureadahead";
+
+// Flag that indicates host ureadahead generation session. Note, it is still
+// valid even in case of kArcDisableUreadahead is set.
+// TODO(b/264585671): Refactore this and |kArcDisableUreadahead| to
+// mode enum.
+const char kArcHostUreadaheadGeneration[] = "arc-host-ureadahead-generation";
 
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
