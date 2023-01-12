@@ -489,12 +489,15 @@ void DriveFsPinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
     return Complete(SetupStage::kCannotCalculateFreeSpace);
   }
 
-  VLOG(2) << "Free space: " << HumanReadableSize(free_space);
-  progress_.stage = SetupStage::kCalculatingRequiredSpace;
   progress_.free_space = free_space;
-  NotifyProgress();
+  VLOG(1) << "Calculated free space " << HumanReadableSize(free_space) << " in "
+          << timer_.Elapsed().InMilliseconds() << " ms";
 
   VLOG(1) << "Calculating required space...";
+  timer_ = base::ElapsedTimer();
+  progress_.stage = SetupStage::kCalculatingRequiredSpace;
+  NotifyProgress();
+
   drivefs_interface_->StartSearchQuery(
       search_query_.BindNewPipeAndPassReceiver(), CreateMyDriveQuery());
   search_query_->GetNextPage(
@@ -514,27 +517,6 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
 
   if (items->empty()) {
     search_query_.reset();
-    VLOG(1) << "Calculated required space in "
-            << timer_.Elapsed().InMilliseconds() << " ms";
-    VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
-    VLOG(1) << "Required space: "
-            << HumanReadableSize(progress_.required_space);
-    VLOG(1) << "To download: " << HumanReadableSize(progress_.total_bytes);
-    VLOG(1) << "To pin: " << files_to_pin_.size() << " files";
-
-    // The free space should not go below this limit.
-    const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
-    const int64_t required_with_margin = progress_.required_space + margin;
-
-    if (progress_.free_space < required_with_margin) {
-      LOG(ERROR) << "Not enough space: Required: "
-                 << HumanReadableSize(progress_.required_space)
-                 << ", Required plus margin: "
-                 << HumanReadableSize(required_with_margin)
-                 << ", Free: " << HumanReadableSize(progress_.free_space);
-      return Complete(SetupStage::kNotEnoughSpace);
-    }
-
     return StartPinning();
   }
 
@@ -552,6 +534,10 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
       continue;
     }
 
+    VLOG_IF(1, md.available_offline)
+        << "Not pinned yet but already available offline: " << id << " "
+        << Quote(path) << ": " << Quote(md);
+
     DCHECK_GE(md.size, 0) << " for " << id << " " << Quote(path);
     const int64_t size = GetSize(md);
     progress_.total_bytes += size;
@@ -564,6 +550,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     const auto [it, ok] = files_to_pin_.try_emplace(
         id, Progress{.path = path.value(), .total = size});
     LOG_IF(ERROR, !ok) << "Cannot add " << id << " " << Quote(path)
+                       << " with size " << HumanReadableSize(size)
                        << " to the files to pin: Conflicting entry "
                        << it->second;
   }
@@ -611,10 +598,34 @@ void DriveFsPinManager::Complete(const SetupStage stage) {
 void DriveFsPinManager::StartPinning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!should_pin_) {
+  VLOG(1) << "Calculated required space "
+          << HumanReadableSize(progress_.required_space) << " in "
+          << timer_.Elapsed().InMilliseconds() << " ms";
+
+  VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
+  VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
+  VLOG(1) << "To download: " << HumanReadableSize(progress_.total_bytes);
+  VLOG(1) << "To pin: " << files_to_pin_.size() << " files";
+
+  // The free space should not go below this limit.
+  const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
+  const int64_t required_with_margin = progress_.required_space + margin;
+
+  if (progress_.free_space < required_with_margin) {
+    LOG(ERROR) << "Not enough space: Free space "
+               << HumanReadableSize(progress_.free_space)
+               << " is less than required space "
+               << HumanReadableSize(progress_.required_space) << " + margin "
+               << HumanReadableSize(margin);
+    return Complete(SetupStage::kNotEnoughSpace);
+  }
+
+  if (!should_pin_ || files_to_pin_.empty()) {
     return Complete(SetupStage::kSuccess);
   }
 
+  VLOG(1) << "Pinning " << files_to_pin_.size() << " files...";
+  timer_ = base::ElapsedTimer();
   progress_.stage = SetupStage::kSyncing;
   NotifyProgress();
 
@@ -765,7 +776,7 @@ void DriveFsPinManager::OnFilesChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const mojom::FileChange& change : changes) {
-    VLOG(2) << "Got FileChange " << Quote(change);
+    VLOG(1) << "Got FileChange " << Quote(change);
 
     const StableId id = StableId(change.stable_id);
     const Files::const_iterator it = files_to_track_.find(id);
@@ -873,11 +884,10 @@ void DriveFsPinManager::OnMetadataRetrieved(
     LOG(ERROR) << "Not tracked: " << id << " " << Quote(path);
   }
 
-  VLOG_IF(1, !metadata->pinned)
-      << "Stopped tracking " << id << " " << Quote(path) << ": Not pinned";
+  LOG_IF(ERROR, !metadata->pinned) << "Stopped tracking " << id << " "
+                                   << Quote(path) << ": Not pinned anymore";
   VLOG_IF(1, metadata->available_offline)
-      << "Stopped tracking " << id << " " << Quote(path)
-      << ": Available offline";
+      << "Synced " << id << " " << Quote(path);
 
   progress_.pinned_files++;
   NotifyProgress();
