@@ -12,6 +12,8 @@ source_set("trust_tokens") {
     "//services/network:network_service",
     "//services/network:test_support",
     "//services/network:tests",
+    "//services/network/attribution",
+    "//services/network/attribution:tests",
   ]
 
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]

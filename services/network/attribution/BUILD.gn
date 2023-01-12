@@ -1,0 +1,47 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("attribution") {
+  visibility = [
+    ":*",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//services/network:tests",
+  ]
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+  sources = [
+    "attribution_attestation_mediator.cc",
+    "attribution_attestation_mediator.h",
+  ]
+  deps = [
+    "//base",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//services/network/trust_tokens",
+    "//url",
+  ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [
+    "attribution_attestation_mediator_unittest.cc",
+    "attribution_test_utils.cc",
+    "attribution_test_utils.h",
+  ]
+
+  deps = [
+    ":attribution",
+    "//base",
+    "//base/test:test_support",
+    "//services/network/public/mojom",
+    "//services/network/trust_tokens",
+    "//testing/gtest",
+    "//url",
+  ]
+}
