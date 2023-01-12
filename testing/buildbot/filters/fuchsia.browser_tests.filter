@@ -592,9 +592,6 @@
 # the Chrome policy schema.
 -Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping*
 
-# TODO(crbug.com/1402825): Why is Fuchsia using "\r\n" as the line break?
--PDFExtensionTest.SelectAllShortcut
-
 # TODO(crbug.com/1402824):
 # Expected equality of these values:
 #  expect_success

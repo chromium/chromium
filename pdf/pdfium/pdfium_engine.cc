@@ -204,9 +204,9 @@ void FormatStringWithHyphens(std::u16string* text) {
   base::ReplaceSubstringsAfterOffset(text, 0, kSpaceCrCn, kCrCn);
 }
 
-// Replace CR/LF with just LF on POSIX.
+// Replace CR/LF with just LF on POSIX and Fuchsia.
 void FormatStringForOS(std::u16string* text) {
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static constexpr char16_t kCr[] = {L'\r', L'\0'};
   static constexpr char16_t kBlank[] = {L'\0'};
   base::ReplaceChars(*text, kCr, kBlank, text);
