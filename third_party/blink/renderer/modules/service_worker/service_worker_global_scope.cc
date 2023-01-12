@@ -2610,7 +2610,8 @@ ServiceWorkerGlobalScope::FetchHandlerType() {
     EventTarget* et = EventTarget::Create(ScriptController()->GetScriptState());
     v8::Local<v8::Value> v =
         To<JSBasedEventListener>(e.Callback())->GetEffectiveFunction(*et);
-    if (!v.As<v8::Function>()->Experimental_IsNopFunction()) {
+    if (!v->IsFunction() ||
+        !v.As<v8::Function>()->Experimental_IsNopFunction()) {
       return mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable;
     }
   }
