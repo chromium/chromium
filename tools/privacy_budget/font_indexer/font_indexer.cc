@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "content/public/browser/font_list_async.h"

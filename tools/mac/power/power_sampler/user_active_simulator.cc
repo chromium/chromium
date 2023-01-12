@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "tools/mac/power/power_sampler/user_active_simulator.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace power_sampler {
 

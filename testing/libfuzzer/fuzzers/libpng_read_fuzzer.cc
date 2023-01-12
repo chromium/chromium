@@ -8,8 +8,8 @@
 
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #define PNG_INTERNAL
 #include "third_party/libpng/png.h"
 
