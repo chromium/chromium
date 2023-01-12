@@ -125,6 +125,8 @@ class CORE_EXPORT XMLHttpRequest final
   State readyState() const;
   bool withCredentials() const { return with_credentials_; }
   void setWithCredentials(bool, ExceptionState&);
+  bool deprecatedBrowsingTopics() const { return deprecated_browsing_topics_; }
+  void setDeprecatedBrowsingTopics(bool);
   void open(const AtomicString& method, const String& url, ExceptionState&);
   void open(const AtomicString& method,
             const String& url,
@@ -366,6 +368,8 @@ class CORE_EXPORT XMLHttpRequest final
   bool async_ = true;
 
   bool with_credentials_ = false;
+
+  bool deprecated_browsing_topics_ = false;
 
   // Used to skip m_responseDocument creation if it's done previously. We need
   // this separate flag since m_responseDocument can be 0 for some cases.

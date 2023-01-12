@@ -1023,6 +1023,14 @@ const base::FeatureParam<int> kBrowsingTopicsConfigVersion{&kBrowsingTopics,
 const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{
     &kBrowsingTopics, "taxonomy_version", 1};
 
+// Enables the deprecatedBrowsingTopics XHR attribute. For this feature to take
+// effect, the main Topics feature has to be enabled first (i.e.
+// `kBrowsingTopics` is enabled, and, either a valid Origin Trial token exists
+// or `kPrivacySandboxAdsAPIsOverride` is enabled.)
+BASE_FEATURE(kBrowsingTopicsXHR,
+             "BrowsingTopicsXHR",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the check for whether the IP address is publicly routable will be
 // bypassed when determining the eligibility for a page to be included in topics
 // calculation. This is useful for developers to test in local environment.

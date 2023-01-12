@@ -63,6 +63,7 @@ typedef (Blob or BufferSource or FormData or URLSearchParams or USVString) XMLHt
     [RaisesException, RuntimeEnabled=PrivateStateTokens, SecureContext, MeasureAs=TrustTokenXhr] void setTrustToken(TrustToken trustToken);
     [RaisesException=Setter] attribute unsigned long timeout;
     [RaisesException=Setter] attribute boolean withCredentials;
+    [RuntimeEnabled=TopicsXHR, SecureContext, Exposed=Window] attribute boolean deprecatedBrowsingTopics;
     readonly attribute XMLHttpRequestUpload upload;
     [RaisesException] void send(optional (Document or XMLHttpRequestBodyInit)? body = null);
     void abort();

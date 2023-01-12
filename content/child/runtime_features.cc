@@ -328,6 +328,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"StorageAccessAPI", net::features::kStorageAccessAPI},
           {"TopicsAPI", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
+          {"TopicsXHR", features::kPrivacySandboxAdsAPIsOverride,
+           kSetOnlyIfOverridden},
           {"TrustedTypesFromLiteral", features::kTrustedTypesFromLiteral},
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
           {"WGIGamepadTriggerRumble",
@@ -603,14 +605,23 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableFencedFrames(false);
   }
 
-  // Topics API cannot be enabled without the support of the browser process.
-  if (base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIsOverride) &&
-      !base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+  // Topics API cannot be enabled without the support of the browser process,
+  // and the XHR attribute should be additionally gated by the
+  // `kBrowsingTopicsXHR` feature.
+  if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
     LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsAPIEnabled())
         << "Topics cannot be enabled in this configuration. Use --"
         << switches::kEnableFeatures << "="
-        << blink::features::kBrowsingTopics.name << " instead.";
+        << blink::features::kBrowsingTopics.name << " in addition.";
     WebRuntimeFeatures::EnableTopicsAPI(false);
+    WebRuntimeFeatures::EnableTopicsXHR(false);
+  } else if (!base::FeatureList::IsEnabled(
+                 blink::features::kBrowsingTopicsXHR)) {
+    LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsXHREnabled())
+        << "Topics XHR cannot be enabled in this configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kBrowsingTopicsXHR.name << " in addition.";
+    WebRuntimeFeatures::EnableTopicsXHR(false);
   }
 
   // Storage Access API ForSite cannot be enabled unless the larger Storage
