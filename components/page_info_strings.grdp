@@ -262,8 +262,8 @@
       <message name="IDS_PAGE_INFO_NUM_COOKIES" desc="The label of the counts for allowed cookies that are in use on the page. This text will be shown next to IDS_PAGE_INFO_COOKIES_BUTTON_TEXT. It is the same as IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED, but without parenthesis">
         {NUM_COOKIES, plural, =1 {1 in use} other {# in use}}
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED.">
-        Show cookies
+      <message name="IDS_PAGE_INFO_COOKIES_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Cookies and site data' button. Options on the next screen include: Block third-party cookies, Manage cookies and site data, and See related sites.">
+        Options for cookies and site data
       </message>
     </if>
 
@@ -716,8 +716,8 @@
    <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening cookies in use dialog in cookies subpage.">
     Manage cookies and site data
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="The text of the tooltip on the button opening cookies in use dialog in cookies subpage.">
-    Show cookies
+  <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Manage cookies and site data' button. The following screen shows cookies and other forms of site data used by the site the user is viewing.">
+    Review a list of cookies and site data in a new window
   </message>
   <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
     See related sites in a new tab
