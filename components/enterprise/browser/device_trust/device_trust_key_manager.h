@@ -21,18 +21,24 @@ class DeviceTrustKeyManager {
  public:
   virtual ~DeviceTrustKeyManager() = default;
 
+  enum class KeyRotationResult {
+    SUCCESS = 0,
+    FAILURE = 1,
+    CANCELLATION = 2,
+  };
+
+  enum class PermanentFailure {
+    kCreationUploadConflict = 0,
+    kInsufficientPermissions = 1
+  };
+
   struct KeyMetadata {
     enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel
         trust_level{};
     crypto::SignatureVerifier::SignatureAlgorithm algorithm{};
     std::string spki_bytes{};
     absl::optional<int> synchronization_response_code = absl::nullopt;
-  };
-
-  enum class KeyRotationResult {
-    SUCCESS = 0,
-    FAILURE = 1,
-    CANCELLATION = 2,
+    absl::optional<PermanentFailure> permanent_failure = absl::nullopt;
   };
 
   // Starts the initialization of the manager which includes trying to load the
@@ -63,6 +69,12 @@ class DeviceTrustKeyManager {
   // Returns KeyMetadata for the currently loaded key. If no key is loaded,
   // returns absl::nullopt.
   virtual absl::optional<KeyMetadata> GetLoadedKeyMetadata() const = 0;
+
+  // Returns true if the manager hit a permanent failure for which retrying
+  // would do no good. Permanent failures will prevent retrying for the lifespan
+  // of the browser process. The browser will retry key creation again upon
+  // restart.
+  virtual bool HasPermanentFailure() const = 0;
 };
 
 }  // namespace enterprise_connectors

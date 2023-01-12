@@ -29777,6 +29777,7 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Timed Out"/>
   <int value="3" label="Failed Key Conflict"/>
   <int value="4" label="Failed OS Restriction"/>
+  <int value="5" label="Failed Invalid Permissions"/>
 </enum>
 
 <enum name="DTKeyTrustLevel">

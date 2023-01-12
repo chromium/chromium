@@ -40,7 +40,8 @@ enum class DTKeyRotationResult {
   kTimedOut = 2,
   kFailedKeyConflict = 3,
   kFailedOSRestriction = 4,
-  kMaxValue = kFailedOSRestriction,
+  kFailedInvalidPermissions = 5,
+  kMaxValue = kFailedInvalidPermissions,
 };
 
 // Possible client errors that can happen during key synchronization.

@@ -24,6 +24,7 @@ class KeyRotationCommand {
     TIMED_OUT,
     FAILED_KEY_CONFLICT,
     FAILED_OS_RESTRICTION,
+    FAILED_INVALID_PERMISSIONS,
   };
 
   // Trigger completion callback.  The single argument is the status of the

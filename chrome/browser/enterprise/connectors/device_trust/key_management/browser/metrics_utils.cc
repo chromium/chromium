@@ -51,12 +51,14 @@ DTKeyRotationResult ResultFromStatus(KeyRotationCommand::Status status) {
       return DTKeyRotationResult::kSucceeded;
     case KeyRotationCommand::Status::FAILED:
       return DTKeyRotationResult::kFailed;
+    case KeyRotationCommand::Status::TIMED_OUT:
+      return DTKeyRotationResult::kTimedOut;
     case KeyRotationCommand::Status::FAILED_KEY_CONFLICT:
       return DTKeyRotationResult::kFailedKeyConflict;
     case KeyRotationCommand::Status::FAILED_OS_RESTRICTION:
       return DTKeyRotationResult::kFailedOSRestriction;
-    case KeyRotationCommand::Status::TIMED_OUT:
-      return DTKeyRotationResult::kTimedOut;
+    case KeyRotationCommand::Status::FAILED_INVALID_PERMISSIONS:
+      return DTKeyRotationResult::kFailedInvalidPermissions;
   }
 }
 

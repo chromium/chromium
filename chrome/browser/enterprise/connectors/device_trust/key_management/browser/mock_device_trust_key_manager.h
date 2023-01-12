@@ -38,6 +38,8 @@ class MockDeviceTrustKeyManager : public DeviceTrustKeyManager {
               GetLoadedKeyMetadata,
               (),
               (const, override));
+
+  MOCK_METHOD(bool, HasPermanentFailure, (), (const, override));
 };
 
 }  // namespace test
