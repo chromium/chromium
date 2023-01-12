@@ -99,8 +99,6 @@ class CORE_EXPORT PerformanceMonitor final
 
   void DocumentWriteFetchScript(Document*);
 
-  void WillReactToScriptPromise(ExecutionContext*);
-
   // Direct API for core.
   void Subscribe(Violation, base::TimeDelta threshold, Client*);
   void UnsubscribeAll(Client*);
