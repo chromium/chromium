@@ -92,8 +92,8 @@ bool HaveSameValueForKey(const base::Value& template_service_properties,
                          const base::Value& service_properties,
                          base::StringPiece key) {
   const base::Value* template_service_value =
-      template_service_properties.FindKey(key);
-  const base::Value* service_value = service_properties.FindKey(key);
+      template_service_properties.GetDict().Find(key);
+  const base::Value* service_value = service_properties.GetDict().Find(key);
   return template_service_value && service_value &&
          *template_service_value == *service_value;
 }
@@ -649,7 +649,7 @@ bool FakeShillServiceClient::ClearConfiguredServiceProperties(
                                        base::Value(std::string()));
 
   for (const std::string& property_to_retain : kIntrinsicServiceProperties) {
-    const base::Value* value = service_dict->FindKey(property_to_retain);
+    const base::Value* value = service_dict->GetDict().Find(property_to_retain);
     if (!value)
       continue;
     properties_after_delete_entry.SetKey(property_to_retain, value->Clone());
@@ -750,7 +750,7 @@ void FakeShillServiceClient::NotifyObserversPropertyChanged(
     LOG(ERROR) << "Notify for unknown service: " << path;
     return;
   }
-  const base::Value* value = dict->FindKey(property);
+  const base::Value* value = dict->GetDict().Find(property);
   if (!value) {
     LOG(ERROR) << "Notify for unknown property: " << path << " : " << property;
     return;

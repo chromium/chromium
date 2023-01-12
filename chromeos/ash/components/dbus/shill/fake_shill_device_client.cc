@@ -171,7 +171,7 @@ void FakeShillDeviceClient::RequirePin(const dbus::ObjectPath& device_path,
                                        base::OnceClosure callback,
                                        ErrorCallback error_callback) {
   VLOG(1) << "RequirePin: " << device_path.value();
-  if (!stub_devices_.FindKey(device_path.value())) {
+  if (!stub_devices_.GetDict().contains(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -194,7 +194,7 @@ void FakeShillDeviceClient::EnterPin(const dbus::ObjectPath& device_path,
                                      base::OnceClosure callback,
                                      ErrorCallback error_callback) {
   VLOG(1) << "EnterPin: " << device_path.value();
-  if (!stub_devices_.FindKey(device_path.value())) {
+  if (!stub_devices_.GetDict().contains(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -216,7 +216,7 @@ void FakeShillDeviceClient::UnblockPin(const dbus::ObjectPath& device_path,
                                        base::OnceClosure callback,
                                        ErrorCallback error_callback) {
   VLOG(1) << "UnblockPin: " << device_path.value();
-  if (!stub_devices_.FindKey(device_path.value())) {
+  if (!stub_devices_.GetDict().contains(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -245,7 +245,7 @@ void FakeShillDeviceClient::ChangePin(const dbus::ObjectPath& device_path,
                                       base::OnceClosure callback,
                                       ErrorCallback error_callback) {
   VLOG(1) << "ChangePin: " << device_path.value();
-  if (!stub_devices_.FindKey(device_path.value())) {
+  if (!stub_devices_.GetDict().contains(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -277,15 +277,17 @@ void FakeShillDeviceClient::Register(const dbus::ObjectPath& device_path,
     PostNotFoundError(std::move(error_callback));
     return;
   }
-  base::Value* scan_results =
-      device_properties->FindKey(shill::kFoundNetworksProperty);
+  base::Value::List* scan_results =
+      device_properties->GetDict().FindList(shill::kFoundNetworksProperty);
   if (!scan_results) {
     PostError("No Cellular scan results", std::move(error_callback));
     return;
   }
-  for (auto& network : scan_results->GetList()) {
-    std::string id = network.FindKey(shill::kNetworkIdProperty)->GetString();
-    std::string status = id == network_id ? "current" : "available";
+  for (auto& network : *scan_results) {
+    const std::string* id =
+        network.GetDict().FindString(shill::kNetworkIdProperty);
+    DCHECK(id);
+    std::string status = (*id == network_id) ? "current" : "available";
     network.SetKey(shill::kStatusProperty, base::Value(status));
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -295,7 +297,7 @@ void FakeShillDeviceClient::Register(const dbus::ObjectPath& device_path,
 void FakeShillDeviceClient::Reset(const dbus::ObjectPath& device_path,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) {
-  if (!stub_devices_.FindKey(device_path.value())) {
+  if (!stub_devices_.GetDict().contains(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -308,7 +310,7 @@ void FakeShillDeviceClient::SetUsbEthernetMacAddressSource(
     const std::string& source,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  if (!stub_devices_.FindKey(device_path.value())) {
+  if (!stub_devices_.GetDict().contains(device_path.value())) {
     PostNotFoundError(std::move(error_callback));
     return;
   }
@@ -404,9 +406,10 @@ void FakeShillDeviceClient::AddCellularFoundNetwork(
     LOG(ERROR) << "Device path not found: " << device_path;
     return;
   }
-  std::string type =
-      device_properties->FindKey(shill::kTypeProperty)->GetString();
-  if (type != shill::kTypeCellular) {
+  const std::string* type =
+      device_properties->GetDict().FindString(shill::kTypeProperty);
+  DCHECK(type);
+  if (*type != shill::kTypeCellular) {
     LOG(ERROR) << "AddCellularNetwork called for non Cellular network: "
                << device_path;
     return;
@@ -414,7 +417,7 @@ void FakeShillDeviceClient::AddCellularFoundNetwork(
 
   // Add a new scan result entry
   base::Value* scan_results =
-      device_properties->FindKey(shill::kFoundNetworksProperty);
+      device_properties->GetDict().Find(shill::kFoundNetworksProperty);
   if (!scan_results) {
     scan_results = device_properties->SetKey(shill::kFoundNetworksProperty,
                                              base::Value(base::Value::List()));
@@ -585,13 +588,15 @@ void FakeShillDeviceClient::NotifyObserversPropertyChanged(
     LOG(ERROR) << "Notify for unknown device: " << path;
     return;
   }
-  base::Value* value = device_properties->FindKey(property);
-  if (!value) {
+
+  if (!device_properties->GetDict().contains(property)) {
     LOG(ERROR) << "Notify for unknown property: " << path << " : " << property;
     return;
   }
-  for (auto& observer : GetObserverList(device_path))
+  const base::Value* value = device_properties->GetDict().Find(property);
+  for (auto& observer : GetObserverList(device_path)) {
     observer.OnPropertyChanged(property, *value);
+  }
 }
 
 base::Value* FakeShillDeviceClient::GetDeviceProperties(

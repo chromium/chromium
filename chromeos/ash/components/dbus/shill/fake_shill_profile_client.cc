@@ -200,8 +200,9 @@ bool FakeShillProfileClient::AddService(const std::string& profile_path,
                << " for: " << service_path;
     return false;
   }
-  if (profile->entries.FindKey(service_path))
+  if (profile->entries.GetDict().contains(service_path)) {
     return false;
+  }
   return AddOrUpdateServiceImpl(profile_path, service_path, profile);
 }
 
@@ -213,7 +214,7 @@ bool FakeShillProfileClient::UpdateService(const std::string& profile_path,
                << " for: " << service_path;
     return false;
   }
-  if (!profile->entries.FindKey(service_path)) {
+  if (!profile->entries.GetDict().contains(service_path)) {
     LOG(ERROR) << "UpdateService: Profile: " << profile_path
                << " does not contain Service: " << service_path;
     return false;
