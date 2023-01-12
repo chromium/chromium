@@ -60,8 +60,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   // Converts a delay that is expressed as a (phase,percentage) pair to
   // a fractional offset.
-  double ToFractionalOffset(
-      const Timing::TimelineOffset& timeline_offset) const;
+  absl::optional<double> ToFractionalOffset(const Timing::Delay& delay) const;
 
   AnimationTimeline::TimeDelayPair TimelineOffsetsToTimeDelays(
       const Timing& timing) const override;

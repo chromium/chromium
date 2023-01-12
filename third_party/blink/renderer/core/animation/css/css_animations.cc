@@ -118,22 +118,20 @@ StringKeyframeVector ProcessKeyframesRule(
     auto* keyframe = MakeGarbageCollected<StringKeyframe>();
     const Vector<KeyframeOffset>& offsets = style_keyframe->Keys();
     DCHECK(!offsets.empty());
+
     bool drop_keyframe = false;
     // If keyframe doesn't have a named range offset, act as before, we don't
     // care if we have a timeline at this point or not in this case.
-    if (offsets[0].name == Timing::TimelineNamedRange::kNone) {
+    if (offsets[0].phase == Timing::TimelineNamedPhase::kNone) {
       keyframe->SetOffset(offsets[0].percent);
     } else {
       // No matter what the timeline is, we have named range keyframes.
       has_named_range_keyframes = true;
 
       if (timeline && timeline->IsViewTimeline()) {
-        Timing::TimelineOffset timeline_offset;
-        timeline_offset.name = offsets[0].name;
-        timeline_offset.relative_offset = offsets[0].percent;
-        double fractional_offset =
-            To<ViewTimeline>(timeline)->ToFractionalOffset(timeline_offset);
-        keyframe->SetOffset(fractional_offset);
+        auto fractional_offset = To<ViewTimeline>(timeline)->ToFractionalOffset(
+            Timing::Delay(offsets[0].phase, offsets[0].percent));
+        keyframe->SetOffset(fractional_offset.value());
       } else {
         // This happens when you have a DocumentTimeline/ScrollTimeline with
         // Named Range keyframes, and also sometimes when you have a
@@ -177,19 +175,17 @@ StringKeyframeVector ProcessKeyframesRule(
     }
     // The last keyframe specified at a given offset is used.
     for (wtf_size_t j = 1; j < offsets.size(); ++j) {
-      if (offsets[j].name == Timing::TimelineNamedRange::kNone) {
+      if (offsets[j].phase == Timing::TimelineNamedPhase::kNone) {
         keyframes.push_back(
             To<StringKeyframe>(keyframe->CloneWithOffset(offsets[j].percent)));
       } else {
         has_named_range_keyframes = true;
         if (timeline && timeline->IsViewTimeline()) {
-          Timing::TimelineOffset timeline_offset;
-          timeline_offset.name = offsets[j].name;
-          timeline_offset.relative_offset = offsets[j].percent;
-          double fractional_offset =
-              To<ViewTimeline>(timeline)->ToFractionalOffset(timeline_offset);
-          keyframes.push_back(
-              To<StringKeyframe>(keyframe->CloneWithOffset(fractional_offset)));
+          auto fractional_offset =
+              To<ViewTimeline>(timeline)->ToFractionalOffset(
+                  Timing::Delay(offsets[j].phase, offsets[j].percent));
+          keyframes.push_back(To<StringKeyframe>(
+              keyframe->CloneWithOffset(fractional_offset.value())));
         }
       }
     }

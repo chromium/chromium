@@ -2185,15 +2185,15 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
     const CSSParserToken& token = range.Peek();
     if (token.GetType() == kPercentageToken && token.NumericValue() >= 0 &&
         token.NumericValue() <= 100) {
-      result->push_back(KeyframeOffset(Timing::TimelineNamedRange::kNone,
+      result->push_back(KeyframeOffset(Timing::TimelineNamedPhase::kNone,
                                        token.NumericValue() / 100));
       range.ConsumeIncludingWhitespace();
     } else if (token.GetType() == kIdentToken) {
       if (EqualIgnoringASCIICase(token.Value(), "from")) {
-        result->push_back(KeyframeOffset(Timing::TimelineNamedRange::kNone, 0));
+        result->push_back(KeyframeOffset(Timing::TimelineNamedPhase::kNone, 0));
         range.ConsumeIncludingWhitespace();
       } else if (EqualIgnoringASCIICase(token.Value(), "to")) {
-        result->push_back(KeyframeOffset(Timing::TimelineNamedRange::kNone, 1));
+        result->push_back(KeyframeOffset(Timing::TimelineNamedPhase::kNone, 1));
         range.ConsumeIncludingWhitespace();
       } else {
         auto* range_name_percent = To<CSSValueList>(
@@ -2204,12 +2204,12 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
         }
 
         auto range_name = To<CSSIdentifierValue>(range_name_percent->Item(0))
-                              .ConvertTo<Timing::TimelineNamedRange>();
+                              .ConvertTo<Timing::TimelineNamedPhase>();
         auto percent =
             To<CSSPrimitiveValue>(range_name_percent->Item(1)).GetFloatValue();
 
         if (!RuntimeEnabledFeatures::CSSViewTimelineEnabled() &&
-            range_name != Timing::TimelineNamedRange::kNone) {
+            range_name != Timing::TimelineNamedPhase::kNone) {
           return nullptr;
         }
 

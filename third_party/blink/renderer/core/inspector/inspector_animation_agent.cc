@@ -42,7 +42,7 @@ namespace blink {
 
 namespace {
 
-double AsDoubleOrZero(Timing::V8Delay* value) {
+double AsDoubleOrZero(V8UnionDoubleOrTimelineOffset* value) {
   if (!value->IsDouble())
     return 0;
 
@@ -405,7 +405,7 @@ Response InspectorAnimationAgent::setTiming(const String& animation_id,
   timing->setDuration(
       MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
           duration));
-  timing->setDelay(MakeGarbageCollected<Timing::V8Delay>(delay));
+  timing->setDelay(MakeGarbageCollected<V8UnionDoubleOrTimelineOffset>(delay));
   animation->effect()->updateTiming(timing, exception_state);
   return Response::Success();
 }
