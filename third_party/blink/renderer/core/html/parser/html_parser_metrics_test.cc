@@ -109,9 +109,11 @@ TEST_F(HTMLMetricsTest, MAYBE_ReportSingleChunk) {
                                       19, 1);
 }
 
-#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || \
-    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86))
+#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) ||   \
+    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 // https://crbug.com/1222653
+// https://crbug.com/1406813
 #define MAYBE_HistogramReportsTwoChunks DISABLED_HistogramReportsTwoChunks
 #else
 #define MAYBE_HistogramReportsTwoChunks HistogramReportsTwoChunks
