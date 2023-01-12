@@ -449,22 +449,13 @@ uint64_t PerformanceResourceTiming::transferSize() const {
   }
 
   return GetTransferSize(Info()->EncodedBodySize(), Info()->CacheState());
-  ;
 }
 
 uint64_t PerformanceResourceTiming::encodedBodySize() const {
-  if (!Info()->AllowTimingDetails()) {
-    return 0;
-  }
-
   return Info()->EncodedBodySize();
 }
 
 uint64_t PerformanceResourceTiming::decodedBodySize() const {
-  if (!Info()->AllowTimingDetails()) {
-    return 0;
-  }
-
   return Info()->DecodedBodySize();
 }
 

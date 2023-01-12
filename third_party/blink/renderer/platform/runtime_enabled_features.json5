@@ -2366,6 +2366,10 @@
       status: "stable",
     },
     {
+      name: "ResourceTimingUseCORSForBodySizes",
+      status: "test"
+    },
+    {
       name: "RestrictGamepadAccess",
       public: true,
       status: "experimental",
