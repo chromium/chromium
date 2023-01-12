@@ -573,7 +573,7 @@ BASE_FEATURE(kCryptohomeRecoverySetup,
 
 BASE_FEATURE(kDarkLightModeKMeansColor,
              "DarkLightModeKMeansColor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Sync for desk templates on ChromeOS.
 BASE_FEATURE(kDeskTemplateSync,
