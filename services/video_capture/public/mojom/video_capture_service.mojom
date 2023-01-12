@@ -5,7 +5,6 @@
 module video_capture.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
-import "services/video_capture/public/mojom/device_factory.mojom";
 import "services/video_capture/public/mojom/testing_controls.mojom";
 import "services/video_capture/public/mojom/video_source_provider.mojom";
 

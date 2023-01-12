@@ -13,10 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace video_capture {
-class DeviceFactory;
-}  // namespace video_capture
+#include "services/video_capture/device_factory.h"
 
 namespace crosapi {
 
@@ -47,6 +44,14 @@ class VideoCaptureDeviceFactoryAsh
       CreateDeviceCallback callback) override;
 
  private:
+  // This will be triggered when the device is created by the underlying
+  // factory.
+  void OnDeviceCreated(
+      CreateDeviceCallback callback,
+      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> device_receiver,
+      const std::string& device_id,
+      video_capture::DeviceFactory::DeviceInfo device_info);
+
   // It will be triggered once the connection to the client of
   // video_capture::mojom::Device in Lacros-Chrome is dropped.
   void OnClientConnectionErrorOrClose(const std::string& device_id);
@@ -57,6 +62,8 @@ class VideoCaptureDeviceFactoryAsh
   base::flat_map<std::string, std::unique_ptr<VideoCaptureDeviceAsh>> devices_;
 
   mojo::ReceiverSet<crosapi::mojom::VideoCaptureDeviceFactory> receivers_;
+
+  base::WeakPtrFactory<VideoCaptureDeviceFactoryAsh> weak_factory_{this};
 };
 
 }  // namespace crosapi

@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/video/video_capture_system_impl.h"
@@ -27,25 +28,18 @@ void MockDeviceTest::SetUp() {
   auto mock_device_factory = std::make_unique<media::MockDeviceFactory>();
   // We keep a pointer to the MockDeviceFactory as a member so that we can
   // invoke its AddMockDevice(). Ownership of the MockDeviceFactory is moved
-  // to the DeviceFactoryMediaToMojoAdapter.
+  // to the DeviceFactoryImpl.
   mock_device_factory_ = mock_device_factory.get();
   auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
       std::move(mock_device_factory));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  mock_device_factory_adapter_ =
-      std::make_unique<DeviceFactoryMediaToMojoAdapter>(
-          std::move(video_capture_system), base::DoNothing(),
-          base::SingleThreadTaskRunner::GetCurrentDefault());
+  mock_device_factory_adapter_ = std::make_unique<DeviceFactoryImpl>(
+      std::move(video_capture_system), base::DoNothing(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 #else
   mock_device_factory_adapter_ =
-      std::make_unique<DeviceFactoryMediaToMojoAdapter>(
-          std::move(video_capture_system));
+      std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  mock_factory_receiver_ =
-      std::make_unique<mojo::Receiver<mojom::DeviceFactory>>(
-          mock_device_factory_adapter_.get(),
-          factory_.BindNewPipeAndPassReceiver());
 
   media::VideoCaptureDeviceDescriptor mock_descriptor;
   mock_descriptor.device_id = "MockDeviceId";
@@ -55,14 +49,20 @@ void MockDeviceTest::SetUp() {
   base::RunLoop wait_loop;
   EXPECT_CALL(device_infos_receiver_, Run(_))
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
-  factory_->GetDeviceInfos(device_infos_receiver_.Get());
+  mock_device_factory_adapter_->GetDeviceInfos(device_infos_receiver_.Get());
   // We must wait for the response to GetDeviceInfos before calling
   // CreateDevice.
   wait_loop.Run();
-  factory_->CreateDevice(mock_descriptor.device_id,
-                         device_remote_.BindNewPipeAndPassReceiver(),
-                         base::DoNothing());
+  base::RunLoop wait_loop_create_device;
+  mock_device_factory_adapter_->CreateDevice(
+      mock_descriptor.device_id,
+      base::BindLambdaForTesting([&](DeviceFactory::DeviceInfo info) {
+        ASSERT_EQ(info.result_code, media::VideoCaptureError::kNone);
+        device_ = info.device;
+        wait_loop_create_device.Quit();
+      }));
 
+  wait_loop_create_device.Run();
   requested_settings_.requested_format.frame_size = gfx::Size(800, 600);
   requested_settings_.requested_format.frame_rate = 15;
   requested_settings_.resolution_change_policy =

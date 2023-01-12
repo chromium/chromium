@@ -28,8 +28,6 @@ source_set("mocks") {
   testonly = true
 
   sources = [
-    "mock_device_factory.cc",
-    "mock_device_factory.h",
     "mock_producer.cc",
     "mock_producer.h",
     "mock_push_subscription.cc",

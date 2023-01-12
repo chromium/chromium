@@ -11,6 +11,7 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_capture/device_factory.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
@@ -57,7 +58,7 @@ class VideoCaptureServiceLifecycleTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<VideoCaptureServiceImpl> service_impl_;
   mojo::Remote<mojom::VideoCaptureService> service_remote_;
-  base::MockCallback<mojom::DeviceFactory::GetDeviceInfosCallback>
+  base::MockCallback<DeviceFactory::GetDeviceInfosCallback>
       device_info_receiver_;
   base::RunLoop service_idle_wait_loop_;
 

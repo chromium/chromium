@@ -138,7 +138,6 @@
 #include "content/public/browser/video_capture_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/video_capture/ash/video_capture_device_factory_ash.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)

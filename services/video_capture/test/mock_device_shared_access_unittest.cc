@@ -17,7 +17,7 @@
 #include "media/capture/video/video_capture_system_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/device_factory_media_to_mojo_adapter.h"
+#include "services/video_capture/device_factory_impl.h"
 #include "services/video_capture/device_media_to_mojo_adapter.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -54,18 +54,18 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
     auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
         std::move(mock_device_factory));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    service_device_factory_ = std::make_unique<DeviceFactoryMediaToMojoAdapter>(
+    service_device_factory_ = std::make_unique<DeviceFactoryImpl>(
         std::move(video_capture_system), base::DoNothing(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
 #else
-    service_device_factory_ = std::make_unique<DeviceFactoryMediaToMojoAdapter>(
-        std::move(video_capture_system));
+    service_device_factory_ =
+        std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     source_provider_ = std::make_unique<VideoSourceProviderImpl>(
         service_device_factory_.get(), base::DoNothing());
 
     // Obtain the mock device backed source from |source_provider_|.
-    base::MockCallback<mojom::DeviceFactory::GetDeviceInfosCallback>
+    base::MockCallback<DeviceFactory::GetDeviceInfosCallback>
         device_infos_receiver;
     base::RunLoop wait_loop;
     EXPECT_CALL(device_infos_receiver, Run(_))
@@ -267,7 +267,7 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   media::MockDevice mock_device_;
   raw_ptr<media::MockDeviceFactory> mock_device_factory_;
-  std::unique_ptr<DeviceFactoryMediaToMojoAdapter> service_device_factory_;
+  std::unique_ptr<DeviceFactoryImpl> service_device_factory_;
   std::unique_ptr<VideoSourceProviderImpl> source_provider_;
   mojo::Remote<mojom::VideoSource> source_;
   media::VideoCaptureParams requestable_settings_;

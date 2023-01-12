@@ -10,8 +10,9 @@ source_set("lib") {
     "broadcasting_receiver.cc",
     "broadcasting_receiver.h",
     "device.h",
-    "device_factory_media_to_mojo_adapter.cc",
-    "device_factory_media_to_mojo_adapter.h",
+    "device_factory.h",
+    "device_factory_impl.cc",
+    "device_factory_impl.h",
     "device_media_to_mojo_adapter.cc",
     "device_media_to_mojo_adapter.h",
     "gpu_memory_buffer_virtual_device_mojo_adapter.cc",
@@ -37,7 +38,6 @@ source_set("lib") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
-    ":video_capture_ash",
     "//base",
     "//media",
     "//media/capture:capture",
@@ -61,6 +61,21 @@ source_set("lib") {
   }
 
   if (is_chromeos_ash) {
+    sources += [
+      "ash/video_capture_device_ash.cc",
+      "ash/video_capture_device_ash.h",
+      "ash/video_capture_device_factory_ash.cc",
+      "ash/video_capture_device_factory_ash.h",
+      "ash/video_frame_handler_ash.cc",
+      "ash/video_frame_handler_ash.h",
+    ]
+
+    deps += [
+      "//base",
+      "//services/video_capture/public/cpp:cpp",
+      "//services/video_capture/public/mojom",
+    ]
+
     public_deps += [ "//media/capture/video/chromeos/mojom:cros_camera" ]
   }
 
@@ -77,25 +92,6 @@ source_set("lib") {
     ]
 
     deps += [ "//chromeos/lacros" ]
-  }
-}
-
-source_set("video_capture_ash") {
-  if (is_chromeos_ash) {
-    sources = [
-      "ash/video_capture_device_ash.cc",
-      "ash/video_capture_device_ash.h",
-      "ash/video_capture_device_factory_ash.cc",
-      "ash/video_capture_device_factory_ash.h",
-      "ash/video_frame_handler_ash.cc",
-      "ash/video_frame_handler_ash.h",
-    ]
-
-    public_deps = [
-      "//base",
-      "//services/video_capture/public/cpp:cpp",
-      "//services/video_capture/public/mojom",
-    ]
   }
 }
 

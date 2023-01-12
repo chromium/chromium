@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/broadcasting_receiver.h"
-#include "services/video_capture/device_factory_media_to_mojo_adapter.h"
+#include "services/video_capture/device_factory_impl.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
@@ -55,7 +55,7 @@ class VideoSourceImpl : public mojom::VideoSource {
     kStarted,
     kStoppingAsynchronously
   };
-  using DeviceInProcessInfo = DeviceFactory::DeviceInProcessInfo;
+  using DeviceInfo = DeviceFactory::DeviceInfo;
 
   using ScopedCaptureTrace =
       media::TypedScopedAsyncTrace<media::TraceCategory::kVideoAndImageCapture>;
@@ -64,7 +64,7 @@ class VideoSourceImpl : public mojom::VideoSource {
   void StartDeviceWithSettings(
       const media::VideoCaptureParams& requested_settings);
   void OnCreateDeviceResponse(std::unique_ptr<ScopedCaptureTrace> scoped_trace,
-                              DeviceInProcessInfo info);
+                              DeviceInfo info);
   void OnPushSubscriptionClosedOrDisconnectedOrDiscarded(
       PushVideoStreamSubscriptionImpl* subscription,
       base::OnceClosure done_cb);

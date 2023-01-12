@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "services/video_capture/ash/video_capture_device_ash.h"
-#include "services/video_capture/device_factory.h"
 
 namespace crosapi {
 
@@ -30,37 +29,43 @@ void VideoCaptureDeviceFactoryAsh::CreateDevice(
     const std::string& device_id,
     mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> device_receiver,
     CreateDeviceCallback callback) {
-  mojo::PendingRemote<video_capture::mojom::Device> proxy_remote;
-  auto proxy_receiver = proxy_remote.InitWithNewPipeAndPassReceiver();
-  auto device_proxy = std::make_unique<VideoCaptureDeviceAsh>(
-      std::move(device_receiver), std::move(proxy_remote),
-      base::BindOnce(
-          &VideoCaptureDeviceFactoryAsh::OnClientConnectionErrorOrClose,
-          base::Unretained(this), device_id));
+  device_factory_->CreateDevice(
+      device_id, base::BindOnce(&VideoCaptureDeviceFactoryAsh::OnDeviceCreated,
+                                weak_factory_.GetWeakPtr(), std::move(callback),
+                                std::move(device_receiver), device_id));
+}
 
-  auto wrapped_callback = base::BindOnce(
-      [](CreateDeviceCallback callback, media::VideoCaptureError error_code) {
-        crosapi::mojom::DeviceAccessResultCode crosapi_result_code;
-        switch (error_code) {
-          case media::VideoCaptureError::
-              kCrosHalV3DeviceDelegateFailedToInitializeCameraDevice:
-            crosapi_result_code =
-                crosapi::mojom::DeviceAccessResultCode::NOT_INITIALIZED;
-            break;
-          case media::VideoCaptureError::kNone:
-            crosapi_result_code =
-                crosapi::mojom::DeviceAccessResultCode::SUCCESS;
-            break;
-          default:
-            crosapi_result_code =
-                crosapi::mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND;
-        }
-        std::move(callback).Run(crosapi_result_code);
-      },
-      std::move(callback));
-  devices_.emplace(device_id, std::move(device_proxy));
-  device_factory_->CreateDevice(device_id, std::move(proxy_receiver),
-                                std::move(wrapped_callback));
+void VideoCaptureDeviceFactoryAsh::OnDeviceCreated(
+    CreateDeviceCallback callback,
+    mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> device_receiver,
+    const std::string& device_id,
+    video_capture::DeviceFactory::DeviceInfo device_info) {
+  crosapi::mojom::DeviceAccessResultCode crosapi_result_code;
+  switch (device_info.result_code) {
+    case media::VideoCaptureError::
+        kCrosHalV3DeviceDelegateFailedToInitializeCameraDevice:
+      crosapi_result_code =
+          crosapi::mojom::DeviceAccessResultCode::NOT_INITIALIZED;
+      break;
+    case media::VideoCaptureError::kNone:
+      crosapi_result_code = crosapi::mojom::DeviceAccessResultCode::SUCCESS;
+      break;
+    default:
+      crosapi_result_code =
+          crosapi::mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND;
+  }
+
+  if (device_info.result_code == media::VideoCaptureError::kNone) {
+    auto device_proxy = std::make_unique<VideoCaptureDeviceAsh>(
+        std::move(device_receiver), device_info.device,
+        base::BindOnce(
+            &VideoCaptureDeviceFactoryAsh::OnClientConnectionErrorOrClose,
+            weak_factory_.GetWeakPtr(), device_id));
+
+    devices_.emplace(device_id, std::move(device_proxy));
+  }
+
+  std::move(callback).Run(crosapi_result_code);
 }
 
 void VideoCaptureDeviceFactoryAsh::OnClientConnectionErrorOrClose(

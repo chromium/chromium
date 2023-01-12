@@ -86,7 +86,7 @@ void VideoSourceImpl::OnClientDisconnected() {
   if (device_status_ != DeviceStatus::kStoppingAsynchronously) {
     // We need to stop devices when VideoSource remote discarded with active
     // subscription.
-    device_factory_->StopDeviceInProcess(device_id_);
+    device_factory_->StopDevice(device_id_);
   }
 
   if (receivers_.empty()) {
@@ -107,7 +107,7 @@ void VideoSourceImpl::StartDeviceWithSettings(
 
   device_start_settings_ = requested_settings;
   device_status_ = DeviceStatus::kStartingAsynchronously;
-  device_factory_->CreateDeviceInProcess(
+  device_factory_->CreateDevice(
       device_id_,
       base::BindOnce(&VideoSourceImpl::OnCreateDeviceResponse,
                      weak_factory_.GetWeakPtr(), std::move(scoped_trace)));
@@ -115,7 +115,7 @@ void VideoSourceImpl::StartDeviceWithSettings(
 
 void VideoSourceImpl::OnCreateDeviceResponse(
     std::unique_ptr<ScopedCaptureTrace> scoped_trace,
-    DeviceInProcessInfo info) {
+    DeviceInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (info.result_code == media::VideoCaptureError::kNone) {
@@ -192,7 +192,7 @@ void VideoSourceImpl::StopDeviceAsynchronously() {
 
   // Stop the device by closing the connection to it. Stopping is complete when
   // OnStopDeviceComplete() gets invoked.
-  device_factory_->StopDeviceInProcess(device_id_);
+  device_factory_->StopDevice(device_id_);
   device_status_ = DeviceStatus::kStoppingAsynchronously;
 }
 

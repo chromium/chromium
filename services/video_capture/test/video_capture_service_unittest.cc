@@ -12,7 +12,6 @@
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
-#include "services/video_capture/public/mojom/device_factory.mojom.h"
 #include "services/video_capture/public/mojom/virtual_device.mojom.h"
 #include "services/video_capture/test/mock_devices_changed_observer.h"
 #include "services/video_capture/test/video_capture_service_test.h"

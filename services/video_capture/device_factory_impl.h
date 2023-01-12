@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_MEDIA_TO_MOJO_ADAPTER_H_
-#define SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_MEDIA_TO_MOJO_ADAPTER_H_
+#ifndef SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_IMPL_H_
+#define SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_IMPL_H_
 
 #include <map>
 
@@ -30,33 +30,27 @@ class DeviceMediaToMojoAdapter;
 // mojom::DeviceFactory interface. Keeps track of device instances that have
 // been created to ensure that it does not create more than one instance of the
 // same media::VideoCaptureDevice at the same time.
-class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
+class DeviceFactoryImpl : public DeviceFactory {
  public:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DeviceFactoryMediaToMojoAdapter(
+  DeviceFactoryImpl(
       std::unique_ptr<media::VideoCaptureSystem> capture_system,
       media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
       scoped_refptr<base::SequencedTaskRunner> jpeg_decoder_task_runner);
 #else
-  DeviceFactoryMediaToMojoAdapter(
-      std::unique_ptr<media::VideoCaptureSystem> capture_system);
+  DeviceFactoryImpl(std::unique_ptr<media::VideoCaptureSystem> capture_system);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  DeviceFactoryMediaToMojoAdapter(const DeviceFactoryMediaToMojoAdapter&) =
-      delete;
-  DeviceFactoryMediaToMojoAdapter& operator=(
-      const DeviceFactoryMediaToMojoAdapter&) = delete;
+  DeviceFactoryImpl(const DeviceFactoryImpl&) = delete;
+  DeviceFactoryImpl& operator=(const DeviceFactoryImpl&) = delete;
 
-  ~DeviceFactoryMediaToMojoAdapter() override;
+  ~DeviceFactoryImpl() override;
 
   // DeviceFactory implementation.
   void GetDeviceInfos(GetDeviceInfosCallback callback) override;
   void CreateDevice(const std::string& device_id,
-                    mojo::PendingReceiver<mojom::Device> device_receiver,
                     CreateDeviceCallback callback) override;
-  void CreateDeviceInProcess(const std::string& device_id,
-                             CreateDeviceInProcessCallback callback) override;
-  void StopDeviceInProcess(const std::string device_id) override;
+  void StopDevice(const std::string device_id) override;
   void AddSharedMemoryVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,
@@ -79,36 +73,20 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
 #endif
 
  private:
-  struct ActiveDeviceEntry {
-    ActiveDeviceEntry();
-    ~ActiveDeviceEntry();
-    ActiveDeviceEntry(ActiveDeviceEntry&& other);
-    ActiveDeviceEntry& operator=(ActiveDeviceEntry&& other);
-
-    std::unique_ptr<DeviceMediaToMojoAdapter> device;
-    // TODO(chfremer) Use mojo::Receiver<> directly instead of unique_ptr<> when
-    // mojo::Receiver<> supports move operators.
-    // https://crbug.com/644314
-    std::unique_ptr<mojo::Receiver<mojom::Device>> receiver;
-  };
-
   void CreateDeviceInternal(
       const std::string& device_id,
       absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
-      absl::optional<CreateDeviceCallback> create_callback,
-      absl::optional<CreateDeviceInProcessCallback> create_in_process_callback,
-      bool create_in_process);
+      absl::optional<CreateDeviceCallback> create_callback);
   void CreateAndAddNewDevice(
       const std::string& device_id,
       absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
-      absl::optional<CreateDeviceCallback> create_callback,
-      absl::optional<CreateDeviceInProcessCallback> create_in_process_callback,
-      bool create_in_process);
+      absl::optional<CreateDeviceCallback> create_callback);
 
   void OnClientConnectionErrorOrClose(const std::string& device_id);
 
   const std::unique_ptr<media::VideoCaptureSystem> capture_system_;
-  std::map<std::string, ActiveDeviceEntry> active_devices_by_id_;
+  std::map<std::string, std::unique_ptr<DeviceMediaToMojoAdapter>>
+      active_devices_by_id_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const media::MojoMjpegDecodeAcceleratorFactoryCB
@@ -117,9 +95,9 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool has_called_get_device_infos_;
-  base::WeakPtrFactory<DeviceFactoryMediaToMojoAdapter> weak_factory_{this};
+  base::WeakPtrFactory<DeviceFactoryImpl> weak_factory_{this};
 };
 
 }  // namespace video_capture
 
-#endif  // SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_MEDIA_TO_MOJO_ADAPTER_H_
+#endif  // SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_IMPL_H_

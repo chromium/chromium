@@ -336,6 +336,9 @@ source_set("crosapi") {
     "//remoting/host/chromeos:remoting_service",
     "//services/data_decoder/public/cpp:cpp",
     "//services/device/wake_lock/power_save_blocker",
+    "//services/video_capture:lib",
+    "//services/video_capture/public/cpp:cpp",
+    "//services/video_capture/public/mojom",
     "//ui/base",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
@@ -358,7 +361,6 @@ source_set("crosapi") {
     ":browser_util",
     "//media/gpu:buildflags",
     "//printing",
-    "//services/video_capture:video_capture_ash",
   ]
 }
 

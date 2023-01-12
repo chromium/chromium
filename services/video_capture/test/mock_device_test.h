@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_capture/device_factory_media_to_mojo_adapter.h"
+#include "services/video_capture/device_factory_impl.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -38,16 +38,14 @@ class MockDeviceTest : public ::testing::Test {
 
  protected:
   raw_ptr<media::MockDeviceFactory> mock_device_factory_;
-  std::unique_ptr<DeviceFactoryMediaToMojoAdapter> mock_device_factory_adapter_;
+  std::unique_ptr<DeviceFactoryImpl> mock_device_factory_adapter_;
 
-  mojo::Remote<mojom::DeviceFactory> factory_;
-  std::unique_ptr<mojo::Receiver<mojom::DeviceFactory>> mock_factory_receiver_;
-  base::MockCallback<mojom::DeviceFactory::GetDeviceInfosCallback>
+  base::MockCallback<DeviceFactory::GetDeviceInfosCallback>
       device_infos_receiver_;
 
   media::MockDevice mock_device_;
   std::unique_ptr<MockVideoFrameHandler> mock_video_frame_handler_;
-  mojo::Remote<mojom::Device> device_remote_;
+  raw_ptr<Device> device_;
   mojo::PendingRemote<mojom::VideoFrameHandler> mock_subscriber_;
   media::VideoCaptureParams requested_settings_;
 

@@ -139,51 +139,23 @@ void VirtualDeviceEnabledDeviceFactory::GetDeviceInfos(
 
 void VirtualDeviceEnabledDeviceFactory::CreateDevice(
     const std::string& device_id,
-    mojo::PendingReceiver<mojom::Device> device_receiver,
     CreateDeviceCallback callback) {
-  auto virtual_device_iter = virtual_devices_by_id_.find(device_id);
-  if (virtual_device_iter != virtual_devices_by_id_.end()) {
-    VirtualDeviceEntry& device_entry = virtual_device_iter->second;
-    if (device_entry.HasConsumerBinding()) {
-      // The requested virtual device is already used by another client.
-      // Revoke the access for the current client, then bind to the new
-      // receiver.
-      device_entry.ResetConsumerReceiver();
-      device_entry.StopDevice();
-    }
-    device_entry.BindConsumerReceiver(
-        std::move(device_receiver),
-        base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
-                           OnVirtualDeviceConsumerConnectionErrorOrClose,
-                       base::Unretained(this), device_id));
-    std::move(callback).Run(media::VideoCaptureError::kNone);
-    return;
-  }
-
-  device_factory_->CreateDevice(device_id, std::move(device_receiver),
-                                std::move(callback));
-}
-
-void VirtualDeviceEnabledDeviceFactory::CreateDeviceInProcess(
-    const std::string& device_id,
-    CreateDeviceInProcessCallback callback) {
   auto virtual_device_iter = virtual_devices_by_id_.find(device_id);
   if (virtual_device_iter != virtual_devices_by_id_.end()) {
     // The requested virtual device is already used by another client.
     // Revoke the access for the current client.
     VirtualDeviceEntry& device_entry = virtual_device_iter->second;
-    DeviceInProcessInfo info{device_entry.GetDevice(),
-                             media::VideoCaptureError::kNone};
+    DeviceInfo info{device_entry.GetDevice(), media::VideoCaptureError::kNone};
     std::move(callback).Run(std::move(info));
     return;
   }
 
-  return device_factory_->CreateDeviceInProcess(device_id, std::move(callback));
+  return device_factory_->CreateDevice(device_id, std::move(callback));
 }
 
-void VirtualDeviceEnabledDeviceFactory::StopDeviceInProcess(
+void VirtualDeviceEnabledDeviceFactory::StopDevice(
     const std::string device_id) {
-  device_factory_->StopDeviceInProcess(device_id);
+  device_factory_->StopDevice(device_id);
 }
 
 void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(

@@ -30,6 +30,12 @@ class VideoCaptureDeviceAsh : public crosapi::mojom::VideoCaptureDevice {
       mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> proxy_receiver,
       mojo::PendingRemote<video_capture::mojom::Device> device_remote,
       base::OnceClosure cleanup_callback);
+
+  VideoCaptureDeviceAsh(
+      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> proxy_receiver,
+      raw_ptr<video_capture::mojom::Device> device_remote,
+      base::OnceClosure cleanup_callback);
+
   VideoCaptureDeviceAsh(const VideoCaptureDeviceAsh&) = delete;
   VideoCaptureDeviceAsh& operator=(const VideoCaptureDeviceAsh&) = delete;
   ~VideoCaptureDeviceAsh() override;
@@ -53,6 +59,8 @@ class VideoCaptureDeviceAsh : public crosapi::mojom::VideoCaptureDevice {
   mojo::Receiver<crosapi::mojom::VideoCaptureDevice> receiver_{this};
 
   mojo::Remote<video_capture::mojom::Device> device_;
+
+  std::unique_ptr<mojo::Receiver<video_capture::mojom::Device>> device_proxy_;
 };
 
 }  // namespace crosapi

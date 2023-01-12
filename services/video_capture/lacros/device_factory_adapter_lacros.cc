@@ -28,30 +28,8 @@ void DeviceFactoryAdapterLacros::GetDeviceInfos(
   device_factory_ash_->GetDeviceInfos(std::move(callback));
 }
 
-void DeviceFactoryAdapterLacros::CreateDevice(
-    const std::string& device_id,
-    mojo::PendingReceiver<mojom::Device> device_receiver,
-    CreateDeviceCallback callback) {
-  CreateDeviceInternal(device_id, std::move(device_receiver),
-                       std::move(callback),
-                       /*create_in_process_callback=*/absl::nullopt,
-                       /*create_in_process=*/false);
-}
-
-void DeviceFactoryAdapterLacros::CreateDeviceInProcess(
-    const std::string& device_id,
-    CreateDeviceInProcessCallback callback) {
-  CreateDeviceInternal(device_id, /*device_receiver=*/absl::nullopt,
-                       /*create_callback=*/absl::nullopt, std::move(callback),
-                       /*create_in_process=*/true);
-}
-
-void DeviceFactoryAdapterLacros::CreateDeviceInternal(
-    const std::string& device_id,
-    absl::optional<mojo::PendingReceiver<mojom::Device>> device_receiver,
-    absl::optional<CreateDeviceCallback> create_callback,
-    absl::optional<CreateDeviceInProcessCallback> create_in_process_callback,
-    bool create_in_process) {
+void DeviceFactoryAdapterLacros::CreateDevice(const std::string& device_id,
+                                              CreateDeviceCallback callback) {
   DCHECK(device_factory_ash_.is_bound());
   mojo::PendingRemote<crosapi::mojom::VideoCaptureDevice> proxy_remote;
   auto proxy_receiver = proxy_remote.InitWithNewPipeAndPassReceiver();
@@ -59,16 +37,13 @@ void DeviceFactoryAdapterLacros::CreateDeviceInternal(
   // is only called within the lifetime of |device_proxy|, it should be safe
   // to use base::Unretained(this) here.
   auto device_proxy = std::make_unique<DeviceProxyLacros>(
-      std::move(device_receiver), std::move(proxy_remote),
+      absl::nullopt, std::move(proxy_remote),
       base::BindOnce(
           &DeviceFactoryAdapterLacros::OnClientConnectionErrorOrClose,
           base::Unretained(this), device_id));
 
   auto wrapped_callback = base::BindOnce(
-      [](absl::optional<CreateDeviceCallback> create_callback,
-         absl::optional<CreateDeviceInProcessCallback>
-             create_in_process_callback,
-         video_capture::Device* device, bool create_in_process,
+      [](CreateDeviceCallback callback, video_capture::Device* device,
          crosapi::mojom::DeviceAccessResultCode code) {
         media::VideoCaptureError video_capture_result_code;
         switch (code) {
@@ -87,27 +62,20 @@ void DeviceFactoryAdapterLacros::CreateDeviceInternal(
             NOTREACHED() << "Unexpected device access result code";
         }
 
-        if (create_in_process) {
-          DCHECK(create_in_process_callback);
-          DCHECK(device);
-          DeviceInProcessInfo info{device, media::VideoCaptureError::kNone};
-          info.result_code = video_capture_result_code;
-          std::move(*create_in_process_callback).Run(std::move(info));
-        } else {
-          DCHECK(create_callback);
-          std::move(*create_callback).Run(video_capture_result_code);
-        }
+        DCHECK(callback);
+        DCHECK(device);
+        DeviceInfo info{device, media::VideoCaptureError::kNone};
+        info.result_code = video_capture_result_code;
+        std::move(callback).Run(std::move(info));
       },
-      std::move(create_callback), std::move(create_in_process_callback),
-      device_proxy.get(), create_in_process);
+      std::move(callback), device_proxy.get());
 
   devices_.emplace(device_id, std::move(device_proxy));
   device_factory_ash_->CreateDevice(device_id, std::move(proxy_receiver),
                                     std::move(wrapped_callback));
 }
 
-void DeviceFactoryAdapterLacros::StopDeviceInProcess(
-    const std::string device_id) {
+void DeviceFactoryAdapterLacros::StopDevice(const std::string device_id) {
   OnClientConnectionErrorOrClose(device_id);
 }
 
