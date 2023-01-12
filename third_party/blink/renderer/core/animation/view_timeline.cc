@@ -181,7 +181,7 @@ Length InsetValueToLength(const CSSValue* inset_value,
 ViewTimeline* ViewTimeline::Create(Document& document,
                                    ViewTimelineOptions* options,
                                    ExceptionState& exception_state) {
-  Element* subject = options->subject();
+  Element* subject = options->hasSubject() ? options->subject() : nullptr;
 
   ScrollAxis axis =
       options->hasAxis() ? options->axis().AsEnum() : ScrollAxis::kBlock;
@@ -270,6 +270,10 @@ AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
 absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
     PaintLayerScrollableArea* scrollable_area,
     ScrollOrientation physical_orientation) const {
+  // Do not call this method with an inactive timeline.
+  // Called from ScrollTimeline::ComputeTimelineState, which has safeguard.
+  // Any new call sites will require a similar safeguard.
+  DCHECK(ComputeIsActive());
   DCHECK(subject());
   LayoutBox* layout_box = subject()->GetLayoutBox();
   DCHECK(layout_box);

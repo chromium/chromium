@@ -160,13 +160,14 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
-  FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
   // Snapshots scroll timeline current time and phase.
   // Called once per animation frame.
   bool ComputeIsActive() const;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
+  FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
 
   struct TimelineState {
     // TODO(crbug.com/1338167): Remove phase as it can be inferred from
