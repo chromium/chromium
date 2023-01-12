@@ -744,6 +744,7 @@ experimental domain Audits
     enum
       CrossOriginPortalPostMessageError
       FormLabelForNameError
+      FormDuplicateIdForInputError
 
   # Depending on the concrete errorType, different properties are set.
   type GenericIssueDetails extends object

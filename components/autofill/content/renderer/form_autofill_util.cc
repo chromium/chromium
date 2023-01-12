@@ -1444,6 +1444,28 @@ void MatchLabelsAndFields(
   }
 }
 
+//  Emits a devtools issue if two or more inputs tags have the same id
+//  attribute.
+void MaybeEmitDuplicateIdForInputIssue(
+    const WebVector<WebFormControlElement>& control_elements) {
+  base::flat_map<WebString, int> id_count;
+
+  for (const WebFormControlElement& element : control_elements) {
+    if (IsAutofillableElement(element) && !element.GetIdAttribute().IsEmpty()) {
+      id_count[element.GetIdAttribute()]++;
+    }
+  }
+
+  for (const WebFormControlElement& element : control_elements) {
+    if (IsAutofillableElement(element) &&
+        id_count[element.GetIdAttribute()] > 1) {
+      element.GetDocument().GetFrame()->AddGenericIssue(
+          blink::mojom::GenericIssueErrorType::kFormLabelForNameError,
+          element.GetDevToolsNodeId());
+    }
+  }
+}
+
 // Populates the |form|'s
 //  * FormData::fields
 //  * FormData::child_frames
@@ -1473,6 +1495,8 @@ bool FormOrFieldsetsToFormData(
   DCHECK(form->child_frames.empty());
   DCHECK(!optional_field || form_control_element);
   DCHECK(!form_element || fieldsets.empty());
+
+  MaybeEmitDuplicateIdForInputIssue(control_elements);
 
   // Extracts fields from |control_elements| into `form->fields` and sets
   // `form->child_frames[i].predecessor` to the field index of the last field
