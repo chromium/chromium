@@ -24,7 +24,6 @@
 #include "chrome/browser/page_load_metrics/observers/live_tab_count_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/loading_predictor_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/local_network_requests_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/media_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/omnibox_suggestion_used_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/optimization_guide_page_load_metrics_observer.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/page_load_metrics/observers/security_state_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/signed_exchange_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/tab_restore_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/third_party_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/translate_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
@@ -137,7 +135,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
         std::make_unique<PrefetchProxyPageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<LiveTabCountPageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<MediaPageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<MultiTabLoadingPageLoadMetricsObserver>());
     tracker->AddObserver(
@@ -150,7 +147,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
         std::make_unique<HttpsEngagementPageLoadMetricsObserver>(
             web_contents()->GetBrowserContext()));
     tracker->AddObserver(std::make_unique<ProtocolPageLoadMetricsObserver>());
-    tracker->AddObserver(std::make_unique<TabRestorePageLoadMetricsObserver>());
     std::unique_ptr<page_load_metrics::AdsPageLoadMetricsObserver>
         ads_observer =
             page_load_metrics::AdsPageLoadMetricsObserver::CreateIfNeeded(

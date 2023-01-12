@@ -3662,16 +3662,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.LoadingPredictor2.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PageLoadMetricsClientsMedia2" separator="."
-    ordering="prefix">
-  <suffix name="Clients.MediaPageLoad2"
-      label="PageLoadMetrics for page loads that involved playing a media
-             element. Includes samples from prerendered pages"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Cache2"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Total2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PageLoadMetricsClientsMultiTabLoading" separator="."
     ordering="prefix">
   <suffix name="Clients.MultiTabLoading"
@@ -3798,16 +3788,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PageLoadMetricsClientsTabRestore" separator="."
-    ordering="prefix">
-  <suffix name="Clients.TabRestore"
-      label="PageLoadMetrics that are a result of a navigation caused by a
-             tab restore."/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Cache2"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Total2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsEarlyHints2" separator="."
