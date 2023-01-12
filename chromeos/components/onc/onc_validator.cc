@@ -55,7 +55,7 @@ bool FieldIsRecommended(const base::Value& object,
 bool FieldIsSetToValueOrRecommended(const base::Value& object,
                                     const std::string& field_name,
                                     const base::Value& expected_value) {
-  const base::Value* actual_value = object.FindKey(field_name);
+  const base::Value* actual_value = object.GetDict().Find(field_name);
   if (actual_value && expected_value == *actual_value)
     return true;
 
@@ -374,7 +374,7 @@ std::string JoinStringRange(const std::vector<const char*>& strings,
 
 bool Validator::IsInDevicePolicy(base::Value* result,
                                  const std::string& field_name) {
-  if (result->FindKey(field_name)) {
+  if (result->GetDict().contains(field_name)) {
     if (onc_source_ != ::onc::ONC_SOURCE_DEVICE_POLICY) {
       std::ostringstream msg;
       msg << "Field '" << field_name << "' is only allowed in a device policy.";
@@ -435,17 +435,21 @@ bool Validator::FieldExistsAndIsNotInRange(const base::Value& object,
 
 bool Validator::FieldExistsAndIsEmpty(const base::Value& object,
                                       const std::string& field_name) {
-  const base::Value* value = object.FindKey(field_name);
-  if (!value)
+  const base::Value::Dict& dict = object.GetDict();
+  if (!dict.contains(field_name)) {
     return false;
+  }
 
-  const std::string* str = value->GetIfString();
-  if (str) {
-    if (!(*str).empty())
+  const std::string* maybe_str = dict.FindString(field_name);
+  const base::Value::List* maybe_list = dict.FindList(field_name);
+  if (maybe_str) {
+    if (!(*maybe_str).empty()) {
       return false;
-  } else if (value->is_list()) {
-    if (!value->GetList().empty())
+    }
+  } else if (maybe_list) {
+    if (!(*maybe_list).empty()) {
       return false;
+    }
   } else {
     NOTREACHED();
     return false;
@@ -454,15 +458,17 @@ bool Validator::FieldExistsAndIsEmpty(const base::Value& object,
   path_.push_back(field_name);
   std::ostringstream msg;
   msg << "Found an empty string, but expected a non-empty string.";
-  AddValidationIssue(true /* is_error */, msg.str());
+  AddValidationIssue(/*is_error=*/true, /*debug_info=*/msg.str());
   path_.pop_back();
   return true;
 }
 
 bool Validator::FieldShouldExistOrBeRecommended(const base::Value& object,
                                                 const std::string& field_name) {
-  if (object.FindKey(field_name) || FieldIsRecommended(object, field_name))
+  if (object.GetDict().contains(field_name) ||
+      FieldIsRecommended(object, field_name)) {
     return true;
+  }
 
   std::ostringstream msg;
   msg << "Field " << field_name << " is not found, but expected either to be "
@@ -474,7 +480,8 @@ bool Validator::FieldShouldExistOrBeRecommended(const base::Value& object,
 bool Validator::OnlyOneFieldSet(const base::Value& object,
                                 const std::string& field_name1,
                                 const std::string& field_name2) {
-  if (object.FindKey(field_name1) && object.FindKey(field_name2)) {
+  if (object.GetDict().contains(field_name1) &&
+      object.GetDict().contains(field_name2)) {
     std::ostringstream msg;
     msg << "At most one of '" << field_name1 << "' and '" << field_name2
         << "' can be set.";
@@ -520,7 +527,7 @@ bool Validator::ValidateSSIDAndHexSSID(base::Value* object) {
     // If the HexSSID field is present, ignore errors in SSID because these
     // might be caused by the usage of a non-UTF-8 encoding when the SSID
     // field was automatically added (see FillInHexSSIDField).
-    if (!object->FindKey(::onc::wifi::kHexSSID)) {
+    if (!object->GetDict().contains(::onc::wifi::kHexSSID)) {
       AddValidationIssue(true /* is_error */, msg.str());
       path_.pop_back();
       return false;
@@ -572,8 +579,9 @@ bool Validator::ValidateSSIDAndHexSSID(base::Value* object) {
 
 bool Validator::RequireField(const base::Value& dict,
                              const std::string& field_name) {
-  if (dict.FindKey(field_name))
+  if (dict.GetDict().contains(field_name)) {
     return true;
+  }
 
   std::ostringstream msg;
   msg << "The required field '" << field_name << "' is missing.";
@@ -603,7 +611,8 @@ bool Validator::CheckGuidIsUniqueAndAddToSet(const base::Value& dict,
 bool Validator::IsGlobalNetworkConfigInUserImport(
     const base::Value& onc_object) {
   if (onc_source_ == ::onc::ONC_SOURCE_USER_IMPORT &&
-      onc_object.FindKey(::onc::toplevel_config::kGlobalNetworkConfiguration)) {
+      onc_object.GetDict().contains(
+          ::onc::toplevel_config::kGlobalNetworkConfiguration)) {
     std::ostringstream msg;
     msg << "Field '" << ::onc::toplevel_config::kGlobalNetworkConfiguration
         << "' is prohibited in ONC user imports";
@@ -802,10 +811,12 @@ bool Validator::ValidateWiFi(base::Value* result) {
   bool all_required_exist = RequireField(*result, ::onc::wifi::kSecurity);
 
   // One of {kSSID, kHexSSID} must be present.
-  if (!result->FindKey(::onc::wifi::kSSID))
+  if (!result->GetDict().contains(::onc::wifi::kSSID)) {
     all_required_exist &= RequireField(*result, ::onc::wifi::kHexSSID);
-  if (!result->FindKey(::onc::wifi::kHexSSID))
+  }
+  if (!result->GetDict().contains(::onc::wifi::kHexSSID)) {
     all_required_exist &= RequireField(*result, ::onc::wifi::kSSID);
+  }
 
   std::string security = GetStringFromDict(*result, ::onc::wifi::kSecurity);
   if (security == ::onc::wifi::kWEP_8021X || security == ::onc::wifi::kWPA_EAP)
@@ -881,9 +892,10 @@ bool Validator::ValidateIPsec(base::Value* result) {
 
   // For cert-based or EAP-based authentication, server CA must exist.
   // For PSK-based authentication, server CA must not exist.
-  bool has_server_ca_cert = result->FindKey(::onc::ipsec::kServerCARefs) ||
-                            result->FindKey(::onc::ipsec::kServerCARef) ||
-                            result->FindKey(::onc::ipsec::kServerCAPEMs);
+  const base::Value::Dict& dict = result->GetDict();
+  bool has_server_ca_cert = dict.contains(::onc::ipsec::kServerCARefs) ||
+                            dict.contains(::onc::ipsec::kServerCARef) ||
+                            dict.contains(::onc::ipsec::kServerCAPEMs);
   if ((auth == ::onc::ipsec::kCert || auth == ::onc::ipsec::kEAP) &&
       !has_server_ca_cert) {
     all_required_exist = false;
@@ -981,16 +993,17 @@ bool Validator::ValidateOpenVPN(base::Value* result) {
 }
 
 bool Validator::ValidateWireGuard(base::Value* result) {
-  const base::Value* peers = result->FindKey(::onc::wireguard::kPeers);
+  const base::Value::Dict& dict = result->GetDict();
+  const base::Value::List* peers = dict.FindList(::onc::wireguard::kPeers);
   std::ostringstream msg;
-  if (!peers->is_list()) {
+  if (!peers) {
     msg << "A " << ::onc::wireguard::kPeers
         << " list is required but not present.";
     AddValidationIssue(true /* is_error */, msg.str());
     return false;
   }
-  for (const base::Value& p : peers->GetList()) {
-    if (!p.FindKey(::onc::wireguard::kPublicKey)) {
+  for (const base::Value& p : *peers) {
+    if (!p.GetDict().contains(::onc::wireguard::kPublicKey)) {
       msg << ::onc::wireguard::kPublicKey
           << " field is required for each peer.";
       AddValidationIssue(true /* is_error */, msg.str());
@@ -1033,9 +1046,10 @@ bool Validator::ValidateVerifyX509(base::Value* result) {
 
 bool Validator::ValidateCertificatePattern(base::Value* result) {
   bool all_required_exist = true;
-  if (!result->FindKey(::onc::client_cert::kSubject) &&
-      !result->FindKey(::onc::client_cert::kIssuer) &&
-      !result->FindKey(::onc::client_cert::kIssuerCARef)) {
+  const base::Value::Dict& dict = result->GetDict();
+  if (!dict.contains(::onc::client_cert::kSubject) &&
+      !dict.contains(::onc::client_cert::kIssuer) &&
+      !dict.contains(::onc::client_cert::kIssuerCARef)) {
     all_required_exist = false;
     std::ostringstream msg;
     msg << "None of the fields '" << ::onc::client_cert::kSubject << "', '"
@@ -1050,7 +1064,8 @@ bool Validator::ValidateCertificatePattern(base::Value* result) {
 
 bool Validator::ValidateGlobalNetworkConfiguration(base::Value* result) {
   // Replace the deprecated kBlacklistedHexSSIDs with kBlockedHexSSIDs.
-  if (!result->FindKey(::onc::global_network_config::kBlockedHexSSIDs)) {
+  if (!result->GetDict().contains(
+          ::onc::global_network_config::kBlockedHexSSIDs)) {
     absl::optional<base::Value> blocked =
         result->ExtractKey(::onc::global_network_config::kBlacklistedHexSSIDs);
     if (blocked) {
