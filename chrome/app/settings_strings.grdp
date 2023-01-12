@@ -3764,8 +3764,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_OFFLINE_DATA" desc="Text for the dialog that warns about loss of offline data when clearing all storage data.">
     Any offline data will be cleared
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_AD_PERSONALIZATION" translateable="false" desc="Text for the dialog that warns about loss of the data that affects ad personalization when clearing all storage data.">
-    Nunc pulvinar, orci sed ullamcorper varius, nunc velit eleifend quam, a commodo lacus elit id tortor
+  <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_AD_PERSONALIZATION" desc="A bullet in a list of data that gets deleted from the user's device when they choose 'Clear data' for a specific site. 1) Go to chrome://settings/content. 2) From the 'Recent activity' list, choose a site. 3) Click the 'Clear data' button. The 'Clear site data?' dialog appears. This string will appear as a new bullet at the bottom of the dialog.">
+    Data that affects ad personalization is deleted
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_APPS" desc="Text for the dialog that warns about loss of offline data for installed app when clearing all storage data for site.">
     Offline data in installed app will also be cleared
