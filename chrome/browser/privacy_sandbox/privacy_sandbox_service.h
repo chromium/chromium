@@ -279,6 +279,20 @@ class PrivacySandboxService : public KeyedService {
   // such as by policy or extensions, should also call here.
   void TopicsToggleChanged(bool new_value) const;
 
+  // Whether the current profile requires consent for Topics to operate.
+  void TopicsConsentRequired() const;
+
+  // Whether there is an active consent for Topics currently recorded.
+  bool TopicsHasActiveConsent() const;
+
+  // Functions which returns the details of the currently recorded Topics
+  // consent.
+  // TODO (crbug.com/1378703): Display the output of these functions in WebUI.
+  privacy_sandbox::TopicsConsentUpdateSource TopicsConsentLastUpdateSource()
+      const;
+  base::Time TopicsConsentLastUpdateTime() const;
+  std::string TopicsConsentLastUpdateText() const;
+
  protected:
   friend class PrivacySandboxServiceTest;
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,

@@ -16,7 +16,9 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 namespace privacy_sandbox_test_util {
 
@@ -68,9 +70,12 @@ V GetItemValueForKey(K key, std::map<K, TestCaseItemValue> test_components) {
 void ApplyTestState(
     StateKey key,
     const TestCaseItemValue& value,
+    content::BrowserTaskEnvironment* task_environment,
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* map,
     MockPrivacySandboxSettingsDelegate* mock_delegate,
+    PrivacySandboxServiceTestInterface* privacy_sandbox_service,
+    browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service,
     content_settings::MockProvider* user_content_setting_provider,
     content_settings::MockProvider* managed_content_setting_provider) {
   switch (key) {
@@ -134,15 +139,88 @@ void ApplyTestState(
           GetItemValue<bool>(value));
       return;
     }
+    case (StateKey::kHasCurrentTopics): {
+      auto has_current_topics = GetItemValue<bool>(value);
+      if (!has_current_topics) {
+        // By default, there are no blocked topics.
+        return;
+      }
+      const auto kTopic = privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(24),  // "Blues"
+          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+      const std::vector<privacy_sandbox::CanonicalTopic> topics = {kTopic};
+
+      EXPECT_CALL(*mock_browsing_topics_service, GetTopTopicsForDisplay())
+          .WillRepeatedly(testing::Return(topics));
+      return;
+    }
+    case (StateKey::kHasBlockedTopics): {
+      auto has_current_topics = GetItemValue<bool>(value);
+      if (!has_current_topics) {
+        // By default, there are no current topics.
+        return;
+      }
+      const auto kTopic = privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(25),  // "Classical Music"
+          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+      privacy_sandbox_service->SetTopicAllowed(kTopic, false);
+      return;
+    }
+    case (StateKey::kAdvanceClockBy): {
+      auto time_delta = GetItemValue<base::TimeDelta>(value);
+      task_environment->AdvanceClock(time_delta);
+      return;
+    }
+    case (StateKey::kActiveTopicsConsent): {
+      bool active_consent = GetItemValue<bool>(value);
+      testing_pref_service->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven,
+                                       active_consent);
+
+      // For other values associated with consent, use values which are
+      // arbitrary, but won't be expected by any test, and don't affect whether
+      // the consent is considered active.
+      testing_pref_service->SetTime(
+          prefs::kPrivacySandboxTopicsConsentLastUpdateTime,
+          base::Time::Now() - base::Microseconds(12345));
+      testing_pref_service->SetInteger(
+          prefs::kPrivacySandboxTopicsConsentLastUpdateReason, 1234);
+      testing_pref_service->SetString(
+          prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "Foo Bar Baz");
+      return;
+    }
     default:
       NOTREACHED();
+  }
+}
+
+// Some input is not directly passed to the function under test, and so must
+// be run in advance of checking output. When input is provided directly to
+// and output function, it is handled in `CheckOutput()`
+void ProvideInput(const std::pair<InputKey, TestCaseItemValue>& input,
+                  PrivacySandboxServiceTestInterface* privacy_sandbox_service) {
+  auto [input_key, input_value] = input;
+  switch (input_key) {
+    case (InputKey::kTopicsToggleNewValue): {
+      privacy_sandbox_service->TopicsToggleChanged(
+          GetItemValue<bool>(input_value));
+      return;
+    }
+    case (InputKey::kTopicsConfirmationDecisionConfirmed): {
+      privacy_sandbox_service->TopicsConfirmationDecisionMade(
+          GetItemValue<bool>(input_value));
+      return;
+    }
+    default: {
+      return;
+    }
   }
 }
 
 void CheckOutput(
     const std::map<InputKey, TestCaseItemValue>& input,
     const std::pair<OutputKey, TestCaseItemValue>& output,
-    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings) {
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+    PrivacySandboxServiceTestInterface* privacy_sandbox_service) {
   auto [output_key, output_value] = output;
   switch (output_key) {
     case (OutputKey::kIsTopicsAllowed): {
@@ -349,6 +427,71 @@ void CheckOutput(
           "PrivacySandbox.IsPrivateAggregationAllowed", histogram_value, 1);
       return;
     }
+    case (OutputKey::kTopicsConsentGiven): {
+      SCOPED_TRACE("Check Output: Topics Consent Given");
+      auto consent_given = GetItemValue<bool>(output_value);
+      EXPECT_EQ(consent_given,
+                privacy_sandbox_service->TopicsHasActiveConsent());
+      return;
+    }
+    case (OutputKey::kTopicsConsentLastUpdateReason): {
+      SCOPED_TRACE("Check Output: Topics Consent Update Source");
+      auto consent_update_source =
+          GetItemValue<privacy_sandbox::TopicsConsentUpdateSource>(
+              output_value);
+      EXPECT_EQ(consent_update_source,
+                privacy_sandbox_service->TopicsConsentLastUpdateSource());
+      return;
+    }
+    case (OutputKey::kTopicsConsentLastUpdateTime): {
+      SCOPED_TRACE("Check Output: Topics Consent Last Update Time");
+      auto consent_last_update = GetItemValue<base::Time>(output_value);
+      EXPECT_EQ(consent_last_update,
+                privacy_sandbox_service->TopicsConsentLastUpdateTime());
+      return;
+    }
+    case (OutputKey::kTopicsConsentStringIdentifiers): {
+      SCOPED_TRACE("Check Output: Topics Consent String Identifiers");
+
+      auto string_ids = GetItemValue<std::vector<int>>(output_value);
+
+      std::string stored_text =
+          privacy_sandbox_service->TopicsConsentLastUpdateText();
+
+      // The stored text should contain all of the strings specified by
+      // `string_ids` in order, each separated by a single space. We can
+      // verify this by finding each string in `stored_text`, starting from
+      // the end of where the previous string was found.
+      auto stored_text_iterator = stored_text.begin();
+
+      for (auto string_id : string_ids) {
+        auto string = l10n_util::GetStringUTF8(string_id);
+        base::ReplaceSubstringsAfterOffset(&string, 0, "<b>", "");
+        base::ReplaceSubstringsAfterOffset(&string, 0, "</b>", "");
+        SCOPED_TRACE(
+            "Expecting to find: \"" + string + "\" at the start of \"" +
+            std::string(stored_text_iterator, stored_text.end()) + "\"");
+
+        auto mismatch_pair =
+            base::ranges::mismatch(string.begin(), string.end(),
+                                   stored_text_iterator, stored_text.end());
+
+        // The first mismatch should be at the end of the string, indicating
+        // that the entire string was matched.
+        EXPECT_EQ(string.end(), mismatch_pair.first);
+
+        // Update text iterator to where the matches for this string stopped.
+        stored_text_iterator = mismatch_pair.second;
+
+        // The iterator should now point to the whitespace character joining the
+        // strings, unless we're at the end of the string.
+        if (stored_text_iterator != stored_text.end()) {
+          EXPECT_EQ(' ', *stored_text_iterator);
+          stored_text_iterator++;
+        }
+      }
+      return;
+    }
   }
 }
 
@@ -426,10 +569,13 @@ void SetupTestState(
 }
 
 void RunTestCase(
+    content::BrowserTaskEnvironment* task_environment,
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* host_content_settings_map,
     MockPrivacySandboxSettingsDelegate* mock_delegate,
+    browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service_,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+    PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     content_settings::MockProvider* user_content_setting_provider,
     content_settings::MockProvider* managed_content_setting_provider,
     const TestCase& test_case) {
@@ -437,15 +583,23 @@ void RunTestCase(
 
   // Setup test state.
   for (const auto& [key, value] : UnpackKeys<StateKey>(test_state)) {
-    ApplyTestState(key, value, testing_pref_service, host_content_settings_map,
-                   mock_delegate, user_content_setting_provider,
+    ApplyTestState(key, value, task_environment, testing_pref_service,
+                   host_content_settings_map, mock_delegate,
+                   privacy_sandbox_service, mock_browsing_topics_service_,
+                   user_content_setting_provider,
                    managed_content_setting_provider);
   }
 
-  // Check expected outputs for provided inputs matches actual output.
+  // Provide any inputs not directly related to an output function.
   auto inputs = UnpackKeys<InputKey>(test_input);
+  for (const auto& input : inputs) {
+    ProvideInput(input, privacy_sandbox_service);
+  }
+
+  // Check expected outputs for provided inputs matches actual output.
   for (const auto& output : UnpackKeys<OutputKey>(test_output)) {
-    CheckOutput(inputs, output, privacy_sandbox_settings);
+    CheckOutput(inputs, output, privacy_sandbox_settings,
+                privacy_sandbox_service);
   }
 }
 

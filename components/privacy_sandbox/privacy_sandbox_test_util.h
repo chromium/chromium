@@ -8,10 +8,13 @@
 #include <set>
 #include <string>
 
+#include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 
@@ -22,6 +25,19 @@ class TestingPrefServiceSyncable;
 class HostContentSettingsMap;
 
 namespace privacy_sandbox_test_util {
+
+class PrivacySandboxServiceTestInterface {
+ public:
+  virtual void TopicsToggleChanged(bool new_value) const = 0;
+  virtual void TopicsConfirmationDecisionMade(bool confirmed) const = 0;
+  virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
+                               bool allowed) = 0;
+  virtual bool TopicsHasActiveConsent() const = 0;
+  virtual privacy_sandbox::TopicsConsentUpdateSource
+  TopicsConsentLastUpdateSource() const = 0;
+  virtual base::Time TopicsConsentLastUpdateTime() const = 0;
+  virtual std::string TopicsConsentLastUpdateText() const = 0;
+};
 
 class MockPrivacySandboxObserver
     : public privacy_sandbox::PrivacySandboxSettings::Observer {
@@ -67,6 +83,10 @@ enum class StateKey {
   kM1AdMeasurementEnabledUserPrefValue = 6,
   kIsIncognito = 7,
   kIsRestrictedAccount = 8,
+  kHasCurrentTopics = 9,
+  kHasBlockedTopics = 10,
+  kAdvanceClockBy = 11,
+  kActiveTopicsConsent = 12,
 };
 
 // Defines the input to the functions under test.
@@ -78,6 +98,8 @@ enum class InputKey {
   kAdMeasurementSourceOrigin = 5,
   kAdMeasurementDestinationOrigin = 6,
   kAccessingOrigin = 7,
+  kTopicsToggleNewValue = 8,
+  kTopicsConfirmationDecisionConfirmed = 9,
 };
 
 // Defines the expected output of the functions under test, when the profile is
@@ -99,6 +121,10 @@ enum class OutputKey {
   kIsSharedStorageAllowedMetric = 14,
   kIsSharedStorageSelectURLAllowedMetric = 15,
   kIsPrivateAggregationAllowedMetric = 16,
+  kTopicsConsentGiven = 17,
+  kTopicsConsentLastUpdateReason = 18,
+  kTopicsConsentLastUpdateTime = 19,
+  kTopicsConsentStringIdentifiers = 20,
 };
 
 // To allow multiple input keys to map to the same value, without having to
@@ -122,14 +148,19 @@ using SiteDataExceptions = std::vector<SiteDataException>;
 // key types, the set of value types associated with those keys is shared, and
 // represented by this variant. When accessing keys, the test util will expect
 // a particular value type, and will error otherwise.
-using TestCaseItemValue = absl::variant<bool,
-                                        std::string,
-                                        url::Origin,
-                                        GURL,
-                                        content_settings::CookieControlsMode,
-                                        SiteDataExceptions,
-                                        ContentSetting,
-                                        int>;
+using TestCaseItemValue =
+    absl::variant<bool,
+                  std::string,
+                  url::Origin,
+                  GURL,
+                  content_settings::CookieControlsMode,
+                  SiteDataExceptions,
+                  ContentSetting,
+                  int,
+                  base::Time,
+                  base::TimeDelta,
+                  privacy_sandbox::TopicsConsentUpdateSource,
+                  std::vector<int>>;
 
 using TestState = std::map<TestKey<StateKey>, TestCaseItemValue>;
 using TestInput = std::map<TestKey<InputKey>, TestCaseItemValue>;
@@ -161,10 +192,13 @@ void SetupTestState(
 
 // Setup and run the provided test case.
 void RunTestCase(
+    content::BrowserTaskEnvironment* task_environment,
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* host_content_settings_map,
     MockPrivacySandboxSettingsDelegate* mock_delegate,
+    browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+    PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     content_settings::MockProvider* user_content_setting_provider,
     content_settings::MockProvider* managed_content_setting_provider,
     const TestCase& test_case);

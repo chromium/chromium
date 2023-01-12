@@ -118,6 +118,60 @@ std::string GetTopicsConfirmationText() {
   );
 }
 
+// Returns the text contents of the Topics settings page.
+std::string GetTopicsSettingsText(bool did_consent,
+                                  bool has_current_topics,
+                                  bool has_blocked_topics) {
+  // `did_consent` refers to the _updated_ state, and so the previous state,
+  // e.g. when the user clicked the toggle, will be the opposite.
+  auto topics_prev_enabled = !did_consent;
+
+  // A user should only have current topics while topics is enabled. Old topics
+  // will not appear when the user enables, as they will have been cleared when
+  // topics was previously disabled, or never generated at all.
+  DCHECK(topics_prev_enabled || !has_current_topics);
+
+  int blocked_topics_description =
+      has_blocked_topics
+          ? IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION
+          : IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY;
+
+  std::vector<int> string_ids = {
+      IDS_SETTINGS_TOPICS_PAGE_TITLE,
+      IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
+      IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
+      IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+      IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
+      IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
+      IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
+      IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
+      IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+      IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
+      blocked_topics_description,
+      IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
+
+  // Additional strings are displayed if there were no current topics, either
+  // because they were empty, or because Topics was disabled. These will have
+  // appeared after the current topics description.
+  if (!topics_prev_enabled) {
+    string_ids.insert(
+        string_ids.begin() + 5,
+        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED);
+  } else if (!has_current_topics) {
+    string_ids.insert(
+        string_ids.begin() + 5,
+        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY);
+  }
+
+  return std::accumulate(string_ids.begin(), string_ids.end(), std::string(),
+                         [](const std::string& previous_result, int next_id) {
+                           auto next_string = l10n_util::GetStringUTF8(next_id);
+                           return previous_result +
+                                  (!previous_result.empty() ? " " : "") +
+                                  next_string;
+                         });
+}
+
 }  // namespace
 
 PrivacySandboxService::PrivacySandboxService() = default;
@@ -764,6 +818,32 @@ void PrivacySandboxService::TopicsToggleChanged(bool new_value) const {
       privacy_sandbox::TopicsConsentUpdateSource::kSettings, new_value);
 }
 
+void PrivacySandboxService::TopicsConsentRequired() const {
+  // TODO(crbug.com/1332513): Implement + Test.
+  NOTIMPLEMENTED();
+}
+
+bool PrivacySandboxService::TopicsHasActiveConsent() const {
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven);
+}
+
+privacy_sandbox::TopicsConsentUpdateSource
+PrivacySandboxService::TopicsConsentLastUpdateSource() const {
+  return static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
+      pref_service_->GetInteger(
+          prefs::kPrivacySandboxTopicsConsentLastUpdateReason));
+}
+
+base::Time PrivacySandboxService::TopicsConsentLastUpdateTime() const {
+  return pref_service_->GetTime(
+      prefs::kPrivacySandboxTopicsConsentLastUpdateTime);
+}
+
+std::string PrivacySandboxService::TopicsConsentLastUpdateText() const {
+  return pref_service_->GetString(
+      prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
+}
+
 /*static*/ PrivacySandboxService::PromptType
 PrivacySandboxService::GetRequiredPromptTypeInternal(
     PrefService* pref_service,
@@ -995,8 +1075,10 @@ void PrivacySandboxService::RecordUpdatedTopicsConsent(
       break;
     }
     case (privacy_sandbox::TopicsConsentUpdateSource::kSettings): {
-      // TODO(crbug.com/1378703): Implement consent recording from settings.
-      NOTIMPLEMENTED();
+      int current_topics_count = GetCurrentTopTopics().size();
+      int blocked_topics_count = GetBlockedTopics().size();
+      consent_text = GetTopicsSettingsText(
+          did_consent, current_topics_count > 0, blocked_topics_count > 0);
       break;
     }
     default:

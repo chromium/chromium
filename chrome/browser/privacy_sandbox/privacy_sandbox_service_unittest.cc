@@ -23,6 +23,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -48,7 +50,6 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -70,11 +71,85 @@ using browsing_topics::Topic;
 using privacy_sandbox::CanonicalTopic;
 using testing::ElementsAre;
 
+// C++20 introduces the "using enum" construct, which significantly reduces the
+// required verbosity here. C++20 is support is coming to Chromium
+// (crbug.com/1284275), with Mac / Windows / Linux support at the time of
+// writing.
+// TODO (crbug.com/1401686): Replace groups with commented lines when C++20 is
+// supported.
+
+// using enum privacy_sandbox_test_util::TestState;
+using privacy_sandbox_test_util::StateKey;
+constexpr auto kHasCurrentTopics = StateKey::kHasCurrentTopics;
+constexpr auto kHasBlockedTopics = StateKey::kHasBlockedTopics;
+constexpr auto kAdvanceClockBy = StateKey::kAdvanceClockBy;
+constexpr auto kActiveTopicsConsent = StateKey::kActiveTopicsConsent;
+
+// using enum privacy_sandbox_test_util::InputKey;
+using privacy_sandbox_test_util::InputKey;
+constexpr auto kTopicsToggleNewValue = InputKey::kTopicsToggleNewValue;
+constexpr auto kTopicsConfirmationDecisionConfirmed =
+    InputKey::kTopicsConfirmationDecisionConfirmed;
+
+// using enum privacy_sandbox_test_util::TestOutput;
+using privacy_sandbox_test_util::OutputKey;
+constexpr auto kTopicsConsentGiven = OutputKey::kTopicsConsentGiven;
+constexpr auto kTopicsConsentLastUpdateReason =
+    OutputKey::kTopicsConsentLastUpdateReason;
+constexpr auto kTopicsConsentLastUpdateTime =
+    OutputKey::kTopicsConsentLastUpdateTime;
+constexpr auto kTopicsConsentStringIdentifiers =
+    OutputKey::kTopicsConsentStringIdentifiers;
+
+using privacy_sandbox_test_util::MultipleInputKeys;
+using privacy_sandbox_test_util::MultipleOutputKeys;
+using privacy_sandbox_test_util::MultipleStateKeys;
+using privacy_sandbox_test_util::SiteDataExceptions;
+using privacy_sandbox_test_util::TestCase;
+using privacy_sandbox_test_util::TestInput;
+using privacy_sandbox_test_util::TestOutput;
+using privacy_sandbox_test_util::TestState;
+
 const char kFirstPartySetsStateHistogram[] = "Settings.FirstPartySets.State";
 const char kPrivacySandboxStartupHistogram[] =
     "Settings.PrivacySandbox.StartupState";
 
 const base::Version kFirstPartySetsVersion("1.2.3");
+
+class TestPrivacySandboxService
+    : public privacy_sandbox_test_util::PrivacySandboxServiceTestInterface {
+ public:
+  explicit TestPrivacySandboxService(PrivacySandboxService* service)
+      : service_(service) {}
+
+  // PrivacySandboxServiceTestInterface
+  void TopicsToggleChanged(bool new_value) const override {
+    service_->TopicsToggleChanged(new_value);
+  }
+  void TopicsConfirmationDecisionMade(bool confirmed) const override {
+    service_->TopicsConfirmationDecisionMade(confirmed);
+  }
+  void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
+                       bool allowed) override {
+    service_->SetTopicAllowed(topic, allowed);
+  }
+  bool TopicsHasActiveConsent() const override {
+    return service_->TopicsHasActiveConsent();
+  }
+  privacy_sandbox::TopicsConsentUpdateSource TopicsConsentLastUpdateSource()
+      const override {
+    return service_->TopicsConsentLastUpdateSource();
+  }
+  base::Time TopicsConsentLastUpdateTime() const override {
+    return service_->TopicsConsentLastUpdateTime();
+  }
+  std::string TopicsConsentLastUpdateText() const override {
+    return service_->TopicsConsentLastUpdateText();
+  }
+
+ private:
+  raw_ptr<PrivacySandboxService> service_;
+};
 
 class TestInterestGroupManager : public content::InterestGroupManager {
  public:
@@ -687,85 +762,108 @@ void ClearFpsUserPrefs(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
 }
 
-std::vector<int> GetTopicsConsentStringIdentifiers(
-    privacy_sandbox::TopicsConsentUpdateSource source) {
-  switch (source) {
-    case (privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue): {
-      return {};
-    }
-    case (privacy_sandbox::TopicsConsentUpdateSource::kConfirmation): {
-      return {IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_3,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_EXPAND_LABEL,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3,
-              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK};
-    }
-    case (privacy_sandbox::TopicsConsentUpdateSource::kSettings): {
-      NOTIMPLEMENTED();
-      return {};
-    }
+std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
+                                                    bool has_current_topics,
+                                                    bool has_blocked_topics) {
+  if (did_consent && !has_blocked_topics) {
+    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
+            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
+  } else if (did_consent && has_blocked_topics) {
+    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
+            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
+  } else if (!did_consent && has_current_topics && has_blocked_topics) {
+    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
+            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
+  } else if (!did_consent && has_current_topics && !has_blocked_topics) {
+    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
+            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
+  } else if (!did_consent && !has_current_topics && has_blocked_topics) {
+    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
+            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
+  } else if (!did_consent && !has_current_topics && !has_blocked_topics) {
+    return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
+            IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   }
 
-  NOTREACHED();
+  NOTREACHED() << "Invalid topics settings consent state";
   return {};
 }
 
-void ValidateTopicsConsentPrefState(
-    sync_preferences::TestingPrefServiceSyncable* pref_service,
-    bool consent_given,
-    privacy_sandbox::TopicsConsentUpdateSource last_update_source,
-    base::Time last_update_time) {
-  EXPECT_EQ(consent_given,
-            pref_service->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven));
-  EXPECT_EQ(last_update_source,
-            static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
-                pref_service->GetInteger(
-                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)));
-  EXPECT_EQ(
-      last_update_time,
-      pref_service->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime));
-
-  auto string_ids = GetTopicsConsentStringIdentifiers(last_update_source);
-
-  std::string stored_text = pref_service->GetString(
-      prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
-
-  // The stored text should contain all of the strings specified by `string_ids`
-  // in order, each separated by a single space. We can verify this by finding
-  // each string in `stored_text`, starting from the end of where the previous
-  // string was found.
-  auto stored_text_iterator = stored_text.begin();
-
-  for (auto string_id : string_ids) {
-    auto string = l10n_util::GetStringUTF8(string_id);
-    base::ReplaceSubstringsAfterOffset(&string, 0, "<b>", "");
-    base::ReplaceSubstringsAfterOffset(&string, 0, "</b>", "");
-
-    auto mismatch_pair = base::ranges::mismatch(
-        string.begin(), string.end(), stored_text_iterator, stored_text.end());
-
-    // The first mismatch should be at the end of the string, indicating that
-    // the entire string was matched.
-    EXPECT_EQ(string.end(), mismatch_pair.first);
-
-    // Update text iterator to where the matches for this string stopped.
-    stored_text_iterator = mismatch_pair.second;
-
-    // The iterator should now point to the whitespace character joining the
-    // strings, unless we're at the end of the string.
-    if (stored_text_iterator != stored_text.end()) {
-      EXPECT_EQ(' ', *stored_text_iterator);
-      stored_text_iterator++;
-    }
-  }
-
-  // We should have iterated over all of the stored text successfully.
-  EXPECT_EQ(stored_text.end(), stored_text_iterator);
+std::vector<int> GetTopicsConfirmationStringIdentifiers() {
+  return {IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_3,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_EXPAND_LABEL,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3,
+          IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK};
 }
 
 }  // namespace
@@ -777,6 +875,7 @@ class PrivacySandboxServiceTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
+    InitializeFeaturesBeforeStart();
     CreateService();
 
     base::RunLoop run_loop;
@@ -786,21 +885,19 @@ class PrivacySandboxServiceTest : public testing::Test {
     first_party_sets_policy_service_.ResetForTesting();
   }
 
-  virtual std::unique_ptr<
-      privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
-  GetMockDelegate() {
-    auto mock_delegate = std::make_unique<
-        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
-    mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
-        /*restricted=*/false);
-    return mock_delegate;
-  }
+  virtual void InitializeFeaturesBeforeStart() {}
 
   void CreateService() {
+    auto mock_delegate = std::make_unique<testing::NiceMock<
+        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
+    mock_delegate_ = mock_delegate.get();
+    mock_delegate->SetUpIsPrivacySandboxRestrictedResponse(
+        /*restricted=*/false);
+
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettings>(
-            GetMockDelegate(), host_content_settings_map(), cookie_settings(),
-            prefs());
+            std::move(mock_delegate), host_content_settings_map(),
+            cookie_settings(), prefs());
 #if !BUILDFLAG(IS_ANDROID)
     mock_sentiment_service_ =
         std::make_unique<::testing::NiceMock<MockTrustSafetySentimentService>>(
@@ -853,6 +950,10 @@ class PrivacySandboxServiceTest : public testing::Test {
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
     return &mock_browsing_topics_service_;
   }
+  privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
+  mock_delegate() {
+    return mock_delegate_;
+  }
   first_party_sets::ScopedMockFirstPartySetsHandler&
   mock_first_party_sets_handler() {
     return mock_first_party_sets_handler_;
@@ -877,6 +978,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
+  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+      mock_delegate_;
+
   first_party_sets::ScopedMockFirstPartySetsHandler
       mock_first_party_sets_handler_;
   first_party_sets::FirstPartySetsPolicyService
@@ -896,11 +1000,11 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
   // actions is correctly converted into a list of eTLD+1s.
 
-  using TestCase =
+  using FledgeTestCase =
       std::pair<std::vector<url::Origin>, std::vector<std::string>>;
 
   // Items which map to the same eTLD+1 should be coalesced into a single entry.
-  TestCase test_case_1 = {
+  FledgeTestCase test_case_1 = {
       {url::Origin::Create(GURL("https://www.example.com")),
        url::Origin::Create(GURL("https://example.com:8080")),
        url::Origin::Create(GURL("http://www.example.com"))},
@@ -908,15 +1012,16 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
 
   // eTLD's should return the host instead, this is relevant for sites which
   // are themselves on the PSL, e.g. github.io.
-  TestCase test_case_2 = {{
-                              url::Origin::Create(GURL("https://co.uk")),
-                              url::Origin::Create(GURL("http://co.uk")),
-                              url::Origin::Create(GURL("http://example.co.uk")),
-                          },
-                          {"co.uk", "example.co.uk"}};
+  FledgeTestCase test_case_2 = {
+      {
+          url::Origin::Create(GURL("https://co.uk")),
+          url::Origin::Create(GURL("http://co.uk")),
+          url::Origin::Create(GURL("http://example.co.uk")),
+      },
+      {"co.uk", "example.co.uk"}};
 
   // IP addresses should also return the host.
-  TestCase test_case_3 = {
+  FledgeTestCase test_case_3 = {
       {
           url::Origin::Create(GURL("https://192.168.1.2")),
           url::Origin::Create(GURL("https://192.168.1.2:8080")),
@@ -925,16 +1030,16 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
       {"192.168.1.2", "192.168.1.3"}};
 
   // Results should be alphabetically ordered.
-  TestCase test_case_4 = {{
-                              url::Origin::Create(GURL("https://d.com")),
-                              url::Origin::Create(GURL("https://b.com")),
-                              url::Origin::Create(GURL("https://a.com")),
-                              url::Origin::Create(GURL("https://c.com")),
-                          },
-                          {"a.com", "b.com", "c.com", "d.com"}};
+  FledgeTestCase test_case_4 = {{
+                                    url::Origin::Create(GURL("https://d.com")),
+                                    url::Origin::Create(GURL("https://b.com")),
+                                    url::Origin::Create(GURL("https://a.com")),
+                                    url::Origin::Create(GURL("https://c.com")),
+                                },
+                                {"a.com", "b.com", "c.com", "d.com"}};
 
-  std::vector<TestCase> test_cases = {test_case_1, test_case_2, test_case_3,
-                                      test_case_4};
+  std::vector<FledgeTestCase> test_cases = {test_case_1, test_case_2,
+                                            test_case_3, test_case_4};
 
   for (const auto& origins_to_expected : test_cases) {
     std::vector<content::InterestGroupManager::InterestGroupDataKey> data_keys;
@@ -2688,26 +2793,6 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       net::SchemefulSite(GURL("https://google.de"))));
 }
 
-TEST_F(PrivacySandboxServiceTest, TopicsConfirmationDecisionMade) {
-  // Pref state should start with no consent decision having been made.
-  ValidateTopicsConsentPrefState(
-      prefs(), false, privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue,
-      base::Time());
-
-  // Record an affirmative consent decision.
-  privacy_sandbox_service()->TopicsConfirmationDecisionMade(true);
-  ValidateTopicsConsentPrefState(
-      prefs(), true, privacy_sandbox::TopicsConsentUpdateSource::kConfirmation,
-      base::Time::Now());
-
-  // Later, revoke consent.
-  browser_task_environment()->AdvanceClock(base::Hours(1));
-  privacy_sandbox_service()->TopicsConfirmationDecisionMade(false);
-  ValidateTopicsConsentPrefState(
-      prefs(), false, privacy_sandbox::TopicsConsentUpdateSource::kConfirmation,
-      base::Time::Now());
-}
-
 class PrivacySandboxServiceTestNonRegularProfile
     : public PrivacySandboxServiceTest {
   profile_metrics::BrowserProfileType GetProfileType() override {
@@ -2979,4 +3064,216 @@ TEST_F(PrivacySandboxServiceTestCoverageTest, PromptTestCoverage) {
   }
   EXPECT_EQ(test_case_properties.size(), kPromptTestCases.size());
   EXPECT_EQ(64u, test_case_properties.size());
+}
+
+class PrivacySandboxServiceM1Test : public PrivacySandboxServiceTest {
+ public:
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxSettings4);
+  }
+
+ protected:
+  void RunTestCase(const TestState& test_state,
+                   const TestInput& test_input,
+                   const TestOutput& test_output) {
+    ASSERT_FALSE(test_case_run_)
+        << "Each test fixture should run a single test, to ensure the test "
+           "profile is in a known state.";
+    test_case_run_ = true;
+    auto user_provider = std::make_unique<content_settings::MockProvider>();
+    auto* user_provider_raw = user_provider.get();
+    auto managed_provider = std::make_unique<content_settings::MockProvider>();
+    auto* managed_provider_raw = managed_provider.get();
+    content_settings::TestUtils::OverrideProvider(
+        host_content_settings_map(), std::move(user_provider),
+        HostContentSettingsMap::PREF_PROVIDER);
+    content_settings::TestUtils::OverrideProvider(
+        host_content_settings_map(), std::move(managed_provider),
+        HostContentSettingsMap::POLICY_PROVIDER);
+    auto service_wrapper = TestPrivacySandboxService(privacy_sandbox_service());
+
+    privacy_sandbox_test_util::RunTestCase(
+        browser_task_environment(), prefs(), host_content_settings_map(),
+        mock_delegate(), mock_browsing_topics_service(),
+        privacy_sandbox_settings(), &service_wrapper, user_provider_raw,
+        managed_provider_raw, TestCase(test_state, test_input, test_output));
+  }
+
+ private:
+  bool test_case_run_ = false;
+};
+
+TEST_F(PrivacySandboxServiceM1Test, TopicsConsentDefault) {
+  RunTestCase(
+      TestState{}, TestInput{},
+      TestOutput{{kTopicsConsentGiven, false},
+                 {kTopicsConsentLastUpdateReason,
+                  privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue},
+                 {kTopicsConsentLastUpdateTime, base::Time()},
+                 {kTopicsConsentStringIdentifiers, std::vector<int>()}});
+}
+
+TEST_F(PrivacySandboxServiceM1Test, TopicsConsentSettings_EnableWithBlocked) {
+  // Note that when testing for enabling topics, there can never have been
+  // current topics in prod code.
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, false},
+                {kHasCurrentTopics, false},
+                {kHasBlockedTopics, true},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{
+          {kTopicsToggleNewValue, true},
+      },
+      TestOutput{
+          {kTopicsConsentGiven, true},
+          {kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsSettingsStringIdentifiers(/*did_consent=*/true,
+                                              /*has_current_topics=*/false,
+                                              /*has_blocked_topics=*/true)},
+      });
+}
+
+TEST_F(PrivacySandboxServiceM1Test, TopicsConsentSettings_EnableNoBlocked) {
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, false},
+                {kHasCurrentTopics, false},
+                {kHasBlockedTopics, false},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{
+          {kTopicsToggleNewValue, true},
+      },
+      TestOutput{
+          {kTopicsConsentGiven, true},
+          {kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsSettingsStringIdentifiers(/*did_consent=*/true,
+                                              /*has_current_topics=*/false,
+                                              /*has_blocked_topics=*/false)},
+      });
+}
+
+TEST_F(PrivacySandboxServiceM1Test,
+       TopicsConsentSettings_DisableCurrentAndBlocked) {
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, true},
+                {kHasCurrentTopics, true},
+                {kHasBlockedTopics, true},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{
+          {kTopicsToggleNewValue, false},
+      },
+      TestOutput{
+          {kTopicsConsentGiven, false},
+          {kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsSettingsStringIdentifiers(/*did_consent=*/false,
+                                              /*has_current_topics=*/true,
+                                              /*has_blocked_topics=*/true)},
+      });
+}
+
+TEST_F(PrivacySandboxServiceM1Test, TopicsConsentSettings_DisableBlockedOnly) {
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, true},
+                {kHasCurrentTopics, false},
+                {kHasBlockedTopics, true},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{
+          {kTopicsToggleNewValue, false},
+      },
+      TestOutput{
+          {kTopicsConsentGiven, false},
+          {kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsSettingsStringIdentifiers(/*did_consent=*/false,
+                                              /*has_current_topics=*/false,
+                                              /*has_blocked_topics=*/true)},
+      });
+}
+
+TEST_F(PrivacySandboxServiceM1Test, TopicsConsentSettings_DisableCurrentOnly) {
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, true},
+                {kHasCurrentTopics, true},
+                {kHasBlockedTopics, false},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{
+          {kTopicsToggleNewValue, false},
+      },
+      TestOutput{
+          {kTopicsConsentGiven, false},
+          {kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsSettingsStringIdentifiers(/*did_consent=*/false,
+                                              /*has_current_topics=*/true,
+                                              /*has_blocked_topics=*/false)},
+      });
+}
+
+TEST_F(PrivacySandboxServiceM1Test,
+       TopicsConsentSettings_DisableNoCurrentNoBlocked) {
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, true},
+                {kHasCurrentTopics, false},
+                {kHasBlockedTopics, false},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{
+          {kTopicsToggleNewValue, false},
+      },
+      TestOutput{
+          {kTopicsConsentGiven, false},
+          {kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsSettingsStringIdentifiers(/*did_consent=*/false,
+                                              /*has_current_topics=*/false,
+                                              /*has_blocked_topics=*/false)},
+      });
+}
+
+TEST_F(PrivacySandboxServiceM1Test, TopicsConsentConfirmation_Accepted) {
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, false},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{
+          {kTopicsConfirmationDecisionConfirmed, true},
+      },
+      TestOutput{
+          {kTopicsConsentGiven, true},
+          {kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kConfirmation},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsConfirmationStringIdentifiers()},
+      });
+}
+
+TEST_F(PrivacySandboxServiceM1Test, TopicsConsentConfirmation_Declined) {
+  RunTestCase(
+      TestState{{kActiveTopicsConsent, true},
+                {kAdvanceClockBy, base::Hours(1)}},
+      TestInput{
+          {kTopicsConfirmationDecisionConfirmed, true},
+      },
+      TestOutput{
+          {kTopicsConsentGiven, true},
+          {kTopicsConsentLastUpdateReason,
+           privacy_sandbox::TopicsConsentUpdateSource::kConfirmation},
+          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
+          {kTopicsConsentStringIdentifiers,
+           GetTopicsConfirmationStringIdentifiers()},
+      });
 }

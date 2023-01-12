@@ -7,6 +7,7 @@
 #include "base/json/values_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -170,6 +171,9 @@ class PrivacySandboxSettingsTest : public testing::Test {
   content::BrowserTaskEnvironment* task_environment() {
     return &browser_task_environment_;
   }
+  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
+    return &mock_browsing_topics_service_;
+  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -179,6 +183,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
   raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
       mock_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
+  browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
@@ -1016,6 +1021,7 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
     auto* user_provider_raw = user_provider.get();
     auto managed_provider = std::make_unique<content_settings::MockProvider>();
     auto* managed_provider_raw = managed_provider.get();
+
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(user_provider),
         HostContentSettingsMap::PREF_PROVIDER);
@@ -1024,9 +1030,10 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
         HostContentSettingsMap::POLICY_PROVIDER);
 
     privacy_sandbox_test_util::RunTestCase(
-        prefs(), host_content_settings_map(), mock_delegate(),
-        privacy_sandbox_settings(), user_provider_raw, managed_provider_raw,
-        TestCase(test_state, test_input, test_output));
+        task_environment(), prefs(), host_content_settings_map(),
+        mock_delegate(), mock_browsing_topics_service(),
+        privacy_sandbox_settings(), nullptr, user_provider_raw,
+        managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
 
  private:

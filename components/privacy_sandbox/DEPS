@@ -1,5 +1,6 @@
 include_rules = [
   "+components/browsing_topics/common",
+  "+components/browsing_topics/test_util.h",
   "+components/content_settings/core",
   "+components/keyed_service/core",
   "+components/pref_registry",

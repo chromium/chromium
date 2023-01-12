@@ -198,10 +198,10 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL" desc="A description that appear beneath the 'Your topics' label. * 'You can block': There is a 'Block' button (or an X on mobile) that appears next to each topic in the list. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly. The link opens a dialog box that provides more information about Ad topics.">
     You can block topics you don’t want shared with sites. Chrome also auto-deletes your topics older than 4 weeks. Learn more
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED" desc="A description that appear beneath the 'Your topics' title. If this setting is off, no interests appear.">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED" desc="A description that appear beneath the 'Your topics' title. If this setting is off, no interests appear." formatter_data="android_java">
     When on, a list of topics appears here based on your recent browsing history
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" desc="A description that appear beneath the 'Your topics' title. This setting could be on but no topics appear in the list. This text explains why.">
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" desc="A description that appear beneath the 'Your topics' title. This setting could be on but no topics appear in the list. This text explains why." formatter_data="android_java">
     It can take up to a week for a list of topics to appear here based on your recent browsing history
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" desc="A button associated with each of the user's topics. If the user clicks 'Block', that topic will get moved to the 'Topics you blocked' page.">
@@ -230,6 +230,9 @@
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" desc="Paragraph 3 of 3 on the Learn more about ad topics page. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly." formatter_data="android_java">
     Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics you don’t want Chrome to share with sites.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL" translateable="false" desc="Footer for the Topics preference page.">
+      Topics footer. Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, fledge settings, cookie settings, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
   </message>
 
 
