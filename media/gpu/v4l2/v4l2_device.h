@@ -93,6 +93,19 @@
 #define V4L2_PIX_FMT_MM21 v4l2_fourcc('M', 'M', '2', '1')
 #endif
 
+#ifndef V4L2_PIX_FMT_P010
+#define V4L2_PIX_FMT_P010 \
+  v4l2_fourcc('P', '0', '1', '0') /* 24  Y/CbCr 4:2:0 10-bit per component */
+#endif
+#ifndef V4L2_PIX_FMT_QC08C
+#define V4L2_PIX_FMT_QC08C \
+  v4l2_fourcc('Q', '0', '8', 'C') /* Qualcomm 8-bit compressed */
+#endif
+#ifndef V4L2_PIX_FMT_QC10C
+#define V4L2_PIX_FMT_QC10C \
+  v4l2_fourcc('Q', '1', '0', 'C') /* Qualcomm 10-bit compressed */
+#endif
+
 namespace gfx {
 struct NativePixmapPlane;
 }  // namespace gfx

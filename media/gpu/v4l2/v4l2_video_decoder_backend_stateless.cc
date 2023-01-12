@@ -561,10 +561,13 @@ void V4L2StatelessVideoDecoderBackend::ChangeResolution() {
 
   const gfx::Rect visible_rect = decoder_->GetVisibleRect();
   const gfx::Size pic_size = decoder_->GetPicSize();
+  const uint8_t bit_depth = decoder_->GetBitDepth();
+
   // Set output format with the new resolution.
   DCHECK(!pic_size.IsEmpty());
   DVLOGF(3) << "Change resolution to " << pic_size.ToString();
-  client_->ChangeResolution(pic_size, visible_rect, num_codec_reference_frames);
+  client_->ChangeResolution(pic_size, visible_rect, num_codec_reference_frames,
+                            bit_depth);
 }
 
 bool V4L2StatelessVideoDecoderBackend::ApplyResolution(

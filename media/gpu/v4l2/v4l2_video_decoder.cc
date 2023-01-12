@@ -418,10 +418,10 @@ bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
   return true;
 }
 
-CroStatus V4L2VideoDecoder::SetupOutputFormat(
-    const gfx::Size& size,
-    const gfx::Rect& visible_rect,
-    size_t num_codec_reference_frames) {
+CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
+                                              const gfx::Rect& visible_rect,
+                                              size_t num_codec_reference_frames,
+                                              uint8_t bit_depth) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3) << "size: " << size.ToString()
             << ", visible_rect: " << visible_rect.ToString();
@@ -436,6 +436,22 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(
       continue;
     }
     VLOGF(1) << "Output (CAPTURE queue) candidate: " << candidate->ToString();
+
+    // Some drivers will enumerate all possible formats for a video stream.
+    // If the compressed video stream is 10 bits, the driver will enumerate both
+    // P010 and NV12, and then down sample to NV12 if it is selected. This is
+    // not desired, so drop the candidates that don't match the bit depth of the
+    // stream.
+    const size_t candidate_bit_depth =
+        BitDepth(candidate->ToVideoPixelFormat());
+    if (candidate_bit_depth != bit_depth) {
+      DVLOGF(1) << "Enumerated format " << candidate->ToString()
+                << " with a bit depth of " << candidate_bit_depth
+                << " removed from consideration because it does not match"
+                << " the bit depth returned by the backend of "
+                << base::strict_cast<size_t>(bit_depth);
+      continue;
+    }
 
     absl::optional<struct v4l2_format> format =
         output_queue_->TryFormat(pixfmt, size, 0);
@@ -700,7 +716,8 @@ void V4L2VideoDecoder::RestartStream() {
 
 void V4L2VideoDecoder::ChangeResolution(gfx::Size pic_size,
                                         gfx::Rect visible_rect,
-                                        size_t num_codec_reference_frames) {
+                                        size_t num_codec_reference_frames,
+                                        uint8_t bit_depth) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
   DCHECK(!continue_change_resolution_cb_);
@@ -711,7 +728,7 @@ void V4L2VideoDecoder::ChangeResolution(gfx::Size pic_size,
   continue_change_resolution_cb_ =
       base::BindOnce(&V4L2VideoDecoder::ContinueChangeResolution,
                      base::Unretained(this), pic_size, visible_rect,
-                     num_codec_reference_frames)
+                     num_codec_reference_frames, bit_depth)
           .Then(base::BindOnce(&V4L2VideoDecoder::OnChangeResolutionDone,
                                base::Unretained(this)));
 
@@ -730,7 +747,8 @@ void V4L2VideoDecoder::ApplyResolutionChange() {
 CroStatus V4L2VideoDecoder::ContinueChangeResolution(
     const gfx::Size& pic_size,
     const gfx::Rect& visible_rect,
-    const size_t num_codec_reference_frames) {
+    const size_t num_codec_reference_frames,
+    const uint8_t bit_depth) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
@@ -760,8 +778,8 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
     return CroStatus::Codes::kFailedToChangeResolution;
   }
 
-  const CroStatus status =
-      SetupOutputFormat(pic_size, visible_rect, num_codec_reference_frames);
+  const CroStatus status = SetupOutputFormat(
+      pic_size, visible_rect, num_codec_reference_frames, bit_depth);
   if (status == CroStatus::Codes::kResetRequired) {
     DVLOGF(2) << "SetupOutputFormat is aborted.";
     return CroStatus::Codes::kResetRequired;

@@ -41,6 +41,15 @@ bool IsVp9KSVCSupportedDriver(const std::string& driver_name) {
   const std::string kVP9KSVCSupportedDrivers[] = {"qcom-venus"};
   return base::Contains(kVP9KSVCSupportedDrivers, driver_name);
 }
+
+absl::optional<uint8_t> V4L2PixelFormatToBitDepth(uint32_t v4l2_pixelformat) {
+  const auto fourcc = Fourcc::FromV4L2PixFmt(v4l2_pixelformat);
+  if (fourcc) {
+    return BitDepth(fourcc->ToVideoPixelFormat());
+  }
+
+  return absl::nullopt;
+}
 }  // namespace
 
 V4L2StatefulVideoDecoderBackend::DecodeRequest::DecodeRequest(
@@ -619,6 +628,13 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
     return;
   }
 
+  const auto bit_depth =
+      V4L2PixelFormatToBitDepth(format->fmt.pix_mp.pixelformat);
+  if (!bit_depth) {
+    client_->OnBackendError();
+    return;
+  }
+
   // Estimate the amount of buffers needed for the CAPTURE queue and for codec
   // reference requirements. For VP9 and AV1, the maximum number of reference
   // frames is constant and 8 (for VP8 is 4); for H.264 and other ITU-T codecs,
@@ -644,7 +660,7 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
   DCHECK(!resolution_change_cb_);
   resolution_change_cb_ = base::BindOnce(
       &V4L2StatefulVideoDecoderBackend::ContinueChangeResolution, weak_this_,
-      pic_size, *visible_rect, num_codec_reference_frames);
+      pic_size, *visible_rect, num_codec_reference_frames, *bit_depth);
 
   // ...that is, unless we are not streaming yet, in which case the resolution
   // change can take place immediately.
@@ -655,13 +671,15 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
 void V4L2StatefulVideoDecoderBackend::ContinueChangeResolution(
     const gfx::Size& pic_size,
     const gfx::Rect& visible_rect,
-    const size_t num_codec_reference_frames) {
+    const size_t num_codec_reference_frames,
+    const uint8_t bit_depth) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
   // Flush is done, but stay in flushing state and ask our client to set the new
   // resolution.
-  client_->ChangeResolution(pic_size, visible_rect, num_codec_reference_frames);
+  client_->ChangeResolution(pic_size, visible_rect, num_codec_reference_frames,
+                            bit_depth);
 }
 
 bool V4L2StatefulVideoDecoderBackend::ApplyResolution(

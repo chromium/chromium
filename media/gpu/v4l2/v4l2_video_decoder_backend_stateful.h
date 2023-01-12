@@ -102,7 +102,8 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // to actually apply the resolution.
   void ContinueChangeResolution(const gfx::Size& pic_size,
                                 const gfx::Rect& visible_rect,
-                                const size_t num_codec_reference_frames);
+                                const size_t num_codec_reference_frames,
+                                uint8_t bit_depth);
 
   // Enqueue all output buffers that are available.
   void EnqueueOutputBuffers();

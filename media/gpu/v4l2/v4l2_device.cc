@@ -1467,8 +1467,7 @@ absl::optional<struct v4l2_format> V4L2Queue::SetModifierFormat(
     uint64_t modifier,
     const gfx::Size& size) {
   if (DRM_FORMAT_MOD_QCOM_COMPRESSED == modifier) {
-    constexpr uint32_t kNV12UBWCFourcc = v4l2_fourcc('Q', '0', '8', 'C');
-    auto format = SetFormat(kNV12UBWCFourcc, size, 0);
+    auto format = SetFormat(V4L2_PIX_FMT_QC08C, size, 0);
 
     if (!format)
       VPLOGF(1) << "Failed to set magic modifier format.";
