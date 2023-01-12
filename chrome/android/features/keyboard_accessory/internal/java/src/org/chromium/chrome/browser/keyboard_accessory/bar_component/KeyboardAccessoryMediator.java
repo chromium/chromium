@@ -72,7 +72,7 @@ class KeyboardAccessoryMediator
 
         // Add mediator as observer so it can use model changes as signal for accessory visibility.
         mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
-        mModel.set(SHOW_KEYBOARD_CALLBACK, this::closeSheet);
+        mModel.set(SHOW_KEYBOARD_CALLBACK, this::onKeyboardRequested);
         mModel.set(SHEET_OPENER_ITEM, new SheetOpenerBarItem(sheetOpenerCallbacks));
         mModel.set(ANIMATION_LISTENER, mVisibilityDelegate::onBarFadeInAnimationEnd);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
@@ -295,6 +295,12 @@ class KeyboardAccessoryMediator
 
     @Override
     public void onActiveTabReselected() {
+        closeSheet();
+    }
+
+    private void onKeyboardRequested() {
+        // Return early if the button was clicked twice and the active tab was already reset.
+        if (mTabSwitcher.getActiveTab() == null) return;
         closeSheet();
     }
 
