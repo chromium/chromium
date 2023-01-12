@@ -3462,6 +3462,21 @@
             ]
         }
     ],
+    "DeferKeepScreenOnDuringGesture": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeferKeepScreenOnDuringGesture"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeferredShaping": [
         {
             "platforms": [
