@@ -188,6 +188,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   LayoutUnit MajorBaseline(wtf_size_t set_index) const;
   LayoutUnit MinorBaseline(wtf_size_t set_index) const;
 
+  bool HasCachedSetsGeometry() const { return !sets_geometry_.empty(); }
+
   // Increase by |delta| the offset of every set with index > |set_index|.
   void AdjustSetOffsets(wtf_size_t set_index, LayoutUnit delta);
 

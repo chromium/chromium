@@ -976,6 +976,7 @@ void NGGridSizingTrackCollection::BuildSets(
   }
 }
 
+// https://drafts.csswg.org/css-grid-2/#algo-init
 void NGGridSizingTrackCollection::InitializeSets(
     LayoutUnit grid_available_size) {
   for (auto& set : sets_) {

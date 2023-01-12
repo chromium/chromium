@@ -20,6 +20,23 @@ struct NGGridSizingData {
   wtf_size_t subtree_size{1};
 };
 
+class NGGridItemSizingData {
+  STACK_ALLOCATED();
+
+ public:
+  NGGridItemSizingData(const GridItemData& item_data_in_parent,
+                       const NGGridLayoutData& parent_layout_data);
+
+  std::unique_ptr<NGGridLayoutTrackCollection> CreateSubgridCollection(
+      GridTrackSizingDirection track_direction) const;
+
+ private:
+  const GridItemData* item_data_in_parent;
+  const NGGridLayoutData* parent_layout_data;
+};
+
+using NGSubgridSizingData = absl::optional<NGGridItemSizingData>;
+
 class CORE_EXPORT NGGridSizingTree {
   STACK_ALLOCATED();
 
