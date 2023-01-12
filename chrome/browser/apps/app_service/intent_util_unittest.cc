@@ -25,7 +25,6 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
@@ -293,88 +292,6 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_FileHandlers) {
   EXPECT_EQ(file_cond2.condition_values[1]->value, "txt");
 }
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest, CreateChromeAppIntentFilters_FileHandlers) {
-  // Foo app provides file handler for text/plain and all file types.
-  extensions::ExtensionBuilder foo_app;
-  foo_app.SetManifest(
-      extensions::DictionaryBuilder()
-          .Set("name", "Foo")
-          .Set("version", "1.0.0")
-          .Set("manifest_version", 2)
-          .Set("app", extensions::DictionaryBuilder()
-                          .Set("background",
-                               extensions::DictionaryBuilder()
-                                   .Set("scripts", extensions::ListBuilder()
-                                                       .Append("background.js")
-                                                       .Build())
-                                   .Build())
-                          .Build())
-          .Set(
-              "file_handlers",
-              extensions::DictionaryBuilder()
-                  .Set("any",
-                       extensions::DictionaryBuilder()
-                           .Set("types",
-                                extensions::ListBuilder().Append("*/*").Build())
-                           .Build())
-                  .Set("text",
-                       extensions::DictionaryBuilder()
-                           .Set("types", extensions::ListBuilder()
-                                             .Append("text/plain")
-                                             .Build())
-                           .Set("extensions",
-                                extensions::ListBuilder().Append("txt").Build())
-                           .Set("verb", "open_with")
-                           .Build())
-                  .Build())
-          .Build());
-  foo_app.SetID("abcdzxcv");
-  scoped_refptr<const extensions::Extension> foo = foo_app.Build();
-
-  std::vector<apps::mojom::IntentFilterPtr> filters =
-      apps_util::CreateChromeAppIntentFilters(foo.get());
-
-  ASSERT_EQ(filters.size(), 2u);
-
-  // "any" filter - View action
-  const apps::mojom::IntentFilterPtr& mime_filter = filters[0];
-  ASSERT_EQ(mime_filter->conditions.size(), 2u);
-  const apps::mojom::Condition& view_cond = *mime_filter->conditions[0];
-  EXPECT_EQ(view_cond.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond.condition_values.size(), 1u);
-  EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
-
-  // "any" filter - mime type match
-  const apps::mojom::Condition& file_cond = *mime_filter->conditions[1];
-  EXPECT_EQ(file_cond.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 1u);
-  EXPECT_EQ(file_cond.condition_values[0]->match_type,
-            apps::mojom::PatternMatchType::kMimeType);
-  EXPECT_EQ(file_cond.condition_values[0]->value, "*/*");
-
-  // Text filter - View action
-  const apps::mojom::IntentFilterPtr& mime_filter2 = filters[1];
-  ASSERT_EQ(mime_filter2->conditions.size(), 2u);
-  const apps::mojom::Condition& view_cond2 = *mime_filter2->conditions[0];
-  EXPECT_EQ(view_cond2.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond2.condition_values.size(), 1u);
-  EXPECT_EQ(view_cond2.condition_values[0]->value,
-            apps_util::kIntentActionView);
-
-  // Text filter - mime type match
-  const apps::mojom::Condition& file_cond2 = *mime_filter2->conditions[1];
-  EXPECT_EQ(file_cond2.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond2.condition_values.size(), 2u);
-  EXPECT_EQ(file_cond2.condition_values[0]->match_type,
-            apps::mojom::PatternMatchType::kMimeType);
-  EXPECT_EQ(file_cond2.condition_values[0]->value, "text/plain");
-  // Text filter - file extension match
-  EXPECT_EQ(file_cond2.condition_values[1]->match_type,
-            apps::mojom::PatternMatchType::kFileExtension);
-  EXPECT_EQ(file_cond2.condition_values[1]->value, "txt");
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_NoteTaking) {
   const std::string note_action_handler =
@@ -505,98 +422,6 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
   EXPECT_EQ(file_cond2.condition_values[1]->value,
             R"(filesystem:chrome://file-manager/.*\..*)");
 }
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest, CreateExtensionIntentFilters_FileHandlers) {
-  // Foo extension provides file_browser_handlers for html and anything.
-  extensions::ExtensionBuilder foo_ext;
-  foo_ext.SetManifest(
-      extensions::DictionaryBuilder()
-          .Set("name", "Foo")
-          .Set("version", "1.0.0")
-          .Set("manifest_version", 2)
-          .Set(
-              "background",
-              extensions::DictionaryBuilder()
-                  .Set(
-                      "scripts",
-                      extensions::ListBuilder().Append("background.js").Build())
-                  .Set("persistent", false)
-                  .Build())
-          .Set(
-              "file_browser_handlers",
-              extensions::ListBuilder()
-                  .Append(
-                      extensions::DictionaryBuilder()
-                          .Set("id", "open")
-                          .Set("default_title", "Open me!")
-                          .Set("file_filters", extensions::ListBuilder()
-                                                   .Append("filesystem:*.html")
-                                                   .Build())
-                          .Build())
-                  .Append(extensions::DictionaryBuilder()
-                              .Set("id", "open_all")
-                              .Set("default_title", "Open anything!")
-                              .Set("file_filters", extensions::ListBuilder()
-                                                       .Append("filesystem:*.*")
-                                                       .Build())
-                              .Build())
-                  .Build())
-          .Set("permissions",
-               extensions::ListBuilder().Append("fileBrowserHandler").Build())
-          .Build());
-
-  foo_ext.SetID("abcdzxcv");
-  scoped_refptr<const extensions::Extension> foo = foo_ext.Build();
-
-  std::vector<apps::mojom::IntentFilterPtr> filters =
-      apps_util::CreateExtensionIntentFilters(foo.get());
-
-  ASSERT_EQ(filters.size(), 2u);
-
-  // "html" filter - View action
-  const apps::mojom::IntentFilterPtr& mime_filter = filters[0];
-  ASSERT_EQ(mime_filter->conditions.size(), 2u);
-  const apps::mojom::Condition& view_cond = *mime_filter->conditions[0];
-  EXPECT_EQ(view_cond.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond.condition_values.size(), 1u);
-  EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
-
-  // "html" filter - glob match
-  const apps::mojom::Condition& file_cond = *mime_filter->conditions[1];
-  EXPECT_EQ(file_cond.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 2u);
-  EXPECT_EQ(file_cond.condition_values[0]->match_type,
-            apps::mojom::PatternMatchType::kGlob);
-  EXPECT_EQ(file_cond.condition_values[0]->value,
-            R"(filesystem:chrome-extension://.*/.*\.html)");
-  EXPECT_EQ(file_cond.condition_values[1]->match_type,
-            apps::mojom::PatternMatchType::kGlob);
-  EXPECT_EQ(file_cond.condition_values[1]->value,
-            R"(filesystem:chrome://file-manager/.*\.html)");
-
-  // "any" filter - View action
-  const apps::mojom::IntentFilterPtr& mime_filter2 = filters[1];
-  ASSERT_EQ(mime_filter2->conditions.size(), 2u);
-  const apps::mojom::Condition& view_cond2 = *mime_filter2->conditions[0];
-  EXPECT_EQ(view_cond2.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond2.condition_values.size(), 1u);
-  EXPECT_EQ(view_cond2.condition_values[0]->value,
-            apps_util::kIntentActionView);
-
-  // "any" filter - glob match
-  const apps::mojom::Condition& file_cond2 = *mime_filter2->conditions[1];
-  EXPECT_EQ(file_cond2.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond2.condition_values.size(), 2u);
-  EXPECT_EQ(file_cond2.condition_values[0]->match_type,
-            apps::mojom::PatternMatchType::kGlob);
-  EXPECT_EQ(file_cond2.condition_values[0]->value,
-            R"(filesystem:chrome-extension://.*/.*\..*)");
-  EXPECT_EQ(file_cond2.condition_values[1]->match_type,
-            apps::mojom::PatternMatchType::kGlob);
-  EXPECT_EQ(file_cond2.condition_values[1]->value,
-            R"(filesystem:chrome://file-manager/.*\..*)");
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -630,37 +455,6 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
       apps_util::CreateIntentFilterForArc(filter_without_path);
 
   ASSERT_EQ(*app_service_filter1, *app_service_filter2);
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPathMojom) {
-  const char* kPackageName = "com.foo.bar";
-  const char* kHost = "www.google.com";
-  const char* kPath = "/";
-  const char* kScheme = "https";
-
-  std::vector<arc::IntentFilter::AuthorityEntry> authorities1;
-  authorities1.emplace_back(kHost, 0);
-  std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
-
-  arc::IntentFilter filter_with_path(kPackageName, {arc::kIntentActionView},
-                                     std::move(authorities1),
-                                     std::move(patterns), {kScheme}, {});
-
-  apps::mojom::IntentFilterPtr app_service_filter1 =
-      apps_util::ConvertArcToAppServiceIntentFilter(filter_with_path);
-
-  std::vector<arc::IntentFilter::AuthorityEntry> authorities2;
-  authorities2.emplace_back(kHost, 0);
-  arc::IntentFilter filter_without_path(kPackageName, {arc::kIntentActionView},
-                                        std::move(authorities2), {}, {kScheme},
-                                        {});
-
-  apps::mojom::IntentFilterPtr app_service_filter2 =
-      apps_util::ConvertArcToAppServiceIntentFilter(filter_without_path);
-
-  ASSERT_EQ(app_service_filter1, app_service_filter2);
 }
 
 TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
@@ -703,50 +497,6 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
   }
 }
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest,
-       ConvertArcIntentFilter_ConvertsSimpleGlobToPrefixMojom) {
-  const char* kPackageName = "com.foo.bar";
-  const char* kHost = "www.google.com";
-  const char* kScheme = "https";
-
-  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
-  authorities.emplace_back(kHost, 0);
-
-  std::vector<arc::IntentFilter::PatternMatcher> patterns;
-
-  patterns.emplace_back("/foo.*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back(".*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back("/foo/.*/bar",
-                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-  patterns.emplace_back("/..*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
-
-  arc::IntentFilter filter_with_path(kPackageName, {arc::kIntentActionView},
-                                     std::move(authorities),
-                                     std::move(patterns), {kScheme}, {});
-
-  apps::mojom::IntentFilterPtr app_service_filter =
-      apps_util::ConvertArcToAppServiceIntentFilter(filter_with_path);
-
-  for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::mojom::ConditionType::kPath) {
-      EXPECT_EQ(4u, condition->condition_values.size());
-      EXPECT_EQ(apps_util::MakeConditionValue(
-                    "/foo", apps::mojom::PatternMatchType::kPrefix),
-                condition->condition_values[0]);
-      EXPECT_EQ(apps_util::MakeConditionValue(
-                    std::string(), apps::mojom::PatternMatchType::kPrefix),
-                condition->condition_values[1]);
-      EXPECT_EQ(apps_util::MakeConditionValue(
-                    "/foo/.*/bar", apps::mojom::PatternMatchType::kGlob),
-                condition->condition_values[2]);
-      EXPECT_EQ(apps_util::MakeConditionValue(
-                    "/..*", apps::mojom::PatternMatchType::kGlob),
-                condition->condition_values[3]);
-    }
-  }
-}
-
 TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
   const char* kPackageName = "com.foo.bar";
   const char* kPath = "/";
@@ -772,39 +522,6 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
 
   for (auto& condition : app_service_filter->conditions) {
     if (condition->condition_type == apps::ConditionType::kHost) {
-      ASSERT_EQ(2u, condition->condition_values.size());
-      ASSERT_EQ(kHost1, condition->condition_values[0]->value);
-      ASSERT_EQ(kHost2, condition->condition_values[1]->value);
-    }
-  }
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHostsMojom) {
-  const char* kPackageName = "com.foo.bar";
-  const char* kPath = "/";
-  const char* kScheme = "https";
-  const char* kHost1 = "www.a.com";
-  const char* kHost2 = "www.b.com";
-
-  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
-  authorities.emplace_back(kHost1, 0);
-  authorities.emplace_back(kHost2, 0);
-  authorities.emplace_back(kHost2, 0);
-  authorities.emplace_back(kHost1, 0);
-
-  std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
-
-  arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
-                               std::move(authorities), std::move(patterns),
-                               {kScheme}, {});
-
-  apps::mojom::IntentFilterPtr app_service_filter =
-      apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
-
-  for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::mojom::ConditionType::kHost) {
       ASSERT_EQ(2u, condition->condition_values.size());
       ASSERT_EQ(kHost1, condition->condition_values[0]->value);
       ASSERT_EQ(kHost2, condition->condition_values[1]->value);
@@ -842,32 +559,6 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_WildcardHostPatternMatchType) {
       // Check non-wildcard host
       EXPECT_EQ(condition->condition_values[1]->match_type,
                 apps::PatternMatchType::kLiteral);
-    }
-  }
-}
-
-TEST_F(IntentUtilsTest, ConvertArcIntentFilter_FileIntentFilterSchemeMojom) {
-  const char* kPackageName = "com.foo.bar";
-  const char* kScheme = "content";
-  const char* kMimeType = "image/*";
-
-  arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView}, {}, {},
-                               {kScheme}, {kMimeType});
-
-  apps::mojom::IntentFilterPtr app_service_filter =
-      apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
-
-  // There should be no scheme condition in the resulting App Service filter.
-  ASSERT_EQ(app_service_filter->conditions.size(), 2U);
-  for (auto& condition : app_service_filter->conditions) {
-    ASSERT_TRUE(condition->condition_type !=
-                apps::mojom::ConditionType::kScheme);
-    if (condition->condition_type == apps::mojom::ConditionType::kAction) {
-      ASSERT_EQ(condition->condition_values[0]->value,
-                apps_util::kIntentActionView);
-    }
-    if (condition->condition_type == apps::mojom::ConditionType::kMimeType) {
-      ASSERT_EQ(condition->condition_values[0]->value, kMimeType);
     }
   }
 }
@@ -918,69 +609,6 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ReturnskFile) {
     }
     if (condition->condition_type == apps::ConditionType::kFile) {
       ASSERT_EQ(condition->condition_values[0]->value, mime_type);
-    }
-  }
-}
-
-TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ReturnskFile_Mojom) {
-  const char* package_name = "com.foo.bar";
-  const char* mime_type = "image/*";
-
-  arc::IntentFilter arc_filter(package_name, {arc::kIntentActionView}, {}, {},
-                               {}, {mime_type});
-
-  apps::mojom::IntentFilterPtr app_service_filter =
-      apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
-
-  ASSERT_EQ(app_service_filter->conditions.size(), 2U);
-  for (auto& condition : app_service_filter->conditions) {
-    // There should not be a kMimeType condition for ARC view file intent
-    // filters.
-    ASSERT_NE(condition->condition_type, apps::mojom::ConditionType::kMimeType);
-    if (condition->condition_type == apps::mojom::ConditionType::kAction) {
-      ASSERT_EQ(condition->condition_values[0]->value,
-                apps_util::kIntentActionView);
-    }
-    if (condition->condition_type == apps::mojom::ConditionType::kFile) {
-      ASSERT_EQ(condition->condition_values[0]->value, mime_type);
-    }
-  }
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest,
-       ConvertArcIntentFilter_WildcardHostPatternMatchTypeMojom) {
-  const char* kPackageName = "com.foo.bar";
-  const char* kPath = "/";
-  const char* kScheme = "https";
-  const char* kHostWildcard = "*.google.com";
-  const char* kHostNoWildcard = "google.com";
-
-  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
-  authorities.emplace_back(kHostWildcard, 0);
-  authorities.emplace_back(kHostNoWildcard, 0);
-  std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
-
-  arc::IntentFilter arc_filter(kPackageName, {arc::kIntentActionView},
-                               std::move(authorities), std::move(patterns),
-                               {kScheme}, {});
-
-  apps::mojom::IntentFilterPtr app_service_filter =
-      apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
-
-  for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::mojom::ConditionType::kHost) {
-      ASSERT_EQ(condition->condition_values.size(), 2U);
-
-      // Check wildcard host
-      EXPECT_EQ(condition->condition_values[0]->match_type,
-                ConvertPatternMatchTypeToMojomPatternMatchType(
-                    apps::PatternMatchType::kSuffix));
-      // Check non-wildcard host
-      EXPECT_EQ(condition->condition_values[1]->match_type,
-                ConvertPatternMatchTypeToMojomPatternMatchType(
-                    apps::PatternMatchType::kLiteral));
     }
   }
 }

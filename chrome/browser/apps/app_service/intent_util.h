@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom-forward.h"
@@ -61,37 +60,16 @@ apps::IntentFilters CreateIntentFiltersFromArcBridge(
 apps::IntentFilters CreateIntentFiltersForChromeApp(
     const extensions::Extension* extension);
 
-// Create intent filters for a Chrome app (extension-based) e.g. for
-// file_handlers.
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
-    const extensions::Extension* extension);
-
 // Create intent filters for an Extension (is_extension() == true) e.g. for
 // file_browser_handlers.
 apps::IntentFilters CreateIntentFiltersForExtension(
     const extensions::Extension* extension);
 
-// Create intent filters for an Extension (is_extension() == true) e.g. for
-// file_browser_handlers.
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
-    const extensions::Extension* extension);
-
 // Create an intent filter for a note-taking app.
 apps::IntentFilterPtr CreateNoteTakingFilter();
 
-// Create a mojom intent filter for a note-taking app.
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-apps::mojom::IntentFilterPtr CreateNoteTakingFilterMojom();
-
 // Create an intent filter for an app capable of running on the lock screen.
 apps::IntentFilterPtr CreateLockScreenFilter();
-
-// Create a mojom intent filter for an app capable of running on the lock
-// screen.
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-apps::mojom::IntentFilterPtr CreateLockScreenFilterMojom();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct with filesystem:// type URLs from the file paths and
@@ -139,10 +117,6 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
     const apps::IntentFilterPtr& intent_filter);
 
 apps::IntentFilterPtr CreateIntentFilterForArc(
-    const arc::IntentFilter& arc_intent_filter);
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter);
 #endif
 
