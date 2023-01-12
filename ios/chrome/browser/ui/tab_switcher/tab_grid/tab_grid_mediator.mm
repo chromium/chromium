@@ -1018,6 +1018,7 @@ void RecordTabGridCloseTabsCount(int count) {
                                                            /*pinned=*/NO)];
 }
 
+// Adds an observations to every non-pinned WebState.
 - (void)addWebStateObservations {
   int firstIndex = IsPinnedTabsEnabled()
                        ? self.webStateList->GetIndexOfFirstNonPinnedWebState()
