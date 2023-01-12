@@ -22,9 +22,9 @@ namespace logging {
 
 namespace {
 
-// DCHECK_IS_CONFIGURABLE and ENABLE_LOG_ERROR_NOT_REACHED are both interested
-// in non-FATAL DCHECK()/NOTREACHED() reports.
-#if BUILDFLAG(DCHECK_IS_CONFIGURABLE) || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+// TODO(crbug.com/851128): Once landed this needs to be under
+// BUILDFLAG(DCHECK_IS_CONFIGURABLE) and NotReachedLogMessage cleaned up and
+// instead just be a LogMessage using FATAL.
 void DumpOnceWithoutCrashing(LogMessage* log_message) {
   // Best-effort gate to prevent multiple DCHECKs from being dumped. This will
   // race if multiple threads DCHECK at the same time, but we'll eventually stop
@@ -63,10 +63,6 @@ class NotReachedLogMessage : public LogMessage {
     }
   }
 };
-#else
-using NotReachedLogMessage = LogMessage;
-#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE) ||
-        // BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
