@@ -49,11 +49,6 @@ std::string ClipboardFormatType::WebCustomFormatName(int index) {
 }
 
 // static
-std::string ClipboardFormatType::WebCustomFormatMapName() {
-  return "application/web;type=\"custom/formatmap\"";
-}
-
-// static
 ClipboardFormatType ClipboardFormatType::CustomPlatformType(
     const std::string& format_string) {
   DCHECK(base::IsStringASCII(format_string));
@@ -63,7 +58,7 @@ ClipboardFormatType ClipboardFormatType::CustomPlatformType(
 // static
 const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
   static base::NoDestructor<ClipboardFormatType> type(
-      ClipboardFormatType::WebCustomFormatMapName());
+      "application/web;type=\"custom/formatmap\"");
   return *type;
 }
 

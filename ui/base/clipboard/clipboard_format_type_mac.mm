@@ -63,18 +63,14 @@ bool ClipboardFormatType::operator<(const ClipboardFormatType& other) const {
 
 // static
 std::string ClipboardFormatType::WebCustomFormatName(int index) {
-  return base::StrCat({"com.web.custom.format", base::NumberToString(index)});
-}
-
-// static
-std::string ClipboardFormatType::WebCustomFormatMapName() {
-  return "com.web.custom.format.map";
+  return base::StrCat(
+      {"org.w3.web-custom-format.type-", base::NumberToString(index)});
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
   static base::NoDestructor<ClipboardFormatType> type(
-      base::SysUTF8ToNSString(ClipboardFormatType::WebCustomFormatMapName()));
+      @"org.w3.web-custom-format.map");
   return *type;
 }
 

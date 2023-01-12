@@ -88,19 +88,28 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& MozUrlType();
 #endif
 
-  // For custom formats we hardcode the web custom format prefix and the index.
-  // Due to Windows/Linux limitations, please place limits on the amount of
-  // `WebCustomFormatName` calls with unique `index` argument.
+  // For custom formats, individual types are added to the clipboard with a type
+  // consisting of a prefix + index, and a map type that maps the custom format
+  // type to the type used on the clipboard. On Windows/Linux, this is done
+  // because there is a limited amount of system resources available to hold
+  // format types, so they must be conserved. On the Mac, there is no limit, but
+  // types must be named using strict alphanumerics, and MIME types do not
+  // conform to that naming restriction, so types must be mapped, and therefore
+  // the same mapping scheme is reused.
+
+  // Returns the format identifier used for web custom format data on the
+  // clipboard. Derived from the provided `index` value.
   static std::string WebCustomFormatName(int index);
-  // Gets the ClipboardFormatType corresponding to a format string,
-  // registering it with the system if needed.
+
+  // Returns the ClipboardFormatType used for web custom format data,
+  // registering it with the system if needed. Pass in a value obtained from
+  // `WebCustomFormatName` above.
   static ClipboardFormatType CustomPlatformType(
       const std::string& format_string);
-  // Returns the web custom format map that has the mapping of MIME types to
-  // custom format names.
+
+  // Returns the ClipboardFormatType used for the web custom format map that has
+  // the mapping of MIME types to custom format names.
   static const ClipboardFormatType& WebCustomFormatMap();
-  // Returns the web custom format map name.
-  static std::string WebCustomFormatMapName();
 
   // ClipboardFormatType can be used in a set on some platforms.
   bool operator<(const ClipboardFormatType& other) const;

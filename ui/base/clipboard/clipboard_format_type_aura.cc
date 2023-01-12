@@ -60,14 +60,9 @@ std::string ClipboardFormatType::WebCustomFormatName(int index) {
 }
 
 // static
-std::string ClipboardFormatType::WebCustomFormatMapName() {
-  return "application/web;type=\"custom/formatmap\"";
-}
-
-// static
 const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
   static base::NoDestructor<ClipboardFormatType> type(
-      ClipboardFormatType::WebCustomFormatMapName());
+      "application/web;type=\"custom/formatmap\"");
   return *type;
 }
 
