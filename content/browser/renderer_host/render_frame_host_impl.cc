@@ -5033,7 +5033,17 @@ void RenderFrameHostImpl::OnUnloadACK() {
     return;
   }
 
-  if (frame_tree_node_->render_manager()->is_attaching_inner_delegate()) {
+  // This method should be called in the pending deletion state except the
+  // placeholder RFHs for an inner WebContents that use unload without changing
+  // lifecycle states. When attaching a GuestView as the inner WebContents,
+  // `RFH::SwapOuterDelegateFrame()` is called for the placeholder RFH so that
+  // it makes its renderer send this message. `owner_` is non null since this
+  // attachment can only happen for subframes and pending deletion is the only
+  // case where subframes may have a null `owner_`.
+  RenderFrameHostOwner* owner =
+      IsPendingDeletion() ? GetFrameTreeNodeForUnload() : owner_;
+  if (!is_main_frame() &&
+      owner->GetRenderFrameHostManager().is_attaching_inner_delegate()) {
     // This RFH was unloaded while attaching an inner delegate. The RFH
     // will stay around but it will no longer be associated with a RenderFrame.
     RenderFrameDeleted();
