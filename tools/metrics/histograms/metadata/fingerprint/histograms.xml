@@ -64,6 +64,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.Enroll.NumCaptures" units="captures"
+    expires_after="2024-01-10">
+  <owner>agrandi@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Count the number of fingerprint sensor captures (i.e. touches) performed
+    during the enrollment session of a new fingerprint. This includes all
+    enrollment captures, including those resulting in errors, such as
+    &quot;partial&quot;, &quot;immobile&quot;, etc.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
     expires_after="2023-07-09">
   <owner>emaamari@google.com</owner>
