@@ -352,6 +352,22 @@ const std::vector<SearchConcept>& GetStylusSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetAudioSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS,
+       mojom::kAudioSubpagePath,
+       mojom::SearchResultIcon::kAudio,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kAudio},
+       {IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT1,
+        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT2,
+        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT3,
+        IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS_ALT4, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetDisplayArrangementSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_DISPLAY_ARRANGEMENT,
@@ -847,6 +863,10 @@ DeviceSection::DeviceSection(Profile* profile,
 
   if (ShouldShowExternalStorageSettings(profile))
     updater.AddSearchTags(GetExternalStorageSearchConcepts());
+
+  if (ash::features::IsAudioSettingsPageEnabled()) {
+    updater.AddSearchTags(GetAudioSearchConcepts());
+  }
 
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
