@@ -34235,7 +34235,7 @@ Called by update_extension_histograms.py.-->
   <int value="475" label="FILESYSTEM_RESTOREENTRY"/>
   <int value="476" label="RUNTIME_SETUNINSTALLURL"/>
   <int value="477" label="INPUTMETHODPRIVATE_STARTIME"/>
-  <int value="478" label="MUSICMANAGERPRIVATE_GETDEVICEID"/>
+  <int value="478" label="DELETED_MUSICMANAGERPRIVATE_GETDEVICEID"/>
   <int value="479" label="TTS_PAUSE"/>
   <int value="480" label="TTS_RESUME"/>
   <int value="481" label="DELETED_SYSTEMINFO_CPU_GET"/>
