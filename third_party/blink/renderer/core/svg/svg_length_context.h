@@ -92,7 +92,7 @@ class CORE_EXPORT SVGLengthContext {
                               const ComputedStyle&,
                               float dimension);
 
-  bool DetermineViewport(gfx::SizeF&) const;
+  gfx::SizeF ResolveViewport() const;
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
 
  private:

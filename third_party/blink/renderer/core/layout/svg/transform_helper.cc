@@ -50,9 +50,7 @@ gfx::RectF TransformHelper::ComputeReferenceBox(
     DCHECK_EQ(style.TransformBox(), ETransformBox::kViewBox);
     SVGLengthContext length_context(
         DynamicTo<SVGElement>(layout_object.GetNode()));
-    gfx::SizeF viewport_size;
-    length_context.DetermineViewport(viewport_size);
-    reference_box.set_size(viewport_size);
+    reference_box.set_size(length_context.ResolveViewport());
   }
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)

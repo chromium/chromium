@@ -347,7 +347,7 @@ gfx::RectF SVGLengthContext::ResolveRectangle(const SVGElement* context,
     gfx::SizeF viewport_size_for_resolve;
     if (size.Width().IsPercentOrCalc() || size.Height().IsPercentOrCalc() ||
         point.X().IsPercentOrCalc() || point.Y().IsPercentOrCalc()) {
-      SVGLengthContext(context).DetermineViewport(viewport_size_for_resolve);
+      viewport_size_for_resolve = SVGLengthContext(context).ResolveViewport();
     }
     // Resolve the Lengths to user units.
     resolved_rect =
@@ -378,7 +378,7 @@ gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
     const ComputedStyle& style) const {
   gfx::SizeF viewport_size;
   if (x_length.IsPercentOrCalc() || y_length.IsPercentOrCalc()) {
-    DetermineViewport(viewport_size);
+    viewport_size = ResolveViewport();
     // If either |x_length| or |y_length| is 'auto', set that viewport dimension
     // to zero so that the corresponding Length resolves to zero. This matches
     // the behavior of ValueForLength() below.
@@ -639,35 +639,29 @@ float SVGLengthContext::ConvertValueFromUserUnits(
   return 0;
 }
 
-bool SVGLengthContext::DetermineViewport(gfx::SizeF& viewport_size) const {
+gfx::SizeF SVGLengthContext::ResolveViewport() const {
   if (!context_) {
-    return false;
+    return gfx::SizeF();
   }
-
   // Root <svg> element lengths are resolved against the top level viewport.
   if (context_->IsOutermostSVGSVGElement()) {
-    viewport_size = To<SVGSVGElement>(context_)->CurrentViewportSize();
-    return true;
+    return To<SVGSVGElement>(context_)->CurrentViewportSize();
   }
-
   // Take size from nearest viewport element.
   SVGElement* viewport_element = context_->viewportElement();
   const auto* svg = DynamicTo<SVGSVGElement>(viewport_element);
   if (!svg) {
-    return false;
+    return gfx::SizeF();
   }
-
-  viewport_size = svg->CurrentViewBoxRect().size();
+  gfx::SizeF viewport_size = svg->CurrentViewBoxRect().size();
   if (viewport_size.IsEmpty()) {
     viewport_size = svg->CurrentViewportSize();
   }
-
-  return true;
+  return viewport_size;
 }
 
 float SVGLengthContext::ViewportDimension(SVGLengthMode mode) const {
-  gfx::SizeF viewport_size;
-  DetermineViewport(viewport_size);
+  gfx::SizeF viewport_size = ResolveViewport();
   switch (mode) {
     case SVGLengthMode::kWidth:
       return viewport_size.width();
