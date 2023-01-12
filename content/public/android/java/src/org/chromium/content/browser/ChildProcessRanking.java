@@ -248,17 +248,6 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
         return mRankings.get(mRankings.size() - 1).connection;
     }
 
-    /**
-     * @return reverse rank. Eg lowest ranked connection will have value 0.
-     */
-    public int getReverseRank(ChildProcessConnection connection) {
-        assert connection != null;
-        assert mRankings.size() > 0;
-        int i = indexOf(connection);
-        assert i != -1;
-        return mRankings.size() - 1 - i;
-    }
-
     private int indexOf(ChildProcessConnection connection) {
         for (int i = 0; i < mRankings.size(); ++i) {
             if (mRankings.get(i).connection == connection) return i;

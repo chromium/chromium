@@ -58,6 +58,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Stability.Android.OomKillReverseRank" units="rank"
     expires_after="2023-01-15">
+  <obsolete>
+    Removed in M111.
+  </obsolete>
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -72,6 +75,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Stability.Android.OomKillReverseRankSuccess"
     enum="BooleanSuccess" expires_after="2020-04-10">
+  <obsolete>
+    Expired in 2020-04-10. Removed in M111.
+  </obsolete>
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>

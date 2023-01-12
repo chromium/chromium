@@ -55,12 +55,6 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
 
   // True if the child shut itself down cleanly by quitting the main runloop.
   bool clean_exit = false;
-
-  // Eg lowest ranked process at time of death should have value 0.
-  // Valid values are non-negative.
-  // -1 means could not be obtained due to threading restrictions.
-  // -2 means not applicable because process is not ranked.
-  int best_effort_reverse_rank = -1;
 #endif
 
 #if BUILDFLAG(IS_WIN)

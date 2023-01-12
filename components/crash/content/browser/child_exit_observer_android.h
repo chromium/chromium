@@ -73,7 +73,6 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
         base::android::ChildBindingState::UNBOUND;
     bool threw_exception_during_init = false;
     bool was_killed_intentionally_by_browser = false;
-    int best_effort_reverse_rank = -1;
 
     // Applies to renderer process only. Generally means renderer is hosting
     // one or more visible tabs.
