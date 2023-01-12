@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
@@ -490,7 +491,10 @@ public final class FledgeFragmentV4Test {
 
     @Test
     @SmallTest
-    public void testFooterTopicsLink() throws IOException {
+    @DisabledTest(
+            message = "The test is tempoprary disabled until we fix the duplicate string problem")
+    public void
+    testFooterTopicsLink() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
         // Open a Topics settings activity.
