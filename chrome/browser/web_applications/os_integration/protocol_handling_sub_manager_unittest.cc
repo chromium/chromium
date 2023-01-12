@@ -318,7 +318,7 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest, Register) {
     if (AreProtocolsRegisteredWithOs()) {
       // Installation registers the protocol handlers.
       EXPECT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
           testing::ElementsAre(std::make_tuple(
               app_id, std::vector({protocol_handler.protocol}))));
     }
@@ -349,7 +349,7 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest, Unregister) {
     // unregistration as part of update.
     // There should only be a single value for registration, as unregistration
     // is a no-op for GetOsIntegrationTestOverride().
-    ASSERT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+    ASSERT_THAT(GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
                 testing::ElementsAre(std::make_tuple(
                     app_id, std::vector({protocol_handler.protocol}))));
   }
@@ -402,7 +402,7 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest, UpdateHandlers) {
       // TODO(crbug.com/1404819): Update tests to verify protocol handling
       // unregistration as part of update.
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
           testing::ElementsAre(
               std::make_tuple(
                   app_id, std::vector({protocol_handler_approved.protocol,
@@ -453,7 +453,7 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest, DataEqualNoOp) {
 #endif
     if (AreProtocolsRegisteredWithOs()) {
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
           testing::ElementsAre(std::make_tuple(
               app_id, std::vector({protocol_handler.protocol}))));
     }
@@ -488,11 +488,11 @@ TEST_P(ProtocolHandlingSynchronizeAndExecuteTest,
       // These values are set by the ShortcutHandlingSubManager.
 #if BUILDFLAG(IS_WIN)
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
           testing::IsEmpty());
 #else
       ASSERT_THAT(
-          GetOsIntegrationTestOverride()->protocol_scheme_registrations_,
+          GetOsIntegrationTestOverride()->protocol_scheme_registrations(),
           testing::ElementsAre(
               std::make_tuple(app_id1, std::vector<std::string>()),
               std::make_tuple(app_id1, std::vector<std::string>())));

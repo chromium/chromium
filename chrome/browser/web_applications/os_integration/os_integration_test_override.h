@@ -61,6 +61,8 @@ struct LinuxFileRegistration {
 class OsIntegrationTestOverride
     : public base::RefCountedThreadSafe<OsIntegrationTestOverride> {
  public:
+  using AppProtocolList =
+      std::vector<std::tuple<AppId, std::vector<std::string>>>;
   // Destroying this class blocks the thread until all users of
   // GetOsIntegrationTestOverride() have completed.
   struct BlockingRegistration {
@@ -152,11 +154,14 @@ class OsIntegrationTestOverride
   }
 #endif
 
-  // Records all registration events for a given app id & protocol list. Due to
-  // simplification on the OS-side, unregistrations are not recorded, and
-  // instead this list can be checked for an empty registration.
-  std::vector<std::tuple<AppId, std::vector<std::string>>>
-      protocol_scheme_registrations_;
+  // Creates a tuple of app_id to protocols and adds it to the vector
+  // of registered protocols. There can be multiple entries for the same
+  // app_id.
+  void RegisterProtocolSchemes(const AppId& app_id,
+                               std::vector<std::string> protocols);
+  const AppProtocolList& protocol_scheme_registrations() {
+    return protocol_scheme_registrations_;
+  }
 
  private:
   friend class base::RefCountedThreadSafe<OsIntegrationTestOverride>;
@@ -184,6 +189,11 @@ class OsIntegrationTestOverride
   base::ScopedTempDir startup_;
   std::vector<LinuxFileRegistration> linux_file_registration_;
 #endif
+
+  // Records all registration events for a given app id & protocol list. Due to
+  // simplification on the OS-side, unregistrations are not recorded, and
+  // instead this list can be checked for an empty registration.
+  AppProtocolList protocol_scheme_registrations_;
 
   // |on_destruction_| has it's closure set only once (when BlockingRegistration
   // is destroyed) and executed when OsIntegrationTestOverride is destroyed.

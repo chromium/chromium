@@ -54,9 +54,8 @@ void RegisterProtocolHandlersWithOSInBackground(
     for (apps::ProtocolHandlerInfo& info : protocol_handlers) {
       protocols_registered.push_back(info.protocol);
     }
-    web_app::GetOsIntegrationTestOverride()
-        ->protocol_scheme_registrations_.emplace_back(
-            app_id, std::move(protocols_registered));
+    web_app::GetOsIntegrationTestOverride()->RegisterProtocolSchemes(
+        app_id, std::move(protocols_registered));
     return;
   }
 
@@ -141,9 +140,8 @@ void RegisterProtocolHandlersWithOs(
     ResultCallback callback) {
   if (protocol_handlers.empty()) {
     if (web_app::GetOsIntegrationTestOverride()) {  // IN-TEST
-      web_app::GetOsIntegrationTestOverride()
-          ->protocol_scheme_registrations_.emplace_back(
-              app_id, std::vector<std::string>());
+      web_app::GetOsIntegrationTestOverride()->RegisterProtocolSchemes(
+          app_id, std::vector<std::string>());
     }
     std::move(callback).Run(Result::kOk);
     return;

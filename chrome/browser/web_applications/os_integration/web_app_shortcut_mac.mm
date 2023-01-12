@@ -1273,8 +1273,8 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
                                  protocol_handlers.begin(),
                                  protocol_handlers.end());
     GetOsIntegrationTestOverride()  // IN-TEST
-        ->protocol_scheme_registrations_.emplace_back(
-            info_->extension_id, std::move(protocol_handlers_vec));
+        ->RegisterProtocolSchemes(info_->extension_id,
+                                  std::move(protocol_handlers_vec));
   }
 
   // TODO(crbug.com/1273526): If we decide to rename app bundles on app title

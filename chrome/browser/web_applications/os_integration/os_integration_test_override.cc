@@ -337,6 +337,12 @@ bool OsIntegrationTestOverride::DeleteDesktopDirOnLinux() {
 }
 #endif
 
+void OsIntegrationTestOverride::RegisterProtocolSchemes(
+    const AppId& app_id,
+    std::vector<std::string> protocols) {
+  protocol_scheme_registrations_.emplace_back(app_id, std::move(protocols));
+}
+
 OsIntegrationTestOverride::OsIntegrationTestOverride(
     const base::FilePath& base_path) {
   // Initialize all directories used. The success & the DCHECK are separated to

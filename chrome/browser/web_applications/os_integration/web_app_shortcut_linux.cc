@@ -494,8 +494,8 @@ bool CreateDesktopShortcut(base::Environment* env,
     std::vector<std::string> protocol_handler(
         shortcut_info.protocol_handlers.begin(),
         shortcut_info.protocol_handlers.end());
-    test_override->protocol_scheme_registrations_.emplace_back(
-        shortcut_info.extension_id, std::move(protocol_handler));
+    test_override->RegisterProtocolSchemes(shortcut_info.extension_id,
+                                           std::move(protocol_handler));
   }
 
   if (applications_menu_location == APP_MENU_LOCATION_NONE) {
