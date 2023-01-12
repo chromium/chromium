@@ -370,10 +370,6 @@ source_set("headers") {
   if (is_mac) {
     sources += [ "sandbox_support/sandbox_support_mac.h" ]
   }
-
-  if (is_win) {
-    sources += [ "dwrite_rasterizer_support/dwrite_rasterizer_support.h" ]
-  }
 }
 
 if (is_android || is_win) {

@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/dwrite_rasterizer_support/dwrite_rasterizer_support.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 #include "ui/gfx/test/font_fallback_test_data.h"
@@ -116,9 +115,6 @@ TEST_F(DWriteFontProxyImplUnitTest, GetFontFilesIndexOutOfBounds) {
 }
 
 TEST_F(DWriteFontProxyImplUnitTest, MapCharacter) {
-  if (!blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
-    return;
-
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
       u"abc",
@@ -138,9 +134,6 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacter) {
 }
 
 TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidCharacter) {
-  if (!blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
-    return;
-
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
       u"\ufffe\uffffabc",
@@ -156,9 +149,6 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidCharacter) {
 }
 
 TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidAfterValid) {
-  if (!blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
-    return;
-
   blink::mojom::MapCharactersResultPtr result;
   dwrite_font_proxy().MapCharacters(
       u"abc\ufffe\uffff",

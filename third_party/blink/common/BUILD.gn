@@ -332,7 +332,6 @@ source_set("common") {
   }
 
   if (is_win) {
-    sources += [ "dwrite_rasterizer_support/dwrite_rasterizer_support.cc" ]
     deps += [ "//ui/gfx/" ]
   }
 

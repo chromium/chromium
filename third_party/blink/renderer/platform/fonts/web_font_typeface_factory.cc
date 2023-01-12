@@ -13,7 +13,6 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "third_party/blink/public/common/dwrite_rasterizer_support/dwrite_rasterizer_support.h"
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
 #endif
 
@@ -157,11 +156,6 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FreeTypeFontManager() {
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrCpal() {
-#if BUILDFLAG(IS_WIN)
-  if (!blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
-    return FreeTypeFontManager();
-#endif
-
 #if BUILDFLAG(IS_MAC)
   return FreeTypeFontManager();
 #else
@@ -171,9 +165,9 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrCpal() {
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrV0Variations() {
 #if BUILDFLAG(IS_WIN)
-  if (DWriteVersionSupportsVariations() &&
-      blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
+  if (DWriteVersionSupportsVariations()) {
     return DefaultFontManager();
+  }
 #endif
   return FreeTypeFontManager();
 }

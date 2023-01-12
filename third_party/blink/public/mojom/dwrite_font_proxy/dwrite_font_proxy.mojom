@@ -35,11 +35,6 @@ struct MapCharactersResult {
   DWriteFontStyle font_style;
 };
 
-enum UniqueFontLookupMode {
-    kRetrieveTable,
-    kSingleLookups
-};
-
 interface DWriteFontProxy {
   // Locates the index of the specified font family within the system
   // collection.

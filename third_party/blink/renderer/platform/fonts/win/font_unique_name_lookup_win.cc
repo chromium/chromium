@@ -60,11 +60,9 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromFileAndTtcIndex(
 }
 
 bool FontUniqueNameLookupWin::IsFontUniqueNameLookupReadyForSyncLookup() {
-  if (!RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
-    return true;
+  if (RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
+    EnsureServiceConnected();
   }
-
-  EnsureServiceConnected();
 
   return true;
 }

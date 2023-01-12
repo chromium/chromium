@@ -37,8 +37,6 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
                                                    uint32_t ttc_index);
 
   mojo::Remote<mojom::blink::DWriteFontProxy> service_;
-  WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
-  absl::optional<bool> sync_available_;
 };
 
 }  // namespace blink
