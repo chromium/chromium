@@ -1959,38 +1959,38 @@
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Ad Measurement Page -->
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" translateable="false" desc="Title for the Ad Measurement preferences page.">
-    Vestibulum augue
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE" desc="A page title and the name of a new setting. **** CONTEXT PRIVACY SANDBOX **** Chrome's Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an 'Ad privacy' page in Chrome settings. For an equivalent structure, see 'Security' on chrome://settings/privacy that opens chrome://settings/security. Likewise, 'Ad privacy' on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
+    Ad measurement
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_LABEL" translateable="false" desc="Label for the toggle in the Ad Measurement preferences page.">
-    Vestibulum augue erat
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_LABEL" desc="The label for a new setting.">
+    Ad measurement
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Sublabel for the toggle in the Ad Measurement preferences page.">
-    Vestibulum eleifend nunc a viverra congue. Integer nec mauris rutrum, porta mauris et, pellentesque ligula. Nam et pulvinar eros, in gravida nisl.
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_SUB_LABEL" desc="A description of the new Ad measurement setting. This text appears beneath the name of the new setting, 'Ad measurement', and is associated with the control that a user can turn on or off. **** CONTEXT PRIVACY SANDBOX **** Chrome's Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an 'Ad privacy' page in Chrome settings. For an equivalent structure, see 'Security' on chrome://settings/privacy that opens chrome://settings/security. Likewise, 'Ad privacy' on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
+    Sites and advertisers can measure the performance of their ads
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_HEADING" translateable="false" desc="Heading for the 'When on' section in the Ad Measurement preferences page.">
-    Mauris
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_HEADING" desc="A label above bullet points that explain the functionality of this setting.">
+    When on
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_HEADING" translateable="false" desc="Heading for the 'Things to consider' section in the Ad Measurement preferences page.">
-    Aenean
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_HEADING" desc="A label above bullet points that note things the user might want to consider when turning this setting on or off.">
+    Things to consider
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_1" translateable="false" desc="First bullet point underneath the 'When on' section in the Ad Measurement preferences page.">
-    Praesent sodales, magna eget volutpat iaculis, justo odio viverra justo, id venenatis est est sit amet ex
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_1" desc="1 of 3 bullets in the 'When on' section that describes the Ad measurement setting. * 'Limited types of data': The Ad measurement API (for developers) and the Ad measurement control (for users) is offered by Chrome. But Chrome is a 'pass through', helping one site communicate information to another about the performance of an ad. That's where this passive construction comes from. Chrome facilitates, but shouldn't be seen as a major actor here. And we don't want to suggest anything like 'Chrome limits the types of data shared between sites,' because Chrome can't do that. Any 2 sites can have a side agreement to share as much info as they like.">
+    Limited types of data are shared between sites to measure the performance of their ads, such as the time of day an ad was shown to you
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_2" translateable="false" desc="Second bullet point underneath the 'When on' section in the Ad Measurement preferences page.">
-    Nunc metus est, faucibus sit amet lacus sit amet, aliquet rutrum libero. Maecenas vel euismod ante.
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_2" desc="2 of 3 bullets in the 'When on' section that describes the Ad measurement setting.">
+    Ad-measurement data is deleted regularly from your device
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_3" translateable="false" desc="Third bullet point underneath the 'When on' section in the Ad Measurement preferences page.">
-    Nunc metus est, faucibus sit amet lacus sit amet, aliquet rutrum libero.
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_3" desc="3 of 3 bullets in the 'When on' section that describes the Ad measurement setting. If reports were instantaneous, a site could receive a report and then consult which visitors most recently visited the site.">
+    Your browsing history is kept private on your device and reports are sent with a delay to protect your identity
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_1" translateable="false" desc="First bullet point underneath the 'Things to consider' section in the Ad Measurement preferences page.">
-    Mauris mattis urna elit. Phasellus quis erat sapien. Praesent finibus pellentesque iaculis. Mauris hendrerit metus at enim rhoncus bibendum.
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_1" desc="1 of 3 bullets in the 'Things to consider' section that describes the Ad measurement setting.">
+    You can always delete ad-measurement data by deleting your browsing data
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2" translateable="false" desc="Second bullet point underneath the 'Things to consider' section in the Ad Measurement preferences page.">
-    Phasellus quis erat sapien. Praesent finibus pellentesque iaculis.
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2" desc="2 of 3 bullets in the 'Things to consider' section that describes the Ad measurement setting.">
+    Chrome limits the total amount of data that sites can share through the browser to measure ad performance
   </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_3" translateable="false" desc="Third bullet point underneath the 'Things to consider' section in the Ad Measurement preferences page.">
-    Mauris mattis urna elit. Phasellus quis erat sapien. Praesent finibus pellentesque iaculis. Mauris hendrerit metus at enim rhoncus bibendum. Maecenas vel euismod ante.
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_3" desc="3 of 3 bullets in the 'Things to consider' section that describes the Ad measurement setting.">
+    Your Android device may include a similar setting. If Ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across web sites you visit and apps you use.
   </message>
 
   <!-- Privacy Guide -->
