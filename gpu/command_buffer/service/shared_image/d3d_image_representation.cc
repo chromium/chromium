@@ -16,41 +16,41 @@ GLTexturePassthroughD3DImageRepresentation::
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
-        scoped_refptr<gles2::TexturePassthrough> texture)
+        std::vector<scoped_refptr<gles2::TexturePassthrough>> textures)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
-      texture_(std::move(texture)) {}
+      textures_(std::move(textures)) {}
 
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughD3DImageRepresentation::GetTexturePassthrough(
     int plane_index) {
-  DCHECK_EQ(plane_index, 0);
-  return texture_;
+  return textures_[plane_index];
 }
 
 GLTexturePassthroughD3DImageRepresentation::
     ~GLTexturePassthroughD3DImageRepresentation() = default;
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
-  // Bind the GLImage if necessary.
-  auto texture =
-      GLTexturePassthroughImageRepresentation::GetTexturePassthrough();
-  if (texture->is_bind_pending()) {
-    GLenum target = texture->target();
-    gl::GLImage* image = texture->GetLevelImage(target, 0);
+  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
+  for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
+    // Bind the GLImage if necessary.
+    auto texture = GetTexturePassthrough(plane);
+    if (texture->is_bind_pending()) {
+      GLenum target = texture->target();
+      gl::GLImage* image = texture->GetLevelImage(target, 0);
 
-    if (image) {
-      // First ensure that |target| is bound to |texture|.
-      gl::GLApi* const api = gl::g_current_gl_context;
-      gl::ScopedRestoreTexture scoped_restore(api, target);
-      api->glBindTextureFn(target, texture->service_id());
+      if (image) {
+        // First ensure that |target| is bound to |texture|.
+        gl::GLApi* const api = gl::g_current_gl_context;
+        gl::ScopedRestoreTexture scoped_restore(api, target);
+        api->glBindTextureFn(target, texture->service_id());
 
-      // Now bind the GLImage to |texture| via |target|.
-      image->BindTexImage(target);
+        // Now bind the GLImage to |texture| via |target|.
+        image->BindTexImage(target);
 
-      texture->clear_bind_pending();
+        texture->clear_bind_pending();
+      }
     }
   }
-  D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
   bool write_access = mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   return d3d_image_backing->BeginAccessD3D11(write_access);
 }

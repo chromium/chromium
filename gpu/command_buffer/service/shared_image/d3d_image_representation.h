@@ -31,7 +31,7 @@ class GLTexturePassthroughD3DImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      scoped_refptr<gles2::TexturePassthrough> texture);
+      std::vector<scoped_refptr<gles2::TexturePassthrough>> textures);
   ~GLTexturePassthroughD3DImageRepresentation() override;
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
@@ -41,7 +41,7 @@ class GLTexturePassthroughD3DImageRepresentation
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
-  scoped_refptr<gles2::TexturePassthrough> texture_;
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_;
 };
 
 // Representation of a D3DImageBacking as a Dawn Texture

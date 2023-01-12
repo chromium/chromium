@@ -196,7 +196,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
       SkAlphaType alpha_type,
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      scoped_refptr<gles2::TexturePassthrough> gl_texture,
+      std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr,
       GLenum texture_target = GL_TEXTURE_2D,
       size_t array_slice = 0u,
@@ -219,7 +219,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 
   // Can be null for backings owned by non-GL producers e.g. WebGPU.
-  scoped_refptr<gles2::TexturePassthrough> gl_texture_;
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures_;
 
   // Holds DXGI shared handle and the keyed mutex if present.  Can be shared
   // between plane shared image backings of a multi-plane texture, or between

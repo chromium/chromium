@@ -16,6 +16,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -541,9 +542,14 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
                     uint8_t u_fill_value,
                     uint8_t v_fill_value,
                     bool use_shared_handle,
-                    bool use_factory);
-  void RunVideoTest(bool use_shared_handle, bool use_factory);
-  void RunOverlayTest(bool use_shared_handle, bool use_factory);
+                    bool use_factory_per_plane,
+                    bool use_factory_multiplanar);
+  void RunVideoTest(bool use_shared_handle,
+                    bool use_factory_per_plane,
+                    bool use_factory_multiplanar);
+  void RunOverlayTest(bool use_shared_handle,
+                      bool use_factory_per_plane,
+                      bool use_factory_multiplanar);
   void RunCreateSharedImageFromHandleTest(DXGI_FORMAT dxgi_format);
 
   scoped_refptr<SharedContextState> context_state_;
@@ -1535,7 +1541,8 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
                                               uint8_t u_fill_value,
                                               uint8_t v_fill_value,
                                               bool use_shared_handle,
-                                              bool use_factory) {
+                                              bool use_factory_per_plane,
+                                              bool use_factory_multiplanar) {
   DCHECK(IsD3DSharedImageSupported());
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
@@ -1594,7 +1601,7 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
                                                gfx::BufferPlane::UV};
 
   std::vector<std::unique_ptr<SharedImageBacking>> shared_image_backings;
-  if (use_factory) {
+  if (use_factory_per_plane) {
     HANDLE dup_handle = nullptr;
     if (!::DuplicateHandle(::GetCurrentProcess(), shared_handle.get(),
                            ::GetCurrentProcess(), &dup_handle, 0, false,
@@ -1626,6 +1633,21 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
         return {};
       shared_image_backings.push_back(std::move(backing));
     }
+  } else if (use_factory_multiplanar) {
+    gfx::GpuMemoryBufferHandle gmb_handle;
+    gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
+    gmb_handle.dxgi_handle = std::move(shared_handle);
+    DCHECK(gmb_handle.dxgi_handle.IsValid());
+    gmb_handle.dxgi_token = gfx::DXGIHandleToken();
+
+    auto backing = shared_image_factory_->CreateSharedImage(
+        mailboxes[0], viz::MultiPlaneFormat::kYUV_420_BIPLANAR, size,
+        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+        std::move(gmb_handle));
+    if (!backing) {
+      return {};
+    }
+    shared_image_backings.push_back(std::move(backing));
   } else {
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state;
     if (use_shared_handle) {
@@ -1638,23 +1660,41 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
         mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
         /*array_slice=*/0, std::move(dxgi_shared_handle_state));
   }
-  EXPECT_EQ(shared_image_backings.size(), kNumPlanes);
-
-  const gfx::Size plane_sizes[kNumPlanes] = {
-      size, gfx::Size(size.width() / 2, size.height() / 2)};
-  const viz::ResourceFormat plane_formats[kNumPlanes] = {viz::RED_8,
-                                                         viz::RG_88};
 
   std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
       shared_image_refs;
-  for (size_t i = 0; i < std::min(shared_image_backings.size(), kNumPlanes);
-       i++) {
-    auto& backing = shared_image_backings[i];
+  if (!use_factory_multiplanar) {
+    EXPECT_EQ(shared_image_backings.size(), kNumPlanes);
 
-    EXPECT_EQ(backing->mailbox(), mailboxes[i]);
-    EXPECT_EQ(backing->size(), plane_sizes[i]);
-    EXPECT_EQ(backing->format(),
-              viz::SharedImageFormat::SinglePlane(plane_formats[i]));
+    const gfx::Size plane_sizes[kNumPlanes] = {
+        size, gfx::Size(size.width() / 2, size.height() / 2)};
+    const viz::ResourceFormat plane_formats[kNumPlanes] = {viz::RED_8,
+                                                           viz::RG_88};
+
+    for (size_t i = 0; i < std::min(shared_image_backings.size(), kNumPlanes);
+         i++) {
+      auto& backing = shared_image_backings[i];
+
+      EXPECT_EQ(backing->mailbox(), mailboxes[i]);
+      EXPECT_EQ(backing->size(), plane_sizes[i]);
+      EXPECT_EQ(backing->format(),
+                viz::SharedImageFormat::SinglePlane(plane_formats[i]));
+      EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
+      EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
+      EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
+      EXPECT_EQ(backing->usage(), usage);
+      EXPECT_TRUE(backing->IsCleared());
+
+      shared_image_refs.push_back(shared_image_manager_.Register(
+          std::move(backing), memory_type_tracker_.get()));
+    }
+  } else {
+    EXPECT_EQ(shared_image_backings.size(), 1u);
+
+    auto& backing = shared_image_backings[0];
+    EXPECT_EQ(backing->mailbox(), mailboxes[0]);
+    EXPECT_EQ(backing->size(), size);
+    EXPECT_EQ(backing->format(), viz::MultiPlaneFormat::kYUV_420_BIPLANAR);
     EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
     EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
     EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
@@ -1669,7 +1709,8 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
 }
 
 void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
-                                              bool use_factory) {
+                                              bool use_factory_per_plane,
+                                              bool use_factory_multiplanar) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -1679,10 +1720,14 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
   const uint8_t kUFillValue = 0x23;
   const uint8_t kVFillValue = 0x34;
 
-  auto shared_image_refs =
-      CreateVideoImages(size, kYFillValue, kUFillValue, kVFillValue,
-                        use_shared_handle, use_factory);
-  ASSERT_EQ(shared_image_refs.size(), 2u);
+  auto shared_image_refs = CreateVideoImages(
+      size, kYFillValue, kUFillValue, kVFillValue, use_shared_handle,
+      use_factory_per_plane, use_factory_multiplanar);
+  if (use_factory_multiplanar) {
+    ASSERT_EQ(shared_image_refs.size(), 1u);
+  } else {
+    ASSERT_EQ(shared_image_refs.size(), 2u);
+  }
 
   // Setup GL shaders, framebuffers, uniforms, etc.
   static const char* kVideoFragmentShaderSrcTextureExternal =
@@ -1722,8 +1767,9 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
   SCOPED_GL_CLEANUP_VAR(api, DeleteShader, fragment_shader);
   ASSERT_NE(fragment_shader, 0u);
   api->glShaderSourceFn(fragment_shader, 1,
-                        use_factory ? &kVideoFragmentShaderSrcTexture2D
-                                    : &kVideoFragmentShaderSrcTextureExternal,
+                        (use_factory_per_plane || use_factory_multiplanar)
+                            ? &kVideoFragmentShaderSrcTexture2D
+                            : &kVideoFragmentShaderSrcTextureExternal,
                         nullptr);
   api->glCompileShaderFn(fragment_shader);
   api->glGetShaderivFn(fragment_shader, GL_COMPILE_STATUS, &status);
@@ -1788,7 +1834,7 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
 
   // Create the representations for the planes, get the texture ids, bind to
   // samplers, and draw.
-  {
+  if (!use_factory_multiplanar) {
     auto y_texture =
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
             shared_image_refs[0]->mailbox());
@@ -1810,13 +1856,57 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
     ASSERT_NE(uv_texture_access, nullptr);
 
     api->glActiveTextureFn(GL_TEXTURE0);
-    api->glBindTextureFn(use_factory ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES,
-                         y_texture->GetTexturePassthrough()->service_id());
+    api->glBindTextureFn(
+        use_factory_per_plane ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES,
+        y_texture->GetTexturePassthrough()->service_id());
     ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
     api->glActiveTextureFn(GL_TEXTURE1);
-    api->glBindTextureFn(use_factory ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES,
-                         uv_texture->GetTexturePassthrough()->service_id());
+    api->glBindTextureFn(
+        use_factory_per_plane ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES,
+        uv_texture->GetTexturePassthrough()->service_id());
+    ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
+
+    api->glUseProgramFn(program);
+
+    api->glEnableVertexAttribArrayFn(vertex_location);
+    api->glVertexAttribPointerFn(vertex_location, 2, GL_FLOAT, GL_FALSE, 0,
+                                 nullptr);
+
+    api->glUniform1iFn(y_texture_location, 0);
+    api->glUniform1iFn(uv_texture_location, 1);
+
+    api->glDrawArraysFn(GL_TRIANGLES, 0, 6);
+    ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
+
+    GLubyte pixel_color[4];
+    api->glReadPixelsFn(size.width() / 2, size.height() / 2, 1, 1, GL_RGBA,
+                        GL_UNSIGNED_BYTE, pixel_color);
+    EXPECT_EQ(kYFillValue, pixel_color[0]);
+    EXPECT_EQ(kUFillValue, pixel_color[1]);
+    EXPECT_EQ(kVFillValue, pixel_color[2]);
+    EXPECT_EQ(255, pixel_color[3]);
+  } else {
+    auto texture =
+        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+            shared_image_refs[0]->mailbox());
+    ASSERT_NE(texture, nullptr);
+
+    auto texture_access = texture->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    ASSERT_NE(texture_access, nullptr);
+
+    api->glActiveTextureFn(GL_TEXTURE0);
+    api->glBindTextureFn(
+        GL_TEXTURE_2D,
+        texture->GetTexturePassthrough(/*plane_index=*/0)->service_id());
+    ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
+
+    api->glActiveTextureFn(GL_TEXTURE1);
+    api->glBindTextureFn(
+        GL_TEXTURE_2D,
+        texture->GetTexturePassthrough(/*plane_index=*/1)->service_id());
     ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
     api->glUseProgramFn(program);
@@ -1843,19 +1933,29 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
 }
 
 TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTexture) {
-  RunVideoTest(/*use_shared_handle=*/false, /*use_factory=*/false);
+  RunVideoTest(/*use_shared_handle=*/false, /*use_factory_per_plane=*/false,
+               /*use_factory_multiplanar=*/false);
 }
 
 TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureSharedHandle) {
-  RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/false);
+  RunVideoTest(/*use_shared_handle=*/true, /*use_factory_per_plane=*/false,
+               /*use_factory_multiplanar=*/false);
 }
 
-TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureViaFactory) {
-  RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/true);
+TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureViaFactoryPerPlane) {
+  RunVideoTest(/*use_shared_handle=*/true, /*use_factory_per_plane=*/true,
+               /*use_factory_multiplanar=*/false);
+}
+
+TEST_F(D3DImageBackingFactoryTest,
+       CreateFromVideoTextureViaFactoryMultiplanar) {
+  RunVideoTest(/*use_shared_handle=*/true, /*use_factory_per_plane=*/false,
+               /*use_factory_multiplanar=*/true);
 }
 
 void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
-                                                bool use_factory) {
+                                                bool use_factory_per_plane,
+                                                bool use_factory_multiplanar) {
   if (!IsD3DSharedImageSupported())
     return;
 
@@ -1865,10 +1965,14 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
   constexpr uint8_t kUFillValue = 0x23;
   constexpr uint8_t kVFillValue = 0x34;
 
-  auto shared_image_refs =
-      CreateVideoImages(size, kYFillValue, kUFillValue, kVFillValue,
-                        use_shared_handle, use_factory);
-  ASSERT_EQ(shared_image_refs.size(), 2u);
+  auto shared_image_refs = CreateVideoImages(
+      size, kYFillValue, kUFillValue, kVFillValue, use_shared_handle,
+      use_factory_per_plane, use_factory_multiplanar);
+  if (use_factory_multiplanar) {
+    ASSERT_EQ(shared_image_refs.size(), 1u);
+  } else {
+    ASSERT_EQ(shared_image_refs.size(), 2u);
+  }
 
   auto overlay_representation =
       shared_image_representation_factory_->ProduceOverlay(
@@ -1912,15 +2016,25 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
 }
 
 TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureOverlay) {
-  RunOverlayTest(/*use_shared_handle=*/false, /*use_factory=*/false);
+  RunOverlayTest(/*use_shared_handle=*/false, /*use_factory_per_plane=*/false,
+                 /*use_factory_multiplanar=*/false);
 }
 
 TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureSharedHandleOverlay) {
-  RunOverlayTest(/*use_shared_handle=*/true, /*use_factory=*/false);
+  RunOverlayTest(/*use_shared_handle=*/true, /*use_factory_per_plane=*/false,
+                 /*use_factory_multiplanar=*/false);
 }
 
-TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureViaFactoryOverlay) {
-  RunOverlayTest(/*use_shared_handle=*/true, /*use_factory=*/true);
+TEST_F(D3DImageBackingFactoryTest,
+       CreateFromVideoTextureViaFactoryPerPlaneOverlay) {
+  RunOverlayTest(/*use_shared_handle=*/true, /*use_factory_per_plane=*/true,
+                 /*use_factory_multiplanar=*/false);
+}
+
+TEST_F(D3DImageBackingFactoryTest,
+       CreateFromVideoTextureViaFactoryMultiplanarOverlay) {
+  RunOverlayTest(/*use_shared_handle=*/true, /*use_factory_per_plane=*/false,
+                 /*use_factory_multiplanar=*/true);
 }
 
 TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {

@@ -93,6 +93,15 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       base::span<const uint8_t> pixel_data) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gfx::GpuMemoryBufferHandle handle) override;
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,
@@ -115,6 +124,21 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   }
 
  private:
+  // `format` can be single planar format, multiplanar format (with
+  // BufferPlane::DEFAULT) or legacy multiplanar format converted to single
+  // planar for per plane access eg. BufferFormat::YUV_420_BIPLANAR converted
+  // to RED_8 (for BufferPlane::Y), RG_88 (for BufferPlane::UV). It does not
+  // support external sampler use cases.
+  std::unique_ptr<SharedImageBacking> CreateSharedImageGMBs(
+      const Mailbox& mailbox,
+      gfx::GpuMemoryBufferHandle handle,
+      viz::SharedImageFormat format,
+      gfx::BufferPlane plane,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage);
   bool UseMapOnDefaultTextures();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;

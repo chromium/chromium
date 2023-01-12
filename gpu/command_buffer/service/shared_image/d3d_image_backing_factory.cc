@@ -79,32 +79,41 @@ absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
 
 // Formats supported by CreateSharedImage(GMB).
 DXGI_FORMAT GetDXGIFormat(viz::SharedImageFormat format) {
-  switch (format.resource_format()) {
-    case viz::ResourceFormat::RGBA_8888:
-      return DXGI_FORMAT_R8G8B8A8_UNORM;
-    case viz::ResourceFormat::BGRA_8888:
-      return DXGI_FORMAT_B8G8R8A8_UNORM;
-    case viz::ResourceFormat::RGBA_F16:
-      return DXGI_FORMAT_R16G16B16A16_FLOAT;
-    case viz::ResourceFormat::YUV_420_BIPLANAR:
-      return DXGI_FORMAT_NV12;
-    default:
-      return DXGI_FORMAT_UNKNOWN;
+  if (format.is_single_plane()) {
+    switch (format.resource_format()) {
+      case viz::ResourceFormat::RGBA_8888:
+        return DXGI_FORMAT_R8G8B8A8_UNORM;
+      case viz::ResourceFormat::BGRA_8888:
+        return DXGI_FORMAT_B8G8R8A8_UNORM;
+      case viz::ResourceFormat::RGBA_F16:
+        return DXGI_FORMAT_R16G16B16A16_FLOAT;
+      case viz::ResourceFormat::YUV_420_BIPLANAR:
+        return DXGI_FORMAT_NV12;
+      default:
+        return DXGI_FORMAT_UNKNOWN;
+    }
   }
+  if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+    return DXGI_FORMAT_NV12;
+  }
+  return DXGI_FORMAT_UNKNOWN;
 }
 
 // Typeless formats supported by CreateSharedImage(GMB) for XR.
 DXGI_FORMAT GetDXGITypelessFormat(viz::SharedImageFormat format) {
-  switch (format.resource_format()) {
-    case viz::ResourceFormat::RGBA_8888:
-      return DXGI_FORMAT_R8G8B8A8_TYPELESS;
-    case viz::ResourceFormat::BGRA_8888:
-      return DXGI_FORMAT_B8G8R8A8_TYPELESS;
-    case viz::ResourceFormat::RGBA_F16:
-      return DXGI_FORMAT_R16G16B16A16_TYPELESS;
-    default:
-      return DXGI_FORMAT_UNKNOWN;
+  if (format.is_single_plane()) {
+    switch (format.resource_format()) {
+      case viz::ResourceFormat::RGBA_8888:
+        return DXGI_FORMAT_R8G8B8A8_TYPELESS;
+      case viz::ResourceFormat::BGRA_8888:
+        return DXGI_FORMAT_B8G8R8A8_TYPELESS;
+      case viz::ResourceFormat::RGBA_F16:
+        return DXGI_FORMAT_R16G16B16A16_TYPELESS;
+      default:
+        return DXGI_FORMAT_UNKNOWN;
+    }
   }
+  return DXGI_FORMAT_UNKNOWN;
 }
 
 scoped_refptr<DXGISharedHandleState> ValidateAndOpenSharedHandle(
@@ -421,6 +430,20 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gfx::GpuMemoryBufferHandle handle) {
+  return CreateSharedImageGMBs(mailbox, std::move(handle), format,
+                               gfx::BufferPlane::DEFAULT, size, color_space,
+                               surface_origin, alpha_type, usage);
+}
+
+std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,
@@ -434,43 +457,11 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
                << " for format " << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
-    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
-               << gfx::BufferFormatToString(buffer_format);
-    return nullptr;
-  }
 
-  DCHECK_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
-  DCHECK(plane == gfx::BufferPlane::DEFAULT || plane == gfx::BufferPlane::Y ||
-         plane == gfx::BufferPlane::UV);
-
-  auto si_format = viz::SharedImageFormat::SinglePlane(
+  auto format = viz::SharedImageFormat::SinglePlane(
       viz::GetResourceFormat(buffer_format));
-  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
-      ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
-                                  std::move(handle), si_format, size);
-  if (!dxgi_shared_handle_state)
-    return nullptr;
-
-  auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
-
-  // Get format and size per plane. For multiplanar formats, `plane_format` is
-  // R/RG based on channels in plane.
-  const gfx::Size plane_size = GetPlaneSize(plane, size);
-  const viz::SharedImageFormat plane_format =
-      viz::SharedImageFormat::SinglePlane(
-          viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format)));
-  const GLenum texture_target = GL_TEXTURE_2D;
-  const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
-
-  auto backing = D3DImageBacking::Create(
-      mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, usage, std::move(d3d11_texture),
-      std::move(dxgi_shared_handle_state), texture_target, /*array_slice=*/0u,
-      /*plane_index=*/plane_index);
-  if (backing)
-    backing->SetCleared();
-  return backing;
+  return CreateSharedImageGMBs(mailbox, std::move(handle), format, plane, size,
+                               color_space, surface_origin, alpha_type, usage);
 }
 
 bool D3DImageBackingFactory::UseMapOnDefaultTextures() {
@@ -499,10 +490,6 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
                                          base::span<const uint8_t> pixel_data) {
-  if (format.is_multi_plane()) {
-    return false;
-  }
-
   if (!pixel_data.empty()) {
     return false;
   }
@@ -528,6 +515,66 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
   }
 
   return true;
+}
+
+std::unique_ptr<SharedImageBacking>
+D3DImageBackingFactory::CreateSharedImageGMBs(
+    const Mailbox& mailbox,
+    gfx::GpuMemoryBufferHandle handle,
+    viz::SharedImageFormat format,
+    gfx::BufferPlane plane,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage) {
+  const gfx::BufferFormat buffer_format = gpu::ToBufferFormat(format);
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
+    LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
+               << gfx::BufferFormatToString(buffer_format);
+    return nullptr;
+  }
+
+  DCHECK_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
+  DCHECK(plane == gfx::BufferPlane::DEFAULT || plane == gfx::BufferPlane::Y ||
+         plane == gfx::BufferPlane::UV);
+
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
+                                  std::move(handle), format, size);
+  if (!dxgi_shared_handle_state) {
+    return nullptr;
+  }
+
+  auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
+
+  const GLenum texture_target = GL_TEXTURE_2D;
+  std::unique_ptr<D3DImageBacking> backing;
+  if (format.IsLegacyMultiplanar()) {
+    // Get format and size per plane. For multiplanar formats, `plane_format` is
+    // R/RG based on channels in plane.
+    const gfx::Size plane_size = GetPlaneSize(plane, size);
+    const viz::SharedImageFormat plane_format =
+        viz::SharedImageFormat::SinglePlane(
+            viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format)));
+    const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
+    backing = D3DImageBacking::Create(
+        mailbox, plane_format, plane_size, color_space, surface_origin,
+        alpha_type, usage, std::move(d3d11_texture),
+        std::move(dxgi_shared_handle_state), texture_target, /*array_slice=*/0u,
+        /*plane_index=*/plane_index);
+  } else {
+    backing = D3DImageBacking::Create(
+        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
+        texture_target, /*array_slice=*/0u,
+        /*plane_index=*/0);
+  }
+
+  if (backing) {
+    backing->SetCleared();
+  }
+  return backing;
 }
 
 }  // namespace gpu
