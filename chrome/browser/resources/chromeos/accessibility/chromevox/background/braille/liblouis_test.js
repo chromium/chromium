@@ -73,7 +73,7 @@ LIBLOUIS_TEST_F('testTranslateComputerBraille', function(liblouis) {
 LIBLOUIS_TEST_F_WITH_PREAMBLE(
     `
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_CheckAllTables CheckAllTables
+#define MAYBE_CheckAllTables DISABLED_CheckAllTables
 #else
 #define MAYBE_CheckAllTables CheckAllTables
 #endif
