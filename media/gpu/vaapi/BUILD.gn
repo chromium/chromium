@@ -341,11 +341,16 @@ test("vaapi_unittest") {
     "//build:chromeos_buildflags",
     "//gpu",
     "//media/gpu/test:helpers",
-    "//media/gpu/vaapi/test/fake_libva_driver:fake_drv_video",
     "//testing/gtest",
     "//third_party/minigbm",
     "//ui/gfx/linux:gbm",
   ]
+
+  # TODO(andrescj): the Chrome bots run vaapi_unittest with the fake driver, but
+  # the ChromeOS tests rely on a real driver. Therefore, we shouldn't need this
+  # unconditional data_deps. Instead, we should try to re-structure things so
+  # that ChromeOS can build the vaapi_unittest without building the fake driver.
+  data_deps = [ "//media/gpu/vaapi/test/fake_libva_driver:fake_drv_video" ]
 
   # TODO(https://crbug.com/1043007): remove is_chromeos.
   if (is_chromeos_ash) {
