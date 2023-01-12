@@ -174,6 +174,18 @@ struct RawPtrNoOpImpl {
     return wrapped_ptr;
   }
 
+  // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
+  // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+    return ptr;
+  }
+
+  template <typename T>
+  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+    return wrapped_ptr;
+  }
+
   // This is for accounting only, used by unit tests.
   static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
   static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
@@ -354,6 +366,18 @@ struct MTECheckedPtrImpl {
   template <typename T>
   static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
     return wrapped_ptr;
+  }
+
+  // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
+  // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+    return WrapRawPtr(ptr);
+  }
+
+  template <typename T>
+  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+    return ExtractPtr(wrapped_ptr);
   }
 
   // This is for accounting only, used by unit tests.
@@ -700,6 +724,18 @@ struct BackupRefPtrImpl {
     ReportIfDanglingInternal(partition_alloc::UntagPtr(wrapped_ptr));
   }
 
+  // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
+  // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+    return WrapRawPtr(ptr);
+  }
+
+  template <typename T>
+  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+    return UnpoisonPtr(wrapped_ptr);
+  }
+
   // This is for accounting only, used by unit tests.
   static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
   static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
@@ -823,6 +859,18 @@ struct AsanUnownedPtrImpl {
   static bool EndOfAliveAllocation(const volatile void* ptr);
   static bool LikelySmuggledScalar(const volatile void* ptr);
 
+  // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
+  // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+    return ptr;
+  }
+
+  template <typename T>
+  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+    return wrapped_ptr;
+  }
+
   // This is for accounting only, used by unit tests.
   static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
   static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
@@ -933,6 +981,18 @@ struct RawPtrHookableImpl {
     return wrapped_ptr;
   }
 
+  // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
+  // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+    return ptr;
+  }
+
+  template <typename T>
+  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+    return wrapped_ptr;
+  }
+
   // This is for accounting only, used by unit tests.
   static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
   static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
@@ -987,6 +1047,18 @@ struct RawPtrCountingImplWrapperForTest
     ++pointer_to_member_operator_cnt;
   }
 
+  template <typename T>
+  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+    ++wrap_raw_ptr_for_dup_cnt;
+    return SuperImpl::WrapRawPtrForDuplication(ptr);
+  }
+
+  template <typename T>
+  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+    ++get_for_duplication_cnt;
+    return SuperImpl::UnsafelyUnwrapPtrForDuplication(wrapped_ptr);
+  }
+
   static void ClearCounters() {
     wrap_raw_ptr_cnt = 0;
     release_wrapped_ptr_cnt = 0;
@@ -996,6 +1068,8 @@ struct RawPtrCountingImplWrapperForTest
     wrapped_ptr_swap_cnt = 0;
     wrapped_ptr_less_cnt = 0;
     pointer_to_member_operator_cnt = 0;
+    wrap_raw_ptr_for_dup_cnt = 0;
+    get_for_duplication_cnt = 0;
   }
 
   static inline int wrap_raw_ptr_cnt = INT_MIN;
@@ -1006,6 +1080,8 @@ struct RawPtrCountingImplWrapperForTest
   static inline int wrapped_ptr_swap_cnt = INT_MIN;
   static inline int wrapped_ptr_less_cnt = INT_MIN;
   static inline int pointer_to_member_operator_cnt = INT_MIN;
+  static inline int wrap_raw_ptr_for_dup_cnt = INT_MIN;
+  static inline int get_for_duplication_cnt = INT_MIN;
 };
 
 }  // namespace internal
@@ -1258,6 +1334,27 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+
+  template <typename PassedRawPtrType,
+            typename Unused =
+                std::enable_if_t<!std::is_same_v<RawPtrType, PassedRawPtrType>>>
+  PA_ALWAYS_INLINE explicit raw_ptr(
+      const raw_ptr<T, PassedRawPtrType>& p) noexcept
+      : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
+            raw_ptr_traits::RawPtrTypeToImpl<PassedRawPtrType>::Impl::
+                UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {}
+
+  template <typename PassedRawPtrType,
+            typename Unused =
+                std::enable_if_t<!std::is_same_v<RawPtrType, PassedRawPtrType>>>
+  PA_ALWAYS_INLINE raw_ptr& operator=(
+      const raw_ptr<T, PassedRawPtrType>& p) noexcept {
+    Impl::ReleaseWrappedPtr(wrapped_ptr_);
+    wrapped_ptr_ = Impl::WrapRawPtrForDuplication(
+        raw_ptr_traits::RawPtrTypeToImpl<PassedRawPtrType>::Impl::
+            UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_));
+    return *this;
+  }
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)

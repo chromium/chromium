@@ -434,6 +434,19 @@ TEST_F(AsanBackupRefPtrTest, AccessOnThreadPoolThread) {
   run_loop.Run();
 }
 
+TEST_F(AsanBackupRefPtrTest, DanglingUnretained) {
+  // The test should finish without crashing.
+
+  raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
+  delete protected_ptr.get();
+
+  auto ptr_callback = base::BindOnce(
+      [](AsanStruct* ptr) {
+        // Do nothing - we only check the behavior of `BindOnce` in this test.
+      },
+      protected_ptr);
+}
+
 }  // namespace base::internal
 
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

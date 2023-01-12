@@ -143,6 +143,8 @@ struct CountingRawPtrExpectations {
   absl::optional<int> wrapped_ptr_swap_cnt;
   absl::optional<int> wrapped_ptr_less_cnt;
   absl::optional<int> pointer_to_member_operator_cnt;
+  absl::optional<int> wrap_raw_ptr_for_dup_cnt;
+  absl::optional<int> get_for_duplication_cnt;
 };
 
 #define REPORT_UNEQUAL_RAW_PTR_COUNTER(member_name, CounterClassImpl) \
@@ -155,18 +157,20 @@ struct CountingRawPtrExpectations {
       result = false;                                                 \
     }                                                                 \
   }
-#define REPORT_UNEQUAL_RAW_PTR_COUNTERS(result, CounterClassImpl)             \
-  {                                                                           \
-    result = true;                                                            \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrap_raw_ptr_cnt, CounterClassImpl)        \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(release_wrapped_ptr_cnt, CounterClassImpl) \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_dereference_cnt, CounterClassImpl) \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_extraction_cnt, CounterClassImpl)  \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_comparison_cnt, CounterClassImpl)  \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_swap_cnt, CounterClassImpl)    \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_less_cnt, CounterClassImpl)    \
-    REPORT_UNEQUAL_RAW_PTR_COUNTER(pointer_to_member_operator_cnt,            \
-                                   CounterClassImpl)                          \
+#define REPORT_UNEQUAL_RAW_PTR_COUNTERS(result, CounterClassImpl)              \
+  {                                                                            \
+    result = true;                                                             \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrap_raw_ptr_cnt, CounterClassImpl)         \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(release_wrapped_ptr_cnt, CounterClassImpl)  \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_dereference_cnt, CounterClassImpl)  \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_extraction_cnt, CounterClassImpl)   \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_comparison_cnt, CounterClassImpl)   \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_swap_cnt, CounterClassImpl)     \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_less_cnt, CounterClassImpl)     \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(pointer_to_member_operator_cnt,             \
+                                   CounterClassImpl)                           \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrap_raw_ptr_for_dup_cnt, CounterClassImpl) \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_duplication_cnt, CounterClassImpl)  \
   }
 
 // Matcher used with `CountingRawPtr`. Provides slightly shorter
@@ -1369,6 +1373,37 @@ TEST_F(RawPtrTest, WorksWithVariant) {
   vary = &x;
   ASSERT_EQ(1u, vary.index());
   EXPECT_EQ(&x, absl::get<raw_ptr<int>>(vary));
+}
+
+TEST_F(RawPtrTest, CrossKindConversions) {
+  int x = 123;
+  CountingRawPtr<int> ptr1 = &x;
+
+  RawPtrCountingImpl::ClearCounters();
+  RawPtrCountingMayDangleImpl::ClearCounters();
+
+  CountingRawPtrMayDangle<int> ptr2(ptr1);
+
+  EXPECT_THAT((CountingRawPtrExpectations{.get_for_dereference_cnt = 0,
+                                          .get_for_extraction_cnt = 0,
+                                          .get_for_duplication_cnt = 1}),
+              CountingRawPtrHasCounts());
+  EXPECT_THAT((CountingRawPtrExpectations{.wrap_raw_ptr_cnt = 0,
+                                          .wrap_raw_ptr_for_dup_cnt = 1}),
+              MayDangleCountingRawPtrHasCounts());
+
+  RawPtrCountingImpl::ClearCounters();
+  RawPtrCountingMayDangleImpl::ClearCounters();
+
+  CountingRawPtr<int> ptr3(ptr2);
+
+  EXPECT_THAT((CountingRawPtrExpectations{.get_for_dereference_cnt = 0,
+                                          .get_for_extraction_cnt = 0,
+                                          .get_for_duplication_cnt = 1}),
+              MayDangleCountingRawPtrHasCounts());
+  EXPECT_THAT((CountingRawPtrExpectations{.wrap_raw_ptr_cnt = 0,
+                                          .wrap_raw_ptr_for_dup_cnt = 1}),
+              CountingRawPtrHasCounts());
 }
 
 }  // namespace
