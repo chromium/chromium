@@ -266,15 +266,16 @@ ExtractionError ExtractResponseRecords(
     out_aliases->clear();
     for (const auto& alias : aliases) {
       std::string canonicalized_alias =
-          dns_alias_utility::ValidateAndCanonicalizeAlias(alias.second);
-      if (!canonicalized_alias.empty())
+          dns_names_util::UrlCanonicalizeNameIfAble(alias.second);
+      if (dns_names_util::IsValidDnsRecordName(canonicalized_alias)) {
         out_aliases->insert(std::move(canonicalized_alias));
+      }
     }
-    std::string canonicalized_query =
-        dns_alias_utility::ValidateAndCanonicalizeAlias(
-            response.GetSingleDottedName());
-    if (!canonicalized_query.empty())
+    std::string canonicalized_query = dns_names_util::UrlCanonicalizeNameIfAble(
+        response.GetSingleDottedName());
+    if (dns_names_util::IsValidDnsRecordName(canonicalized_query)) {
       out_aliases->insert(std::move(canonicalized_query));
+    }
   }
 
   return ExtractionError::kOk;

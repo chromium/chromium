@@ -14,9 +14,13 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
+#include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon.h"
+#include "url/url_canon_stdstring.h"
 
 namespace net::dns_names_util {
 
@@ -24,6 +28,14 @@ bool IsValidDnsName(base::StringPiece dotted_form_name) {
   return DottedNameToNetwork(dotted_form_name,
                              /*require_valid_internet_hostname=*/false)
       .has_value();
+}
+
+bool IsValidDnsRecordName(base::StringPiece dotted_form_name) {
+  IPAddress ip_address;
+  return IsValidDnsName(dotted_form_name) &&
+         !HostStringIsLocalhost(dotted_form_name) &&
+         !ip_address.AssignFromIPLiteral(dotted_form_name) &&
+         !ParseURLHostnameToAddress(dotted_form_name, &ip_address);
 }
 
 // Based on DJB's public domain code.
@@ -156,6 +168,21 @@ absl::optional<std::string> NetworkToDottedName(base::BigEndianReader& reader,
   // not count against the limit.
 
   return ret;
+}
+
+std::string UrlCanonicalizeNameIfAble(base::StringPiece name) {
+  std::string canonicalized;
+  url::StdStringCanonOutput output(&canonicalized);
+  url::CanonHostInfo host_info;
+  url::CanonicalizeHostVerbose(name.data(), url::Component(0, name.size()),
+                               &output, &host_info);
+
+  if (host_info.family == url::CanonHostInfo::Family::BROKEN) {
+    return std::string(name);
+  }
+
+  output.Complete();
+  return canonicalized;
 }
 
 }  // namespace net::dns_names_util

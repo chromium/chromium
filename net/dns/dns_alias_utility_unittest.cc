@@ -24,17 +24,26 @@ TEST(DnsAliasUtilityTest, FixUpDnsAliases) {
       "0.0.1.2",   "a.b.com", "c.org",     "123.tld",    "d-e.net",
       "f__g",      "h"};
   const std::set<std::string> kExpectedFixedUpAliases = {
-      "a.com", "test",    "-www.e.com", "alias.com", "s%20.de",   "www-1",
-      "2a",    "a-",      "b..net",     "b_o.org",   "a%2Cb%2Cc", "a.b.com",
-      "c.org", "123.tld", "d-e.net",    "f__g",      "h"};
+      "a.com",   "test",    "-www.e.com", "alias.com", "s%20.de", "www-1",
+      "2a",      "a-",      "b_o.org",    "a%2Cb%2Cc", "a.b.com", "c.org",
+      "123.tld", "d-e.net", "f__g",       "h"};
 
   std::set<std::string> fixed_up_aliases =
       dns_alias_utility::FixUpDnsAliases(kAliases);
   EXPECT_EQ(kExpectedFixedUpAliases, fixed_up_aliases);
 
-  std::string long_unqualified_alias(dns_protocol::kMaxCharNameLength + 1, 'x');
-  std::string long_qualified_alias(dns_protocol::kMaxCharNameLength, 'x');
-  long_qualified_alias += ".";
+  std::string long_unqualified_alias =
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcd";
+  std::string long_qualified_alias =
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abc.";
   std::set<std::string> set_with_long_aliases(
       {long_unqualified_alias, long_qualified_alias});
 

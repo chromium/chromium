@@ -736,13 +736,14 @@ class HostResolverManager::RequestImpl
     if (endpoint_results_.has_value()) {
       DCHECK(results_.value().aliases());
       fixed_up_dns_alias_results_ = *results_.value().aliases();
+
+      // Skip fixups for `include_canonical_name` requests. Just use the
+      // canonical name exactly as it was received from the system resolver.
       if (parameters().include_canonical_name) {
         DCHECK_LE(fixed_up_dns_alias_results_.value().size(), 1u);
       } else {
-        // Expect `aliases()` results to already be fixed up.
-        DCHECK(dns_alias_utility::FixUpDnsAliases(
-                   fixed_up_dns_alias_results_.value()) ==
-               fixed_up_dns_alias_results_.value());
+        fixed_up_dns_alias_results_ = dns_alias_utility::FixUpDnsAliases(
+            fixed_up_dns_alias_results_.value());
       }
 
       legacy_address_results_ = HostResolver::EndpointResultToAddressList(
@@ -2243,10 +2244,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     auto aliases = std::set<std::string>(addr_list.dns_aliases().begin(),
                                          addr_list.dns_aliases().end());
-
-    if (!(key_.flags & HOST_RESOLVER_CANONNAME)) {
-      aliases = dns_alias_utility::FixUpDnsAliases(aliases);
-    }
 
     // Source unknown because the system resolver could have gotten it from a
     // hosts file, its own cache, a DNS lookup or somewhere else.

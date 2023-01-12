@@ -643,7 +643,7 @@ TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectTooLongCompleteName) {
   EXPECT_EQ(NetworkToDottedName(reader), absl::nullopt);
 }
 
-TEST(DnsNamesUtilTest, IsValidDnsName) {
+TEST(DnsNamesUtilTest, ValidDnsNames) {
   constexpr base::StringPiece kGoodHostnames[] = {
       "www.noodles.blorg",   "1www.noodles.blorg",    "www.2noodles.blorg",
       "www.n--oodles.blorg", "www.noodl_es.blorg",    "www.no-_odles.blorg",
@@ -654,7 +654,140 @@ TEST(DnsNamesUtilTest, IsValidDnsName) {
 
   for (base::StringPiece good_hostname : kGoodHostnames) {
     EXPECT_TRUE(IsValidDnsName(good_hostname));
+    EXPECT_TRUE(IsValidDnsRecordName(good_hostname));
   }
+}
+
+TEST(DnsNamesUtilTest, EmptyNotValidDnsName) {
+  EXPECT_FALSE(IsValidDnsName(""));
+  EXPECT_FALSE(IsValidDnsRecordName(""));
+}
+
+TEST(DnsNamesUtilTest, EmptyLabelNotValidDnsName) {
+  EXPECT_FALSE(IsValidDnsName("www..test"));
+  EXPECT_FALSE(IsValidDnsName(".foo.test"));
+
+  EXPECT_FALSE(IsValidDnsRecordName("www..test"));
+  EXPECT_FALSE(IsValidDnsRecordName(".foo.test"));
+}
+
+TEST(DnsNameUtilTest, LongLabelsInValidDnsNames) {
+  EXPECT_TRUE(IsValidDnsName(
+      "z23456789a123456789a123456789a123456789a123456789a123456789a123"));
+  EXPECT_TRUE(IsValidDnsName(
+      "z23456789a123456789a123456789a123456789a123456789a123456789a123."));
+
+  EXPECT_TRUE(IsValidDnsRecordName(
+      "z23456789a123456789a123456789a123456789a123456789a123456789a123"));
+  EXPECT_TRUE(IsValidDnsRecordName(
+      "z23456789a123456789a123456789a123456789a123456789a123456789a123."));
+}
+
+TEST(DnsNameUtilTest, TooLongLabelsInInvalidDnsNames) {
+  EXPECT_FALSE(IsValidDnsName(
+      "123456789a123456789a123456789a123456789a123456789a123456789a1234"));
+  EXPECT_FALSE(IsValidDnsName(
+      "z23456789a123456789a123456789a123456789a123456789a123456789a1234."));
+
+  EXPECT_FALSE(IsValidDnsRecordName(
+      "z23456789a123456789a123456789a123456789a123456789a123456789a1234"));
+  EXPECT_FALSE(IsValidDnsRecordName(
+      "z23456789a123456789a123456789a123456789a123456789a123456789a1234."));
+}
+
+TEST(DnsNameUtilTest, LongValidDnsNames) {
+  EXPECT_TRUE(IsValidDnsName(
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abc"));
+  EXPECT_TRUE(IsValidDnsName(
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abc."));
+
+  EXPECT_TRUE(IsValidDnsRecordName(
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abc"));
+  EXPECT_TRUE(IsValidDnsRecordName(
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abc."));
+}
+
+TEST(DnsNameUtilTest, TooLongInalidDnsNames) {
+  EXPECT_FALSE(IsValidDnsName(
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcd"));
+  EXPECT_FALSE(IsValidDnsName(
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcd."));
+
+  EXPECT_FALSE(IsValidDnsRecordName(
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcd"));
+  EXPECT_FALSE(IsValidDnsRecordName(
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi.abcdefghi."
+      "abcdefghi.abcd."));
+}
+
+TEST(DnsNameUtilTest, LocalhostNotValidDnsRecordName) {
+  EXPECT_TRUE(IsValidDnsName("localhost"));
+  EXPECT_FALSE(IsValidDnsRecordName("localhost"));
+}
+
+TEST(DnsNameUtilTest, IpAddressNotValidDnsRecordName) {
+  EXPECT_TRUE(IsValidDnsName("1.2.3.4"));
+  EXPECT_FALSE(IsValidDnsRecordName("1.2.3.4"));
+
+  EXPECT_TRUE(IsValidDnsName("[2001:4860:4860::8888]"));
+  EXPECT_FALSE(IsValidDnsRecordName("[2001:4860:4860::8888]"));
+
+  EXPECT_TRUE(IsValidDnsName("2001:4860:4860::8888"));
+  EXPECT_FALSE(IsValidDnsRecordName("2001:4860:4860::8888"));
+}
+
+TEST(DnsUtilTest, CanonicalizeNames) {
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("GOOGLE.test"), "google.test");
+
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("g{oo}gle.test"), "g%7Boo%7Dgle.test");
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("G{OO}GLE.test"), "g%7Boo%7Dgle.test");
+
+  // gügle.test
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("g\u00FCgle.test"), "xn--ggle-0ra.test");
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("G\u00fcGLE.test"), "xn--ggle-0ra.test");
+}
+
+TEST(DnsUtilTest, IgnoreUncanonicalizeableNames) {
+  EXPECT_EQ(UrlCanonicalizeNameIfAble(""), "");
+
+  // Invalid UTF8 character.
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("g\x00FCgle.test"), "g\x00fcgle.test");
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("G\x00fcGLE.test"), "G\x00fcGLE.test");
+
+  // Disallowed ASCII character.
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("google\n.test"), "google\n.test");
+  EXPECT_EQ(UrlCanonicalizeNameIfAble("GOOGLE\n.test"), "GOOGLE\n.test");
 }
 
 }  // namespace

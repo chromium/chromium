@@ -13,12 +13,6 @@
 
 namespace net::dns_alias_utility {
 
-// Validates that `alias` represents a valid DNS alias name, e.g. CNAME, and
-// then URL-canonicalizes the name. Returns empty string if not valid or unable
-// to canonicalize.
-NET_EXPORT_PRIVATE std::string ValidateAndCanonicalizeAlias(
-    base::StringPiece alias);
-
 // Returns a fixed up set of canonicalized aliases (i.e. aliases that are
 // written as hostnames for canonical URLs). The set is stripped of "localhost",
 // IP addresses, duplicates, the empty string, strings longer than

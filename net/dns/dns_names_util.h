@@ -34,6 +34,13 @@ namespace net::dns_names_util {
 // validation, see IsCanonicalizedHostCompliant().
 NET_EXPORT_PRIVATE bool IsValidDnsName(base::StringPiece dotted_form_name);
 
+// Like IsValidDnsName() but further validates `dotted_form_name` is not an IP
+// address (with or without surrounding []) or localhost, as such names would
+// not be suitable for DNS queries or for use as DNS record names or alias
+// target names.
+NET_EXPORT_PRIVATE bool IsValidDnsRecordName(
+    base::StringPiece dotted_form_name);
+
 // Convert a dotted-form DNS name to network wire format. Returns nullopt if
 // input is not valid for conversion (equivalent validity can be checked using
 // IsValidDnsName()). If `require_valid_internet_hostname` is true, also returns
@@ -62,6 +69,12 @@ NET_EXPORT_PRIVATE absl::optional<std::string> NetworkToDottedName(
 NET_EXPORT_PRIVATE absl::optional<std::string> NetworkToDottedName(
     base::BigEndianReader& reader,
     bool require_complete = false);
+
+// Canonicalize `name` as a URL hostname if able. If unable (typically if a name
+// is not a valid URL hostname), returns `name` without change because such a
+// name could still be a valid DNS name.
+NET_EXPORT_PRIVATE std::string UrlCanonicalizeNameIfAble(
+    base::StringPiece name);
 
 // std::map-compliant Compare for two domain names. Works for any valid
 // dotted-format or network-wire-format names. Returns true iff `lhs` is before
