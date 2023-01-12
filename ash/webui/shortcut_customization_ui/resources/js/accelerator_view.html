@@ -30,7 +30,7 @@
   }
 </style>
 
-<div id="container" class="flex-row" tabindex="0">
+<div id="container" class="flex-row" tabindex$="[[getTabIndex()]]">
   <template is="dom-if" if="[[!showEditView(viewState)]]">
     <div id="accelerator-keys">
       <template is="dom-repeat" items="[[modifiers]]">

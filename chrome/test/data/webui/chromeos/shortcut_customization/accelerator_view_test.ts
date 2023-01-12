@@ -232,4 +232,39 @@ suite('acceleratorViewTest', function() {
     assertTrue(lockItemContainer.hidden);
   });
 
+  test('ElementFocusableWhenCustomizationEnabled', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+
+    viewElement.acceleratorInfo = acceleratorInfo;
+
+    await flushTasks();
+    const containerElement =
+        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    assertEquals(0, containerElement.tabIndex);
+  });
+
+  test('ElementNotFocusableWhenCustomizationDisabled', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+
+    viewElement.acceleratorInfo = acceleratorInfo;
+
+    await flushTasks();
+    const containerElement =
+        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    assertEquals(-1, containerElement.tabIndex);
+  });
 });

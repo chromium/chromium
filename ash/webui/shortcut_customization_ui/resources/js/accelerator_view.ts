@@ -499,6 +499,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.sourceIsLocked;
   }
 
+  /**
+   * Determines whether accelerator items should be tab-focusable.
+   */
+  private getTabIndex(): number {
+    // If customization is disabled, this element should not be tab-focusable.
+    return isCustomizationDisabled() ? -1 : 0;
+  }
+
   static get template(): HTMLTemplateElement {
     return getTemplate();
   }
