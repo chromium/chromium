@@ -258,15 +258,6 @@ void NotificationCenterView::OnNotificationSlidOut() {
 }
 
 void NotificationCenterView::ListPreferredSizeChanged() {
-  // TODO(b/252888173): With QsRevamp enabled size changes for the notification
-  // center should be handled by an AnimationBuilder. The previous
-  // implementation uses a layout based animation whenever
-  // `PreferredSizeChanged()` is called which results in choppy performance and
-  // jank.
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
-
   UpdateVisibility();
   PreferredSizeChanged();
   SetMaxHeight(available_height_);
@@ -499,7 +490,9 @@ void NotificationCenterView::UpdateVisibility() {
   // With QsRevamp enabled the visibility of the bubble will be tied to the
   // `NotificationCenterTray` so we do not need to make any visibility changes
   // here.
-  DCHECK(!features::IsQsRevampEnabled());
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
 
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();

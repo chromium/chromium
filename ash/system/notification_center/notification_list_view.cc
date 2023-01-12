@@ -76,8 +76,9 @@ void SetupThroughputTrackerForAnimationSmoothness(
     absl::optional<ui::ThroughputTracker>& tracker,
     const char* histogram_name) {
   // `widget` may not exist in tests.
-  if (!widget)
+  if (!widget) {
     return;
+  }
 
   tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
   tracker->Start(ash::metrics_util::ForSmoothness(
@@ -115,8 +116,9 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   base::TimeDelta GetBoundsAnimationDuration() const {
     auto* notification = MessageCenter::Get()->FindNotificationById(
         message_view()->notification_id());
-    if (!notification)
+    if (!notification) {
       return base::Milliseconds(0);
+    }
     return message_view()->GetBoundsAnimationDuration(*notification);
   }
 
@@ -124,8 +126,9 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   // at the top or the bottom. If `force_update` is true, ignore previous states
   // and always update the border.
   void UpdateBorder(bool is_top, bool is_bottom, bool force_update) {
-    if (is_top_ == is_top && is_bottom_ == is_bottom && !force_update)
+    if (is_top_ == is_top && is_bottom_ == is_bottom && !force_update) {
       return;
+    }
     is_top_ = is_top;
     is_bottom_ = is_bottom;
 
@@ -166,8 +169,9 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
   // Collapses the notification if its state haven't changed manually by a user.
   void Collapse() {
-    if (!message_view_->IsManuallyExpandedOrCollapsed())
+    if (!message_view_->IsManuallyExpandedOrCollapsed()) {
       message_view_->SetExpanded(false);
+    }
   }
 
   // Check if the notification is manually expanded / collapsed before and
@@ -233,25 +237,29 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override {
     // If we've already been removed, ignore new child size changes.
-    if (is_removed_)
+    if (is_removed_) {
       return;
+    }
 
     // PreferredSizeChanged will trigger
     // NotificationListView::ChildPreferredSizeChanged.
     base::ScopedClosureRunner defer_preferred_size_changed(base::BindOnce(
         &MessageViewContainer::PreferredSizeChanged, base::Unretained(this)));
 
-    if (!features::IsNotificationsRefreshEnabled())
+    if (!features::IsNotificationsRefreshEnabled()) {
       return;
+    }
 
     // Ignore non user triggered expand/collapses.
-    if (loading_expanded_state_)
+    if (loading_expanded_state_) {
       return;
+    }
 
     auto* notification = MessageCenter::Get()->FindNotificationById(
         message_view()->notification_id());
-    if (!notification)
+    if (!notification) {
       return;
+    }
 
     needs_bounds_animation_ = true;
   }
@@ -293,28 +301,32 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
     auto list_child_views = list_view_->children();
 
     above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
-    if (above_view_)
+    if (above_view_) {
       above_view_->message_view()->UpdateCornerRadius(
           kMessageCenterNotificationInnerCornerRadius,
           kMessageCenterNotificationTopBottomCornerRadius);
+    }
 
     below_view_ = (index == list_child_views.size() - 1)
                       ? nullptr
                       : AsMVC(list_child_views[index + 1]);
-    if (below_view_)
+    if (below_view_) {
       below_view_->message_view()->UpdateCornerRadius(
           kMessageCenterNotificationTopBottomCornerRadius,
           kMessageCenterNotificationInnerCornerRadius);
+    }
   }
 
   void OnSlideEnded(const std::string& notification_id) override {
     if (!features::IsNotificationsRefreshEnabled() ||
-        notification_id != GetNotificationId())
+        notification_id != GetNotificationId()) {
       return;
+    }
 
     absl::optional<size_t> index = list_view_->GetIndexOf(this);
-    if (!index.has_value())
+    if (!index.has_value()) {
       return;
+    }
     auto list_child_views = list_view_->children();
     above_view_ = (index == size_t{0})
                       ? nullptr
@@ -325,10 +337,12 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
     // Reset the corner radius of views to their normal state.
     ResetCornerRadius();
-    if (above_view_ && !above_view_->is_slid_out())
+    if (above_view_ && !above_view_->is_slid_out()) {
       above_view_->ResetCornerRadius();
-    if (below_view_ && !below_view_->is_slid_out())
+    }
+    if (below_view_ && !below_view_->is_slid_out()) {
       below_view_->ResetCornerRadius();
+    }
   }
 
   void OnPreSlideOut(const std::string& notification_id) override {
@@ -435,8 +449,9 @@ NotificationListView::NotificationListView(
 NotificationListView::~NotificationListView() {
   if (!features::IsQsRevampEnabled()) {
     model_->ClearNotificationChanges();
-    for (auto* view : children())
+    for (auto* view : children()) {
       AsMVC(view)->StoreExpandedState(model_.get());
+    }
   }
 }
 
@@ -452,8 +467,17 @@ void NotificationListView::Init() {
     // `UnifiedSystemTray` and  notifications are being completely separated
     // from it. Implement a way to remember collase/expand state for
     // notifications across popups and notification center.
-    if (!features::IsQsRevampEnabled())
+    if (!features::IsQsRevampEnabled()) {
       view->LoadExpandedState(model_.get(), is_latest);
+    }
+
+    // TODO(b/252876795): This is a workaround to match the pre-existing
+    // behavior, need to fully implement this to remember expanded states across
+    // popups and the message center.
+    if (features::IsQsRevampEnabled() && is_latest) {
+      view->message_view()->SetExpanded(
+          view->message_view()->IsAutoExpandingAllowed());
+    }
 
     // The insertion order for notifications will be reversed when
     // is_notifications_refresh_enabled_.
@@ -468,8 +492,10 @@ void NotificationListView::Init() {
 }
 
 void NotificationListView::ClearAllWithAnimation() {
-  if (state_ == State::CLEAR_ALL_STACKED || state_ == State::CLEAR_ALL_VISIBLE)
+  if (state_ == State::CLEAR_ALL_STACKED ||
+      state_ == State::CLEAR_ALL_VISIBLE) {
     return;
+  }
   ResetBounds();
 
   UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.NotificationsRemovedByClearAll",
@@ -490,8 +516,9 @@ void NotificationListView::ClearAllWithAnimation() {
 
   state_ = State::CLEAR_ALL_STACKED;
   UpdateClearAllAnimation();
-  if (state_ != State::IDLE)
+  if (state_ != State::IDLE) {
     StartAnimation();
+  }
 }
 
 std::vector<message_center::Notification*>
@@ -502,8 +529,9 @@ NotificationListView::GetAllNotifications() const {
     // center.
     auto* notification = MessageCenter::Get()->FindVisibleNotificationById(
         AsMVC(view)->GetNotificationId());
-    if (notification)
+    if (notification) {
       notifications.insert(notifications.begin(), notification);
+    }
   }
   return notifications;
 }
@@ -526,8 +554,9 @@ NotificationListView::GetNotificationsAboveY(int y_offset) const {
     if (bottom_limit <= y_offset) {
       auto* notification = MessageCenter::Get()->FindVisibleNotificationById(
           AsMVC(view)->GetNotificationId());
-      if (notification)
+      if (notification) {
         notifications.insert(notifications.begin(), notification);
+      }
     }
   }
   return notifications;
@@ -542,8 +571,9 @@ NotificationListView::GetNotificationsBelowY(int y_offset) const {
     if (bottom_limit >= y_offset) {
       auto* notification = MessageCenter::Get()->FindVisibleNotificationById(
           AsMVC(view)->GetNotificationId());
-      if (notification)
+      if (notification) {
         notifications.push_back(notification);
+      }
     }
   }
   return notifications;
@@ -555,8 +585,9 @@ std::vector<std::string> NotificationListView::GetNotificationIdsAboveY(
   for (views::View* view : children()) {
     const int bottom_limit =
         view->bounds().y() + kNotificationIconStackThreshold;
-    if (bottom_limit > y_offset)
+    if (bottom_limit > y_offset) {
       continue;
+    }
     notifications.insert(notifications.begin(),
                          AsMVC(view)->GetNotificationId());
   }
@@ -568,8 +599,9 @@ std::vector<std::string> NotificationListView::GetNotificationIdsBelowY(
   std::vector<std::string> notifications;
   for (views::View* view : children()) {
     const int top_of_notification = view->bounds().y();
-    if (top_of_notification < y_offset)
+    if (top_of_notification < y_offset) {
       continue;
+    }
     notifications.insert(notifications.begin(),
                          AsMVC(view)->GetNotificationId());
   }
@@ -583,8 +615,9 @@ int NotificationListView::GetTotalNotificationCount() const {
 int NotificationListView::GetTotalPinnedNotificationCount() const {
   int count = 0;
   for (auto* child : children()) {
-    if (AsMVC(child)->IsPinned())
+    if (AsMVC(child)->IsPinned()) {
       count++;
+    }
   }
   return count;
 }
@@ -595,8 +628,9 @@ bool NotificationListView::IsAnimating() const {
 
 bool NotificationListView::IsAnimatingExpandOrCollapseContainer(
     const views::View* view) const {
-  if (!view || !expand_or_collapsing_container_)
+  if (!view || !expand_or_collapsing_container_) {
     return false;
+  }
 
   DCHECK_EQ(kMessageViewContainerClassName, view->GetClassName())
       << view->GetClassName() << " is not a " << kMessageViewContainerClassName;
@@ -605,8 +639,9 @@ bool NotificationListView::IsAnimatingExpandOrCollapseContainer(
 }
 
 void NotificationListView::ChildPreferredSizeChanged(views::View* child) {
-  if (ignore_size_change_)
+  if (ignore_size_change_) {
     return;
+  }
 
   // No State::EXPAND_OR_COLLAPSE animation in the old UI.
   if (!features::IsNotificationsRefreshEnabled()) {
@@ -632,16 +667,18 @@ void NotificationListView::ChildPreferredSizeChanged(views::View* child) {
     return;
   }
 
-  if (state_ == State::EXPAND_OR_COLLAPSE)
+  if (state_ == State::EXPAND_OR_COLLAPSE) {
     return;
+  }
 
   ResetBounds();
 }
 
 void NotificationListView::PreferredSizeChanged() {
   views::View::PreferredSizeChanged();
-  if (message_center_view_)
+  if (message_center_view_) {
     message_center_view_->ListPreferredSizeChanged();
+  }
 }
 
 void NotificationListView::Layout() {
@@ -659,8 +696,9 @@ void NotificationListView::Layout() {
 gfx::Rect NotificationListView::GetNotificationBounds(
     const std::string& notification_id) const {
   const MessageViewContainer* child = nullptr;
-  if (!notification_id.empty())
+  if (!notification_id.empty()) {
     child = GetNotificationById(notification_id);
+  }
   return child ? child->bounds() : GetLastNotificationBounds();
 }
 
@@ -677,8 +715,9 @@ gfx::Rect NotificationListView::GetNotificationBoundsBelowY(
 }
 
 gfx::Size NotificationListView::CalculatePreferredSize() const {
-  if (state_ == State::IDLE)
+  if (state_ == State::IDLE) {
     return gfx::Size(message_view_width_, target_height_);
+  }
 
   return gfx::Size(message_view_width_,
                    gfx::Tween::IntValueBetween(GetCurrentValue(), start_height_,
@@ -697,8 +736,9 @@ NotificationListView::GetMessageViewForNotificationId(const std::string& id) {
     return AsMVC(child)->message_view()->notification_id();
   });
 
-  if (it == children().end())
+  if (it == children().end()) {
     return nullptr;
+  }
   return AsMVC(*it)->message_view();
 }
 
@@ -707,8 +747,9 @@ void NotificationListView::ConvertNotificationViewToGroupedNotificationView(
     const std::string& new_grouped_notification_id) {
   auto* message_view =
       GetMessageViewForNotificationId(ungrouped_notification_id);
-  if (message_view)
+  if (message_view) {
     message_view->set_notification_id(new_grouped_notification_id);
+  }
 }
 
 void NotificationListView::ConvertGroupedNotificationViewToNotificationView(
@@ -720,12 +761,14 @@ void NotificationListView::ConvertGroupedNotificationViewToNotificationView(
 
 void NotificationListView::OnNotificationAdded(const std::string& id) {
   auto* notification = MessageCenter::Get()->FindVisibleNotificationById(id);
-  if (!notification)
+  if (!notification) {
     return;
+  }
 
   // A group child notification should be added to its parent's message view.
-  if (is_notifications_refresh_enabled_ && notification->group_child())
+  if (is_notifications_refresh_enabled_ && notification->group_child()) {
     return;
+  }
 
   InterruptClearAll();
 
@@ -751,8 +794,9 @@ void NotificationListView::OnNotificationAdded(const std::string& id) {
     auto* child_notification =
         MessageCenter::Get()->FindVisibleNotificationById(
             message_view->GetNotificationId());
-    if (!child_notification)
+    if (!child_notification) {
       break;
+    }
 
     // The insertion order for notifications will be reversed when
     // is_notifications_refresh_enabled_.
@@ -776,14 +820,16 @@ void NotificationListView::OnNotificationAdded(const std::string& id) {
 
 void NotificationListView::OnNotificationRemoved(const std::string& id,
                                                  bool by_user) {
-  if (ignore_notification_remove_)
+  if (ignore_notification_remove_) {
     return;
+  }
 
   // The corresponding MessageView may have already been deleted after being
   // manually slid out.
   auto* child = GetNotificationById(id);
-  if (!child)
+  if (!child) {
     return;
+  }
 
   InterruptClearAll();
   ResetBounds();
@@ -792,16 +838,18 @@ void NotificationListView::OnNotificationRemoved(const std::string& id,
 
   // If the MessageView is slid out, then do nothing here. The MOVE_DOWN
   // animation will be started in OnNotificationSlidOut().
-  if (!child->is_slid_out())
+  if (!child->is_slid_out()) {
     child->SlideOutAndClose();
+  }
 }
 
 void NotificationListView::OnNotificationSlidOut() {
   DeleteRemovedNotifications();
 
   // |message_center_view_| can be null in tests.
-  if (message_center_view_)
+  if (message_center_view_) {
     message_center_view_->OnNotificationSlidOut();
+  }
 
   state_ = State::MOVE_DOWN;
   UpdateBounds();
@@ -810,16 +858,18 @@ void NotificationListView::OnNotificationSlidOut() {
 
 void NotificationListView::OnNotificationUpdated(const std::string& id) {
   auto* notification = MessageCenter::Get()->FindVisibleNotificationById(id);
-  if (!notification)
+  if (!notification) {
     return;
+  }
 
   InterruptClearAll();
 
   // The corresponding MessageView may have been slid out and deleted, so just
   // ignore this update as the notification will soon be deleted.
   auto* child = GetNotificationById(id);
-  if (!child)
+  if (!child) {
     return;
+  }
 
   child->UpdateWithNotification(*notification);
   ResetBounds();
@@ -830,8 +880,9 @@ void NotificationListView::OnSlideStarted(const std::string& notification_id) {
   // controls.
   for (auto* child : children()) {
     auto* view = AsMVC(child);
-    if (view->GetNotificationId() != notification_id)
+    if (view->GetNotificationId() != notification_id) {
       view->CloseSwipeControl();
+    }
   }
 }
 
@@ -883,14 +934,16 @@ void NotificationListView::AnimationEnded(const gfx::Animation* animation) {
 
   UpdateBorders(/*force_update=*/false);
 
-  if (state_ != State::IDLE)
+  if (state_ != State::IDLE) {
     StartAnimation();
+  }
 }
 
 void NotificationListView::AnimationProgressed(
     const gfx::Animation* animation) {
-  if (state_ == State::EXPAND_OR_COLLAPSE)
+  if (state_ == State::EXPAND_OR_COLLAPSE) {
     expand_or_collapsing_container_->TriggerPreferredSizeChangedForAnimation();
+  }
 
   PreferredSizeChanged();
 }
@@ -915,12 +968,14 @@ void NotificationListView::ConfigureMessageView(
   auto* notification = MessageCenter::Get()->FindNotificationById(
       message_view->notification_id());
   // `notification` may not exist in tests.
-  if (notification && !notification->group_child())
+  if (notification && !notification->group_child()) {
     message_view->SetIsNested();
+  }
   message_view_multi_source_observation_.AddObservation(message_view);
   // `message_center_view_` may not exist in tests.
-  if (message_center_view_)
+  if (message_center_view_) {
     message_center_view_->ConfigureMessageView(message_view);
+  }
 }
 
 std::vector<message_center::Notification*>
@@ -969,16 +1024,18 @@ NotificationListView::GetNextRemovableNotification() {
 
 void NotificationListView::CollapseAllNotifications() {
   base::AutoReset<bool> auto_reset(&ignore_size_change_, true);
-  for (auto* child : children())
+  for (auto* child : children()) {
     AsMVC(child)->Collapse();
+  }
 }
 
 void NotificationListView::UpdateBorders(bool force_update) {
   // The top notification is drawn with rounded corners when the stacking bar
   // is not shown.
   bool is_top = state_ != State::MOVE_DOWN;
-  if (!is_notifications_refresh_enabled_)
+  if (!is_notifications_refresh_enabled_) {
     is_top = is_top && children().size() == 1;
+  }
 
   for (auto* child : children()) {
     AsMVC(child)->UpdateBorder(is_top, child == children().back(),
@@ -997,8 +1054,9 @@ void NotificationListView::UpdateBounds() {
     const int height = view->GetHeightForWidth(message_view_width_);
     const int direction = view->GetSlideDirection();
 
-    if (y > 0 && is_notifications_refresh_enabled_)
+    if (y > 0 && is_notifications_refresh_enabled_) {
       y += kMessageListNotificationSpacing;
+    }
 
     view->set_start_bounds(view->target_bounds());
     view->set_target_bounds(view->is_removed()
@@ -1017,28 +1075,33 @@ void NotificationListView::ResetBounds() {
   UpdateBounds();
 
   state_ = State::IDLE;
-  if (animation_->is_animating())
+  if (animation_->is_animating()) {
     animation_->End();
-  else
+  } else {
     PreferredSizeChanged();
+  }
 }
 
 void NotificationListView::InterruptClearAll() {
-  if (state_ != State::CLEAR_ALL_STACKED && state_ != State::CLEAR_ALL_VISIBLE)
+  if (state_ != State::CLEAR_ALL_STACKED &&
+      state_ != State::CLEAR_ALL_VISIBLE) {
     return;
+  }
 
   for (auto* child : children()) {
     auto* view = AsMVC(child);
-    if (!view->IsPinned())
+    if (!view->IsPinned()) {
       view->set_is_removed();
+    }
   }
 
   DeleteRemovedNotifications();
 }
 
 void NotificationListView::DeleteRemovedNotifications() {
-  if (!features::IsQsRevampEnabled())
+  if (!features::IsQsRevampEnabled()) {
     DCHECK(model_);
+  }
 
   views::View::Views removed_views;
   base::ranges::copy_if(children(), std::back_inserter(removed_views),
@@ -1047,8 +1110,9 @@ void NotificationListView::DeleteRemovedNotifications() {
   {
     base::AutoReset<bool> auto_reset(&is_deleting_removed_notifications_, true);
     for (auto* view : removed_views) {
-      if (!features::IsQsRevampEnabled())
+      if (!features::IsQsRevampEnabled()) {
         model_->RemoveNotificationExpanded(AsMVC(view)->GetNotificationId());
+      }
       message_view_multi_source_observation_.RemoveObservation(
           AsMVC(view)->message_view());
       delete view;
@@ -1106,8 +1170,9 @@ void NotificationListView::UpdateClearAllAnimation() {
          state_ == State::CLEAR_ALL_VISIBLE);
 
   auto* view = GetNextRemovableNotification();
-  if (view)
+  if (view) {
     view->set_is_removed();
+  }
 
   if (state_ == State::CLEAR_ALL_STACKED) {
     const auto non_visible_notification_ids =
@@ -1117,8 +1182,9 @@ void NotificationListView::UpdateClearAllAnimation() {
       // window.
       for (const auto& id : non_visible_notification_ids) {
         auto* message_view_container = GetNotificationById(id);
-        if (message_view_container)
+        if (message_view_container) {
           message_view_container->set_is_removed();
+        }
       }
 
       DeleteRemovedNotifications();
@@ -1137,10 +1203,11 @@ void NotificationListView::UpdateClearAllAnimation() {
   if (state_ == State::CLEAR_ALL_VISIBLE) {
     UpdateBounds();
 
-    if (view || start_height_ != target_height_)
+    if (view || start_height_ != target_height_) {
       state_ = State::CLEAR_ALL_VISIBLE;
-    else
+    } else {
       state_ = State::IDLE;
+    }
   }
 }
 
