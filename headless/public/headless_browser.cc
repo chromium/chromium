@@ -30,10 +30,8 @@ constexpr gfx::FontRenderParams::Hinting kDefaultFontRenderHinting =
 
 }  // namespace
 
-Options::Options(int argc, const char** argv)
-    : argc(argc),
-      argv(argv),
-      user_agent(content::BuildUserAgentFromProduct(
+Options::Options()
+    : user_agent(content::BuildUserAgentFromProduct(
           HeadlessBrowser::GetProductNameAndVersion())),
       window_size(kDefaultWindowSize),
       font_render_hinting(kDefaultFontRenderHinting) {}
@@ -48,9 +46,7 @@ bool Options::DevtoolsServerEnabled() {
   return (devtools_pipe_enabled || !devtools_endpoint.IsEmpty());
 }
 
-Builder::Builder(int argc, const char** argv) : options_(argc, argv) {}
-
-Builder::Builder() : options_(0, nullptr) {}
+Builder::Builder() = default;
 
 Builder::~Builder() = default;
 
@@ -83,18 +79,6 @@ Builder& Builder::SetProxyConfig(std::unique_ptr<net::ProxyConfig> config) {
   options_.proxy_config = std::move(config);
   return *this;
 }
-
-#if BUILDFLAG(IS_WIN)
-Builder& Builder::SetInstance(HINSTANCE hinstance) {
-  options_.instance = hinstance;
-  return *this;
-}
-
-Builder& Builder::SetSandboxInfo(sandbox::SandboxInterfaceInfo* info) {
-  options_.sandbox_info = info;
-  return *this;
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
   options_.user_data_dir = dir;

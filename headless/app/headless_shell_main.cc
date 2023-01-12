@@ -14,11 +14,15 @@
 #endif
 
 int main(int argc, const char** argv) {
+  content::ContentMainParams params(nullptr);
 #if BUILDFLAG(IS_WIN)
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
-  return headless::HeadlessShellMain(0, &sandbox_info);
-#else
+  // Sandbox info has to be set and initialized.
+  params.sandbox_info = &sandbox_info;
+#elif !BUILDFLAG(IS_ANDROID)
+  params.argc = argc;
+  params.argv = argv;
 #if BUILDFLAG(IS_MAC)
   sandbox::SeatbeltExecServer::CreateFromArgumentsResult seatbelt =
       sandbox::SeatbeltExecServer::CreateFromArguments(
@@ -27,7 +31,7 @@ int main(int argc, const char** argv) {
     CHECK(seatbelt.server->InitializeSandbox());
   }
 #endif  // BUILDFLAG(IS_MAC)
-
-  return headless::HeadlessShellMain(argc, argv);
 #endif  // BUILDFLAG(IS_WIN)
+
+  return headless::HeadlessShellMain(std::move(params));
 }

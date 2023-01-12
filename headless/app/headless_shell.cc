@@ -87,7 +87,6 @@ class HeadlessShell {
   void Shutdown();
 
   raw_ptr<HeadlessBrowser> browser_ = nullptr;
-  raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;
 };
 
 void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
@@ -112,8 +111,8 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   // Create browser  context and set it as the default. The default browser
   // context is used by the Target.createTarget() DevTools command when no other
   // context is given.
-  browser_context_ = context_builder.Build();
-  browser_->SetDefaultBrowserContext(browser_context_);
+  HeadlessBrowserContext* browser_context = context_builder.Build();
+  browser_->SetDefaultBrowserContext(browser_context);
 
   // If no explicit URL is present navigate to about:blank unless we're being
   // driven by a debugger.
@@ -127,12 +126,12 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   }
 
   GURL target_url = ConvertArgumentToURL(args.front());
+  HeadlessWebContents::Builder builder(
+      browser_context->CreateWebContentsBuilder());
 
   // If driven by a debugger just open the target page and
   // leave expecting the debugger will do what they need.
   if (IsRemoteDebuggingEnabled()) {
-    HeadlessWebContents::Builder builder(
-        browser_context_->CreateWebContentsBuilder());
     HeadlessWebContents* web_contents =
         builder.SetInitialURL(target_url).Build();
     if (!web_contents) {
@@ -146,8 +145,6 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   // execute the commands against the target page.
 #if defined(HEADLESS_ENABLE_COMMANDS)
   GURL handler_url = HeadlessCommandHandler::GetHandlerUrl();
-  HeadlessWebContents::Builder builder(
-      browser_context_->CreateWebContentsBuilder());
   HeadlessWebContents* web_contents =
       builder.SetInitialURL(handler_url).Build();
   if (!web_contents) {
@@ -173,47 +170,10 @@ void HeadlessShell::Shutdown() {
   browser_->Shutdown();
 }
 
-int RunContentMain(
-    HeadlessBrowser::Options options,
-    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
-  content::ContentMainParams params(nullptr);
-#if BUILDFLAG(IS_WIN)
-  // Sandbox info has to be set and initialized.
-  CHECK(options.sandbox_info);
-  params.instance = options.instance;
-  params.sandbox_info = std::move(options.sandbox_info);
-#elif !BUILDFLAG(IS_ANDROID)
-  params.argc = options.argc;
-  params.argv = options.argv;
-#endif
-
-  auto browser = std::make_unique<HeadlessBrowserImpl>(
-      std::move(on_browser_start_callback), std::move(options));
-  HeadlessContentMainDelegate delegate(std::move(browser));
+void HeadlessChildMain(content::ContentMainParams params) {
+  HeadlessContentMainDelegate delegate(nullptr);
   params.delegate = &delegate;
-  return content::ContentMain(std::move(params));
-}
-
-#if BUILDFLAG(IS_WIN)
-void RunChildProcessIfNeeded(HINSTANCE instance,
-                             sandbox::SandboxInterfaceInfo* sandbox_info) {
-  base::CommandLine::Init(0, nullptr);
-  HeadlessBrowser::Options::Builder builder(0, nullptr);
-  builder.SetInstance(instance);
-  builder.SetSandboxInfo(std::move(sandbox_info));
-#else
-void RunChildProcessIfNeeded(int argc, const char** argv) {
-  base::CommandLine::Init(argc, argv);
-  HeadlessBrowser::Options::Builder builder(argc, argv);
-#endif  // BUILDFLAG(IS_WIN)
-  const base::CommandLine& command_line(
-      *base::CommandLine::ForCurrentProcess());
-
-  if (!command_line.HasSwitch(::switches::kProcessType))
-    return;
-
-  int rc = RunContentMain(builder.Build(),
-                          base::OnceCallback<void(HeadlessBrowser*)>());
+  int rc = content::ContentMain(std::move(params));
 
   // Note that exiting from here means that base::AtExitManager objects will not
   // have a chance to be destroyed (typically in main/WinMain).
@@ -222,7 +182,8 @@ void RunChildProcessIfNeeded(int argc, const char** argv) {
   base::Process::TerminateCurrentProcessImmediately(rc);
 }
 
-int HeadlessBrowserMain(HeadlessBrowser::Options options) {
+int HeadlessBrowserMain(content::ContentMainParams params) {
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
 #if DCHECK_IS_ON()
   // The browser can only be initialized once.
   static bool browser_was_initialized;
@@ -230,53 +191,56 @@ int HeadlessBrowserMain(HeadlessBrowser::Options options) {
   browser_was_initialized = true;
 
   // Child processes should not end up here.
-  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kProcessType));
+  DCHECK(!command_line.HasSwitch(::switches::kProcessType));
 #endif
   HeadlessShell shell;
 
-  return RunContentMain(
-      std::move(options),
-      base::BindOnce(&HeadlessShell::OnBrowserStart, base::Unretained(&shell)));
+  HeadlessBrowser::Options::Builder builder;
+
+#if defined(HEADLESS_ENABLE_COMMANDS)
+  if ((command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
+       command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) &&
+      HeadlessCommandHandler::HasHeadlessCommandSwitches(command_line)) {
+    LOG(ERROR) << "Headless commands are not compatible with remote debugging.";
+    return EXIT_FAILURE;
+  }
+#endif
+
+  if (!HandleCommandLineSwitches(command_line, builder)) {
+    return EXIT_FAILURE;
+  }
+
+  auto browser = std::make_unique<HeadlessBrowserImpl>(
+      base::BindOnce(&HeadlessShell::OnBrowserStart, base::Unretained(&shell)),
+      builder.Build());
+  HeadlessContentMainDelegate delegate(std::move(browser));
+  params.delegate = &delegate;
+  return content::ContentMain(std::move(params));
 }
 
 }  // namespace
 
-// An entry point for chrome.
-int HeadlessShellMain(const content::ContentMainParams& params) {
+int HeadlessShellMain(content::ContentMainParams params) {
 #if BUILDFLAG(IS_WIN)
-  return HeadlessShellMain(params.instance, params.sandbox_info);
-#else
-  return HeadlessShellMain(params.argc, params.argv);
-#endif
-}
-
-#if BUILDFLAG(IS_WIN)
-int HeadlessShellMain(HINSTANCE instance,
-                      sandbox::SandboxInterfaceInfo* sandbox_info) {
   base::CommandLine::Init(0, nullptr);
-#if defined(HEADLESS_USE_CRASHPAD)
+#else
+  base::CommandLine::Init(params.argc, params.argv);
+#endif  // BUILDFLAG(IS_WIN)
+  base::CommandLine& command_line(*base::CommandLine::ForCurrentProcess());
   std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ::switches::kProcessType);
+      command_line.GetSwitchValueASCII(::switches::kProcessType);
+#if defined(HEADLESS_USE_CRASHPAD)
   if (process_type == crash_reporter::switches::kCrashpadHandler) {
     return crash_reporter::RunAsCrashpadHandler(
         *base::CommandLine::ForCurrentProcess(), base::FilePath(),
         ::switches::kProcessType, switches::kUserDataDir);
   }
 #endif  // defined(HEADLESS_USE_CRASHPAD)
-  RunChildProcessIfNeeded(instance, sandbox_info);
-  HeadlessBrowser::Options::Builder builder(0, nullptr);
-  builder.SetInstance(instance);
-  builder.SetSandboxInfo(std::move(sandbox_info));
-#else
-int HeadlessShellMain(int argc, const char** argv) {
-  base::CommandLine::Init(argc, argv);
-  RunChildProcessIfNeeded(argc, argv);
-  HeadlessBrowser::Options::Builder builder(argc, argv);
-#endif  // BUILDFLAG(IS_WIN)
 
-  base::CommandLine& command_line(*base::CommandLine::ForCurrentProcess());
+  if (!process_type.empty()) {
+    HeadlessChildMain(std::move(params));
+    NOTREACHED();
+  }
 
 #if BUILDFLAG(IS_MAC)
   command_line.AppendSwitch(os_crypt::switches::kUseMockKeychain);
@@ -292,20 +256,7 @@ int HeadlessShellMain(int argc, const char** argv) {
     return EXIT_FAILURE;
   }
 
-#if defined(HEADLESS_ENABLE_COMMANDS)
-  if ((command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
-       command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) &&
-      HeadlessCommandHandler::HasHeadlessCommandSwitches(command_line)) {
-    LOG(ERROR) << "Headless commands are not compatible with remote debugging.";
-    return EXIT_FAILURE;
-  }
-#endif
-
-  if (!HandleCommandLineSwitches(command_line, builder)) {
-    return EXIT_FAILURE;
-  }
-
-  return HeadlessBrowserMain(builder.Build());
+  return HeadlessBrowserMain(std::move(params));
 }
 
 }  // namespace headless

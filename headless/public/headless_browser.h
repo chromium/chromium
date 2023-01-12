@@ -111,18 +111,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
 
   Options& operator=(Options&& options);
 
-  // Command line options to be passed to browser. Initialized in constructor.
-  int argc;
-  raw_ptr<const char*> argv;
-
-#if BUILDFLAG(IS_WIN)
-  // Set hardware instance if available, otherwise it defaults to 0.
-  HINSTANCE instance = 0;
-
-  // Set with sandbox information. This has to be already initialized.
-  raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
-#endif
-
   // Address at which DevTools should listen for connections. Disabled by
   // default.
   net::HostPortPair devtools_endpoint;
@@ -170,12 +158,11 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // Reminder: when adding a new field here, do not forget to add it to
   // HeadlessBrowserContextOptions (where appropriate).
  private:
-  Options(int argc, const char** argv);
+  Options();
 };
 
 class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
  public:
-  Builder(int argc, const char** argv);
   Builder();
 
   Builder(const Builder&) = delete;
@@ -189,10 +176,6 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& EnableDevToolsPipe();
   Builder& SetGLImplementation(const std::string& implementation);
   Builder& SetANGLEImplementation(const std::string& implementation);
-#if BUILDFLAG(IS_WIN)
-  Builder& SetInstance(HINSTANCE hinstance);
-  Builder& SetSandboxInfo(sandbox::SandboxInterfaceInfo* info);
-#endif
 
   // Per-context settings.
 

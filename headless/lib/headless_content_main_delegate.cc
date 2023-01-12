@@ -158,7 +158,6 @@ void InitApplicationLocale(const base::CommandLine& command_line) {
 HeadlessContentMainDelegate::HeadlessContentMainDelegate(
     std::unique_ptr<HeadlessBrowserImpl> browser)
     : browser_(std::move(browser)) {
-  DCHECK(browser_);
   DCHECK(!g_current_headless_content_main_delegate);
   g_current_headless_content_main_delegate = this;
 }
@@ -420,8 +419,14 @@ HeadlessContentMainDelegate* HeadlessContentMainDelegate::GetInstance() {
   return g_current_headless_content_main_delegate;
 }
 
-HeadlessBrowser::Options* HeadlessContentMainDelegate::options() {
-  return browser_->options();
+const HeadlessBrowser::Options* HeadlessContentMainDelegate::options() {
+  if (browser_) {
+    return browser_->options();
+  }
+  // TODO(caseq): get rid of this.
+  static base::NoDestructor<HeadlessBrowser::Options>
+      s_dummy_for_child_processes(HeadlessBrowser::Options::Builder().Build());
+  return s_dummy_for_child_processes.get();
 }
 
 content::ContentClient* HeadlessContentMainDelegate::CreateContentClient() {
@@ -430,6 +435,7 @@ content::ContentClient* HeadlessContentMainDelegate::CreateContentClient() {
 
 content::ContentBrowserClient*
 HeadlessContentMainDelegate::CreateContentBrowserClient() {
+  DCHECK(browser_);
   browser_client_ =
       std::make_unique<HeadlessContentBrowserClient>(browser_.get());
   return browser_client_.get();
