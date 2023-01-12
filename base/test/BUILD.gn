@@ -397,6 +397,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//base:jni_java",
+      "//base:process_launcher_java",
       "//testing/android/native_test:native_main_runner_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     ]

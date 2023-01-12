@@ -22,6 +22,7 @@ android_library("content_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
+    "//base:process_launcher_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
     "//net/android:net_java",

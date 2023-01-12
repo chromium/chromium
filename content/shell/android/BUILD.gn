@@ -140,6 +140,7 @@ android_library("content_shell_apk_java") {
     ":content_shell_java",
     ":content_shell_manifest",
     "//base:base_java",
+    "//base:process_launcher_java",
     "//build/android:build_java",
     "//components/embedder_support/android:view_java",
     "//content/public/android:content_java",

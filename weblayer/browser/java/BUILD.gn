@@ -99,6 +99,7 @@ android_library("base_module_java") {
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
     "//base:jni_java",
+    "//base:process_launcher_java",
     "//build/android:build_java",
     "//components/embedder_support/android:application_java",
     "//content/public/android:content_java",
