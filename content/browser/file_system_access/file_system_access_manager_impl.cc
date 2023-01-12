@@ -48,6 +48,7 @@
 #include "net/base/filename_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_util.h"
@@ -1529,7 +1530,11 @@ storage::FileSystemURL FileSystemAccessManagerImpl::CreateFileSystemURLFromPath(
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context()->CreateCrackedFileSystemURL(
-      opaque_origin_for_non_sandboxed_filesystemurls_,
+      base::FeatureList::IsEnabled(
+          storage::features::
+              kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin)
+          ? blink::StorageKey()
+          : opaque_origin_for_non_sandboxed_filesystemurls_,
       path_type == PathType::kLocal ? storage::kFileSystemTypeLocal
                                     : storage::kFileSystemTypeExternal,
       path);

@@ -8,8 +8,10 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
+#include "storage/browser/file_system/file_system_features.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -246,12 +248,24 @@ TEST(FileSystemURLTest, IsInSameFileSystem) {
   FileSystemURL url_bar_perm_a = FileSystemURL::CreateForTest(
       blink::StorageKey::CreateFromStringForTesting("http://bar"),
       kFileSystemTypePersistent, base::FilePath::FromUTF8Unsafe("a"));
+  FileSystemURL url_opaque_a =
+      FileSystemURL::CreateForTest(blink::StorageKey(), kFileSystemTypeLocal,
+                                   base::FilePath::FromUTF8Unsafe("a"));
+  FileSystemURL url_opaque_b =
+      FileSystemURL::CreateForTest(blink::StorageKey(), kFileSystemTypeLocal,
+                                   base::FilePath::FromUTF8Unsafe("b"));
+  FileSystemURL url_invalid_a;
+  FileSystemURL url_invalid_b = url_invalid_a;
 
   EXPECT_TRUE(url_foo_temp_a.IsInSameFileSystem(url_foo_temp_a));
   EXPECT_TRUE(url_foo_temp_a.IsInSameFileSystem(url_foo_temp_b));
   EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_foo_perm_a));
   EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_bar_temp_a));
   EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_bar_perm_a));
+  EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_opaque_a));
+  EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_opaque_b));
+  EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_invalid_a));
+  EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_invalid_b));
 
   // Test that non-empty, non-default bucket values are taken into account when
   // determining of two URLs are in the same FileSystem.
@@ -264,6 +278,19 @@ TEST(FileSystemURLTest, IsInSameFileSystem) {
       blink::StorageKey::CreateFromStringForTesting("http://foo"),
       kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("a"));
   EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_foo_temp_c));
+
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin)) {
+    // Test that opaque origins with differing nonces are considered to be in
+    // the same file system.
+    EXPECT_NE(url_opaque_a, url_opaque_b);
+    EXPECT_TRUE(url_opaque_a.IsInSameFileSystem(url_opaque_b));
+
+    // Test that identical, invalid URLs are considered not to be in the same
+    // file system.
+    EXPECT_EQ(url_invalid_a, url_invalid_b);
+    EXPECT_FALSE(url_invalid_a.IsInSameFileSystem(url_invalid_b));
+  }
 }
 
 TEST(FileSystemURLTest, ValidAfterMoves) {

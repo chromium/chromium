@@ -347,12 +347,6 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     }
   }
 
-  // TODO(https://crbug.com/1396116): Fix FileSystemURL comparison operators
-  // that use a StorageKey.
-  //
-  // This check is held together by a hack in `CreateFileSystemURLFromPath()` in
-  // the FSA manager which ensures all non-sandboxed FileSystemURLs have the
-  // same opaque origin.
   if (dest_url == url()) {
     // Nothing to do here.
     std::move(callback).Run(file_system_access_error::Ok());

@@ -8,9 +8,7 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 
-namespace storage {
-
-namespace features {
+namespace storage::features {
 
 COMPONENT_EXPORT(STORAGE_BROWSER)
 BASE_DECLARE_FEATURE(kEnablePersistentFilesystemInIncognito);
@@ -18,8 +16,9 @@ BASE_DECLARE_FEATURE(kEnablePersistentFilesystemInIncognito);
 COMPONENT_EXPORT(STORAGE_BROWSER)
 BASE_DECLARE_FEATURE(kIncognitoFileSystemContextForTesting);
 
-}  // namespace features
+COMPONENT_EXPORT(STORAGE_BROWSER)
+BASE_DECLARE_FEATURE(kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin);
 
-}  // namespace storage
+}  // namespace storage::features
 
 #endif  // STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_FEATURES_H_

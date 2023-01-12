@@ -207,12 +207,6 @@ bool FileSystemAccessSafeMoveHelper::RequireAfterWriteChecks() const {
     return true;
   }
 
-  // TODO(https://crbug.com/1396116): Fix FileSystemURL comparison operators
-  // that use a StorageKey.
-  //
-  // This check is held together by a hack in `CreateFileSystemURLFromPath()` in
-  // the FSA manager which ensures all non-sandboxed FileSystemURLs have the
-  // same opaque origin.
   if (!source_url().IsInSameFileSystem(dest_url()))
     return true;
 

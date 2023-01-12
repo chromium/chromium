@@ -4,9 +4,7 @@
 
 #include "storage/browser/file_system/file_system_features.h"
 
-namespace storage {
-
-namespace features {
+namespace storage::features {
 
 // Enables persistent Filesystem API in incognito mode.
 BASE_FEATURE(kEnablePersistentFilesystemInIncognito,
@@ -19,6 +17,11 @@ BASE_FEATURE(kIncognitoFileSystemContextForTesting,
              "IncognitoFileSystemContextForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace features
+// TODO(https://crbug.com/1396116): Remove this eventually.
+// When enabled, FileSystemURL comparators will treat opaque origins as a null
+// state. See https://crbug.com/1396116.
+BASE_FEATURE(kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin,
+             "FileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-}  // namespace storage
+}  // namespace storage::features

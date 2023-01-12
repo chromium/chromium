@@ -80,13 +80,16 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
       auto buf = base::MakeRefCounted<net::IOBufferWithSize>(4096);
       net::TestCompletionCallback callback;
       int rv = reader->Read(buf.get(), buf->size(), callback.callback());
-      if (rv == net::ERR_IO_PENDING)
+      if (rv == net::ERR_IO_PENDING) {
         rv = callback.WaitForResult();
+      }
       EXPECT_GE(rv, 0);
-      if (rv < 0)
+      if (rv < 0) {
         return "(read failure)";
-      if (rv == 0)
+      }
+      if (rv == 0) {
         return result;
+      }
       result.append(buf->data(), rv);
     }
   }
@@ -175,8 +178,9 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
                               : base::FilePath::FromUTF8Unsafe("test");
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
         test_src_storage_key_, type, test_file_path);
-    if (type == storage::kFileSystemTypeTemporary)
+    if (type == storage::kFileSystemTypeTemporary) {
       test_file_url_.SetBucket(CreateBucketForTesting());
+    }
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFile(
@@ -869,6 +873,36 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
   }
 }
 
+TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest, Rename_SameFile) {
+  auto [source, target] = CreateSourceAndMaybeTarget();
+
+  target = source;
+
+  auto parent_grant = allow_grant_;
+
+  // We want ExpectFileRenameSuccess(), but without most EXPECT_CALLs since we
+  // should exit early if we detect that the target is the source.
+  auto handle = GetHandleWithPermissions(source, /*read=*/true, /*write=*/true);
+
+  EXPECT_CALL(permission_context_,
+              GetReadPermissionGrant(
+                  test_src_storage_key_.origin(), dir_.GetPath(),
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kNone))
+      .WillOnce(testing::Return(parent_grant));
+  EXPECT_CALL(permission_context_,
+              GetWritePermissionGrant(
+                  test_src_storage_key_.origin(), dir_.GetPath(),
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kNone))
+      .WillOnce(testing::Return(parent_grant));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Rename(target.BaseName().AsUTF8Unsafe(), future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(base::PathExists(source));
+}
+
 TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
        Move_HasTargetWriteAccess) {
   auto [source, target] = CreateSourceAndMaybeTarget();
@@ -913,6 +947,29 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
     ExpectFileMoveSuccess(
         /*parent=*/dir_.GetPath(), source, target, target_grant);
   }
+}
+
+TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest, Move_SameFile) {
+  auto [source, target] = CreateSourceAndMaybeTarget();
+
+  target = source;
+
+  // We want ExpectFileMoveSuccess(), but without any EXPECT_CALLs since we
+  // should exit early if we detect that the target is the source.
+  auto dest_dir_handle =
+      GetDirectoryHandleWithPermissions(dir_.GetPath(), /*read=*/true,
+                                        /*write=*/true);
+  auto handle = GetHandleWithPermissions(source, /*read=*/true, /*write=*/true);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
+  manager_->CreateTransferToken(*dest_dir_handle,
+                                dir_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dir_remote), target.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(base::PathExists(source));
 }
 
 INSTANTIATE_TEST_SUITE_P(
