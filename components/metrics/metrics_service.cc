@@ -502,10 +502,10 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
   // backgrounded.
   delegating_provider_.OnAppEnterBackground();
 
-  // At this point, there's no way of knowing when the process will be
-  // killed, so this has to be treated similar to a shutdown, closing and
-  // persisting all logs. Unlinke a shutdown, the state is primed to be ready
-  // to continue logging and uploading if the process does return.
+  // At this point, there's no way of knowing when the process will be killed,
+  // so this has to be treated similar to a shutdown, closing and persisting all
+  // logs. Unlike a shutdown, the state is primed to be ready to continue
+  // logging and uploading if the process does return.
   if (recording_active() && !IsTooEarlyToCloseLog()) {
     base::UmaHistogramBoolean(
         "UMA.MetricsService.PendingOngoingLogOnBackgrounded",
