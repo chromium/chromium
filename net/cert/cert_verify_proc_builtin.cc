@@ -749,7 +749,7 @@ int CertVerifyProcBuiltin::VerifyInternal(
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_TARGET_CERT, [&] {
       return NetLogCertParams(input_cert->cert_buffer(), parsing_errors);
     });
-    if (!target || !target->signature_algorithm()) {
+    if (!target) {
       verify_result->cert_status |= CERT_STATUS_INVALID;
       return ERR_CERT_INVALID;
     }

@@ -863,8 +863,17 @@ TEST_P(CertVerifyProcInternalTest, CertWithNullInSAN) {
 TEST_P(CertVerifyProcInternalTest, InvalidTarget) {
   base::FilePath certs_dir =
       GetTestNetDataDirectory().AppendASCII("parse_certificate_unittest");
-  scoped_refptr<X509Certificate> bad_cert =
-      ImportCertFromFile(certs_dir, "signature_algorithm_null.pem");
+  scoped_refptr<X509Certificate> bad_cert;
+  if (VerifyProcTypeIsBuiltin()) {
+    // Builtin verifier doesn't distinguish between invalid signature algorithm
+    // and unknown signature algorithm, so use a different test file that will
+    // fail in ParsedCertificate::Create. The other verifiers use a different
+    // test file since the platform verifiers don't all consider empty
+    // extensions sequence invalid.
+    bad_cert = ImportCertFromFile(certs_dir, "extensions_empty_sequence.pem");
+  } else {
+    bad_cert = ImportCertFromFile(certs_dir, "signature_algorithm_null.pem");
+  }
   ASSERT_TRUE(bad_cert);
 
   scoped_refptr<X509Certificate> ok_cert(
@@ -5361,10 +5370,11 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, UnknownSignatureAlgorithm) {
   chain_[0]->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
 
   if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-    // TODO(mattm): this shouldn't be INVALID, the signature doesn't need to be
-    // checked:
-    EXPECT_THAT(VerifyAsTrustedLeaf(), IsError(ERR_CERT_INVALID));
+    // Since no chain is found, signature is not checked, fails with generic
+    // error for untrusted chain.
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+    // Valid since signature on directly trusted leaf is not checked.
+    EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
   } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   } else {
@@ -5598,8 +5608,27 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
        UnknownSignatureAlgorithm) {
   cert_->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
   if (VerifyProcTypeIsBuiltin()) {
+    // Attempts to verify as anchor of itself, which fails when verifying the
+    // signature.
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-    EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(), IsError(ERR_CERT_INVALID));
+
+    // Signature not checked when verified as a directly trusted leaf without
+    // require_leaf_selfsigned.
+    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustedLeaf()), IsOk());
+
+    // PathBuilder override ignores require_leaf_selfsigned due to the
+    // self-signed check returning false (due to the invalid signature
+    // algorithm), thus this fails with AUTHORITY_INVALID due to failing to
+    // find a chain to another root.
+    EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(),
+                IsError(ERR_CERT_AUTHORITY_INVALID));
+
+    // PathBuilder override ignores require_leaf_selfsigned due to the invalid
+    // signature algorithm, thus this tries to verify as anchor of itself,
+    // which fails when verifying the signature.
+    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+                                    .WithRequireLeafSelfSigned()),
+                IsError(ERR_CERT_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   } else {
