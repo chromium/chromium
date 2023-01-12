@@ -59,6 +59,8 @@ class BASE_EXPORT RawPtrAsanService {
     return instance_;
   }
 
+  void WarnOnDanglingExtraction(const volatile void* ptr) const;
+
   static void SetPendingReport(ReportType type, const volatile void* ptr);
 
  private:

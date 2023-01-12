@@ -3,19 +3,23 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr_asan_service.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
 #include <sanitizer/allocator_interface.h>
 #include <sanitizer/asan_interface.h>
 #include <stdarg.h>
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/debug/asan_service.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
+#include "base/memory/raw_ptr_asan_hooks.h"
 #include "base/no_destructor.h"
+#include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool/thread_group.h"
 #include "base/threading/thread_local.h"
@@ -82,6 +86,7 @@ void RawPtrAsanService::Configure(
 
     __sanitizer_install_malloc_and_free_hooks(MallocHook, FreeHook);
     debug::AsanService::GetInstance()->AddErrorCallback(ErrorReportCallback);
+    internal::InstallRawPtrHooks(base::internal::GetRawPtrAsanHooks());
 
     is_dereference_check_enabled_ = !!enable_dereference_check;
     is_extraction_check_enabled_ = !!enable_extraction_check;
@@ -269,6 +274,27 @@ void RawPtrAsanService::ErrorReportCallback(const char* report, bool*) {
       "raw_ptr.md for details.",
       ProtectionStatusToString(crash_info.protection_status),
       crash_info.crash_details, crash_info.protection_details);
+}
+
+void RawPtrAsanService::WarnOnDanglingExtraction(
+    const volatile void* ptr) const {
+  debug::AsanService::GetInstance()->Log(
+      "=================================================================\n"
+      "==%d==WARNING: MiraclePtr: dangling-pointer-extraction on address "
+      "%p\n"
+      "extracted here:",
+      Process::Current().Pid(), ptr);
+  __sanitizer_print_stack_trace();
+  __asan_describe_address(const_cast<void*>(ptr));
+  debug::AsanService::GetInstance()->Log(
+      "A regular ASan report will follow if the extracted pointer is "
+      "dereferenced later.\n"
+      "Otherwise, it is still likely a bug to rely on the address of an "
+      "already freed allocation.\n"
+      "Refer to "
+      "https://chromium.googlesource.com/chromium/src/+/main/base/memory/"
+      "raw_ptr.md for details.\n"
+      "=================================================================");
 }
 
 // static

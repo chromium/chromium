@@ -741,117 +741,6 @@ struct BackupRefPtrImpl {
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-// Maps 1-to-1 onto the public enum of `RawPtrAsanService`.
-enum class AsanBackupRefPtrReportType {
-  kDereference,
-  kExtraction,
-  kInstantiation,
-};
-
-// Callback carrier struct that inverts a dependency from `raw_ptr` to
-// `//base`.
-struct AsanBackupRefPtrCallbacks {
-  // `RawPtrAsanService` callbacks.
-  bool (*is_dereference_check_enabled)() = nullptr;
-  bool (*is_extraction_check_enabled)() = nullptr;
-  bool (*is_instantiation_check_enabled)() = nullptr;
-  void (*set_pending_report)(AsanBackupRefPtrReportType type,
-                             const volatile void* ptr) = nullptr;
-
-  // Logs an invalid extraction for `ptr` without crashing.
-  void (*emit_invalid_extraction)(void const volatile* ptr) = nullptr;
-};
-
-static_assert(std::is_trivially_destructible<AsanBackupRefPtrCallbacks>());
-
-void InstallAsanBackupRefPtrCallbacks(
-    const AsanBackupRefPtrCallbacks& callbacks);
-
-// Implementation that allows us to detect BackupRefPtr problems in ASan builds.
-struct AsanBackupRefPtrImpl {
-  // Wraps a pointer.
-  template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
-    AsanCheckIfValidInstantiation(ptr);
-    return ptr;
-  }
-
-  // Notifies the allocator when a wrapped pointer is being removed or replaced.
-  template <typename T>
-  static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T*) {}
-
-  // Unwraps the pointer, while asserting that memory hasn't been freed. The
-  // function is allowed to crash on nullptr.
-  template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
-    AsanCheckIfValidDereference(wrapped_ptr);
-    return wrapped_ptr;
-  }
-
-  // Unwraps the pointer, while asserting that memory hasn't been freed. The
-  // function must handle nullptr gracefully.
-  template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
-    AsanCheckIfValidExtraction(wrapped_ptr);
-    return wrapped_ptr;
-  }
-
-  // Unwraps the pointer, without making an assertion on whether memory was
-  // freed or not.
-  template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
-    return wrapped_ptr;
-  }
-
-  // Upcasts the wrapped pointer.
-  template <typename To, typename From>
-  static PA_ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
-    static_assert(std::is_convertible<From*, To*>::value,
-                  "From must be convertible to To.");
-    // Note, this cast may change the address if upcasting to base that lies in
-    // the middle of the derived object.
-    return wrapped_ptr;
-  }
-
-  // Advance the wrapped pointer by `delta_elems`.
-  template <
-      typename T,
-      typename Z,
-      typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
-    return wrapped_ptr + delta_elems;
-  }
-
-  template <typename T>
-  static PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
-                                                  T* wrapped_ptr2) {
-    return wrapped_ptr1 - wrapped_ptr2;
-  }
-
-  // Returns a copy of a wrapped pointer, without making an assertion on whether
-  // memory was freed or not.
-  template <typename T>
-  static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
-    return wrapped_ptr;
-  }
-
-  // This is for accounting only, used by unit tests.
-  static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
-
- private:
-  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
-      void AsanCheckIfValidInstantiation(void const volatile* ptr);
-  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
-      void AsanCheckIfValidDereference(void const volatile* ptr);
-  static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
-      void AsanCheckIfValidExtraction(void const volatile* ptr);
-};
-#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-
 #if BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
 struct AsanUnownedPtrImpl {
@@ -962,9 +851,9 @@ struct RawPtrHooks {
   Duplicate* duplicate;
 };
 
-const RawPtrHooks* GetRawPtrHooks();
-void InstallRawPtrHooks(const RawPtrHooks*);
-void ResetRawPtrHooks();
+PA_COMPONENT_EXPORT(RAW_PTR) const RawPtrHooks* GetRawPtrHooks();
+PA_COMPONENT_EXPORT(RAW_PTR) void InstallRawPtrHooks(const RawPtrHooks*);
+PA_COMPONENT_EXPORT(RAW_PTR) void ResetRawPtrHooks();
 
 struct RawPtrHookableImpl {
   // Wraps a pointer.
@@ -1018,9 +907,11 @@ struct RawPtrHookableImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T,
-            typename Z,
-            typename = std::enable_if_t<offset_type<Z>, void>>
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     GetRawPtrHooks()->advance(
         reinterpret_cast<uintptr_t>(wrapped_ptr),
@@ -1216,8 +1107,6 @@ template <>
 struct RawPtrTypeToImpl<RawPtrMayDangle> {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/true>;
-#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  using Impl = internal::AsanBackupRefPtrImpl;
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
   // No special bookkeeping required for this case, just treat these
   // as ordinary pointers.
@@ -1236,8 +1125,6 @@ template <>
 struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/false>;
-#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  using Impl = internal::AsanBackupRefPtrImpl;
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
   using Impl = internal::AsanUnownedPtrImpl;
 #elif PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
