@@ -92,7 +92,6 @@ namespace base {
 // change behavior depending on RawPtrType.
 struct RawPtrMayDangle {};
 struct RawPtrBanDanglingIfSupported {};
-struct RawPtrMayDangleUntriaged {};
 
 struct RawPtrNoOp {};
 
@@ -103,8 +102,7 @@ struct RawPtrTypeToImpl;
 template <typename RawPtrType>
 inline constexpr bool IsValidRawPtrTypeV =
     std::is_same_v<RawPtrType, RawPtrMayDangle> ||
-    std::is_same_v<RawPtrType, RawPtrBanDanglingIfSupported> ||
-    std::is_same_v<RawPtrType, RawPtrMayDangleUntriaged>;
+    std::is_same_v<RawPtrType, RawPtrBanDanglingIfSupported>;
 }
 
 namespace internal {
@@ -1235,11 +1233,6 @@ struct RawPtrTypeToImpl<RawPtrMayDangle> {
 };
 
 template <>
-struct RawPtrTypeToImpl<RawPtrMayDangleUntriaged> {
-  using Impl = RawPtrTypeToImpl<RawPtrMayDangle>::Impl;
-};
-
-template <>
 struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/false>;
@@ -1778,17 +1771,6 @@ inline constexpr bool IsRawPtrMayDangleV = false;
 template <typename T>
 inline constexpr bool IsRawPtrMayDangleV<raw_ptr<T, RawPtrMayDangle>> = true;
 
-template <typename T>
-inline constexpr bool IsRawPtrDanglingUntriagedV = false;
-
-template <typename T>
-inline constexpr bool
-    IsRawPtrDanglingUntriagedV<raw_ptr<T, RawPtrMayDangleUntriaged>> = true;
-
-template <typename T>
-inline constexpr bool IsRawPtrAllowedToDangleV =
-    IsRawPtrMayDangleV<T> || IsRawPtrDanglingUntriagedV<T>;
-
 // Template helpers for working with T* or raw_ptr<T>.
 template <typename T>
 struct IsPointer : std::false_type {};
@@ -1838,7 +1820,7 @@ using DisableDanglingPtrDetection = base::RawPtrMayDangle;
 // See `docs/dangling_ptr.md`
 // Annotates known dangling raw_ptr. Those haven't been triaged yet. All the
 // occurrences are meant to be removed. See https://crbug.com/1291138.
-using DanglingUntriaged = base::RawPtrMayDangleUntriaged;
+using DanglingUntriaged = base::RawPtrMayDangle;
 
 // This type is to be used in callbacks arguments when it is known that they
 // might receive dangling pointers. In any other cases, please use one of:

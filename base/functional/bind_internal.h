@@ -176,14 +176,10 @@ class UnretainedWrapper {
   // before invoking the bound functor (unless stated otherwise, see
   // `UnsafeDangling()` and `UnsafeDanglingUntriaged()`), when retrieving the
   // pointer value via `get()` above.
-  using StorageType = std::conditional_t<
-      raw_ptr_traits::IsSupportedType<T>::value,
-      raw_ptr<T,
-              std::conditional_t<
-                  std::is_same_v<Trait, unretained_traits::MayDangleUntriaged>,
-                  DanglingUntriaged,
-                  DisableDanglingPtrDetection>>,
-      T*>;
+  using StorageType =
+      std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
+                         MayBeDangling<T>,
+                         T*>;
 #endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // Avoid converting between different `raw_ptr` types when calling `get()`.
   // See the comment by `GetPtrType` describing why this wouldn't be good.
@@ -1404,15 +1400,16 @@ struct BindArgument {
       // (or `MayBeDangling<T>`).
       static constexpr bool kParamIsDanglingRawPtr =
           IsRawPtrMayDangleV<FunctionParamType>;
-      // true if the bound parameter is of type `UnretainedWrapper<T,
-      // RawPtrMayDangle>`.
+      // true if the bound parameter is of type
+      // `UnretainedWrapper<T, unretained_traits::MayDangle>`.
       static constexpr bool kBoundPtrMayDangle =
           IsUnretainedMayDangle<StorageType>;
       // true if the receiver argument **must** be of type `MayBeDangling<T>`.
       static constexpr bool kMayBeDanglingMustBeUsed =
           kBoundPtrMayDangle && kParamIsDanglingRawPtr;
       // true iff:
-      // - bound parameter is of type `UnretainedWrapper<T, RawPtrMayDangle>`
+      // - bound parameter is of type
+      //   `UnretainedWrapper<T, unretained_traits::MayDangle>`
       // - the receiving argument is of type `MayBeDangling<T>`
       template <bool is_method>
       static constexpr bool kMayBeDanglingPtrPassedCorrectly =
