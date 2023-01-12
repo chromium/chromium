@@ -92,9 +92,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   void SetUp() override {
     InitializeEmptyExtensionService();
-    g_browser_process->platform_part()
-        ->browser_policy_connector_ash()
-        ->SetPolicyServiceForTesting(policy_service());
+    policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(
+        policy_service());
 
     keyboard_controller_client_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
@@ -115,6 +114,14 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     SetKioskLaunchStateCrashKey(KioskLaunchState::kStartLaunch);
 
     kiosk_app_id_ = KioskAppId::ForWebApp(EmptyAccountId());
+
+    extensions::ExtensionServiceTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    extensions::ExtensionServiceTestBase::TearDown();
+
+    policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
   }
 
   KioskLaunchController& controller() { return *controller_; }

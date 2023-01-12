@@ -128,6 +128,11 @@ class ProfilePolicyConnectorTest : public testing::Test {
 
   void TearDown() override {
     task_environment_.RunUntilIdle();
+
+    // Some tests override the policy service via this global singleton. Unset
+    // it here to make sure the cleanup happens.
+    BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
+
     TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
     cloud_policy_manager_->Shutdown();
   }
@@ -262,8 +267,7 @@ TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
   // the local policy provider but never get destroyed until the very end. This
   // will cause DCHECK failure as the local policy provider observer list is not
   // clear.
-  g_browser_process->browser_policy_connector()->SetPolicyServiceForTesting(
-      &mock_policy_service_);
+  BrowserPolicyConnectorBase::SetPolicyServiceForTesting(&mock_policy_service_);
   ProfilePolicyConnector connector;
   connector.Init(nullptr /* user */, &schema_registry_,
                  cloud_policy_manager_.get(), &cloud_policy_store_,
