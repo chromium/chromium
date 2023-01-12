@@ -107,6 +107,9 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
   if (delete_end.is_null()) {
     delete_end = base::Time::Max();
   }
+  if (delete_begin.is_null()) {
+    delete_begin = base::Time::Min();
+  }
 
   if (filter.is_null()) {
     db_->RemoveEventsByTime(delete_begin, delete_end, type);
@@ -120,7 +123,8 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
     // necessary.
     // Time ranges aren't currently supported for site-filtered
     // deletion of DIPS Events.
-    if (delete_begin != base::Time() || delete_end != base::Time::Max()) {
+    if (delete_begin != base::Time::Min() || delete_end != base::Time::Max()) {
+      // TODO (kaklilu@): Add a UMA metric to record if this happens.
       return;
     }
 
@@ -134,6 +138,7 @@ void DIPSStorage::RemoveEvents(base::Time delete_begin,
 
 void DIPSStorage::RemoveRows(const std::vector<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   db_->RemoveRows(sites);
 }
 
@@ -204,7 +209,7 @@ std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage() const {
   return db_->GetSitesThatUsedStorage();
 }
 
-void DIPSStorage::DeleteDIPSEligibleState(DIPSCookieMode mode) {
+std::vector<std::string> DIPSStorage::GetSitesToClear() const {
   std::vector<std::string> sites_to_clear;
   switch (dips::kTriggeringAction.Get()) {
     case DIPSTriggeringAction::kStorage: {
@@ -221,13 +226,7 @@ void DIPSStorage::DeleteDIPSEligibleState(DIPSCookieMode mode) {
     }
   }
 
-  base::UmaHistogramCounts1000(base::StrCat({"Privacy.DIPS.ClearedSitesCount",
-                                             GetHistogramSuffix(mode)}),
-                               sites_to_clear.size());
-
-  // Perform clearing of sites.
-  // TODO: Actually clear the site-data for `sites_to_clear` here as well.
-  RemoveRows(sites_to_clear);
+  return sites_to_clear;
 }
 
 /* static */

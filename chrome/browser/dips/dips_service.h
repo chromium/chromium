@@ -58,6 +58,13 @@ class DIPSService : public KeyedService {
     HandleRedirect(redirect, chain, callback);
   }
 
+  void SetStorageClockForTesting(base::Clock* clock) {
+    DCHECK(storage_);
+    storage_.AsyncCall(&DIPSStorage::SetClockForTesting).WithArgs(clock);
+  }
+
+  void OnTimerFiredForTesting() { OnTimerFired(); }
+
  private:
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;
@@ -80,6 +87,10 @@ class DIPSService : public KeyedService {
   void InitializeStorage(base::Time time, std::vector<std::string> sites);
 
   void OnTimerFired();
+  void DeleteDIPSEligibleState(base::Time deletion_start,
+                               std::vector<std::string> sites_to_clear);
+  void RunDeletionTaskOnUIThread(std::vector<std::string> sites_to_clear,
+                                 base::OnceClosure callback);
 
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;

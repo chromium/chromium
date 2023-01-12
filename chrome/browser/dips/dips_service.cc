@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_features.h"
@@ -28,6 +29,10 @@
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -87,6 +92,59 @@ inline void UmaHistogramBounceCategory(RedirectCategory category,
   base::UmaHistogramEnumeration(histogram_name, category);
 }
 
+inline void UmaHistogramDeletionLatency(base::Time deletion_start) {
+  base::UmaHistogramLongTimes100("Privacy.DIPS.DeletionLatency",
+                                 base::Time::Now() - deletion_start);
+}
+
+class StateClearer : public content::BrowsingDataRemover::Observer {
+ public:
+  StateClearer(const StateClearer&) = delete;
+  StateClearer& operator=(const StateClearer&) = delete;
+
+  ~StateClearer() override { remover_->RemoveObserver(this); }
+
+  // Clears state for the sites specified by 'filter'. Runs |callback| once
+  // clearing is complete.
+  //
+  // NOTE: This deletion task removing rows for `sites_to_clear` from the
+  // DIPSStorage backend relies on the assumption that rows flagged as DIPS
+  // eligible don't have user interaction time values. So even though 'remover'
+  // will only clear the storage timestamps, that's sufficient to delete the
+  // entire row.
+  static void DeleteState(
+      content::BrowsingDataRemover* remover,
+      std::unique_ptr<content::BrowsingDataFilterBuilder> filter,
+      base::OnceClosure callback) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // StateClearer manages its own lifetime and deletes itself when finished.
+    auto* state_clearer = new StateClearer(remover, std::move(callback));
+
+    remover->AddObserver(state_clearer);
+    remover->RemoveWithFilterAndReply(
+        base::Time::Min(), base::Time::Max(),
+        chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
+            content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+            content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+        std::move(filter), state_clearer);
+  }
+
+ private:
+  StateClearer(content::BrowsingDataRemover* remover,
+               base::OnceClosure callback)
+      : remover_(remover), callback_(std::move(callback)) {}
+
+  void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
+    std::move(callback_).Run();
+    delete this;  // Matches the new in DeleteState()
+  }
+
+  raw_ptr<content::BrowsingDataRemover> remover_;
+  base::OnceClosure callback_;
+};
+
 }  // namespace
 
 DIPSService::DIPSService(content::BrowserContext* context)
@@ -105,8 +163,9 @@ DIPSService::DIPSService(content::BrowserContext* context)
 
   // TODO: Prevent use of the DB until prepopulation starts.
   InitializeStorageWithEngagedSites();
-  if (repeating_timer_)
+  if (repeating_timer_) {
     repeating_timer_->Start();
+  }
 }
 
 std::unique_ptr<signin::PersistentRepeatingTimer> DIPSService::CreateTimer(
@@ -258,12 +317,53 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
 
 void DIPSService::OnTimerFired() {
   base::Time start = base::Time::Now();
-  storage_.AsyncCall(&DIPSStorage::DeleteDIPSEligibleState)
-      .WithArgs(GetCookieMode())
-      .Then(base::BindOnce(
-          [](base::Time deletion_start) {
-            base::UmaHistogramLongTimes100("Privacy.DIPS.DeletionLatency",
-                                           base::Time::Now() - deletion_start);
-          },
-          start));
+  storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
+      .Then(base::BindOnce(&DIPSService::DeleteDIPSEligibleState,
+                           weak_factory_.GetWeakPtr(), start));
+}
+
+void DIPSService::DeleteDIPSEligibleState(
+    base::Time deletion_start,
+    std::vector<std::string> sites_to_clear) {
+  base::UmaHistogramCounts1000(
+      base::StrCat({"Privacy.DIPS.ClearedSitesCount",
+                    GetHistogramSuffix(GetCookieMode())}),
+      sites_to_clear.size());
+
+  if (sites_to_clear.empty()) {
+    return;
+  }
+
+  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
+      dips::kDeletionEnabled.Get()) {
+    // TODO: Check for site-specific third-party cookie exceptions here and
+    // exclude sites with them from 'sites_to_clear' then call
+    // 'DIPSStorage::RemoveRows' to remove the DIPS entries for the excluded
+    // sites.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &DIPSService::RunDeletionTaskOnUIThread, weak_factory_.GetWeakPtr(),
+            std::move(sites_to_clear),
+            base::BindOnce(&UmaHistogramDeletionLatency, deletion_start)));
+  } else {
+    storage_.AsyncCall(&DIPSStorage::RemoveRows)
+        .WithArgs(std::move(sites_to_clear))
+        .Then(base::BindOnce(&UmaHistogramDeletionLatency, deletion_start));
+  }
+}
+
+void DIPSService::RunDeletionTaskOnUIThread(std::vector<std::string> sites,
+                                            base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kDelete);
+  for (const auto& site : sites) {
+    filter->AddRegisterableDomain(site);
+  }
+
+  StateClearer::DeleteState(browser_context_->GetBrowsingDataRemover(),
+                            std::move(filter), std::move(callback));
 }

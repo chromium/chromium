@@ -57,10 +57,10 @@ class DIPSStorage {
   // Returns all sites which use storage that aren't protected from DIPS.
   std::vector<std::string> GetSitesThatUsedStorage() const;
 
-  // Queries the DIPS database for sites whose state DIPS should clear.
-  // If DIPS deletion isn't enabled, this just logs UMA about how many sites
-  // would've been cleared by DIPS.
-  void DeleteDIPSEligibleState(DIPSCookieMode mode);
+  // Returns the list of sites that should have their state cleared by DIPS. How
+  // these sites are determined is controlled by the value of
+  // `dips::kTriggeringAction`.
+  std::vector<std::string> GetSitesToClear() const;
 
   // Utility Methods -----------------------------------------------------------
 
@@ -103,8 +103,8 @@ class DIPSStorage {
   void PrepopulateChunk(PrepopulateArgs args);
 
   std::unique_ptr<DIPSDatabase> db_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<DIPSStorage> weak_factory_{this};
 };
 

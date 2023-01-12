@@ -17,6 +17,9 @@ BASE_FEATURE(kFeature, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPersistedDatabaseEnabled{
     &kFeature, "persist_database", false};
 
+// Set whether DIPS performs deletion.
+const base::FeatureParam<bool> kDeletionEnabled{&kFeature, "delete", false};
+
 // Set the time period that Chrome will wait for before clearing storage for a
 // site after it performs some action (e.g. bouncing the user or using storage)
 // without user interaction.
