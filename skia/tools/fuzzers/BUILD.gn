@@ -125,6 +125,7 @@ if (is_win && use_libfuzzer) {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzJSON.cpp" ]
     defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
     deps = [ ":skia_fuzzer_sources" ]
+    check_includes = false
   }
 
   fuzzer_test("skia_image_decode_incremental_fuzzer") {

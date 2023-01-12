@@ -204,6 +204,22 @@ source_set("skcms") {
 
 component("skia") {
   deps = []
+  public = [
+    "ext/benchmarking_canvas.h",
+    "ext/cicp.h",
+    "ext/convolver.h",
+    "ext/event_tracer_impl.h",
+    "ext/image_operations.h",
+    "ext/legacy_display_globals.h",
+    "ext/opacity_filter_canvas.h",
+    "ext/recursive_gaussian_convolution.h",
+    "ext/rgba_to_yuva.h",
+    "ext/skcolorspace_primaries.h",
+    "ext/skcolorspace_trfn.h",
+    "ext/skia_memory_dump_provider.h",
+    "ext/skia_trace_memory_dump_impl.h",
+    "ext/skia_utils_base.h",
+  ]
   sources = [
     # Chrome sources.
     "config/SkUserConfig.h",
@@ -213,41 +229,25 @@ component("skia") {
     "ext/SkDiscardableMemory_chrome.h",
     "ext/SkMemory_new_handler.cpp",
     "ext/benchmarking_canvas.cc",
-    "ext/benchmarking_canvas.h",
     "ext/cicp.cc",
-    "ext/cicp.h",
     "ext/convolver.cc",
-    "ext/convolver.h",
     "ext/event_tracer_impl.cc",
-    "ext/event_tracer_impl.h",
     "ext/google_logging.cc",
     "ext/image_operations.cc",
-    "ext/image_operations.h",
     "ext/legacy_display_globals.cc",
-    "ext/legacy_display_globals.h",
     "ext/opacity_filter_canvas.cc",
-    "ext/opacity_filter_canvas.h",
     "ext/recursive_gaussian_convolution.cc",
-    "ext/recursive_gaussian_convolution.h",
     "ext/rgba_to_yuva.cc",
-    "ext/rgba_to_yuva.h",
     "ext/skcolorspace_primaries.cc",
-    "ext/skcolorspace_primaries.h",
-    "ext/skcolorspace_trfn.h",
     "ext/skia_histogram.cc",
     "ext/skia_histogram.h",
     "ext/skia_memory_dump_provider.cc",
-    "ext/skia_memory_dump_provider.h",
     "ext/skia_trace_memory_dump_impl.cc",
-    "ext/skia_trace_memory_dump_impl.h",
     "ext/skia_utils_base.cc",
-    "ext/skia_utils_base.h",
   ]
   if (!is_apple) {
-    sources += [
-      "ext/fontmgr_default.cc",
-      "ext/fontmgr_default.h",
-    ]
+    public += [ "ext/fontmgr_default.h" ]
+    sources += [ "ext/fontmgr_default.cc" ]
   }
   if (is_android) {
     sources += [ "ext/fontmgr_default_android.cc" ]
@@ -256,30 +256,24 @@ component("skia") {
     sources += [ "ext/fontmgr_default_linux.cc" ]
   }
   if (is_ios) {
-    sources += [
-      "ext/skia_utils_ios.h",
-      "ext/skia_utils_ios.mm",
-    ]
+    public += [ "ext/skia_utils_ios.h" ]
+    sources += [ "ext/skia_utils_ios.mm" ]
   }
   if (is_mac) {
-    sources += [
-      "ext/skia_utils_mac.h",
-      "ext/skia_utils_mac.mm",
-    ]
+    public += [ "ext/skia_utils_mac.h" ]
+    sources += [ "ext/skia_utils_mac.mm" ]
   }
   if (is_win) {
+    public += [ "ext/skia_utils_win.h" ]
     sources += [
       "ext/fontmgr_default_win.cc",
       "ext/skia_utils_win.cc",
-      "ext/skia_utils_win.h",
     ]
   }
 
   if (!is_ios) {
-    sources += [
-      "ext/platform_canvas.cc",
-      "ext/platform_canvas.h",
-    ]
+    public += [ "ext/platform_canvas.h" ]
+    sources += [ "ext/platform_canvas.cc" ]
   }
   if (!is_ios && (current_cpu == "x86" || current_cpu == "x64")) {
     sources += [
@@ -307,19 +301,16 @@ component("skia") {
     ]
   }
 
-  # The *_public variables should be added to 'public' not 'sources'.
-  # However, Skia does not export enough *_public variables to make Chromium
-  # 'gn check' clean. Until that can be done add the *_public variables to
-  # 'sources' so that the buildbot 'analyze' step is aware of their existence.
-  sources += skia_core_public
-  sources += skia_utils_public
-  sources += skia_effects_public
-  sources += skia_effects_imagefilter_public
+  public += skia_core_public
+  public += skia_utils_public
+  public += skia_effects_public
+  public += skia_effects_imagefilter_public
+  public += skia_utils_chromium
 
   # The imported Skia gni source paths are made absolute by gn.
   defines = []
   sources += skia_sksl_sources
-  sources += skia_utils_sources
+  sources += skia_utils_private
   sources += skia_xps_sources
   sources += [
     "//third_party/skia/src/fonts/SkFontMgr_indirect.cpp",
@@ -335,27 +326,16 @@ component("skia") {
   ]
   if (!is_ios) {
     sources -= [ "//third_party/skia/src/ports/SkImageGenerator_none.cpp" ]
+    sources += skia_codec_core
+    sources += skia_codec_decode_bmp
     sources += [
-      "//third_party/skia/src/codec/SkBmpBaseCodec.cpp",
-      "//third_party/skia/src/codec/SkBmpCodec.cpp",
-      "//third_party/skia/src/codec/SkBmpMaskCodec.cpp",
-      "//third_party/skia/src/codec/SkBmpRLECodec.cpp",
-      "//third_party/skia/src/codec/SkBmpStandardCodec.cpp",
-      "//third_party/skia/src/codec/SkCodec.cpp",
-      "//third_party/skia/src/codec/SkCodecImageGenerator.cpp",
-      "//third_party/skia/src/codec/SkColorTable.cpp",
       "//third_party/skia/src/codec/SkEncodedInfo.cpp",
       "//third_party/skia/src/codec/SkIcoCodec.cpp",
       "//third_party/skia/src/codec/SkJpegCodec.cpp",
       "//third_party/skia/src/codec/SkJpegDecoderMgr.cpp",
       "//third_party/skia/src/codec/SkJpegUtility.cpp",
-      "//third_party/skia/src/codec/SkMaskSwizzler.cpp",
-      "//third_party/skia/src/codec/SkMasks.cpp",
       "//third_party/skia/src/codec/SkParseEncodedOrigin.cpp",
       "//third_party/skia/src/codec/SkPngCodec.cpp",
-      "//third_party/skia/src/codec/SkSampler.cpp",
-      "//third_party/skia/src/codec/SkSwizzler.cpp",
-      "//third_party/skia/src/codec/SkWbmpCodec.cpp",
       "//third_party/skia/src/codec/SkWebpCodec.cpp",
       "//third_party/skia/src/codec/SkWuffsCodec.cpp",
       "//third_party/skia/src/images/SkJPEGWriteUtility.cpp",
@@ -531,6 +511,7 @@ component("skia") {
   if (is_mac) {
     deps += [ ":skia_metal" ]
     defines += [ "SK_METAL" ]
+    sources += skia_gpu_metal_cpp
     frameworks = [
       "AppKit.framework",
       "CoreFoundation.framework",
@@ -541,7 +522,8 @@ component("skia") {
     ]
   }
   if (skia_use_dawn) {
-    sources += skia_dawn_sources
+    public += skia_gpu_dawn_public
+    sources += skia_gpu_dawn_private
   }
   if (is_ios) {
     frameworks = [ "ImageIO.framework" ]
@@ -552,16 +534,27 @@ component("skia") {
   }
 
   if (skia_support_gpu) {
-    sources += skia_gpu_sources
+    public += skia_gpu_public
+    public += skia_gpu_chromium_public
+    sources += skia_gpu_private
     sources += skia_null_gpu_sources
     sources += skia_sksl_gpu_sources
     sources += skia_shared_gpu_sources
     if (skia_use_gl) {
-      sources += skia_gl_gpu_sources
+      public += skia_gpu_gl_public
+      sources += skia_gpu_gl_private
     }
     if (enable_vulkan) {
-      sources += skia_vk_sources
+      public += skia_gpu_vk_public
+      public += skia_gpu_vk_chromium_public
+      public += [
+        # TODO(kjlubick) remove this file once Chrome uses the one from
+        # skia/include/private/chromium
+        "//third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h",
+      ]
+      sources += skia_gpu_vk_private
       sources += skia_shared_vk_sources
+      sources += skia_gpu_vk_chromium_private
     }
     deps += [ "//gpu/config:workaround_list" ]
   }
@@ -571,6 +564,7 @@ component("skia") {
       "//third_party:freetype_harfbuzz",
       "//third_party/zlib",
     ]
+    public += skia_pdf_public
     sources += skia_pdf_sources
   } else {
     sources += [ "//third_party/skia/src/pdf/SkDocument_PDF_None.cpp" ]
@@ -581,7 +575,8 @@ component("skia") {
     import("//third_party/skia/modules/skresources/skresources.gni")
     import("//third_party/skia/modules/sksg/sksg.gni")
     import("//third_party/skia/modules/skshaper/skshaper.gni")
-    sources += skia_skottie_sources + skia_skottie_public
+    public += skia_skottie_public
+    sources += skia_skottie_sources
     sources += skia_skresources_sources
     sources += skia_sksg_sources
     sources += skia_shaper_primitive_sources
@@ -768,7 +763,8 @@ skia_source_set("skia_opts") {
 if (is_mac) {
   skia_source_set("skia_metal") {
     defines = [ "SK_METAL" ]
-    sources = skia_metal_sources
+    public = skia_gpu_metal_public
+    sources = skia_gpu_metal_private
     sources += skia_shared_mtl_sources
     cflags_objcc = [
       "-Wno-unguarded-availability",
