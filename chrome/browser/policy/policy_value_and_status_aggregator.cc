@@ -273,6 +273,9 @@ base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyNames() {
 }
 
 void PolicyValueAndStatusAggregator::Refresh() {
+  for (auto* value_provider : value_providers_unowned_) {
+    value_provider->Refresh();
+  }
   for (auto& value_provider : value_providers_) {
     value_provider->Refresh();
   }
