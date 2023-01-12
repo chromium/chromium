@@ -161,6 +161,7 @@ try_.builder(
     ],
     builderless = True,
     check_for_flakiness = True,
+    goma_backend = None,
 )
 
 try_.orchestrator_builder(
@@ -220,6 +221,7 @@ try_.builder(
         "ci/Mac11 Tests",
     ],
     builderless = False,
+    goma_backend = None,
 )
 
 try_.builder(
@@ -243,7 +245,8 @@ try_.builder(
         "ci/Mac ASan 64 Builder",
         "ci/Mac ASan 64 Tests (1)",
     ],
-    goma_jobs = goma.jobs.J150,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -307,6 +310,7 @@ ios_builder(
     mirrors = [
         "ci/ios-asan",
     ],
+    goma_backend = None,
 )
 
 ios_builder(
@@ -436,6 +440,7 @@ ios_builder(
 ios_builder(
     name = "ios15-beta-simulator",
     mirrors = ["ci/ios15-beta-simulator"],
+    goma_backend = None,
 )
 
 ios_builder(
@@ -457,6 +462,7 @@ ios_builder(
     mirrors = [
         "ci/ios16-sdk-simulator",
     ],
+    goma_backend = None,
     os = os.MAC_DEFAULT,
     xcode = xcode.x14betabots,
 )

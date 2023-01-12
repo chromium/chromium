@@ -1240,7 +1240,7 @@
       'gpu-fyi-try-mac-nvidia-retina-rel': 'gpu_fyi_tests_release_trybot',
       'gpu-try-mac-amd-retina-dbg': 'gpu_tests_debug_bot',
       'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot',
-      'ios-asan': 'ios_simulator_release_static_asan_bot_xctest',
+      'ios-asan': 'ios_simulator_release_static_asan_bot_xctest_reclient',
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting',
       'ios-device': 'ios_device_release_compile_only',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
@@ -1255,10 +1255,10 @@
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-rts': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
-      'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
+      'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
-      'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
+      'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_trybot',
       'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-code-coverage': 'clang_code_coverage',
@@ -1268,15 +1268,15 @@
       'mac-perfetto-rel': 'perfetto_release_trybot',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
-      'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
+      'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient',
       'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
       'mac12-tests': 'release_trybot',
       'mac_chromium_10.13_rel_ng': 'release_trybot',
       'mac_chromium_10.14_rel_ng': 'release_trybot',
       'mac_chromium_10.15_rel_ng': 'release_trybot_no_nacl',
-      'mac_chromium_11.0_rel_ng': 'release_trybot',
+      'mac_chromium_11.0_rel_ng': 'release_trybot_reclient',
       'mac_chromium_archive_rel_ng': 'release_bot_mac_strip_minimal_symbols',
-      'mac_chromium_asan_rel_ng': 'asan_dcheck_disable_nacl_release_bot',
+      'mac_chromium_asan_rel_ng': 'asan_dcheck_disable_nacl_release_bot_reclient',
       'mac_chromium_compile_dbg_ng': 'gpu_tests_debug_bot',
       'mac_chromium_compile_rel_ng': 'gpu_tests_release_trybot',
       'mac_chromium_dbg_ng': 'gpu_tests_debug_bot',
@@ -1849,8 +1849,8 @@
       'asan', 'clang_tot', 'shared', 'v8_heap', 'minimal_symbols', 'release',
     ],
 
-    'asan_dcheck_disable_nacl_release_bot': [
-      'asan', 'dcheck_always_on', 'disable_nacl', 'release_bot',
+    'asan_dcheck_disable_nacl_release_bot_reclient': [
+      'asan', 'dcheck_always_on', 'disable_nacl', 'release_bot_reclient',
     ],
 
     'asan_disable_nacl_clang_tot_minimal_symbols_static_release': [
@@ -2977,10 +2977,6 @@
         'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
-    'ios_simulator_release_static_asan_bot_xctest': [
-        'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot', 'asan', 'xctest',
-    ],
-
     'ios_simulator_release_static_asan_bot_xctest_reclient': [
         'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot_reclient', 'asan', 'xctest',
     ],
@@ -3166,6 +3162,10 @@
 
     'mac_arm64_gpu_tests_release_trybot_no_symbols': [
       'arm64', 'gpu_tests', 'release_trybot', 'no_symbols',
+    ],
+
+    'mac_arm64_gpu_tests_release_trybot_no_symbols_reclient': [
+      'arm64', 'gpu_tests', 'release_trybot_reclient', 'no_symbols',
     ],
 
     'mac_arm64_release_bot_reclient': [
