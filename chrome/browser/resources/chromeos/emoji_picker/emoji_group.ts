@@ -370,6 +370,10 @@ export class EmojiGroupComponent extends PolymerElement {
   getIndex(item: EmojiVariants): number {
     return this.data.indexOf(item);
   }
+
+  formatCategory(category: CategoryEnum): string {
+    return category === CategoryEnum.GIF ? 'GIF' : category;
+  }
 }
 
 declare global {

@@ -237,7 +237,7 @@
 <template is = "dom-if" if="[[showClearRecents]]">
   <button id="clear-recents" on-click="onClearRecentsClick">
     <div id="clear-recents-hover">
-      Clear recently used [[category]]s
+      Clear recently used [[formatCategory(category)]]s
     </div>
   </button>
 </template>

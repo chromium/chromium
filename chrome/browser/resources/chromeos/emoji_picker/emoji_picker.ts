@@ -802,7 +802,10 @@ export class EmojiPicker extends PolymerElement {
       category: CategoryEnum, historyUpdated = true,
       _preferenceUpdated = true) {
     // History item is assumed to be the first item of each category.
-    const historyIndex = TABS_CATEGORY_START_INDEX.get(category);
+    const historyIndexes = this.gifSupport ?
+        TABS_CATEGORY_START_INDEX_GIF_SUPPORT :
+        TABS_CATEGORY_START_INDEX;
+    const historyIndex = historyIndexes.get(category);
 
     // If history group is already added, then update it.
     if (historyUpdated && (historyIndex !== undefined) &&
