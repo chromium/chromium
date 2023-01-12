@@ -21,7 +21,11 @@
 #include "fuchsia_web/runners/common/web_content_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class WebInstanceHost;
+namespace base {
+class FilteredServiceDirectory;
+}
+
+class WebInstanceHostV1;
 
 // ComponentRunner that runs Cast activities specified via cast/casts URIs.
 class CastRunner final : public fuchsia::component::runner::ComponentRunner,
@@ -44,7 +48,7 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   // `web_instance_host` is used to create a "main" instance to host Cast apps
   // and serve `FrameHost` instances, and isolated containers for apps that
   // need them.
-  CastRunner(WebInstanceHost& web_instance_host, Options options);
+  CastRunner(WebInstanceHostV1& web_instance_host, Options options);
   ~CastRunner() override;
 
   CastRunner(const CastRunner&) = delete;
@@ -122,7 +126,7 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   bool WasPersistedCacheErased();
 
   // Passed to WebContentRunners to use to create web_instance Components.
-  const raw_ref<WebInstanceHost> web_instance_host_;
+  const raw_ref<WebInstanceHostV1> web_instance_host_;
 
   // True if this Runner uses Context(s) with the HEADLESS feature set.
   const bool is_headless_;
@@ -134,7 +138,10 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   // Holds the main fuchsia.web.Context used to host CastComponents.
   // Note that although |main_context_| is actually a WebContentRunner, that is
   // only being used to maintain the Context for the hosted components.
+  const std::unique_ptr<base::FilteredServiceDirectory> main_services_;
   const std::unique_ptr<WebContentRunner> main_context_;
+
+  const std::unique_ptr<base::FilteredServiceDirectory> isolated_services_;
 
   // Holds `fuchsia.web.Context`s used to host isolated components.
   base::flat_set<std::unique_ptr<WebContentRunner>, base::UniquePtrComparator>
