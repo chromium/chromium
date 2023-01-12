@@ -96,7 +96,8 @@ void GPUShaderModule::OnCompilationInfoCallback(
     const WGPUCompilationMessage* message = &info->messages[i];
     result->AppendMessage(MakeGarbageCollected<GPUCompilationMessage>(
         StringFromASCIIAndUTF8(message->message), message->type,
-        message->lineNum, message->linePos, message->offset, message->length));
+        message->lineNum, message->utf16LinePos, message->utf16Offset,
+        message->utf16Length));
   }
 
   resolver->Resolve(result);
