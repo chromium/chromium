@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_EMULATE_WAYLAND_INPUT_EMULATE_H_
-#define UI_OZONE_PLATFORM_WAYLAND_EMULATE_WAYLAND_INPUT_EMULATE_H_
+#ifndef UI_OZONE_PLATFORM_WAYLAND_EMULATE_WESTON_TEST_INPUT_EMULATE_H_
+#define UI_OZONE_PLATFORM_WAYLAND_EMULATE_WESTON_TEST_INPUT_EMULATE_H_
 
 #include <memory>
 
@@ -28,9 +28,10 @@ struct wl_callback;
 
 namespace wl {
 
-// Emulates Keyboard, Pointer, and Touch events that ui_interactive_tests test
-// suite sends. Mustn't be used in production code.
-class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
+// Uses the weston_test protocol extension to emulate Keyboard, Pointer, and
+// Touch events that the ui_interactive_tests test suite sends. Mustn't be used
+// in production code.
+class WestonTestInputEmulate : public wl::WaylandProxy::Delegate {
  public:
   // Notifies the observer about events sent by Wayland compositor.
   class Observer : public base::CheckedObserver {
@@ -53,8 +54,8 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     ~Observer() override = default;
   };
 
-  WaylandInputEmulate();
-  ~WaylandInputEmulate() override;
+  WestonTestInputEmulate();
+  ~WestonTestInputEmulate() override;
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
@@ -84,7 +85,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   struct PendingEvent {
     PendingEvent(ui::EventType event_type,
                  gfx::AcceleratedWidget target_widget,
-                 WaylandInputEmulate*);
+                 WestonTestInputEmulate*);
     ~PendingEvent();
 
     ui::EventType type;
@@ -185,7 +186,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   // properly w.r.t. input events. This member stores all windows that have been
   // created.
   base::flat_map<gfx::AcceleratedWidget,
-                 std::unique_ptr<WaylandInputEmulate::TestWindow>>
+                 std::unique_ptr<WestonTestInputEmulate::TestWindow>>
       windows_;
 
   // Stores pending events in a global queue. We will not dispatch any pending
@@ -193,7 +194,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   // created.
   base::circular_deque<std::unique_ptr<PendingEvent>> pending_events_;
 
-  base::ObserverList<WaylandInputEmulate::Observer> observers_;
+  base::ObserverList<WestonTestInputEmulate::Observer> observers_;
 
   // Owned raw pointers. wl::Object is not used because the component this
   // class belongs to cannot depend on the "wayland" target in the
@@ -204,4 +205,4 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
 
 }  // namespace wl
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_EMULATE_WAYLAND_INPUT_EMULATE_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_EMULATE_WESTON_TEST_INPUT_EMULATE_H_

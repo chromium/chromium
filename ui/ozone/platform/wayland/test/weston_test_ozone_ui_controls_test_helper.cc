@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/test/wayland_ozone_ui_controls_test_helper.h"
+#include "ui/ozone/platform/wayland/test/weston_test_ozone_ui_controls_test_helper.h"
 #include "base/memory/raw_ptr.h"
 
 #include <linux/input.h>
@@ -11,7 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
-#include "ui/ozone/platform/wayland/emulate/wayland_input_emulate.h"
+#include "ui/ozone/platform/wayland/emulate/weston_test_input_emulate.h"
 
 namespace wl {
 
@@ -24,7 +24,7 @@ using ui_controls::MouseButton;
 using ui_controls::RIGHT;
 using ui_controls::UP;
 
-class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
+class WaylandGlobalEventWaiter : public WestonTestInputEmulate::Observer {
  public:
   enum class WaylandEventType {
     kMotion,
@@ -36,7 +36,7 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
 
   WaylandGlobalEventWaiter(WaylandEventType event_type,
                            const gfx::Point& screen_point,
-                           WaylandInputEmulate* emulate)
+                           WestonTestInputEmulate* emulate)
       : event_type_(event_type),
         emulate_(emulate),
         screen_point_(screen_point) {
@@ -46,7 +46,7 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
   WaylandGlobalEventWaiter(WaylandEventType event_type,
                            int button,
                            bool pressed,
-                           WaylandInputEmulate* emulate)
+                           WestonTestInputEmulate* emulate)
       : event_type_(event_type),
         emulate_(emulate),
         button_or_key_(button),
@@ -133,7 +133,7 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
   // Internal closure used to quit the nested run loop.
   base::RepeatingClosure quit_closure_;
 
-  const raw_ptr<WaylandInputEmulate> emulate_;
+  const raw_ptr<WestonTestInputEmulate> emulate_;
 
   // Expected pointer location on screen.
   gfx::Point screen_point_;
@@ -147,16 +147,17 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
 
 }  // namespace
 
-WaylandOzoneUIControlsTestHelper::WaylandOzoneUIControlsTestHelper()
-    : input_emulate_(std::make_unique<WaylandInputEmulate>()) {}
+WestonTestOzoneUIControlsTestHelper::WestonTestOzoneUIControlsTestHelper()
+    : input_emulate_(std::make_unique<WestonTestInputEmulate>()) {}
 
-WaylandOzoneUIControlsTestHelper::~WaylandOzoneUIControlsTestHelper() = default;
+WestonTestOzoneUIControlsTestHelper::~WestonTestOzoneUIControlsTestHelper() =
+    default;
 
-unsigned WaylandOzoneUIControlsTestHelper::ButtonDownMask() const {
+unsigned WestonTestOzoneUIControlsTestHelper::ButtonDownMask() const {
   return button_down_mask_;
 }
 
-void WaylandOzoneUIControlsTestHelper::SendKeyPressEvent(
+void WestonTestOzoneUIControlsTestHelper::SendKeyPressEvent(
     gfx::AcceleratedWidget widget,
     ui::KeyboardCode key,
     bool control,
@@ -170,7 +171,7 @@ void WaylandOzoneUIControlsTestHelper::SendKeyPressEvent(
                        std::move(closure), false /* key release */);
 }
 
-void WaylandOzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(
+void WestonTestOzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(
     gfx::AcceleratedWidget widget,
     const gfx::Point& mouse_loc,
     const gfx::Point& mouse_screen_loc_in_px,
@@ -189,7 +190,7 @@ void WaylandOzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(
   }
 }
 
-void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
+void WestonTestOzoneUIControlsTestHelper::SendMouseEvent(
     gfx::AcceleratedWidget widget,
     ui_controls::MouseButton type,
     int button_state,
@@ -258,7 +259,7 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void WaylandOzoneUIControlsTestHelper::SendTouchEvent(
+void WestonTestOzoneUIControlsTestHelper::SendTouchEvent(
     gfx::AcceleratedWidget widget,
     int action,
     int id,
@@ -291,16 +292,16 @@ void WaylandOzoneUIControlsTestHelper::SendTouchEvent(
 }
 #endif
 
-void WaylandOzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
+void WestonTestOzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
     base::OnceClosure closure) {
   NOTREACHED();
 }
 
-bool WaylandOzoneUIControlsTestHelper::MustUseUiControlsForMoveCursorTo() {
+bool WestonTestOzoneUIControlsTestHelper::MustUseUiControlsForMoveCursorTo() {
   return true;
 }
 
-void WaylandOzoneUIControlsTestHelper::SendKeyPressInternal(
+void WestonTestOzoneUIControlsTestHelper::SendKeyPressInternal(
     gfx::AcceleratedWidget widget,
     ui::KeyboardCode key,
     bool control,
@@ -353,7 +354,7 @@ void WaylandOzoneUIControlsTestHelper::SendKeyPressInternal(
   }
 }
 
-void WaylandOzoneUIControlsTestHelper::DispatchKeyPress(
+void WestonTestOzoneUIControlsTestHelper::DispatchKeyPress(
     gfx::AcceleratedWidget widget,
     ui::EventType event_type,
     ui::DomCode dom_code) {
@@ -371,7 +372,7 @@ void WaylandOzoneUIControlsTestHelper::DispatchKeyPress(
 namespace ui {
 
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWayland() {
-  return new wl::WaylandOzoneUIControlsTestHelper();
+  return new wl::WestonTestOzoneUIControlsTestHelper();
 }
 
 }  // namespace ui

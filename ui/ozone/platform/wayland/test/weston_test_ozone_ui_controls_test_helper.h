@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_OZONE_UI_CONTROLS_TEST_HELPER_H_
-#define UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_OZONE_UI_CONTROLS_TEST_HELPER_H_
+#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_WESTON_TEST_OZONE_UI_CONTROLS_TEST_HELPER_H_
+#define UI_OZONE_PLATFORM_WAYLAND_TEST_WESTON_TEST_OZONE_UI_CONTROLS_TEST_HELPER_H_
 
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
@@ -11,16 +11,17 @@
 
 namespace wl {
 
-class WaylandInputEmulate;
+class WestonTestInputEmulate;
 
-class WaylandOzoneUIControlsTestHelper : public ui::OzoneUIControlsTestHelper {
+class WestonTestOzoneUIControlsTestHelper
+    : public ui::OzoneUIControlsTestHelper {
  public:
-  WaylandOzoneUIControlsTestHelper();
-  WaylandOzoneUIControlsTestHelper(const WaylandOzoneUIControlsTestHelper&) =
-      delete;
-  WaylandOzoneUIControlsTestHelper& operator=(
-      const WaylandOzoneUIControlsTestHelper&) = delete;
-  ~WaylandOzoneUIControlsTestHelper() override;
+  WestonTestOzoneUIControlsTestHelper();
+  WestonTestOzoneUIControlsTestHelper(
+      const WestonTestOzoneUIControlsTestHelper&) = delete;
+  WestonTestOzoneUIControlsTestHelper& operator=(
+      const WestonTestOzoneUIControlsTestHelper&) = delete;
+  ~WestonTestOzoneUIControlsTestHelper() override;
 
   unsigned ButtonDownMask() const override;
   void SendKeyPressEvent(gfx::AcceleratedWidget widget,
@@ -67,7 +68,7 @@ class WaylandOzoneUIControlsTestHelper : public ui::OzoneUIControlsTestHelper {
 
   unsigned button_down_mask_ = 0;
 
-  std::unique_ptr<WaylandInputEmulate> input_emulate_;
+  std::unique_ptr<WestonTestInputEmulate> input_emulate_;
 };
 
 }  // namespace wl
@@ -78,4 +79,4 @@ OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWayland();
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_OZONE_UI_CONTROLS_TEST_HELPER_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_WESTON_TEST_OZONE_UI_CONTROLS_TEST_HELPER_H_
