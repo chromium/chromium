@@ -15,9 +15,13 @@ namespace ash {
 void SetCornerRadius(aura::Window* shadow_window,
                      ui::Layer* layer,
                      int radius) {
-  float radius_f = radius;
-  layer->SetRoundedCornerRadius({radius_f, radius_f, radius_f, radius_f});
-  layer->SetIsFastRoundedCorner(true);
+  const gfx::RoundedCornersF rounded_corner_radii(radius);
+  if (layer->rounded_corner_radii() != rounded_corner_radii) {
+    layer->SetRoundedCornerRadius(rounded_corner_radii);
+  }
+  if (!layer->is_fast_rounded_corner()) {
+    layer->SetIsFastRoundedCorner(true);
+  }
 
   ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(shadow_window);
   if (shadow)
