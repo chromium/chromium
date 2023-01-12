@@ -5,10 +5,10 @@
 #ifndef CHROME_UPDATER_POLICY_DM_POLICY_MANAGER_H_
 #define CHROME_UPDATER_POLICY_DM_POLICY_MANAGER_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
@@ -23,7 +23,6 @@ class DMPolicyManager : public PolicyManagerInterface {
           OmahaSettingsClientProto& omaha_settings);
   DMPolicyManager(const DMPolicyManager&) = delete;
   DMPolicyManager& operator=(const DMPolicyManager&) = delete;
-  ~DMPolicyManager() override;
 
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
@@ -52,6 +51,7 @@ class DMPolicyManager : public PolicyManagerInterface {
   absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
 
  private:
+  ~DMPolicyManager() override;
   const ::wireless_android_enterprise_devicemanagement::ApplicationSettings*
   GetAppSettings(const std::string& app_id) const;
 
@@ -60,7 +60,7 @@ class DMPolicyManager : public PolicyManagerInterface {
 };
 
 // A factory method to create a DM policy manager.
-std::unique_ptr<PolicyManagerInterface> CreateDMPolicyManager();
+scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager();
 
 }  // namespace updater
 

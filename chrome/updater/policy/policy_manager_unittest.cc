@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/updater/updater_scope.h"
@@ -22,7 +23,8 @@ constexpr char kTestAppIDForceInstall[] = "AppIDForceInstall";
 class PolicyManagerTests : public ::testing::Test {};
 
 TEST_F(PolicyManagerTests, NoPolicySet) {
-  auto policy_manager = std::make_unique<PolicyManager>(base::Value::Dict());
+  auto policy_manager =
+      base::MakeRefCounted<PolicyManager>(base::Value::Dict());
   EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->source(), "DictValuePolicy");
@@ -81,7 +83,8 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   policies.Set(base::StrCat({"Install", kTestAppIDForceInstall}),
                kPolicyForceInstallUser);
 
-  auto policy_manager = std::make_unique<PolicyManager>(std::move(policies));
+  auto policy_manager =
+      base::MakeRefCounted<PolicyManager>(std::move(policies));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
@@ -159,7 +162,8 @@ TEST_F(PolicyManagerTests, WrongPolicyValueType) {
   policies.Set(base::StrCat({"TargetChannel", kTestAppID}), 10);
   policies.Set(base::StrCat({"RollbackToTargetVersion", kTestAppID}), "1");
 
-  auto policy_manager = std::make_unique<PolicyManager>(std::move(policies));
+  auto policy_manager =
+      base::MakeRefCounted<PolicyManager>(std::move(policies));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 

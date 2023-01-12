@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/enterprise_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -223,14 +225,14 @@ absl::optional<std::vector<std::string>> DMPolicyManager::GetForceInstallApps()
   return absl::nullopt;
 }
 
-std::unique_ptr<PolicyManagerInterface> CreateDMPolicyManager() {
+scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager() {
   std::unique_ptr<
       ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
       omaha_settings = GetDefaultDMStorage()->GetOmahaPolicySettings();
   if (!omaha_settings)
     return nullptr;
 
-  return std::make_unique<DMPolicyManager>(*omaha_settings);
+  return base::MakeRefCounted<DMPolicyManager>(*omaha_settings);
 }
 
 }  // namespace updater

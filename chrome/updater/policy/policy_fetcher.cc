@@ -4,7 +4,6 @@
 
 #include "chrome/updater/policy/policy_fetcher.h"
 
-#include <memory>
 #include <utility>
 #include <vector>
 
@@ -48,7 +47,7 @@ PolicyFetcher::PolicyFetcher(scoped_refptr<PolicyService> policy_service)
 PolicyFetcher::~PolicyFetcher() = default;
 
 void PolicyFetcher::FetchPolicies(
-    base::OnceCallback<void(int, std::unique_ptr<PolicyManagerInterface>)>
+    base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
@@ -77,7 +76,7 @@ void PolicyFetcher::RegisterDevice(
 }
 
 void PolicyFetcher::OnRegisterDeviceRequestComplete(
-    base::OnceCallback<void(int, std::unique_ptr<PolicyManagerInterface>)>
+    base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>
         callback,
     bool is_enrollment_mandatory,
     DMClient::RequestResult result) {
@@ -103,8 +102,7 @@ void PolicyFetcher::OnRegisterDeviceRequestComplete(
 }
 
 void PolicyFetcher::FetchPolicy(
-    base::OnceCallback<void(std::unique_ptr<PolicyManagerInterface>)>
-        callback) {
+    base::OnceCallback<void(scoped_refptr<PolicyManagerInterface>)> callback) {
   VLOG(1) << __func__;
 
   DMClient::FetchPolicy(
@@ -114,7 +112,7 @@ void PolicyFetcher::FetchPolicy(
           .Then(std::move(callback)));
 }
 
-std::unique_ptr<PolicyManagerInterface>
+scoped_refptr<PolicyManagerInterface>
 PolicyFetcher::OnFetchPolicyRequestComplete(
     DMClient::RequestResult result,
     const std::vector<PolicyValidationResult>& validation_results) {

@@ -5,10 +5,11 @@
 #ifndef CHROME_UPDATER_POLICY_MANAGER_H_
 #define CHROME_UPDATER_POLICY_MANAGER_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,10 +42,9 @@ class UpdatesSuppressedTimes {
 
 // The Policy Manager Interface is implemented by policy managers such as Group
 // Policy and Device Management.
-class PolicyManagerInterface {
+class PolicyManagerInterface
+    : public base::RefCountedThreadSafe<PolicyManagerInterface> {
  public:
-  virtual ~PolicyManagerInterface() = default;
-
   // This is human-readable string that indicates the policy manager being
   // queried.
   virtual std::string source() const = 0;
@@ -114,9 +114,13 @@ class PolicyManagerInterface {
   // updater.
   virtual absl::optional<std::vector<std::string>> GetForceInstallApps()
       const = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<PolicyManagerInterface>;
+  virtual ~PolicyManagerInterface() = default;
 };
 
-std::unique_ptr<PolicyManagerInterface> GetDefaultValuesPolicyManager();
+scoped_refptr<PolicyManagerInterface> GetDefaultValuesPolicyManager();
 
 }  // namespace updater
 

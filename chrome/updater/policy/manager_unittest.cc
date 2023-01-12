@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/policy/manager.h"
+#include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
 
 TEST(PolicyManager, GetDefaultValuesPolicyManager) {
-  std::unique_ptr<PolicyManagerInterface> policy_manager(
+  scoped_refptr<PolicyManagerInterface> policy_manager(
       GetDefaultValuesPolicyManager());
   ASSERT_TRUE(policy_manager->HasActiveDevicePolicies());
 }

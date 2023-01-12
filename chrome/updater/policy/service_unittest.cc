@@ -22,7 +22,6 @@ class FakePolicyManager : public PolicyManagerInterface {
   FakePolicyManager(bool has_active_device_policies, const std::string& source)
       : has_active_device_policies_(has_active_device_policies),
         source_(source) {}
-  ~FakePolicyManager() override = default;
 
   std::string source() const override { return source_; }
   bool HasActiveDevicePolicies() const override {
@@ -105,6 +104,7 @@ class FakePolicyManager : public PolicyManagerInterface {
   }
 
  private:
+  ~FakePolicyManager() override = default;
   bool has_active_device_policies_;
   std::string source_;
   UpdatesSuppressedTimes suppressed_times_;
@@ -146,7 +146,7 @@ TEST(PolicyService, DefaultPolicyValue) {
 }
 
 TEST(PolicyService, SinglePolicyManager) {
-  auto manager = std::make_unique<FakePolicyManager>(true, "test_source");
+  auto manager = base::MakeRefCounted<FakePolicyManager>(true, "test_source");
   manager->SetChannel("app1", "test_channel");
   manager->SetUpdatePolicy("app2", 3);
   PolicyService::PolicyManagerVector managers;
@@ -181,7 +181,7 @@ TEST(PolicyService, SinglePolicyManager) {
 TEST(PolicyService, MultiplePolicyManagers) {
   PolicyService::PolicyManagerVector managers;
 
-  auto manager = std::make_unique<FakePolicyManager>(true, "group_policy");
+  auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
   UpdatesSuppressedTimes updates_suppressed_times;
   updates_suppressed_times.start_hour_ = 5;
   updates_suppressed_times.start_minute_ = 10;
@@ -191,13 +191,13 @@ TEST(PolicyService, MultiplePolicyManagers) {
   manager->SetUpdatePolicy("app2", 1);
   managers.push_back(std::move(manager));
 
-  manager = std::make_unique<FakePolicyManager>(true, "device_management");
+  manager = base::MakeRefCounted<FakePolicyManager>(true, "device_management");
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetChannel("app1", "channel_dm");
   manager->SetUpdatePolicy("app1", 3);
   managers.push_back(std::move(manager));
 
-  manager = std::make_unique<FakePolicyManager>(true, "imaginary");
+  manager = base::MakeRefCounted<FakePolicyManager>(true, "imaginary");
   updates_suppressed_times.start_hour_ = 1;
   updates_suppressed_times.start_minute_ = 1;
   updates_suppressed_times.duration_minute_ = 20;
@@ -280,7 +280,8 @@ TEST(PolicyService, MultiplePolicyManagers) {
 TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   PolicyService::PolicyManagerVector managers;
 
-  auto manager = std::make_unique<FakePolicyManager>(true, "device_management");
+  auto manager =
+      base::MakeRefCounted<FakePolicyManager>(true, "device_management");
   UpdatesSuppressedTimes updates_suppressed_times;
   updates_suppressed_times.start_hour_ = 5;
   updates_suppressed_times.start_minute_ = 10;
@@ -290,7 +291,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   manager->SetUpdatePolicy("app1", 3);
   managers.push_back(std::move(manager));
 
-  manager = std::make_unique<FakePolicyManager>(true, "imaginary");
+  manager = base::MakeRefCounted<FakePolicyManager>(true, "imaginary");
   updates_suppressed_times.start_hour_ = 1;
   updates_suppressed_times.start_minute_ = 1;
   updates_suppressed_times.duration_minute_ = 20;
@@ -302,7 +303,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
 
   managers.push_back(GetDefaultValuesPolicyManager());
 
-  manager = std::make_unique<FakePolicyManager>(false, "group_policy");
+  manager = base::MakeRefCounted<FakePolicyManager>(false, "group_policy");
   updates_suppressed_times.start_hour_ = 5;
   updates_suppressed_times.start_minute_ = 10;
   updates_suppressed_times.duration_minute_ = 30;

@@ -17,11 +17,13 @@ class GroupPolicyManager : public PolicyManager {
   explicit GroupPolicyManager(bool is_system_install_scenario);
   GroupPolicyManager(const GroupPolicyManager&) = delete;
   GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
-  ~GroupPolicyManager() override;
 
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
   bool HasActiveDevicePolicies() const override;
+
+ private:
+  ~GroupPolicyManager() override;
 };
 
 }  // namespace updater

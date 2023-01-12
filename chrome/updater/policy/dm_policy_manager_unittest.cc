@@ -5,6 +5,7 @@
 #include "chrome/updater/policy/dm_policy_manager.h"
 
 #include "base/enterprise_util.h"
+#include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/unittest_util.h"
@@ -106,7 +107,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
       omaha_settings;
 
-  auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
+  auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
 #if !BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->HasActiveDevicePolicies(), base::IsManagedDevice());
@@ -159,7 +160,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
           ROLLBACK_TO_TARGET_VERSION_ENABLED);
   omaha_settings.mutable_application_settings()->Add(std::move(app));
 
-  auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
+  auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
 #if !BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->HasActiveDevicePolicies(), base::IsManagedDevice());
@@ -224,7 +225,7 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
   EXPECT_TRUE(policy_data.has_policy_value());
   EXPECT_TRUE(omaha_settings.ParseFromString(policy_data.policy_value()));
 
-  auto policy_manager(std::make_unique<DMPolicyManager>(omaha_settings));
+  auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
   EXPECT_EQ(policy_manager->HasActiveDevicePolicies(), base::IsManagedDevice());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");

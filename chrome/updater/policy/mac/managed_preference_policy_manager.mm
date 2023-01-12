@@ -9,6 +9,8 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
@@ -27,7 +29,6 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
       delete;
   ManagedPreferencePolicyManager& operator=(
       const ManagedPreferencePolicyManager&) = delete;
-  ~ManagedPreferencePolicyManager() override;
 
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
@@ -56,6 +57,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
   absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
 
  private:
+  ~ManagedPreferencePolicyManager() override;
   base::scoped_nsobject<CRUManagedPreferencePolicyManager> impl_;
 };
 
@@ -197,9 +199,9 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
   return reinterpret_cast<NSDictionary*>(CFBridgingRelease(policies.release()));
 }
 
-std::unique_ptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager() {
+scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager() {
   NSDictionary* policyDict = ReadManagedPreferencePolicyDictionary();
-  return std::make_unique<ManagedPreferencePolicyManager>(policyDict);
+  return base::MakeRefCounted<ManagedPreferencePolicyManager>(policyDict);
 }
 
 }  // namespace updater

@@ -23,7 +23,6 @@ class PolicyManager : public PolicyManagerInterface {
   explicit PolicyManager(base::Value::Dict policies);
   PolicyManager(const PolicyManager&) = delete;
   PolicyManager& operator=(const PolicyManager&) = delete;
-  ~PolicyManager() override;
 
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
@@ -50,6 +49,9 @@ class PolicyManager : public PolicyManagerInterface {
   absl::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override;
   absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
+
+ protected:
+  ~PolicyManager() override;
 
  private:
   absl::optional<std::string> GetStringPolicy(const std::string& key) const;

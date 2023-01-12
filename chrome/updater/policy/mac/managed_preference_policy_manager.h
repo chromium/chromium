@@ -5,14 +5,13 @@
 #ifndef CHROME_UPDATER_POLICY_MAC_MANAGED_PREFERENCE_POLICY_MANAGER_H_
 #define CHROME_UPDATER_POLICY_MAC_MANAGED_PREFERENCE_POLICY_MANAGER_H_
 
-#include <memory>
-
+#include "base/memory/scoped_refptr.h"
 #include "chrome/updater/policy/manager.h"
 
 namespace updater {
 
 // A factory method to create a managed preference policy manager.
-std::unique_ptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager();
+scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager();
 
 }  // namespace updater
 

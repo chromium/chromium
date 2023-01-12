@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,7 +59,6 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
   DefaultValuesPolicyManager(const DefaultValuesPolicyManager&) = delete;
   DefaultValuesPolicyManager& operator=(const DefaultValuesPolicyManager&) =
       delete;
-  ~DefaultValuesPolicyManager() override;
 
   std::string source() const override;
 
@@ -83,6 +84,9 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
   absl::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override;
   absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
+
+ private:
+  ~DefaultValuesPolicyManager() override;
 };
 
 DefaultValuesPolicyManager::DefaultValuesPolicyManager() = default;
@@ -166,8 +170,8 @@ DefaultValuesPolicyManager::GetForceInstallApps() const {
   return absl::nullopt;
 }
 
-std::unique_ptr<PolicyManagerInterface> GetDefaultValuesPolicyManager() {
-  return std::make_unique<DefaultValuesPolicyManager>();
+scoped_refptr<PolicyManagerInterface> GetDefaultValuesPolicyManager() {
+  return base::MakeRefCounted<DefaultValuesPolicyManager>();
 }
 
 }  // namespace updater
