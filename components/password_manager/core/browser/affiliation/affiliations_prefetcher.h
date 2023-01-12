@@ -47,11 +47,27 @@ class AffiliationsPrefetcher : public KeyedService,
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  void DoDeferredInitialization();
+  void OnResultFromAllStoresReceived(
+      std::vector<std::vector<std::unique_ptr<PasswordForm>>> results);
+
+  void InitializeWithPasswordStores();
 
   raw_ptr<AffiliationService> affiliation_service_ = nullptr;
 
-  raw_ptr<PasswordStoreInterface> password_store_ = nullptr;
+  // Password stores registered via RegisterPasswordStore but aren't observed
+  // yet.
+  std::vector<raw_ptr<PasswordStoreInterface>> pending_initializations_;
+
+  // Password store which are currently being observed.
+  std::vector<raw_ptr<PasswordStoreInterface>> password_stores_;
+
+  // Allows to aggregate GetAllLogins results from multiple stores.
+  base::RepeatingCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
+      on_password_forms_received_barrier_callback_;
+
+  // Indicates whether passwords were fetched for all stores in
+  // |password_stores_|.
+  bool is_ready_ = false;
 
   base::WeakPtrFactory<AffiliationsPrefetcher> weak_ptr_factory_{this};
 };

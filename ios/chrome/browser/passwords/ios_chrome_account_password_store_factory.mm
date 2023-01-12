@@ -12,6 +12,7 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #import "components/password_manager/core/browser/login_database.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store_built_in_backend.h"
@@ -20,10 +21,15 @@
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/credentials_cleaner_runner_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliations_prefetcher_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using password_manager::AffiliatedMatchHelper;
+using password_manager::AffiliationService;
 
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
@@ -79,14 +85,21 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db)));
 
-  // TODO(crbug.com/1100818): Pass the affiliated_match_helper.
+  AffiliationService* affiliation_service =
+      IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+  std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
+      std::make_unique<AffiliatedMatchHelper>(affiliation_service);
+
   password_store->Init(browser_state->GetPrefs(),
-                       /*affiliated_match_helper=*/nullptr);
+                       std::move(affiliated_match_helper));
 
   password_manager_util::RemoveUselessCredentials(
       CredentialsCleanerRunnerFactory::GetForBrowserState(browser_state),
       password_store, browser_state->GetPrefs(), base::Minutes(1),
       base::NullCallback());
+
+  IOSChromeAffiliationsPrefetcherFactory::GetForBrowserState(context)
+      ->RegisterPasswordStore(password_store.get());
   return password_store;
 }
 

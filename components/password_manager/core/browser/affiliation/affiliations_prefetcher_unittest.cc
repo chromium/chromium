@@ -22,6 +22,8 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -31,6 +33,8 @@
 namespace password_manager {
 
 namespace {
+
+constexpr base::TimeDelta kInitializationDelayOnStartup = base::Seconds(30);
 
 using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
 
@@ -145,6 +149,8 @@ PasswordForm GetTestBlocklistedAndroidCredentials(const char* signon_realm) {
 
 }  // namespace
 
+// Boolean parameters indicates whether affiliation service should support
+// affiliated websites.
 class AffiliationsPrefetcherTest : public testing::Test,
                                    public ::testing::WithParamInterface<bool> {
  public:
@@ -154,18 +160,43 @@ class AffiliationsPrefetcherTest : public testing::Test,
   }
 
  protected:
+  // testing::Test:
+  void SetUp() override {
+    mock_affiliation_service_ = std::make_unique<
+        testing::StrictMock<OverloadedMockAffiliationService>>();
+    password_store()->Init(/*prefs=*/nullptr,
+                           /*affiliated_match_helper=*/nullptr);
+
+    prefetcher_ =
+        std::make_unique<AffiliationsPrefetcher>(mock_affiliation_service());
+  }
+
+  void TearDown() override {
+    (static_cast<KeyedService*>(prefetcher()))->Shutdown();
+    if (password_store_) {
+      DestroyPasswordStore();
+    }
+    mock_affiliation_service_.reset();
+    // Clean up on the background thread.
+    RunUntilIdle();
+  }
+
   void RunDeferredInitialization() {
     task_environment_.RunUntilIdle();
     mock_affiliation_service()->ExpectCallToTrimUnusedCache();
     prefetcher_->RegisterPasswordStore(password_store());
-    // task_environment_.RunUntilIdle();
-    task_environment_.FastForwardBy(base::Seconds(30));
+    task_environment_.FastForwardBy(kInitializationDelayOnStartup);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  void AddLoginAndWait(const PasswordForm& form) {
-    password_store_->AddLogin(form);
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
+  void AddLoginAndWait(PasswordStoreInterface* store,
+                       const PasswordForm& form) {
+    store->AddLogin(form);
     RunUntilIdle();
   }
 
@@ -181,14 +212,19 @@ class AffiliationsPrefetcherTest : public testing::Test,
   }
 
   void AddAndroidAndNonAndroidTestLogins() {
-    AddLoginAndWait(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
-    AddLoginAndWait(GetTestAndroidCredentials(kTestAndroidRealmBeta2));
-    AddLoginAndWait(
-        GetTestBlocklistedAndroidCredentials(kTestAndroidRealmBeta3));
-    AddLoginAndWait(GetTestAndroidCredentials(kTestAndroidRealmGamma));
+    AddLoginAndWait(password_store(),
+                    GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+    AddLoginAndWait(password_store(),
+                    GetTestAndroidCredentials(kTestAndroidRealmBeta2));
+    AddLoginAndWait(password_store(), GetTestBlocklistedAndroidCredentials(
+                                          kTestAndroidRealmBeta3));
+    AddLoginAndWait(password_store(),
+                    GetTestAndroidCredentials(kTestAndroidRealmGamma));
 
-    AddLoginAndWait(GetTestAndroidCredentials(kTestWebRealmAlpha1));
-    AddLoginAndWait(GetTestAndroidCredentials(kTestWebRealmAlpha2));
+    AddLoginAndWait(password_store(),
+                    GetTestAndroidCredentials(kTestWebRealmAlpha1));
+    AddLoginAndWait(password_store(),
+                    GetTestAndroidCredentials(kTestWebRealmAlpha2));
   }
 
   void RemoveAndroidAndNonAndroidTestLogins() {
@@ -294,25 +330,6 @@ class AffiliationsPrefetcherTest : public testing::Test,
     EXPECT_TRUE(expecting_result_callback_);
     expecting_result_callback_ = false;
     last_result_realms_ = affiliated_realms;
-  }
-
-  // testing::Test:
-  void SetUp() override {
-    mock_affiliation_service_ = std::make_unique<
-        testing::StrictMock<OverloadedMockAffiliationService>>();
-    password_store()->Init(/*prefs=*/nullptr, nullptr);
-
-    prefetcher_ = std::make_unique<AffiliationsPrefetcher>(
-        mock_affiliation_service_.get());
-  }
-
-  void TearDown() override {
-    prefetcher()->Shutdown();
-    if (password_store_)
-      DestroyPasswordStore();
-    mock_affiliation_service_.reset();
-    // Clean up on the background thread.
-    RunUntilIdle();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -446,7 +463,7 @@ TEST_P(AffiliationsPrefetcherTest,
   // Store one credential after deferred initialization.
   PasswordForm android_form4(android_form);
   android_form4.username_value = u"JohnDoe4";
-  AddLoginAndWait(android_form4);
+  AddLoginAndWait(password_store(), android_form4);
 
   for (size_t i = 0; i < 4; ++i) {
     mock_affiliation_service()->ExpectCallToCancelPrefetch(
@@ -487,5 +504,148 @@ TEST_P(AffiliationsPrefetcherTest, OnLoginsRetained) {
 INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,
                          AffiliationsPrefetcherTest,
                          ::testing::Bool());
+
+class AffiliationsPrefetcherWithTwoStoresTest
+    : public AffiliationsPrefetcherTest {
+ protected:
+  void SetUp() override {
+    AffiliationsPrefetcherTest::SetUp();
+    account_password_store_->Init(/*prefs=*/nullptr, nullptr);
+  }
+
+  void TearDown() override {
+    AffiliationsPrefetcherTest::TearDown();
+    account_password_store_->ShutdownOnUIThread();
+    account_password_store_ = nullptr;
+  }
+
+  TestPasswordStore* account_password_store() {
+    return account_password_store_.get();
+  }
+
+  void RunDeferredInitialization() {
+    RunUntilIdle();
+    mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+    prefetcher()->RegisterPasswordStore(password_store());
+    prefetcher()->RegisterPasswordStore(account_password_store());
+    FastForwardBy(kInitializationDelayOnStartup);
+  }
+
+ private:
+  scoped_refptr<TestPasswordStore> account_password_store_ =
+      base::MakeRefCounted<TestPasswordStore>();
+};
+
+INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,
+                         AffiliationsPrefetcherWithTwoStoresTest,
+                         ::testing::Bool());
+
+TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestInitialPrefetch) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+  AddLoginAndWait(account_password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmBeta2));
+
+  std::vector<FacetURI> expected_facets;
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2));
+
+  // Expect prefetch for passwords from both stores.
+  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+
+  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
+}
+
+TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestDuplicatesPrefetch) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+  AddLoginAndWait(account_password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+
+  std::vector<FacetURI> expected_facets;
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
+
+  // Expect prefetch for passwords from both stores.
+  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+
+  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
+}
+
+TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestLoginsChanged) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+
+  mock_affiliation_service()->ExpectKeepPrefetchForFacets(
+      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3)});
+
+  ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
+
+  EXPECT_CALL(*mock_affiliation_service(),
+              Prefetch(FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2),
+                       base::Time::Max()));
+  account_password_store()->AddLogin(
+      GetTestAndroidCredentials(kTestAndroidRealmBeta2));
+  RunUntilIdle();
+
+  mock_affiliation_service()->ExpectCallToTrimCacheForFacetURI(
+      kTestAndroidFacetURIAlpha3);
+  mock_affiliation_service()->ExpectCallToCancelPrefetch(
+      kTestAndroidFacetURIAlpha3);
+  password_store()->RemoveLogin(
+      GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+  RunUntilIdle();
+}
+
+TEST_P(AffiliationsPrefetcherWithTwoStoresTest, TestStoreRegisteredLater) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+  AddLoginAndWait(account_password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmBeta2));
+
+  std::vector<FacetURI> expected_facets;
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
+
+  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+  mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+
+  prefetcher()->RegisterPasswordStore(password_store());
+  FastForwardBy(kInitializationDelayOnStartup);
+
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2));
+  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+  mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+
+  prefetcher()->RegisterPasswordStore(account_password_store());
+  RunUntilIdle();
+}
+
+TEST_P(AffiliationsPrefetcherWithTwoStoresTest,
+       TestStoresRegisteredAfterDelay) {
+  AddLoginAndWait(password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
+  AddLoginAndWait(account_password_store(),
+                  GetTestAndroidCredentials(kTestAndroidRealmBeta2));
+
+  FastForwardBy(kInitializationDelayOnStartup);
+
+  std::vector<FacetURI> expected_facets;
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3));
+  expected_facets.push_back(
+      FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2));
+  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+  mock_affiliation_service()->ExpectCallToTrimUnusedCache();
+
+  prefetcher()->RegisterPasswordStore(password_store());
+  prefetcher()->RegisterPasswordStore(account_password_store());
+  RunUntilIdle();
+}
 
 }  // namespace password_manager

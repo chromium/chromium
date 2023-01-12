@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/barrier_callback.h"
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -35,32 +38,39 @@ bool IsFacetValidForAffiliation(const FacetURI& facet) {
 
 AffiliationsPrefetcher::AffiliationsPrefetcher(
     AffiliationService* affiliation_service)
-    : affiliation_service_(affiliation_service) {}
-
-AffiliationsPrefetcher::~AffiliationsPrefetcher() = default;
-
-void AffiliationsPrefetcher::RegisterPasswordStore(
-    PasswordStoreInterface* store) {
-  DCHECK(store);
-  DCHECK_EQ(nullptr, password_store_);
-
-  password_store_ = store;
-
+    : affiliation_service_(affiliation_service) {
   // I/O heavy initialization on start-up will be delayed by this long.
   // This should be high enough not to exacerbate start-up I/O contention too
   // much, but also low enough that the user be able log-in shortly after
   // browser start-up into web sites using Android credentials.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&AffiliationsPrefetcher::DoDeferredInitialization,
+      base::BindOnce(&AffiliationsPrefetcher::InitializeWithPasswordStores,
                      weak_ptr_factory_.GetWeakPtr()),
       kInitializationDelayOnStartup);
 }
 
+AffiliationsPrefetcher::~AffiliationsPrefetcher() = default;
+
+void AffiliationsPrefetcher::RegisterPasswordStore(
+    PasswordStoreInterface* store) {
+  DCHECK(store);
+
+  pending_initializations_.push_back(store);
+  // If initialization had already happened, request passwords from all stores
+  // again to ensure affiliations cache gets properly updated, otherwise
+  // do nothing.
+  if (is_ready_) {
+    InitializeWithPasswordStores();
+  }
+}
+
 void AffiliationsPrefetcher::Shutdown() {
-  if (password_store_)
-    password_store_->RemoveObserver(this);
-  password_store_ = nullptr;
+  for (const auto& store : password_stores_) {
+    store->RemoveObserver(this);
+  }
+  password_stores_.clear();
+  pending_initializations_.clear();
 }
 
 void AffiliationsPrefetcher::OnLoginsChanged(
@@ -110,28 +120,65 @@ void AffiliationsPrefetcher::OnLoginsRetained(
     if (IsFacetValidForAffiliation(facet_uri))
       facets.push_back(std::move(facet_uri));
   }
+  // TODO(crbug.com/1100818): Current logic cancels prefetch for all missing
+  // facets. This might be wrong if both account and profile store is used.
   affiliation_service_->KeepPrefetchForFacets(std::move(facets));
 }
 
 void AffiliationsPrefetcher::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  DCHECK(on_password_forms_received_barrier_callback_);
+  on_password_forms_received_barrier_callback_.Run(std::move(results));
+}
+
+void AffiliationsPrefetcher::OnResultFromAllStoresReceived(
+    std::vector<std::vector<std::unique_ptr<PasswordForm>>> results) {
+  // If PasswordStore is registered while awaiting for results from already
+  // registered PasswordStores, reinitialize it again to account newly added
+  // store.
+  if (!pending_initializations_.empty()) {
+    InitializeWithPasswordStores();
+    return;
+  }
+
   std::vector<FacetURI> facets;
-  for (const auto& form : results) {
-    FacetURI facet_uri =
-        FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
-    if (IsFacetValidForAffiliation(facet_uri))
-      facets.push_back(std::move(facet_uri));
+  for (const auto& result_per_store : results) {
+    for (const auto& form : result_per_store) {
+      FacetURI facet_uri =
+          FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
+      if (IsFacetValidForAffiliation(facet_uri)) {
+        facets.push_back(std::move(facet_uri));
+      }
+    }
   }
   affiliation_service_->KeepPrefetchForFacets(facets);
   affiliation_service_->TrimUnusedCache(std::move(facets));
+
+  is_ready_ = true;
 }
 
-void AffiliationsPrefetcher::DoDeferredInitialization() {
-  // Must start observing for changes at the same time as when the snapshot is
-  // taken to avoid inconsistencies due to any changes taking place in-between.
-  if (password_store_) {
-    password_store_->AddObserver(this);
-    password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+void AffiliationsPrefetcher::InitializeWithPasswordStores() {
+  // If no calls to RegisterPasswordStore happened before
+  // |kInitializationDelayOnStartup| return early.
+  if (pending_initializations_.empty()) {
+    is_ready_ = true;
+    return;
+  }
+
+  is_ready_ = false;
+  for (const auto& store : pending_initializations_) {
+    store->AddObserver(this);
+    password_stores_.push_back(store);
+  }
+  pending_initializations_.clear();
+
+  on_password_forms_received_barrier_callback_ =
+      base::BarrierCallback<std::vector<std::unique_ptr<PasswordForm>>>(
+          password_stores_.size(),
+          base::BindOnce(&AffiliationsPrefetcher::OnResultFromAllStoresReceived,
+                         weak_ptr_factory_.GetWeakPtr()));
+  for (const auto& store : password_stores_) {
+    store->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
   }
 }
 
