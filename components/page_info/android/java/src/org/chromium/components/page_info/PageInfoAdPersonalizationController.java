@@ -57,8 +57,11 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
     @NonNull
     @Override
     public String getSubpageTitle() {
+        var siteSettingsDelegate = getDelegate().getSiteSettingsDelegate();
         return mRowView.getContext().getResources().getString(
-                R.string.page_info_ad_personalization_title);
+                siteSettingsDelegate.isPrivacySandboxSettings4Enabled()
+                        ? R.string.page_info_ad_privacy_header
+                        : R.string.page_info_ad_personalization_title);
     }
 
     @Override

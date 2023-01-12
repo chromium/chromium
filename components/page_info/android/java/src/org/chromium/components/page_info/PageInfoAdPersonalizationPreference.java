@@ -42,11 +42,17 @@ public class PageInfoAdPersonalizationPreference
 
         int summaryId;
         if (mParams.hasJoinedUserToInterestGroup && !mParams.topicInfo.isEmpty()) {
-            summaryId = R.string.page_info_ad_personalization_topics_and_interest_group_description;
+            summaryId = getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
+                    ? R.string.page_info_ad_privacy_topics_and_fledge_description
+                    : R.string.page_info_ad_personalization_topics_and_interest_group_description;
         } else if (mParams.hasJoinedUserToInterestGroup) {
-            summaryId = R.string.page_info_ad_personalization_interest_group_description;
+            summaryId = getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
+                    ? R.string.page_info_ad_privacy_fledge_description
+                    : R.string.page_info_ad_personalization_interest_group_description;
         } else {
-            summaryId = R.string.page_info_ad_personalization_topics_description;
+            summaryId = getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
+                    ? R.string.page_info_ad_privacy_topics_description
+                    : R.string.page_info_ad_personalization_topics_description;
         }
         findPreference(PERSONALIZATION_SUMMARY).setSummary(summaryId);
 
@@ -65,7 +71,11 @@ public class PageInfoAdPersonalizationPreference
         SettingsUtils.addPreferencesFromResource(
                 this, R.xml.page_info_ad_personalization_preference);
 
-        findPreference(MANAGE_INTEREST_PREFERENCE).setOnPreferenceClickListener(this);
+        var manageButtonPreference = findPreference(MANAGE_INTEREST_PREFERENCE);
+        manageButtonPreference.setOnPreferenceClickListener(this);
+        manageButtonPreference.setTitle(getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
+                        ? R.string.page_info_ad_privacy_subpage_manage_button
+                        : R.string.page_info_ad_manage_interests);
         updateTopics();
     }
 

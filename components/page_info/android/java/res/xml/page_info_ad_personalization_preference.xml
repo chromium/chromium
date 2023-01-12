@@ -18,6 +18,5 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ButtonPreference
         android:key="manage_interest_button"
-        android:title="@string/page_info_ad_manage_interests"
         app:buttonLayout="@layout/button_preference_text_button"/>
 </PreferenceScreen>
