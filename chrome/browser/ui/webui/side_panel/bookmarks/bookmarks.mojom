@@ -38,6 +38,16 @@ interface BookmarksPageHandler {
   ExecuteOpenInIncognitoWindowCommand(array<int64> node_ids,
                                       ActionSource source);
 
+  // Moves bookmark specified by node_id to be a direct descendant of the
+  // Bookmarks Bar folder, using the same logic as the native bookmarks context
+  // menu.
+  ExecuteAddToBookmarksBarCommand(int64 node_id, ActionSource source);
+
+  // Moves bookmark specified by node_id to be a direct descendant of the
+  // Other Bookmarks folder, using the same logic as the native bookmarks
+  // context menu.
+  ExecuteRemoveFromBookmarksBarCommand(int64 node_id, ActionSource source);
+
   // Deletes bookmark specified by node_id, using the same logic as the native
   // bookmarks context menu.
   ExecuteDeleteCommand(int64 node_id, ActionSource source);

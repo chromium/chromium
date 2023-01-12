@@ -7366,6 +7366,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_UNDO_BOOKMARK_DELETION" desc="Label for the bookmarks side panel undo button displayed after deleting one or more bookmarks">
         Undo
       </message>
+      <message name="IDS_BOOKMARKS_MOVE_TO_BOOKMARKS_BAR" desc="Label for the move to bookmarks bar folder menu option">
+        Move to Bookmarks Bar folder
+      </message>
+      <message name="IDS_BOOKMARKS_MOVE_TO_ALL_BOOKMARKS" desc="Label for the move to all bookmarks menu option">
+        Move to All Bookmarks
+      </message>
+      <message name="IDS_BOOKMARKS_RENAME" desc="Label for the rename bookmarks menu option">
+        Rename
+      </message>
 
       <!-- Read Anything strings -->
       <!-- TODO(crbug.com/1266555): Add final strings and make them translateable. -->

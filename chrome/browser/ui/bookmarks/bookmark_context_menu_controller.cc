@@ -268,6 +268,27 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
                                     BookmarkEditor::NO_TREE);
       break;
 
+    case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR: {
+      base::RecordAction(
+          UserMetricsAction("BookmarkBar_ContextMenu_AddToBookmarkBar"));
+      const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
+      for (const auto* node : selection_) {
+        model_->Move(node, bookmark_bar_node,
+                     bookmark_bar_node->children().size());
+      }
+      break;
+    }
+
+    case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR: {
+      base::RecordAction(
+          UserMetricsAction("BookmarkBar_ContextMenu_RemoveFromBookmarkBar"));
+      const BookmarkNode* other_node = model_->other_node();
+      for (const auto* node : selection_) {
+        model_->Move(node, other_node, other_node->children().size());
+      }
+      break;
+    }
+
     case IDC_BOOKMARK_BAR_UNDO: {
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Undo"));
       BookmarkUndoServiceFactory::GetForProfile(profile_)->undo_manager()->
@@ -463,6 +484,23 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:
     case IDC_BOOKMARK_BAR_EDIT:
       return selection_.size() == 1 && !is_root_node && can_edit;
+
+    case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR:
+      for (auto* node : selection_) {
+        if (node->is_permanent_node() ||
+            node->parent() == model_->bookmark_bar_node()) {
+          return false;
+        }
+      }
+      return can_edit && model_->client()->CanBeEditedByUser(parent_);
+    case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR:
+      for (auto* node : selection_) {
+        if (node->is_permanent_node() ||
+            node->parent() != model_->bookmark_bar_node()) {
+          return false;
+        }
+      }
+      return can_edit && model_->client()->CanBeEditedByUser(parent_);
 
     case IDC_BOOKMARK_BAR_UNDO:
       return can_edit &&

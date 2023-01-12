@@ -641,6 +641,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
+  private setRenamingId_(event: CustomEvent<{id: string}>) {
+    this.renamingId_ = event.detail.id;
+  }
+
   private onRename_(
       event: CustomEvent<
           {bookmark: chrome.bookmarks.BookmarkTreeNode, value: string}>) {

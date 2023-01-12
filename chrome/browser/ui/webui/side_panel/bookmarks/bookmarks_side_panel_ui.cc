@@ -91,6 +91,9 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"menuOpenIncognito", IDS_BOOKMARK_MANAGER_MENU_OPEN_INCOGNITO},
       {"menuOpenIncognitoWithCount",
        IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT},
+      {"menuMoveToBookmarksBar", IDS_BOOKMARKS_MOVE_TO_BOOKMARKS_BAR},
+      {"menuMoveToAllBookmarks", IDS_BOOKMARKS_MOVE_TO_ALL_BOOKMARKS},
+      {"menuRename", IDS_BOOKMARKS_RENAME},
       {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
       {"undoBookmarkDeletion", IDS_UNDO_BOOKMARK_DELETION},
   };
@@ -116,6 +119,10 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddString(
       "otherBookmarksId",
       base::NumberToString(bookmark_model ? bookmark_model->other_node()->id()
+                                          : -1));
+  source->AddString(
+      "mobileBookmarksId",
+      base::NumberToString(bookmark_model ? bookmark_model->mobile_node()->id()
                                           : -1));
 
   content::URLDataSource::Add(

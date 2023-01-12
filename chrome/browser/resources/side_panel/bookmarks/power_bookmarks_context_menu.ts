@@ -26,8 +26,11 @@ export enum MenuItemId {
   OPEN_NEW_TAB = 0,
   OPEN_NEW_WINDOW = 1,
   OPEN_INCOGNITO = 2,
-  DELETE = 3,
-  DIVIDER = 4,
+  ADD_TO_BOOKMARKS_BAR = 3,
+  REMOVE_FROM_BOOKMARKS_BAR = 4,
+  RENAME = 5,
+  DELETE = 6,
+  DIVIDER = 7,
 }
 
 export interface MenuItem {
@@ -93,16 +96,39 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       });
     }
 
-    if (this.bookmarks_.length === 1 &&
-        this.bookmarks_[0]!.id !== loadTimeData.getString('bookmarksBarId')) {
-      menuItems.push(
-          {id: MenuItemId.DIVIDER},
-          {
-            id: MenuItemId.DELETE,
-            label: loadTimeData.getString('tooltipDelete'),
-          },
-      );
+    if (this.bookmarks_.length > 1 ||
+        this.bookmarks_[0]!.id === loadTimeData.getString('bookmarksBarId')) {
+      return menuItems;
     }
+
+    if (this.bookmarks_[0]!.parentId ===
+        loadTimeData.getString('bookmarksBarId')) {
+      menuItems.push({id: MenuItemId.DIVIDER}, {
+        id: MenuItemId.REMOVE_FROM_BOOKMARKS_BAR,
+        label: loadTimeData.getString('menuMoveToAllBookmarks'),
+      });
+    } else if (
+        this.bookmarks_[0]!.parentId ===
+            loadTimeData.getString('otherBookmarksId') ||
+        this.bookmarks_[0]!.parentId ===
+            loadTimeData.getString('mobileBookmarksId')) {
+      menuItems.push({id: MenuItemId.DIVIDER}, {
+        id: MenuItemId.ADD_TO_BOOKMARKS_BAR,
+        label: loadTimeData.getString('menuMoveToBookmarksBar'),
+      });
+    }
+
+    menuItems.push(
+        {id: MenuItemId.DIVIDER},
+        {
+          id: MenuItemId.RENAME,
+          label: loadTimeData.getString('menuRename'),
+        },
+        {
+          id: MenuItemId.DELETE,
+          label: loadTimeData.getString('tooltipDelete'),
+        },
+    );
 
     return menuItems;
   }
@@ -130,9 +156,26 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
             this.bookmarks_.map(bookmark => bookmark.id),
             ActionSource.kBookmark);
         break;
+      // Everything below is not expected to ever be called when
+      // this.bookmarks_ has more than one entry.
+      case MenuItemId.ADD_TO_BOOKMARKS_BAR:
+        this.bookmarksApi_.contextMenuAddToBookmarksBar(
+            this.bookmarks_[0]!.id, ActionSource.kBookmark);
+        break;
+      case MenuItemId.REMOVE_FROM_BOOKMARKS_BAR:
+        this.bookmarksApi_.contextMenuRemoveFromBookmarksBar(
+            this.bookmarks_[0]!.id, ActionSource.kBookmark);
+        break;
+      case MenuItemId.RENAME:
+        this.dispatchEvent(new CustomEvent('rename-clicked', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            id: this.bookmarks_[0]!.id,
+          },
+        }));
+        break;
       case MenuItemId.DELETE:
-        // Not expected to ever be called when this.bookmarks_ has more than
-        // one entry.
         this.bookmarksApi_.contextMenuDelete(
             this.bookmarks_[0]!.id, ActionSource.kBookmark);
         this.dispatchEvent(new CustomEvent('delete-clicked', {
