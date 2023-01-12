@@ -36,6 +36,21 @@ namespace {
 // The lower limit of memory usage that we would display to the user in bytes.
 // This value is the equivalent of 10MB.
 constexpr uint64_t kMemoryUsageThresholdInBytes = 10 * 1024 * 1024;
+
+void AddBubbleBodyText(
+    ui::DialogModel::Builder* dialog_model_builder,
+    int text_id,
+    std::vector<ui::DialogModelLabel::TextReplacement> replacements = {}) {
+  ui::DialogModelLabel label =
+      replacements.empty()
+          ? ui::DialogModelLabel(text_id).set_is_secondary()
+          : ui::DialogModelLabel::CreateWithReplacements(text_id, replacements)
+                .set_is_secondary();
+
+  dialog_model_builder->AddParagraph(
+      label, std::u16string(),
+      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+}
 }  // namespace
 
 // static
@@ -63,31 +78,45 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       browser->tab_strip_model()->GetActiveWebContents());
   const uint64_t memory_savings = tab_helper->GetMemorySavingsInBytes();
 
-  if (memory_savings > kMemoryUsageThresholdInBytes) {
-    dialog_model_builder.AddParagraph(
-        ui::DialogModelLabel::CreateWithReplacements(
-            IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS_AND_LINK,
-            {ui::DialogModelLabel::CreatePlainText(
-                 ui::FormatBytes(memory_savings)),
-             ui::DialogModelLabel::CreateLink(
-                 IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT,
-                 base::BindRepeating(
-                     &HighEfficiencyBubbleDelegate::OnSettingsClicked,
-                     base::Unretained(bubble_delegate)))})
-            .set_is_secondary(),
-        std::u16string(), kHighEfficiencyDialogBodyElementId);
+  ui::DialogModelLabel::TextReplacement memory_savings_text =
+      ui::DialogModelLabel::CreatePlainText(ui::FormatBytes(memory_savings));
+
+  const Profile* profile = browser->profile();
+  const bool is_guest = profile->IsGuestSession();
+  const bool is_forced_incognito =
+      IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
+      IncognitoModePrefs::Availability::kForced;
+
+  // Show bubble without Performance Settings Page Link since guest users or
+  // forced incognito users are not allowed to navigate to the performance
+  // settings page
+  if (is_guest || is_forced_incognito) {
+    if (memory_savings > kMemoryUsageThresholdInBytes) {
+      AddBubbleBodyText(&dialog_model_builder,
+                        IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS,
+                        {memory_savings_text});
+    } else {
+      AddBubbleBodyText(&dialog_model_builder,
+                        IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITHOUT_LINK);
+    }
   } else {
-    dialog_model_builder.AddParagraph(
-        ui::DialogModelLabel::CreateWithReplacement(
-            IDS_HIGH_EFFICIENCY_DIALOG_BODY,
-            ui::DialogModelLabel::CreateLink(
-                IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT,
-                base::BindRepeating(
-                    &HighEfficiencyBubbleDelegate::OnSettingsClicked,
-                    base::Unretained(bubble_delegate))))
-            .set_is_secondary(),
-        std::u16string(), kHighEfficiencyDialogBodyElementId);
+    ui::DialogModelLabel::TextReplacement settings_link =
+        ui::DialogModelLabel::CreateLink(
+            IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT,
+            base::BindRepeating(
+                &HighEfficiencyBubbleDelegate::OnSettingsClicked,
+                base::Unretained(bubble_delegate)));
+
+    if (memory_savings > kMemoryUsageThresholdInBytes) {
+      AddBubbleBodyText(&dialog_model_builder,
+                        IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS_AND_LINK,
+                        {memory_savings_text, settings_link});
+    } else {
+      AddBubbleBodyText(&dialog_model_builder, IDS_HIGH_EFFICIENCY_DIALOG_BODY,
+                        {settings_link});
+    }
   }
+
   auto dialog_model = dialog_model_builder.Build();
 
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(

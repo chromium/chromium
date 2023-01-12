@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -28,6 +30,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
@@ -113,6 +116,15 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
         identifier, context);
   }
 
+  void ClickPageActionChip() {
+    PageActionIconView* view = GetPageActionIconView();
+
+    ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), 0, 0);
+    views::test::ButtonTestApi test_api(view);
+    test_api.NotifyClick(e);
+  }
+
   base::HistogramTester histogram_tester_;
 
  private:
@@ -162,10 +174,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldOpenDialogOnClick) {
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_EQ(view->GetBubble(), nullptr);
 
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                   ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(view);
-  test_api.NotifyClick(e);
+  ClickPageActionChip();
 
   EXPECT_NE(view->GetBubble(), nullptr);
 }
@@ -174,16 +183,10 @@ TEST_F(HighEfficiencyChipViewTest, ShouldOpenDialogOnClick) {
 TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsOnDialogDismiss) {
   SetTabDiscardState(0, true);
 
-  PageActionIconView* view = GetPageActionIconView();
-  EXPECT_EQ(view->GetBubble(), nullptr);
-
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                   ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(view);
   // Open bubble
-  test_api.NotifyClick(e);
+  ClickPageActionChip();
   // Close bubble
-  test_api.NotifyClick(e);
+  ClickPageActionChip();
 
   histogram_tester_.ExpectUniqueSample(
       "PerformanceControls.HighEfficiency.BubbleAction",
@@ -216,12 +219,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldShowAndHideInkDrop) {
 TEST_F(HighEfficiencyChipViewTest, ShouldRenderLinkInDialog) {
   SetTabDiscardState(0, true);
 
-  PageActionIconView* view = GetPageActionIconView();
-
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                   ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(view);
-  test_api.NotifyClick(e);
+  ClickPageActionChip();
 
   views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
@@ -234,12 +232,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldRenderLinkInDialog) {
 TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
   SetTabDiscardState(0, true);
 
-  PageActionIconView* view = GetPageActionIconView();
-
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                   ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(view);
-  test_api.NotifyClick(e);
+  ClickPageActionChip();
 
   views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
@@ -262,12 +255,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotRenderSmallMemorySavingsInDialog) {
   // Mark the new tab as discarded.
   SetTabDiscardState(1, true);
 
-  PageActionIconView* view = GetPageActionIconView();
-
-  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                   ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi test_api(view);
-  test_api.NotifyClick(e);
+  ClickPageActionChip();
 
   views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
@@ -315,4 +303,56 @@ TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
 
   tab_strip_model->SelectNextTab();
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
+}
+
+TEST_F(HighEfficiencyChipViewTest, ShowChipWithSavingsInGuestMode) {
+  TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
+  EXPECT_TRUE(testprofile);
+  testprofile->SetGuestSession(true);
+
+  SetTabDiscardState(0, true);
+
+  ClickPageActionChip();
+
+  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
+      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+
+  EXPECT_EQ(label->GetText().find(u"You can change this anytime in Settings"),
+            std::string::npos);
+
+  EXPECT_NE(
+      label->GetText().find(ui::FormatBytes(kMemorySavingsKilobytes * 1024)),
+      std::string::npos);
+}
+
+TEST_F(HighEfficiencyChipViewTest, ShowChipWithoutSavingsInGuestMode) {
+  // Add a new tab with small memory savings.
+  AddTab(browser(), GURL("http://bar"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  TabDiscardTabHelper::CreateForWebContents(contents);
+  performance_manager::user_tuning::UserPerformanceTuningManager::
+      PreDiscardResourceUsage::CreateForWebContents(
+          contents, kSmallMemorySavingsKilobytes);
+
+  TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
+  EXPECT_TRUE(testprofile);
+  testprofile->SetGuestSession(true);
+
+  SetTabDiscardState(1, true);
+
+  ClickPageActionChip();
+
+  // Since there is no placeholders in the bubble text in guest mode and without
+  // savings, the text is created with views::Label instead of
+  // views::StyledLabel
+  views::Label* label = GetDialogLabel<views::Label>(
+      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+
+  EXPECT_EQ(label->GetText().find(u"You can change this anytime in Settings"),
+            std::string::npos);
+
+  EXPECT_NE(
+      label->GetText().find(u"Memory Saver freed up memory for other tasks"),
+      std::string::npos);
 }

@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,12 +28,20 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/performance_manager/public/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-typedef BrowserWithTestWindowTest BrowserCommandControllerTest;
+class BrowserCommandControllerTest : public BrowserWithTestWindowTest {
+ public:
+  BrowserCommandControllerTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      performance_manager::features::kHighEfficiencyModeAvailable};
+};
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -162,6 +171,7 @@ TEST_F(BrowserWithTestWindowTest, IncognitoCommands) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_IMPORT_SETTINGS));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_SHOW_SIGNIN));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_PERFORMANCE));
 
   TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
@@ -172,6 +182,7 @@ TEST_F(BrowserWithTestWindowTest, IncognitoCommands) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_IMPORT_SETTINGS));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_SHOW_SIGNIN));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_PERFORMANCE));
 
   testprofile->SetGuestSession(false);
   IncognitoModePrefs::SetAvailability(
@@ -183,6 +194,7 @@ TEST_F(BrowserWithTestWindowTest, IncognitoCommands) {
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_IMPORT_SETTINGS));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_SHOW_SIGNIN));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_PERFORMANCE));
 }
 
 TEST_F(BrowserCommandControllerTest, AppFullScreen) {
