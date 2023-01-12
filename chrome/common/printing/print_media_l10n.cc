@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/i18n/string_compare.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
@@ -699,6 +700,13 @@ void SortPaperDisplayNames(std::vector<PaperWithSizeInfo>& papers) {
 
   // Break apart the list into separate sort groups.
   for (auto& p : papers) {
+    // Drop borderless sizes so they don't get sorted ahead of standard sizes.
+    // TODO(b/218752273): Remove once borderless sizes are handled properly.
+    if (base::Contains(p.paper.vendor_id, ".borderless_") ||
+        base::Contains(p.paper.vendor_id, ".fb_")) {
+      continue;
+    }
+
     switch (p.size_info.sort_group) {
       case MediaSizeGroup::kSizeMm:
         mm_sizes.emplace_back(p);

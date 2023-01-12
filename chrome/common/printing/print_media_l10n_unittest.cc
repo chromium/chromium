@@ -192,4 +192,24 @@ TEST(PrintMediaL10N, SortNamedSizes) {
   }
 }
 
+TEST(PrintMediaL10N, RemoveBorderlessSizes) {
+  PaperWithSizeInfo p1 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed},
+                          Paper{"AAA", "oe_aaa.fb_8x10in", gfx::Size(8, 10)}};
+  PaperWithSizeInfo p2 = {MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed},
+                          Paper{"BBB", "oe_bbb_4x6in", gfx::Size(4, 6)}};
+  PaperWithSizeInfo p3 = {
+      MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed},
+      Paper{"BBB", "oe_bbb.borderless_4x6in", gfx::Size(4, 6)}};
+  PaperWithSizeInfo p4 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed},
+                          Paper{"AAA", "oe_aaa.8x10in", gfx::Size(8, 10)}};
+
+  std::vector<PaperWithSizeInfo> papers = {p1, p2, p3, p4};
+  std::vector<PaperWithSizeInfo> expected = {p4, p2};
+  SortPaperDisplayNames(papers);
+  ASSERT_EQ(papers.size(), expected.size());
+  for (size_t i = 0; i < expected.size(); i++) {
+    VerifyPaperSizeMatch(papers[i], expected[i]);
+  }
+}
+
 }  // namespace printing
