@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/safe_browsing/url_checker_delegate_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"

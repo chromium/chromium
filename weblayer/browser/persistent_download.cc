@@ -4,8 +4,8 @@
 
 #include "weblayer/browser/persistent_download.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/download/public/common/download_item.h"

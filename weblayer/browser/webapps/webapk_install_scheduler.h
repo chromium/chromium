@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "third_party/skia/include/core/SkBitmap.h"

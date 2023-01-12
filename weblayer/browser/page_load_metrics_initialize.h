@@ -5,7 +5,7 @@
 #ifndef WEBLAYER_BROWSER_PAGE_LOAD_METRICS_INITIALIZE_H_
 #define WEBLAYER_BROWSER_PAGE_LOAD_METRICS_INITIALIZE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace content {
 class WebContents;

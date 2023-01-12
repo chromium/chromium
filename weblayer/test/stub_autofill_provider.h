@@ -5,7 +5,7 @@
 #ifndef WEBLAYER_TEST_STUB_AUTOFILL_PROVIDER_H_
 #define WEBLAYER_TEST_STUB_AUTOFILL_PROVIDER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/android_autofill/browser/test_autofill_provider.h"
 #include "content/public/browser/web_contents.h"
 

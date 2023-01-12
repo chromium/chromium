@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"

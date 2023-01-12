@@ -5,8 +5,8 @@
 #include "weblayer/browser/browser_main_parts_impl.h"
 
 #include "base/base_switches.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"

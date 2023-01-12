@@ -4,8 +4,8 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/browsing_data/content/browsing_data_helper.h"

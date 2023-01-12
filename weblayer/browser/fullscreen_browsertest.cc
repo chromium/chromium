@@ -4,7 +4,7 @@
 
 #include "weblayer/test/weblayer_browser_test.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/browser.h"

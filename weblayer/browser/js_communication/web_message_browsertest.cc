@@ -4,7 +4,7 @@
 
 #include "weblayer/public/js_communication/web_message.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

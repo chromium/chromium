@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/popup_navigation_delegate_impl.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"

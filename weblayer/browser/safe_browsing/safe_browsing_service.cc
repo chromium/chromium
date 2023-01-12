@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"

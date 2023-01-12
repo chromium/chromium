@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content {

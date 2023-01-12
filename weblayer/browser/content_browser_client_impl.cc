@@ -121,7 +121,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/browser_ui/client_certificate/android/ssl_client_certificate_request.h"
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck

@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/safe_browsing/safe_browsing_token_fetcher_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "weblayer/public/google_account_access_token_fetch_delegate.h"

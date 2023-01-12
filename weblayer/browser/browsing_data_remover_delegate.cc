@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/browsing_data_remover_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
