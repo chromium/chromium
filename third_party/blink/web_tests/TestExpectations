@@ -6950,3 +6950,6 @@ crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.htt
 crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.serviceworker.html [ Failure Pass ]
 
 crbug.com/1406661 [ Mac12 ] http/tests/devtools/persistence/automapping-dynamic-uisourcecodes.js [ Failure Pass ]
+
+crbug.com/1406683 [ Win11 ] external/wpt/css/css-properties-values-api/at-property-animation.html [ Failure ]
+
