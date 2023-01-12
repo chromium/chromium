@@ -10693,6 +10693,30 @@
             ]
         }
     ],
+    "SpeculativeServiceWorkerStartup": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "FindRegistrationImprovements_20221130",
+                    "enable_features": [
+                        "ServiceWorkerStorageControlOnThreadPool",
+                        "ServiceWorkerStorageControlResponseUseHighPriority"
+                    ],
+                    "disable_features": [
+                        "SpeculativeServiceWorkerStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "SplitCacheByNetworkIsolationKey": [
         {
             "platforms": [
