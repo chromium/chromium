@@ -23,6 +23,13 @@ enum class CertificateTrustType {
   // This certificate is a trust anchor (as defined by RFC 5280).
   TRUSTED_ANCHOR,
 
+  // This certificate can be used as a trust anchor (as defined by RFC 5280) or
+  // a trusted leaf, depending on context.
+  TRUSTED_ANCHOR_OR_LEAF,
+
+  // This certificate is a directly trusted leaf.
+  TRUSTED_LEAF,
+
   LAST = TRUSTED_ANCHOR
 };
 
@@ -31,6 +38,18 @@ struct NET_EXPORT CertificateTrust {
   static constexpr CertificateTrust ForTrustAnchor() {
     CertificateTrust result;
     result.type = CertificateTrustType::TRUSTED_ANCHOR;
+    return result;
+  }
+
+  static constexpr CertificateTrust ForTrustAnchorOrLeaf() {
+    CertificateTrust result;
+    result.type = CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF;
+    return result;
+  }
+
+  static constexpr CertificateTrust ForTrustedLeaf() {
+    CertificateTrust result;
+    result.type = CertificateTrustType::TRUSTED_LEAF;
     return result;
   }
 
@@ -58,7 +77,15 @@ struct NET_EXPORT CertificateTrust {
     return result;
   }
 
+  constexpr CertificateTrust WithRequireLeafSelfSigned(
+      bool value = true) const {
+    CertificateTrust result = *this;
+    result.require_leaf_selfsigned = value;
+    return result;
+  }
+
   bool IsTrustAnchor() const;
+  bool IsTrustLeaf() const;
   bool IsDistrusted() const;
   bool HasUnspecifiedTrust() const;
 
@@ -72,6 +99,9 @@ struct NET_EXPORT CertificateTrust {
   // name and SPKI.
   bool enforce_anchor_expiry = false;
   bool enforce_anchor_constraints = false;
+
+  // Optionally, require trusted leafs to be self-signed to be trusted.
+  bool require_leaf_selfsigned = false;
 };
 
 // Interface for finding intermediates / trust anchors, and testing the

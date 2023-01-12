@@ -735,11 +735,8 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert_DistrustServer) {
       x509_server_cert.get(), "127.0.0.1",
       /*ocsp_response=*/std::string(), /*sct_list=*/std::string(), flags,
       crl_set_.get(), empty_cert_list_, &verify_result, NetLogWithSource());
-  // This hits the "Cannot verify a chain of length 1" error in the new
-  // verifier, since path building stops at the leaf which has a distrust
-  // record.
-  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-  EXPECT_EQ(CERT_STATUS_INVALID, verify_result.cert_status);
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID, verify_result.cert_status);
 }
 
 TEST_F(CertDatabaseNSSTest, TrustIntermediateCa) {

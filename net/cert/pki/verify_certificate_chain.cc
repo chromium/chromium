@@ -679,6 +679,15 @@ class PathVerifier {
                               CertErrors* errors,
                               bool* shortcircuit_chain_validation);
 
+  // Processes verification when the input is a single certificate. This is not
+  // defined by any standard. We attempt to match the de-facto behaviour of
+  // Operating System verifiers.
+  void ProcessSingleCertChain(const ParsedCertificate& cert,
+                              const CertificateTrust& trust,
+                              const der::GeneralizedTime& time,
+                              KeyPurpose required_key_purpose,
+                              CertErrors* errors);
+
   // Parses |spki| to an EVP_PKEY and checks whether the public key is accepted
   // by |delegate_|. On failure parsing returns nullptr. If either parsing the
   // key or key policy failed, adds a high-severity error to |errors|.
@@ -1303,6 +1312,7 @@ void PathVerifier::ProcessRootCertificate(const ParsedCertificate& cert,
   *shortcircuit_chain_validation = false;
   switch (trust.type) {
     case CertificateTrustType::UNSPECIFIED:
+    case CertificateTrustType::TRUSTED_LEAF:
       // Doesn't chain to a trust anchor - implicitly distrusted
       errors->AddError(cert_errors::kCertIsNotTrustAnchor);
       *shortcircuit_chain_validation = true;
@@ -1313,6 +1323,7 @@ void PathVerifier::ProcessRootCertificate(const ParsedCertificate& cert,
       *shortcircuit_chain_validation = true;
       break;
     case CertificateTrustType::TRUSTED_ANCHOR:
+    case CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
       break;
   }
   if (*shortcircuit_chain_validation)
@@ -1328,6 +1339,58 @@ void PathVerifier::ProcessRootCertificate(const ParsedCertificate& cert,
   // Use the certificate's SPKI and subject when verifying the next certificate.
   working_public_key_ = ParseAndCheckPublicKey(cert.tbs().spki_tlv, errors);
   working_normalized_issuer_name_ = cert.normalized_subject();
+}
+
+void PathVerifier::ProcessSingleCertChain(const ParsedCertificate& cert,
+                                          const CertificateTrust& trust,
+                                          const der::GeneralizedTime& time,
+                                          KeyPurpose required_key_purpose,
+                                          CertErrors* errors) {
+  switch (trust.type) {
+    case CertificateTrustType::UNSPECIFIED:
+    case CertificateTrustType::TRUSTED_ANCHOR:
+      // Target doesn't have a chain and isn't a directly trusted leaf -
+      // implicitly distrusted.
+      errors->AddError(cert_errors::kCertIsNotTrustAnchor);
+      return;
+    case CertificateTrustType::DISTRUSTED:
+      // Target is directly distrusted.
+      errors->AddError(cert_errors::kDistrustedByTrustStore);
+      return;
+    case CertificateTrustType::TRUSTED_LEAF:
+    case CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+      break;
+  }
+
+  // Check the public key for the target certificate regardless of whether
+  // `require_leaf_selfsigned` is true. This matches the check in WrapUp and
+  // fulfills the documented behavior of the IsPublicKeyAcceptable delegate.
+  ParseAndCheckPublicKey(cert.tbs().spki_tlv, errors);
+
+  if (trust.require_leaf_selfsigned) {
+    if (!VerifyCertificateIsSelfSigned(cert, delegate_->GetVerifyCache(),
+                                       errors)) {
+      // VerifyCertificateIsSelfSigned should have added an error, but just
+      // double check to be safe.
+      if (!errors->ContainsAnyErrorWithSeverity(CertError::SEVERITY_HIGH)) {
+        errors->AddError(cert_errors::kInternalError);
+      }
+      return;
+    }
+  }
+
+  // There is no standard for what it means to verify a directly trusted leaf
+  // certificate, so this is basically just checking common sense things that
+  // also mirror what we observed to be enforced with the Operating System
+  // native verifiers.
+  VerifyTimeValidity(cert, time, errors);
+  VerifyExtendedKeyUsage(cert, required_key_purpose, errors,
+                         /*is_target_cert=*/true,
+                         /*is_target_cert_issuer=*/false);
+
+  // Checking for unknown critical extensions matches Windows, but is stricter
+  // than the Mac verifier.
+  VerifyNoUnconsumedCriticalExtensions(cert, errors);
 }
 
 bssl::UniquePtr<EVP_PKEY> PathVerifier::ParseAndCheckPublicKey(
@@ -1372,10 +1435,11 @@ void PathVerifier::Run(
     return;
   }
 
-  // Verifying a trusted leaf certificate is not permitted. (It isn't a
-  // well-specified operation.) See https://crbug.com/814994.
+  // Verifying a trusted leaf certificate isn't a well-specified operation, so
+  // it's handled separately from the RFC 5280 defined verification process.
   if (certs.size() == 1) {
-    errors->GetOtherErrors()->AddError(cert_errors::kChainIsLength1);
+    ProcessSingleCertChain(*certs.front(), last_cert_trust, time,
+                           required_key_purpose, errors->GetErrorsForCert(0));
     return;
   }
 

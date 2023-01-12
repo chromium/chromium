@@ -48,6 +48,7 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, Simple) {
   this->RunTest("target-and-intermediate/main.test");
   this->RunTest("target-and-intermediate/ta-with-expiration.test");
   this->RunTest("target-and-intermediate/ta-with-constraints.test");
+  this->RunTest("target-and-intermediate/trusted_leaf-and-trust_anchor.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, BasicConstraintsCa) {
@@ -58,6 +59,13 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, BasicConstraintsCa) {
   this->RunTest("root-lacks-basic-constraints/ta-with-constraints.test");
   this->RunTest("root-basic-constraints-ca-false/main.test");
   this->RunTest("root-basic-constraints-ca-false/ta-with-constraints.test");
+
+  this->RunTest("target-has-ca-basic-constraints/main.test");
+  this->RunTest("target-has-ca-basic-constraints/strict.test");
+  this->RunTest(
+      "target-has-ca-basic-constraints/target_only-trusted_leaf.test");
+  this->RunTest(
+      "target-has-ca-basic-constraints/target_only-trusted_leaf-strict.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, BasicConstraintsPathlen) {
@@ -72,6 +80,8 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, UnknownExtension) {
   this->RunTest("intermediate-unknown-critical-extension/main.test");
   this->RunTest("intermediate-unknown-non-critical-extension/main.test");
   this->RunTest("target-unknown-critical-extension/main.test");
+  this->RunTest(
+      "target-unknown-critical-extension/target_only-trusted_leaf.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, WeakSignature) {
@@ -92,6 +102,7 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, LastCertificateNotTrusted) {
   this->RunTest("target-and-intermediate/distrusted-root.test");
   this->RunTest("target-and-intermediate/distrusted-root-expired.test");
   this->RunTest("target-and-intermediate/unspecified-trust-root.test");
+  this->RunTest("target-and-intermediate/trusted_leaf-root.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, WeakPublicKey) {
@@ -237,6 +248,33 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, ManyNames) {
   this->RunTest("many-names/toomany-dirnames-permitted.test");
 }
 
+TYPED_TEST_P(VerifyCertificateChainSingleRootTest, TargetOnly) {
+  this->RunTest("target-only/trusted_anchor.test");
+  this->RunTest("target-only/trusted_leaf-and-trust_anchor.test");
+  this->RunTest("target-only/trusted_leaf.test");
+  this->RunTest("target-only/trusted_leaf_require_self_signed.test");
+  this->RunTest("target-only/trusted_leaf-not_after.test");
+  this->RunTest("target-only/trusted_leaf-wrong_eku.test");
+
+  this->RunTest("target-selfissued/trusted_anchor.test");
+  this->RunTest("target-selfissued/trusted_leaf-and-trust_anchor.test");
+  this->RunTest("target-selfissued/trusted_leaf.test");
+  this->RunTest("target-selfissued/trusted_leaf_require_self_signed.test");
+}
+
+TYPED_TEST_P(VerifyCertificateChainSingleRootTest, TargetSelfSigned) {
+  // Note that there is not a test here of target-selfsigned with
+  // TRUSTED_ANCHOR, since it will have different results when run under
+  // verify_certificate_chain_unittest.cc and
+  // path_builder_verify_certificate_chain_unittest.cc
+
+  this->RunTest("target-selfsigned/trusted_leaf-and-trust_anchor.test");
+  this->RunTest("target-selfsigned/trusted_leaf.test");
+  this->RunTest("target-selfsigned/trusted_leaf_require_self_signed.test");
+  this->RunTest("target-selfsigned/trusted_leaf-not_after.test");
+  this->RunTest("target-selfsigned/trusted_leaf-wrong_eku.test");
+}
+
 // TODO(eroman): Add test that invalid validity dates where the day or month
 // ordinal not in range, like "March 39, 2016" are rejected.
 
@@ -258,7 +296,9 @@ REGISTER_TYPED_TEST_SUITE_P(VerifyCertificateChainSingleRootTest,
                             TrustAnchorNotSelfSigned,
                             KeyRollover,
                             Policies,
-                            ManyNames);
+                            ManyNames,
+                            TargetOnly,
+                            TargetSelfSigned);
 
 }  // namespace net
 

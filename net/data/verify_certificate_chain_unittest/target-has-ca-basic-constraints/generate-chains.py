@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-# Copyright 2015 The Chromium Authors
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-"""Certificate chain where the target certificate contains an unknown X.509v3
-extension (OID=1.2.3.4) that is marked as critical."""
+"""Certificate chain where the leaf has a basic constraints extension with
+CA=true"""
 
 import sys
 sys.path += ['../..']
@@ -17,12 +16,10 @@ root = gencerts.create_self_signed_root_certificate('Root')
 # Intermediate certificate.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
 
-# Target certificate (has unknown critical extension).
+# Target certificate (end entity, but has pathlen set).
 target = gencerts.create_end_entity_certificate('Target', intermediate)
-target.get_extensions().add_property('1.2.3.4',
-                                     'critical,DER:01:02:03:04')
+target.get_extensions().set_property('basicConstraints', 'critical,CA:true')
 
 chain = [target, intermediate, root]
 gencerts.write_chain(__doc__, chain, 'chain.pem')
-
 gencerts.write_chain(__doc__, [target], 'target_only.pem')

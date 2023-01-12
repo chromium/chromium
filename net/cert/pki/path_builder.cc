@@ -122,6 +122,7 @@ int TrustAndKeyIdentifierMatchToOrder(const ParsedCertificate* target,
   KeyIdentifierMatch key_id_match = CalculateKeyIdentifierMatch(target, issuer);
   switch (issuer_trust.type) {
     case CertificateTrustType::TRUSTED_ANCHOR:
+    case CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
       switch (key_id_match) {
         case kMatch:
           return kTrustedAndKeyIdMatch;
@@ -131,6 +132,7 @@ int TrustAndKeyIdentifierMatchToOrder(const ParsedCertificate* target,
           return kTrustedAndKeyIdMismatch;
       }
     case CertificateTrustType::UNSPECIFIED:
+    case CertificateTrustType::TRUSTED_LEAF:
       switch (key_id_match) {
         case kMatch:
           return kKeyIdMatch;
@@ -442,6 +444,8 @@ const ParsedCertificate* CertPathBuilderResultPath::GetTrustedCert() const {
 
   switch (last_cert_trust.type) {
     case CertificateTrustType::TRUSTED_ANCHOR:
+    case CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+    case CertificateTrustType::TRUSTED_LEAF:
       return certs.back().get();
     case CertificateTrustType::UNSPECIFIED:
     case CertificateTrustType::DISTRUSTED:
@@ -590,16 +594,50 @@ bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
       }
     }
 
-    // If the cert is trusted but is the leaf, treat it as having unspecified
-    // trust. This may allow a successful path to be built to a different root
-    // (or to the same cert if it's self-signed).
+    // Overrides for cert with trust appearing in the wrong place for the type
+    // of trust (trusted leaf in non-leaf position, or trust anchor in leaf
+    // position.)
     switch (next_issuer_.trust.type) {
       case CertificateTrustType::TRUSTED_ANCHOR:
+        // If the leaf cert is trusted only as an anchor, treat it as having
+        // unspecified trust. This may allow a successful path to be built to a
+        // different root (or to the same cert if it's self-signed).
         if (cur_path_.Empty()) {
           DVLOG(1) << "Leaf is a trust anchor, considering as UNSPECIFIED";
           next_issuer_.trust = CertificateTrust::ForUnspecified();
         }
         break;
+      case CertificateTrustType::TRUSTED_LEAF:
+        // If a non-leaf cert is trusted only as a leaf, treat it as having
+        // unspecified trust. This may allow a successful path to be built to a
+        // trusted root.
+        if (!cur_path_.Empty()) {
+          DVLOG(1) << "Issuer is a trust leaf, considering as UNSPECIFIED";
+          next_issuer_.trust = CertificateTrust::ForUnspecified();
+        }
+        break;
+      case CertificateTrustType::DISTRUSTED:
+      case CertificateTrustType::UNSPECIFIED:
+      case CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+        // No override necessary.
+        break;
+    }
+
+    // Overrides for trusted leaf cert with require_leaf_selfsigned. If the leaf
+    // isn't actually self-signed, treat it as unspecified.
+    switch (next_issuer_.trust.type) {
+      case CertificateTrustType::TRUSTED_LEAF:
+      case CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+        if (cur_path_.Empty() && next_issuer_.trust.require_leaf_selfsigned &&
+            !VerifyCertificateIsSelfSigned(*next_issuer_.cert,
+                                           delegate->GetVerifyCache(),
+                                           /*errors=*/nullptr)) {
+          DVLOG(1) << "Leaf is trusted with require_leaf_selfsigned but is "
+                      "not self-signed, considering as UNSPECIFIED";
+          next_issuer_.trust = CertificateTrust::ForUnspecified();
+        }
+        break;
+      case CertificateTrustType::TRUSTED_ANCHOR:
       case CertificateTrustType::DISTRUSTED:
       case CertificateTrustType::UNSPECIFIED:
         // No override necessary.
@@ -611,7 +649,9 @@ bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
       // distrusted, or because it is trusted) then stop building and return the
       // path.
       case CertificateTrustType::DISTRUSTED:
-      case CertificateTrustType::TRUSTED_ANCHOR: {
+      case CertificateTrustType::TRUSTED_ANCHOR:
+      case CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+      case CertificateTrustType::TRUSTED_LEAF: {
         // If the issuer has a known trust level, can stop building the path.
         DVLOG(2) << "CertPathIter got anchor: "
                  << CertDebugString(next_issuer_.cert.get());

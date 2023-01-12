@@ -492,6 +492,7 @@ void MapPathBuilderErrorsToCertStatus(const CertPathErrors& errors,
   if (errors.ContainsError(cert_errors::kDistrustedByTrustStore) ||
       errors.ContainsError(cert_errors::kVerifySignedDataFailed) ||
       errors.ContainsError(cert_errors::kNoIssuersFound) ||
+      errors.ContainsError(cert_errors::kSubjectDoesNotMatchIssuer) ||
       errors.ContainsError(cert_errors::kDeadlineExceeded) ||
       errors.ContainsError(cert_errors::kIterationLimitExceeded)) {
     *cert_status |= CERT_STATUS_AUTHORITY_INVALID;
