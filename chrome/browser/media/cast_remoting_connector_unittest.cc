@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/pref_names.h"
@@ -164,7 +163,7 @@ class CastRemotingConnectorTest : public ::testing::Test {
   void CreateConnector(bool remoting_allowed) {
     connector_.reset();  // Call dtor first if there is one created.
     connector_.reset(new CastRemotingConnector(
-        &media_router_, &pref_service_, kRemotingTabId,
+        &pref_service_, kRemotingTabId,
         std::make_unique<MediaRemotingDialogCoordinator>()));
     connector_->set_remoting_allowed_for_testing(remoting_allowed);
   }
@@ -175,7 +174,6 @@ class CastRemotingConnectorTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  media_router::MockMediaRouter media_router_;
   std::unique_ptr<CastRemotingConnector> connector_;
 };
 

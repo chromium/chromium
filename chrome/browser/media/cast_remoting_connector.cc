@@ -15,8 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "components/media_router/browser/media_router.h"
-#include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -155,8 +153,6 @@ CastRemotingConnector* CastRemotingConnector::Get(
     if (!media_router::MediaRouterEnabled(contents->GetBrowserContext()))
       return nullptr;
     connector = new CastRemotingConnector(
-        media_router::MediaRouterFactory::GetApiForBrowserContext(
-            contents->GetBrowserContext()),
         user_prefs::UserPrefs::Get(contents->GetBrowserContext()),
         sessions::SessionTabHelper::IdForTab(contents),
 #if defined(TOOLKIT_VIEWS)
@@ -187,12 +183,10 @@ void CastRemotingConnector::CreateMediaRemoter(
 }
 
 CastRemotingConnector::CastRemotingConnector(
-    media_router::MediaRouter* router,
     PrefService* pref_service,
     SessionID tab_id,
     std::unique_ptr<MediaRemotingDialogCoordinator> dialog_coordinator)
-    : media_router_(router),
-      pref_service_(pref_service),
+    : pref_service_(pref_service),
       tab_id_(tab_id),
       dialog_coordinator_(std::move(dialog_coordinator)) {
   StartObservingPref();
