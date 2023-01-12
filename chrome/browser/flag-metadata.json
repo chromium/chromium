@@ -708,7 +708,7 @@
   {
     "name": "bluetooth-coredump",
     "owners": ["mmandlik", "chromeos-bt-team@google.com"],
-    "expiry_milestone": 111
+    "expiry_milestone": 115
   },
   {
     "name": "bluetooth-fix-a2dp-packet-size",
