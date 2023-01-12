@@ -4,7 +4,7 @@
 
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_offset_string_conversions.h"

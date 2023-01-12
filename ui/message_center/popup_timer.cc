@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/message_center/popup_timer.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace message_center {
 

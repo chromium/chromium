@@ -5,7 +5,7 @@
 #ifndef UI_GFX_VSYNC_PROVIDER_H_
 #define UI_GFX_VSYNC_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "ui/gfx/gfx_export.h"
 

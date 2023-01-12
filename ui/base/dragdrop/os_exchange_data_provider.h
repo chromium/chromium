@@ -20,7 +20,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #endif
 
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)

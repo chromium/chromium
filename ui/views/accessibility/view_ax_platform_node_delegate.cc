@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/adapters.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"

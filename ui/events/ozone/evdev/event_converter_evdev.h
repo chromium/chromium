@@ -10,10 +10,10 @@
 #include <set>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
 #include "ui/events/devices/gamepad_device.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"

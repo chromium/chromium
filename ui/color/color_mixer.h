@@ -8,9 +8,9 @@
 #include <map>
 #include <set>
 
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"

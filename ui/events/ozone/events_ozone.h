@@ -5,7 +5,7 @@
 #ifndef UI_EVENTS_OZONE_EVENTS_OZONE_H_
 #define UI_EVENTS_OZONE_EVENTS_OZONE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform_event.h"
 

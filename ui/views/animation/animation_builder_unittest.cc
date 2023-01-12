@@ -4,7 +4,7 @@
 
 #include "ui/views/animation/animation_builder.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"

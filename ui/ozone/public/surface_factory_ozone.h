@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/native_library.h"
 #include "gpu/vulkan/buildflags.h"

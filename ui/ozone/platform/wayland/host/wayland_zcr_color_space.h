@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"

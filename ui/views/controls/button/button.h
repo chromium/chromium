@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "ui/events/event_constants.h"

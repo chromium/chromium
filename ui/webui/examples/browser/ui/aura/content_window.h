@@ -5,7 +5,7 @@
 #ifndef UI_WEBUI_EXAMPLES_BROWSER_UI_AURA_CONTENT_WINDOW_H_
 #define UI_WEBUI_EXAMPLES_BROWSER_UI_AURA_CONTENT_WINDOW_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/webui/examples/browser/ui/aura/aura_context.h"
 #include "url/gurl.h"
 

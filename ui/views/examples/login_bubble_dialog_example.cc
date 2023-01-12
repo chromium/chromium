@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"

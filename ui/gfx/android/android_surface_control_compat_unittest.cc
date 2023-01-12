@@ -4,7 +4,7 @@
 
 #include "ui/gfx/android/android_surface_control_compat.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"

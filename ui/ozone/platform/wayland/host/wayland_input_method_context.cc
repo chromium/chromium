@@ -4,9 +4,9 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

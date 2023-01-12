@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace ui {

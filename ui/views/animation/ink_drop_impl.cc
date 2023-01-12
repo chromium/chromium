@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/ink_drop_highlight.h"

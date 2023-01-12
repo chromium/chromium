@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/record_paint_canvas.h"

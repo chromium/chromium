@@ -4,9 +4,9 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

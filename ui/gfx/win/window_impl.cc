@@ -7,8 +7,8 @@
 #include <list>
 
 #include "base/at_exit.h"
-#include "base/bind.h"
 #include "base/debug/alias.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"

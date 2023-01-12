@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "base/win/registry.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"

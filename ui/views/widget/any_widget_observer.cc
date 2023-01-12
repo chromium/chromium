@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/widget/any_widget_observer.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
 #include "ui/views/widget/widget.h"
 

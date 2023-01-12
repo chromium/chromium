@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "ui/compositor/compositor_export.h"

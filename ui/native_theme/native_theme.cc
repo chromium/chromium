@@ -6,9 +6,9 @@
 
 #include <cstring>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"

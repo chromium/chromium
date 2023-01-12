@@ -12,9 +12,9 @@
 #include <ostream>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"

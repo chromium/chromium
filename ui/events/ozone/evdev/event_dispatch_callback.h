@@ -5,7 +5,7 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_EVENT_DISPATCH_CALLBACK_H_
 #define UI_EVENTS_OZONE_EVDEV_EVENT_DISPATCH_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ui {
 

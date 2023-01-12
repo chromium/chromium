@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"

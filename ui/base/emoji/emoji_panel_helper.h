@@ -5,8 +5,8 @@
 #ifndef UI_BASE_EMOJI_EMOJI_PANEL_HELPER_H_
 #define UI_BASE_EMOJI_EMOJI_PANEL_HELPER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 
 namespace ui {

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_thread_proxy.h"

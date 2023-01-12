@@ -9,7 +9,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/build_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"

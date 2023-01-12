@@ -4,7 +4,7 @@
 
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/display/display.h"

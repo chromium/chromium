@@ -12,8 +12,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "url/android/parsed_android.h"
 #include "url/gurl_jni_headers/GURL_jni.h"

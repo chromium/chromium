@@ -4,7 +4,7 @@
 
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/x/x11_display_util.h"

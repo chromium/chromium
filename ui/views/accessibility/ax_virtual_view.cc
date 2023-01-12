@@ -10,8 +10,8 @@
 #include <map>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/containers/adapters.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"

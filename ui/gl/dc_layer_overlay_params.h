@@ -5,7 +5,7 @@
 #ifndef UI_GL_DC_LAYER_OVERLAY_PARAMS_H_
 #define UI_GL_DC_LAYER_OVERLAY_PARAMS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -4,7 +4,7 @@
 
 #include "ui/ozone/platform/x11/x11_canvas_surface.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/base/x/x11_display_util.h"

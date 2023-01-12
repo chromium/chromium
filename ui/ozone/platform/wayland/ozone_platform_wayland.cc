@@ -11,8 +11,8 @@
 
 #include <components/exo/wayland/protocol/aura-shell-client-protocol.h>
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"

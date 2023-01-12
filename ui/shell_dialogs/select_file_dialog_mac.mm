@@ -4,8 +4,8 @@
 
 #include "ui/shell_dialogs/select_file_dialog_mac.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/thread_restrictions.h"

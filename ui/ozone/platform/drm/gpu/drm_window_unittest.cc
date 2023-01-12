@@ -12,8 +12,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/platform_file.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

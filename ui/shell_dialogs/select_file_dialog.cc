@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <algorithm>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"

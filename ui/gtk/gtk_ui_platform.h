@@ -5,7 +5,7 @@
 #ifndef UI_GTK_GTK_UI_PLATFORM_H_
 #define UI_GTK_GTK_UI_PLATFORM_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "ui/events/event.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gtk/gtk_compat.h"

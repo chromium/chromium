@@ -12,8 +12,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"

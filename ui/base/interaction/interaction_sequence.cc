@@ -4,9 +4,9 @@
 
 #include "ui/base/interaction/interaction_sequence.h"
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_auto_reset.h"

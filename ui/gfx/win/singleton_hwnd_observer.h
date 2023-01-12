@@ -7,7 +7,7 @@
 
 #include <windows.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {

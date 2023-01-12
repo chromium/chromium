@@ -11,7 +11,7 @@
 #include "ui/display/screen.h"
 
 #if defined(USE_DBUS)
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"

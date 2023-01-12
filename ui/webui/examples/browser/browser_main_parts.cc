@@ -6,8 +6,8 @@
 
 #include <tuple>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/browser_context.h"

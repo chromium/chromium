@@ -7,7 +7,7 @@
 #include <wayland-server-core.h>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"

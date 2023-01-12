@@ -4,9 +4,9 @@
 
 #include "ui/views/accessibility/views_ax_tree_manager.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"

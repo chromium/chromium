@@ -4,7 +4,7 @@
 
 #include "ui/message_center/views/notification_input_container.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"

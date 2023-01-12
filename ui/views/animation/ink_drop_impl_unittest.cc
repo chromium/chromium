@@ -6,7 +6,7 @@
 
 #include "ui/views/animation/ink_drop_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_simple_task_runner.h"

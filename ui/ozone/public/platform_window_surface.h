@@ -11,7 +11,7 @@
 #if BUILDFLAG(IS_FUCHSIA)
 #include <fuchsia/images/cpp/fidl.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/native_pixmap.h"

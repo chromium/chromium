@@ -4,7 +4,7 @@
 
 #include "ui/gl/vsync_thread_win.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/power_monitor/power_monitor.h"

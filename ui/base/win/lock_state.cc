@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <wtsapi32.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/win/windows_version.h"
 #include "ui/base/win/session_change_observer.h"

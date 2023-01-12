@@ -5,7 +5,7 @@
 #ifndef UI_BASE_TEST_UI_CONTROLS_INTERNAL_WIN_H_
 #define UI_BASE_TEST_UI_CONTROLS_INTERNAL_WIN_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "ui/base/test/ui_controls.h"
 
 namespace ui_controls {

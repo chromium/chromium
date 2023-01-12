@@ -8,8 +8,8 @@
 #include <msctf.h>
 #include <wrl/client.h>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/range/range.h"

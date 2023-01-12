@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"

@@ -9,9 +9,9 @@
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/inspect/cpp/vmo/types.h>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"

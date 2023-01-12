@@ -4,7 +4,7 @@
 
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/base/ime/linux/fake_input_method_context.h"

@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"

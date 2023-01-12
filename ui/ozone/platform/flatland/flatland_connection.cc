@@ -6,11 +6,11 @@
 
 #include <lib/sys/cpp/component_context.h>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 
 namespace ui {

@@ -4,7 +4,7 @@
 
 #include "ui/snapshot/snapshot.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 

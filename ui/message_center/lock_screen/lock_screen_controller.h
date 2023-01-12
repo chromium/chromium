@@ -5,8 +5,8 @@
 #ifndef UI_MESSAGE_CENTER_LOCK_SCREEN_LOCK_SCREEN_CONTROLLER_H_
 #define UI_MESSAGE_CENTER_LOCK_SCREEN_LOCK_SCREEN_CONTROLLER_H_
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "ui/message_center/message_center_export.h"
 
 namespace message_center {

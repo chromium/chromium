@@ -7,8 +7,8 @@
 #include <inttypes.h>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"

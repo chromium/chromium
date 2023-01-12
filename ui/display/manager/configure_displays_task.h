@@ -10,8 +10,8 @@
 #include <queue>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_configuration_params.h"

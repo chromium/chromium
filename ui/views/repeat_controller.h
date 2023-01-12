@@ -5,7 +5,7 @@
 #ifndef UI_VIEWS_REPEAT_CONTROLLER_H_
 #define UI_VIEWS_REPEAT_CONTROLLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/views/views_export.h"

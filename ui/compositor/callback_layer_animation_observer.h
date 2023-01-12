@@ -5,7 +5,7 @@
 #ifndef UI_COMPOSITOR_CALLBACK_LAYER_ANIMATION_OBSERVER_H_
 #define UI_COMPOSITOR_CALLBACK_LAYER_ANIMATION_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer_animation_observer.h"
 

@@ -10,8 +10,8 @@
 
 #include "base/android/build_info.h"
 #include "base/atomic_sequence_num.h"
-#include "base/bind.h"
 #include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

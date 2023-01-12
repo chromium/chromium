@@ -4,9 +4,9 @@
 
 #include "ui/message_center/views/message_popup_collection.h"
 
-#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

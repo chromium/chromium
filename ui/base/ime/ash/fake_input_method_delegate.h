@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
 
 namespace ash {

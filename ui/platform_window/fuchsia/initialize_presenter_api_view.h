@@ -8,8 +8,8 @@
 #include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {

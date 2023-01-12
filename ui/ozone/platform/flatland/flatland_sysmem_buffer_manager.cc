@@ -6,9 +6,9 @@
 
 #include <zircon/rights.h>
 
-#include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
+#include "base/functional/bind.h"
 #include "ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.h"
 
 namespace ui {

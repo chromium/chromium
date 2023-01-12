@@ -7,8 +7,8 @@
 #include <OpenGL/CGLRenderers.h>
 #include <OpenGL/CGLTypes.h>
 
-#include "base/bind.h"
 #include "base/cancelable_callback.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"

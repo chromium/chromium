@@ -5,7 +5,7 @@
 #ifndef UI_BASE_TEST_UI_CONTROLS_H_
 #define UI_BASE_TEST_UI_CONTROLS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/keycodes/keyboard_codes.h"

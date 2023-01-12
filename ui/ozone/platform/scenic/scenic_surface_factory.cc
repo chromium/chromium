@@ -8,10 +8,10 @@
 #include <lib/zx/event.h>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/vulkan/vulkan_device_queue.h"

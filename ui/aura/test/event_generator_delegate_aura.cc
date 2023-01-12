@@ -4,7 +4,7 @@
 
 #include "ui/aura/test/event_generator_delegate_aura.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/test/default_event_generator_delegate.h"

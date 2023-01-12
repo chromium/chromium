@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/stylus_state.h"

@@ -9,8 +9,8 @@
 #include <cwctype>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/win/windows_version.h"
 #include "ui/base/ime/text_input_client.h"

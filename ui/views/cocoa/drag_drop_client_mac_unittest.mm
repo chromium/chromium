@@ -10,7 +10,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/strings/utf_string_conversions.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"

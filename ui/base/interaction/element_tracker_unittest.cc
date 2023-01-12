@@ -4,8 +4,8 @@
 
 #include "ui/base/interaction/element_tracker.h"
 
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"

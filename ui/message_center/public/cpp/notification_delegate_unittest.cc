@@ -4,8 +4,8 @@
 
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -4,7 +4,7 @@
 
 #include "ui/compositor/recyclable_compositor_mac.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/features.h"

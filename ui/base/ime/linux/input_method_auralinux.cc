@@ -5,8 +5,8 @@
 #include "ui/base/ime/linux/input_method_auralinux.h"
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/environment.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"

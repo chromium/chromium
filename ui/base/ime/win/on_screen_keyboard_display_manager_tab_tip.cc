@@ -10,7 +10,7 @@
 #include <shlobj.h>
 #include <shobjidl.h>  // Must be before propkey.
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

@@ -5,8 +5,8 @@
 #ifndef UI_EVENTS_OZONE_KEYBOARD_HOOK_OZONE_H_
 #define UI_EVENTS_OZONE_KEYBOARD_HOOK_OZONE_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keyboard_hook.h"
 

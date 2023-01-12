@@ -5,7 +5,7 @@
 #ifndef UI_VIEWS_WIDGET_WIDGET_UTILS_H_
 #define UI_VIEWS_WIDGET_WIDGET_UTILS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"

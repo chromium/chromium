@@ -4,7 +4,7 @@
 
 #include "ui/gfx/animation/animation_container.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/gfx/animation/animation_container_element.h"
 #include "ui/gfx/animation/animation_container_observer.h"
 

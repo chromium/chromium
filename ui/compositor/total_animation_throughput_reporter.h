@@ -5,7 +5,7 @@
 #ifndef UI_COMPOSITOR_TOTAL_ANIMATION_THROUGHPUT_REPORTER_H_
 #define UI_COMPOSITOR_TOTAL_ANIMATION_THROUGHPUT_REPORTER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/metrics/frame_sequence_metrics.h"

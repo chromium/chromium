@@ -4,8 +4,8 @@
 
 #import "ui/base/cocoa/menu_controller.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"

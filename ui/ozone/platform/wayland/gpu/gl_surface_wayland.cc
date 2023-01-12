@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "third_party/khronos/EGL/egl.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/presentation_feedback.h"

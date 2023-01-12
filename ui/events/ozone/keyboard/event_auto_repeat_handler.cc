@@ -4,7 +4,7 @@
 
 #include "ui/events/ozone/keyboard/event_auto_repeat_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"

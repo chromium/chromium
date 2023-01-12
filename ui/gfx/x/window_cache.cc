@@ -4,10 +4,10 @@
 
 #include "ui/gfx/x/window_cache.h"
 
-#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"

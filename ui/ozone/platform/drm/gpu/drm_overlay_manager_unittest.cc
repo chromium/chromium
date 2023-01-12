@@ -4,8 +4,8 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"

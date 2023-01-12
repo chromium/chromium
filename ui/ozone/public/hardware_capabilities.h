@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PUBLIC_HARDWARE_CAPABILITIES_H_
 #define UI_OZONE_PUBLIC_HARDWARE_CAPABILITIES_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ui {
 

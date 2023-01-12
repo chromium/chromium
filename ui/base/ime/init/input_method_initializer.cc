@@ -4,8 +4,8 @@
 
 #include "ui/base/ime/init/input_method_initializer.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 

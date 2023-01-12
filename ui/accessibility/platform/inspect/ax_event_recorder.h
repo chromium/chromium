@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 

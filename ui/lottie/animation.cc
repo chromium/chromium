@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"

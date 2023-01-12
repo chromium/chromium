@@ -7,7 +7,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"

@@ -10,8 +10,8 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

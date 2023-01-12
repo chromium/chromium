@@ -10,7 +10,7 @@
 #include <exception>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "skia/ext/platform_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"

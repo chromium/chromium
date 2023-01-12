@@ -5,7 +5,7 @@
 #ifndef UI_COMPOSITOR_THROUGHPUT_TRACKER_HOST_H_
 #define UI_COMPOSITOR_THROUGHPUT_TRACKER_HOST_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "ui/compositor/compositor_export.h"
 

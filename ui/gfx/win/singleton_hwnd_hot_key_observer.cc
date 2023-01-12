@@ -4,8 +4,8 @@
 
 #include "ui/gfx/win/singleton_hwnd_hot_key_observer.h"
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

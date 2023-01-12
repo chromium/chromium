@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chromeos/crosapi/mojom/select_file.mojom-shared.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"

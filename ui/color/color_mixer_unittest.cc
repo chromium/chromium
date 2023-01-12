@@ -6,8 +6,8 @@
 
 #include <set>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_test_ids.h"

@@ -4,8 +4,8 @@
 
 #include "ui/base/ime/mock_input_method.h"
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"

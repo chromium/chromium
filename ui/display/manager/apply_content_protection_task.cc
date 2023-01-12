@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/display_manager_util.h"

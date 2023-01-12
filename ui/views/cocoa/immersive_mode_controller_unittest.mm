@@ -7,8 +7,8 @@
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #import "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"

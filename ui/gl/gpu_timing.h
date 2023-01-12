@@ -10,7 +10,7 @@
 #include <memory>
 #include <queue>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_export.h"
 

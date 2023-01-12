@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace ui {

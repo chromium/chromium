@@ -8,8 +8,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"

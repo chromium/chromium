@@ -5,8 +5,7 @@
 #ifndef UI_SNAPSHOT_SNAPSHOT_H_
 #define UI_SNAPSHOT_SNAPSHOT_H_
 
-
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "ui/gfx/native_widget_types.h"

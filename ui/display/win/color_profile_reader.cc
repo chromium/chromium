@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <windows.h>
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "ui/display/win/display_info.h"

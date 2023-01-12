@@ -4,7 +4,7 @@
 
 #include "ui/base/accelerators/global_media_keys_listener_win.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/keycodes/keyboard_code_conversion_win.h"

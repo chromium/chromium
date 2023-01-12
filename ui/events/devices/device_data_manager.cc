@@ -5,9 +5,9 @@
 #include "ui/events/devices/device_data_manager.h"
 
 #include "base/at_exit.h"
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "ui/display/types/display_constants.h"

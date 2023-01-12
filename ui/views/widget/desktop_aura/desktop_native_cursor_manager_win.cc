@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/win/windows_types.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
