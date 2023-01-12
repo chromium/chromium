@@ -370,6 +370,9 @@
   <message name="IDS_EXTENSIONS_NO_DESCRIPTION" desc="The message shown to the user when an extension does not have any description.">
     No description provided
   </message>
+  <message name="IDS_EXTENSIONS_OPENS_IN_NEW_TAB" desc="ARIA (accessibility) label describing a link which opens in a new tab.">
+    Opens in new tab
+  </message>
   <message name="IDS_EXTENSIONS_PACK_DIALOG_TITLE" desc="The title of the dialog to pack an extension.">
     Pack extension
   </message>

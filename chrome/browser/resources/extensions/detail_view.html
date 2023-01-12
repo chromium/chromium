@@ -405,6 +405,7 @@
     </template>
     <cr-link-row class="hr"
         id="siteSettings" label="$i18n{siteSettings}"
+        button-aria-description="$i18n{opensInNewTab}"
         on-click="onSiteSettingsClick_" external></cr-link-row>
     <template is="dom-if" if="[[shouldShowOptionsSection_(data.*)]]">
       <div id="options-section">
@@ -442,6 +443,7 @@
     <cr-link-row class="hr" id="extensionsOptions"
         disabled="[[!isEnabled_(data.state)]]"
         hidden="[[!shouldShowOptionsLink_(data.*)]]"
+        button-aria-description="$i18n{opensInNewTab}"
         label="$i18n{itemOptions}" on-click="onExtensionOptionsTap_"
         external></cr-link-row>
     <cr-link-row class="hr"
@@ -451,9 +453,11 @@
     </cr-link-row>
     <cr-link-row class="hr" hidden="[[!data.manifestHomePageUrl.length]]"
         id="extensionWebsite" label="$i18n{extensionWebsite}"
+        button-aria-description="$i18n{opensInNewTab}"
         on-click="onExtensionWebSiteTap_" external></cr-link-row>
     <cr-link-row class="hr" hidden="[[!data.webStoreUrl.length]]"
         id="viewInStore" label="$i18n{viewInStore}"
+        button-aria-description="$i18n{opensInNewTab}"
         on-click="onViewInStoreTap_" external></cr-link-row>
     <div class="section hr">
       <div class="section-title" role="heading" aria-level="2">
