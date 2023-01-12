@@ -85,6 +85,10 @@ ASH_EXPORT bool CanToggleCalendar();
 
 ASH_EXPORT bool CanToggleDictation();
 
+ASH_EXPORT bool CanToggleFloatingWindow();
+
+ASH_EXPORT bool CanToggleMultitaskMenu();
+
 ASH_EXPORT bool CanToggleOverview();
 
 ASH_EXPORT bool CanTogglePrivacyScreen();
@@ -334,6 +338,9 @@ ASH_EXPORT bool ToggleMinimized();
 
 // Turns the mirror mode on or off.
 ASH_EXPORT void ToggleMirrorMode();
+
+// Toggles the multitask menu.
+ASH_EXPORT void ToggleMultitaskMenu();
 
 // Turns the overview mode on or off.
 ASH_EXPORT void ToggleOverview();

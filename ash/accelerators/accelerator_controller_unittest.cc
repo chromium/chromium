@@ -23,6 +23,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/media/media_controller_impl.h"
@@ -61,6 +62,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
@@ -1421,6 +1423,24 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
   generator->PressKey(ui::VKEY_S, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(tray->IsBubbleShown());
+}
+
+TEST_F(AcceleratorControllerTest, ToggleMultitaskMenu) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      chromeos::wm::features::kFloatWindow);
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+
+  // Pressing accelerator once should show the multitask menu.
+  controller_->PerformActionIfEnabled(TOGGLE_MULTITASK_MENU, {});
+  auto* frame_view = NonClientFrameViewAsh::Get(window.get());
+  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
+      frame_view->GetHeaderView()->caption_button_container()->size_button());
+  ASSERT_TRUE(size_button->IsMultitaskMenuShown());
+
+  // Pressing accelerator a second time should close the menu.
+  controller_->PerformActionIfEnabled(TOGGLE_MULTITASK_MENU, {});
+  ASSERT_FALSE(size_button->IsMultitaskMenuShown());
 }
 
 class GlobalAcceleratorsToggleLauncher

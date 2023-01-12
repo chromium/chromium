@@ -224,6 +224,10 @@ FrameSizeButton::FrameSizeButton(PressedCallback callback,
 
 FrameSizeButton::~FrameSizeButton() = default;
 
+bool FrameSizeButton::IsMultitaskMenuShown() const {
+  return multitask_menu_ && multitask_menu_->IsBubbleShown();
+}
+
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
   // Show Multitask Menu if float is enabled. Note here float flag is also used
   // to represent other relatable UI/UX changes.
@@ -232,9 +236,30 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
     RecordMultitaskMenuEntryType(entry_type);
     // Owned by the bubble which contains this view. If there is an existing
     // bubble, it will be deactivated and then close and destroy itself.
-    auto* multitask_menu = new MultitaskMenu(/*anchor=*/this, GetWidget());
-    multitask_menu->ShowBubble();
+    multitask_menu_ = new MultitaskMenu(
+        /*anchor=*/this, GetWidget(),
+        base::BindOnce(&FrameSizeButton::OnMultitaskMenuClosed,
+                       weak_factory_.GetWeakPtr()));
+    multitask_menu_->ShowBubble();
   }
+}
+
+void FrameSizeButton::ToggleMultitaskMenu() {
+  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+  DCHECK(!chromeos::TabletState::Get()->InTabletMode());
+  if (!IsMultitaskMenuShown()) {
+    multitask_menu_ = new MultitaskMenu(
+        /*anchor=*/this, GetWidget(),
+        base::BindOnce(&FrameSizeButton::OnMultitaskMenuClosed,
+                       weak_factory_.GetWeakPtr()));
+    multitask_menu_->ShowBubble();
+  } else {
+    multitask_menu_->HideBubble();
+  }
+}
+
+void FrameSizeButton::OnMultitaskMenuClosed() {
+  multitask_menu_ = nullptr;
 }
 
 bool FrameSizeButton::OnMousePressed(const ui::MouseEvent& event) {

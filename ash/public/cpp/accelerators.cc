@@ -360,6 +360,13 @@ const AcceleratorData kEnableWithSameAppWindowCycleAcceleratorData[] = {
 const size_t kEnableWithSameAppWindowCycleAcceleratorDataLength =
     std::size(kEnableWithSameAppWindowCycleAcceleratorData);
 
+const AcceleratorData kEnableWithFloatWindowAcceleratorData[] = {
+    {true, ui::VKEY_Z, ui::EF_COMMAND_DOWN, TOGGLE_MULTITASK_MENU},
+};
+
+const size_t kEnableWithFloatWindowAcceleratorDataLength =
+    std::size(kEnableWithFloatWindowAcceleratorData);
+
 // static
 AcceleratorController* AcceleratorController::Get() {
   return g_instance;

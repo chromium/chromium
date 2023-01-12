@@ -666,6 +666,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanToggleDictation();
     case TOGGLE_DOCKED_MAGNIFIER:
       return true;
+    case TOGGLE_FLOATING:
+      return accelerators::CanToggleFloatingWindow();
     case TOGGLE_FULLSCREEN_MAGNIFIER:
       return true;
     case TOGGLE_MESSAGE_CENTER_BUBBLE:
@@ -674,6 +676,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return true;
     case TOGGLE_OVERVIEW:
       return accelerators::CanToggleOverview();
+    case TOGGLE_MULTITASK_MENU:
+      return accelerators::CanToggleMultitaskMenu();
     case TOUCH_HUD_CLEAR:
     case TOUCH_HUD_MODE_CHANGE:
       return accelerators::CanActivateTouchHud();
@@ -696,8 +700,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanToggleProjectorMarker();
     case TOGGLE_RESIZE_LOCK_MENU:
       return accelerators::CanToggleResizeLockMenu();
-    case TOGGLE_FLOATING:
-      return debug::CanToggleFloatingWindow();
     case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
     case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
       return debug::CanTuckFloatedWindow();
@@ -1232,6 +1234,9 @@ void AcceleratorControllerImpl::PerformAction(
       base::RecordAction(UserMetricsAction("Accel_Toggle_Mirror_Mode"));
       accelerators::ToggleMirrorMode();
       break;
+    case TOGGLE_MULTITASK_MENU:
+      accelerators::ToggleMultitaskMenu();
+      return;
     case TOGGLE_OVERVIEW:
       base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
       accelerators::ToggleOverview();

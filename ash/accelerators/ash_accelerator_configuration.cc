@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -119,6 +120,12 @@ void AshAcceleratorConfiguration::Initialize() {
         accelerators,
         base::make_span(kEnableWithSameAppWindowCycleAcceleratorData,
                         kEnableWithSameAppWindowCycleAcceleratorDataLength));
+  }
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(kEnableWithFloatWindowAcceleratorData,
+                        kEnableWithFloatWindowAcceleratorDataLength));
   }
 
   // Debug accelerators.

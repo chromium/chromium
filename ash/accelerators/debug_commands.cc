@@ -250,14 +250,6 @@ void PrintUIHierarchies() {
   HandlePrintViewHierarchy();
 }
 
-bool CanToggleFloatingWindow() {
-  if (!chromeos::wm::features::IsFloatWindowEnabled())
-    return false;
-
-  aura::Window* window = window_util::GetActiveWindow();
-  return window && chromeos::wm::CanFloatWindow(window);
-}
-
 bool CanTuckFloatedWindow() {
   if (!chromeos::wm::features::IsFloatWindowEnabled())
     return false;

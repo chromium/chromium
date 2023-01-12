@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
@@ -42,7 +43,20 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
 
   ~FrameSizeButton() override;
 
+  // Returns true if the multitask menu is created and shown.
+  bool IsMultitaskMenuShown() const;
+
+  // Note that `ShowMultitaskMenu()` recreates the menu if it is already shown,
+  // while `ToggleMultitaskMenu()` will hide it.
   void ShowMultitaskMenu(MultitaskMenuEntryType entry_type);
+  void ToggleMultitaskMenu();
+
+  // Clears menu references if it is closed. See `MultitaskMenu`.
+  void OnMultitaskMenuClosed();
+
+  // Cancel the snap operation if we're currently in snap mode. The snap
+  // preview will be deleted and the button will be set back to its normal mode.
+  void CancelSnap();
 
   // views::Button:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -57,13 +71,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  // Cancel the snap operation if we're currently in snap mode. The snap
-  // preview will be deleted and the button will be set back to its normal mode.
-  void CancelSnap();
-
   void set_delay_to_set_buttons_to_snap_mode(int delay_ms) {
     set_buttons_to_snap_mode_delay_ms_ = delay_ms;
   }
+
   bool in_snap_mode_for_testing() { return in_snap_mode_; }
 
  private:
@@ -113,6 +124,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
 
   // Not owned.
   raw_ptr<FrameSizeButtonDelegate> delegate_;
+  raw_ptr<MultitaskMenu> multitask_menu_ = nullptr;
 
   // The window observer to observe the to-be-snapped window.
   std::unique_ptr<SnappingWindowObserver> snapping_window_observer_;
@@ -137,6 +149,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   bool in_snap_mode_ = false;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
+
+  base::WeakPtrFactory<FrameSizeButton> weak_factory_{this};
 };
 
 }  // namespace chromeos
