@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/hats/hats_config.h"
@@ -12,6 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace ash {
@@ -24,6 +27,13 @@ constexpr const base::TimeDelta kHatsSurveyTimeout = base::Minutes(5);
 HatsBluetoothRevampTriggerImpl::HatsBluetoothRevampTriggerImpl() = default;
 
 HatsBluetoothRevampTriggerImpl::~HatsBluetoothRevampTriggerImpl() = default;
+
+// static
+void HatsBluetoothRevampTriggerImpl::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(ash::prefs::kUserPairedWithFastPair,
+                                /*default_value=*/false);
+}
 
 void HatsBluetoothRevampTriggerImpl::TryToShowSurvey() {
   Profile* profile = GetActiveUserProfile();
@@ -41,6 +51,14 @@ void HatsBluetoothRevampTriggerImpl::TryToShowSurvey() {
   // The survey has already been shown and should not be shown again.
   if (hats_notification_controller_) {
     HID_LOG(DEBUG) << "HaTS survey has already been shown.";
+    return;
+  }
+
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  if (pref_service->GetBoolean(ash::prefs::kUserPairedWithFastPair)) {
+    HID_LOG(DEBUG) << "HaTS survey not shown, user has visited Fast pair flow";
     return;
   }
 

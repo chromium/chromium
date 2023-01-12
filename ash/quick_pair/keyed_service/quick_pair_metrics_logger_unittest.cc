@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
@@ -25,6 +26,9 @@
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/mock_ui_broker.h"
 #include "ash/quick_pair/ui/ui_broker.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -103,6 +107,8 @@ constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
 constexpr char kValidModelId[] = "718c17";
 
+constexpr char kUserEmail[] = "user@email";
+
 std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
 CreateTestBluetoothDevice(std::string address) {
   return std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
@@ -145,9 +151,31 @@ class FakeMetricBluetoothAdapter
 namespace ash {
 namespace quick_pair {
 
-class QuickPairMetricsLoggerTest : public testing::Test {
+class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
  public:
   void SetUp() override {
+    NoSessionAshTestBase::SetUp();
+
+    TestSessionControllerClient* session_controller =
+        GetSessionControllerClient();
+    session_controller->Reset();
+
+    // Inject our own PrefServices for each user which enables us to setup the
+    // desks restore data before the user signs in.
+    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
+    user_prefs_ = user_prefs.get();
+    RegisterUserProfilePrefs(user_prefs_->registry(), /*for_test=*/true);
+
+    auto accountId = AccountId::FromUserEmail(kUserEmail);
+    session_controller->AddUserSession(kUserEmail,
+                                       user_manager::USER_TYPE_REGULAR,
+                                       /*provide_pref_service=*/false);
+    session_controller->SetUserPrefService(accountId, std::move(user_prefs));
+
+    user_prefs_->registry()->RegisterBooleanPref(
+        ash::prefs::kUserPairedWithFastPair,
+        /*default_value=*/false);
+
     adapter_ = base::MakeRefCounted<FakeMetricBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
 
@@ -192,6 +220,8 @@ class QuickPairMetricsLoggerTest : public testing::Test {
         scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get(),
         retroactive_pairing_detector_.get());
   }
+
+  void TearDown() override { NoSessionAshTestBase::TearDown(); }
 
   void SimulateDiscoveryUiShown(Protocol protocol) {
     switch (protocol) {
@@ -471,11 +501,18 @@ class QuickPairMetricsLoggerTest : public testing::Test {
     adapter_->NotifyDevicePairedChanged(bt_device_ptr, new_paired_status);
   }
 
+  void AssertUserPairedWithFastPairPref(bool pref_value) {
+    EXPECT_EQ(Shell::Get()
+                  ->session_controller()
+                  ->GetLastActiveUserPrefService()
+                  ->GetBoolean(ash::prefs::kUserPairedWithFastPair),
+              pref_value);
+  }
+
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  protected:
   base::HistogramTester histogram_tester_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<FakeMetricBluetoothAdapter> adapter_;
   scoped_refptr<Device> initial_device_;
   scoped_refptr<Device> subsequent_device_;
@@ -483,6 +520,7 @@ class QuickPairMetricsLoggerTest : public testing::Test {
 
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   TestingPrefServiceSimple pref_service_;
+  TestingPrefServiceSimple* user_prefs_;
 
   MockScannerBroker* mock_scanner_broker_ = nullptr;
   MockPairerBroker* mock_pairer_broker_ = nullptr;
@@ -891,6 +929,7 @@ TEST_F(QuickPairMetricsLoggerTest,
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Initial) {
+  AssertUserPairedWithFastPairPref(false);
   SimulateDiscoveryUiConnectPressed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -937,9 +976,11 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Initial) {
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kDiscoveryUiDismissedByTimeout),
             0);
+  AssertUserPairedWithFastPairPref(true);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Subsequent) {
+  AssertUserPairedWithFastPairPref(false);
   SimulateDiscoveryUiConnectPressed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -986,6 +1027,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kDiscoveryUiDismissedByTimeout),
             0);
+  AssertUserPairedWithFastPairPref(true);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogPairingFailed_Initial) {
@@ -1821,6 +1863,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountDismissedByTimeout) {
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountSavePressed) {
+  AssertUserPairedWithFastPairPref(false);
   SimulateAssociateAccountUiSavePressed();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
@@ -1873,6 +1916,7 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountSavePressed) {
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountUiDismissedByTimeout),
             0);
+  AssertUserPairedWithFastPairPref(true);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountLearnMorePressed) {

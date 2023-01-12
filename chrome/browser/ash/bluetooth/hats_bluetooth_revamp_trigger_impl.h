@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 
 class Profile;
+class PrefRegistrySimple;
 
 namespace ash {
 
@@ -24,6 +25,8 @@ class HatsBluetoothRevampTriggerImpl : public HatsBluetoothRevampTrigger {
   HatsBluetoothRevampTriggerImpl& operator=(
       const HatsBluetoothRevampTriggerImpl&) = delete;
   ~HatsBluetoothRevampTriggerImpl() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // HatsBluetoothRevampTrigger:
   void TryToShowSurvey() override;

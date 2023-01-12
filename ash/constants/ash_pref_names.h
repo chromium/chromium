@@ -473,6 +473,9 @@ extern const char kLacrosProxyControllingExtension[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kFastPairEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kUserPairedWithFastPair[];
+
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDeskTemplatesEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPreconfiguredDeskTemplates[];
 
