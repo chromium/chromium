@@ -393,7 +393,9 @@ bool IsPathSafeToSetAclOn(const FilePath& path) {
   for (const auto path_type : valid_paths) {
     base::FilePath valid_path;
     if (base::PathService::Get(path_type, &valid_path)) {
-      if (valid_path.IsParent(path)) {
+      // Temp files can sometimes have an 8.3 path. See comments in
+      // base::MakeLongFilePath.
+      if (base::MakeLongFilePath(valid_path).IsParent(path)) {
         return true;
       }
     }
@@ -1098,7 +1100,9 @@ bool PreventExecuteMapping(const FilePath& path) {
     return true;
   }
 
-  bool is_path_safe = IsPathSafeToSetAclOn(path);
+  // MakeLongFilePath is needed here because temp files can have an 8.3 path
+  // under certain conditions. See comments in base::MakeLongFilePath.
+  bool is_path_safe = IsPathSafeToSetAclOn(base::MakeLongFilePath(path));
 
   if (!is_path_safe) {
     // To mitigate the effect of past OS bugs where attackers are able to use

@@ -862,6 +862,16 @@ TEST(FileUtilDeathTest, DisallowNoExecuteOnUnsafeFile) {
       "Unsafe to deny execute access to path");
 }
 
+TEST_F(FileUtilTest, NoExecuteOnSafeFile) {
+  base::FilePath temp_file;
+  // A file created in temp dir should always be permitted.
+  ASSERT_TRUE(base::CreateTemporaryFile(&temp_file));
+  File reopen_file(temp_file, File::FLAG_READ | File::FLAG_WRITE |
+                                  File::FLAG_WIN_NO_EXECUTE |
+                                  File::FLAG_OPEN_ALWAYS |
+                                  File::FLAG_DELETE_ON_CLOSE);
+}
+
 class FileUtilExecuteEnforcementTest
     : public FileUtilTest,
       public ::testing::WithParamInterface<bool> {
