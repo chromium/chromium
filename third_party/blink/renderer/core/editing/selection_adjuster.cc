@@ -126,14 +126,14 @@ class GranularityAdjuster final {
         const PositionTemplate<Strategy> word_start = StartOfWordPosition(
             passed_start.GetPosition(), ChooseWordSide(visible_start));
         if (inclusion == WordInclusion::kMiddle) {
-            // Check if the middle of the word is within the passed selection.
-            const PositionTemplate<Strategy> word_end = EndOfWordPosition(
-                passed_start.GetPosition(), ChooseWordSide(visible_start));
-            const PositionTemplate<Strategy> word_middle =
-                MiddleOfWordPosition(word_start, word_end);
-            if (passed_start.GetPosition() > word_middle) {
-                return word_end;
-            }
+          // Check if the middle of the word is within the passed selection.
+          const PositionTemplate<Strategy> word_end = EndOfWordPosition(
+              passed_start.GetPosition(), ChooseWordSide(visible_start));
+          const PositionTemplate<Strategy> word_middle =
+              MiddleOfWordPosition(word_start, word_end);
+          if (passed_start.GetPosition() > word_middle) {
+            return word_end;
+          }
         }
         return CreateVisiblePosition(word_start).DeepEquivalent();
       }
@@ -206,7 +206,7 @@ class GranularityAdjuster final {
           const PositionTemplate<Strategy> word_middle =
               MiddleOfWordPosition(word_start, word_end.DeepEquivalent());
           if (word_middle > passed_end.GetPosition()) {
-              return word_start;
+            return word_start;
           }
         }
         if (!is_end_of_paragraph)

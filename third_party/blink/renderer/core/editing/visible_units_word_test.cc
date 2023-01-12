@@ -57,9 +57,9 @@ class VisibleUnitsWordTest : public EditingTestBase {
   }
 
   std::string DoMiddleOfWord(const std::string& selection_text) {
-      SelectionInDOMTree selection = SetSelectionTextToBody(selection_text);
-      return GetCaretTextFromBody(
-              MiddleOfWordPosition(selection.Base(), selection.Extent()));
+    SelectionInDOMTree selection = SetSelectionTextToBody(selection_text);
+    return GetCaretTextFromBody(
+        MiddleOfWordPosition(selection.Base(), selection.Extent()));
   }
 
   // To avoid name conflict in jumbo build, following functions should be here.
@@ -833,8 +833,9 @@ TEST_P(ParameterizedVisibleUnitsWordTest, MiddleOfWord) {
   EXPECT_EQ("<p>This is a <span>test</span> |sentence.</p>",
             DoMiddleOfWord("<p>This is ^a <span>test</span> sentenc|e.</p>"));
   // Positions and middle all in inner element.
-  EXPECT_EQ("<p>This is a <span>tes|ting</span> sentence.</p>",
-            DoMiddleOfWord("<p>This is a <span>^testin|g</span> sentence.</p>"));
+  EXPECT_EQ(
+      "<p>This is a <span>tes|ting</span> sentence.</p>",
+      DoMiddleOfWord("<p>This is a <span>^testin|g</span> sentence.</p>"));
 }
 
 }  // namespace blink

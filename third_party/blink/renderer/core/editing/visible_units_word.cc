@@ -32,10 +32,10 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/text_offset_mapping.h"
 #include "third_party/blink/renderer/core/editing/text_segments.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/text/character.h"
@@ -342,8 +342,12 @@ Position StartOfWordPosition(const Position& position, WordSide side) {
 
 PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree& word_start,
                                         const PositionInFlatTree& word_end) {
-  unsigned middle = TextIteratorAlgorithm<EditingInFlatTreeStrategy>::RangeLength(word_start, word_end) / 2;
-  TextOffsetMapping::ForwardRange range = TextOffsetMapping::ForwardRangeOf(word_start);
+  unsigned middle =
+      TextIteratorAlgorithm<EditingInFlatTreeStrategy>::RangeLength(word_start,
+                                                                    word_end) /
+      2;
+  TextOffsetMapping::ForwardRange range =
+      TextOffsetMapping::ForwardRangeOf(word_start);
   middle += TextOffsetMapping(*range.begin()).ComputeTextOffset(word_start);
   for (auto inline_contents : range) {
     const TextOffsetMapping mapping(inline_contents);
