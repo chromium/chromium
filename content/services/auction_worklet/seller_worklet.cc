@@ -299,6 +299,7 @@ SellerWorklet::SellerWorklet(
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
+    mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     absl::optional<uint16_t> experiment_group_id)
     : v8_runner_(v8_helper->v8_runner()),
       v8_helper_(std::move(v8_helper)),
@@ -323,7 +324,8 @@ SellerWorklet::SellerWorklet(
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper_, debug_id_, decision_logic_url,
                   trusted_scoring_signals_url, top_window_origin,
-                  experiment_group_id, weak_ptr_factory_.GetWeakPtr()),
+                  std::move(permissions_policy_state), experiment_group_id,
+                  weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
@@ -549,6 +551,7 @@ SellerWorklet::V8State::V8State(
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
+    mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     absl::optional<uint16_t> experiment_group_id,
     base::WeakPtr<SellerWorklet> parent)
     : v8_helper_(std::move(v8_helper)),
@@ -558,6 +561,7 @@ SellerWorklet::V8State::V8State(
       decision_logic_url_(decision_logic_url),
       trusted_scoring_signals_url_(trusted_scoring_signals_url),
       top_window_origin_(top_window_origin),
+      permissions_policy_state_(std::move(permissions_policy_state)),
       experiment_group_id_(experiment_group_id) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
@@ -605,7 +609,8 @@ void SellerWorklet::V8State::ScoreAd(
   // repeated calls to this worklet, or to calls to any other worklet.
   ContextRecycler context_recycler(v8_helper_.get());
   context_recycler.AddForDebuggingOnlyBindings();
-  context_recycler.AddPrivateAggregationBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      permissions_policy_state_->private_aggregation_allowed);
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
@@ -906,7 +911,8 @@ void SellerWorklet::V8State::ReportResult(
   ContextRecycler context_recycler(v8_helper_.get());
   context_recycler.AddReportBindings();
   context_recycler.AddRegisterAdBeaconBindings();
-  context_recycler.AddPrivateAggregationBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      permissions_policy_state_->private_aggregation_allowed);
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 

@@ -62,14 +62,16 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
   // Starts loading the worklet script on construction.
-  SellerWorklet(scoped_refptr<AuctionV8Helper> v8_helper,
-                bool pause_for_debugger_on_start,
-                mojo::PendingRemote<network::mojom::URLLoaderFactory>
-                    pending_url_loader_factory,
-                const GURL& decision_logic_url,
-                const absl::optional<GURL>& trusted_scoring_signals_url,
-                const url::Origin& top_window_origin,
-                absl::optional<uint16_t> experiment_group_id);
+  SellerWorklet(
+      scoped_refptr<AuctionV8Helper> v8_helper,
+      bool pause_for_debugger_on_start,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_url_loader_factory,
+      const GURL& decision_logic_url,
+      const absl::optional<GURL>& trusted_scoring_signals_url,
+      const url::Origin& top_window_origin,
+      mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
+      absl::optional<uint16_t> experiment_group_id);
 
   explicit SellerWorklet(const SellerWorklet&) = delete;
   SellerWorklet& operator=(const SellerWorklet&) = delete;
@@ -243,13 +245,15 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
                                 PrivateAggregationRequests pa_requests,
                                 std::vector<std::string> errors)>;
 
-    V8State(scoped_refptr<AuctionV8Helper> v8_helper,
-            scoped_refptr<AuctionV8Helper::DebugId> debug_id,
-            const GURL& decision_logic_url,
-            const absl::optional<GURL>& trusted_scoring_signals_url,
-            const url::Origin& top_window_origin,
-            absl::optional<uint16_t> experiment_group_id,
-            base::WeakPtr<SellerWorklet> parent);
+    V8State(
+        scoped_refptr<AuctionV8Helper> v8_helper,
+        scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+        const GURL& decision_logic_url,
+        const absl::optional<GURL>& trusted_scoring_signals_url,
+        const url::Origin& top_window_origin,
+        mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
+        absl::optional<uint16_t> experiment_group_id,
+        base::WeakPtr<SellerWorklet> parent);
 
     void SetWorkletScript(WorkletLoader::Result worklet_script);
 
@@ -345,6 +349,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     const GURL decision_logic_url_;
     const absl::optional<GURL> trusted_scoring_signals_url_;
     const url::Origin top_window_origin_;
+    mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const absl::optional<uint16_t> experiment_group_id_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);

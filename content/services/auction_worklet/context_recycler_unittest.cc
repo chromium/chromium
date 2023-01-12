@@ -868,7 +868,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
   ASSERT_FALSE(script.IsEmpty());
 
   ContextRecycler context_recycler(helper_.get());
-  context_recycler.AddPrivateAggregationBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      /*private_aggregation_permissions_policy_allowed=*/true);
 
   // Basic test
   {
@@ -1210,7 +1211,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
   ASSERT_FALSE(script.IsEmpty());
 
   ContextRecycler context_recycler(helper_.get());
-  context_recycler.AddPrivateAggregationBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      /*private_aggregation_permissions_policy_allowed=*/true);
 
   // Debug mode enabled with no debug key
   {
@@ -1528,7 +1530,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
   ASSERT_FALSE(script.IsEmpty());
 
   ContextRecycler context_recycler(helper_.get());
-  context_recycler.AddPrivateAggregationBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      /*private_aggregation_permissions_policy_allowed=*/true);
 
   // Basic test
   {
@@ -2237,7 +2240,8 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
   ASSERT_FALSE(script.IsEmpty());
 
   ContextRecycler context_recycler(helper_.get());
-  context_recycler.AddPrivateAggregationBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      /*private_aggregation_permissions_policy_allowed=*/true);
 
   {
     ContextRecyclerScope scope(context_recycler);
@@ -2294,7 +2298,8 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
   ASSERT_FALSE(script.IsEmpty());
 
   ContextRecycler context_recycler(helper_.get());
-  context_recycler.AddPrivateAggregationBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      /*private_aggregation_permissions_policy_allowed=*/true);
 
   {
     ContextRecyclerScope scope(context_recycler);

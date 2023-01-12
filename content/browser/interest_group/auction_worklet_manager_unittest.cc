@@ -22,7 +22,10 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -486,6 +489,8 @@ class MockAuctionProcessManager
       const absl::optional<GURL>& bidding_wasm_helper_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
       const url::Origin& top_window_origin,
+      auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
+          permissions_policy_state,
       bool has_experiment_group_id,
       uint16_t experiment_group_id) override {
     DCHECK(!bidder_worklet_);
@@ -514,6 +519,8 @@ class MockAuctionProcessManager
       const GURL& script_source_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
+      auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
+          permissions_policy_state,
       bool has_experiment_group_id,
       uint16_t experiment_group_id) override {
     DCHECK(!seller_worklet_);
@@ -581,11 +588,13 @@ class MockAuctionProcessManager
       receiver_set_;
 };
 
-class AuctionWorkletManagerTest : public testing::Test,
+class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
                                   public AuctionWorkletManager::Delegate {
  public:
   AuctionWorkletManagerTest()
-      : auction_worklet_manager_(&auction_process_manager_,
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        auction_worklet_manager_(&auction_process_manager_,
                                  kTopWindowOrigin,
                                  kFrameOrigin,
                                  this) {
@@ -610,7 +619,10 @@ class AuctionWorkletManagerTest : public testing::Test,
   void PreconnectSocket(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}
-  RenderFrameHostImpl* GetFrame() override { return nullptr; }
+  RenderFrameHostImpl* GetFrame() override {
+    return static_cast<RenderFrameHostImpl*>(
+        web_contents()->GetPrimaryMainFrame());
+  }
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override {
     return scoped_refptr<SiteInstance>();
   }
@@ -647,8 +659,6 @@ class AuctionWorkletManagerTest : public testing::Test,
   const SubresourceUrlBuilder kEmptySubresourceBuilder{absl::nullopt};
   const SubresourceUrlBuilder kPopulatedSubresourceBuilder{
       PopulateSubresources()};
-
-  base::test::TaskEnvironment task_environment_;
 
   std::string bad_message_;
 
@@ -1413,7 +1423,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletLoadError) {
   // Should be safe to call into the worklet, even after the error. This allows
   // errors to be handled asynchronously.
   handle->GetBidderWorklet()->SendPendingSignalsRequests();
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   // Another request for the same worklet should trigger creation of a new
   // worklet, even though the old handle for the worklet hasn't been deleted
@@ -1457,7 +1467,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
   // Should be safe to call into the worklet, even after the error. This allows
   // errors to be handled asynchronously.
   handle->GetSellerWorklet()->SendPendingSignalsRequests();
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   // Another request for the same worklet should trigger creation of a new
   // worklet, even though the old handle for the worklet hasn't been deleted
@@ -1500,7 +1510,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCrash) {
   // Should be safe to call into the worklet, even after the error. This allows
   // errors to be handled asynchronously.
   handle->GetBidderWorklet()->SendPendingSignalsRequests();
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
   handle->GetBidderWorklet()->SendPendingSignalsRequests();
 
   // Another request for the same worklet should trigger creation of a new
@@ -1544,7 +1554,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
   // Should be safe to call into the worklet, even after the error. This allows
   // errors to be handled asynchronously.
   handle->GetSellerWorklet()->SendPendingSignalsRequests();
-  task_environment_.RunUntilIdle();
+  task_environment()->RunUntilIdle();
   handle->GetSellerWorklet()->SendPendingSignalsRequests();
 
   // Another request for the same worklet should trigger creation of a new

@@ -23,7 +23,9 @@ class AuctionV8Helper;
 // arguments are detected.
 class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
  public:
-  explicit PrivateAggregationBindings(AuctionV8Helper* v8_helper);
+  explicit PrivateAggregationBindings(
+      AuctionV8Helper* v8_helper,
+      bool private_aggregation_permissions_policy_allowed);
   PrivateAggregationBindings(const PrivateAggregationBindings&) = delete;
   PrivateAggregationBindings& operator=(const PrivateAggregationBindings&) =
       delete;
@@ -57,6 +59,8 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
           contributions);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
+
+  bool private_aggregation_permissions_policy_allowed_;
 
   // Defaults to debug mode being disabled.
   content::mojom::DebugModeDetails debug_mode_details_;
