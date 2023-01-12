@@ -99,8 +99,8 @@
     <PropertyRef Id="WIX_ACCOUNT_ADMINISTRATORS" />
 
     <Condition
-      Message="$(var.ChromotingHost) is only supported on Windows 7 and above.">
-      <![CDATA[Installed OR (VersionNT >= 601)]]>
+      Message="$(var.ChromotingHost) is only supported on Windows 10 and above.">
+      <![CDATA[Installed OR (VersionNT >= 1000)]]>
     </Condition>
 
     <!-- The upgrade rules below could be expressed with MajorUpgrade element.
