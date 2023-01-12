@@ -36,7 +36,6 @@ constexpr char kSwitchNoiseSeed[] = "noise_seed";
 constexpr char kSwitchRemoveReportIds[] = "remove_report_ids";
 constexpr char kSwitchInputMode[] = "input_mode";
 constexpr char kSwitchCopyInputToOutput[] = "copy_input_to_output";
-constexpr char kSwitchReportTimeFormat[] = "report_time_format";
 constexpr char kSwitchRandomizedResponseRateNavigation[] =
     "randomized_response_rate_navigation";
 constexpr char kSwitchRandomizedResponseRateEvent[] =
@@ -57,7 +56,6 @@ constexpr const char* kAllowedSwitches[] = {
     kSwitchRemoveReportIds,
     kSwitchInputMode,
     kSwitchCopyInputToOutput,
-    kSwitchReportTimeFormat,
     kSwitchRandomizedResponseRateNavigation,
     kSwitchRandomizedResponseRateEvent,
     kSwitchSkipDebugCookieChecks,
@@ -74,7 +72,6 @@ attribution_reporting_simulator
   [--randomized_response_rate_navigation=<rate>]
   [--input_mode=<input_mode>]
   [--remove_report_ids]
-  [--report_time_format=<format>]
   [--remove_assembled_report]
   [--skip_debug_cookie_checks]
   [--remove_actual_report_times]
@@ -153,18 +150,6 @@ Switches:
                               field from report bodies, as they are randomly
                               generated. Use this switch to make the tool's
                               output more deterministic.
-
-  --report_time_format=<format>
-                            - Optional. Either `milliseconds_since_unix_epoch`
-                              (default) or `iso8601`. Controls the report time
-                              output format.
-
-                              `milliseconds_since_unix_epoch`: Report times are
-                              integer milliseconds since the Unix epoch, e.g.
-                              1643408373000.
-
-                              `iso8601`: Report times are ISO 8601 strings,
-                              e.g. "2022-01-28T22:19:33.000Z".
 
   --remove_assembled_report - Optional. If present, removes the `shared_info`,
                               `aggregation_service_payloads` and
@@ -344,19 +329,6 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  auto report_time_format =
-      content::AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch;
-  if (command_line.HasSwitch(kSwitchReportTimeFormat)) {
-    std::string str = command_line.GetSwitchValueASCII(kSwitchReportTimeFormat);
-
-    if (str == "iso8601") {
-      report_time_format = content::AttributionReportTimeFormat::kISO8601;
-    } else if (str != "milliseconds_since_unix_epoch") {
-      std::cerr << "unknown report time format: " << str << std::endl;
-      return 1;
-    }
-  }
-
   auto input_mode = InputMode::kSingle;
   if (command_line.HasSwitch(kSwitchInputMode)) {
     std::string input_mode_string =
@@ -385,7 +357,6 @@ int main(int argc, char* argv[]) {
           content::AttributionSimulationOutputOptions{
               .remove_report_ids =
                   command_line.HasSwitch(kSwitchRemoveReportIds),
-              .report_time_format = report_time_format,
               .remove_assembled_report =
                   command_line.HasSwitch(kSwitchRemoveAssembledReport),
               .remove_actual_report_times =

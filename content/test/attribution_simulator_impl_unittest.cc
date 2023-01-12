@@ -93,19 +93,6 @@ void ParseOptions(const base::Value& dict,
     options.noise_seed = value;
   }
 
-  if (const std::string* report_time_format =
-          dict.FindStringKey("report_time_format")) {
-    if (*report_time_format == "iso8601") {
-      options.output_options.report_time_format =
-          AttributionReportTimeFormat::kISO8601;
-    } else {
-      ASSERT_EQ(*report_time_format, "milliseconds_since_unix_epoch")
-          << "unknown report time format: " << *report_time_format;
-      options.output_options.report_time_format =
-          AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch;
-    }
-  }
-
   if (absl::optional<bool> skip_debug_cookie_checks =
           dict.FindBoolKey("skip_debug_cookie_checks")) {
     options.skip_debug_cookie_checks = *skip_debug_cookie_checks;
@@ -126,8 +113,6 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
       .output_options =
           AttributionSimulationOutputOptions{
               .remove_report_ids = true,
-              .report_time_format =
-                  AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch,
               .remove_assembled_report = true,
               .remove_actual_report_times = true,
           },

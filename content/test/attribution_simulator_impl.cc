@@ -33,7 +33,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -230,13 +229,7 @@ struct AttributionReportJsonConverter {
 
   std::string FormatTime(base::Time time) const {
     base::TimeDelta time_delta = time - time_origin;
-
-    switch (options.report_time_format) {
-      case AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch:
-        return base::NumberToString(time_delta.InMilliseconds());
-      case AttributionReportTimeFormat::kISO8601:
-        return base::TimeToISO8601(base::Time::UnixEpoch() + time_delta);
-    }
+    return base::NumberToString(time_delta.InMilliseconds());
   }
 
   bool AdjustScheduledReportTime(base::Value::Dict& report_body,

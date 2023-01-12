@@ -111,8 +111,6 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
       .output_options =
           AttributionSimulationOutputOptions{
               .remove_report_ids = true,
-              .report_time_format =
-                  AttributionReportTimeFormat::kMillisecondsSinceUnixEpoch,
               .remove_assembled_report = true,
               .remove_actual_report_times = true,
           },
