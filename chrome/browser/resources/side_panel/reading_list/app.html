@@ -46,9 +46,9 @@
     transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  #empty-state-container:not([hidden]) ~ #currentPageActionButton {
+  sp-empty-state:not([hidden]) ~ #currentPageActionButton {
     display: flex;
-    margin: -8px auto 16px auto;
+    margin: 0 auto 16px auto;
     width: fit-content;
   }
 
@@ -94,47 +94,16 @@
       border-top: 1px solid var(--google-grey-700);
     }
   }
-
-  #empty-state-container {
-    text-align: center;
-  }
-
-  #empty-state-image {
-    content: url(images/read_later_empty.svg);
-    height: 160px;
-    margin-bottom: 8px;
-    margin-top: 0;
-    width: 240px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #empty-state-image {
-      content: url(images/read_later_empty_dark.svg);
-    }
-  }
-
-  #empty-state-header {
-    color: var(--cr-primary-text-color);
-    font-size: 15px;
-    line-height: 20px;
-    padding: 0 var(--mwb-list-item-horizontal-margin);
-  }
-
-  #empty-state-subheader {
-    color: var(--cr-secondary-text-color);
-    font-size: var(--mwb-primary-text-font-size);
-    line-height: 20px;
-    padding: 4px var(--mwb-list-item-horizontal-margin) 16px;
-  }
 </style>
 
 <div id="content" hidden="[[loadingContent_]]">
-  <div id="empty-state-container"
-       hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
-    <img id="empty-state-image" aria-hidden="true">
-    <div id="empty-state-header">$i18n{emptyStateHeader}</div>
-    <div id="empty-state-subheader">[[getEmptyStateSubheaderText_()]]</div>
-  </div>
+  <sp-empty-state
+      hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]"
+      image-path="./images/read_later_empty.svg"
+      dark-image-path="./images/read_later_empty_dark.svg"
+      heading="$i18n{emptyStateHeader}"
+      body="[[getEmptyStateSubheaderText_()]]">
+  </sp-empty-state>
   <cr-button id="currentPageActionButton"
       aria-label="[[getCurrentPageActionButtonText_(
           currentPageActionButtonState_)]]"

@@ -4,7 +4,6 @@
     --border-color: var(--google-grey-300);
     --disabled-text-color: var(--google-grey-600);
     --edit-footer-background: var(--google-grey-50);
-    --empty-state-image: url(./images/bookmarks_empty.svg);
     --label-selected-color: var(--google-blue-50);
     --price-tracking-chip-background: var(--google-green-50);
     --price-tracking-discount-color: var(--google-green-800);
@@ -16,7 +15,6 @@
       --border-color: var(--google-grey-700);
       --disabled-text-color: var(--google-grey-500);
       --edit-footer-background: var(--google-grey-900-white-4-percent);
-      --empty-state-image: url(./images/bookmarks_empty_dark.svg);
       --price-tracking-chip-background: var(--google-green-900);
       --price-tracking-discount-color: white;
       --price-tracking-original-color: var(--google-green-200);
@@ -102,32 +100,8 @@
     gap: 16px;
   }
 
-  .empty {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin: 0 48px;
-    text-align: center;
-  }
-
-  .empty[guest] {
+  sp-empty-state[guest] {
     margin-top: 66px;
-  }
-
-  .empty-body {
-    color: var(--cr-secondary-text-color);
-    font-size: 13px;
-  }
-
-  .empty-image {
-    content: var(--empty-state-image);
-    margin-bottom: 8px;
-  }
-
-  .empty-title {
-    color: var(--cr-primary-text-color);
-    font-size: 15px;
   }
 
   .footer-or-empty-state {
@@ -139,13 +113,10 @@
     border: none;
     display: flex;
     flex-direction: column;
-    gap: 13px;
   }
 
-  .footer-button {
-    gap: 8px;
+  .footer-or-empty-state:not([empty]) .footer-button {
     margin: 8px;
-    padding: 6px;
   }
 
   .footer-button[disabled] > .label-icon {
@@ -323,17 +294,22 @@
     </template>
   </div>
   <div class="footer-or-empty-state" empty$="[[!shownBookmarks_.length]]">
-    <div class="empty" hidden="[[shownBookmarks_.length]]"
-        guest$="[[guestMode_]]">
-      <div class="empty-image"></div>
-      <div class="empty-title">[[getEmptyTitle_()]]</div>
-      <div class="empty-body">[[getEmptyBody_()]]</div>
-    </div>
-    <cr-button class="footer-button" hidden="[[hideAddTabButton_(editing_)]]"
+    <sp-empty-state
+        hidden="[[shownBookmarks_.length]]"
+        guest$="[[guestMode_]]"
+        image-path="./images/bookmarks_empty.svg"
+        dark-image-path="./images/bookmarks_empty_dark.svg"
+        heading="[[getEmptyTitle_()]]"
+        body="[[getEmptyBody_()]]">
+    </sp-empty-state>
+
+    <cr-button class="footer-button"
+        hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(shownBookmarks_.*, activeFolderPath_.*,
                      currentUrl_)]]">
-      <iron-icon icon="bookmarks:add-tab" class="label-icon"></iron-icon>
+      <iron-icon slot="prefix-icon" icon="bookmarks:add-tab" class="label-icon">
+      </iron-icon>
       $i18n{addCurrentTab}
     </cr-button>
     <div class="edit-footer" hidden="[[!editing_]]">

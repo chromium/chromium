@@ -1,0 +1,35 @@
+<style>
+  :host {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  picture {
+    margin-block-end: 12px;
+  }
+
+  #heading {
+    color: var(--cr-primary-text-color);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 22px;
+    margin-block-end: 8px;
+  }
+
+  #body {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    margin-block-end: 12px;
+  }
+</style>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="[[darkImagePath]]">
+  <img id="product-logo" srcset="[[imagePath]]" alt="">
+</picture>
+<div id="heading">[[heading]]</div>
+<div id="body">[[body]]</div>

@@ -10,8 +10,11 @@ build_webui("build") {
   grd_prefix = "side_panel_shared"
   grd_resource_path_prefix = "shared"
 
-  web_component_files = [ "dummy_shared.ts" ]
+  web_component_files = [ "sp_empty_state.ts" ]
 
   ts_composite = true
-  ts_deps = [ "//third_party/polymer/v3_0:library" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
 }
