@@ -117,6 +117,11 @@ suite('PrivacyPage', function() {
         '#thirdPartyCookiesLinkRow')));
     assertFalse(Boolean(
         page.shadowRoot!.querySelector<HTMLElement>('#cookiesLinkRow')));
+    assertEquals(
+        page.i18n('thirdPartyCookiesLinkRowLabel'),
+        page.shadowRoot!
+            .querySelector<CrLinkRowElement>(
+                '#thirdPartyCookiesLinkRow')!.label);
   });
 
   test('cookiesLinkRowSublabel', async function() {
@@ -227,6 +232,10 @@ suite(`PrivacySandbox4Disabled`, function() {
         page.shadowRoot!.querySelector<HTMLElement>('#cookiesLinkRow')));
     assertFalse(Boolean(page.shadowRoot!.querySelector<HTMLElement>(
         '#thirdPartyCookiesLinkRow')));
+    assertEquals(
+        page.i18n('cookiePageTitle'),
+        page.shadowRoot!.querySelector<CrLinkRowElement>(
+                            '#cookiesLinkRow')!.label);
   });
 
   test('cookiesLinkRowSublabel', async function() {
@@ -246,6 +255,15 @@ suite(`PrivacySandbox4Disabled`, function() {
 
   test('privacySandboxRestricted', function() {
     assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
+  });
+
+  test('privacySandboxRowLabel', function() {
+    const privacySandboxLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#privacySandboxLinkRow')!;
+    assertEquals(
+        loadTimeData.getString('privacySandboxTitle'),
+        privacySandboxLinkRow.label);
   });
 
   test('privacySandboxRowSublabel', async function() {
@@ -331,6 +349,15 @@ suite(`PrivacySandbox4Enabled`, function() {
     assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
   });
 
+  test('privacySandboxRowLabel', function() {
+    const privacySandboxLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#privacySandboxLinkRow')!;
+    assertEquals(
+        loadTimeData.getString('adPrivacyLinkRowLabel'),
+        privacySandboxLinkRow.label);
+  });
+
   test('privacySandboxRowSublabel', async function() {
     page.set('prefs.privacy_sandbox.apis_enabled_v2.value', true);
     assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
@@ -384,7 +411,7 @@ suite(`PrivacySandbox4Enabled`, function() {
         page.shadowRoot!.querySelector<PolymerElement>('#cookies');
     assertTrue(!!cookiesSubpage);
     assertEquals(
-        page.i18n('thirdPartyCookiesLinkRowLabel'),
+        page.i18n('thirdPartyCookiesPageTitle'),
         cookiesSubpage.getAttribute('page-title'));
     const associatedControl = cookiesSubpage.get('associatedControl');
     assertTrue(!!associatedControl);

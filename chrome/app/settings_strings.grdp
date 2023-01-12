@@ -1842,11 +1842,11 @@
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Privacy & Security Page -->
-  <message name="IDS_SETTINGS_AD_PRIVACY_LINK_ROW_LABEL" translateable="false" desc="Label for row linking to the Ad Privacy preferences page in the Privacy &amp; Security Page.">
-    Donec semper
+  <message name="IDS_SETTINGS_AD_PRIVACY_LINK_ROW_LABEL" desc="A new label that appears on the Privacy and security page (chrome://settings/privacy) between 'Third-party cookies' and 'Security'. This same text is used as a page title for the new Ad privacy section. This same pair of words is used in the Consent and Notice flow and must be consistently translated in both contexts. We mean privacy associated with ads, and not privacy from ads. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an 'Ad privacy' page in Chrome settings. For an equivalent structure, see 'Security' on chrome://settings/privacy that opens chrome://settings/security. Likewise, 'Ad privacy' on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
+    Ad privacy
   </message>
-  <message name="IDS_SETTINGS_AD_PRIVACY_LINK_ROW_SUB_LABEL" translateable="false" desc="Sub label for row linking to the Ad Privacy preferences page in the Privacy &amp; Security Page.">
-    Fusce purus nibh, dictum sit amet mi in, fringilla ullamcorper tortor
+  <message name="IDS_SETTINGS_AD_PRIVACY_LINK_ROW_SUB_LABEL" desc="A string that describes 'Ad privacy', the label that appears just above it. For context, this new 'Ad privacy' / 'Customize the info...' pair of strings is similar to the existing 'Clear browsing data' / 'Clear history, cookies...' that you find on chrome://settings/privacy. * 'Customize': From our word list: 'This word describes user agency in refining their personalized recommendations, elements of the experience, or sometimes products'. Please don't confuse with 'personalize', which we reserve to mean: '...when Google provides recommendations and other content for users based on their data'.  **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an 'Ad privacy' page in Chrome settings. For an equivalent structure, see 'Security' on chrome://settings/privacy that opens chrome://settings/security. Likewise, 'Ad privacy' on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
+    Customize the info used by sites to show you ads
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Ad Privacy Page -->
@@ -3345,17 +3345,20 @@
   <message name="IDS_SETTINGS_COOKIES_PAGE" desc="Title of the cookies settings page">
     Cookies and other site data
   </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_LABEL" desc="Label of the link row that leads to the third-party cookies page" translateable="false">
-    Nam condimentum
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_TITLE" desc="The title of a new page. Today, Chrome has a 'Cookies and other site data' page at chrome://settings/cookies. As part of the Privacy Sandbox project (see below), Chrome is deprecating third-party cookies but maintaining first-party cookies. As a step towards the ultimate deprecation of third-party cookies, we're first separating them from other forms of 'site data', making it easier to eventually remove this page completely. Cookies are often used for honorable objectives, and the difference between first and third-party cookies is important (see any of the many resources online such as https://termly.io/resources/articles/first-party-cookies-vs-third-party-cookies/.">
+    Third-party cookies
   </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_ENABLED" desc="Subabel for third-party cookies link row stating that third-party cookies are allowed with no exceptions" translateable="false">
-    Enabled Vestibulum ante mi, feugiat eget velit id
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_LABEL" desc="This text is the label of a page. Here, it serves as a button that opens the new page.">
+    Third-party cookies
   </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED_INCOGNITO" desc="Subabel for third-party cookies link row stating that third-party cookies are disabled in incognito mode with no exceptions" translateable="false">
-    Disabled Incognito Vestibulum ante mi, feugiat eget velit id
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_ENABLED" desc="1 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
+    Third-party cookies are allowed
   </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="Subabel for third-party cookies link row stating that third-party cookies are disabled with no exceptions" translateable="false">
-    Disabled Vestibulum ante mi, feugiat eget velit id
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED_INCOGNITO" desc="2 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
+    Third-party cookies are blocked in Incognito mode
+  </message>
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="3 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
+    Third-party cookies are blocked
   </message>
   <message name="IDS_SETTINGS_COOKIES_CONTROLS" desc="Title of the general cookies control section.">
     General settings
