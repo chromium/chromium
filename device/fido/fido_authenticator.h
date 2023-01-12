@@ -262,6 +262,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       const std::vector<LargeBlobKey>& large_blob_keys,
       absl::optional<pin::TokenResponse> pin_uv_auth_token,
       LargeBlobReadCallback callback);
+  // Removes all stored large blobs that conform to the large blob CBOR
+  // structure without a corresponding discoverable credential.
+  virtual void GarbageCollectLargeBlob(
+      const pin::TokenResponse& pin_uv_auth_token,
+      base::OnceCallback<void(CtapDeviceResponseCode)> callback);
 
   // GetAlgorithms returns the list of supported COSEAlgorithmIdentifiers, or
   // |nullopt| if this is unknown and thus all requests should be tried in case

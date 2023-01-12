@@ -186,6 +186,12 @@ void FidoAuthenticator::ReadLargeBlob(
   NOTREACHED();
 }
 
+void FidoAuthenticator::GarbageCollectLargeBlob(
+    const pin::TokenResponse& pin_uv_auth_token,
+    base::OnceCallback<void(CtapDeviceResponseCode)> callback) {
+  NOTREACHED();
+}
+
 absl::optional<base::span<const int32_t>> FidoAuthenticator::GetAlgorithms() {
   return absl::nullopt;
 }

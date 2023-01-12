@@ -5,9 +5,9 @@
 #include "device/fido/credential_management.h"
 
 #include "base/check_op.h"
-#include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
@@ -309,6 +309,18 @@ EnumerateCredentialsResponse::Parse(
     return absl::nullopt;
   }
 
+  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
+  it = response_map.find(cbor::Value(
+      static_cast<int>(CredentialManagementResponseKey::kLargeBlobKey)));
+  if (it != response_map.end()) {
+    if (!it->second.is_bytestring() ||
+        it->second.GetBytestring().size() != kLargeBlobKeyLength) {
+      return absl::nullopt;
+    }
+    large_blob_key = fido_parsing_utils::Materialize(
+        base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
+  }
+
   size_t credential_count = 0;
   if (!expect_credential_count) {
     if (response_map.find(cbor::Value(static_cast<int>(
@@ -327,7 +339,8 @@ EnumerateCredentialsResponse::Parse(
     credential_count = static_cast<size_t>(it->second.GetUnsigned());
   }
   return EnumerateCredentialsResponse(
-      std::move(*opt_user), std::move(*opt_credential_id), credential_count);
+      std::move(*opt_user), std::move(*opt_credential_id), credential_count,
+      std::move(large_blob_key));
 }
 
 // static
@@ -352,14 +365,16 @@ EnumerateCredentialsResponse::~EnumerateCredentialsResponse() = default;
 EnumerateCredentialsResponse::EnumerateCredentialsResponse(
     PublicKeyCredentialUserEntity user_,
     PublicKeyCredentialDescriptor credential_id_,
-    size_t credential_count_)
+    size_t credential_count_,
+    absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key_)
     : user(std::move(user_)),
       credential_id(std::move(credential_id_)),
-      credential_count(credential_count_) {}
+      credential_count(credential_count_),
+      large_blob_key(std::move(large_blob_key_)) {}
 
 AggregatedEnumerateCredentialsResponse::AggregatedEnumerateCredentialsResponse(
     PublicKeyCredentialRpEntity rp_)
-    : rp(std::move(rp_)), credentials() {}
+    : rp(std::move(rp_)) {}
 AggregatedEnumerateCredentialsResponse::AggregatedEnumerateCredentialsResponse(
     AggregatedEnumerateCredentialsResponse&&) = default;
 AggregatedEnumerateCredentialsResponse&

@@ -192,6 +192,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // a makeCredential or getAssertion request carries any extension.
     bool reject_all_extensions = false;
 
+    // Some authenticators will return CTAP2_ERR_NO_CREDENTIALS when enumerating
+    // RPs if there are no credentials present. Setting this to `true` emulates
+    // that behaviour.
+    bool return_err_no_credentials_on_empty_rp_enumeration = false;
+
     // advertised_algorithms is the contents of the algorithms field in the
     // getInfo. If empty then no such field is reported. The virtual
     // authenticator only enables the algorithms listed here, unless the list is

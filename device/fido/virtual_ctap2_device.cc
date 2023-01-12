@@ -2166,6 +2166,10 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
       }
 
       InitPendingRPs();
+      if (request_state_.pending_rps.empty() &&
+          config_.return_err_no_credentials_on_empty_rp_enumeration) {
+        return CtapDeviceResponseCode::kCtap2ErrNoCredentials;
+      }
       response_map.emplace(
           static_cast<int>(CredentialManagementResponseKey::kTotalRPs),
           static_cast<int>(request_state_.pending_rps.size()));
@@ -2786,6 +2790,11 @@ void VirtualCtap2Device::InitPendingRegistrations(
         static_cast<int>(CredentialManagementResponseKey::kCredentialID),
         AsCBOR(PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
                                              registration.first)));
+    if (registration.second.large_blob_key) {
+      response_map.emplace(
+          static_cast<int>(CredentialManagementResponseKey::kLargeBlobKey),
+          cbor::Value(cbor::Value(*registration.second.large_blob_key)));
+    }
 
     absl::optional<cbor::Value> cose_key = cbor::Reader::Read(
         registration.second.private_key->GetPublicKey()->cose_key_bytes);

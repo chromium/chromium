@@ -4,10 +4,12 @@
 
 #include "device/fido/fido_device_authenticator.h"
 
+#include <algorithm>
 #include <numeric>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -847,6 +849,16 @@ void FidoDeviceAuthenticator::ReadLargeBlob(
                      std::move(callback)));
 }
 
+void FidoDeviceAuthenticator::GarbageCollectLargeBlob(
+    const pin::TokenResponse& pin_uv_auth_token,
+    base::OnceCallback<void(CtapDeviceResponseCode)> callback) {
+  EnumerateCredentials(
+      pin_uv_auth_token,
+      base::BindOnce(
+          &FidoDeviceAuthenticator::OnCredentialsEnumeratedForGarbageCollect,
+          weak_factory_.GetWeakPtr(), pin_uv_auth_token, std::move(callback)));
+}
+
 void FidoDeviceAuthenticator::FetchLargeBlobArray(
     const absl::optional<pin::TokenResponse> pin_uv_auth_token,
     LargeBlobArrayReader large_blob_array_reader,
@@ -1015,6 +1027,81 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead(
   }
 
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess, std::move(result));
+}
+
+void FidoDeviceAuthenticator::OnCredentialsEnumeratedForGarbageCollect(
+    const pin::TokenResponse& pin_uv_auth_token,
+    base::OnceCallback<void(CtapDeviceResponseCode)> callback,
+    CtapDeviceResponseCode status,
+    absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>
+        credentials) {
+  if (status == CtapDeviceResponseCode::kCtap2ErrNoCredentials) {
+    credentials.emplace();
+  } else if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback).Run(status);
+    return;
+  }
+
+  FetchLargeBlobArray(
+      pin_uv_auth_token, LargeBlobArrayReader(),
+      base::BindOnce(
+          &FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect,
+          weak_factory_.GetWeakPtr(), std::move(*credentials),
+          pin_uv_auth_token, std::move(callback)));
+}
+
+void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
+    std::vector<AggregatedEnumerateCredentialsResponse> credentials,
+    const pin::TokenResponse& pin_uv_auth_token,
+    base::OnceCallback<void(CtapDeviceResponseCode)> callback,
+    CtapDeviceResponseCode status,
+    absl::optional<LargeBlobArrayReader> large_blob_array_reader) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback).Run(status);
+    return;
+  }
+
+  absl::optional<cbor::Value::ArrayValue> large_blob_array =
+      large_blob_array_reader->Materialize();
+  if (!large_blob_array) {
+    FIDO_LOG(ERROR) << "Large blob array corrupted. Replacing with a new one";
+    WriteLargeBlobArray(std::move(pin_uv_auth_token), LargeBlobArrayWriter({}),
+                        std::move(callback));
+    return;
+  }
+
+  std::vector<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_keys;
+  for (const auto& cred_by_rp : credentials) {
+    for (const auto& credential : cred_by_rp.credentials) {
+      if (credential.large_blob_key) {
+        large_blob_keys.push_back(*credential.large_blob_key);
+      }
+    }
+  }
+  bool did_erase = base::EraseIf(
+      *large_blob_array, [&large_blob_keys](const cbor::Value& blob_cbor) {
+        absl::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
+        return blob &&
+               base::ranges::none_of(
+                   large_blob_keys,
+                   [&blob](
+                       const std::array<uint8_t, kLargeBlobKeyLength>& key) {
+                     return blob->Decrypt(key);
+                   });
+      });
+
+  if (!did_erase) {
+    // No need to update the blob.
+    std::move(callback).Run(CtapDeviceResponseCode::kSuccess);
+    return;
+  }
+
+  LargeBlobArrayWriter writer(std::move(*large_blob_array));
+  DCHECK_LE(writer.size(),
+            device_->device_info()->max_serialized_large_blob_array.value_or(
+                kMinLargeBlobSize));
+  WriteLargeBlobArray(std::move(pin_uv_auth_token), std::move(writer),
+                      std::move(callback));
 }
 
 absl::optional<base::span<const int32_t>>

@@ -132,6 +132,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
   void OnHavePIN(std::string pin);
   void OnHavePINToken(CtapDeviceResponseCode status,
                       absl::optional<pin::TokenResponse> response);
+  void OnInitFinished(CtapDeviceResponseCode status);
   void OnCredentialsMetadata(
       CtapDeviceResponseCode status,
       absl::optional<CredentialsMetadataResponse> response);

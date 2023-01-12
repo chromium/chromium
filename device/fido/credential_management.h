@@ -49,6 +49,7 @@ enum class CredentialManagementResponseKey : uint8_t {
   kPublicKey = 0x08,
   kTotalCredentials = 0x09,
   kCredProtect = 0x0a,
+  kLargeBlobKey = 0x0b,
 };
 
 enum class CredentialManagementSubCommand : uint8_t {
@@ -187,35 +188,37 @@ struct EnumerateCredentialsResponse {
 
   EnumerateCredentialsResponse(EnumerateCredentialsResponse&&);
   EnumerateCredentialsResponse& operator=(EnumerateCredentialsResponse&&);
+  EnumerateCredentialsResponse(const EnumerateCredentialsResponse&) = delete;
+  EnumerateCredentialsResponse& operator=(EnumerateCredentialsResponse&) =
+      delete;
   ~EnumerateCredentialsResponse();
 
   PublicKeyCredentialUserEntity user;
   PublicKeyCredentialDescriptor credential_id;
   size_t credential_count;
+  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
 
  private:
-  EnumerateCredentialsResponse(PublicKeyCredentialUserEntity user,
-                               PublicKeyCredentialDescriptor credential_id,
-                               size_t credential_count);
-  EnumerateCredentialsResponse(const EnumerateCredentialsResponse&) = delete;
-  EnumerateCredentialsResponse& operator=(EnumerateCredentialsResponse&) =
-      delete;
+  EnumerateCredentialsResponse(
+      PublicKeyCredentialUserEntity user,
+      PublicKeyCredentialDescriptor credential_id,
+      size_t credential_count,
+      absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key);
 };
 
 struct COMPONENT_EXPORT(DEVICE_FIDO) AggregatedEnumerateCredentialsResponse {
-  AggregatedEnumerateCredentialsResponse(PublicKeyCredentialRpEntity rp);
+  explicit AggregatedEnumerateCredentialsResponse(
+      PublicKeyCredentialRpEntity rp);
   AggregatedEnumerateCredentialsResponse(
       AggregatedEnumerateCredentialsResponse&&);
   AggregatedEnumerateCredentialsResponse& operator=(
       AggregatedEnumerateCredentialsResponse&&);
+  AggregatedEnumerateCredentialsResponse(
+      const AggregatedEnumerateCredentialsResponse&) = delete;
   ~AggregatedEnumerateCredentialsResponse();
 
   PublicKeyCredentialRpEntity rp;
   std::vector<EnumerateCredentialsResponse> credentials;
-
- private:
-  AggregatedEnumerateCredentialsResponse(
-      const AggregatedEnumerateCredentialsResponse&) = delete;
 };
 
 using DeleteCredentialResponse = pin::EmptyResponse;
