@@ -90,11 +90,11 @@ export class LocalStorage {
 
   /**
    * @param {string} key
-   * @param {number=} default_value
+   * @param {number=} defaultValue
    * @return {number}
    */
-  static getNumber(key, default_value) {
-    const value = LocalStorage.getTypeChecked(key, 'number', default_value);
+  static getNumber(key, defaultValue) {
+    const value = LocalStorage.getTypeChecked(key, 'number', defaultValue);
     if (isNaN(value)) {
       throw new Error('Value in LocalStorage for key "' + key + '" is NaN');
     }
@@ -103,11 +103,11 @@ export class LocalStorage {
 
   /**
    * @param {string} key
-   * @param {string=} default_value
+   * @param {string=} defaultValue
    * @return {string}
    */
-  static getString(key, default_value) {
-    const value = LocalStorage.getTypeChecked(key, 'string', default_value);
+  static getString(key, defaultValue) {
+    const value = LocalStorage.getTypeChecked(key, 'string', defaultValue);
     return String(value);
   }
 
