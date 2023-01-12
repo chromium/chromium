@@ -106,15 +106,12 @@ def CheckChangeOnUpload(input_api, output_api):
   if len(ascii_file.OldContents()) == 0:
     return []
 
-  # TODO(skrakowi): uncomment the commented out version and scheme id
-  # checks
-  return []
   # Check the new version of the component with the old to ensure validity
-  #   return (
-  #     CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
-  #         output_api, ascii_file
-  #     ) +
-  #     CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
-  #         output_api, ascii_file
-  #     )
-  #   )
+  return (
+    CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
+        output_api, ascii_file
+    ) +
+    CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
+        output_api, ascii_file
+    )
+  )
