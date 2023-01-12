@@ -1082,6 +1082,29 @@ TEST_P(TextIteratorTest, IterateWithLockedSubtree) {
   EXPECT_EQ(6, TextIterator::RangeLength(start_position, end_position));
 }
 
+TEST_P(TextIteratorTest, IterateRangeEndingAtLockedSubtree) {
+  SetBodyContent(R"HTML(
+      <div id=start>start</div><div hidden=until-found><div id=end>end</div>
+      foo</div>
+    )HTML");
+  auto* start = GetDocument().getElementById("start");
+  auto* end = GetDocument().getElementById("end");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  const Position start_position = Position::FirstPositionInNode(*start);
+  const Position end_position = Position::LastPositionInNode(*end);
+  TextIterator iter(start_position, end_position);
+  EXPECT_FALSE(iter.AtEnd());
+  EXPECT_EQ("start", iter.GetTextState().GetTextForTesting());
+
+  iter.Advance();
+  EXPECT_FALSE(iter.AtEnd());
+  EXPECT_EQ("\n", iter.GetTextState().GetTextForTesting());
+
+  iter.Advance();
+  EXPECT_TRUE(iter.AtEnd());
+}
+
 // http://crbug.com/1203786
 TEST_P(TextIteratorTest, RangeLengthWithSoftLineWrap) {
   LoadAhem();
