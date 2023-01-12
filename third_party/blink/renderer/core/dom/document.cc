@@ -3984,16 +3984,8 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
   // |dispatched_pagehide_persisted| above, if we enable same-site
   // ProactivelySwapBrowsingInstance but not BackForwardCache.
   if (window && !GetPage()->DispatchedPagehideAndStillHidden()) {
-    const base::TimeTicks pagehide_event_start = base::TimeTicks::Now();
     window->DispatchEvent(
         *PageTransitionEvent::Create(event_type_names::kPagehide, false), this);
-    const base::TimeTicks pagehide_event_end = base::TimeTicks::Now();
-    DEFINE_STATIC_LOCAL(
-        CustomCountHistogram, pagehide_histogram,
-        ("DocumentEventTiming.PageHideDuration", kTimeBasedHistogramMinSample,
-         kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount));
-    pagehide_histogram.CountMicroseconds(pagehide_event_end -
-                                         pagehide_event_start);
   }
   if (!dom_window_)
     return;
@@ -4005,18 +3997,7 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
   if (page_visible) {
     // Dispatch visibilitychange event, but don't bother doing
     // other notifications as we're about to be unloaded.
-    const base::TimeTicks pagevisibility_hidden_event_start =
-        base::TimeTicks::Now();
     DispatchEvent(*Event::CreateBubble(event_type_names::kVisibilitychange));
-    const base::TimeTicks pagevisibility_hidden_event_end =
-        base::TimeTicks::Now();
-    DEFINE_STATIC_LOCAL(
-        CustomCountHistogram, pagevisibility_histogram,
-        ("DocumentEventTiming.PageVibilityHiddenDuration",
-         kTimeBasedHistogramMinSample, kTimeBasedHistogramMaxSample,
-         kTimeBasedHistogramBucketCount));
-    pagevisibility_histogram.CountMicroseconds(
-        pagevisibility_hidden_event_end - pagevisibility_hidden_event_start);
     DispatchEvent(
         *Event::CreateBubble(event_type_names::kWebkitvisibilitychange));
   }
@@ -4033,12 +4014,6 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
 
   if (unload_timing_info) {
     // Record unload event timing when navigating cross-document.
-    DEFINE_STATIC_LOCAL(
-        CustomCountHistogram, unload_histogram,
-        ("DocumentEventTiming.UnloadDuration", kTimeBasedHistogramMinSample,
-         kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount));
-    unload_histogram.CountMicroseconds(unload_event_end - unload_event_start);
-
     auto& timing = unload_timing_info->unload_timing.emplace();
     timing.can_request =
         unload_timing_info->new_document_origin->CanRequest(Url());
@@ -4049,16 +4024,9 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
 }
 
 void Document::DispatchFreezeEvent() {
-  const base::TimeTicks freeze_event_start = base::TimeTicks::Now();
   SetFreezingInProgress(true);
   DispatchEvent(*Event::Create(event_type_names::kFreeze));
   SetFreezingInProgress(false);
-  const base::TimeTicks freeze_event_end = base::TimeTicks::Now();
-  DEFINE_STATIC_LOCAL(
-      CustomCountHistogram, freeze_histogram,
-      ("DocumentEventTiming.FreezeDuration", kTimeBasedHistogramMinSample,
-       kTimeBasedHistogramMaxSample, kTimeBasedHistogramBucketCount));
-  freeze_histogram.CountMicroseconds(freeze_event_end - freeze_event_start);
   UseCounter::Count(*this, WebFeature::kPageLifeCycleFreeze);
 }
 
