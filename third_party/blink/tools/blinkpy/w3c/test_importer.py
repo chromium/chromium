@@ -679,12 +679,6 @@ class TestImporter(object):
             self._expectations_updater.update_expectations())
         tests_to_rebaseline.update(to_rebaseline)
 
-        _log.info('Adding test expectations lines for disable-layout-ng')
-        to_rebaseline, _ = (
-            self._expectations_updater.update_expectations_for_flag_specific(
-                'disable-layout-ng'))
-        tests_to_rebaseline.update(to_rebaseline)
-
         _log.info('Adding test expectations lines for disable-site-isolation-trials')
         to_rebaseline, _ = (
             self._expectations_updater.update_expectations_for_flag_specific(

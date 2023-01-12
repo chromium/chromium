@@ -4164,15 +4164,6 @@
       'base_unittests': {},
     },
 
-    'layout_ng_gtests': {
-      'webkit_unit_tests_ng': {
-        'args': [
-          '--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation'
-        ],
-        'test': 'blink_unittests',
-      },
-    },
-
     'leak_detection_isolated_scripts': {
       'memory.leak_detection': {
         'args': [
@@ -5575,29 +5566,6 @@
       },
     },
 
-    'wpt_web_tests_layout_ng_disabled': {
-      'wpt_tests_suite_layout_ng_disabled': {
-        'args': [
-          '--log-wptreport',
-          '--xvfb',
-          '--flag-specific',
-          'disable-layout-ng',
-        ],
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'isolate_name': 'wpt_tests_isolate_content_shell',
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 12,
-        },
-        'experiment_percentage': 100,
-      },
-    },
-
     'wpt_web_tests_not_site_per_process': {
       'wpt_tests_suite_not_site_per_process': {
         'args': [
@@ -6519,7 +6487,6 @@
     'wpt_web_tests_content_shell_multiple_flags': [
       'wpt_web_tests_content_shell',
       'wpt_web_tests_not_site_per_process',
-      'wpt_web_tests_layout_ng_disabled',
       'wpt_web_tests_highdpi',
     ],
   },

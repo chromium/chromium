@@ -745,15 +745,6 @@
       "use_remoteexec": true
     }
   },
-  "linux_layout_tests_layout_ng_disabled": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_remoteexec": true
-    }
-  },
   "linux_optional_gpu_tests_rel": {
     "gn_args": {
       "dcheck_always_on": true,

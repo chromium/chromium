@@ -90665,39 +90665,6 @@
       },
       {
         "args": [
-          "--log-wptreport",
-          "--xvfb",
-          "--flag-specific",
-          "disable-layout-ng"
-        ],
-        "experiment_percentage": 100,
-        "isolate_name": "wpt_tests_isolate_content_shell",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "wpt_tests_suite_layout_ng_disabled",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
-      },
-      {
-        "args": [
           "--child-processes=8",
           "--log-wptreport",
           "--xvfb",

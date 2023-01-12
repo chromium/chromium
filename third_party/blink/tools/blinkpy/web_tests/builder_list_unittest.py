@@ -114,16 +114,6 @@ class BuilderListTest(unittest.TestCase):
                 },
                 "is_try_builder": True
             },
-            'Flag Specific B': {
-                'port_name': 'port-c',
-                'specifiers': ['C', 'Release'],
-                'steps': {
-                    'layout_ng_disabled_blink_web_tests (with patch)': {
-                        'flag_specific': 'disable-layout-ng',
-                    },
-                },
-                "is_try_builder": True
-            },
         })
 
     def test_constructor_validates_list(self):
@@ -143,7 +133,6 @@ class BuilderListTest(unittest.TestCase):
             'CQ Try B',
             'CQ Try C',
             'Flag Specific A',
-            'Flag Specific B',
             'Try A',
             'Try B',
             'some-wpt-bot',
@@ -158,8 +147,8 @@ class BuilderListTest(unittest.TestCase):
     def test_all_try_builder_names(self):
         builders = self.sample_builder_list()
         self.assertEqual([
-            'CQ Try A', 'CQ Try B', 'CQ Try C', 'Flag Specific A',
-            'Flag Specific B', 'Try A', 'Try B', 'some-wpt-bot'
+            'CQ Try A', 'CQ Try B', 'CQ Try C', 'Flag Specific A', 'Try A',
+            'Try B', 'some-wpt-bot'
         ], builders.all_try_builder_names())
 
     def test_all_cq_try_builder_names(self):
@@ -174,7 +163,7 @@ class BuilderListTest(unittest.TestCase):
                          builders.all_flag_specific_try_builder_names(
                              flag_specific="highdpi"))
         self.assertEqual(
-            ['CQ Try C', 'Flag Specific A', 'Flag Specific B'],
+            ['CQ Try C', 'Flag Specific A'],
             builders.all_flag_specific_try_builder_names(flag_specific="*"))
 
     def test_try_bots_with_cq_mirror(self):
@@ -227,9 +216,6 @@ class BuilderListTest(unittest.TestCase):
         builders = self.sample_builder_list()
         self.assertEqual(
             set(), builders.flag_specific_options_for_port_name('port-a'))
-        self.assertEqual(
-            {'highdpi', 'disable-layout-ng'},
-            builders.flag_specific_options_for_port_name('port-c'))
 
     def test_reject_flag_specific_multiple_ports(self):
         with self.assertRaises(ValueError):

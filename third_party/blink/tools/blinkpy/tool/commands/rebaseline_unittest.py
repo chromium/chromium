@@ -57,15 +57,6 @@ class BaseTestCase(unittest.TestCase):
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release']
             },
-            'MOCK Trusty Disable LayoutNG': {
-                'port_name': 'test-linux-trusty',
-                'specifiers': ['Trusty', 'Release'],
-                'steps': {
-                    'blink_web_tests (with patch)': {
-                        'flag_specific': 'disable-layout-ng',
-                    },
-                },
-            },
             'MOCK Trusty Multiple Steps': {
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
@@ -73,9 +64,6 @@ class BaseTestCase(unittest.TestCase):
                     'blink_web_tests (with patch)': {},
                     'not_site_per_process_blink_web_tests (with patch)': {
                         'flag_specific': 'disable-site-isolation-trials',
-                    },
-                    'layout_ng_disabled_blink_web_tests (with patch)': {
-                        'flag_specific': 'disable-layout-ng',
                     },
                 },
             },
@@ -129,14 +117,6 @@ class BaseTestCase(unittest.TestCase):
         self._write(
             'FlagSpecificConfig',
             json.dumps([
-                {
-                    'name':
-                    'disable-layout-ng',
-                    'args': [
-                        '--disable-blink-features=LayoutNG,'
-                        'LayoutNGBlockFragmentation'
-                    ],
-                },
                 {
                     'name': 'disable-site-isolation-trials',
                     'args': ['--disable-site-isolation-trials'],
@@ -252,28 +232,19 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
     def test_builders_to_fetch_from_flag_specific(self):
         build_steps_to_fetch = self.command.build_steps_to_fetch_from([
             ('MOCK Trusty', 'blink_web_tests (with patch)'),
-            # On this dedicated flag-specific builder, there's no need to
-            # include the flag-specific option in the step name.
-            ('MOCK Trusty Disable LayoutNG', 'blink_web_tests (with patch)'),
         ])
         # Ports are the same, but the fallback paths differ.
         self.assertEqual(
             build_steps_to_fetch, {
                 ('MOCK Trusty', 'blink_web_tests (with patch)'),
-                ('MOCK Trusty Disable LayoutNG',
-                 'blink_web_tests (with patch)'),
             })
 
         build_steps_to_fetch = self.command.build_steps_to_fetch_from([
-            ('MOCK Trusty Disable LayoutNG', 'blink_web_tests (with patch)'),
             ('MOCK Trusty Multiple Steps', 'blink_web_tests (with patch)'),
             ('MOCK Trusty Multiple Steps',
              'not_site_per_process_blink_web_tests (with patch)'),
-            ('MOCK Trusty Multiple Steps',
-             'layout_ng_disabled_blink_web_tests (with patch)'),
         ])
-        # 'layout_ng_disabled_blink_web_tests' should not be rebaselined twice.
-        self.assertEqual(len(build_steps_to_fetch), 3)
+        self.assertEqual(len(build_steps_to_fetch), 2)
         self.assertIn(
             ('MOCK Trusty Multiple Steps', 'blink_web_tests (with patch)'),
             build_steps_to_fetch)

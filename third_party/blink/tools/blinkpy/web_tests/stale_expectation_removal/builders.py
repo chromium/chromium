@@ -59,9 +59,6 @@ class WebTestBuilders(builders.Builders):
                 'mac11.0.arm64-blink-rel-dummy': {
                     'mac11.0.arm64-blink-rel',
                 },
-                'WebKit Linux layout_ng_disabled Builder': {
-                    'linux_layout_tests_layout_ng_disabled',
-                },
                 'win10.20h2-blink-rel-dummy': {
                     'win10.20h2-blink-rel',
                 },

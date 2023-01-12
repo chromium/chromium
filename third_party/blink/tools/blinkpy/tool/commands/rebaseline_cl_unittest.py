@@ -701,9 +701,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                     'not_site_per_process_blink_web_tests (with patch)': {
                         'flag_specific': 'disable-site-isolation-trials',
                     },
-                    'layout_ng_disabled_blink_web_tests (with patch)': {
-                        'flag_specific': 'disable-layout-ng',
-                    },
                 },
             },
         })
@@ -711,11 +708,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         # Add results for the other flag-specific steps on this builder.
         multiple_step_build = Build('MOCK Try Linux Multiple Steps', 9000,
                                     'Build-5')
-        self.tool.results_fetcher.set_results(
-            multiple_step_build,
-            WebTestResults.from_json(
-                self.raw_web_test_results,
-                step_name='layout_ng_disabled_blink_web_tests (with patch)'))
         self.tool.results_fetcher.set_results(
             multiple_step_build,
             WebTestResults.from_json(
@@ -735,11 +727,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             [
                 'python', 'echo', 'copy-existing-baselines-internal', '--test',
                 'one/text-fail.html', '--suffixes', 'txt', '--port-name',
-                'test-linux-trusty', '--flag-specific', 'disable-layout-ng'
-            ],
-            [
-                'python', 'echo', 'copy-existing-baselines-internal', '--test',
-                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
                 'test-linux-trusty', '--flag-specific',
                 'disable-site-isolation-trials'
             ],
@@ -751,14 +738,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'test-linux-trusty', '--builder',
                 'MOCK Try Linux Multiple Steps', '--build-number', '9000',
                 '--step-name', 'blink_web_tests (with patch)'
-            ],
-            [
-                'python', 'echo', 'rebaseline-test-internal', '--test',
-                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
-                'test-linux-trusty', '--flag-specific', 'disable-layout-ng',
-                '--builder', 'MOCK Try Linux Multiple Steps', '--build-number',
-                '9000', '--step-name',
-                'layout_ng_disabled_blink_web_tests (with patch)'
             ],
             [
                 'python', 'echo', 'rebaseline-test-internal', '--test',

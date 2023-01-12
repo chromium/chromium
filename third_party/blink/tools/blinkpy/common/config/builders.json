@@ -255,20 +255,5 @@
         },
         "is_try_builder": true,
         "is_cq_builder":true
-    },
-    "linux_layout_tests_layout_ng_disabled": {
-        "main": "tryserver.chromium.linux",
-        "port_name": "linux-trusty",
-        "specifiers": ["Trusty", "Release"],
-        "steps": {
-            "blink_web_tests (with patch)": {
-                "flag_specific": "disable-layout-ng"
-            },
-            "blink_wpt_tests (with patch)": {
-                "flag_specific": "disable-layout-ng"
-            }
-        },
-        "is_try_builder": true,
-        "is_cq_builder":true
     }
 }

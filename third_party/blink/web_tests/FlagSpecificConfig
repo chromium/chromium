@@ -12,11 +12,6 @@
     "args": ["--content-shell-devtools-tab-target"]
   },
   {
-    "name": "disable-layout-ng",
-    "args": ["--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"],
-    "smoke_file": "SmokeTests/disable-layout-ng"
-  },
-  {
     "name": "disable-site-isolation-trials",
     "args": ["--disable-site-isolation-trials"]
   },

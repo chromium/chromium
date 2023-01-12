@@ -112,7 +112,7 @@ class AbstractRebaseliningCommand(Command):
         '--flag-specific',
         # TODO(crbug/1291020): build the list from builders.json
         choices=[
-            "disable-layout-ng", "disable-site-isolation-trials", "highdpi",
+            "disable-site-isolation-trials", "highdpi",
             "skia-vulkan-swiftshader"
         ],
         default=None,

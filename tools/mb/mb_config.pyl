@@ -1217,7 +1217,6 @@
       # the CI configuration, where no debug builder exists.
       'linux_chromium_ubsan_rel_ng': 'ubsan_vptr_release_bot_reclient',
 
-      'linux_layout_tests_layout_ng_disabled': 'release_trybot_reclient',
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'linux_upload_clang': 'release_bot',
       'linux_vr': 'vr_release_trybot_reclient',

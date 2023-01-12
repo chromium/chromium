@@ -624,25 +624,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux_layout_tests_layout_ng_disabled",
-    branch_selector = branches.STANDARD_MILESTONE,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-    ),
-    main_list_view = "try",
-)
-
-try_.builder(
     name = "linux_upload_clang",
     executable = "recipe:chromium_upload_clang",
     builderless = True,
