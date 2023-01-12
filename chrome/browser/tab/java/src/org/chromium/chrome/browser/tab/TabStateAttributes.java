@@ -38,15 +38,17 @@ public class TabStateAttributes implements UserData {
     }
 
     /**
-     * Set whether the TabState representing this Tab has been updated.
-     * This method will ultimately be deprecated when the migration
-     * to CriticalPersistedTabData is complete.
-     * @param isTabStateDirty whether the Tab's state has changed.
+     * Signals that the tab state is dirty and needs to be persisted.
      */
-    public void setIsTabStateDirty(boolean isTabStateDirty) {
-        mIsTabStateDirty = isTabStateDirty;
-        if (isTabStateDirty && !mTab.isDestroyed()) {
-            CriticalPersistedTabData.from(mTab).setShouldSave();
-        }
+    public void markTabStateDirty() {
+        mIsTabStateDirty = true;
+        if (!mTab.isDestroyed()) CriticalPersistedTabData.from(mTab).setShouldSave();
+    }
+
+    /**
+     * Signals that the tab state is no longer dirty (e.g. has been successfully persisted).
+     */
+    public void clearTabStateDirtiness() {
+        mIsTabStateDirty = false;
     }
 }

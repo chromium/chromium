@@ -681,11 +681,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
         for (CriticalPersistedTabDataObserver observer : mObservers) {
             observer.onRootIdChanged(mTab, rootId);
         }
-        // TODO(crbug.com/1376990) investigate if this can be moved inside
-        // setIsTabStateDirty. Perhaps the gate can be changed to
-        // !mTab.isFrozen().
+        // TODO(crbug.com/1376990) investigate if this can be moved inside markTabStateDirty.
+        //  Perhaps the gate can be changed to !mTab.isFrozen().
         if (mTab.isInitialized()) {
-            TabStateAttributes.from(mTab).setIsTabStateDirty(true);
+            TabStateAttributes.from(mTab).markTabStateDirty();
         }
         save();
     }

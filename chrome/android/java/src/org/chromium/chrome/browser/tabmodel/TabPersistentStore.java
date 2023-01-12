@@ -166,7 +166,7 @@ public class TabPersistentStore {
         new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
             public void onNavigationEntriesDeleted(Tab tab) {
-                if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+                if (!tab.isDestroyed()) TabStateAttributes.from(tab).markTabStateDirty();
                 addTabToSaveQueue(tab);
             }
 
@@ -182,12 +182,12 @@ public class TabPersistentStore {
 
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+                if (!tab.isDestroyed()) TabStateAttributes.from(tab).markTabStateDirty();
             }
 
             @Override
             public void onTitleUpdated(Tab tab) {
-                if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+                if (!tab.isDestroyed()) TabStateAttributes.from(tab).markTabStateDirty();
             }
         };
 
@@ -1379,7 +1379,7 @@ public class TabPersistentStore {
         protected void onPostExecute(Void v) {
             if (mDestroyed || isCancelled()) return;
             if (mStateSaved) {
-                if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).setIsTabStateDirty(false);
+                if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).clearTabStateDirtiness();
                 mTab.setIsTabSaveEnabled(isCriticalPersistedTabDataSaveOnlyEnabled()
                         || isCriticalPersistedTabDataSaveAndRestoreEnabled());
                 migrateSomeRemainingTabsToCriticalPersistedTabData();

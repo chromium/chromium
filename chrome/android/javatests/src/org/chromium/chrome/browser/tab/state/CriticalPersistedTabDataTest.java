@@ -760,7 +760,7 @@ public class CriticalPersistedTabDataTest {
         Assert.assertFalse(uninitializedTab.isInitialized());
         CriticalPersistedTabData criticalPersistedTabData =
                 new CriticalPersistedTabData(uninitializedTab);
-        TabStateAttributes.from(uninitializedTab).setIsTabStateDirty(false);
+        TabStateAttributes.from(uninitializedTab).clearTabStateDirtiness();
         Assert.assertFalse(TabStateAttributes.from(uninitializedTab).isTabStateDirty());
         criticalPersistedTabData.setRootId(ROOT_ID_A);
         Assert.assertFalse(TabStateAttributes.from(uninitializedTab).isTabStateDirty());
@@ -775,7 +775,7 @@ public class CriticalPersistedTabDataTest {
         Assert.assertTrue(initializedTab.isInitialized());
         CriticalPersistedTabData criticalPersistedTabData =
                 new CriticalPersistedTabData(initializedTab);
-        TabStateAttributes.from(initializedTab).setIsTabStateDirty(false);
+        TabStateAttributes.from(initializedTab).clearTabStateDirtiness();
         Assert.assertFalse(TabStateAttributes.from(initializedTab).isTabStateDirty());
         criticalPersistedTabData.setRootId(ROOT_ID_A);
         Assert.assertTrue(TabStateAttributes.from(initializedTab).isTabStateDirty());

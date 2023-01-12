@@ -165,7 +165,7 @@ public class ReparentingTask implements UserData {
     public void finish(@NonNull Delegate delegate, @Nullable Runnable finalizeCallback) {
         delegate.getCompositorViewHolder().prepareForTabReparenting();
         attach(delegate.getWindowAndroid(), delegate.getTabDelegateFactory());
-        if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).setIsTabStateDirty(true);
+        if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).markTabStateDirty();
         if (finalizeCallback != null) finalizeCallback.run();
     }
 

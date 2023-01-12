@@ -126,7 +126,7 @@ public class TabUnitTest {
     @SmallTest
     public void testSetRootIdWithoutChange() {
         assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
-        TabStateAttributes.from(mTab).setIsTabStateDirty(false);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
 
         CriticalPersistedTabData.from(mTab).setRootId(TAB1_ID);
 

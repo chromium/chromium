@@ -151,7 +151,7 @@ public class TabPersistentStoreUnitTest {
         UserDataHost emptyNtpTabUserDataHost = new UserDataHost();
         when(emptyNtpTab.getUserDataHost()).thenReturn(emptyNtpTabUserDataHost);
         when(emptyNtpTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        TabStateAttributes.from(emptyNtpTab).setIsTabStateDirty(true);
+        TabStateAttributes.from(emptyNtpTab).markTabStateDirty();
         when(emptyNtpTab.canGoBack()).thenReturn(false);
         when(emptyNtpTab.canGoForward()).thenReturn(false);
 
@@ -162,7 +162,7 @@ public class TabPersistentStoreUnitTest {
         UserDataHost ntpWithBackNavTabUserDataHost = new UserDataHost();
         when(ntpWithBackNavTab.getUserDataHost()).thenReturn(ntpWithBackNavTabUserDataHost);
         when(ntpWithBackNavTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        TabStateAttributes.from(ntpWithBackNavTab).setIsTabStateDirty(true);
+        TabStateAttributes.from(ntpWithBackNavTab).markTabStateDirty();
         when(ntpWithBackNavTab.canGoBack()).thenReturn(true);
         when(ntpWithBackNavTab.canGoForward()).thenReturn(false);
 
@@ -173,7 +173,7 @@ public class TabPersistentStoreUnitTest {
         UserDataHost ntpWithForwardNavTabUserDataHost = new UserDataHost();
         when(ntpWithForwardNavTab.getUserDataHost()).thenReturn(ntpWithForwardNavTabUserDataHost);
         when(ntpWithForwardNavTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        TabStateAttributes.from(ntpWithForwardNavTab).setIsTabStateDirty(true);
+        TabStateAttributes.from(ntpWithForwardNavTab).markTabStateDirty();
         when(ntpWithForwardNavTab.canGoBack()).thenReturn(false);
         when(ntpWithForwardNavTab.canGoForward()).thenReturn(true);
 
@@ -184,7 +184,7 @@ public class TabPersistentStoreUnitTest {
         UserDataHost ntpWithAllTheNavsTabUserDataHost = new UserDataHost();
         when(ntpWithAllTheNavsTab.getUserDataHost()).thenReturn(ntpWithAllTheNavsTabUserDataHost);
         when(ntpWithAllTheNavsTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        TabStateAttributes.from(ntpWithAllTheNavsTab).setIsTabStateDirty(true);
+        TabStateAttributes.from(ntpWithAllTheNavsTab).markTabStateDirty();
         when(ntpWithAllTheNavsTab.canGoBack()).thenReturn(true);
         when(ntpWithAllTheNavsTab.canGoForward()).thenReturn(true);
 
