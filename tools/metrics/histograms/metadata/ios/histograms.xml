@@ -1462,7 +1462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Permission.Modal.Events" enum="IOSPermissionEvent"
-    expires_after="2023-02-22">
+    expires_after="2024-01-10">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -1473,7 +1473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Permission.PageInfo.Events" enum="IOSPermissionEvent"
-    expires_after="2023-02-22">
+    expires_after="2024-01-10">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
