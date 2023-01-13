@@ -47,9 +47,10 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
 
-  writer.AddOutputConfigForMultiClassClassifier(
-      /*class_labels=*/{kShareUser, kNewTabUser, kVoiceUser, kShoppingUser},
-      top_k_outputs, threshold);
+  std::array<const char*, 4> labels{kShareUser, kNewTabUser, kVoiceUser,
+                                    kShoppingUser};
+  writer.AddOutputConfigForMultiClassClassifier(labels.begin(), labels.size(),
+                                                top_k_outputs, threshold);
   return model_metadata.output_config();
 }
 

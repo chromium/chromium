@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -42,23 +41,10 @@ using proto::SegmentId;
 // Default parameters for Chrome Start model.
 constexpr SegmentId kCrossDeviceUserSegmentId =
     SegmentId::CROSS_DEVICE_USER_SEGMENT;
-constexpr proto::TimeUnit kCrossDeviceUserTimeUnit = proto::TimeUnit::DAY;
-constexpr uint64_t kCrossDeviceUserBucketDuration = 1;
 constexpr int64_t kCrossDeviceUserSignalStorageLength = 28;
 constexpr int64_t kCrossDeviceUserMinSignalCollectionLength = 1;
-constexpr int64_t kCrossDeviceUserResultTTL = 1;
 constexpr int kCrossDeviceUserSegmentSelectionTTLDays = 7;
 constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
-
-// Discrete mapping parameters.
-constexpr char kCrossDeviceUserDiscreteMappingKey[] = "cross_device_user";
-// All values greater than or equal to kCrossDeviceMobile will map to true.
-constexpr float kCrossDeviceUserDiscreteMappingMinResult =
-    RANK(CrossDeviceUserSubsegment::kCrossDeviceMobile);
-constexpr int64_t kCrossDeviceUserDiscreteMappingRank = 1;
-constexpr std::pair<float, int> kDiscreteMappings[] = {
-    {kCrossDeviceUserDiscreteMappingMinResult,
-     kCrossDeviceUserDiscreteMappingRank}};
 
 // InputFeatures.
 
@@ -152,24 +138,12 @@ void CrossDeviceUserSegment::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   proto::SegmentationModelMetadata chrome_start_metadata;
   MetadataWriter writer(&chrome_start_metadata);
-  writer.SetSegmentationMetadataConfig(
-      kCrossDeviceUserTimeUnit, kCrossDeviceUserBucketDuration,
-      kCrossDeviceUserSignalStorageLength,
-      kCrossDeviceUserMinSignalCollectionLength, kCrossDeviceUserResultTTL);
+  writer.SetDefaultSegmentationMetadataConfig(
+      kCrossDeviceUserMinSignalCollectionLength,
+      kCrossDeviceUserSignalStorageLength);
 
-  // Set discrete mapping.
-  writer.AddDiscreteMappingEntries(kCrossDeviceUserDiscreteMappingKey,
-                                   kDiscreteMappings, 1);
-
-  // Add subsegment mapping.
-  std::vector<std::pair<float, int>> subsegment_mapping;
-  for (unsigned i = 1; i <= RANK(CrossDeviceUserSubsegment::kMaxValue); ++i) {
-    subsegment_mapping.emplace_back(i, i);
-  }
-  writer.AddDiscreteMappingEntries(
-      base::StrCat({kCrossDeviceUserDiscreteMappingKey,
-                    kSubsegmentDiscreteMappingSuffix}),
-      subsegment_mapping.data(), subsegment_mapping.size());
+  writer.AddBooleanSegmentDiscreteMappingWithSubsegments(
+      kCrossDeviceUserKey, 1, RANK(CrossDeviceUserSubsegment::kMaxValue));
 
   // Set features.
   writer.AddUmaFeatures(kCrossDeviceUserUMAFeatures.data(),

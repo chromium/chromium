@@ -152,7 +152,8 @@ void MetadataWriter::AddOutputConfigForBinaryClassifier(
 }
 
 void MetadataWriter::AddOutputConfigForMultiClassClassifier(
-    const std::vector<std::string>& class_labels,
+    const char* const* class_labels,
+    size_t class_labels_length,
     int top_k_outputs,
     absl::optional<float> threshold) {
   proto::Predictor_MultiClassClassifier* multi_class_classifier =
@@ -161,8 +162,9 @@ void MetadataWriter::AddOutputConfigForMultiClassClassifier(
           ->mutable_multi_class_classifier();
 
   multi_class_classifier->set_top_k_outputs(top_k_outputs);
-  multi_class_classifier->mutable_class_labels()->Assign(class_labels.begin(),
-                                                         class_labels.end());
+  for (size_t i = 0; i < class_labels_length; ++i) {
+    multi_class_classifier->mutable_class_labels()->Add(class_labels[i]);
+  }
   if (threshold.has_value()) {
     multi_class_classifier->set_threshold(threshold.value());
   }

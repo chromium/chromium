@@ -44,6 +44,10 @@ constexpr std::array<MetadataWriter::UMAFeature, 6> kShareUMAFeatures = {
         kShareOutputCollectionDelayInSec),
 };
 
+constexpr std::array<const char*, 2> kContextualPageActionModelLabels = {
+    kContextualPageActionModelLabelPriceTracking,
+    kContextualPageActionModelLabelReaderMode};
+
 }  // namespace
 
 ContextualPageActionsModel::ContextualPageActionsModel()
@@ -94,8 +98,8 @@ void ContextualPageActionsModel::InitAndFetchModel(
 
   // Set output config, labels, and classifier.
   writer.AddOutputConfigForMultiClassClassifier(
-      {kContextualPageActionModelLabelPriceTracking,
-       kContextualPageActionModelLabelReaderMode},
+      kContextualPageActionModelLabels.begin(),
+      kContextualPageActionModelLabels.size(),
       /*top_k_outputs=*/1, threshold);
 
   constexpr int kModelVersion = 1;
