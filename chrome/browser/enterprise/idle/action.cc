@@ -13,19 +13,24 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/idle/action_runner.h"
-#include "chrome/browser/enterprise/idle/browser_closer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browsing_data_remover.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/idle/browser_closer.h"
+#include "chrome/browser/ui/profile_picker.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_idle {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 // Wrapper Action for BrowserCloser.
 class CloseBrowsersAction : public Action {
  public:
@@ -66,6 +71,7 @@ class ShowProfilePickerAction : public Action {
     std::move(continuation).Run(true);
   }
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Action that clears one or more types of data via BrowsingDataRemover.
 // Multiple data types may be grouped into a single ClearBrowsingDataAction
@@ -183,12 +189,14 @@ ActionFactory::ActionQueue ActionFactory::Build(
   base::flat_set<ActionType> clear_actions;
   for (auto action_type : action_types) {
     switch (action_type) {
+#if !BUILDFLAG(IS_ANDROID)
       case ActionType::kCloseBrowsers:
         actions.push(std::make_unique<CloseBrowsersAction>());
         break;
       case ActionType::kShowProfilePicker:
         actions.push(std::make_unique<ShowProfilePickerAction>());
         break;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
       // "clear_*" actions are all grouped into a single Action object. Collect
       // them in a flat_set<>, and create the shared object once we have the

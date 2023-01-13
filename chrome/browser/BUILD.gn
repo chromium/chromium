@@ -6045,6 +6045,21 @@ static_library("browser") {
     deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac" ]
   }
 
+  if (is_linux || is_win || is_mac || is_android) {
+    sources += [
+      "enterprise/idle/action.cc",
+      "enterprise/idle/action.h",
+      "enterprise/idle/action_runner.cc",
+      "enterprise/idle/action_runner.h",
+      "enterprise/idle/idle_service.cc",
+      "enterprise/idle/idle_service.h",
+      "enterprise/idle/idle_service_factory.cc",
+      "enterprise/idle/idle_service_factory.h",
+      "enterprise/idle/idle_timeout_policy_handler.cc",
+      "enterprise/idle/idle_timeout_policy_handler.h",
+    ]
+  }
+
   if (is_linux || is_win || is_mac) {
     sources += [
       "enterprise/chrome_browser_main_extra_parts_enterprise.cc",
@@ -6067,18 +6082,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/browser/browser_device_trust_connector_service.h",
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.cc",
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h",
-      "enterprise/idle/action.cc",
-      "enterprise/idle/action.h",
-      "enterprise/idle/action_runner.cc",
-      "enterprise/idle/action_runner.h",
       "enterprise/idle/browser_closer.cc",
       "enterprise/idle/browser_closer.h",
-      "enterprise/idle/idle_service.cc",
-      "enterprise/idle/idle_service.h",
-      "enterprise/idle/idle_service_factory.cc",
-      "enterprise/idle/idle_service_factory.h",
-      "enterprise/idle/idle_timeout_policy_handler.cc",
-      "enterprise/idle/idle_timeout_policy_handler.h",
       "enterprise/remote_commands/rotate_attestation_credential_job.cc",
       "enterprise/remote_commands/rotate_attestation_credential_job.h",
       "enterprise/signals/signals_aggregator_factory.cc",

@@ -16,6 +16,7 @@ features:
   per_profile: true
 future_on:
 - chrome.*
+- android
 owners:
 - nicolaso@chromium.org
 - cbe-magic@google.com

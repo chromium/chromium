@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/idle/action.h"
 #include "chrome/common/pref_names.h"
@@ -72,8 +73,8 @@ ACTION_P(RunContinuation, success) {
 
 }  // namespace
 
-using testing::_;
-
+// TODO(crbug.com/1316551): Enable this when Android supports >1 Action.
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that actions are run in sequence, in order of priority.
 TEST(IdleActionRunnerTest, RunsActionsInSequence) {
   content::BrowserTaskEnvironment task_environment;
@@ -164,6 +165,7 @@ TEST(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
                            std::move(show_profile_picker));
   runner.Run();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that it does nothing when the "IdleTimeoutActions" pref is empty.
 TEST(IdleActionRunnerTest, DoNothingWithEmptyPref) {
@@ -173,21 +175,23 @@ TEST(IdleActionRunnerTest, DoNothingWithEmptyPref) {
   ActionRunner runner(&profile, &action_factory);
 
   // "IdleTimeoutActions" is deliberately unset.
-  auto close_browsers =
-      std::make_unique<MockAction>(ActionType::kCloseBrowsers);
-  auto show_profile_picker =
-      std::make_unique<MockAction>(ActionType::kShowProfilePicker);
+  auto clear_browsing_history =
+      std::make_unique<MockAction>(ActionType::kClearBrowsingHistory);
+  auto clear_download_history =
+      std::make_unique<MockAction>(ActionType::kClearDownloadHistory);
 
-  EXPECT_CALL(*close_browsers, Run(_, _)).Times(0);
-  EXPECT_CALL(*show_profile_picker, Run(_, _)).Times(0);
+  EXPECT_CALL(*clear_browsing_history, Run(_, _)).Times(0);
+  EXPECT_CALL(*clear_download_history, Run(_, _)).Times(0);
 
-  action_factory.Associate(ActionType::kCloseBrowsers,
-                           std::move(close_browsers));
-  action_factory.Associate(ActionType::kShowProfilePicker,
-                           std::move(show_profile_picker));
+  action_factory.Associate(ActionType::kClearBrowsingHistory,
+                           std::move(clear_browsing_history));
+  action_factory.Associate(ActionType::kClearDownloadHistory,
+                           std::move(clear_download_history));
   runner.Run();
 }
 
+// TODO(crbug.com/1316551): Enable this when Android supports >1 Action.
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that ActionRunner only runs the actions configured via the
 // "IdleTimeoutActions" pref.
 TEST(IdleActionRunnerTest, JustCloseBrowsers) {
@@ -243,6 +247,7 @@ TEST(IdleActionRunnerTest, JustShowProfilePicker) {
                            std::move(show_profile_picker));
   runner.Run();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // A basic implementation of BrowsingDataRemover, that doesn't remove any data.
 //

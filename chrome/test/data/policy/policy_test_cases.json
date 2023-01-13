@@ -20723,10 +20723,10 @@
   },
   "IdleTimeout": {
     "os": [
-      "win",
+      "android",
       "linux",
       "mac",
-      "fuchsia"
+      "win"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -20755,19 +20755,21 @@
   },
   "IdleTimeoutActions": {
     "os": [
-      "win",
+      "android",
       "linux",
-      "mac"
+      "mac",
+      "win"
     ],
     "policy_pref_mapping_tests": [
       {
         "policies": {
           "IdleTimeout": 10,
-          "IdleTimeoutActions": ["close_browsers", "show_profile_picker"]
+          "IdleTimeoutActions": ["clear_browsing_history",
+                                 "clear_download_history"]
         },
         "prefs": {
           "idle_timeout_actions": {
-            "value": [0, 1]
+            "value": [2, 3]
           }
         }
       }

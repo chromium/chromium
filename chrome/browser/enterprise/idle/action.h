@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 class Profile;
@@ -23,8 +24,10 @@ namespace enterprise_idle {
 // Actions run in order, based on their numerical value. Lower values run first.
 // Keep this enum sorted by priority.
 enum class ActionType {
+#if !BUILDFLAG(IS_ANDROID)
   kCloseBrowsers = 0,
   kShowProfilePicker = 1,
+#endif  // !BUILDFLAG(IS_ANDROID)
   kClearBrowsingHistory = 2,
   kClearDownloadHistory = 3,
   kClearCookiesAndOtherSiteData = 4,
