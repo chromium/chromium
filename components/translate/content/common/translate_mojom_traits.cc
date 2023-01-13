@@ -95,6 +95,8 @@ bool StructTraits<translate::mojom::LanguageDetectionDetailsDataView,
                   translate::LanguageDetectionDetails>::
     Read(translate::mojom::LanguageDetectionDetailsDataView data,
          translate::LanguageDetectionDetails* out) {
+  out->has_run_lang_detection = data.has_run_lang_detection();
+
   if (!data.ReadTime(&out->time))
     return false;
   if (!data.ReadUrl(&out->url))

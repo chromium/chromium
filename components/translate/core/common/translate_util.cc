@@ -60,6 +60,10 @@ const base::FeatureParam<int>
 const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs{
     &kDesktopPartialTranslate, "DesktopPartialTranslateBubbleShowDelayMs", 500};
 
+BASE_FEATURE(kRetryLanguageDetection,
+             "RetryLanguageDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_WIN)
 BASE_FEATURE(kMmapLanguageDetectionModel,
              "MmapLanguageDetectionModel",

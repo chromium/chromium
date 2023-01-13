@@ -373,6 +373,17 @@ function onLanguageDetectionInfoAdded(detail) {
 
   const tr = document.createElement('tr');
 
+  // If language detection was skipped, do not populate related details.
+  const hasRunLangDetection = JSON.parse(detail['has_run_lang_detection']);
+  const cldLang = hasRunLangDetection ?
+      formatLanguageCode(detail['model_detected_language']) :
+      'No page content - language detection skipped';
+  const modelVersion =
+      hasRunLangDetection ? detail['detection_model_version'] : '';
+  const reliabilityScore =
+      hasRunLangDetection ? detail['model_reliability_score'].toFixed(2) : '';
+  const isReliable = hasRunLangDetection ? detail['is_model_reliable'] : '';
+
   appendTD(tr, formatDate(new Date(detail['time'])), 'detection-logs-time');
   appendTD(tr, detail['url'], 'detection-logs-url');
   appendTD(
@@ -381,16 +392,10 @@ function onLanguageDetectionInfoAdded(detail) {
   appendTD(
       tr, formatLanguageCode(detail['html_root_language']),
       'detection-logs-html-root-language');
-  appendTD(
-      tr, formatLanguageCode(detail['model_detected_language']),
-      'detection-logs-cld-language');
-  appendTD(
-      tr, detail['detection_model_version'],
-      'detection-logs-detection-model-version');
-  appendTD(
-      tr, detail['model_reliability_score'].toFixed(2),
-      'detection-logs-model-reliability');
-  appendTD(tr, detail['is_model_reliable'], 'detection-logs-is-cld-reliable');
+  appendTD(tr, cldLang, 'detection-logs-cld-language');
+  appendTD(tr, modelVersion, 'detection-logs-detection-model-version');
+  appendTD(tr, reliabilityScore, 'detection-logs-model-reliability');
+  appendTD(tr, isReliable, 'detection-logs-is-cld-reliable');
   appendTD(tr, detail['has_notranslate'], 'detection-logs-has-notranslate');
   appendTD(
       tr, formatLanguageCode(detail['adopted_language']),

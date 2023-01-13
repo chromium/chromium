@@ -27,6 +27,11 @@ struct EnumTraits<translate::mojom::TranslateError,
 template <>
 struct StructTraits<translate::mojom::LanguageDetectionDetailsDataView,
                     translate::LanguageDetectionDetails> {
+  static bool has_run_lang_detection(
+      const translate::LanguageDetectionDetails& r) {
+    return r.has_run_lang_detection;
+  }
+
   static const base::Time& time(const translate::LanguageDetectionDetails& r) {
     return r.time;
   }

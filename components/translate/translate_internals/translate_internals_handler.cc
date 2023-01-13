@@ -91,6 +91,7 @@ void TranslateInternalsHandler::RegisterMessageCallbacks() {
 void TranslateInternalsHandler::AddLanguageDetectionDetails(
     const translate::LanguageDetectionDetails& details) {
   base::Value::Dict dict;
+  dict.Set("has_run_lang_detection", details.has_run_lang_detection);
   dict.Set("time", details.time.ToJsTime());
   dict.Set("url", details.url.spec());
   dict.Set("content_language", details.content_language);

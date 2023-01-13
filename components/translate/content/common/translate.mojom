@@ -24,12 +24,12 @@ enum TranslateError {
   TRANSLATE_ERROR_MAX,
 };
 
-// This struct is populated a TranslateAgent to inform the browser about the
+// This struct is populated by a TranslateAgent to inform the browser about the
 // result of the language detection model. Corresponds to
 // LanguageDetectionDetails defined in language_detection_details.h.
 struct LanguageDetectionDetails {
-  // All the elements in this section are used for to make decisions related
-  // to page translation.
+  // All the elements in this section are used for making decisions related to
+  // page translation.
   //
   // The URL corresponding to the main frame that had its language detected.
   // Used by the TranslateDriver to determine if the page is eligible for
@@ -47,6 +47,9 @@ struct LanguageDetectionDetails {
   // All the elements below are used only for debugging and metrics purposes,
   // e.g., translate-internals.
   //
+  // Whether language detection has been run on the page. Under
+  // kRetryLanguageDetection, this is only done if page content was captured.
+  bool has_run_lang_detection;
   // The time at which language the language detection was performed. Used only
   // for debugging.
   mojo_base.mojom.Time time;

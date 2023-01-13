@@ -37,6 +37,9 @@ extern const base::FeatureParam<int>
 // is shown.
 extern const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs;
 
+// Controls whether language detection improvements are in effect
+BASE_DECLARE_FEATURE(kRetryLanguageDetection);
+
 #if !BUILDFLAG(IS_WIN)
 // Controls whether mmap is used to load the language detection model.
 BASE_DECLARE_FEATURE(kMmapLanguageDetectionModel);
