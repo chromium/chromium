@@ -120,7 +120,12 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "gpu/command_buffer/service/image_factory_native_pixmap.h"
+#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_usage_util.h"
+#include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_image_native_pixmap.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -3641,30 +3646,14 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
 
   should_use_native_gmb_for_backbuffer_ =
       attrib_helper.should_use_native_gmb_for_backbuffer;
-  if (should_use_native_gmb_for_backbuffer_) {
-    bool supported = false;
-#if BUILDFLAG(IS_OZONE)
-    switch (image_factory_for_nacl_swapchain()->RequiredTextureType()) {
-      case GL_TEXTURE_RECTANGLE_ARB:
-        supported = feature_info_->feature_flags().arb_texture_rectangle;
-        break;
-      case GL_TEXTURE_EXTERNAL_OES:
-        supported = feature_info_->feature_flags().oes_egl_image_external;
-        break;
-      case GL_TEXTURE_2D:
-        supported = true;
-        break;
-      default:
-        break;
-    }
-#endif
 
-    if (!supported) {
-      LOG(ERROR) << "ContextResult::kFatalFailure: "
-                    "native gmb format not supported";
-      return gpu::ContextResult::kFatalFailure;
-    }
+#if !BUILDFLAG(IS_OZONE)
+  if (should_use_native_gmb_for_backbuffer_) {
+    LOG(ERROR) << "ContextResult::kFatalFailure: "
+                  "native gmb format not supported";
+    return gpu::ContextResult::kFatalFailure;
   }
+#endif
 
   // In theory |needs_emulation| needs to be true on Desktop GL 4.1 or lower.
   // However, we set it to true everywhere, not to trust drivers to handle
@@ -19290,11 +19279,9 @@ bool GLES2DecoderImpl::NeedsCopyTextureImageWorkaround(
 }
 
 bool GLES2DecoderImpl::ChromiumImageNeedsRGBEmulation() {
-#if BUILDFLAG(IS_OZONE)
-  return !image_factory_for_nacl_swapchain()->SupportsFormatRGB();
-#else
+  // TODO(blundell): Eliminate this method and streamline all code that calls
+  // it.
   return false;
-#endif
 }
 
 void GLES2DecoderImpl::ClearFramebufferForWorkaround(GLbitfield mask) {
@@ -19550,16 +19537,38 @@ error::Error GLES2DecoderImpl::HandleSetActiveURLCHROMIUM(
 
 #if BUILDFLAG(IS_OZONE)
 bool GLES2DecoderImpl::SupportsCreateAnonymousImage() {
-  return image_factory_for_nacl_swapchain()->SupportsCreateAnonymousImage();
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformRuntimeProperties()
+      .supports_native_pixmaps;
 }
 
 scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool* is_cleared) {
-  return image_factory_for_nacl_swapchain()->CreateAnonymousImage(
-      size, format, gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle,
-      is_cleared);
+  gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
+  SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+
+  scoped_refptr<gfx::NativePixmap> pixmap;
+  pixmap =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateNativePixmap(surface_handle, nullptr, size, format, usage);
+  if (!pixmap.get()) {
+    LOG(ERROR) << "Failed to create pixmap " << size.ToString() << ", "
+               << gfx::BufferFormatToString(format) << ", usage "
+               << gfx::BufferUsageToString(usage);
+    return nullptr;
+  }
+  auto image = gl::GLImageNativePixmap::Create(size, format, std::move(pixmap));
+  if (!image) {
+    LOG(ERROR) << "Failed to create GLImage " << size.ToString() << ", "
+               << gfx::BufferFormatToString(format) << ", usage "
+               << gfx::BufferUsageToString(usage);
+    return nullptr;
+  }
+  *is_cleared = true;
+  return image;
 }
 
 #endif
@@ -19567,7 +19576,7 @@ scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
 // An image can only be bound to a texture with the appropriate type.
 unsigned int GLES2DecoderImpl::RequiredTextureTypeForAnonymousImage() {
 #if BUILDFLAG(IS_OZONE)
-  return image_factory_for_nacl_swapchain()->RequiredTextureType();
+  return GL_TEXTURE_2D;
 #else
   NOTREACHED();
   return 0;

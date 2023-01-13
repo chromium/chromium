@@ -12,17 +12,4 @@ ImageFactory::ImageFactory() = default;
 
 ImageFactory::~ImageFactory() = default;
 
-unsigned ImageFactory::RequiredTextureType() {
-  NOTIMPLEMENTED();
-  return 0;
-}
-
-bool ImageFactory::SupportsFormatRGB() {
-  return true;
-}
-
-ImageFactoryNativePixmap* ImageFactory::AsImageFactoryNativePixmap() {
-  return nullptr;
-}
-
 }  // namespace gpu

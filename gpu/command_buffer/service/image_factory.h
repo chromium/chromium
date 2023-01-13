@@ -12,8 +12,6 @@ namespace gles2 {
 class GLES2DecoderImpl;
 }
 
-class ImageFactoryNativePixmap;
-
 class GPU_EXPORT ImageFactory {
  public:
   virtual ~ImageFactory();
@@ -24,16 +22,6 @@ class GPU_EXPORT ImageFactory {
  private:
   // This class is used by validating command decoder for NaCL swapchain.
   friend class gles2::GLES2DecoderImpl;
-
-  // An image can only be bound to a texture with the appropriate type.
-  virtual unsigned RequiredTextureType();
-
-  // Whether a created image can have format GL_RGB.
-  virtual bool SupportsFormatRGB();
-
-  // Returns this instance as an ImageFactoryNativePixmap, or nullptr if this
-  // instance is not an ImageFactoryNativePixmap instance.
-  virtual ImageFactoryNativePixmap* AsImageFactoryNativePixmap();
 };
 
 }  // namespace gpu
