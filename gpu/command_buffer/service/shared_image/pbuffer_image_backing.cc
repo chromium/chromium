@@ -147,10 +147,4 @@ bool PbufferImageBacking::GLTextureImageRepresentationBeginAccess(
 void PbufferImageBacking::GLTextureImageRepresentationEndAccess(bool readonly) {
 }
 
-void PbufferImageBacking::GLTextureImageRepresentationRelease(
-    bool has_context) {
-  // No action needed: This class retains the passed-in texture for its
-  // lifetime, and releases it in its destructor.
-}
-
 }  // namespace gpu

@@ -19,7 +19,6 @@ class GLTextureImageRepresentationClient {
  public:
   virtual bool GLTextureImageRepresentationBeginAccess(bool readonly) = 0;
   virtual void GLTextureImageRepresentationEndAccess(bool readonly) = 0;
-  virtual void GLTextureImageRepresentationRelease(bool have_context) = 0;
 };
 
 // Representation of a GLTextureImageBacking or GLImageBacking

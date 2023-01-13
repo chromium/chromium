@@ -415,9 +415,6 @@ void AngleVulkanImageBacking::GLTextureImageRepresentationEndAccess(
   ReleaseTextureANGLE();
 }
 
-void AngleVulkanImageBacking::GLTextureImageRepresentationRelease(
-    bool have_context) {}
-
 void AngleVulkanImageBacking::AcquireTextureANGLE() {
   gl::GLApi* api = gl::g_current_gl_context;
   GLuint texture = passthrough_texture_->service_id();

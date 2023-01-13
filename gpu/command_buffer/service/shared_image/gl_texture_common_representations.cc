@@ -29,12 +29,7 @@ GLTextureGLCommonRepresentation::GLTextureGLCommonRepresentation(
   DCHECK_EQ(textures_.size(), NumPlanesExpected());
 }
 
-GLTextureGLCommonRepresentation::~GLTextureGLCommonRepresentation() {
-  textures_.clear();
-  if (client_) {
-    client_->GLTextureImageRepresentationRelease(has_context());
-  }
-}
+GLTextureGLCommonRepresentation::~GLTextureGLCommonRepresentation() = default;
 
 gles2::Texture* GLTextureGLCommonRepresentation::GetTexture(int plane_index) {
   DCHECK(format().IsValidPlaneIndex(plane_index));
@@ -77,12 +72,7 @@ GLTexturePassthroughGLCommonRepresentation::
 }
 
 GLTexturePassthroughGLCommonRepresentation::
-    ~GLTexturePassthroughGLCommonRepresentation() {
-  textures_.clear();
-  if (client_) {
-    client_->GLTextureImageRepresentationRelease(has_context());
-  }
-}
+    ~GLTexturePassthroughGLCommonRepresentation() = default;
 
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughGLCommonRepresentation::GetTexturePassthrough(
@@ -133,11 +123,6 @@ SkiaGLCommonRepresentation::SkiaGLCommonRepresentation(
 
 SkiaGLCommonRepresentation::~SkiaGLCommonRepresentation() {
   DCHECK(write_surfaces_.empty());
-  promise_textures_.clear();
-  if (client_) {
-    DCHECK(context_state_->GrContextIsGL());
-    client_->GLTextureImageRepresentationRelease(has_context());
-  }
 }
 
 std::vector<sk_sp<SkSurface>> SkiaGLCommonRepresentation::BeginWriteAccess(

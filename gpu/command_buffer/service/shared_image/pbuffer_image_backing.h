@@ -66,7 +66,6 @@ class GPU_GLES2_EXPORT PbufferImageBacking
   // GLTextureImageRepresentationClient:
   bool GLTextureImageRepresentationBeginAccess(bool readonly) override;
   void GLTextureImageRepresentationEndAccess(bool readonly) override;
-  void GLTextureImageRepresentationRelease(bool have_context) override;
 
   base::ScopedClosureRunner on_destruction_closure_runner_;
 

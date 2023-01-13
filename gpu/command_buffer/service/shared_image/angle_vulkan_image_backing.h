@@ -51,7 +51,6 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
   // GLTextureImageRepresentationClient implementation.
   bool GLTextureImageRepresentationBeginAccess(bool readonly) override;
   void GLTextureImageRepresentationEndAccess(bool readonly) override;
-  void GLTextureImageRepresentationRelease(bool have_context) override;
 
  private:
   class SkiaAngleVulkanImageRepresentation;
