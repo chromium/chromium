@@ -12,9 +12,9 @@ class GURL;
 // Model object representing details about a tab item.
 @interface TabItem : NSObject
 
-// Create an item with `title`, and `url`.
+// Create an item with `title`, and `URL`.
 - (instancetype)initWithTitle:(NSString*)title
-                          url:(GURL)URL NS_DESIGNATED_INITIALIZER;
+                          URL:(GURL)URL NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

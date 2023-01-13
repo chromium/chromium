@@ -99,7 +99,7 @@ TabItem* GetTabItem(WebStateList* web_state_list,
 
   TabItem* item =
       [[TabItem alloc] initWithTitle:tab_util::GetTabTitle(web_state)
-                                 url:web_state->GetVisibleURL()];
+                                 URL:web_state->GetVisibleURL()];
   return item;
 }
 

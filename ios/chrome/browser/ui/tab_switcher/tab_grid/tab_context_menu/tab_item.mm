@@ -12,7 +12,7 @@
 
 @implementation TabItem
 
-- (instancetype)initWithTitle:(NSString*)title url:(GURL)URL {
+- (instancetype)initWithTitle:(NSString*)title URL:(GURL)URL {
   if ((self = [super init])) {
     _title = title;
     _URL = URL;
