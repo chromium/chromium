@@ -31,6 +31,7 @@ import './kiosk_dialog.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
@@ -227,6 +228,7 @@ export class ExtensionsManagerElement extends PolymerElement {
   private installWarnings_: string[]|null;
   private showOptionsDialog_: boolean;
   private fromActivityLog_: boolean;
+  private pageInitializedResolver_: PromiseResolver<void>;
 
   // <if expr="chromeos_ash">
   private kioskEnabled_: boolean;
@@ -250,6 +252,12 @@ export class ExtensionsManagerElement extends PolymerElement {
      * listener can be removed when this element is detached (happens in tests).
      */
     this.navigationListener_ = null;
+
+    /**
+     * A promise resolver for any external files waiting for initPage_ to be
+     * called after the extensions info has been fetched.
+     */
+    this.pageInitializedResolver_ = new PromiseResolver();
   }
 
   override ready() {
@@ -310,12 +318,21 @@ export class ExtensionsManagerElement extends PolymerElement {
   }
 
   /**
+   * @return the promise of `pageInitializedResolver_` so tests can wait for the
+   * page to be initialized.
+   */
+  whenPageInitializedForTest(): Promise<void> {
+    return this.pageInitializedResolver_.promise;
+  }
+
+  /**
    * Initializes the page to reflect what's specified in the url so that if
    * the user visits chrome://extensions/?id=..., we land on the proper page.
    */
   private initPage_() {
     this.didInitPage_ = true;
     this.changePage_(navigation.getCurrentPage());
+    this.pageInitializedResolver_.resolve();
   }
 
   private onItemStateChanged_(eventData: chrome.developerPrivate.EventData) {

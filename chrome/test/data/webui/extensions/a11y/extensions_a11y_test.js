@@ -32,6 +32,13 @@ var CrExtensionsA11yTest = class extends PolymerTest {
     ];
   }
 
+  /** @override */
+  setUp() {
+    const runTest = this.deferRunTest(WhenTestDone.DEFAULT);
+    const manager = document.querySelector('extensions-manager');
+    manager.whenPageInitializedForTest().then(runTest);
+  }
+
   // Default accessibility audit options. Specify in test definition to use.
   static get axeOptions() {
     return {
@@ -130,10 +137,6 @@ AccessibilityTest.define('CrExtensionsA11yTest', {
 CrExtensionsA11yTestWithMultipleExensions = class extends CrExtensionsA11yTest {
   /** @override */
   testGenPreamble() {
-    // (crbug.com/1397832): Flaky on mac builder.
-    GEN('#if BUILDFLAG(IS_MAC)');
-    GEN('#define DISABLED_All');
-    GEN('#endif');
     GEN('  InstallGoodExtension();');
     GEN('  InstallPackagedApp();');
     GEN('  InstallHostedApp();');
