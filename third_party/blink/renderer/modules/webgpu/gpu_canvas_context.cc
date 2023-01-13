@@ -323,6 +323,12 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   texture_descriptor_.viewFormats = view_formats_.get();
   texture_descriptor_.viewFormatCount = descriptor->viewFormats().size();
 
+  // Set the size of the texture in case there was no Reshape() since the
+  // creation of the context.
+  gfx::Size host_size = Host()->Size();
+  texture_descriptor_.size = {static_cast<uint32_t>(host_size.width()),
+                              static_cast<uint32_t>(host_size.height()), 1};
+
   // This needs to happen early so that if any validation fails the swapbuffers
   // are not created and getCurrentTexture() will return an error GPUTexture.
   DetachSwapBuffers();
@@ -330,6 +336,13 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // Store the configured device separately, even if the configuration fails, so
   // that errors can be generated in the appropriate error scope.
   device_ = descriptor->device();
+
+  // The WebGPU spec requires that a validation error be produced if the
+  // descriptor is invalid. However no call to AssociateMailbox is done in
+  // configure() which would produce the error. Directly request that the
+  // descriptor be validated instead.
+  device_->GetProcs().deviceValidateTextureDescriptor(device_->GetHandle(),
+                                                      &texture_descriptor_);
 
   switch (texture_descriptor_.format) {
     // TODO(crbug.com/1361468): support BGRA8Unorm on Android.
@@ -346,8 +359,11 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
 #endif
       break;
     default:
-      device_->InjectError(WGPUErrorType_Validation,
-                           "unsupported swap chain format");
+      device_->InjectError(
+          WGPUErrorType_Validation,
+          ("unsupported swap chain format \"" +
+           std::string(FromDawnEnum(texture_descriptor_.format)) + "\"")
+              .c_str());
       return;
   }
 
@@ -427,9 +443,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     ResizeSwapbuffers(configured_size_);
   } else {
     configured_size_.SetSize(0, 0);
-
-    gfx::Size size = Host()->Size();
-    ResizeSwapbuffers(size);
+    ResizeSwapbuffers(host_size);
   }
 }
 
