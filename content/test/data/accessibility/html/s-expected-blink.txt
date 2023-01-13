@@ -1,5 +1,6 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++staticText name='My car is blue.'
-++++++++inlineTextBox name='My car is blue.'
+++++++contentDeletion
+++++++++staticText name='My car is blue.'
+++++++++++inlineTextBox name='My car is blue.'
