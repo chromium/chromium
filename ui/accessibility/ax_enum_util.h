@@ -105,6 +105,9 @@ AX_BASE_EXPORT const char* ToString(
 // ax::mojom::HasPopup
 AX_BASE_EXPORT const char* ToString(ax::mojom::HasPopup has_popup);
 
+// ax::mojom::IsPopup
+AX_BASE_EXPORT const char* ToString(ax::mojom::IsPopup is_popup);
+
 // ax::mojom::InvalidState
 AX_BASE_EXPORT const char* ToString(ax::mojom::InvalidState invalid_state);
 

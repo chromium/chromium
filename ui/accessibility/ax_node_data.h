@@ -236,6 +236,8 @@ struct AX_BASE_EXPORT AXNodeData {
   void SetDefaultActionVerb(ax::mojom::DefaultActionVerb default_action_verb);
   ax::mojom::HasPopup GetHasPopup() const;
   void SetHasPopup(ax::mojom::HasPopup has_popup);
+  ax::mojom::IsPopup GetIsPopup() const;
+  void SetIsPopup(ax::mojom::IsPopup is_popup);
   ax::mojom::InvalidState GetInvalidState() const;
   void SetInvalidState(ax::mojom::InvalidState invalid_state);
   ax::mojom::NameFrom GetNameFrom() const;

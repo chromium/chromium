@@ -30,7 +30,7 @@ enum class AOMStringProperty {
   kChecked,
   kCurrent,
   kDescription,
-  kHasPopUp,
+  kHasPopup,
   kInvalid,
   kKeyShortcuts,
   kLabel,
@@ -257,8 +257,8 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData,
   AccessibleNodeList* flowTo() const;
   void setFlowTo(AccessibleNodeList*);
 
-  AtomicString hasPopUp() const;
-  void setHasPopUp(const AtomicString&);
+  AtomicString hasPopup() const;
+  void setHasPopup(const AtomicString&);
 
   absl::optional<bool> hidden() const;
   void setHidden(absl::optional<bool>);

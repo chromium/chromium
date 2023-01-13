@@ -1194,7 +1194,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
                        "AXPlatformNodeDelegate.";
   // Expose some HTML and ARIA attributes in the IAccessible2 attributes string
   // "display", "tag", and "xml-roles" have somewhat unusual names for
-  // historical reasons. Aside from that virtually every ARIA attribute
+  // historical reasons. Aside from that, virtually every ARIA attribute
   // is exposed in a really straightforward way, i.e. "aria-foo" is exposed
   // as "foo".
   AddAttributeToList(ax::mojom::StringAttribute::kDisplay, "display",
@@ -1342,6 +1342,21 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     }
   } else if (HasState(ax::mojom::State::kAutofillAvailable)) {
     AddAttributeToList("haspopup", "menu", attributes);
+  }
+
+  // Expose the aria-ispopup attribute.
+  int32_t is_popup;
+  if (GetIntAttribute(ax::mojom::IntAttribute::kIsPopup, &is_popup)) {
+    switch (static_cast<ax::mojom::IsPopup>(is_popup)) {
+      case ax::mojom::IsPopup::kNone:
+        break;
+      case ax::mojom::IsPopup::kManual:
+        AddAttributeToList("ispopup", "manual", attributes);
+        break;
+      case ax::mojom::IsPopup::kAuto:
+        AddAttributeToList("ispopup", "auto", attributes);
+        break;
+    }
   }
 
   // Expose the aria-current attribute.

@@ -948,6 +948,8 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "color";
     case ax::mojom::IntAttribute::kHasPopup:
       return "haspopup";
+    case ax::mojom::IntAttribute::kIsPopup:
+      return "ispopup";
     case ax::mojom::IntAttribute::kInvalidState:
       return "invalidState";
     case ax::mojom::IntAttribute::kCheckedState:
@@ -1479,6 +1481,17 @@ const char* ToString(ax::mojom::HasPopup has_popup) {
   }
 
   return "";
+}
+
+const char* ToString(ax::mojom::IsPopup is_popup) {
+  switch (is_popup) {
+    case ax::mojom::IsPopup::kNone:
+      return "";
+    case ax::mojom::IsPopup::kAuto:
+      return "auto";
+    case ax::mojom::IsPopup::kManual:
+      return "manual";
+  }
 }
 
 const char* ToString(ax::mojom::InvalidState invalid_state) {

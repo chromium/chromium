@@ -1,0 +1,32 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_PUSHBUTTON name='Button pointing to hidden popover' COLLAPSED FOCUSABLE
+++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_STATICTEXT name='Text input pointing to hidden popover '
+++ROLE_SYSTEM_PUSHBUTTON name='Hide button pointing to hidden manual' FOCUSABLE
+++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_STATICTEXT name='Email input pointing to hidden manual '
+++ROLE_SYSTEM_PUSHBUTTON name='Button pointing to non-popover' FOCUSABLE
+++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_STATICTEXT name='Text input pointing to non-popover'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='No popover attribute'
+++ROLE_SYSTEM_PUSHBUTTON name='Button pointing to invalid popover value' FOCUSABLE
+++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_STATICTEXT name='Text input pointing to invalid popover value'
+++IA2_ROLE_PARAGRAPH
+++++ROLE_SYSTEM_STATICTEXT name='Showing/visible popovers below'
+++ROLE_SYSTEM_PUSHBUTTON name='Button pointing to showing popover' EXPANDED FOCUSABLE
+++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_STATICTEXT name='Tel input pointing to showing popover '
+++ROLE_SYSTEM_PUSHBUTTON name='Show button pointing to nested popover' EXPANDED FOCUSABLE
+++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_STATICTEXT name='Url input pointing to nested popover '
+++IA2_ROLE_SECTION ispopup:auto
+++++ROLE_SYSTEM_STATICTEXT name='Popover (showing)'
+++++IA2_ROLE_SECTION ispopup:auto
+++++++ROLE_SYSTEM_STATICTEXT name='Nested popover (showing)'
+++ROLE_SYSTEM_PUSHBUTTON name='Hide button pointing to showing manual' FOCUSABLE
+++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_STATICTEXT name='Url input pointing to showing manual'
+++IA2_ROLE_SECTION ispopup:manual
+++++ROLE_SYSTEM_STATICTEXT name='Manual (showing)'

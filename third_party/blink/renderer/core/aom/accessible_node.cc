@@ -36,7 +36,7 @@ QualifiedName GetCorrespondingARIAAttribute(AOMStringProperty property) {
       return html_names::kAriaCurrentAttr;
     case AOMStringProperty::kDescription:
       return html_names::kAriaDescriptionAttr;
-    case AOMStringProperty::kHasPopUp:
+    case AOMStringProperty::kHasPopup:
       return html_names::kAriaHaspopupAttr;
     case AOMStringProperty::kInvalid:
       return html_names::kAriaInvalidAttr;
@@ -663,12 +663,12 @@ void AccessibleNode::setFlowTo(AccessibleNodeList* flow_to) {
   NotifyAttributeChanged(html_names::kAriaFlowtoAttr);
 }
 
-AtomicString AccessibleNode::hasPopUp() const {
-  return GetProperty(AOMStringProperty::kHasPopUp);
+AtomicString AccessibleNode::hasPopup() const {
+  return GetProperty(AOMStringProperty::kHasPopup);
 }
 
-void AccessibleNode::setHasPopUp(const AtomicString& has_popup) {
-  SetStringProperty(AOMStringProperty::kHasPopUp, has_popup);
+void AccessibleNode::setHasPopup(const AtomicString& has_popup) {
+  SetStringProperty(AOMStringProperty::kHasPopup, has_popup);
   NotifyAttributeChanged(html_names::kAriaHaspopupAttr);
 }
 
@@ -1052,7 +1052,7 @@ bool AccessibleNode::IsStringTokenProperty(AOMStringProperty property) {
     case AOMStringProperty::kAutocomplete:
     case AOMStringProperty::kChecked:
     case AOMStringProperty::kCurrent:
-    case AOMStringProperty::kHasPopUp:
+    case AOMStringProperty::kHasPopup:
     case AOMStringProperty::kInvalid:
     case AOMStringProperty::kLive:
     case AOMStringProperty::kOrientation:

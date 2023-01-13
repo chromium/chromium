@@ -150,6 +150,7 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kColorValue:
     case ax::mojom::IntAttribute::kAriaCurrentState:
     case ax::mojom::IntAttribute::kHasPopup:
+    case ax::mojom::IntAttribute::kIsPopup:
     case ax::mojom::IntAttribute::kBackgroundColor:
     case ax::mojom::IntAttribute::kColor:
     case ax::mojom::IntAttribute::kInvalidState:
@@ -897,6 +898,21 @@ void AXNodeData::SetHasPopup(ax::mojom::HasPopup has_popup) {
   }
 }
 
+ax::mojom::IsPopup AXNodeData::GetIsPopup() const {
+  return static_cast<ax::mojom::IsPopup>(
+      GetIntAttribute(ax::mojom::IntAttribute::kIsPopup));
+}
+
+void AXNodeData::SetIsPopup(ax::mojom::IsPopup is_popup) {
+  if (HasIntAttribute(ax::mojom::IntAttribute::kIsPopup)) {
+    RemoveIntAttribute(ax::mojom::IntAttribute::kIsPopup);
+  }
+  if (is_popup != ax::mojom::IsPopup::kNone) {
+    AddIntAttribute(ax::mojom::IntAttribute::kIsPopup,
+                    static_cast<int32_t>(is_popup));
+  }
+}
+
 ax::mojom::InvalidState AXNodeData::GetInvalidState() const {
   return static_cast<ax::mojom::InvalidState>(
       GetIntAttribute(ax::mojom::IntAttribute::kInvalidState));
@@ -1551,6 +1567,18 @@ std::string AXNodeData::ToString(bool verbose) const {
             break;
           case ax::mojom::HasPopup::kFalse:
           default:
+            break;
+        }
+        break;
+      case ax::mojom::IntAttribute::kIsPopup:
+        switch (static_cast<ax::mojom::IsPopup>(int_attribute.second)) {
+          case ax::mojom::IsPopup::kNone:
+            break;
+          case ax::mojom::IsPopup::kAuto:
+            result += " ispopup=auto";
+            break;
+          case ax::mojom::IsPopup::kManual:
+            result += " ispopup=manual";
             break;
         }
         break;

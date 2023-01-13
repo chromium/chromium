@@ -191,6 +191,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       Vector<ax::mojom::blink::Dropeffect>& dropeffects) const override;
 
   ax::mojom::blink::HasPopup HasPopup() const override;
+  ax::mojom::blink::IsPopup IsPopup() const override;
   bool IsEditableRoot() const override;
   bool HasContentEditableAttributeSet() const override;
 

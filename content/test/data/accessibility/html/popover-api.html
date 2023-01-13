@@ -6,28 +6,9 @@
 <button popovertoggletarget=popover1>Button pointing to hidden popover</button>
 <input type=text popovertoggletarget=popover1>Text input pointing to hidden popover</button>
 <div popover id=popover1>Popover</div>
-<button popovershowtarget=hint1>Show button pointing to hidden hint</button>
-<input type=search popovershowtarget=hint1>Search input pointing to hidden hint</button>
-<div popover=hint id=hint1>Hint</div>
 <button popoverhidetarget=manual1>Hide button pointing to hidden manual</button>
 <input type=email popoverhidetarget=manual1>Email input pointing to hidden manual</button>
 <div popover=manual id=manual1>Manual</div>
-
-<button popovertoggletarget=popover2>Button pointing to showing popover</button>
-<input type=tel popovertoggletarget=popover2>Tel input pointing to showing popover</button>
-<button popovershowtarget=hint2>Show button pointing to showing hint</button>
-<input type=url popovershowtarget=hint2>Url input pointing to showing hint</button>
-<div popover id=popover2>Popover
-  <div popover=hint id=hint2>Hint (nested)</div>
-</div>
-<button popoverhidetarget=manual2>Hide button pointing to showing manual</button>
-<input type=text popoverhidetarget=manual2>Text input pointing to showing manual</button>
-<div popover=manual id=manual2>Manual</div>
-<script>
-  popover2.showPopover();
-  hint2.showPopover();
-  manual2.showPopover();
-</script>
 
 <button popovertoggletarget=noattr>Button pointing to non-popover</button>
 <input type=text popovertoggletarget=noattr>Text input pointing to non-popover</button>
@@ -35,3 +16,21 @@
 <button popovertoggletarget=badattr>Button pointing to invalid popover value</button>
 <input type=text popovertoggletarget=badattr>Text input pointing to invalid popover value</button>
 <div id=badattr popover=invalid_value>Invalid popover attribute value</div>
+
+<p> Showing/visible popovers below </p>
+
+<button popovertoggletarget=popover2>Button pointing to showing popover</button>
+<input type=tel popovertoggletarget=popover2>Tel input pointing to showing popover</button>
+<button popovershowtarget=popover3>Show button pointing to nested popover</button>
+<input type=url popovershowtarget=popover3>Url input pointing to nested popover</button>
+<div popover id=popover2>Popover (showing)
+  <div popover id=popover3>Nested popover (showing)</div>
+</div>
+<button popoverhidetarget=manual2>Hide button pointing to showing manual</button>
+<input type=url popoverhidetarget=manual2>Url input pointing to showing manual</button>
+<div popover=manual id=manual2>Manual (showing)</div>
+<script>
+  popover2.showPopover();
+  popover3.showPopover();
+  manual2.showPopover();
+</script>

@@ -3152,7 +3152,7 @@ void AXNodeObject::Dropeffects(
 
 ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
   const AtomicString& has_popup =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kHasPopUp);
+      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kHasPopup);
   if (!has_popup.IsNull()) {
     if (EqualIgnoringASCIICase(has_popup, "false"))
       return ax::mojom::blink::HasPopup::kFalse;
@@ -3189,6 +3189,24 @@ ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
   }
 
   return AXObject::HasPopup();
+}
+
+ax::mojom::blink::IsPopup AXNodeObject::IsPopup() const {
+  if (IsDetached() || !GetElement()) {
+    return ax::mojom::blink::IsPopup::kNone;
+  }
+  const auto* html_element = DynamicTo<HTMLElement>(GetElement());
+  if (!html_element) {
+    return ax::mojom::blink::IsPopup::kNone;
+  }
+  switch (html_element->PopoverType()) {
+    case PopoverValueType::kNone:
+      return ax::mojom::blink::IsPopup::kNone;
+    case PopoverValueType::kAuto:
+      return ax::mojom::blink::IsPopup::kAuto;
+    case PopoverValueType::kManual:
+      return ax::mojom::blink::IsPopup::kManual;
+  }
 }
 
 bool AXNodeObject::IsEditableRoot() const {

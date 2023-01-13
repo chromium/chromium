@@ -55,7 +55,7 @@ interface AccessibleNode : EventTarget
     getter errorMessage
     getter expanded
     getter flowTo
-    getter hasPopUp
+    getter hasPopup
     getter hidden
     getter invalid
     getter keyShortcuts
@@ -111,7 +111,7 @@ interface AccessibleNode : EventTarget
     setter errorMessage
     setter expanded
     setter flowTo
-    setter hasPopUp
+    setter hasPopup
     setter hidden
     setter invalid
     setter keyShortcuts

@@ -782,6 +782,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // autocomplete suggestion.
   virtual ax::mojom::blink::HasPopup HasPopup() const;
 
+  // Determines whether this object is a popup, and what type.
+  virtual ax::mojom::blink::IsPopup IsPopup() const;
+
   // Heuristic to get the listbox for an <input role="combobox">.
   AXObject* GetControlsListboxForTextfieldCombobox();
 

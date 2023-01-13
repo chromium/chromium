@@ -610,7 +610,8 @@ enum StringAttribute {
   kVirtualContent = 30,
 };
 
-// Next value: 61
+// Next version: 2
+// Next value: 62
 [Extensible, Stable, Uuid="c350e50f-5177-405d-b155-79868449ba7b"]
 enum IntAttribute {
   [Default]kNone = 0,
@@ -697,6 +698,8 @@ enum IntAttribute {
   kBackgroundColor = 43,
   kColor = 44,
 
+  // Indicates the availability and type of interactive popup element that can
+  // be triggered by the element on which the attribute is set.
   kHasPopup = 45,
 
   // Image annotation status, of type ImageAnnotationStatus.
@@ -747,6 +750,9 @@ enum IntAttribute {
   // unrelated to the accessibility node ID, or the ID attribute for an
   // HTML element - it's an ID used to uniquely identify nodes in Blink.
   kDOMNodeId = 60,
+
+  // Indicates whether the element is a popover ("popup") and if so, what type.
+  [MinVersion=1] kIsPopup = 61,
 };
 
 // Next version: 2
@@ -1162,6 +1168,12 @@ enum HasPopup {
   kGrid,
   kDialog,
   kNone = kFalse
+};
+
+enum IsPopup {
+  kNone = 0,
+  kManual,
+  kAuto,
 };
 
 enum InvalidState {
