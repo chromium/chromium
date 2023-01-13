@@ -445,8 +445,9 @@
     },
     {
       // If set, the parser will canonicalize whitespace strings.
-      name: "CanonicalizeWhiteSpaceStrings",
-      base_feature: "CanonicalizeWhiteSpaceStrings",
+      name: "CanonicalizeWhitespaceStrings",
+      status: "stable",
+      base_feature: "CanonicalizeWhitespaceStrings",
     },
     {
       name: "Canvas2dImageChromium",

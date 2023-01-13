@@ -132,8 +132,72 @@ static unsigned NextTextBreakPositionForContainer(
   return std::min(current_position + *length_limit, string_length);
 }
 
-static inline bool IsAllWhitespace(const StringView& string_view) {
-  return string_view.IsAllSpecialCharacters<IsHTMLSpace<UChar>>();
+static inline WhitespaceMode RecomputeWhiteSpaceMode(
+    const StringView& string_view) {
+  DCHECK(!string_view.empty());
+  if (string_view[0] != '\n') {
+    return string_view.IsAllSpecialCharacters<IsHTMLSpace<UChar>>()
+               ? WhitespaceMode::kAllWhitespace
+               : WhitespaceMode::kNotAllWhitespace;
+  }
+
+  auto check_whitespace = [](auto* buffer, size_t length) {
+    WhitespaceMode result = WhitespaceMode::kNewlineThenWhitespace;
+    for (size_t i = 1; i < length; ++i) {
+      if (LIKELY(buffer[i] == ' ')) {
+        continue;
+      } else if (IsHTMLSpecialWhitespace(buffer[i])) {
+        result = WhitespaceMode::kAllWhitespace;
+      } else {
+        return WhitespaceMode::kNotAllWhitespace;
+      }
+    }
+    return result;
+  };
+
+  if (string_view.Is8Bit()) {
+    return check_whitespace(string_view.Characters8(), string_view.length());
+  } else {
+    return check_whitespace(string_view.Characters16(), string_view.length());
+  }
+}
+
+enum class RecomputeMode {
+  kDontRecompute,
+  kRecomputeIfNeeded,
+};
+
+// Strings composed entirely of whitespace are likely to be repeated. Turn them
+// into AtomicString so we share a single string for each.
+static String CheckWhitespaceAndConvertToString(const StringView& string,
+                                                WhitespaceMode whitespace_mode,
+                                                RecomputeMode recompute_mode) {
+  switch (whitespace_mode) {
+    case WhitespaceMode::kNewlineThenWhitespace:
+      DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsCommon(string));
+      if (string.length() <
+          WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
+        return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
+            string.length());
+      }
+      [[fallthrough]];
+    case WhitespaceMode::kAllWhitespace:
+      return string.ToAtomicString().GetString();
+    case WhitespaceMode::kNotAllWhitespace:
+      // Other strings are pretty random and unlikely to repeat.
+      return string.ToString();
+    case WhitespaceMode::kWhitespaceUnknown:
+      DCHECK_EQ(RecomputeMode::kRecomputeIfNeeded, recompute_mode);
+      return CheckWhitespaceAndConvertToString(string,
+                                               RecomputeWhiteSpaceMode(string),
+                                               RecomputeMode::kDontRecompute);
+  }
+}
+
+static String TryCanonicalizeString(const StringView& string,
+                                    WhitespaceMode mode) {
+  return CheckWhitespaceAndConvertToString(string, mode,
+                                           RecomputeMode::kRecomputeIfNeeded);
 }
 
 static inline void Insert(HTMLConstructionSiteTask& task) {
@@ -303,17 +367,10 @@ void HTMLConstructionSite::FlushPendingText() {
     }
     StringView substring_view =
         string.SubstringView(current_position, break_index - current_position);
-    String substring;
-    if (canonicalize_whitespace_strings_ &&
-        (pending_text_.whitespace_mode == kAllWhitespace ||
-         (pending_text_.whitespace_mode == kWhitespaceUnknown &&
-          IsAllWhitespace(substring_view)))) {
-      // Strings composed entirely of whitespace are likely to be repeated. Turn
-      // them into AtomicString so we share a single string for each.
-      substring = substring_view.ToAtomicString().GetString();
-    } else {
-      substring = substring_view.ToString();
-    }
+    String substring = canonicalize_whitespace_strings_
+                           ? TryCanonicalizeString(
+                                 substring_view, pending_text_.whitespace_mode)
+                           : substring_view.ToString();
 
     DCHECK_GT(break_index, current_position);
     DCHECK_EQ(break_index - current_position, substring.length());
@@ -405,7 +462,7 @@ HTMLConstructionSite::HTMLConstructionSite(
       redirect_attach_to_foster_parent_(false),
       in_quirks_mode_(document.InQuirksMode()),
       canonicalize_whitespace_strings_(
-          RuntimeEnabledFeatures::CanonicalizeWhiteSpaceStringsEnabled()) {
+          RuntimeEnabledFeatures::CanonicalizeWhitespaceStringsEnabled()) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument());
 }
 

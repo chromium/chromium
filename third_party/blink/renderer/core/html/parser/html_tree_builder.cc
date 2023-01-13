@@ -153,8 +153,42 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
 
   void SkipLeadingWhitespace() { SkipLeading<IsHTMLSpace<UChar>>(); }
 
-  StringView TakeLeadingWhitespace() {
-    return TakeLeading<IsHTMLSpace<UChar>>();
+  struct TakeLeadingWhitespaceResult {
+    StringView string;
+    WhitespaceMode whitespace_mode;
+  };
+
+  TakeLeadingWhitespaceResult TakeLeadingWhitespace() {
+    DCHECK(!IsEmpty());
+    const unsigned start = current_;
+    WhitespaceMode whitespace_mode = WhitespaceMode::kNewlineThenWhitespace;
+
+    // First, check the first character to identify whether the string looks
+    // common (i.e. "\n<space>*").
+    const UChar first = (*characters_)[current_];
+    if (!IsHTMLSpace(first)) {
+      return {StringView(characters_.get(), start, 0),
+              WhitespaceMode::kNotAllWhitespace};
+    }
+    if (first != '\n') {
+      whitespace_mode = WhitespaceMode::kAllWhitespace;
+    }
+
+    // Then, check the rest.
+    ++current_;
+    for (; current_ != end_; ++current_) {
+      const UChar ch = (*characters_)[current_];
+      if (LIKELY(ch == ' ')) {
+        continue;
+      } else if (IsHTMLSpecialWhitespace(ch)) {
+        whitespace_mode = WhitespaceMode::kAllWhitespace;
+      } else {
+        break;
+      }
+    }
+
+    return {StringView(characters_.get(), start, current_ - start),
+            whitespace_mode};
   }
 
   void SkipLeadingNonWhitespace() { SkipLeading<IsNotHTMLSpace<UChar>>(); }
@@ -175,34 +209,54 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     current_ = end_;
   }
 
-  String TakeRemainingWhitespace() {
+  struct TakeRemainingWhitespaceResult {
+    String string;
+    WhitespaceMode whitespace_mode;
+  };
+
+  TakeRemainingWhitespaceResult TakeRemainingWhitespace() {
     DCHECK(!IsEmpty());
     const unsigned start = current_;
     current_ = end_;  // One way or another, we're taking everything!
 
+    WhitespaceMode whitespace_mode = WhitespaceMode::kNewlineThenWhitespace;
     unsigned length = 0;
     for (unsigned i = start; i < end_; ++i) {
-      if (IsHTMLSpace<UChar>((*characters_)[i]))
+      const UChar ch = (*characters_)[i];
+      if (ch == '\n' && length == 0) {
         ++length;
+        continue;
+      }
+
+      if (ch == ' ') {
+        ++length;
+      } else if (IsHTMLSpecialWhitespace<UChar>(ch)) {
+        whitespace_mode = WhitespaceMode::kAllWhitespace;
+        ++length;
+      }
     }
     // Returning the null string when there aren't any whitespace
     // characters is slightly cleaner semantically because we don't want
     // to insert a text node (as opposed to inserting an empty text node).
-    if (!length)
-      return String();
-    if (length == start - end_)  // It's all whitespace.
-      return String(characters_->Substring(start, start - end_));
+    if (!length) {
+      return {String(), WhitespaceMode::kNotAllWhitespace};
+    }
+    if (length == start - end_) {  // It's all whitespace.
+      return {String(characters_->Substring(start, start - end_)),
+              whitespace_mode};
+    }
 
     // All HTML spaces are ASCII.
     StringBuffer<LChar> result(length);
     unsigned j = 0;
     for (unsigned i = start; i < end_; ++i) {
       UChar c = (*characters_)[i];
-      if (IsHTMLSpace(c))
+      if (c == ' ' || IsHTMLSpecialWhitespace(c)) {
         result[j++] = static_cast<LChar>(c);
+      }
     }
     DCHECK_EQ(j, length);
-    return String::Adopt(result);
+    return {String::Adopt(result), whitespace_mode};
   }
 
  private:
@@ -213,14 +267,6 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
       if (++current_ == end_)
         return;
     }
-  }
-
-  template <bool characterPredicate(UChar)>
-  StringView TakeLeading() {
-    DCHECK(!IsEmpty());
-    const unsigned start = current_;
-    SkipLeading<characterPredicate>();
-    return StringView(characters_.get(), start, current_ - start);
   }
 
   scoped_refptr<StringImpl> characters_;
@@ -2479,18 +2525,22 @@ ReprocessBuffer:
       [[fallthrough]];
     }
     case kInHeadMode: {
-      StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty())
-        tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
+      auto leading_whitespace = buffer.TakeLeadingWhitespace();
+      if (!leading_whitespace.string.empty()) {
+        tree_.InsertTextNode(leading_whitespace.string,
+                             leading_whitespace.whitespace_mode);
+      }
       if (buffer.IsEmpty())
         return;
       DefaultForInHead();
       [[fallthrough]];
     }
     case kAfterHeadMode: {
-      StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty())
-        tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
+      auto leading_whitespace = buffer.TakeLeadingWhitespace();
+      if (!leading_whitespace.string.empty()) {
+        tree_.InsertTextNode(leading_whitespace.string,
+                             leading_whitespace.whitespace_mode);
+      }
       if (buffer.IsEmpty())
         return;
       DefaultForAfterHead();
@@ -2528,9 +2578,11 @@ ReprocessBuffer:
       break;
     }
     case kInColumnGroupMode: {
-      StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty())
-        tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
+      auto leading_whitespace = buffer.TakeLeadingWhitespace();
+      if (!leading_whitespace.string.empty()) {
+        tree_.InsertTextNode(leading_whitespace.string,
+                             leading_whitespace.whitespace_mode);
+      }
       if (buffer.IsEmpty())
         return;
       if (!ProcessColgroupEndTagForInColumnGroup()) {
@@ -2545,11 +2597,12 @@ ReprocessBuffer:
     case kAfterBodyMode:
     case kAfterAfterBodyMode: {
       // FIXME: parse error
-      StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty()) {
+      auto leading_whitespace = buffer.TakeLeadingWhitespace();
+      if (!leading_whitespace.string.empty()) {
         InsertionMode mode = GetInsertionMode();
         SetInsertionMode(kInBodyMode);
-        tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
+        tree_.InsertTextNode(leading_whitespace.string,
+                             leading_whitespace.whitespace_mode);
         SetInsertionMode(mode);
       }
       if (buffer.IsEmpty())
@@ -2562,19 +2615,24 @@ ReprocessBuffer:
       break;
     }
     case kInHeadNoscriptMode: {
-      StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty())
-        tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
-      if (buffer.IsEmpty())
+      auto leading_whitespace = buffer.TakeLeadingWhitespace();
+      if (!leading_whitespace.string.empty()) {
+        tree_.InsertTextNode(leading_whitespace.string,
+                             leading_whitespace.whitespace_mode);
+      }
+      if (buffer.IsEmpty()) {
         return;
+      }
       DefaultForInHeadNoscript();
       goto ReprocessBuffer;
     }
     case kInFramesetMode:
     case kAfterFramesetMode: {
-      String leading_whitespace = buffer.TakeRemainingWhitespace();
-      if (!leading_whitespace.empty())
-        tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
+      auto leading_whitespace = buffer.TakeRemainingWhitespace();
+      if (!leading_whitespace.string.empty()) {
+        tree_.InsertTextNode(leading_whitespace.string,
+                             leading_whitespace.whitespace_mode);
+      }
       // FIXME: We should generate a parse error if we skipped over any
       // non-whitespace characters.
       break;
@@ -2585,10 +2643,11 @@ ReprocessBuffer:
       break;
     }
     case kAfterAfterFramesetMode: {
-      String leading_whitespace = buffer.TakeRemainingWhitespace();
-      if (!leading_whitespace.empty()) {
+      auto leading_whitespace = buffer.TakeRemainingWhitespace();
+      if (!leading_whitespace.string.empty()) {
         tree_.ReconstructTheActiveFormattingElements();
-        tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
+        tree_.InsertTextNode(leading_whitespace.string,
+                             leading_whitespace.whitespace_mode);
       }
       // FIXME: We should generate a parse error if we skipped over any
       // non-whitespace characters.
@@ -2732,7 +2791,7 @@ void HTMLTreeBuilder::DefaultForInTableText() {
     // FIXME: parse error
     HTMLConstructionSite::RedirectToFosterParentGuard redirecter(tree_);
     tree_.ReconstructTheActiveFormattingElements();
-    tree_.InsertTextNode(characters, kNotAllWhitespace);
+    tree_.InsertTextNode(characters, WhitespaceMode::kNotAllWhitespace);
     frameset_ok_ = false;
     SetInsertionMode(original_insertion_mode_);
     return;

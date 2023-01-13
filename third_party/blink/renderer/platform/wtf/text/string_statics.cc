@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -49,6 +50,18 @@ WTF_EXPORT DEFINE_GLOBAL(String, g_xmlns_with_colon);
 
 WTF_EXPORT DEFINE_GLOBAL(String, g_empty_string);
 WTF_EXPORT DEFINE_GLOBAL(String, g_empty_string16_bit);
+
+namespace {
+std::aligned_storage_t<sizeof(String) *
+                           NewlineThenWhitespaceStringsTable::kTableSize,
+                       alignof(String)>
+    g_canonical_whitespace_table_storage;
+}
+
+WTF_EXPORT const String (&NewlineThenWhitespaceStringsTable::g_table_)
+    [NewlineThenWhitespaceStringsTable::kTableSize] = *reinterpret_cast<
+        String (*)[NewlineThenWhitespaceStringsTable::kTableSize]>(
+        &g_canonical_whitespace_table_storage);
 
 NOINLINE unsigned StringImpl::HashSlowCase() const {
   if (Is8Bit())
@@ -74,6 +87,32 @@ scoped_refptr<StringImpl> AddStaticASCIILiteral(
   return base::AdoptRef(StringImpl::CreateStatic(characters, length, hash));
 }
 
+void NewlineThenWhitespaceStringsTable::Init() {
+  LChar whitespace_buffer[kTableSize + 1] = {'\n'};
+  std::fill(std::next(std::begin(whitespace_buffer), 1),
+            std::end(whitespace_buffer), ' ');
+
+  // Keep g_table_[0] uninitialized.
+  for (size_t i = 1; i < kTableSize; ++i) {
+    new (NotNullTag::kNotNull, (void*)(&g_table_[i]))
+        String(AtomicString(whitespace_buffer, i).GetString());
+  }
+}
+
+bool NewlineThenWhitespaceStringsTable::IsCommon(const StringView& view) {
+  if (view.empty()) {
+    return false;
+  }
+  if (!view.Is8Bit()) {
+    return false;
+  }
+  if (view[0] != '\n') {
+    return false;
+  }
+  return std::all_of(view.Characters8() + 1, view.Characters8() + view.length(),
+                     [](LChar ch) { return ch == ' '; });
+}
+
 void StringStatics::Init() {
   DCHECK(IsMainThread());
 
@@ -95,6 +134,8 @@ void StringStatics::Init() {
       AtomicString(AddStaticASCIILiteral("http"));
   new (NotNullTag::kNotNull, (void*)&g_https_atom)
       AtomicString(AddStaticASCIILiteral("https"));
+
+  NewlineThenWhitespaceStringsTable::Init();
 }
 
 }  // namespace WTF
