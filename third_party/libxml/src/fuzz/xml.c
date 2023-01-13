@@ -8,6 +8,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlerror.h>
+#include <libxml/xinclude.h>
 #include <libxml/xmlreader.h>
 #include "fuzz.h"
 
@@ -32,12 +33,16 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     xmlTextReaderPtr reader;
     xmlChar *out;
     const char *docBuffer, *docUrl;
-    size_t docSize, consumed, chunkSize;
+    size_t maxSize, docSize, consumed, chunkSize;
     int opts, outSize;
 
     xmlFuzzDataInit(data, size);
     opts = xmlFuzzReadInt();
-    opts &= ~XML_PARSE_XINCLUDE;
+
+    /* Lower maximum size when processing entities for now. */
+    maxSize = opts & XML_PARSE_NOENT ? 50000 : 500000;
+    if (size > maxSize)
+        goto exit;
 
     xmlFuzzReadEntities();
     docBuffer = xmlFuzzMainEntity(&docSize);
@@ -48,6 +53,8 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     /* Pull parser */
 
     doc = xmlReadMemory(docBuffer, docSize, docUrl, NULL, opts);
+    if (opts & XML_PARSE_XINCLUDE)
+        xmlXIncludeProcessFlags(doc, opts);
     /* Also test the serializer. */
     xmlDocDumpMemory(doc, &out, &outSize);
     xmlFree(out);
@@ -68,6 +75,8 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     }
 
     xmlParseChunk(ctxt, NULL, 0, 1);
+    if (opts & XML_PARSE_XINCLUDE)
+        xmlXIncludeProcessFlags(ctxt->myDoc, opts);
     xmlFreeDoc(ctxt->myDoc);
     xmlFreeParserCtxt(ctxt);
 

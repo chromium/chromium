@@ -1,0 +1,19 @@
+diff --git a/third_party/libxml/src/parserInternals.c b/third_party/libxml/src/parserInternals.c
+index bfc778ac1f77..286fdcea9760 100644
+--- src/parserInternals.c
++++ src/parserInternals.c
+@@ -1369,8 +1369,13 @@ xmlNewInputStream(xmlParserCtxtPtr ctxt) {
+      * should not happen while parsing which is the situation where
+      * the id is actually needed.
+      */
+-    if (ctxt != NULL)
++    if (ctxt != NULL) {
++        if (ctxt->input_id >= INT_MAX) {
++            xmlErrMemory(ctxt, "Input ID overflow\n");
++            return(NULL);
++        }
+         input->id = ctxt->input_id++;
++    }
+ 
+     return(input);
+ }

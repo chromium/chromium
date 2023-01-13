@@ -1238,7 +1238,7 @@ xmlNewInputStream(xmlParserCtxtPtr ctxt) {
      * the id is actually needed.
      */
     if (ctxt != NULL) {
-        if (input->id >= INT_MAX) {
+        if (ctxt->input_id >= INT_MAX) {
             xmlErrMemory(ctxt, "Input ID overflow\n");
             return(NULL);
         }
@@ -1311,11 +1311,8 @@ xmlNewEntityInputStream(xmlParserCtxtPtr ctxt, xmlEntityPtr entity) {
                 break;
             case XML_EXTERNAL_GENERAL_PARSED_ENTITY:
             case XML_EXTERNAL_PARAMETER_ENTITY:
-		input = xmlLoadExternalEntity((char *) entity->URI,
-		       (char *) entity->ExternalID, ctxt);
-                if (input != NULL)
-                    input->entity = entity;
-                return(input);
+		return(xmlLoadExternalEntity((char *) entity->URI,
+		       (char *) entity->ExternalID, ctxt));
             case XML_INTERNAL_GENERAL_ENTITY:
 	        xmlErrInternal(ctxt,
 		      "Internal entity %s without content !\n",
@@ -1346,7 +1343,6 @@ xmlNewEntityInputStream(xmlParserCtxtPtr ctxt, xmlEntityPtr entity) {
     input->cur = entity->content;
     input->length = entity->length;
     input->end = &entity->content[input->length];
-    input->entity = entity;
     return(input);
 }
 
@@ -1645,6 +1641,7 @@ xmlInitSAXParserCtxt(xmlParserCtxtPtr ctxt, const xmlSAXHandler *sax,
     ctxt->depth = 0;
     ctxt->charset = XML_CHAR_ENCODING_UTF8;
     ctxt->catalogs = NULL;
+    ctxt->nbentities = 0;
     ctxt->sizeentities = 0;
     ctxt->sizeentcopy = 0;
     ctxt->input_id = 1;
