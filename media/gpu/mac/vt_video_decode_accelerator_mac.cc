@@ -21,7 +21,6 @@
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_policy.h"
 #include "base/metrics/histogram_macros.h"

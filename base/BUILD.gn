@@ -1319,8 +1319,6 @@ component("base") {
       "mac/scoped_objc_class_swizzler.mm",
       "mac/scoped_sending_event.h",
       "mac/scoped_sending_event.mm",
-      "mac/sdk_forward_declarations.h",
-      "mac/sdk_forward_declarations.mm",
       "message_loop/message_pump_mac.h",
       "message_loop/message_pump_mac.mm",
       "native_library_mac.mm",
