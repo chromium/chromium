@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
-class Group;
 class Section;
 using PGroups = std::vector<std::unique_ptr<Group>>;
 using PSections = std::vector<std::unique_ptr<Section>>;
