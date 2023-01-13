@@ -214,40 +214,27 @@ TEST_F(IntentUtilsTest, CreateLockScreenFilter) {
 
 TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_FileHandlers) {
   // Foo app provides file handler for text/plain and all file types.
-  extensions::ExtensionBuilder foo_app;
-  foo_app.SetManifest(
-      extensions::DictionaryBuilder()
-          .Set("name", "Foo")
-          .Set("version", "1.0.0")
-          .Set("manifest_version", 2)
-          .Set("app", extensions::DictionaryBuilder()
-                          .Set("background",
-                               extensions::DictionaryBuilder()
-                                   .Set("scripts", extensions::ListBuilder()
-                                                       .Append("background.js")
-                                                       .Build())
-                                   .Build())
-                          .Build())
-          .Set(
-              "file_handlers",
-              extensions::DictionaryBuilder()
-                  .Set("any",
-                       extensions::DictionaryBuilder()
-                           .Set("types",
-                                extensions::ListBuilder().Append("*/*").Build())
-                           .Build())
-                  .Set("text",
-                       extensions::DictionaryBuilder()
-                           .Set("types", extensions::ListBuilder()
-                                             .Append("text/plain")
-                                             .Build())
-                           .Set("extensions",
-                                extensions::ListBuilder().Append("txt").Build())
-                           .Set("verb", "open_with")
-                           .Build())
-                  .Build())
-          .Build());
-  foo_app.SetID("abcdzxcv");
+  extensions::ExtensionBuilder foo_app("Foo");
+  static constexpr char kManifest[] = R"(
+    "manifest_version": 2,
+    "version": "1.0.0",
+    "app": {
+      "background": {
+        "scripts": ["background.js"]
+      }
+    },
+    "file_handlers": {
+      "any": {
+        "types": ["*/*"]
+      },
+      "text": {
+        "extensions": ["txt"],
+        "types": ["text/plain"],
+        "verb": "open_with"
+      }
+    }
+  )";
+  foo_app.AddJSON(kManifest).BuildManifest();
   scoped_refptr<const extensions::Extension> foo = foo_app.Build();
 
   IntentFilters filters = apps_util::CreateIntentFiltersForChromeApp(foo.get());
@@ -298,24 +285,15 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_NoteTaking) {
       extensions::api::app_runtime::ToString(
           extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE);
   // Foo app has a note-taking action handler.
-  extensions::ExtensionBuilder foo_app;
-  foo_app.SetManifest(
-      extensions::DictionaryBuilder()
-          .Set("name", "Foo")
-          .Set("version", "1.0.0")
-          .Set("manifest_version", 2)
-          .Set("app", extensions::DictionaryBuilder()
-                          .Set("background",
-                               extensions::DictionaryBuilder()
-                                   .Set("scripts", extensions::ListBuilder()
-                                                       .Append("background.js")
-                                                       .Build())
-                                   .Build())
-                          .Build())
-          .Set("action_handlers",
-               extensions::ListBuilder().Append(note_action_handler).Build())
-          .Build());
-  foo_app.SetID("abcdefghzxcv");
+  extensions::ExtensionBuilder foo_app("Foo");
+  std::string manifest = base::StringPrintf(R"(
+    "manifest_version": 2,
+    "version": "1.0.0",
+    "action_handlers": ["%s"],
+    "app": {"background": {"scripts": ["background.js"]}}
+  )",
+                                            note_action_handler.c_str());
+  foo_app.AddJSON(manifest).BuildManifest();
   scoped_refptr<const extensions::Extension> foo = foo_app.Build();
 
   IntentFilters filters = apps_util::CreateIntentFiltersForChromeApp(foo.get());
@@ -337,44 +315,26 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_NoteTaking) {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
   // Foo extension provides file_browser_handlers for html and anything.
-  extensions::ExtensionBuilder foo_ext;
-  foo_ext.SetManifest(
-      extensions::DictionaryBuilder()
-          .Set("name", "Foo")
-          .Set("version", "1.0.0")
-          .Set("manifest_version", 2)
-          .Set(
-              "background",
-              extensions::DictionaryBuilder()
-                  .Set(
-                      "scripts",
-                      extensions::ListBuilder().Append("background.js").Build())
-                  .Set("persistent", false)
-                  .Build())
-          .Set(
-              "file_browser_handlers",
-              extensions::ListBuilder()
-                  .Append(
-                      extensions::DictionaryBuilder()
-                          .Set("id", "open")
-                          .Set("default_title", "Open me!")
-                          .Set("file_filters", extensions::ListBuilder()
-                                                   .Append("filesystem:*.html")
-                                                   .Build())
-                          .Build())
-                  .Append(extensions::DictionaryBuilder()
-                              .Set("id", "open_all")
-                              .Set("default_title", "Open anything!")
-                              .Set("file_filters", extensions::ListBuilder()
-                                                       .Append("filesystem:*.*")
-                                                       .Build())
-                              .Build())
-                  .Build())
-          .Set("permissions",
-               extensions::ListBuilder().Append("fileBrowserHandler").Build())
-          .Build());
-
-  foo_ext.SetID("abcdzxcv");
+  extensions::ExtensionBuilder foo_ext("Foo");
+  static constexpr char kManifest[] = R"(
+    "manifest_version": 2,
+    "permissions": ["fileBrowserHandler"],
+    "version": "1.0.0",
+    "background": {
+      "persistent": false,
+      "scripts": ["background.js"]
+    },
+    "file_browser_handlers": [ {
+      "default_title": "Open me!",
+      "file_filters": ["filesystem:*.html"],
+      "id": "open"
+    }, {
+      "default_title": "Open anything!",
+      "file_filters": ["filesystem:*.*"],
+      "id": "open_all"
+    }]
+  )";
+  foo_ext.AddJSON(kManifest).BuildManifest();
   scoped_refptr<const extensions::Extension> foo = foo_ext.Build();
 
   IntentFilters filters = apps_util::CreateIntentFiltersForExtension(foo.get());
