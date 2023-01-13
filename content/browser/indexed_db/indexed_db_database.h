@@ -381,6 +381,13 @@ class CONTENT_EXPORT IndexedDBDatabase {
   std::vector<PartitionedLockManager::PartitionedLockRequest>
   BuildLockRequestsFromTransaction(IndexedDBTransaction* transaction) const;
 
+  // Find the transactions that block `current_transaction` from acquiring the
+  // locks, and ensure that the clients with blocking transactions are active.
+  void RequireBlockingTransactionClientsToBeActive(
+      IndexedDBTransaction* current_transaction,
+      std::vector<PartitionedLockManager::PartitionedLockRequest>&
+          lock_requests);
+
   // Safe because the IndexedDBBackingStore is owned by the same object which
   // owns us, the IndexedDBPerBucketFactory.
   raw_ptr<IndexedDBBackingStore> backing_store_;

@@ -562,6 +562,11 @@ void IDBDatabase::ContextDestroyed() {
 void IDBDatabase::ContextEnteredBackForwardCache() {
   if (base::FeatureList::IsEnabled(
           features::kAllowPageWithIDBTransactionInBFCache)) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::kAllowPageWithIDBConnectionInBFCache))
+        << "kAllowPageWithIDBTransactionInBFCache should only be turned on "
+           "when kAllowPageWithIDBConnectionInBFCache is on.";
+
     if (backend_) {
       backend_->DidBecomeInactive();
     }

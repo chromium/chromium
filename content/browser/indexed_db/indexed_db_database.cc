@@ -7,7 +7,6 @@
 #include <math.h>
 #include <algorithm>
 #include <cstddef>
-#include <set>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -197,15 +196,61 @@ IndexedDBDatabase::BuildLockRequestsFromTransaction(
   return lock_requests;
 }
 
+void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
+    IndexedDBTransaction* current_transaction,
+    std::vector<PartitionedLockManager::PartitionedLockRequest>&
+        lock_requests) {
+  std::vector<PartitionedLockId> blocked_lock_ids =
+      lock_manager_->GetUnacquirableLocks(lock_requests);
+
+  if (blocked_lock_ids.empty()) {
+    return;
+  }
+
+  for (IndexedDBConnection* connection : connections_) {
+    bool should_require_connection_to_be_active = false;
+    for (const auto& [existing_transaction_id, existing_transaction] :
+         connection->transactions()) {
+      if (connection->id() == current_transaction->connection()->id() &&
+          existing_transaction_id == current_transaction->id()) {
+        // This is the current transaction itself, we skip the check.
+        continue;
+      }
+      for (PartitionedLockId blocked_lock_id : blocked_lock_ids) {
+        if (existing_transaction->lock_ids().contains(blocked_lock_id)) {
+          should_require_connection_to_be_active = true;
+          break;
+        }
+      }
+    }
+    if (should_require_connection_to_be_active) {
+      connection->RequireClientToBeActive(
+          storage::mojom::DisallowClientActivationReason::
+              kTransactionIsBlockingOthers);
+    }
+  }
+}
+
 void IndexedDBDatabase::RegisterAndScheduleTransaction(
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::RegisterAndScheduleTransaction",
                "txn.id", transaction->id());
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
       BuildLockRequestsFromTransaction(transaction);
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAllowPageWithIDBTransactionInBFCache)) {
+    CHECK(base::FeatureList::IsEnabled(
+        blink::features::kAllowPageWithIDBConnectionInBFCache))
+        << "kAllowPageWithIDBTransactionInBFCache should only be turned on "
+           "when kAllowPageWithIDBConnectionInBFCache is on.";
+
+    RequireBlockingTransactionClientsToBeActive(transaction, lock_requests);
+  }
+
   lock_manager_->AcquireLocks(
       std::move(lock_requests),
-      transaction->mutable_locks_receiver()->weak_factory.GetWeakPtr(),
+      transaction->mutable_locks_receiver()->AsWeakPtr(),
       base::BindOnce(&IndexedDBTransaction::Start, transaction->AsWeakPtr()));
 }
 

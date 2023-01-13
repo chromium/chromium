@@ -117,6 +117,21 @@ PartitionedLockManager::TestLockResult PartitionedLockManager::TestLock(
                                           : TestLockResult::kLocked;
 }
 
+std::vector<PartitionedLockId> PartitionedLockManager::GetUnacquirableLocks(
+    std::vector<PartitionedLockRequest>& lock_requests) {
+  std::vector<PartitionedLockId> lock_ids;
+  for (PartitionedLockRequest& request : lock_requests) {
+    auto it = locks_.find(request.lock_id);
+    if (it != locks_.end()) {
+      Lock& lock = it->second;
+      if (!lock.CanBeAcquired(request.type)) {
+        lock_ids.push_back(request.lock_id);
+      }
+    }
+  }
+  return lock_ids;
+}
+
 void PartitionedLockManager::RemoveLockId(const PartitionedLockId& lock_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = locks_.find(lock_id);

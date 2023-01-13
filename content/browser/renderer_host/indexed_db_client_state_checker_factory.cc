@@ -108,11 +108,17 @@ class DocumentIndexedDBClientStateChecker final
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
       RequireClientToBeActiveCallback callback) override {
+    // This is the only reason that we need to keep the client active.
+    CHECK_EQ(reason, storage::mojom::DisallowClientActivationReason::
+                         kClientEventIsTriggered);
     bool was_active = CheckIfClientWasActive(reason);
     if (was_active) {
       // If the document is active, we need to register a non sticky feature to
       // prevent putting it into BFCache until the IndexedDB connection is
       // successfully closed and the context is automatically destroyed.
+      // Since `kClientEventIsTriggered` is the only reason that should be
+      // passed to this function, the non-sticky feature will always be
+      // `kIndexedDBEvent`.
       KeepActiveReceiverContext context(
           static_cast<RenderFrameHostImpl&>(render_frame_host())
               .RegisterBackForwardCacheDisablingNonStickyFeature(

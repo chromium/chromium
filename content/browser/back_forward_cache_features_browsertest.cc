@@ -2611,6 +2611,75 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForIndexedDB,
+                       EvictCacheIfPageBlocksNewTransaction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  Shell* tab_holding_locks = shell();
+  Shell* tab_acquiring_locks = CreateBrowser();
+
+  // 1) Navigate the tab holding locks to A and use IndexedDB, it also register
+  // a event on pagehide to run tasks that never ends to keep the IndexedDB
+  // transaction locks.
+  ASSERT_TRUE(NavigateToURL(
+      tab_holding_locks,
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  content::DOMMessageQueue queue_holding_locks(
+      tab_holding_locks->web_contents());
+  std::string message_holding_locks;
+  ASSERT_TRUE(ExecJs(tab_holding_locks, "setupIndexedDBConnection()"));
+  ASSERT_TRUE(
+      ExecJs(tab_holding_locks, "registerPagehideToStartTransaction()"));
+
+  // 2) Navigate the tab holding locks away.
+  ASSERT_TRUE(NavigateToURL(tab_holding_locks, embedded_test_server()->GetURL(
+                                                   "b.com", "/title1.html")));
+
+  // 3) After confirming the transaction has been created from the tab holding
+  // locks, navigate the tab acquiring locks to A that tries to acquire the same
+  // lock.
+  ASSERT_TRUE(queue_holding_locks.WaitForMessage(&message_holding_locks));
+  ASSERT_EQ("\"transaction_created\"", message_holding_locks);
+  ASSERT_TRUE(NavigateToURL(
+      tab_acquiring_locks,
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/page_with_indexedDB.html")));
+
+  content::DOMMessageQueue queue_acquiring_locks(
+      tab_acquiring_locks->web_contents());
+  std::string message_acquiring_locks;
+  ASSERT_TRUE(ExecJs(tab_acquiring_locks, "setupIndexedDBConnection()"));
+  ASSERT_TRUE(ExecJs(tab_acquiring_locks, "startIndexedDBTransaction()"));
+
+  // 4) After confirming that the transaction from the tab acquiring locks is
+  // completed (which should evict the other tab if it's in BFCache), navigate
+  // the tab holding locks back to the page with IndexedDB.
+  ASSERT_TRUE(queue_acquiring_locks.WaitForMessage(&message_acquiring_locks));
+  ASSERT_EQ("\"transaction_completed\"", message_acquiring_locks);
+  if (ShouldAllowPageWithIndexedDBTransactionInBFCache()) {
+    // If the flag that enables a page with IndexedDB features to enter BFCache
+    // is toggled on, the page should be evicted by disallowing activation.
+    ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+    ASSERT_TRUE(HistoryGoBack(tab_holding_locks->web_contents()));
+    ExpectNotRestored(
+        {NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+        {DisallowActivationReasonId::kIndexedDBTransactionIsBlockingOthers},
+        FROM_HERE);
+  } else {
+    // If the flag is not toggled on, the page will not be eligible for BFCache
+    // because of the registered feature.
+    ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+    ASSERT_TRUE(HistoryGoBack(tab_holding_locks->web_contents()));
+    ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                      {blink::scheduler::WebSchedulerTrackedFeature::
+                           kOutstandingIndexedDBTransaction},
+                      {}, {}, {}, FROM_HERE);
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DoesNotCacheIfBroadcastChannelStillOpen) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
@@ -3071,7 +3140,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   Shell* tab_to_execute_service_worker = shell();
   Shell* tab_to_be_bfcached = CreateBrowser();
 
-  // Observe the new WebContents to trace the navigtion ID.
+  // Observe the new WebContents to trace the navigation ID.
   WebContentsObserver::Observe(tab_to_be_bfcached->web_contents());
 
   // 1) Navigate to A in |tab_to_execute_service_worker|.
