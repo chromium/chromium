@@ -47,13 +47,6 @@
 @property(nonatomic, weak) id<ContentSuggestionsHeaderCommands> commandHandler;
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
-// `YES` when notifications indicate the omnibox is focused.
-@property(nonatomic, assign) BOOL omniboxFocused;
-
-// `YES` if the omnibox should be focused on when the view appears for voice
-// over.
-@property(nonatomic, assign) BOOL focusOmniboxWhenViewAppears;
-
 // `YES` if Google is the default search engine.
 @property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
 

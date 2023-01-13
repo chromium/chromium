@@ -385,6 +385,7 @@
 
 - (void)locationBarDidBecomeFirstResponder {
   [self.headerController locationBarBecomesFirstResponder];
+  self.NTPViewController.omniboxFocused = YES;
 }
 
 - (void)locationBarDidResignFirstResponder {
@@ -547,7 +548,7 @@
   // Do not focus on omnibox for voice over if there are other screens to
   // show.
   if (appState.initStage < InitStageFinal) {
-    self.headerController.focusOmniboxWhenViewAppears = NO;
+    self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = NO;
   }
 }
 
@@ -1178,7 +1179,7 @@
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
   if (previousInitStage == InitStageFirstRun) {
-    self.headerController.focusOmniboxWhenViewAppears = YES;
+    self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = YES;
     [self.headerController focusAccessibilityOnOmnibox];
 
     [appState removeObserver:self];

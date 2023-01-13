@@ -75,6 +75,13 @@
 // Whether the NTP should initially be scrolled into the feed.
 @property(nonatomic, assign) BOOL shouldScrollIntoFeed;
 
+// `YES` when notifications indicate the omnibox is focused.
+@property(nonatomic, assign) BOOL omniboxFocused;
+
+// `YES` if the omnibox should be focused on when the view appears for voice
+// over.
+@property(nonatomic, assign) BOOL focusAccessibilityOmniboxWhenViewAppears;
+
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

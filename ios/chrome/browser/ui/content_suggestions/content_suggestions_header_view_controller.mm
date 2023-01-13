@@ -89,10 +89,7 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 @implementation ContentSuggestionsHeaderViewController
 
 - (instancetype)init {
-  if (self = [super initWithNibName:nil bundle:nil]) {
-    _focusOmniboxWhenViewAppears = YES;
-  }
-  return self;
+  return [super initWithNibName:nil bundle:nil];
 }
 
 #pragma mark - Public
@@ -239,14 +236,6 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
   }
 
   return AlignValueToPixel(offsetY);
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-
-  if (self.focusOmniboxWhenViewAppears && !self.omniboxFocused) {
-    [self focusAccessibilityOnOmnibox];
-  }
 }
 
 - (CGFloat)headerHeight {
@@ -657,8 +646,6 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 - (void)locationBarBecomesFirstResponder {
   if (!self.isShowing)
     return;
-
-  self.omniboxFocused = YES;
 
   [self.delegate focusFakebox];
 }

@@ -146,6 +146,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
     _collectionShiftingOffset = 0;
     _additionalOffset = 0;
     _shouldAnimateHeader = YES;
+    _focusAccessibilityOmniboxWhenViewAppears = YES;
   }
   return self;
 }
@@ -214,6 +215,10 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
 
   [self applyCollectionViewConstraints];
   [self updateNTPLayout];
+
+  if (self.focusAccessibilityOmniboxWhenViewAppears && !self.omniboxFocused) {
+    [self.headerController focusAccessibilityOnOmnibox];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -307,8 +312,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
     // Pinned offset is different based on the orientation, so we reevaluate the
     // minimum scroll position upon device rotation.
     CGFloat pinnedOffsetY = [weakSelf pinnedOffsetY];
-    if (weakSelf.headerController.omniboxFocused &&
-        [weakSelf scrollPosition] < pinnedOffsetY) {
+    if (weakSelf.omniboxFocused && [weakSelf scrollPosition] < pinnedOffsetY) {
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
     }
     if (!weakSelf.isFeedVisible) {
@@ -528,7 +532,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
   // show a "double" omibox state.
   // TODO(crbug.com/1371261): Replace the -setContentOffsetForWebState: call
   // with calls directly from all async updates to the NTP.
-  if (self.headerController.omniboxFocused) {
+  if (self.omniboxFocused) {
     return;
   }
   [self setContentOffset:-[self heightAboveFeed]];
@@ -559,7 +563,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
     return;
   }
 
-  self.headerController.omniboxFocused = NO;
+  self.omniboxFocused = NO;
   [self shiftTilesDownForOmniboxDefocus];
 }
 
@@ -899,7 +903,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
 // Either signals to the omnibox to cancel its focused state or just update the
 // NTP state for an unfocused state.
 - (void)unfocusOmnibox {
-  if (self.headerController.omniboxFocused) {
+  if (self.omniboxFocused) {
     [self.ntpContentDelegate cancelOmniboxEdit];
   } else {
     [self omniboxDidResignFirstResponder];
@@ -986,7 +990,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
 - (void)updateFakeOmniboxForScrollPosition {
   // Unfocus the omnibox when the scroll view is scrolled by the user (but not
   // when a scroll is triggered by layout/UIKit).
-  if (self.headerController.omniboxFocused && !self.shouldAnimateHeader &&
+  if (self.omniboxFocused && !self.shouldAnimateHeader &&
       self.collectionView.dragging) {
     [self unfocusOmnibox];
   }
@@ -1092,7 +1096,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
       (visibleContentStartingPoint > -([self feedTopSectionHeight] * 2) / 3 &&
        ([self scrollPosition] <
         -([self stickyContentHeight] + [self feedTopSectionHeight] / 3))) &&
-      !self.headerController.omniboxFocused;
+      !self.omniboxFocused;
 
   [self.ntpContentDelegate
       signinPromoHasChangedVisibility:isFeedSigninPromoVisible];
