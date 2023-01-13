@@ -2003,26 +2003,6 @@ template("mojom") {
         # TODO(crbug.com/1007591): Support generate_fuzzing.
       }
     }
-
-    ts_target_name = target_name + "_ts"
-    group(ts_target_name) {
-      public_deps = []
-      if (sources_list != []) {
-        public_deps += [ ":$generator_ts_target_name" ]
-      }
-
-      foreach(d, all_deps) {
-        full_name = get_label_info(d, "label_no_toolchain")
-        public_deps += [ "${full_name}_js" ]
-      }
-    }
-
-    # Use |js_target_name| to track dependencies since TS targets may depend on
-    # either TS or JS targets.
-    js_target_name = target_name + "_js"
-    group(js_target_name) {
-      public_deps = [ ":$ts_target_name" ]
-    }
   }
 }
 

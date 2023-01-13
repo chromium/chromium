@@ -12,7 +12,6 @@ group("mojom_js") {
     "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js",
     "//chromeos/ash/components/audio/public/mojom/:mojom_js",
-    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js",
   ]
 }
 

@@ -7710,7 +7710,6 @@ grit("resources") {
     deps += [
       "//chrome/browser/resources/media_router/internals:build_ts",
       "//chrome/browser/share/core/resources:make_share_targets_protobuf",
-      "//chrome/browser/ui/webui/web_app_internals:mojo_bindings_js",
     ]
   }
   if (is_chromeos_ash) {
@@ -7739,8 +7738,6 @@ grit("resources") {
       "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings_js__generator",
       "//chrome/browser/ui/webui/settings/ash:mojom_js",
-      "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js",
-      "//ui/webui/resources/cr_components/app_management:mojo_bindings_js",
     ]
   }
 
@@ -7779,13 +7776,11 @@ grit("dev_ui_browser_resources") {
   ]
 
   deps = [
-    "//chrome/browser/media:mojo_bindings_js",
     "//chrome/browser/resources/accessibility:build_ts",
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/engagement:build_ts",
     "//chrome/browser/resources/memory_internals:build_ts",
     "//chrome/browser/resources/predictors:build_ts",
-    "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_js",
   ]
 
   if (is_android || is_linux || is_chromeos || is_win) {
