@@ -10,12 +10,15 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
+#include "chrome/common/extensions/api/identity.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -38,6 +41,16 @@ struct AccessTokenInfo;
 
 namespace extensions {
 class IdentityGetAuthTokenError;
+
+BASE_DECLARE_FEATURE(kGetAuthTokenCheckInteractivity);
+
+// Exposed for testing
+constexpr base::TimeDelta kDefaultGetAuthTokenInactivityThreshold =
+    base::Minutes(10);
+extern const char kGetAuthTokenActivityStatusHistogramBaseName[];
+extern const char kGetAuthTokenIdleTimeHistogramBaseName[];
+extern const char kGetAuthTokenHistogramConsentSuffix[];
+extern const char kGetAuthTokenHistogramSigninSuffix[];
 
 // identity.getAuthToken fetches an OAuth 2 function for the
 // caller. The request has three sub-flows: non-interactive,
@@ -62,6 +75,33 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
                                      public signin::IdentityManager::Observer,
                                      public OAuth2MintTokenFlow::Delegate {
  public:
+  // Interactive requests showing UIs (like a signin tab or a consent window)
+  // may be rejected to avoid creating unwanted or out-of-context user
+  // interruption.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Exposed for testing.
+  enum class InteractivityStatus {
+    // Interactivity was not requested.
+    kNotRequested = 0,
+    // Interactivity was requested, but the user is inactive. Interactivity is
+    // not allowed.
+    kDisallowedIdle = 1,
+    // Interactivity was requested, and the user is not idle, but signin is
+    // disabled.
+    kDisallowedSigninDisallowed = 2,
+    // Interactivity was requested and allowed because there is a user gesture.
+    kAllowedWithGesture = 3,
+    // Interactivity was requested. There is no user gesture but it is allowed
+    // because the user was recently active.
+    kAllowedWithActivity = 4,
+    // Interactivity was requested, and it is allowed because the idle checks
+    // are disabled.
+    kAllowedNoIdleCheck = 5,
+
+    kMaxValue = kAllowedNoIdleCheck,
+  };
+
   DECLARE_EXTENSION_FUNCTION("identity.getAuthToken",
                              EXPERIMENTAL_IDENTITY_GETAUTHTOKEN)
 
@@ -143,6 +183,8 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   FRIEND_TEST_ALL_PREFIXES(GetAuthTokenFunctionTest, InteractiveQueueShutdown);
   FRIEND_TEST_ALL_PREFIXES(GetAuthTokenFunctionTest, NoninteractiveShutdown);
 
+  enum class InteractionType { kSignin, kConsent };
+
   // Request the primary account info.
   // |extension_gaia_id|: The GAIA ID that was set in the parameters for this
   // instance, or empty if this was not in the parameters.
@@ -219,12 +261,30 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // Returns true if extensions are restricted to the primary account.
   bool IsPrimaryAccountOnly() const;
 
-  bool interactive_ = false;
-  bool should_prompt_for_scopes_ = false;
+  // Records metrics related to user activity.
+  void RecordInteractivityMetrics(InteractionType interaction_type);
+
+  // Computes the interactivity status for consent and sign-in based on the
+  // "interactive" parameter, the idle state and whether signin is allowed.
+  void ComputeInteractivityStatus(
+      const absl::optional<api::identity::TokenDetails>& details);
+
+  // Returns an error for cases when interactivity is not allowed. Must not be
+  // called when interactivity is allowed.
+  IdentityGetAuthTokenError GetErrorFromInteractivityStatus(
+      InteractionType interaction_type) const;
+
+  // For metrics.
+  base::TimeDelta idle_time_;
+  bool interactivity_metrics_recorded_ = false;
+
+  InteractivityStatus interactivity_status_for_consent_ =
+      InteractivityStatus::kNotRequested;
   IdentityMintRequestQueue::MintType mint_token_flow_type_;
   std::unique_ptr<OAuth2MintTokenFlow> mint_token_flow_;
   OAuth2MintTokenFlow::Mode gaia_mint_token_mode_;
-  bool should_prompt_for_signin_ = false;
+  InteractivityStatus interactivity_status_for_signin_ =
+      InteractivityStatus::kNotRequested;
   bool enable_granular_permissions_ = false;
 
   // The gaia id of the account requested by or previously selected for this

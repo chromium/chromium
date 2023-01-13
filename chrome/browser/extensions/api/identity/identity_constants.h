@@ -17,6 +17,7 @@ extern const char kUserNotSignedIn[];
 extern const char kUserNonPrimary[];
 extern const char kBrowserSigninNotAllowed[];
 extern const char kInteractionRequired[];
+extern const char kGetAuthTokenInteractivityDeniedError[];
 extern const char kInvalidRedirect[];
 extern const char kOffTheRecord[];
 extern const char kPageLoadFailure[];

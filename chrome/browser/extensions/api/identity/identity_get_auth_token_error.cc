@@ -70,6 +70,8 @@ std::string IdentityGetAuthTokenError::ToString() const {
       return identity_constants::kInvalidConsentResult;
     case State::kCanceled:
       return identity_constants::kCanceled;
+    case State::kInteractivityDenied:
+      return identity_constants::kGetAuthTokenInteractivityDeniedError;
   }
 }
 

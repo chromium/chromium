@@ -1566,15 +1566,6 @@ if (!is_android) {
       "//v8",
     ]
 
-    if (enable_extensions) {
-      deps += [
-        "//chrome/browser/extensions:test_support",
-        "//extensions/browser/updater",
-        "//extensions/buildflags",
-        "//extensions/renderer",
-      ]
-    }
-
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
@@ -3323,16 +3314,20 @@ if (!is_android) {
         "//components/media_router/common:test_support",
         "//components/optimization_guide/optimization_guide_internals/webui",
         "//components/web_package",
-        "//google_apis/common:test_support",
-        "//google_apis/drive",
 
         # TODO(rockot) bug 505926: The chrome_extensions_browsertests_sources
         # target should be deleted and this line removed. See the
         # chrome_extensions_browsertests_sources target for more.
         "//extensions:chrome_extensions_browsertests_sources",
         "//extensions/browser:test_support",
+        "//extensions/browser/updater",
+        "//extensions/buildflags",
         "//extensions/common:mojom",
         "//extensions/common/api",
+        "//extensions/renderer",
+        "//google_apis/common:test_support",
+        "//google_apis/drive",
+        "//ui/base/idle:test_support",
       ]
 
       data += [

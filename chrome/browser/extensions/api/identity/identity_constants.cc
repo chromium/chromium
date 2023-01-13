@@ -16,6 +16,8 @@ const char kUserNotSignedIn[] = "The user is not signed in.";
 const char kUserNonPrimary[] = "Only the primary user account is allowed";
 const char kBrowserSigninNotAllowed[] = "The user turned off browser signin";
 const char kInteractionRequired[] = "User interaction required.";
+const char kGetAuthTokenInteractivityDeniedError[] =
+    "User interaction blocked due to user inactivity.";
 const char kInvalidRedirect[] = "Did not redirect to the right URL.";
 const char kOffTheRecord[] = "Identity API is disabled in incognito windows.";
 const char kPageLoadFailure[] = "Authorization page could not be loaded.";

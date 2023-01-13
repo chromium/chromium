@@ -44,7 +44,8 @@ class IdentityGetAuthTokenError {
     kSetAccountsInCookieFailure = 25,
     kInvalidConsentResult = 26,
     kCanceled = 27,
-    kMaxValue = kCanceled,
+    kInteractivityDenied = 28,
+    kMaxValue = kInteractivityDenied,
   };
 
   // Constructs a |State::kMintTokenAuthFailure| error with an

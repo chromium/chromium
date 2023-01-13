@@ -947,6 +947,7 @@ static_library("extensions") {
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom:mojom_shared",
+    "//ui/base/idle",
     "//ui/base/ime",
     "//ui/gfx",
     "//ui/gfx/geometry",

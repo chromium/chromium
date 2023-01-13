@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -82,6 +83,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/idle/idle.h"
+#include "ui/base/idle/scoped_set_idle_state.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1372,11 +1375,100 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       kGetAuthTokenResultHistogramName,
       IdentityGetAuthTokenError::State::kRemoteConsentFlowRejected, 1);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
-                       InteractiveLoginSuccessApprovalSuccess) {
+class GetAuthTokenFunctionInteractivityTest
+    : public GetAuthTokenFunctionTest,
+      public testing::WithParamInterface<
+          IdentityGetAuthTokenFunction::InteractivityStatus> {
+ public:
+  GetAuthTokenFunctionInteractivityTest() {
+    // Configure the `kGetAuthTokenCheckInteractivity` feature.
+    if (GetParam() == IdentityGetAuthTokenFunction::InteractivityStatus::
+                          kAllowedNoIdleCheck) {
+      feature_list_.InitAndDisableFeature(kGetAuthTokenCheckInteractivity);
+    } else {
+      feature_list_.InitAndEnableFeature(kGetAuthTokenCheckInteractivity);
+    }
+  }
+
+ protected:
+  // Checks that the histograms:
+  // - Signin.Extensions.GetAuthTokenNoGestureIdleTime.* are recorded only when
+  //   there is no user gesture
+  // - Signin.Extensions.GetAuthTokenInteractivityStatus.* are always recorded
+  //   and match the user activity.
+  void CheckUserActivityMetricsHistograms(const std::string& suffix) {
+    int idle_time_sample_count = 0;
+    if (GetParam() == IdentityGetAuthTokenFunction::InteractivityStatus::
+                          kDisallowedIdle ||
+        GetParam() == IdentityGetAuthTokenFunction::InteractivityStatus::
+                          kAllowedWithActivity) {
+      idle_time_sample_count = 1;
+    }
+    histogram_tester()->ExpectTotalCount(
+        std::string(extensions::kGetAuthTokenIdleTimeHistogramBaseName) +
+            suffix,
+        idle_time_sample_count);
+    histogram_tester()->ExpectUniqueSample(
+        std::string(extensions::kGetAuthTokenActivityStatusHistogramBaseName) +
+            suffix,
+        GetParam(), 1);
+  }
+
+ private:
+  void SetUpOnMainThread() override {
+    // Mock the user activity.
+    switch (GetParam()) {
+      case IdentityGetAuthTokenFunction::InteractivityStatus::
+          kAllowedWithGesture:
+        user_gesture_ =
+            std::make_unique<ExtensionFunction::ScopedUserGestureForTests>();
+        break;
+      case IdentityGetAuthTokenFunction::InteractivityStatus::
+          kAllowedWithActivity:
+        idle_state_ = std::make_unique<ui::ScopedSetIdleState>(
+            ui::IdleState::IDLE_STATE_ACTIVE);
+        ASSERT_EQ(ui::CalculateIdleState(
+                      kDefaultGetAuthTokenInactivityThreshold.InSeconds()),
+                  ui::IDLE_STATE_ACTIVE);
+        break;
+      case IdentityGetAuthTokenFunction::InteractivityStatus::kNotRequested:
+      case IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle:
+      case IdentityGetAuthTokenFunction::InteractivityStatus::
+          kAllowedNoIdleCheck:
+        idle_state_ = std::make_unique<ui::ScopedSetIdleState>(
+            ui::IdleState::IDLE_STATE_LOCKED);
+        ASSERT_NE(ui::CalculateIdleState(
+                      kDefaultGetAuthTokenInactivityThreshold.InSeconds()),
+                  ui::IDLE_STATE_ACTIVE);
+        break;
+      case IdentityGetAuthTokenFunction::InteractivityStatus::
+          kDisallowedSigninDisallowed:
+        NOTREACHED();
+        break;
+    }
+
+    GetAuthTokenFunctionTest::SetUpOnMainThread();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ExtensionFunction::ScopedUserGestureForTests> user_gesture_;
+  std::unique_ptr<ui::ScopedSetIdleState> idle_state_;
+};
+
+// The interactive login flow is always short-circuited out with failure on
+// Ash, so the tests of the interactive login flow being successful are not
+// relevant on that platform.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_P(GetAuthTokenFunctionInteractivityTest,
+                       SigninInteractivityTest) {
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
   scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
+  ASSERT_EQ(func->user_gesture(),
+            GetParam() == IdentityGetAuthTokenFunction::InteractivityStatus::
+                              kAllowedWithGesture);
+
   func->set_extension(extension.get());
   func->set_login_ui_result(true);
   func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
@@ -1384,19 +1476,118 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   func->set_remote_consent_gaia_id("gaia_id_for_secondary_example.com");
   func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
 
-  std::string access_token;
-  std::set<std::string> granted_scopes;
-  RunGetAuthTokenFunction(func.get(), "[{\"interactive\": true}]", browser(),
-                          &access_token, &granted_scopes);
-  EXPECT_EQ(std::string(kAccessToken), access_token);
-  EXPECT_EQ(func->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
-  EXPECT_TRUE(func->login_ui_shown());
-  EXPECT_TRUE(func->scope_ui_shown());
-  histogram_tester()->ExpectUniqueSample(
-      kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
-      1);
+  const std::string function_args =
+      GetParam() ==
+              IdentityGetAuthTokenFunction::InteractivityStatus::kNotRequested
+          ? "[{}]"
+          : "[{\"interactive\": true}]";
+  IdentityGetAuthTokenError::State expected_error_state =
+      IdentityGetAuthTokenError::State::kNone;
+  if (GetParam() ==
+          IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle ||
+      GetParam() ==
+          IdentityGetAuthTokenFunction::InteractivityStatus::kNotRequested) {
+    // Interactivity is not allowed, return an error.
+    std::string error =
+        utils::RunFunctionAndReturnError(func.get(), function_args, browser());
+    std::string expected_error;
+    if (GetParam() ==
+        IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle) {
+      expected_error = errors::kGetAuthTokenInteractivityDeniedError;
+      expected_error_state =
+          IdentityGetAuthTokenError::State::kInteractivityDenied;
+    } else {
+      expected_error = errors::kUserNotSignedIn;
+      expected_error_state = IdentityGetAuthTokenError::State::kUserNotSignedIn;
+    }
+    EXPECT_EQ(expected_error, error);
+    EXPECT_FALSE(func->login_ui_shown());
+    EXPECT_FALSE(func->scope_ui_shown());
+  } else {
+    std::string access_token;
+    std::set<std::string> granted_scopes;
+    RunGetAuthTokenFunction(func.get(), function_args, browser(), &access_token,
+                            &granted_scopes);
+    EXPECT_EQ(std::string(kAccessToken), access_token);
+    EXPECT_EQ(func->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
+    EXPECT_TRUE(func->login_ui_shown());
+    EXPECT_TRUE(func->scope_ui_shown());
+  }
+  histogram_tester()->ExpectUniqueSample(kGetAuthTokenResultHistogramName,
+                                         expected_error_state, 1);
+  CheckUserActivityMetricsHistograms(kGetAuthTokenHistogramSigninSuffix);
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_P(GetAuthTokenFunctionInteractivityTest,
+                       ConsentInteractivityTest) {
+  SignIn("primary@example.com");
+  scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
+  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
+  ASSERT_EQ(func->user_gesture(),
+            GetParam() == IdentityGetAuthTokenFunction::InteractivityStatus::
+                              kAllowedWithGesture);
+
+  func->set_extension(extension.get());
+  func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
+  func->set_remote_consent_gaia_id("gaia_id_for_primary_example.com");
+  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+
+  const std::string function_args =
+      GetParam() ==
+              IdentityGetAuthTokenFunction::InteractivityStatus::kNotRequested
+          ? "[{}]"
+          : "[{\"interactive\": true}]";
+  IdentityGetAuthTokenError::State expected_error_state =
+      IdentityGetAuthTokenError::State::kNone;
+  if (GetParam() ==
+          IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle ||
+      GetParam() ==
+          IdentityGetAuthTokenFunction::InteractivityStatus::kNotRequested) {
+    // Interactivity is not allowed, return an error.
+    std::string error =
+        utils::RunFunctionAndReturnError(func.get(), function_args, browser());
+    std::string expected_error;
+    if (GetParam() ==
+        IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle) {
+      expected_error = errors::kGetAuthTokenInteractivityDeniedError;
+      expected_error_state =
+          IdentityGetAuthTokenError::State::kInteractivityDenied;
+    } else {
+      expected_error = errors::kNoGrant;
+      expected_error_state =
+          IdentityGetAuthTokenError::State::kGaiaConsentInteractionRequired;
+    }
+    EXPECT_EQ(expected_error, error);
+    EXPECT_FALSE(func->scope_ui_shown());
+  } else {
+    std::string access_token;
+    std::set<std::string> granted_scopes;
+    RunGetAuthTokenFunction(func.get(), function_args, browser(), &access_token,
+                            &granted_scopes);
+    EXPECT_EQ(std::string(kAccessToken), access_token);
+    EXPECT_EQ(func->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
+    EXPECT_TRUE(func->scope_ui_shown());
+    EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+              GetCachedToken(CoreAccountInfo()).status());
+  }
+  EXPECT_FALSE(func->login_ui_shown());
+  histogram_tester()->ExpectUniqueSample(kGetAuthTokenResultHistogramName,
+                                         expected_error_state, 1);
+  CheckUserActivityMetricsHistograms(
+      extensions::kGetAuthTokenHistogramConsentSuffix);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetAuthTokenFunctionInteractivityTest,
+    testing::Values(
+        IdentityGetAuthTokenFunction::InteractivityStatus::kNotRequested,
+        IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle,
+        IdentityGetAuthTokenFunction::InteractivityStatus::kAllowedWithGesture,
+        IdentityGetAuthTokenFunction::InteractivityStatus::kAllowedWithActivity,
+        IdentityGetAuthTokenFunction::InteractivityStatus::
+            kAllowedNoIdleCheck));
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveApprovalAborted) {
   SignIn("primary@example.com");
@@ -1510,31 +1701,6 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       IdentityGetAuthTokenError::State::kNoGrant, 1);
 }
 #endif
-
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveApprovalSuccess) {
-  SignIn("primary@example.com");
-  scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
-  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
-  func->set_extension(extension.get());
-  func->push_mint_token_result(TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
-  func->set_remote_consent_gaia_id("gaia_id_for_primary_example.com");
-  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
-
-  std::string access_token;
-  std::set<std::string> granted_scopes;
-  RunGetAuthTokenFunction(func.get(), "[{\"interactive\": true}]", browser(),
-                          &access_token, &granted_scopes);
-  EXPECT_EQ(std::string(kAccessToken), access_token);
-  EXPECT_EQ(func->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
-  EXPECT_FALSE(func->login_ui_shown());
-  EXPECT_TRUE(func->scope_ui_shown());
-
-  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
-            GetCachedToken(CoreAccountInfo()).status());
-  histogram_tester()->ExpectUniqueSample(
-      kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
-      1);
-}
 
 #if !BUILDFLAG(IS_MAC)
 // Test was originally written for http://crbug.com/753014 and subsequently

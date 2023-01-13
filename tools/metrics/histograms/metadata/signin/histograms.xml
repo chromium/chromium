@@ -419,6 +419,41 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Extensions.GetAuthTokenInteractivityStatus.{UiType}"
+    enum="SigninExtensionsGetAuthTokenInteractivityStatus"
+    expires_after="2023-07-10">
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether an interactive UI is allowed, when
+    `chrome.identity.getAuthToken` is in interactive mode and attempts to show a
+    &quot;{UiType}&quot; UI. If multiple UIs are shown by the same call, only
+    the first one is recorded.
+  </summary>
+  <token key="UiType">
+    <variant name="Consent" summary="OAuth consent"/>
+    <variant name="Signin" summary="Signin"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.Extensions.GetAuthTokenNoGestureIdleTime.{UiType}"
+    units="ms" expires_after="2023-07-10">
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the Chrome idle time, when `chrome.identity.getAuthToken` is in
+    interactive mode, has no user gesture, and attempts to show a
+    &quot;{UiType}&quot; UI. If multiple UIs are shown by the same call, only
+    the first one is recorded.
+  </summary>
+  <token key="UiType">
+    <variant name="Consent" summary="OAuth consent"/>
+    <variant name="Signin" summary="Signin"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Extensions.GetAuthTokenResult"
     enum="GetAuthTokenResult" expires_after="2023-06-04">
 <!-- Name completed by histogram_suffixes name="GetAuthTokenType" -->
