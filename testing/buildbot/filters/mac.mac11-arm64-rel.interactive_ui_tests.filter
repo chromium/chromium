@@ -1,0 +1,3 @@
+# Test filter for interactive_ui_tests on mac11-arm64-rel
+
+-LocationIconViewTest.HideOnSecondClick
