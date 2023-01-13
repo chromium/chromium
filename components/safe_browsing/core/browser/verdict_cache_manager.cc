@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -142,21 +143,25 @@ bool ParseVerdictEntry(base::Value* verdict_entry,
                        const char* proto_name) {
   DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
 
-  if (!verdict_entry || !verdict_entry->is_dict() || !out_verdict)
+  if (!verdict_entry || !verdict_entry->is_dict() || !out_verdict) {
     return false;
-  base::Value* cache_creation_time_value =
-      verdict_entry->FindKey(kCacheCreationTime);
+  }
 
-  if (!cache_creation_time_value || !cache_creation_time_value->is_int())
+  const base::Value::Dict& dict = verdict_entry->GetDict();
+  absl::optional<int> cache_creation_time = dict.FindInt(kCacheCreationTime);
+
+  if (!cache_creation_time) {
     return false;
-  *out_verdict_received_time = cache_creation_time_value->GetInt();
+  }
+  *out_verdict_received_time = cache_creation_time.value();
 
-  base::Value* verdict_proto_value = verdict_entry->FindKey(proto_name);
-  if (!verdict_proto_value || !verdict_proto_value->is_string())
+  const std::string* verdict_proto = dict.FindString(proto_name);
+  if (!verdict_proto) {
     return false;
-  std::string serialized_proto = verdict_proto_value->GetString();
+  }
 
-  return base::Base64Decode(serialized_proto, &serialized_proto) &&
+  std::string serialized_proto;
+  return base::Base64Decode(*verdict_proto, &serialized_proto) &&
          out_verdict->ParseFromString(serialized_proto);
 }
 
