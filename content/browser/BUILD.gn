@@ -470,6 +470,7 @@ source_set("browser") {
     "attribution_reporting/rate_limit_table.cc",
     "attribution_reporting/rate_limit_table.h",
     "attribution_reporting/send_result.h",
+    "attribution_reporting/sql_queries.h",
     "attribution_reporting/sql_utils.cc",
     "attribution_reporting/sql_utils.h",
     "attribution_reporting/storable_source.cc",

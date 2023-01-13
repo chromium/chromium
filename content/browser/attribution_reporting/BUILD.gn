@@ -57,3 +57,21 @@ mojom("internals_mojo_bindings") {
     },
   ]
 }
+
+# Platforms where sqlite_dev_shell is defined.
+if (is_win || is_mac || is_linux || is_chromeos) {
+  source_set("sqlite_test_utils") {
+    testonly = true
+    sources = [
+      "sql_query_plan_test_util.cc",
+      "sql_query_plan_test_util.h",
+    ]
+
+    deps = [
+      "//base",
+      "//testing/gtest",
+    ]
+
+    data_deps = [ "//third_party/sqlite:sqlite_dev_shell" ]
+  }
+}

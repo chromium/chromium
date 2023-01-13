@@ -2846,6 +2846,12 @@ test("content_unittests") {
     "//third_party/mesa_headers",
   ]
 
+  # Platforms where sqlite_dev_shell is defined.
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "../browser/attribution_reporting/attribution_storage_sql_query_plans_unittest.cc" ]
+    deps += [ "../browser/attribution_reporting:sqlite_test_utils" ]
+  }
+
   if (is_chromeos_lacros) {
     deps += [
       "//chromeos/crosapi/mojom",
