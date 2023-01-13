@@ -2085,6 +2085,10 @@ PageImpl& RenderFrameHostImpl::GetPage() {
   return *GetMainFrame()->document_associated_data_->owned_page();
 }
 
+const PageImpl& RenderFrameHostImpl::GetPage() const {
+  return *GetMainFrame()->document_associated_data_->owned_page();
+}
+
 bool RenderFrameHostImpl::IsDescendantOfWithinFrameTree(
     RenderFrameHostImpl* ancestor) {
   if (!ancestor || !ancestor->child_count())
@@ -5559,7 +5563,7 @@ void RenderFrameHostImpl::ReportInspectorIssue(
 void RenderFrameHostImpl::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
   proto.Set(TraceProto::kRenderFrameHostId, GetGlobalId());
-  proto->set_frame_tree_node_id(frame_tree_node_->frame_tree_node_id());
+  proto->set_frame_tree_node_id(GetFrameTreeNodeId());
   proto->set_lifecycle_state(LifecycleStateToProto());
   proto->set_frame_type(GetFrameTypeProto());
   proto->set_origin(GetLastCommittedOrigin().GetDebugString());
@@ -5610,7 +5614,7 @@ RenderFrameHostImpl::GetFrameTypeProto() const {
   if (GetParent()) {
     return RFHProto::SUBFRAME;
   }
-  if (const_cast<RenderFrameHostImpl*>(this)->GetPage().IsPrimary()) {
+  if (GetPage().IsPrimary()) {
     return RFHProto::PRIMARY_MAIN_FRAME;
   }
   if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {

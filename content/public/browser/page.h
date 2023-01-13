@@ -82,7 +82,7 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // include pages in bfcache, portal, prerendering, fenced frames, pending
   // commit and pending deletion pages. See WebContents::GetPrimaryPage for more
   // details.
-  virtual bool IsPrimary() = 0;
+  virtual bool IsPrimary() const = 0;
 
   // Returns the main RenderFrameHost associated with this Page.
   RenderFrameHost& GetMainDocument() { return GetMainDocumentHelper(); }

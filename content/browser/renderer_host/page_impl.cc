@@ -48,7 +48,7 @@ void PageImpl::GetManifest(GetManifestCallback callback) {
   manifest_manager_host->GetManifest(std::move(callback));
 }
 
-bool PageImpl::IsPrimary() {
+bool PageImpl::IsPrimary() const {
   // TODO(1244137): Check for portals as well, once they are migrated to MPArch.
   if (main_document_->IsFencedFrameRoot())
     return false;

@@ -509,6 +509,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;
 
+  // Additional non-override const version of GetPage.
+  const PageImpl& GetPage() const;
+
   // Returns the token for the document currently associated with this frame.
   // This can change over time if a `RenderFrameHost` is reused when navigating
   // to a new document.
@@ -4464,6 +4467,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // The Page object associated with the main document. It is nullptr for
     // subframes.
     PageImpl* owned_page() { return owned_page_.get(); }
+
+    const PageImpl* owned_page() const { return owned_page_.get(); }
 
     // Indicates whether `blink::mojom::DidDispatchDOMContentLoadedEvent` was
     // called for this document or not.

@@ -46,7 +46,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Page implementation.
   const absl::optional<GURL>& GetManifestUrl() const override;
   void GetManifest(GetManifestCallback callback) override;
-  bool IsPrimary() override;
+  bool IsPrimary() const override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
