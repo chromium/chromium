@@ -2,8 +2,8 @@ caption: Allows users to be shown the <ph name="IOS_NAME">iOS</ph> App Store Rat
 desc: |-
   When the policy is not set or set to Enabled, the App Store Rating promo may be shown to the user, at most once per year.
   When the policy is set to Disabled, the App Store Rating promo will not be shown to the user.
-future_on:
-- ios
+supported_on:
+- ios:110-
 features:
   dynamic_refresh: true
   per_profile: true
