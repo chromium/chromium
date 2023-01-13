@@ -41787,6 +41787,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4438" label="CSSBackgroundClipPadding"/>
   <int value="4439"
       label="DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning"/>
+  <int value="4440" label="CSSPseudoHasContainsMixOfValidAndInvalid"/>
+  <int value="4441" label="CSSPseudoIsWhereContainsMixOfValidAndInvalid"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

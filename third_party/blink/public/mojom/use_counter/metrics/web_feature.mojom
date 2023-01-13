@@ -3778,6 +3778,8 @@ enum WebFeature {
   kCSSBackgroundClipContent = 4437,
   kCSSBackgroundClipPadding = 4438,
   kDisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning = 4439,
+  kCSSPseudoHasContainsMixOfValidAndInvalid = 4440,
+  kCSSPseudoIsWhereContainsMixOfValidAndInvalid = 4441,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

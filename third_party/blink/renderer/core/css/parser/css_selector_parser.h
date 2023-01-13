@@ -127,6 +127,7 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList* ConsumeForgivingComplexSelectorList(CSSParserTokenRange&);
   CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
+  CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);
   CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenRange&);
 
   base::span<CSSSelector> ConsumeNestedRelativeSelector(

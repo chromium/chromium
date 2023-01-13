@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -167,6 +168,13 @@ TEST(CSSSelector, Specificity_Has) {
             Specificity("div > div"));
   EXPECT_EQ(Specificity(":has(.c + .c + .c, .b + .c:not(span), .b + .c + .e)"),
             Specificity(".c + .c + .c"));
+
+  {
+    ScopedCSSPseudoHasNonForgivingParsingForTest scoped_feature(false);
+
+    EXPECT_EQ(Specificity(".a+:has(.b+span.f, :has(.c>.e, .g))"),
+              Specificity(".a+.b+span.f"));
+  }
 }
 
 TEST(CSSSelector, HasLinkOrVisited) {

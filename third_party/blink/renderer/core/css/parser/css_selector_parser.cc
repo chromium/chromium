@@ -315,6 +315,55 @@ class CSSAtSupportsDropInvalidWhileForgivingParsingCounter {
   bool counted_{false};
 };
 
+// Class to get usecounter of forgiving parsing for a selector list that
+// has a mix of valid selector and invalid selector. (e.g. :where(a, :foo))
+//
+// There are two counters
+// - kCSSPseudoHasContainsMixOfValidAndInvalid : detect a mix of valid and
+//                                               invalid inside :has().
+// - kCSSPseudoIsWhereContainsMixOfValidAndInvalid : detect a mix of valid and
+//                                                   invalid inside :is() and
+//                                                   :where().
+class ForgivingParsingContainsMixOfValidAndInvalidCounter {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ForgivingParsingContainsMixOfValidAndInvalidCounter(
+      const CSSParserContext* context,
+      WebFeature feature)
+      : context_(context), feature_(feature) {
+    DCHECK(feature_ == WebFeature::kCSSPseudoHasContainsMixOfValidAndInvalid ||
+           feature_ ==
+               WebFeature::kCSSPseudoIsWhereContainsMixOfValidAndInvalid);
+  }
+
+  ~ForgivingParsingContainsMixOfValidAndInvalidCounter() {
+    if (!valid_counted_ || (!invalid_counted_ && !empty_after_last_comma_)) {
+      return;
+    }
+    context_->Count(feature_);
+  }
+
+  // Method for a valid selector. (e.g. '.a' of ':is(.a, :foo,))
+  void CountValid() { valid_counted_ = true; }
+
+  // Method for a invalid selector. (e.g. ':foo' of ':is(.a, :foo,))
+  void CountInvalid() { invalid_counted_ = true; }
+
+  // Method for the empty after the last comma. (e.g. the space after the last
+  // comma of ':is(.a, :foo, )')
+  void SetEmptyAfterLastComma(bool empty_after_last_comma) {
+    empty_after_last_comma_ = empty_after_last_comma;
+  }
+
+ private:
+  const CSSParserContext* context_;
+  const WebFeature feature_;
+  bool valid_counted_{false};
+  bool invalid_counted_{false};
+  bool empty_after_last_comma_{false};
+};
+
 }  // namespace
 
 CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
@@ -342,8 +391,11 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
 
   CSSAtSupportsDropInvalidWhileForgivingParsingCounter
       at_supports_drop_invalid_counter(context_);
+  ForgivingParsingContainsMixOfValidAndInvalidCounter valid_and_invalid_counter(
+      context_, WebFeature::kCSSPseudoIsWhereContainsMixOfValidAndInvalid);
 
   while (!range.AtEnd()) {
+    valid_and_invalid_counter.SetEmptyAfterLastComma(false);
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
     wtf_size_t subpos = output_.size();
@@ -354,11 +406,15 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
         at_supports_drop_invalid_counter.Count();
       }
       output_.resize(subpos);  // Drop what we parsed so far.
+      valid_and_invalid_counter.CountInvalid();
+    } else {
+      valid_and_invalid_counter.CountValid();
     }
     if (range.Peek().GetType() != kCommaToken) {
       break;
     }
     range.ConsumeIncludingWhitespace();
+    valid_and_invalid_counter.SetEmptyAfterLastComma(true);
   }
 
   if (reset_vector.AddedElements().empty()) {
@@ -385,9 +441,12 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
 
   CSSAtSupportsDropInvalidWhileForgivingParsingCounter
       at_supports_drop_invalid_counter(context_);
+  ForgivingParsingContainsMixOfValidAndInvalidCounter valid_and_invalid_counter(
+      context_, WebFeature::kCSSPseudoIsWhereContainsMixOfValidAndInvalid);
 
   ResetVectorAfterScope reset_vector(output_);
   while (!range.AtEnd()) {
+    valid_and_invalid_counter.SetEmptyAfterLastComma(false);
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
     wtf_size_t subpos = output_.size();
@@ -398,13 +457,16 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
         at_supports_drop_invalid_counter.Count();
       }
       output_.resize(subpos);  // Drop what we parsed so far.
+      valid_and_invalid_counter.CountInvalid();
     } else {
       MarkAsEntireComplexSelector(selector);
+      valid_and_invalid_counter.CountValid();
     }
     if (range.Peek().GetType() != kCommaToken) {
       break;
     }
     range.ConsumeIncludingWhitespace();
+    valid_and_invalid_counter.SetEmptyAfterLastComma(true);
   }
 
   if (reset_vector.AddedElements().empty()) {
@@ -412,6 +474,64 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
       at_supports_drop_invalid_counter.Count();
     }
     return CSSSelectorList::Empty();
+  }
+
+  return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
+}
+
+CSSSelectorList* CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
+    CSSParserTokenRange& range) {
+  if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
+      in_supports_parsing_) {
+    CSSSelectorList* selector_list = ConsumeRelativeSelectorList(range);
+    if (!selector_list || !selector_list->IsValid()) {
+      return nullptr;
+    }
+    return selector_list;
+  }
+
+  CSSAtSupportsDropInvalidWhileForgivingParsingCounter
+      at_supports_drop_invalid_counter(context_);
+  ForgivingParsingContainsMixOfValidAndInvalidCounter valid_and_invalid_counter(
+      context_, WebFeature::kCSSPseudoHasContainsMixOfValidAndInvalid);
+
+  ResetVectorAfterScope reset_vector(output_);
+  while (!range.AtEnd()) {
+    valid_and_invalid_counter.SetEmptyAfterLastComma(false);
+    base::AutoReset<bool> reset_failure(&failed_parsing_, false);
+    CSSParserTokenRange argument = ConsumeNestedArgument(range);
+    wtf_size_t subpos = output_.size();
+    base::span<CSSSelector> selector = ConsumeRelativeSelector(argument);
+    if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
+      if (in_supports_parsing_) {
+        at_supports_drop_invalid_counter.Count();
+      }
+      output_.resize(subpos);  // Drop what we parsed so far.
+      valid_and_invalid_counter.CountInvalid();
+    } else {
+      valid_and_invalid_counter.CountValid();
+    }
+    if (range.Peek().GetType() != kCommaToken) {
+      break;
+    }
+    range.ConsumeIncludingWhitespace();
+    valid_and_invalid_counter.SetEmptyAfterLastComma(true);
+  }
+
+  // :has() is not allowed in the pseudos accepting only compound selectors, or
+  // not allowed after pseudo elements.
+  // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
+  if (inside_compound_pseudo_ ||
+      restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
+      reset_vector.AddedElements().empty()) {
+    if (in_supports_parsing_) {
+      at_supports_drop_invalid_counter.Count();
+    }
+
+    // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
+    // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
+    // Should return empty CSSSelectorList. (return CSSSelectorList::Empty())
+    return nullptr;
   }
 
   return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
@@ -1289,9 +1409,17 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       base::AutoReset<bool> found_complex_logical_combinations_in_has_argument(
           &found_complex_logical_combinations_in_has_argument_, false);
 
-      CSSSelectorList* selector_list = ConsumeRelativeSelectorList(block);
-      if (!selector_list || !selector_list->IsValid() || !block.AtEnd()) {
-        return false;
+      CSSSelectorList* selector_list;
+      if (RuntimeEnabledFeatures::CSSPseudoHasNonForgivingParsingEnabled()) {
+        selector_list = ConsumeRelativeSelectorList(block);
+        if (!selector_list || !selector_list->IsValid() || !block.AtEnd()) {
+          return false;
+        }
+      } else {
+        selector_list = ConsumeForgivingRelativeSelectorList(block);
+        if (!selector_list || !block.AtEnd()) {
+          return false;
+        }
       }
       selector.SetSelectorList(selector_list);
       if (found_pseudo_in_has_argument_) {
