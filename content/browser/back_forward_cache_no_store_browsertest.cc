@@ -971,18 +971,18 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheAuthorizationHeaderBrowserTest,
                      BlocklistedFeature::kAuthorizationHeader},
                     {}, {}, {}, FROM_HERE);
 
-  auto subframe_result = MatchesNotRestoredReasons(
-      blink::mojom::BFCacheBlocked::kYes,
-      MatchesSameOriginDetails(
-          /*id=*/"", /*name=*/"", /*src=*/url_a_2.spec(),
-          /*url=*/url_a_2.spec(),
-          /*reasons=*/{"AuthorizationHeader"},
-          /*children=*/{}));
+  auto subframe_result =
+      MatchesNotRestoredReasons(blink::mojom::BFCacheBlocked::kYes,
+                                /*id=*/"", /*name=*/"", /*src=*/url_a_2.spec(),
+                                MatchesSameOriginDetails(
+                                    /*url=*/url_a_2.spec(),
+                                    /*reasons=*/{"AuthorizationHeader"},
+                                    /*children=*/{}));
   EXPECT_THAT(current_frame_host()->NotRestoredReasonsForTesting(),
               MatchesNotRestoredReasons(
                   blink::mojom::BFCacheBlocked::kYes,
+                  /*id=*/"", /*name=*/"", /*src=*/"",
                   MatchesSameOriginDetails(
-                      /*id=*/"", /*name=*/"", /*src=*/"",
                       /*url=*/url_a_no_store.spec(),
                       /*reasons=*/{"MainResourceHasCacheControlNoStore"},
                       /*children=*/

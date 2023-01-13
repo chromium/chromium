@@ -3136,11 +3136,17 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     not_restored_reasons =
         mojom::blink::BackForwardCacheNotRestoredReasons::New();
     not_restored_reasons->blocked = reasons_to_copy->blocked;
-    auto details = mojom::blink::SameOriginBfcacheNotRestoredDetails::New();
+    if (reasons_to_copy->id) {
+      not_restored_reasons->id = reasons_to_copy->id.value().c_str();
+    }
+    if (reasons_to_copy->name) {
+      not_restored_reasons->name = reasons_to_copy->name.value().c_str();
+    }
+    if (reasons_to_copy->src) {
+      not_restored_reasons->src = reasons_to_copy->src.value().c_str();
+    }
     if (reasons_to_copy->same_origin_details) {
-      details->id = reasons_to_copy->same_origin_details->id.c_str();
-      details->name = reasons_to_copy->same_origin_details->name.c_str();
-      details->src = reasons_to_copy->same_origin_details->src.c_str();
+      auto details = mojom::blink::SameOriginBfcacheNotRestoredDetails::New();
       details->url = reasons_to_copy->same_origin_details->url.c_str();
       for (const auto& reason : reasons_to_copy->same_origin_details->reasons) {
         details->reasons.push_back(reason.c_str());
@@ -3148,8 +3154,8 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
       for (const auto& child : reasons_to_copy->same_origin_details->children) {
         details->children.push_back(ConvertNotRestoredReasons(child));
       }
+      not_restored_reasons->same_origin_details = std::move(details);
     }
-    not_restored_reasons->same_origin_details = std::move(details);
   }
   return not_restored_reasons;
 }
