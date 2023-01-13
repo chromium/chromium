@@ -30,6 +30,12 @@ bool InProgress(const SetupStage stage) {
   return stage > SetupStage::kNotStarted && stage < SetupStage::kSuccess;
 }
 
+int Percentage(const int64_t a, const int64_t b) {
+  DCHECK_GE(a, 0);
+  DCHECK_LE(a, b);
+  return b ? 100 * a / b : 0;
+}
+
 mojom::QueryParametersPtr CreateMyDriveQuery() {
   mojom::QueryParametersPtr query = mojom::QueryParameters::New();
   query->page_size = 1000;
@@ -666,7 +672,7 @@ void DriveFsPinManager::PinSomeFiles() {
   }
 
   VLOG(1) << "Progress "
-          << (100 * progress_.transferred_bytes / progress_.total_bytes)
+          << Percentage(progress_.transferred_bytes, progress_.total_bytes)
           << "%: synced " << HumanReadableSize(progress_.transferred_bytes)
           << " and " << progress_.pinned_files << " files, syncing "
           << files_to_track_.size() << " files";
@@ -749,7 +755,8 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
         if (Update(id, event->path, event->bytes_transferred,
                    event->bytes_to_transfer)) {
           VLOG(2) << "Syncing " << id << " " << Quote(event->path) << " at "
-                  << (100 * event->bytes_transferred / event->bytes_to_transfer)
+                  << Percentage(event->bytes_transferred,
+                                event->bytes_to_transfer)
                   << "%: " << Quote(*event);
           progress_.useful_events++;
           NotifyProgress();
