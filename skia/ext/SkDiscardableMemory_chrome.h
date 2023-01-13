@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "third_party/skia/src/core/SkDiscardableMemory.h"
+#include "third_party/skia/include/private/chromium/SkDiscardableMemory.h"
 
 namespace base {
 class DiscardableMemory;

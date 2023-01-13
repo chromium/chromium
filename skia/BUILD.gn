@@ -547,11 +547,6 @@ component("skia") {
     if (enable_vulkan) {
       public += skia_gpu_vk_public
       public += skia_gpu_vk_chromium_public
-      public += [
-        # TODO(kjlubick) remove this file once Chrome uses the one from
-        # skia/include/private/chromium
-        "//third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h",
-      ]
       sources += skia_gpu_vk_private
       sources += skia_shared_vk_sources
       sources += skia_gpu_vk_chromium_private

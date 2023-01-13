@@ -16,7 +16,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
+#include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 #include "ui/gfx/color_space.h"
 
 using base::android::JavaParamRef;

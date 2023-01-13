@@ -13,11 +13,10 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurfaceCharacterization.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
+#include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 
 struct AwDrawFn_InitVkParams;
 class GrDirectContext;
-class GrVkSecondaryCBDrawContext;
 
 namespace gpu {
 class VulkanImplementation;

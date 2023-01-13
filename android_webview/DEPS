@@ -48,5 +48,4 @@ include_rules = [
 
   # Used for Vulkan interop path.
   "+third_party/vulkan/include",
-  "+third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h",
 ]

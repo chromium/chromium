@@ -20,7 +20,7 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
-#include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
+#include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/android/egl_fence_utils.h"
 #include "ui/gl/gl_bindings.h"
