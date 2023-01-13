@@ -139,12 +139,35 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
+       * Whether the removal of Expiration and Type titles on settings page is
+       * enabled.
+       */
+      removeCardExpirationAndTypeTitlesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('removeCardExpirationAndTypeTitles');
+        },
+        readOnly: true,
+      },
+
+      /**
        * Whether virtual card enroll management on settings page is enabled.
        */
       virtualCardEnrollmentEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('virtualCardEnrollmentEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * Whether virtual card metadata on settings page is enabled.
+       */
+      virtualCardMetadataEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('virtualCardMetadataEnabled');
         },
         readOnly: true,
       },
@@ -161,7 +184,9 @@ export class SettingsPaymentsSectionElement extends
   private showVirtualCardUnenrollDialog_: boolean;
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
+  private removeCardExpirationAndTypeTitlesEnabled_: boolean;
   private virtualCardEnrollmentEnabled_: boolean;
+  private virtualCardMetadataEnabled_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -238,6 +263,16 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.removePersonalDataManagerListener(
         this.setPersonalDataListener_!);
     this.setPersonalDataListener_ = null;
+  }
+
+  /**
+   * Calculate the class style for `paymentsList` based on flags.
+   */
+  private computeCssClass_(): string {
+    return this.removeCardExpirationAndTypeTitlesEnabled_ &&
+            this.virtualCardMetadataEnabled_ ?
+        'payment-list-margin-start' :
+        '';
   }
 
   /**

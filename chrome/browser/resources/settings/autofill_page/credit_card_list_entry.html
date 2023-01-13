@@ -50,9 +50,14 @@
             [[creditCard.metadata.summaryLabel]]
           </div>
           <div id="summarySublabel"
-            hidden$="[[!shouldShowSecondarySublabel_()]]"
-            class="ellipses sub-label">
-            [[getSecondarySublabel_(creditCard.metadata)]]
+              hidden$="[[!shouldShowSecondarySublabel_(creditCard,
+                  virtualCardEnrollmentEnabled_,
+                      showExpirationAsSecondaryLabelEnabled_)]]"
+              class="ellipses sub-label">
+            [[getExpirationAndVirtualCardMetadata_(
+                showExpirationAsSecondaryLabelEnabled_, creditCard,
+                    showExpirationAsSecondaryLabelEnabled_,
+                        virtualCardEnrollmentEnabled_)]]
           </div>
         </div>
         <span id="virtualCardLabel"
@@ -65,8 +70,9 @@
         </span>
       </div>
       <div class="expiration-column">
-        <div id="creditCardExpiration" role="cell">
-            [[creditCard.expirationMonth]]/[[creditCard.expirationYear]]
+        <div id="creditCardExpiration" role="cell"
+            hidden$="[[showExpirationAsSecondaryLabelEnabled_]]">
+          [[creditCard.expirationMonth]]/[[creditCard.expirationYear]]
         </div>
         <div role="cell" class="misc-column">
           <div id="paymentsIndicator"

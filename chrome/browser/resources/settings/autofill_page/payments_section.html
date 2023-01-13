@@ -13,6 +13,10 @@
     width: var(--cr-icon-size);
   }
 
+  .payment-list-margin-start {
+    padding-inline-start: 20px;
+  }
+
   #migrateCreditCards {
     border-bottom: var(--cr-separator-line);
     border-top: none;
@@ -104,7 +108,10 @@
     on-click="onMigrateCreditCardsClick_"
     label="$i18n{migrateCreditCardsLabel}"
     sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
-<settings-payments-list id="paymentsList" class="list-frame"
+<settings-payments-list id="paymentsList"
+    class$="list-frame [[computeCssClass_(
+        removeCardExpirationAndTypeTitlesEnabled_,
+            virtualCardMetadataEnabled_)]]"
     credit-cards="[[creditCards]]" upi-ids="[[upiIds]]">
 </settings-payments-list>
 

@@ -14,7 +14,9 @@
     <div role="table">
       <div role="rowgroup">
         <div id="creditCardsHeading" class="list-item column-header"
-            hidden$="[[!showAnyPaymentMethods_]]" role="row">
+            hidden$="[[shouldHideExpirationAndTypeTitles_(
+                removeCardExpirationAndTypeTitlesEnabled_,
+                    creditCards, enableUpiIds_, upiIds)]]" role="row">
           <div class="type-column" role="columnheader">
             $i18n{creditCardType}
           </div>

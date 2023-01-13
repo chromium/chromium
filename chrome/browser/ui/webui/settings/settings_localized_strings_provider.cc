@@ -1350,6 +1350,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(IDS_UNDO_DESCRIPTION,
                                  undo_accelerator.GetShortcutText()));
 
+  html_source->AddBoolean(
+      "removeCardExpirationAndTypeTitles",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillRemoveCardExpirationAndTypeTitles));
+
   html_source->AddBoolean("showUpiIdSettings",
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillSaveAndFillVPA));
