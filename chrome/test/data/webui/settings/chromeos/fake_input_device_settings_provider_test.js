@@ -58,4 +58,16 @@ suite('FakeInputDeviceSettings', function() {
     return provider.getFakeMice().then(
         result => assertDeepEquals(fakeMice, result));
   });
+
+  test('setFakePointingSticks', () => {
+    const fakePointingSticks = [{
+      id: 3,
+      name: 'fake-pointing-stick',
+      isExternal: false,
+    }];
+
+    provider.setFakePointingSticks(fakePointingSticks);
+    return provider.getFakePointingSticks().then(
+        result => assertDeepEquals(fakePointingSticks, result));
+  });
 });

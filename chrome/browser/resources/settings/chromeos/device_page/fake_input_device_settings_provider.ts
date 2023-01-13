@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, Mouse, MouseObserverInterface, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, Mouse, MouseObserverInterface, PointingStick, PointingStickObserverInterface, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -16,6 +16,7 @@ interface InputDeviceType {
   fakeKeyboards: Keyboard[];
   fakeTouchpads: Touchpad[];
   fakeMice: Mouse[];
+  fakePointingSticks: PointingStick[];
 }
 
 class FakeMethodState {
@@ -71,6 +72,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeKeyboards');
     this.methods.register('fakeTouchpads');
     this.methods.register('fakeMice');
+    this.methods.register('fakePointingSticks');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -97,6 +99,14 @@ export class FakeInputDeviceSettingsProvider implements
     return this.methods.resolveMethod('fakeMice');
   }
 
+  setFakePointingSticks(pointingSticks: PointingStick[]): void {
+    this.methods.setResult('fakePointingSticks', pointingSticks);
+  }
+
+  getFakePointingSticks(): Promise<PointingStick[]> {
+    return this.methods.resolveMethod('fakePointingSticks');
+  }
+
   observeKeyboardSettings(_observer: KeyboardObserverInterface): void {
     // TODO(yyhyyh): Implement observeKeyboardSettings().
   }
@@ -107,5 +117,10 @@ export class FakeInputDeviceSettingsProvider implements
 
   observeMouseSettings(_observer: MouseObserverInterface): void {
     // TODO(yyhyyh): Implement observeMouseSettings().
+  }
+
+  observePointingStickSettings(_observer: PointingStickObserverInterface):
+      void {
+    // TODO(yyhyyh): Implement observePointingStickSettings().
   }
 }

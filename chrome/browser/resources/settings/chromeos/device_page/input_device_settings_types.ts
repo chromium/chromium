@@ -57,6 +57,14 @@ export interface Mouse {
   isExternal: boolean;
 }
 
+export interface PointingStick {
+  id: number;
+  name: string;
+  // This property represents whether or not the pointing stick is an
+  // external device.
+  isExternal: boolean;
+}
+
 export interface KeyboardSettings {
   // TODO: Populate KeyboardSettings interface.
 }
@@ -82,8 +90,17 @@ export interface MouseObserverInterface {
   onMouseDisconnected(id: number): void;
 }
 
+
+export interface PointingStickObserverInterface {
+  // Fired when a pointing stick is connected.
+  onPointingStickConnected(pointingStick: PointingStick): void;
+  // Fired when a pointing stick is removed from the list.
+  onPointingStickDisconnected(id: number): void;
+}
+
 export interface InputDeviceSettingsProviderInterface {
   observeKeyboardSettings(observer: KeyboardObserverInterface): void;
   observeTouchpadSettings(observer: TouchpadObserverInterface): void;
   observeMouseSettings(observer: MouseObserverInterface): void;
+  observePointingStickSettings(observer: PointingStickObserverInterface): void;
 }
