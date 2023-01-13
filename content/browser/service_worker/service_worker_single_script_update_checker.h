@@ -165,10 +165,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   bool network_accessed() const { return network_accessed_; }
-  const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
-      const {
-    return cross_origin_embedder_policy_;
-  }
   const scoped_refptr<PolicyContainerHost> policy_container_host() const {
     return policy_container_host_;
   }
@@ -211,7 +207,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   const blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const base::TimeDelta time_since_last_check_;
   bool network_accessed_ = false;
-  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   scoped_refptr<PolicyContainerHost> policy_container_host_;
 
   // The endpoint called by `network_loader_`. That needs to be alive while

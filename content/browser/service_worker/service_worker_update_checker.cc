@@ -114,8 +114,6 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
     network_accessed_ = true;
 
   if (is_main_script) {
-    cross_origin_embedder_policy_ =
-        running_checker_->cross_origin_embedder_policy();
     policy_container_host_ = running_checker_->policy_container_host();
   }
 

@@ -316,12 +316,12 @@ void EmbeddedWorkerInstance::Start(
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter_for_subresources;
 
-    network::mojom::ClientSecurityStatePtr client_security_state;
-    const network::CrossOriginEmbedderPolicy* coep = nullptr;
-    if (owner_version_->client_security_state()) {
-      client_security_state = owner_version_->client_security_state()->Clone();
-      coep = &client_security_state->cross_origin_embedder_policy;
-    }
+    network::mojom::ClientSecurityStatePtr client_security_state =
+        owner_version_->BuildClientSecurityState();
+    const network::CrossOriginEmbedderPolicy* coep =
+        client_security_state
+            ? &client_security_state->cross_origin_embedder_policy
+            : nullptr;
 
     if (coep) {
       mojo::PendingRemote<blink::mojom::ReportingObserver>

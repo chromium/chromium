@@ -326,11 +326,6 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
                   : PolicyContainerPolicies()));
     }
 
-    version_->set_cross_origin_embedder_policy(
-        response_head->parsed_headers
-            ? response_head->parsed_headers->cross_origin_embedder_policy
-            : network::CrossOriginEmbedderPolicy());
-
     if (response_head->network_accessed)
       version_->embedded_worker()->OnNetworkAccessedForScriptLoad();
 

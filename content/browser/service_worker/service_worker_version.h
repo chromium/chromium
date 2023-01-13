@@ -562,15 +562,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
     return used_features_;
   }
 
-  // Sets the COEP used by this service worker.
-  // Must not be called twice with different values.
-  //
-  // TODO(https://crbug.com/1239551): Replace this with
-  // `set_client_security_state()`, and try to enforce that it is only called
-  // once.
-  void set_cross_origin_embedder_policy(
-      network::CrossOriginEmbedderPolicy cross_origin_embedder_policy);
-
   // Returns the COEP value stored in `client_security_state()`.
   // Returns `kNone` if `client_security_state()` is nullptr.
   network::mojom::CrossOriginEmbedderPolicyValue
@@ -584,11 +575,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
     return policy_container_host_;
   }
 
-  // Returns the client security state used by this service worker, if any.
-  // Never returns a nullptr value after returning a non-nullptr value.
-  const network::mojom::ClientSecurityState* client_security_state() const {
-    return client_security_state_.get();
-  }
+  // Returns a client security state built from this service worker's policy
+  // container policies.
+  const network::mojom::ClientSecurityStatePtr BuildClientSecurityState() const;
 
   void set_script_response_time_for_devtools(base::Time response_time) {
     script_response_time_for_devtools_ = std::move(response_time);
@@ -622,8 +611,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
       std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>
           compared_script_info_map,
       const GURL& updated_script_url,
-      scoped_refptr<PolicyContainerHost> policy_container_host,
-      network::CrossOriginEmbedderPolicy cross_origin_embedder_policy);
+      scoped_refptr<PolicyContainerHost> policy_container_host);
   const std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>&
   compared_script_info_map() const;
   ServiceWorkerUpdateChecker::ComparedScriptInfo TakeComparedScriptInfo(

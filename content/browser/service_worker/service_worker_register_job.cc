@@ -516,7 +516,6 @@ void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
              message);
     return;
   }
-  DCHECK(version->client_security_state());
 
   GURL final_response_url = WorkerScriptFetcher::DetermineFinalResponseUrl(
       version->script_url(), main_script_load_params.get());
@@ -564,11 +563,9 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
   }
 
   if (update_checker_) {
-    new_version()->PrepareForUpdate(
-        update_checker_->TakeComparedResults(),
-        update_checker_->updated_script_url(),
-        update_checker_->policy_container_host(),
-        update_checker_->cross_origin_embedder_policy());
+    new_version()->PrepareForUpdate(update_checker_->TakeComparedResults(),
+                                    update_checker_->updated_script_url(),
+                                    update_checker_->policy_container_host());
     update_checker_.reset();
   }
 

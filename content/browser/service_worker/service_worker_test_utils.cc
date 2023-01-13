@@ -431,8 +431,6 @@ scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
           }));
   run_loop.Run();
   DCHECK(version);
-  version->set_policy_container_host(
-      base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies()));
   return version;
 }
 
@@ -793,8 +791,7 @@ void ServiceWorkerUpdateCheckTestUtils::SetComparedScriptInfoForVersion(
        ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent)
           ? script_url
           : GURL(),
-      base::MakeRefCounted<PolicyContainerHost>(),
-      network::CrossOriginEmbedderPolicy());
+      base::MakeRefCounted<PolicyContainerHost>());
 }
 
 void ServiceWorkerUpdateCheckTestUtils::

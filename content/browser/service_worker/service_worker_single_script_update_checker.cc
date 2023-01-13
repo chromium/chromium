@@ -237,12 +237,6 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
            network::URLLoaderCompletionStatus(net::ERR_INSECURE_RESPONSE));
       return;
     }
-    // TODO(arthursonzogni): Ensure CrossOriginEmbedderPolicy to be available
-    // here, not matter the URLLoader used to load it.
-    cross_origin_embedder_policy_ =
-        response_head->parsed_headers
-            ? response_head->parsed_headers->cross_origin_embedder_policy
-            : network::CrossOriginEmbedderPolicy();
 
     if (!GetContentClient()
              ->browser()

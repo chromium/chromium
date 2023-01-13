@@ -380,8 +380,8 @@ TEST_F(EmbeddedWorkerInstanceTest, CacheStorageOptimization) {
   RegistrationAndVersionPair pair =
       helper_->PrepareRegistrationAndVersion(scope, url);
   // We should set COEP, or cache storage pipe won't be made.
-  pair.second->set_cross_origin_embedder_policy(
-      network::CrossOriginEmbedderPolicy());
+  pair.second->set_policy_container_host(
+      base::MakeRefCounted<PolicyContainerHost>());
   auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
 
   // Start the worker.
