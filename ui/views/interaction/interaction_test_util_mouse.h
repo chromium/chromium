@@ -78,6 +78,13 @@ class InteractionTestUtilMouse {
 
   void MaybeCancelDrag(bool in_future);
 
+  bool SendButtonPress(const MouseButtonGesture& gesture,
+                       gfx::NativeWindow window_hint,
+                       base::OnceClosure sync_operation_complete);
+  bool SendMove(const MouseMoveGesture& gesture,
+                gfx::NativeWindow window_hint,
+                base::OnceClosure sync_operation_complete);
+
   // The set of mouse buttons currently depressed. Used to clean up on abort.
   std::set<ui_controls::MouseButton> buttons_down_;
 
@@ -99,6 +106,8 @@ class InteractionTestUtilMouse {
   class NativeWindowRef;
   const std::unique_ptr<NativeWindowRef> native_window_;
 #endif
+
+  base::WeakPtrFactory<InteractionTestUtilMouse> weak_ptr_factory_{this};
 };
 
 template <typename... Args>

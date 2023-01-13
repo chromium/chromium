@@ -8,10 +8,16 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/native_widget_types.h"
@@ -175,6 +181,59 @@ void InteractionTestUtilMouse::MaybeCancelDrag(bool in_future) {
 #endif
 }
 
+bool InteractionTestUtilMouse::SendButtonPress(
+    const MouseButtonGesture& gesture,
+    gfx::NativeWindow window_hint,
+    base::OnceClosure sync_operation_complete) {
+  if (sync_operation_complete) {
+    return ui_controls::SendMouseEventsNotifyWhenDone(
+        gesture.first, gesture.second, std::move(sync_operation_complete),
+        ui_controls::kNoAccelerator, window_hint);
+  }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<InteractionTestUtilMouse> util,
+             MouseButtonGesture gesture, gfx::NativeWindow window_hint) {
+            if (!util) {
+              return;
+            }
+            CHECK(ui_controls::SendMouseEvents(gesture.first, gesture.second,
+                                               ui_controls::kNoAccelerator,
+                                               window_hint));
+          },
+          weak_ptr_factory_.GetWeakPtr(), gesture, window_hint));
+
+  return true;
+}
+
+bool InteractionTestUtilMouse::SendMove(
+    const MouseMoveGesture& gesture,
+    gfx::NativeWindow window_hint,
+    base::OnceClosure sync_operation_complete) {
+  if (sync_operation_complete) {
+    return ui_controls::SendMouseMoveNotifyWhenDone(
+        gesture.x(), gesture.y(), std::move(sync_operation_complete),
+        window_hint);
+  }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<InteractionTestUtilMouse> util,
+             MouseMoveGesture gesture, gfx::NativeWindow window_hint) {
+            if (!util) {
+              return;
+            }
+            CHECK(ui_controls::SendMouseMove(gesture.x(), gesture.y(),
+                                             window_hint));
+          },
+          weak_ptr_factory_.GetWeakPtr(), gesture, window_hint));
+
+  return true;
+}
+
 bool InteractionTestUtilMouse::PerformGesturesImpl(
     MouseGestures gestures,
     gfx::NativeWindow window_hint) {
@@ -186,31 +245,59 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
     if (canceled_)
       break;
 
+    bool force_async = false;
+#if BUILDFLAG(IS_MAC)
+    force_async = base::Contains(buttons_down_, ui_controls::RIGHT);
+#endif
+
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     if (MouseButtonGesture* const button =
             absl::get_if<MouseButtonGesture>(&gesture)) {
       switch (button->second) {
         case ui_controls::UP:
           CHECK(buttons_down_.erase(button->first));
-          if (!ui_controls::SendMouseEventsNotifyWhenDone(
-                  button->first, button->second, run_loop.QuitClosure(),
-                  ui_controls::kNoAccelerator, window_hint)) {
+          if (!SendButtonPress(*button, window_hint,
+                               force_async ? base::NullCallback()
+                                           : run_loop.QuitClosure())) {
             LOG(ERROR) << "Mouse button " << button->first << " up failed.";
             return false;
           }
-          run_loop.Run();
+          if (!force_async) {
+            run_loop.Run();
+          }
           MaybeCancelDrag(true);
           break;
         case ui_controls::DOWN:
           CHECK(buttons_down_.insert(button->first).second);
+#if BUILDFLAG(IS_MAC)
+          if (!force_async && button->first == ui_controls::RIGHT) {
+            force_async = true;
+            LOG(WARNING)
+                << "InteractionTestUtilMouse::PerformGestures(): "
+                   "Important note:\n"
+                << "Because right-clicking on Mac typically results in a "
+                   "context menu, and because context menus on Mac are native "
+                   "and take over the main message loop, mouse events from "
+                   "here until release of the right mouse button will be sent "
+                   "asynchronously to avoid a hang.\n"
+                << "Furthermore, your test will likely still hang unless you "
+                   "explicitly find and close the context menu. There is (as "
+                   "of the time this warning was written) no general way to do "
+                   "this because it requires access to the menu runner, which "
+                   "is not always publicly exposed.";
+          }
+#endif
           MaybeCancelDrag(false);
-          if (!ui_controls::SendMouseEventsNotifyWhenDone(
-                  button->first, button->second, run_loop.QuitClosure(),
-                  ui_controls::kNoAccelerator, window_hint)) {
+          if (!SendButtonPress(*button, window_hint,
+                               force_async ? base::NullCallback()
+                                           : run_loop.QuitClosure())) {
             LOG(ERROR) << "Mouse button " << button->first << " down failed.";
             return false;
           }
-          run_loop.Run();
+
+          if (!force_async) {
+            run_loop.Run();
+          }
           break;
       }
     } else {
@@ -221,12 +308,16 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
         dragging_ = true;
       }
 #endif
-      if (!ui_controls::SendMouseMoveNotifyWhenDone(
-              move.x(), move.y(), run_loop.QuitClosure(), window_hint)) {
+      if (!SendMove(
+              move, window_hint,
+              force_async ? base::NullCallback() : run_loop.QuitClosure())) {
         LOG(ERROR) << "Mouse move to " << move.ToString() << " failed.";
         return false;
       }
-      run_loop.Run();
+
+      if (!force_async) {
+        run_loop.Run();
+      }
     }
   }
 
@@ -234,6 +325,7 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
 }
 
 void InteractionTestUtilMouse::CancelAllGestures() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   canceled_ = true;
 
   // Now that no additional actions will happen, release all mouse buttons.
