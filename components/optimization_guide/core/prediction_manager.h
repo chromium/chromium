@@ -158,7 +158,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
  private:
   friend class PredictionManagerTestBase;
-  friend class PredictionModelStoreBrowserTest;
+  friend class PredictionModelStoreBrowserTestBase;
 
   // Called on construction to initialize the prediction model.
   // |background_dowload_service_provider| can provide the

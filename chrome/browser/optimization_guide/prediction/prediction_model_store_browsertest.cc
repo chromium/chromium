@@ -64,25 +64,25 @@ proto::ModelCacheKey CreateModelCacheKey(const std::string& locale) {
 
 }  // namespace
 
-class PredictionModelStoreBrowserTest : public InProcessBrowserTest {
+class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
  public:
-  PredictionModelStoreBrowserTest() = default;
-  ~PredictionModelStoreBrowserTest() override = default;
+  PredictionModelStoreBrowserTestBase() = default;
+  ~PredictionModelStoreBrowserTestBase() override = default;
 
-  PredictionModelStoreBrowserTest(const PredictionModelStoreBrowserTest&) =
-      delete;
-  PredictionModelStoreBrowserTest& operator=(
-      const PredictionModelStoreBrowserTest&) = delete;
+  PredictionModelStoreBrowserTestBase(
+      const PredictionModelStoreBrowserTestBase&) = delete;
+  PredictionModelStoreBrowserTestBase& operator=(
+      const PredictionModelStoreBrowserTestBase&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {{features::kOptimizationGuideInstallWideModelStore}}, {});
+    InitializeFeatureList();
+
     models_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     models_server_->ServeFilesFromSourceDirectory(
         "chrome/test/data/optimization_guide");
     models_server_->RegisterRequestHandler(base::BindRepeating(
-        &PredictionModelStoreBrowserTest::HandleGetModelsRequest,
+        &PredictionModelStoreBrowserTestBase::HandleGetModelsRequest,
         base::Unretained(this)));
 
     ASSERT_TRUE(models_server_->Start());
@@ -201,6 +201,9 @@ class PredictionModelStoreBrowserTest : public InProcessBrowserTest {
     return std::move(response);
   }
 
+  // Virtualize for testing different feature configurations.
+  virtual void InitializeFeatureList() = 0;
+
   base::test::ScopedFeatureList scoped_feature_list_;
   GURL model_file_url_;
   std::unique_ptr<net::EmbeddedTestServer> download_server_;
@@ -209,6 +212,23 @@ class PredictionModelStoreBrowserTest : public InProcessBrowserTest {
 
   // Server returned ModelCacheKey in the GetModels response.
   absl::optional<proto::ModelCacheKey> server_model_cache_key_;
+};
+
+class PredictionModelStoreBrowserTest
+    : public PredictionModelStoreBrowserTestBase {
+ public:
+  PredictionModelStoreBrowserTest() = default;
+  ~PredictionModelStoreBrowserTest() override = default;
+
+  PredictionModelStoreBrowserTest(const PredictionModelStoreBrowserTest&) =
+      delete;
+  PredictionModelStoreBrowserTest& operator=(
+      const PredictionModelStoreBrowserTest&) = delete;
+
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {{features::kOptimizationGuideInstallWideModelStore}}, {});
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest, TestRegularProfile) {
@@ -489,6 +509,73 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_TRUE(
       model_file_observer_foo.model_info()->GetModelFilePath().IsAbsolute());
+}
+
+class PredictionModelStoreMigrationBrowserTest
+    : public PredictionModelStoreBrowserTestBase {
+ public:
+  PredictionModelStoreMigrationBrowserTest() = default;
+  ~PredictionModelStoreMigrationBrowserTest() override = default;
+
+  PredictionModelStoreMigrationBrowserTest(
+      const PredictionModelStoreMigrationBrowserTest&) = delete;
+  PredictionModelStoreMigrationBrowserTest& operator=(
+      const PredictionModelStoreMigrationBrowserTest&) = delete;
+
+  void InitializeFeatureList() override {
+    base::StringPiece test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    if (base::StartsWith(test_name, "PRE_PRE_")) {
+      // First stage of migration. Old model store is active.
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kOptimizationGuideInstallWideModelStore);
+    } else if (base::StartsWith(test_name, "PRE_")) {
+      // Second stage of migration. New model store is active.
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kOptimizationGuideInstallWideModelStore);
+    } else {
+      // Last stage of migration. Old model store is active.
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kOptimizationGuideInstallWideModelStore);
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
+                       PRE_PRE_MigrationOldToNewToOldStore) {
+  EXPECT_FALSE(features::IsInstallWideModelStoreEnabled());
+  ModelFileObserver model_file_observer;
+  RegisterAndWaitForModelUpdate(&model_file_observer);
+
+  // The model will be downloaded by the old model store.
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+      PredictionModelDownloadStatus::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
+                       PRE_MigrationOldToNewToOldStore) {
+  EXPECT_TRUE(features::IsInstallWideModelStoreEnabled());
+  ModelFileObserver model_file_observer;
+  RegisterAndWaitForModelUpdate(&model_file_observer);
+
+  // The model will be downloaded by the new model store.
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+      PredictionModelDownloadStatus::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
+                       MigrationOldToNewToOldStore) {
+  EXPECT_FALSE(features::IsInstallWideModelStoreEnabled());
+  ModelFileObserver model_file_observer;
+  RegisterAndWaitForModelUpdate(&model_file_observer);
+
+  // The model saved in the old model store will be used, and no download will
+  // happen.
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
 }
 
 }  // namespace optimization_guide

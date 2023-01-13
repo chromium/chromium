@@ -42,7 +42,7 @@ class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
-class PredictionModelStoreBrowserTest;
+class PredictionModelStoreBrowserTestBase;
 class PushNotificationManager;
 class TabUrlProvider;
 class TopHostProvider;
@@ -143,7 +143,7 @@ class OptimizationGuideKeyedService
   friend class OptimizationGuideWebContentsObserver;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
   friend class optimization_guide::PredictionModelDownloadClient;
-  friend class optimization_guide::PredictionModelStoreBrowserTest;
+  friend class optimization_guide::PredictionModelStoreBrowserTestBase;
   friend class optimization_guide::android::OptimizationGuideBridge;
 
   // Initializes |this|.
