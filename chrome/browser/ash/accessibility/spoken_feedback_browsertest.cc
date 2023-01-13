@@ -371,7 +371,9 @@ class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
 
 // Tests that clicking the notification center tray does not crash when spoken
 // feedback is enabled.
-IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest, OpenBubble) {
+// TODO(crbug.com/1407232): Fix flaky timeouts and re-enable.
+IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
+                       DISABLED_OpenBubble) {
   // Enable spoken feedback and add a notification to ensure the tray is
   // visible.
   EnableChromeVox();
