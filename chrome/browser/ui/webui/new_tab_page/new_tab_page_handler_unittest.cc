@@ -87,7 +87,7 @@ class MockPage : public new_tab_page::mojom::Page {
   MOCK_METHOD1(SetTheme, void(new_tab_page::mojom::ThemePtr));
   MOCK_METHOD2(SetDisabledModules, void(bool, const std::vector<std::string>&));
   MOCK_METHOD1(SetModulesFreVisibility, void(bool));
-  MOCK_METHOD1(CustomizeChromeSidePanelVisibilityChanged, void(bool));
+  MOCK_METHOD1(SetCustomizeChromeSidePanelVisibility, void(bool));
   MOCK_METHOD1(SetPromo, void(new_tab_page::mojom::PromoPtr));
 
   mojo::Receiver<new_tab_page::mojom::Page> receiver_{this};

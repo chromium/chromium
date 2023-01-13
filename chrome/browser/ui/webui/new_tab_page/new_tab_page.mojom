@@ -324,8 +324,8 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Called when the customize chrome side panel is shown/hidden.
-  CustomizeChromeSidePanelVisibilityChanged(bool visible);
+  // Sets Customize Chrome Side Panel visibility to |visible|.
+  SetCustomizeChromeSidePanelVisibility(bool visible);
   // Sets the current theme.
   SetTheme(Theme theme);
   // Disables the modules in |ids|. If |all|, disables all modules and passes an

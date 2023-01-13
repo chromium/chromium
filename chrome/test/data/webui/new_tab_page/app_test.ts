@@ -653,7 +653,7 @@ suite('NewTabPageAppTest', () => {
 
     test('clicking customize button hides side panel', async () => {
       // Act.
-      callbackRouterRemote.customizeChromeSidePanelVisibilityChanged(true);
+      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
       await callbackRouterRemote.$.flushForTesting();
       $$<HTMLElement>(app, '#customizeButton')!.click();
 

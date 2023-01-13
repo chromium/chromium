@@ -491,7 +491,7 @@ NewTabPageHandler::NewTabPageHandler(
         CustomizeChromeTabHelper::FromWebContents(web_contents_);
     // Lifetime is tied to NewTabPageUI which owns the NewTabPageHandler.
     DCHECK(customize_chrome_tab_helper);
-    page_->CustomizeChromeSidePanelVisibilityChanged(
+    page_->SetCustomizeChromeSidePanelVisibility(
         customize_chrome_tab_helper->IsCustomizeChromeEntryShowing());
     customize_chrome_tab_helper->SetCallback(base::BindRepeating(
         &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
@@ -1317,5 +1317,5 @@ bool NewTabPageHandler::IsShortcutsVisible() const {
 
 void NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged(
     bool is_open) {
-  page_->CustomizeChromeSidePanelVisibilityChanged(is_open);
+  page_->SetCustomizeChromeSidePanelVisibility(is_open);
 }

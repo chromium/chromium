@@ -324,8 +324,7 @@ export class AppElement extends PolymerElement {
   private pageHandler_: PageHandlerRemote;
   private backgroundManager_: BackgroundManager;
   private setThemeListenerId_: number|null = null;
-  private customizeChromeSidePanelVisibilityChangedListener_: number|null =
-      null;
+  private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private shouldPrintPerformance_: boolean;
   private backgroundImageLoadStartEpoch_: number;
@@ -366,10 +365,9 @@ export class AppElement extends PolymerElement {
           performance.measure('theme-set');
           this.theme_ = theme;
         });
-    this.customizeChromeSidePanelVisibilityChangedListener_ =
-        this.callbackRouter_.customizeChromeSidePanelVisibilityChanged
-            .addListener(
-                this.onCustomizeChromeSidePanelVisibilityChanged_.bind(this));
+    this.setCustomizeChromeSidePanelVisibilityListener_ =
+        this.callbackRouter_.setCustomizeChromeSidePanelVisibility.addListener(
+            this.onCustomizeChromeSidePanelVisibilityChanged_.bind(this));
     this.eventTracker_.add(window, 'message', (event: MessageEvent) => {
       const data = event.data;
       // Something in OneGoogleBar is sending a message that is received here.
@@ -409,7 +407,7 @@ export class AppElement extends PolymerElement {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(this.setThemeListenerId_!);
     this.callbackRouter_.removeListener(
-        this.customizeChromeSidePanelVisibilityChangedListener_!);
+        this.setCustomizeChromeSidePanelVisibilityListener_!);
     this.eventTracker_.removeAll();
   }
 
