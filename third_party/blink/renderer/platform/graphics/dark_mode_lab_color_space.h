@@ -125,8 +125,7 @@ class DarkModeLABColorSpace {
   // https://en.wikipedia.org/wiki/CIELAB_color_space#Reverse_transformation.
   SkV3 FromXYZ(const SkV3& v) const {
     auto f = [](float x) {
-      return x > kSigma3 ? pow(x, 1.0f / 3.0f)
-                         : x / (3 * kSigma2) + 4.0f / 29.0f;
+      return x > kSigma3 ? std::cbrt(x) : x / (3 * kSigma2) + 4.0f / 29.0f;
     };
 
     float fx = f(v.x / kIlluminantD50.x);
@@ -145,7 +144,7 @@ class DarkModeLABColorSpace {
   // https://en.wikipedia.org/wiki/CIELAB_color_space#Forward_transformation.
   SkV3 ToXYZ(const SkV3& lab) const {
     auto invf = [](float x) {
-      return x > kSigma ? pow(x, 3.0f) : 3.0f * kSigma2 * (x - 4.0f / 29.0f);
+      return x > kSigma ? x * x * x : 3.0f * kSigma2 * (x - 4.0f / 29.0f);
     };
 
     SkV3 v = {Clamp(lab.x, 0.0f, 100.0f), Clamp(lab.y, -128.0f, 128.0f),
