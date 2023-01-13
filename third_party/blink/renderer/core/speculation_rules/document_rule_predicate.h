@@ -18,6 +18,7 @@ class ExceptionState;
 class ExecutionContext;
 class JSONObject;
 class KURL;
+class StyleRule;
 class URLPattern;
 
 class CORE_EXPORT DocumentRulePredicate
@@ -37,12 +38,13 @@ class CORE_EXPORT DocumentRulePredicate
   virtual bool Matches(const HTMLAnchorElement& link) const = 0;
 
   // Methods for testing.
-  enum class Type { kAnd, kOr, kNot, kURLPatterns };
+  enum class Type { kAnd, kOr, kNot, kURLPatterns, kCSSSelectors };
   virtual String ToString() const = 0;
   virtual Type GetTypeForTesting() const = 0;
   virtual HeapVector<Member<DocumentRulePredicate>> GetSubPredicatesForTesting()
       const;
   virtual HeapVector<Member<URLPattern>> GetURLPatternsForTesting() const;
+  virtual HeapVector<Member<StyleRule>> GetStyleRulesForTesting() const;
 
   virtual void Trace(Visitor*) const;
 };

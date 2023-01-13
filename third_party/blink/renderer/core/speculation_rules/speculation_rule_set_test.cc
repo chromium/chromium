@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -928,110 +929,46 @@ String GetTypeString(DocumentRulePredicate::Type type) {
       return "Not";
     case DocumentRulePredicate::Type::kURLPatterns:
       return "Href";
+    case DocumentRulePredicate::Type::kCSSSelectors:
+      return "Selector";
   }
 }
 
-std::string GetMatcherDescription(
-    const ::testing::Matcher<DocumentRulePredicate>& matcher) {
-  std::stringstream ss;
-  matcher.DescribeTo(&ss);
-  return ss.str();
-}
-
-class ConditionMatcher {
+template <typename ItemType>
+class PredicateMatcher {
  public:
-  explicit ConditionMatcher(
-      DocumentRulePredicate::Type type,
-      Vector<::testing::Matcher<DocumentRulePredicate>> matchers)
-      : type_(type), matchers_(std::move(matchers)) {}
+  using DocumentRulePredicateGetter =
+      HeapVector<Member<ItemType>> (DocumentRulePredicate::*)() const;
+
+  explicit PredicateMatcher(Vector<::testing::Matcher<ItemType>> matchers,
+                            DocumentRulePredicate::Type type,
+                            DocumentRulePredicateGetter getter)
+      : matchers_(std::move(matchers)), type_(type), getter_(getter) {}
 
   bool MatchAndExplain(DocumentRulePredicate* predicate,
                        ::testing::MatchResultListener* listener) const {
-    if (!predicate)
+    if (!predicate) {
       return false;
+    }
     return MatchAndExplain(*predicate, listener);
   }
 
   bool MatchAndExplain(const DocumentRulePredicate& predicate,
                        ::testing::MatchResultListener* listener) const {
-    ::testing::StringMatchResultListener inner_listener;
-    const auto& predicates = predicate.GetSubPredicatesForTesting();
-    if (predicate.GetTypeForTesting() != type_ ||
-        predicates.size() != matchers_.size()) {
+    if (predicate.GetTypeForTesting() != type_) {
       *listener << predicate.ToString();
       return false;
     }
 
-    bool matches = true;
-    for (wtf_size_t i = 0; i < matchers_.size(); i++) {
-      if (!matchers_[i].MatchAndExplain(*(predicates[i]), &inner_listener)) {
-        matches = false;
-        break;
-      }
-    }
-    *listener << predicate.ToString();
-    return matches;
-  }
-
-  void DescribeTo(::std::ostream* os) const {
-    *os << GetTypeString(type_) << "(";
-    for (wtf_size_t i = 0; i < matchers_.size(); i++) {
-      *os << GetMatcherDescription(matchers_[i]);
-      if (i != matchers_.size() - 1)
-        *os << ", ";
-    }
-    *os << ")";
-  }
-
-  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
-
- private:
-  DocumentRulePredicate::Type type_;
-  Vector<::testing::Matcher<DocumentRulePredicate>> matchers_;
-};
-
-auto And(Vector<::testing::Matcher<DocumentRulePredicate>> matchers = {}) {
-  return testing::MakePolymorphicMatcher(
-      ConditionMatcher(DocumentRulePredicate::Type::kAnd, std::move(matchers)));
-}
-
-auto Or(Vector<::testing::Matcher<DocumentRulePredicate>> matchers = {}) {
-  return testing::MakePolymorphicMatcher(
-      ConditionMatcher(DocumentRulePredicate::Type::kOr, std::move(matchers)));
-}
-
-auto Neg(::testing::Matcher<DocumentRulePredicate> matcher) {
-  return testing::MakePolymorphicMatcher(
-      ConditionMatcher(DocumentRulePredicate::Type::kNot, {matcher}));
-}
-
-class HrefMatcher {
- public:
-  explicit HrefMatcher(Vector<::testing::Matcher<URLPattern>> pattern_matchers)
-      : pattern_matchers_(std::move(pattern_matchers)) {}
-
-  bool MatchAndExplain(DocumentRulePredicate* predicate,
-                       ::testing::MatchResultListener* listener) const {
-    if (!predicate)
-      return false;
-    return MatchAndExplain(*predicate, listener);
-  }
-
-  bool MatchAndExplain(const DocumentRulePredicate& predicate,
-                       ::testing::MatchResultListener* listener) const {
-    if (predicate.GetTypeForTesting() !=
-            DocumentRulePredicate::Type::kURLPatterns ||
-        predicate.GetURLPatternsForTesting().size() !=
-            pattern_matchers_.size()) {
+    HeapVector<Member<ItemType>> items = ((predicate).*(getter_))();
+    if (items.size() != matchers_.size()) {
       *listener << predicate.ToString();
       return false;
     }
 
-    auto patterns = predicate.GetURLPatternsForTesting();
     ::testing::StringMatchResultListener inner_listener;
-    for (wtf_size_t i = 0; i < pattern_matchers_.size(); i++) {
-      if (!pattern_matchers_[i].MatchAndExplain(*patterns[i],
-                                                &inner_listener)) {
+    for (wtf_size_t i = 0; i < matchers_.size(); i++) {
+      if (!matchers_[i].MatchAndExplain(*items[i], &inner_listener)) {
         *listener << predicate.ToString();
         return false;
       }
@@ -1040,11 +977,12 @@ class HrefMatcher {
   }
 
   void DescribeTo(::std::ostream* os) const {
-    *os << GetTypeString(DocumentRulePredicate::Type::kURLPatterns) << "([";
-    for (wtf_size_t i = 0; i < pattern_matchers_.size(); i++) {
-      pattern_matchers_[i].DescribeTo(os);
-      if (i != pattern_matchers_.size() - 1)
+    *os << GetTypeString(type_) << "([";
+    for (wtf_size_t i = 0; i < matchers_.size(); i++) {
+      matchers_[i].DescribeTo(os);
+      if (i != matchers_.size() - 1) {
         *os << ", ";
+      }
     }
     *os << "])";
   }
@@ -1052,11 +990,52 @@ class HrefMatcher {
   void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
 
  private:
-  Vector<::testing::Matcher<URLPattern>> pattern_matchers_;
+  Vector<::testing::Matcher<ItemType>> matchers_;
+  DocumentRulePredicate::Type type_;
+  DocumentRulePredicateGetter getter_;
 };
 
+template <typename ItemType>
+auto MakePredicateMatcher(
+    Vector<::testing::Matcher<ItemType>> matchers,
+    DocumentRulePredicate::Type type,
+    typename PredicateMatcher<ItemType>::DocumentRulePredicateGetter getter) {
+  return testing::MakePolymorphicMatcher(
+      PredicateMatcher<ItemType>(std::move(matchers), type, getter));
+}
+
+auto MakeConditionMatcher(
+    Vector<::testing::Matcher<DocumentRulePredicate>> matchers,
+    DocumentRulePredicate::Type type) {
+  return MakePredicateMatcher(
+      std::move(matchers), type,
+      &DocumentRulePredicate::GetSubPredicatesForTesting);
+}
+
+auto And(Vector<::testing::Matcher<DocumentRulePredicate>> matchers = {}) {
+  return MakeConditionMatcher(std::move(matchers),
+                              DocumentRulePredicate::Type::kAnd);
+}
+
+auto Or(Vector<::testing::Matcher<DocumentRulePredicate>> matchers = {}) {
+  return MakeConditionMatcher(std::move(matchers),
+                              DocumentRulePredicate::Type::kOr);
+}
+
+auto Neg(::testing::Matcher<DocumentRulePredicate> matcher) {
+  return MakeConditionMatcher({matcher}, DocumentRulePredicate::Type::kNot);
+}
+
 auto Href(Vector<::testing::Matcher<URLPattern>> pattern_matchers = {}) {
-  return testing::MakePolymorphicMatcher(HrefMatcher(pattern_matchers));
+  return MakePredicateMatcher(std::move(pattern_matchers),
+                              DocumentRulePredicate::Type::kURLPatterns,
+                              &DocumentRulePredicate::GetURLPatternsForTesting);
+}
+
+auto Selector(Vector<::testing::Matcher<StyleRule>> style_rule_matchers = {}) {
+  return MakePredicateMatcher(std::move(style_rule_matchers),
+                              DocumentRulePredicate::Type::kCSSSelectors,
+                              &DocumentRulePredicate::GetStyleRulesForTesting);
 }
 
 class URLPatternMatcher {
@@ -1102,6 +1081,36 @@ auto URLPattern(String pattern,
                 const KURL& base_url = KURL("https://example.com/")) {
   return ::testing::MakePolymorphicMatcher(
       URLPatternMatcher(pattern, base_url));
+}
+
+class StyleRuleMatcher {
+ public:
+  explicit StyleRuleMatcher(String selector_text)
+      : selector_text_(std::move(selector_text)) {}
+
+  bool MatchAndExplain(StyleRule* style_rule,
+                       ::testing::MatchResultListener* listener) const {
+    if (!style_rule) {
+      return false;
+    }
+    return MatchAndExplain(*style_rule, listener);
+  }
+
+  bool MatchAndExplain(const StyleRule& style_rule,
+                       ::testing::MatchResultListener* listener) const {
+    return style_rule.SelectorsText() == selector_text_;
+  }
+
+  void DescribeTo(::std::ostream* os) const { *os << selector_text_; }
+
+  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
+
+ private:
+  String selector_text_;
+};
+
+auto StyleRuleWithSelectorText(String selector_text) {
+  return ::testing::MakePolymorphicMatcher(StyleRuleMatcher(selector_text));
 }
 
 class DocumentRulesTest : public SpeculationRuleSetTest {
@@ -1291,6 +1300,8 @@ TEST_F(DocumentRulesTest, HrefMatchesWithBaseURLAndRelativeTo) {
 }
 
 TEST_F(DocumentRulesTest, DropInvalidRules) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      enabled_selector_matches_{true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
@@ -1380,18 +1391,46 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
                    "relative_to": "document",
                    "world-cup": "2022"}},)"
 
+      // "selector_matches" paired with another key.
+      R"({"source": "document",
+          "where": {"selector_matches": ".valid", "second": "value"}
+        },)"
+
+      // "selector_matches" with an object value.
+      R"({"source": "document",
+          "where": {"selector_matches": {"selector": ".valid"}}
+        },)"
+
+      // "selector_matches" with an invalid CSS selector.
+      R"({"source": "document",
+          "where": {"selector_matches": "#invalid#"}
+        },)"
+
+      // "selector_matches" with a list with an object.
+      R"({"source": "document",
+          "where": {"selector_matches": [{"selector": ".valid"}]}
+        },)"
+
+      // "selector_matches" with a list with one valid and one invalid CSS
+      // selector.
+      R"({"source": "document",
+        "where": {"selector_matches": [".valid", "#invalid#"]}
+        },)"
+
       // valid document rule.
       R"({"source": "document",
-          "where": {"and": [
-            {"or": [{"href_matches": "/hello.html"}]},
-            {"not": {"and": [{"href_matches": {"hostname": "world.com"}}]}}
-          ]}
-         }]})",
+        "where": {"and": [
+          {"or": [{"href_matches": "/hello.html"},
+                  {"selector_matches": ".valid"}]},
+          {"not": {"and": [{"href_matches": {"hostname": "world.com"}}]}}
+        ]}
+    }]})",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesPredicate(
-                  And({Or({Href({URLPattern("/hello.html")})}),
+                  And({Or({Href({URLPattern("/hello.html")}),
+                           Selector({StyleRuleWithSelectorText(".valid")})}),
                        Neg(And({Href({URLPattern("https://world.com")})}))}))));
 }
 
@@ -2122,6 +2161,41 @@ TEST_F(DocumentRulesTest, BaseURLChanged) {
   // "https://bar.com/bar*" and doesn't match. "/bart" is resolved to
   // "https://bar.com/bart" and matches with "https://bar.com/bar*".
   EXPECT_THAT(candidates, HasURLs("https://bar.com/bart"));
+}
+
+// Tests that "selector_matches" is not parsed without the RuntimeEnabledFeature
+// enabled.
+TEST_F(DocumentRulesTest, SelectorMatchesIsNotParsed) {
+  auto* rule_set =
+      CreateRuleSet(R"({"prefetch": [
+    {"source": "document", "where": {"selector_matches": ".valid"}}
+  ]})",
+                    KURL("https://example.com"), execution_context());
+  EXPECT_TRUE(rule_set->prefetch_rules().empty());
+}
+
+TEST_F(DocumentRulesTest, ParseSelectorMatches) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      enabled_selector_matches_{true};
+  auto* simple_selector_matches = CreatePredicate(R"(
+    "selector_matches": ".valid"
+  )");
+  EXPECT_THAT(simple_selector_matches,
+              Selector({StyleRuleWithSelectorText(".valid")}));
+
+  auto* simple_selector_matches_list = CreatePredicate(R"(
+    "selector_matches": [".one", "#two"]
+  )");
+  EXPECT_THAT(simple_selector_matches_list,
+              Selector({StyleRuleWithSelectorText(".one"),
+                        StyleRuleWithSelectorText("#two")}));
+
+  auto* selector_matches_with_compound_selector = CreatePredicate(R"(
+    "selector_matches": ".interesting-section > a"
+  )");
+  EXPECT_THAT(
+      selector_matches_with_compound_selector,
+      Selector({StyleRuleWithSelectorText(".interesting-section > a")}));
 }
 
 }  // namespace

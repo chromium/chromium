@@ -7,6 +7,8 @@
 #include "base/containers/contains.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -191,6 +193,49 @@ class URLPatternPredicate : public DocumentRulePredicate {
 
  private:
   HeapVector<Member<URLPattern>> patterns_;
+};
+
+// Represents a document rule CSS selector predicate:
+// https://wicg.github.io/nav-speculation/speculation-rules.html#document-rule-css-selector-predicate
+class CSSSelectorPredicate : public DocumentRulePredicate {
+ public:
+  explicit CSSSelectorPredicate(HeapVector<Member<StyleRule>> style_rules)
+      : style_rules_(std::move(style_rules)) {}
+
+  bool Matches(const HTMLAnchorElement& link) const override {
+    // TODO(crbug.com/1371522): Implement this.
+    return false;
+  }
+
+  String ToString() const override {
+    StringBuilder builder;
+    builder.Append("Selector([");
+    for (wtf_size_t i = 0; i < style_rules_.size(); i++) {
+      builder.Append(style_rules_[i]->SelectorsText());
+      if (i != style_rules_.size() - 1) {
+        builder.Append(", ");
+      }
+    }
+    builder.Append("])");
+    return builder.ReleaseString();
+  }
+
+  Type GetTypeForTesting() const override { return Type::kCSSSelectors; }
+
+  HeapVector<Member<StyleRule>> GetStyleRulesForTesting() const override {
+    return style_rules_;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(style_rules_);
+    DocumentRulePredicate::Trace(visitor);
+  }
+
+ private:
+  // TODO(crbug.com/1371522): If we do not end up integrating with the
+  // style engine, change this to use CSSSelectorList instead of StyleRule to
+  // save space.
+  HeapVector<Member<StyleRule>> style_rules_;
 };
 
 namespace {
@@ -416,8 +461,51 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
   // If predicateType is "selector_matches"
   if (predicate_type == "selector_matches" && input->size() == 1) {
-    // TODO(crbug.com/1371522): Implement this.
-    NOTIMPLEMENTED();
+    const bool selector_matches_enabled = RuntimeEnabledFeatures::
+        SpeculationRulesDocumentRulesSelectorMatchesEnabled(execution_context);
+    if (!selector_matches_enabled) {
+      return nullptr;
+    }
+
+    // Let rawSelectors be input["selector_matches"].
+    Vector<JSONValue*> raw_selectors;
+    JSONArray* selector_matches = input->GetArray("selector_matches");
+    if (selector_matches) {
+      for (wtf_size_t i = 0; i < selector_matches->size(); i++) {
+        raw_selectors.push_back(selector_matches->at(i));
+      }
+    } else {
+      // If rawSelectors is not a list, then set rawSelectors to « rawSelectors
+      // ».
+      raw_selectors.push_back(input->Get("selector_matches"));
+    }
+    // Let selectors be an empty list.
+    HeapVector<Member<StyleRule>> selectors;
+    HeapVector<CSSSelector> arena;
+    CSSPropertyValueSet* empty_properties =
+        ImmutableCSSPropertyValueSet::Create(nullptr, 0, kUASheetMode);
+    CSSParserContext* css_parser_context =
+        MakeGarbageCollected<CSSParserContext>(*execution_context);
+    for (auto* raw_selector : raw_selectors) {
+      String raw_selector_string;
+      // If rawSelector is not a string, then return null.
+      if (!raw_selector->AsString(&raw_selector_string)) {
+        return nullptr;
+      }
+
+      // Parse a selector from rawSelector. If the result is failure, then
+      // return null. Otherwise, let selector be the result.
+      base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
+          css_parser_context, nullptr, nullptr, raw_selector_string, arena);
+      if (selector_vector.empty()) {
+        return nullptr;
+      }
+      StyleRule* selector =
+          StyleRule::Create(selector_vector, empty_properties);
+      // Append selector to selectors.
+      selectors.push_back(std::move(selector));
+    }
+    return MakeGarbageCollected<CSSSelectorPredicate>(std::move(selectors));
   }
 
   return nullptr;
@@ -436,6 +524,12 @@ DocumentRulePredicate::GetSubPredicatesForTesting() const {
 }
 
 HeapVector<Member<URLPattern>> DocumentRulePredicate::GetURLPatternsForTesting()
+    const {
+  NOTREACHED();
+  return {};
+}
+
+HeapVector<Member<StyleRule>> DocumentRulePredicate::GetStyleRulesForTesting()
     const {
   NOTREACHED();
   return {};
