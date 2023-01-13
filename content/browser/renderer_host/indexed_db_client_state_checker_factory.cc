@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-shared.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_user_data.h"
@@ -16,6 +17,21 @@
 
 namespace content {
 namespace {
+
+using IndexedDBDisallowActivationReason =
+    storage::mojom::DisallowClientActivationReason;
+
+DisallowActivationReasonId ConvertToDisallowActivationReasonId(
+    IndexedDBDisallowActivationReason reason) {
+  switch (reason) {
+    case IndexedDBDisallowActivationReason::kClientEventIsTriggered:
+      return DisallowActivationReasonId::kIndexedDBEvent;
+    case IndexedDBDisallowActivationReason::kTransactionIsAcquiringLocks:
+      return DisallowActivationReasonId::kIndexedDBTransactionIsAcquiringLocks;
+    case IndexedDBDisallowActivationReason::kTransactionIsBlockingOthers:
+      return DisallowActivationReasonId::kIndexedDBTransactionIsBlockingOthers;
+  }
+}
 
 // The class will only provide the default result and the client will be
 // considered active. It should be used when the client doesn't have an
@@ -32,12 +48,18 @@ class NoDocumentIndexedDBClientStateChecker
       const NoDocumentIndexedDBClientStateChecker&) = delete;
 
   // storage::mojom::IndexedDBClientStateChecker overrides:
-  void RequireClientToBeActive(
+  // Non-document clients are always active, since the inactive state such as
+  // back/forward cache is not applicable to them.
+  void RequireClientToBeActiveAndKeepActive(
+      storage::mojom::DisallowClientActivationReason reason,
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
       RequireClientToBeActiveCallback callback) override {
-    // Non-document clients are always active, since the inactive state such as
-    // back/forward cache is not applicable to them.
+    std::move(callback).Run(/*was_active=*/true);
+  }
+  void RequireClientToBeActive(
+      storage::mojom::DisallowClientActivationReason reason,
+      RequireClientToBeActiveCallback callback) override {
     std::move(callback).Run(/*was_active=*/true);
   }
 };
@@ -59,11 +81,8 @@ class DocumentIndexedDBClientStateChecker final
     receivers_.Add(this, std::move(receiver));
   }
 
-  // storage::mojom::IndexedDBClientStateChecker overrides:
-  void RequireClientToBeActive(
-      mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
-          keep_active,
-      RequireClientToBeActiveCallback callback) override {
+  bool CheckIfClientWasActive(
+      storage::mojom::DisallowClientActivationReason reason) {
     bool was_active = false;
 
     if (render_frame_host().GetLifecycleState() ==
@@ -77,9 +96,19 @@ class DocumentIndexedDBClientStateChecker final
       // also brings side effect like evicting the page if it's in back/forward
       // cache.
       was_active = !render_frame_host().IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kIndexedDBEvent);
+          ConvertToDisallowActivationReasonId(reason));
     }
 
+    return was_active;
+  }
+
+  // storage::mojom::IndexedDBClientStateChecker overrides:
+  void RequireClientToBeActiveAndKeepActive(
+      storage::mojom::DisallowClientActivationReason reason,
+      mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
+          keep_active,
+      RequireClientToBeActiveCallback callback) override {
+    bool was_active = CheckIfClientWasActive(reason);
     if (was_active) {
       // If the document is active, we need to register a non sticky feature to
       // prevent putting it into BFCache until the IndexedDB connection is
@@ -93,6 +122,13 @@ class DocumentIndexedDBClientStateChecker final
                                  std::move(context));
     }
 
+    std::move(callback).Run(was_active);
+  }
+
+  void RequireClientToBeActive(
+      storage::mojom::DisallowClientActivationReason reason,
+      RequireClientToBeActiveCallback callback) override {
+    bool was_active = CheckIfClientWasActive(reason);
     std::move(callback).Run(was_active);
   }
 

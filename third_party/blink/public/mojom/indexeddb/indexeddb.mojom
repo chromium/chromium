@@ -363,6 +363,9 @@ union IDBDatabaseOpenCursorResult {
   IDBDatabaseOpenCursorValue value;
 };
 
+// The interface used by the IndexedDB client (which lives in the renderer process)
+// to trigger some actions from the IndexedDB service (which currently lives in the
+// browser process, but will be potentially moved to a separate one in the future).
 interface IDBDatabase {
   RenameObjectStore(int64 transaction_id,
                     int64 object_store_id,
@@ -443,6 +446,11 @@ interface IDBDatabase {
               int64 index_id,
               mojo_base.mojom.String16 new_name);
   Abort(int64 transaction_id);
+  // Called when the document is moved into BFCache, the IndexedDB service
+  // receiving this should check if the client is blocking other clients
+  // or being blocked by other clients, and disallow the re-activation of
+  // the document if so.
+  DidBecomeInactive();
 };
 
 interface IDBFactory {

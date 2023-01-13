@@ -965,9 +965,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // enabled.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
 
-// Feature for allowing page with open IDB connection to be stored in
-// back/forward cache.
+// TODO(leimy crbug.com/1378823): Merge the following two together into a
+// multi-level feature. Feature for allowing page with open IDB connection to be
+// stored in back/forward cache.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBConnectionInBFCache);
+
+// Feature for allowing page with open IDB transaction to be stored in
+// back/forward cache.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBTransactionInBFCache);
 
 // Kill switch for using a custom task runner in the blink scheduler that makes
 // DeleteSoon/ReleaseSoon less prone to memory leaks.

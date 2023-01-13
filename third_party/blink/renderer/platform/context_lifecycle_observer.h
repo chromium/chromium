@@ -13,8 +13,9 @@ namespace blink {
 
 class ContextLifecycleNotifier;
 
-// Observer that gets notified when the context is destroyed. Used to observe
-// ExecutionContext from platform/.
+// Observer that gets notified when the context lifecycle is changed (e.g.
+// destroyed, moved into back/forward cache). Used to observe ExecutionContext
+// from platform/.
 class PLATFORM_EXPORT ContextLifecycleObserver : public GarbageCollectedMixin {
  public:
   virtual ~ContextLifecycleObserver();

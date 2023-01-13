@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -130,6 +131,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
                    int64_t index_id,
                    const std::u16string& new_name) override;
   void Abort(int64_t transaction_id) override;
+  void DidBecomeInactive() override;
 
  private:
   storage::BucketLocator bucket_locator() {

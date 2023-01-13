@@ -136,6 +136,7 @@ class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase> {
                int64_t object_store_id,
                mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>),
               (override));
+  MOCK_METHOD(void, DidBecomeInactive, (), (override));
 
   void Bind(mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabase>);
   mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>

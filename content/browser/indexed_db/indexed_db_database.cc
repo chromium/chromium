@@ -1778,15 +1778,20 @@ void IndexedDBDatabase::SendVersionChangeToAllConnections(int64_t old_version,
     // method is executed asynchronously.
     if (base::FeatureList::IsEnabled(
             blink::features::kAllowPageWithIDBConnectionInBFCache)) {
-      connection->RequireClientToBeActive(base::BindOnce(
-          [](base::WeakPtr<IndexedDBConnection> connection, int64_t old_version,
-             int64_t new_version, bool was_client_active) {
-            if (connection && connection->IsConnected() && was_client_active) {
-              connection->callbacks()->OnVersionChange(old_version,
-                                                       new_version);
-            }
-          },
-          connection->GetWeakPtr(), old_version, new_version));
+      connection->RequireClientToBeActiveAndKeepActive(
+          storage::mojom::DisallowClientActivationReason::
+              kClientEventIsTriggered,
+          base::BindOnce(
+              [](base::WeakPtr<IndexedDBConnection> connection,
+                 int64_t old_version, int64_t new_version,
+                 bool was_client_active) {
+                if (connection && connection->IsConnected() &&
+                    was_client_active) {
+                  connection->callbacks()->OnVersionChange(old_version,
+                                                           new_version);
+                }
+              },
+              connection->GetWeakPtr(), old_version, new_version));
     } else {
       connection->callbacks()->OnVersionChange(old_version, new_version);
     }

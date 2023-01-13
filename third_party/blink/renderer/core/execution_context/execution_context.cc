@@ -153,6 +153,17 @@ CodeCacheHost* ExecutionContext::GetCodeCacheHostFromContext(
 }
 
 void ExecutionContext::SetIsInBackForwardCache(bool value) {
+  if (!is_in_back_forward_cache_ && value) {
+    ContextLifecycleNotifier::observers().ForEachObserver(
+        [&](ContextLifecycleObserver* observer) {
+          if (!observer->IsExecutionContextLifecycleObserver()) {
+            return;
+          }
+          ExecutionContextLifecycleObserver* execution_context_observer =
+              static_cast<ExecutionContextLifecycleObserver*>(observer);
+          execution_context_observer->ContextEnteredBackForwardCache();
+        });
+  }
   is_in_back_forward_cache_ = value;
 }
 

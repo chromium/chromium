@@ -28,6 +28,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -93,13 +95,17 @@ IDBTransaction::IDBTransaction(
       scope_(scope),
       event_queue_(
           MakeGarbageCollected<EventQueue>(ExecutionContext::From(script_state),
-                                           TaskType::kDatabaseAccess)),
-      feature_handle_for_scheduler_(
-          ExecutionContext::From(script_state)
-              ->GetScheduler()
-              ->RegisterFeature(
-                  SchedulingPolicy::Feature::kOutstandingIndexedDBTransaction,
-                  {SchedulingPolicy::DisableBackForwardCache()})) {
+                                           TaskType::kDatabaseAccess)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAllowPageWithIDBTransactionInBFCache)) {
+    feature_handle_for_scheduler_ =
+        ExecutionContext::From(script_state)
+            ->GetScheduler()
+            ->RegisterFeature(
+                SchedulingPolicy::Feature::kOutstandingIndexedDBTransaction,
+                {SchedulingPolicy::DisableBackForwardCache()});
+  }
+
   DCHECK(database_);
   DCHECK(!scope_.empty()) << "Non-versionchange transactions must operate "
                              "on a well-defined set of stores";
@@ -391,10 +397,13 @@ void IDBTransaction::commit(ExceptionState& exception_state) {
   if (transaction_backend())
     transaction_backend()->Commit(num_errors_handled_);
 
-  // Once IDBtransaction.commit() is called, the page should no longer be
-  // prevented from entering back/forward cache for having outstanding IDB
-  // connections. Commit ends the inflight IDB transactions.
-  feature_handle_for_scheduler_.reset();
+  if (!base::FeatureList::IsEnabled(
+          features::kAllowPageWithIDBTransactionInBFCache)) {
+    // Once IDBtransaction.commit() is called, the page should no longer be
+    // prevented from entering back/forward cache for having outstanding IDB
+    // connections. Commit ends the inflight IDB transactions.
+    feature_handle_for_scheduler_.reset();
+  }
 }
 
 void IDBTransaction::RegisterRequest(IDBRequest* request) {

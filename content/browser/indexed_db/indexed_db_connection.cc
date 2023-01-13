@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state.h"
@@ -187,14 +188,19 @@ void IndexedDBConnection::RemoveTransaction(int64_t id) {
   transactions_.erase(id);
 }
 
-void IndexedDBConnection::RequireClientToBeActive(
+void IndexedDBConnection::RequireClientToBeActiveAndKeepActive(
+    storage::mojom::DisallowClientActivationReason reason,
     base::OnceCallback<void(bool)> callback) {
   mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
       client_keep_active_remote;
-  client_state_checker_->RequireClientToBeActive(
-      client_keep_active_remote.BindNewPipeAndPassReceiver(),
+  client_state_checker_->RequireClientToBeActiveAndKeepActive(
+      reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
       std::move(callback));
   client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
 }
 
+void IndexedDBConnection::RequireClientToBeActive(
+    storage::mojom::DisallowClientActivationReason reason) {
+  client_state_checker_->RequireClientToBeActive(reason, base::NullCallback());
+}
 }  // namespace content

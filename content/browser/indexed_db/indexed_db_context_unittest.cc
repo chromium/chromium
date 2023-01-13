@@ -44,10 +44,16 @@ class IndexedDBContextTest : public testing::Test {
     ~MockIndexedDBClientStateChecker() override = default;
 
     // storage::mojom::IndexedDBClientStateChecker overrides
-    void RequireClientToBeActive(
+    void RequireClientToBeActiveAndKeepActive(
+        storage::mojom::DisallowClientActivationReason reason,
         mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
             keep_active,
-        RequireClientToBeActiveCallback callback) override {}
+        storage::mojom::IndexedDBClientStateChecker::
+            RequireClientToBeActiveCallback callback) override {}
+    void RequireClientToBeActive(
+        storage::mojom::DisallowClientActivationReason reason,
+        storage::mojom::IndexedDBClientStateChecker::
+            RequireClientToBeActiveCallback callback) override {}
   };
 
   IndexedDBContextTest()

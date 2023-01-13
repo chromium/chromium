@@ -30,9 +30,14 @@ class CONTENT_EXPORT IndexedDBClientStateCheckerWrapper
   IndexedDBClientStateCheckerWrapper& operator=(
       const IndexedDBClientStateCheckerWrapper&) = delete;
 
-  void RequireClientToBeActive(
+  void RequireClientToBeActiveAndKeepActive(
+      storage::mojom::DisallowClientActivationReason reason,
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
+      storage::mojom::IndexedDBClientStateChecker::
+          RequireClientToBeActiveCallback callback);
+  void RequireClientToBeActive(
+      storage::mojom::DisallowClientActivationReason reason,
       storage::mojom::IndexedDBClientStateChecker::
           RequireClientToBeActiveCallback callback);
 

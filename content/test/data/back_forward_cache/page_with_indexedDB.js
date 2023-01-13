@@ -62,6 +62,22 @@ async function setupIndexedDBVersionChangeHandlerToNavigateTo(url) {
   };
 }
 
+function startIndexedDBTransaction() {
+  let transaction = db.transaction(['store'], 'readwrite');
+  let store = transaction.objectStore('store');
+  store.put("key", "value");
+}
+
+function runInfiniteIndexedDBTransactionLoop() {
+  let transaction = db.transaction(['store'], 'readwrite');
+  let store = transaction.objectStore('store');
+  let infiniteLoop = () => {
+    let request = store.put("key", "value");
+    request.onsuccess = infiniteLoop;
+  }
+  infiniteLoop();
+}
+
 function registerPagehideToCloseIndexedDBConnection() {
   addEventListener('pagehide', () => {
     db.close();

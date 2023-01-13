@@ -4,6 +4,12 @@
 
 module storage.mojom;
 
+enum DisallowClientActivationReason {
+  kClientEventIsTriggered = 0,
+  kTransactionIsAcquiringLocks = 1,
+  kTransactionIsBlockingOthers = 2,
+};
+
 // IndexedDB clients live in the renderer and talk directly to the storage
 // service, but some clients may be inactive (e.g. in a BFCached document).
 // In order to correctly handle IndexedDB interactions with the inactive
@@ -14,7 +20,9 @@ interface IndexedDBClientStateChecker {
   // receive certain callbacks/events (e.g. those that might block the
   // IndexedDB flow such as `VersionChange`) from the IndexedDB service.
   // For the client without an associated RenderFrameHost, this should report
-  // the value indicating that the client is active.
+  // the value indicating that the client is active. A reason needs to be
+  // provided to this call, which will be passed to the actual method that
+  // processes the disallow action.
   // For the client with an associated RenderFrameHost, this call may also have
   // side effects:
   // 1. If the client is active, it may be disallowed from entering some
@@ -25,9 +33,16 @@ interface IndexedDBClientStateChecker {
   // `keep_active` is used to force a client to remain active. This has no
   // effect if the client is no longer active by the time the IPC message
   // is handled.
-  RequireClientToBeActive(
+  RequireClientToBeActiveAndKeepActive(
+      DisallowClientActivationReason reason,
       pending_receiver<IndexedDBClientKeepActive> keep_active
   ) => (bool was_active);
+  // Similar to `RequireClientToBeActiveAndKeepActive`, but do not force
+  // the client to remain active. This method should be used if the caller
+  // only needs to disallow the client activation from an inactive state,
+  // as it won't be affected if the active client becomes inactive.
+  RequireClientToBeActive(DisallowClientActivationReason reason)
+    => (bool was_active);
 };
 
 // Keeping an instance of this interface alive pins the associated client

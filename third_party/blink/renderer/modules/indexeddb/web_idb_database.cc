@@ -314,6 +314,10 @@ void WebIDBDatabase::Abort(int64_t transaction_id) {
   database_->Abort(transaction_id);
 }
 
+void WebIDBDatabase::DidBecomeInactive() {
+  database_->DidBecomeInactive();
+}
+
 mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
 WebIDBDatabase::GetCallbacksProxy(
     std::unique_ptr<WebIDBCallbacks> callbacks_impl) {

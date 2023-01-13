@@ -121,6 +121,7 @@ class MODULES_EXPORT WebIDBDatabase final {
                    int64_t index_id,
                    const String& new_name);
   void Abort(int64_t transaction_id);
+  void DidBecomeInactive();
 
  private:
   mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(

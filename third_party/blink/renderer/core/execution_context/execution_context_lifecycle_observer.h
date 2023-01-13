@@ -100,7 +100,6 @@ class CORE_EXPORT ExecutionContextClient : public GarbageCollectedMixin {
 class CORE_EXPORT ExecutionContextLifecycleObserver
     : public ContextLifecycleObserver {
  public:
-
   // Returns the execution context until it is detached.
   // From then on, returns null instead.
   ExecutionContext* GetExecutionContext() const;
@@ -120,6 +119,9 @@ class CORE_EXPORT ExecutionContextLifecycleObserver
   bool IsExecutionContextLifecycleObserver() const override { return true; }
 
   void Trace(Visitor*) const override;
+
+  // This will be triggered when the ExecutionContext is moved into BFCache.
+  virtual void ContextEnteredBackForwardCache() {}
 
  protected:
   explicit ExecutionContextLifecycleObserver(

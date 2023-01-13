@@ -122,6 +122,7 @@ class MODULES_EXPORT IDBDatabase final
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
+  void ContextEnteredBackForwardCache() override;
 
   // EventTarget
   const AtomicString& InterfaceName() const override;

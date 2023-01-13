@@ -87,8 +87,18 @@ class CONTENT_EXPORT IndexedDBConnection {
   void RemoveTransaction(int64_t id);
 
   // Checks if the client is in inactive state and disallow it from activation
-  // if so.
-  void RequireClientToBeActive(base::OnceCallback<void(bool)> callback);
+  // if so. This is called when the client is not supposed to be inactive,
+  // otherwise it may affect the IndexedDB service (e.g. blocking others from
+  // acquiring the locks).
+  void RequireClientToBeActiveAndKeepActive(
+      storage::mojom::DisallowClientActivationReason reason,
+      base::OnceCallback<void(bool)> callback);
+
+  // Disallow the client from activation, this method is used when the caller
+  // does not care about if the client was active or not and do not force the
+  // client to remain active.
+  void RequireClientToBeActive(
+      storage::mojom::DisallowClientActivationReason reason);
 
   const base::flat_map<int64_t, std::unique_ptr<IndexedDBTransaction>>&
   transactions() const {
