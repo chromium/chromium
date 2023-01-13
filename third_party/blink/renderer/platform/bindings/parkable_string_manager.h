@@ -107,7 +107,7 @@ class PLATFORM_EXPORT ParkableStringManager {
       scoped_refptr<StringImpl>&&,
       std::unique_ptr<ParkableStringImpl::SecureDigest> digest);
 
-  void RemoveOnMainThread(MayBeDangling<ParkableStringImpl> string);
+  void RemoveOnMainThread(ParkableStringImpl* string);
   // If on a background thread, posts a `RemoveOnMainThread` task to the Main
   // thread. Calls `RemoveOnMainThread` otherwise.
   void Remove(ParkableStringImpl* string);

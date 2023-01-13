@@ -218,8 +218,7 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
   return new_parkable;
 }
 
-void ParkableStringManager::RemoveOnMainThread(
-    MayBeDangling<ParkableStringImpl> string) {
+void ParkableStringManager::RemoveOnMainThread(ParkableStringImpl* string) {
   DCHECK(IsMainThread());
   DCHECK(string->may_be_parked());
   DCHECK(string->digest());
@@ -262,7 +261,7 @@ void ParkableStringManager::Remove(ParkableStringImpl* string) {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ParkableStringManager::RemoveOnMainThread,
-                     base::Unretained(this), base::UnsafeDangling(string)));
+                     base::Unretained(this), base::Unretained(string)));
 }
 
 void ParkableStringManager::CompleteUnparkOnMainThread(
