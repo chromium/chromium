@@ -17,7 +17,13 @@ namespace blink {
 ListItemOrdinal::ListItemOrdinal() : type_(kNeedsUpdate) {}
 
 bool ListItemOrdinal::IsList(const Node& node) {
-  return IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node);
+  // Counters can not cross elements with style containment, hence we
+  // pretend such elements are lists for the purposes of calculating ordinal
+  // values.
+  //
+  // https://drafts.csswg.org/css-contain-2/#containment-style
+  return IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node) ||
+         HasStyleContainment(node);
 }
 
 bool ListItemOrdinal::IsListItem(const LayoutObject* layout_object) {
@@ -44,6 +50,13 @@ ListItemOrdinal* ListItemOrdinal::Get(const Node& item_node) {
       return &To<LayoutNGListItem>(layout_object)->Ordinal();
   }
   return nullptr;
+}
+
+bool ListItemOrdinal::HasStyleContainment(const Node& node) {
+  if (LayoutObject* layout_object = node.GetLayoutObject()) {
+    return layout_object->ShouldApplyStyleContainment();
+  }
+  return false;
 }
 
 // Returns the enclosing list with respect to the DOM order.
