@@ -31,11 +31,12 @@ proprietary_codecs = true
 Running the Cast Web Runtime on Linux can be done with the following steps:
 
 1. Build the Cast Web Runtime using the above flags
-2. Build Cast Core following instructions [here](go/cast-core-on-glinux#build).
-3. [Run](go/cast-core-on-glinux#run) the Cast Core and Platform Service
-applications built in step 2. Note that if it is your first time running Cast
-Core you will need to
-[generate certificates](go/cast-core-on-glinux#certificates).
+2. Build Cast Core following instructions
+[here](https://goto.google.com/cast-core-on-glinux#build).
+3. [Run](https://goto.google.com/cast-core-on-glinux#run) the Cast Core and
+Platform Service applications built in step 2. Note that if it is your first
+time running Cast Core you will need to
+[generate certificates](https://goto.google.com/cast-core-on-glinux#certificates).
 4. Run the `core_runtime_simple` application built in step 1. The runtime should
 immediately be registered with Cast Core.
 5. Cast from a Chrome instance running on the local machine. It may take a few
