@@ -45,6 +45,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
@@ -70,9 +71,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/presentation_time_recorder.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -121,6 +124,12 @@ constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
 
 constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
     base::Milliseconds(300);
+
+// The animiation duration of desks bar slide out animation when exiting
+// overview mode.
+constexpr base::TimeDelta kExpandedDesksBarSlideDuration =
+    base::Milliseconds(350);
+constexpr base::TimeDelta kZeroDesksBarSlideDuration = base::Milliseconds(250);
 
 // Toast id for the toast that is displayed when a user tries to move a window
 // that is visible on all desks to another desk.
@@ -355,6 +364,44 @@ bool ShouldExcludeItemFromGridLayout(
 
 }  // namespace
 
+// A self-deleting object that performs slide out animation for the desks
+// bar when exiting the overview mode. It owns the desks bar widget, thus when
+// the slide out animation is done, it will delete itself and destroy the desks
+// bar widget as well.
+class DesksBarSlideAnimation {
+ public:
+  DesksBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
+                         bool is_zero_state)
+      : desks_widget_(std::move(desks_widget)) {
+    gfx::Transform transform;
+    transform.Translate(0, -desks_widget_->GetWindowBoundsInScreen().height());
+
+    const auto duration = is_zero_state ? kZeroDesksBarSlideDuration
+                                        : kExpandedDesksBarSlideDuration;
+    views::AnimationBuilder()
+        .OnEnded(base::BindOnce(
+            [](DesksBarSlideAnimation* animation) { delete animation; },
+            base::Unretained(this)))
+        .OnAborted(base::BindOnce(
+            [](DesksBarSlideAnimation* animation) { delete animation; },
+            base::Unretained(this)))
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .SetDuration(duration)
+        .SetTransform(desks_widget_->GetLayer(), transform,
+                      gfx::Tween::ACCEL_30_DECEL_20_85);
+  }
+
+  DesksBarSlideAnimation(const DesksBarSlideAnimation&) = delete;
+  DesksBarSlideAnimation& operator=(const DesksBarSlideAnimation&) = delete;
+
+  ~DesksBarSlideAnimation() = default;
+
+ private:
+  std::unique_ptr<views::Widget> desks_widget_;
+};
+
 // The class to observe the overview window that the dragged tabs will merge
 // into. After the dragged tabs merge into the overview window, and if the
 // overview window represents a minimized window, we need to update the
@@ -458,6 +505,19 @@ OverviewGrid::~OverviewGrid() = default;
 
 void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   EndNudge();
+
+  if (features::IsJellyrollEnabled() && desks_widget_ &&
+      exit_type != OverviewEnterExitType::kImmediateExit) {
+    // When applying the slide out animation to the `desks_widget_` during
+    // overview grid shutdown phase, we need to make the lifetime of the
+    // `desks_widget_` longer than its owner (overview grid). Thus move the
+    // ownership of `desks_widget_` from the overview grid to
+    // `DesksBarSlideAnimation` which is a self-deleting object, when the
+    // animation is done, it will delete itself and destroy `desks_widget_` as
+    // well.
+    new DesksBarSlideAnimation(std::move(desks_widget_),
+                               desks_bar_view_->IsZeroState());
+  }
 
   SplitViewController::Get(root_window_)->RemoveObserver(this);
   ScreenRotationAnimator::GetForRootWindow(root_window_)->RemoveObserver(this);
