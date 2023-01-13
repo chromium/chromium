@@ -326,6 +326,10 @@ function jsonSerialize(item, seen) {
       typeof item === 'number' ||
       typeof item === 'string')
     return item;
+  // http://crbug.com/chromedriver/2995: Placed here because some element
+  // (above) are type 'function', so this check must be performed after.
+  if (typeof item === 'function')
+    return {};
   if (isElement(item)) {
     const root = getNodeRootThroughAnyShadows(item);
     const cache = getPageCache(root, w3cEnabled);
@@ -348,17 +352,15 @@ function jsonSerialize(item, seen) {
     ret[key] = cache.storeItem(item);
     return ret;
   }
+
+  // TODO(crbug.com/1337415): Implement WindowProxy serialization.
+
+  if (typeof item.toJSON === 'function' &&
+      item.hasOwnProperty('toJSON')) {
+    return item.toJSON();
+  }
   if (isCollection(item))
     return cloneWithCircularCheck(item, seen, jsonSerialize);
-  // http://crbug.com/chromedriver/2995: Placed here because some element
-  // (above) are type 'function', so this check must be performed after.
-  if (typeof item === 'function')
-    return item;
-  // TODO(crbug.com/1337415): Implement WindowProxy serialization.
-  if (typeof item.toJSON === 'function' &&
-      (item.hasOwnProperty('toJSON') ||
-       Object.getPrototypeOf(item).hasOwnProperty('toJSON')))
-    return item.toJSON();
 
   // Deep clone Objects.
   return cloneWithCircularCheck(item, seen, jsonSerialize);

@@ -230,7 +230,7 @@ function testCallFunctionWithShadowRoot(runner) {
   }
   var wrappedHost = wrap(host);
   var wrappedRoot = wrap(root);
-  
+
   // Should handle shadow root as an argument.
   callFunction(func, [wrappedRoot]).then((result) => {
     assertEquals(0, result.status);
@@ -247,17 +247,17 @@ function testCallFunctionWithShadowRoot(runner) {
 function testCacheWithShadowDomAttached() {
   clearCache();
   const pageCache = getPageCache();
-  
+
   // Set up something in the shadow DOM.
   var host = document.body.appendChild(document.createElement('div'));
   var root = host.attachShadow({ mode: 'open' });
   var shadowDiv = root.appendChild(document.createElement('div'));
-  
+
   // Test with attached element in shadow DOM.
   var wrappedDiv = wrap(shadowDiv);
   var unwrappedDiv = unwrap(wrappedDiv, pageCache);
   assertEquals(shadowDiv, unwrappedDiv);
-  
+
   document.body.removeChild(host);
 }
 
@@ -279,7 +279,7 @@ function testCacheWithShadowDomDetachedChild() {
   } catch (e) {
     assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
   }
-  
+
   document.body.removeChild(host);
 }
 
@@ -302,7 +302,7 @@ function testCallWithFunctionInObject(runner) {
 
 // Verify array serialization works when Array.prototype.toJSON is defined.
 // (https://crbug.com/chromedriver/3084)
-function testCallWithArrayToJSON(runner) {
+function testCallWithArrayToJsonProto(runner) {
   clearCache();
 
   Array.prototype.toJSON = () => '["testing"]';
@@ -314,6 +314,24 @@ function testCallWithArrayToJSON(runner) {
     assertEquals(result.value.length, 3);
     assertEquals(result.value[2], 3);
     delete Array.prototype.toJSON;
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
+}
+
+// Verify array serialization works when own property toJSON is defined.
+// (https://crbug.com/chromedriver/4325)
+function testCallWithArrayToJsonOwn(runner) {
+  clearCache();
+
+  function func() {
+    let result = [1, 2, 3];
+    result.toJSON = () => '["testing"]';
+    return result;
+  }
+  callFunction(func, []).then((result) => {
+    assertEquals(typeof result.value, 'string');
+    assertEquals(result.value, '["testing"]');
     runner.continueTesting();
   });
   runner.waitForAsync();
