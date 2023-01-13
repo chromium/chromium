@@ -22,8 +22,8 @@
 namespace ash {
 namespace {
 
-// TODO(b/244529735): Replace the generic support URL with the final one.
-const char kLearnMoreUrl[] = "https://www.support.google.com/chromebook";
+const char kLearnMoreUrl[] =
+    "https://support.google.com/chromebook/?p=privacy_hub";
 
 size_t CountActiveInputStreams() {
   size_t num_active_streams = 0;
