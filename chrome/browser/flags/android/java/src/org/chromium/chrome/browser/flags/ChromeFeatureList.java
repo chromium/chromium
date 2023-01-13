@@ -567,7 +567,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctResizable90MaximumHeight =
             new CachedFlag(CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false);
     public static final CachedFlag sCctResizableForThirdParties =
-            new CachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, false);
+            new CachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctResizableSideSheet =
             new CachedFlag(CCT_RESIZABLE_SIDE_SHEET, false);
     public static final CachedFlag sCctRetainableStateInMemory =
