@@ -1,9 +1,9 @@
 {
-  "short_name": "Password Manager",
-  "name": "Password Manager",
+  "short_name": "Google Password Manager",
+  "name": "Google Password Manager",
   "icons": [
     {
-      "src": "chrome://password-manager/images/password_manager_logo.svg",
+      "src": "chrome://password-manager/images/password_manager_pwa_icon.svg",
       "type": "image/svg+xml",
       "sizes": "any"
     }

@@ -16,9 +16,14 @@ build_webui("build") {
     "images/checkup_result_banner_running.svg",
     "images/checkup_result_banner_running_dark.svg",
     "images/password_manager_logo.svg",
-    "manifest.webmanifest",
     "password_manager.html",
   ]
+  if (is_chrome_branded) {
+    static_files += [ "chrome_branded_manifest.webmanifest" ]
+  } else {
+    static_files += [ "manifest.webmanifest" ]
+  }
+
   web_component_files = [
     "checkup_section.ts",
     "checkup_details_section.ts",

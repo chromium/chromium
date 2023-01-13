@@ -31,6 +31,7 @@
             </else>
           </if>
           <include name="IDR_CHROME_PASSWORD_MANAGER_LOGO" file="google_chrome/google_password_manager_logo.svg" type="BINDATA" />
+          <include name="IDR_CHROME_PASSWORD_MANAGER_PWA_ICON" file="google_chrome/google_password_manager_pwa_icon.svg" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_24PX_1X" file="google_chrome/chrome_24px_1x.svg" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="google_chrome/chrome_128px.svg" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_SVG" file="google_chrome/chrome_logo.svg" type="BINDATA" />

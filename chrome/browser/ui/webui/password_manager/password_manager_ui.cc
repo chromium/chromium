@@ -147,10 +147,14 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.
-  // This path is used in the manifest of the PasswordManager web app
-  // (chrome/browser/resources/password_manager/manifest.webmanifest).
   source->AddResourcePath("images/password_manager_logo.svg",
                           IDR_CHROME_PASSWORD_MANAGER_LOGO);
+
+  // This path is used in the manifest of the PasswordManager web app
+  // (chrome/browser/resources/password_manager/
+  // chrome_branded_manifest.webmanifest).
+  source->AddResourcePath("images/password_manager_pwa_icon.svg",
+                          IDR_CHROME_PASSWORD_MANAGER_PWA_ICON);
 #endif
 
   return source;
