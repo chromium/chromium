@@ -75,9 +75,7 @@ const int64_t kLastUsedFolderNone = -1;
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
-  const BookmarkNode* defaultFolder =
-      [[self class] folderForNewBookmarksInBookmarkModel:_bookmarkModel
-                                                   prefs:_prefs];
+  const BookmarkNode* defaultFolder = [self folderForNewBookmarks];
   _bookmarkModel->AddNewURL(defaultFolder, defaultFolder->children().size(),
                             base::SysNSStringToUTF16(title), URL);
 
@@ -125,16 +123,14 @@ const int64_t kLastUsedFolderNone = -1;
 
 #pragma mark - Private
 
-+ (const BookmarkNode*)
-    folderForNewBookmarksInBookmarkModel:(bookmarks::BookmarkModel*)bookmarks
-                                   prefs:(PrefService*)prefs {
-  const BookmarkNode* defaultFolder = bookmarks->mobile_node();
-  int64_t node_id = prefs->GetInt64(prefs::kIosBookmarkFolderDefault);
+- (const BookmarkNode*)folderForNewBookmarks {
+  const BookmarkNode* defaultFolder = _bookmarkModel->mobile_node();
+  int64_t node_id = _prefs->GetInt64(prefs::kIosBookmarkFolderDefault);
   if (node_id == kLastUsedFolderNone) {
     node_id = defaultFolder->id();
   }
   const BookmarkNode* result =
-      bookmarks::GetBookmarkNodeByID(bookmarks, node_id);
+      bookmarks::GetBookmarkNodeByID(_bookmarkModel, node_id);
 
   if (result) {
     return result;
