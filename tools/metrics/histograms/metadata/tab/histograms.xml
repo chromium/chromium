@@ -1301,6 +1301,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabRestore.{RestoreType}.TimeBetweenClosedAndRestored"
+    units="ms" expires_after="2023-07-10">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Recorded when the user restores a {RestoreType}. The value is the time
+    duration between the previous closing of the {RestoreType} and the
+    {RestoreType} being restored.
+  </summary>
+  <token key="RestoreType">
+    <variant name="Group" summary="tab group"/>
+    <variant name="Tab" summary="tab"/>
+    <variant name="Window" summary="window"/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.CountAtResume" units="tabs" expires_after="2022-11-02">
   <owner>marq@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>

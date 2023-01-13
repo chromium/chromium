@@ -1609,13 +1609,40 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// Check that TabManager.TimeSinceTablosedUntilRestored histogram is not
+// Check that TabRestore.Tab.TimeBetweenClosedAndRestored histogram is recorded
+// on tab restore.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       TimeBetweenTabClosedAndRestoredRecorded) {
+  base::HistogramTester histogram_tester;
+  const char kTimeBetweenTabClosedAndRestored[] =
+      "TabRestore.Tab.TimeBetweenClosedAndRestored";
+
+  int starting_tab_count = browser()->tab_strip_model()->count();
+  AddSomeTabs(browser(), 3);
+
+  // Close the tab in the middle.
+  int closed_tab_index = starting_tab_count + 1;
+  CloseTab(closed_tab_index);
+
+  EXPECT_EQ(
+      histogram_tester.GetAllSamples(kTimeBetweenTabClosedAndRestored).size(),
+      0U);
+
+  // Restore the tab. This should record the kTimeBetweenTabClosedAndRestored
+  // histogram.
+  RestoreTab(0, closed_tab_index);
+  EXPECT_EQ(
+      histogram_tester.GetAllSamples(kTimeBetweenTabClosedAndRestored).size(),
+      1U);
+}
+
+// Check that TabRestore.Window.TimeBetweenClosedAndRestored histogram is
 // recorded on window restore.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
-                       TimeSinceTabClosedNotRecordedOnWindowRestore) {
+                       TimeBetweenWindowClosedAndRestoredRecorded) {
   base::HistogramTester histogram_tester;
-  const char kTimeSinceTabClosedUntilRestored[] =
-      "TabManager.TimeSinceTabClosedUntilRestored";
+  const char kTimeBetweenWindowClosedAndRestored[] =
+      "TabRestore.Window.TimeBetweenClosedAndRestored";
 
   // Create a new window.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1634,20 +1661,42 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   // Close the window.
   CloseBrowserSynchronously(browser());
 
-  EXPECT_EQ(
-      histogram_tester.GetAllSamples(kTimeSinceTabClosedUntilRestored).size(),
-      0U);
+  EXPECT_EQ(histogram_tester.GetAllSamples(kTimeBetweenWindowClosedAndRestored)
+                .size(),
+            0U);
 
-  // Restore the window.
+  // Restore the window. This should record kTimeBetweenWindowClosedAndRestored
+  // histogram.
   content::WindowedNotificationObserver load_stop_observer(
       content::NOTIFICATION_LOAD_STOP,
       content::NotificationService::AllSources());
   chrome::RestoreTab(active_browser_list_->get(0));
 
-  // Check that TabManager.TimeSinceTablosedUntilRestored was not recorded.
+  EXPECT_EQ(histogram_tester.GetAllSamples(kTimeBetweenWindowClosedAndRestored)
+                .size(),
+            1U);
+}
+
+// // Check that TabRestore.Group.TimeBetweenClosedAndRestored histogram is
+// recorded on group restore.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       TimeBetweenGroupClosedAndRestoredRecorded) {
+  base::HistogramTester histogram_tester;
+  const char kTimeBetweenGroupClosedAndRestored[] =
+      "TabRestore.Group.TimeBetweenClosedAndRestored";
+
+  AddSomeTabs(browser(), 3);
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  CloseGroup(group);
+
+  // Restore closed group. This should record kTimeBetweenGroupClosedAndRestored
+  // histogram.
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 1));
+
   EXPECT_EQ(
-      histogram_tester.GetAllSamples(kTimeSinceTabClosedUntilRestored).size(),
-      0U);
+      histogram_tester.GetAllSamples(kTimeBetweenGroupClosedAndRestored).size(),
+      1U);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_PRE_RestoreAfterMultipleRestarts) {
