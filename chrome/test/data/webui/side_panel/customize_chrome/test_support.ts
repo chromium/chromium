@@ -66,6 +66,7 @@ export function createTheme(systemDarkMode = false): Theme {
     foregroundColor: undefined,
     colorPickerIconColor: {value: 0xffff0000},
     colorsManagedByPolicy: false,
+    dailyRefreshCollectionId: undefined,
   };
 }
 

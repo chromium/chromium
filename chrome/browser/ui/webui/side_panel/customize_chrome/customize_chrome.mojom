@@ -47,6 +47,8 @@ struct Theme {
   skia.mojom.SkColor color_picker_icon_color;
   // True if the colors are managed by a policy.
   bool colors_managed_by_policy;
+  // Selected collection for daily refresh.
+  string? daily_refresh_collection_id;
 };
 
 struct ChromeColor {
@@ -140,6 +142,10 @@ interface CustomizeChromePageHandler {
   SetBackgroundImage(string attribution_1, string attribution_2,
       url.mojom.Url attribution_url, url.mojom.Url image_url,
       url.mojom.Url thumbnail_url);
+
+  // Sets collection id for daily refresh. When |collection_id| is empty, the
+  // daily refresh is turned off.
+  SetDailyRefreshCollectionId(string collection_id);
 
   // Open Chrome Web Store's theme page in a new tab.
   OpenChromeWebStore();

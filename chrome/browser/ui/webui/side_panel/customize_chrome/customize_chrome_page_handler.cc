@@ -220,6 +220,9 @@ void CustomizeChromePageHandler::UpdateTheme() {
   }
   theme->color_picker_icon_color =
       web_contents_->GetColorProvider().GetColor(kColorNewTabPageText);
+  if (custom_background.has_value()) {
+    theme->daily_refresh_collection_id = custom_background->collection_id;
+  }
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   CHECK(native_theme);
   theme->system_dark_mode = native_theme->ShouldUseDarkColors();
@@ -280,6 +283,16 @@ void CustomizeChromePageHandler::SetBackgroundImage(
   ntp_custom_background_service_->SetCustomBackgroundInfo(
       image_url, thumbnail_url, attribution_1, attribution_2, attribution_url,
       /* collection_id= */ "");
+}
+
+void CustomizeChromePageHandler::SetDailyRefreshCollectionId(
+    const std::string& collection_id) {
+  // Populating the |collection_id| turns on refresh daily which overrides the
+  // the selected image.
+  ntp_custom_background_service_->SetCustomBackgroundInfo(
+      /* image_url */ GURL(), /* thumbnail_url */ GURL(),
+      /* attribution_line_1= */ "", /* attribution_line_2= */ "",
+      /* action_url= */ GURL(), collection_id);
 }
 
 void CustomizeChromePageHandler::OpenChromeWebStore() {

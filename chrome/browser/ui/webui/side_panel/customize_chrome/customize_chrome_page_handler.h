@@ -69,6 +69,7 @@ class CustomizeChromePageHandler
                           const GURL& attribution_url,
                           const GURL& image_url,
                           const GURL& thumbnail_url) override;
+  void SetDailyRefreshCollectionId(const std::string& collection_id) override;
   void OpenChromeWebStore() override;
   void OpenThirdPartyThemePage(const std::string& theme_id) override;
   void SetModulesVisible(bool visible) override;
