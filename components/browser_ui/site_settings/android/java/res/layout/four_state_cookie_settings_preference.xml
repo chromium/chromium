@@ -32,14 +32,14 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:primaryText="@string/website_settings_category_cookie_block_third_party_incognito_title"
-            app:descriptionText="@string/website_settings_category_cookie_block_third_party_addition" />
+            app:descriptionText="@string/website_settings_third_party_cookies_page_block_radio_sub_label" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/block_third_party"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:primaryText="@string/website_settings_category_cookie_block_third_party_title"
-            app:descriptionText="@string/website_settings_category_cookie_block_third_party_addition" />
+            app:descriptionText="@string/website_settings_third_party_cookies_page_block_radio_sub_label" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
             android:id="@+id/block_third_party_incognito_with_aux"
@@ -47,7 +47,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:primaryText="@string/website_settings_category_cookie_block_third_party_incognito_title"
-            app:descriptionText="@string/website_settings_category_cookie_block_third_party_addition" />
+            app:descriptionText="@string/website_settings_third_party_cookies_page_block_radio_sub_label" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
             android:id="@+id/block_third_party_with_aux"
@@ -55,7 +55,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:primaryText="@string/website_settings_category_cookie_block_third_party_title"
-            app:descriptionText="@string/website_settings_category_cookie_block_third_party_addition" />
+            app:descriptionText="@string/website_settings_third_party_cookies_page_block_radio_sub_label" />
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/block"

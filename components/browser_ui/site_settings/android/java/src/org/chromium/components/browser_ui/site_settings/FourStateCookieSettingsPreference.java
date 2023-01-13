@@ -220,7 +220,7 @@ public class FourStateCookieSettingsPreference extends Preference
 
     private void setBlockThirdPartyCookieDescription(Params params) {
         String defaultDescription = getResources().getString(
-                R.string.website_settings_category_cookie_block_third_party_addition);
+                R.string.website_settings_third_party_cookies_page_block_radio_sub_label);
         if (params.isFirstPartySetsDataAccessEnabled) {
             String fpsAdditionalDescription = getResources().getString(
                     R.string.website_settings_category_cookie_block_third_party_fps_addition);

@@ -204,16 +204,12 @@ public class TriStateCookieSettingsPreference extends Preference
     }
 
     private void setBlockThirdPartyCookieDescription(Params params) {
-        String defaultDescription = getResources().getString(
-                R.string.website_settings_third_party_cookies_page_block_radio_sub_label);
         if (params.isFirstPartySetsDataAccessEnabled) {
-            String fpsAdditionalDescription = getResources().getString(
-                    R.string.website_settings_third_party_cookies_page_block_radio_sub_label_fps_addition);
-            String description = getResources().getString(R.string.concat_two_strings_with_periods,
-                    defaultDescription, fpsAdditionalDescription);
-            mBlockThirdPartyButton.setDescriptionText(description);
+            mBlockThirdPartyButton.setDescriptionText(getResources().getString(
+                    R.string.website_settings_third_party_cookies_page_block_radio_sub_label_fps_enabled));
         } else {
-            mBlockThirdPartyButton.setDescriptionText(defaultDescription);
+            mBlockThirdPartyButton.setDescriptionText(getResources().getString(
+                    R.string.website_settings_third_party_cookies_page_block_radio_sub_label_fps_disabled));
         }
     }
 
