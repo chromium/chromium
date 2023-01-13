@@ -1,0 +1,18 @@
+<style>
+  :host {
+    display: flex;
+    justify-content: center;
+  }
+
+  :host([pinned]) {
+    border-top: var(--cr-hairline);
+    box-sizing: border-box;
+    display: block;
+    flex-shrink: 0;
+    height: 48px;
+    margin-block-start: auto;
+    padding: 8px;
+    position: relative;
+  }
+</style>
+<slot></slot>

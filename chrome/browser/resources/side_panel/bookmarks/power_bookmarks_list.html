@@ -80,47 +80,8 @@
     gap: 4px;
   }
 
-  .edit-description {
-    align-items: center;
-    color: var(--cr-secondary-text-color);
-    display: flex;
-    gap: 8px;
-  }
-
-  .edit-footer {
-    background-color: var(--edit-footer-background);
-    color: var(--cr-secondary-text-color);
-    display: flex;
-    justify-content: space-between;
-    padding: 14px;
-  }
-
-  .edit-icons {
-    display: flex;
-    gap: 16px;
-  }
-
   sp-empty-state[guest] {
     margin-top: 66px;
-  }
-
-  .footer-or-empty-state {
-    border-top: 1px solid var(--border-color);
-  }
-
-  .footer-or-empty-state[empty] {
-    align-items: center;
-    border: none;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .footer-or-empty-state:not([empty]) .footer-button {
-    margin: 8px;
-  }
-
-  .footer-button[disabled] > .label-icon {
-    color: var(--disabled-text-color);
   }
 
   .heading-row {
@@ -178,10 +139,6 @@
     background-color: var(--google-grey-100);
   }
 
-  .label-icon {
-    color: var(--cr-link-color);
-  }
-
   .label-row {
     display: flex;
     flex-direction: row;
@@ -212,6 +169,27 @@
   .sort-menu-button:active {
     background-color: var(--cr-active-background-color);
     box-shadow: none;
+  }
+
+  cr-toolbar-selection-overlay {
+    --cr-toolbar-selection-overlay-padding: 16px;
+    background: var(--edit-footer-background);
+    color: var(--cr-secondary-text-color);
+    font-size: 12px;
+  }
+
+  cr-toolbar-selection-overlay::part(clearIcon) {
+    --cr-icon-button-icon-size: 16px;
+    height: 24px;
+    margin-inline-end: 8px;
+    margin-inline-start: -6px;
+    width: 24px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    cr-toolbar-selection-overlay {
+      background: var(--google-grey-900-white-4-percent);
+    }
   }
 </style>
 
@@ -293,46 +271,42 @@
       </power-bookmark-row>
     </template>
   </div>
-  <div class="footer-or-empty-state" empty$="[[!shownBookmarks_.length]]">
-    <sp-empty-state
-        hidden="[[shownBookmarks_.length]]"
-        guest$="[[guestMode_]]"
-        image-path="./images/bookmarks_empty.svg"
-        dark-image-path="./images/bookmarks_empty_dark.svg"
-        heading="[[getEmptyTitle_()]]"
-        body="[[getEmptyBody_()]]">
-    </sp-empty-state>
 
-    <cr-button class="footer-button"
+  <sp-empty-state
+      hidden="[[shownBookmarks_.length]]"
+      guest$="[[guestMode_]]"
+      image-path="./images/bookmarks_empty.svg"
+      dark-image-path="./images/bookmarks_empty_dark.svg"
+      heading="[[getEmptyTitle_()]]"
+      body="[[getEmptyBody_()]]">
+  </sp-empty-state>
+  <sp-footer
+      pinned="[[shouldPinFooter_(shownBookmarks_.length)]]">
+    <cr-button
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(shownBookmarks_.*, activeFolderPath_.*,
                      currentUrl_)]]">
-      <iron-icon slot="prefix-icon" icon="bookmarks:add-tab" class="label-icon">
-      </iron-icon>
+      <iron-icon slot="prefix-icon" icon="bookmarks:add-tab"></iron-icon>
       $i18n{addCurrentTab}
     </cr-button>
-    <div class="edit-footer" hidden="[[!editing_]]">
-      <div class="edit-description">
-        <cr-icon-button iron-icon="cr:close"
-            aria-label="$i18n{cancelA11yLabel}"
-            on-click="onBulkEditClicked_"></cr-icon-button>
-        [[getSelectedDescription_(selectedBookmarks_.*)]]
-      </div>
-      <div class="edit-icons">
-        <cr-icon-button iron-icon="bookmarks:delete"
-            disabled="[[!selectedBookmarks_.length]]"
-            title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
-            on-click="onDeleteClicked_">
-        </cr-icon-button>
-        <cr-icon-button iron-icon="cr:more-vert"
-            disabled="[[!selectedBookmarks_.length]]"
-            title="$i18n{tooltipMore}" aria-label="$i18n{tooltipMore}"
-            on-click="onEditMenuClicked_">
-        </cr-icon-button>
-      </div>
-    </div>
-  </div>
+
+    <cr-toolbar-selection-overlay show="[[editing_]]"
+        cancel-label="$i18n{cancelA11yLabel}"
+        selection-label="[[getSelectedDescription_(selectedBookmarks_.*)]]"
+        on-clear-selected-items="onBulkEditClicked_">
+      <cr-icon-button iron-icon="bookmarks:delete"
+          disabled="[[!selectedBookmarks_.length]]"
+          title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
+          on-click="onDeleteClicked_">
+      </cr-icon-button>
+      <cr-icon-button iron-icon="cr:more-vert"
+          disabled="[[!selectedBookmarks_.length]]"
+          title="$i18n{tooltipMore}" aria-label="$i18n{tooltipMore}"
+          on-click="onEditMenuClicked_">
+      </cr-icon-button>
+    </cr-toolbar-selection-overlay>
+  </sp-footer>
 </div>
 
 <cr-action-menu id="sortMenu">
