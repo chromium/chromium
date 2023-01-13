@@ -77,20 +77,32 @@
         line-height: 20px;
       }
 
-      :host([has-icon_]) {
+      :host([has-prefix-icon_]),
+      :host([has-suffix-icon_]) {
         --iron-icon-height: 16px;
         --iron-icon-width: 16px;
         gap: 8px;
         padding: 8px;
       }
 
-      :host-context([chrome-refresh-2023]):host([has-icon_]) {
+      :host-context([chrome-refresh-2023]):host([has-prefix-icon_]),
+      :host-context([chrome-refresh-2023]):host([has-suffix-icon_]) {
         --iron-icon-height: 20px;
         --iron-icon-width: 20px;
+        --icon-block-padding-large: 16px;
+        --icon-block-padding-small: 12px;
         padding-block-end: 8px;
         padding-block-start: 8px;
-        padding-inline-end: 16px;
-        padding-inline-start: 12px;
+      }
+
+      :host-context([chrome-refresh-2023]):host([has-prefix-icon_]) {
+        padding-inline-end: var(--icon-block-padding-large);
+        padding-inline-start: var(--icon-block-padding-small);
+      }
+
+      :host-context([chrome-refresh-2023]):host([has-suffix-icon_]) {
+        padding-inline-end: var(--icon-block-padding-small);
+        padding-inline-start: var(--icon-block-padding-large);
       }
 
       :host-context(.focus-outline-visible):host(:focus) {
@@ -183,9 +195,9 @@
     </style>
 
     <slot id="prefixIcon" name="prefix-icon"
-        on-slotchange="onIconSlotChanged_">
+        on-slotchange="onPrefixIconSlotChanged_">
     </slot>
     <slot></slot>
     <slot id="suffixIcon" name="suffix-icon"
-        on-slotchange="onIconSlotChanged_">
+        on-slotchange="onSuffixIconSlotChanged_">
     </slot>

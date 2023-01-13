@@ -65,7 +65,13 @@ export class CrButtonElement extends CrButtonElementBase {
         value: false,
       },
 
-      hasIcon_: {
+      hasPrefixIcon_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
+      hasSuffixIcon_: {
         type: Boolean,
         reflectToAttribute: true,
         value: false,
@@ -76,7 +82,8 @@ export class CrButtonElement extends CrButtonElementBase {
   disabled: boolean;
   customTabIndex: number;
   circleRipple: boolean;
-  private hasIcon_: boolean;
+  private hasPrefixIcon_: boolean;
+  private hasSuffixIcon_: boolean;
 
   /**
    * It is possible to activate a tab when the space key is pressed down. When
@@ -165,9 +172,12 @@ export class CrButtonElement extends CrButtonElementBase {
     }
   }
 
-  private onIconSlotChanged_() {
-    this.hasIcon_ = this.$.prefixIcon.assignedElements().length > 0 ||
-        this.$.suffixIcon.assignedElements().length > 0;
+  private onPrefixIconSlotChanged_() {
+    this.hasPrefixIcon_ = this.$.prefixIcon.assignedElements().length > 0;
+  }
+
+  private onSuffixIconSlotChanged_() {
+    this.hasSuffixIcon_ = this.$.suffixIcon.assignedElements().length > 0;
   }
 
   private onKeyDown_(e: KeyboardEvent) {

@@ -141,6 +141,10 @@ suite('cr-button', function() {
     assertEquals('8px', buttonStyle.gap);
     assertEquals('8px', buttonStyle.padding);
 
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    assertEquals('8px 16px 8px 12px', buttonStyle.padding);
+    document.documentElement.removeAttribute('chrome-refresh-2023');
+
     const whenPrefixSlotRemoved =
         eventToPromise('slotchange', button.$.prefixIcon);
     icon.remove();
@@ -157,5 +161,9 @@ suite('cr-button', function() {
 
     assertEquals('8px', buttonStyle.gap);
     assertEquals('8px', buttonStyle.padding);
+
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    assertEquals('8px 12px 8px 16px', buttonStyle.padding);
+    document.documentElement.removeAttribute('chrome-refresh-2023');
   });
 });
