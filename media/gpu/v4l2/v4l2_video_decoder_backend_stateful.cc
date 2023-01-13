@@ -240,7 +240,7 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
   size_t bytes_to_copy = 0;
 
   if (!frame_splitter_->AdvanceFrameFragment(data, data_size, &bytes_to_copy)) {
-    VLOGF(1) << "Invalid bitstream detected.";
+    LOG(ERROR) << "Invalid bitstream detected.";
     std::move(current_decode_request_->decode_cb)
         .Run(DecoderStatus::Codes::kFailed);
     current_decode_request_.reset();
@@ -251,7 +251,7 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
 
   const size_t bytes_used = current_input_buffer_->GetPlaneBytesUsed(0);
   if (bytes_used + bytes_to_copy > current_input_buffer_->GetPlaneSize(0)) {
-    VLOGF(1) << "V4L2 buffer size is too small to contain a whole frame.";
+    LOG(ERROR) << "V4L2 buffer size is too small to contain a whole frame.";
     std::move(current_decode_request_->decode_cb)
         .Run(DecoderStatus::Codes::kFailed);
     current_decode_request_.reset();
@@ -612,6 +612,7 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
 
   auto format = output_queue_->GetFormat().first;
   if (!format) {
+    LOG(ERROR) << "Unable to get format when changing resolution.";
     client_->OnBackendError();
     return;
   }
@@ -619,11 +620,15 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
 
   auto visible_rect = output_queue_->GetVisibleRect();
   if (!visible_rect) {
+    LOG(ERROR) << "Unable to get visible rectangle when changing resolution.";
     client_->OnBackendError();
     return;
   }
 
   if (!gfx::Rect(pic_size).Contains(*visible_rect)) {
+    LOG(ERROR) << "Visible rectangle (" << visible_rect->ToString()
+               << ") is not contained by the picture rectangle ("
+               << gfx::Rect(pic_size).ToString() << ").";
     client_->OnBackendError();
     return;
   }
@@ -631,6 +636,7 @@ void V4L2StatefulVideoDecoderBackend::ChangeResolution() {
   const auto bit_depth =
       V4L2PixelFormatToBitDepth(format->fmt.pix_mp.pixelformat);
   if (!bit_depth) {
+    LOG(ERROR) << "Unable to determine bitdepth of format ";
     client_->OnBackendError();
     return;
   }
@@ -704,6 +710,8 @@ void V4L2StatefulVideoDecoderBackend::OnChangeResolutionDone(CroStatus status) {
   }
 
   if (status != CroStatus::Codes::kOk) {
+    LOG(ERROR) << "Backend failure when changing resolution ("
+               << static_cast<int>(status.code()) << ").";
     client_->OnBackendError();
     return;
   }
