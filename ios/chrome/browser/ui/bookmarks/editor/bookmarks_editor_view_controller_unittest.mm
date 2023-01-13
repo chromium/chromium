@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,38 +15,38 @@
 
 namespace {
 
-using BookmarkEditViewControllerTest = BookmarkIOSUnitTestSupport;
+using BookmarksEditorViewControllerTest = BookmarkIOSUnitTestSupport;
 
 // Checks that the view controller can become the first responder. This is
 // needed to correctly register key commands.
-TEST_F(BookmarkEditViewControllerTest, CanBecomeFirstResponder) {
+TEST_F(BookmarksEditorViewControllerTest, CanBecomeFirstResponder) {
   const bookmarks::BookmarkNode* bookmark =
       AddBookmark(bookmark_model_->mobile_node(), @"Some Bookmark");
-  BookmarkEditViewController* controller =
-      [[BookmarkEditViewController alloc] initWithBookmark:bookmark
-                                                   browser:browser_.get()];
+  BookmarksEditorViewController* controller =
+      [[BookmarksEditorViewController alloc] initWithBookmark:bookmark
+                                                      browser:browser_.get()];
 
   EXPECT_TRUE(controller.canBecomeFirstResponder);
 }
 
 // Checks that key commands are registered.
-TEST_F(BookmarkEditViewControllerTest, KeyCommands) {
+TEST_F(BookmarksEditorViewControllerTest, KeyCommands) {
   const bookmarks::BookmarkNode* bookmark =
       AddBookmark(bookmark_model_->mobile_node(), @"Some Bookmark");
-  BookmarkEditViewController* controller =
-      [[BookmarkEditViewController alloc] initWithBookmark:bookmark
-                                                   browser:browser_.get()];
+  BookmarksEditorViewController* controller =
+      [[BookmarksEditorViewController alloc] initWithBookmark:bookmark
+                                                      browser:browser_.get()];
 
   EXPECT_GT(controller.keyCommands.count, 0u);
 }
 
 // Checks that metrics are correctly reported.
-TEST_F(BookmarkEditViewControllerTest, Metrics) {
+TEST_F(BookmarksEditorViewControllerTest, Metrics) {
   const bookmarks::BookmarkNode* bookmark =
       AddBookmark(bookmark_model_->mobile_node(), @"Some Bookmark");
-  BookmarkEditViewController* controller =
-      [[BookmarkEditViewController alloc] initWithBookmark:bookmark
-                                                   browser:browser_.get()];
+  BookmarksEditorViewController* controller =
+      [[BookmarksEditorViewController alloc] initWithBookmark:bookmark
+                                                      browser:browser_.get()];
   base::UserActionTester user_action_tester;
   std::string user_action = "MobileKeyCommandClose";
   ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);

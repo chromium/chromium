@@ -1,15 +1,15 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_EDIT_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_EDIT_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@class BookmarkEditViewController;
+@class BookmarksEditorViewController;
 @class BookmarkFolderViewController;
 class Browser;
 @protocol SnackbarCommands;
@@ -18,7 +18,7 @@ namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 
-@protocol BookmarkEditViewControllerDelegate
+@protocol BookmarksEditorViewControllerDelegate
 
 // Called when the edited bookmark is set for deletion.
 // If the delegate returns `YES`, all nodes matching the URL of `bookmark` will
@@ -26,15 +26,15 @@ class BookmarkNode;
 // If the delegate returns `NO`, only `bookmark` will be deleted.
 // If the delegate doesn't implement this method, the default behavior is to
 // delete all nodes matching the URL of `bookmark`.
-- (BOOL)bookmarkEditor:(BookmarkEditViewController*)controller
+- (BOOL)bookmarkEditor:(BookmarksEditorViewController*)controller
     shoudDeleteAllOccurencesOfBookmark:(const bookmarks::BookmarkNode*)bookmark;
 
 // Called when the controller should be dismissed.
-- (void)bookmarkEditorWantsDismissal:(BookmarkEditViewController*)controller;
+- (void)bookmarkEditorWantsDismissal:(BookmarksEditorViewController*)controller;
 
 // Called when the controller is going to commit the title or URL change.
 - (void)bookmarkEditorWillCommitTitleOrUrlChange:
-    (BookmarkEditViewController*)controller;
+    (BookmarksEditorViewController*)controller;
 
 @end
 
@@ -44,11 +44,11 @@ class BookmarkNode;
 // This view controller will also monitor bookmark model change events and react
 // accordingly depending on whether the bookmark and folder it is editing
 // changes underneath it.
-@interface BookmarkEditViewController
+@interface BookmarksEditorViewController
     : ChromeTableViewController <KeyCommandActions,
                                  UIAdaptivePresentationControllerDelegate>
 
-@property(nonatomic, weak) id<BookmarkEditViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<BookmarksEditorViewControllerDelegate> delegate;
 
 // Snackbar commands handler.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
@@ -65,4 +65,4 @@ class BookmarkNode;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_EDIT_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_VIEW_CONTROLLER_H_

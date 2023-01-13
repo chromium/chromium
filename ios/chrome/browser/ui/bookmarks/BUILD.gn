@@ -64,6 +64,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/bookmarks/editor",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/elements",
@@ -134,8 +135,6 @@ source_set("core") {
 source_set("bookmarks_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "bookmark_edit_view_controller.h",
-    "bookmark_edit_view_controller.mm",
     "bookmark_folder_editor_view_controller.h",
     "bookmark_folder_editor_view_controller.mm",
     "bookmark_folder_view_controller.h",
@@ -185,7 +184,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "bookmark_edit_view_controller_unittest.mm",
     "bookmark_home_view_controller_unittest.mm",
     "bookmark_path_cache_unittest.mm",
     "bookmark_utils_ios_unittest.mm",

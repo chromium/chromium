@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
@@ -33,6 +32,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
@@ -72,7 +72,7 @@ enum class PresentedState {
 }  // namespace
 
 @interface BookmarkInteractionController () <
-    BookmarkEditViewControllerDelegate,
+    BookmarksEditorViewControllerDelegate,
     BookmarkFolderEditorViewControllerDelegate,
     BookmarkFolderViewControllerDelegate,
     BookmarkHomeViewControllerDelegate,
@@ -113,7 +113,7 @@ enum class PresentedState {
 
 // A reference to the potentially presented single bookmark editor. This will be
 // non-nil when `currentPresentedState` is BOOKMARK_EDITOR.
-@property(nonatomic, strong) BookmarkEditViewController* bookmarkEditor;
+@property(nonatomic, strong) BookmarksEditorViewController* bookmarkEditor;
 
 // A reference to the potentially presented folder editor. This will be non-nil
 // when `currentPresentedState` is FOLDER_EDITOR.
@@ -327,9 +327,9 @@ enum class PresentedState {
       editorController = nil;
   if (node->type() == BookmarkNode::URL) {
     self.currentPresentedState = PresentedState::BOOKMARK_EDITOR;
-    BookmarkEditViewController* bookmarkEditor =
-        [[BookmarkEditViewController alloc] initWithBookmark:node
-                                                     browser:_browser];
+    BookmarksEditorViewController* bookmarkEditor =
+        [[BookmarksEditorViewController alloc] initWithBookmark:node
+                                                        browser:_browser];
     bookmarkEditor.delegate = self;
     bookmarkEditor.snackbarCommandsHandler = self.snackbarCommandsHandler;
     self.bookmarkEditor = bookmarkEditor;
@@ -480,19 +480,20 @@ enum class PresentedState {
           bookmark_utils_ios::kBookmarksSnackbarCategory];
 }
 
-#pragma mark - BookmarkEditViewControllerDelegate
+#pragma mark - BookmarksEditorViewControllerDelegate
 
-- (BOOL)bookmarkEditor:(BookmarkEditViewController*)controller
+- (BOOL)bookmarkEditor:(BookmarksEditorViewController*)controller
     shoudDeleteAllOccurencesOfBookmark:(const BookmarkNode*)bookmark {
   return YES;
 }
 
-- (void)bookmarkEditorWantsDismissal:(BookmarkEditViewController*)controller {
+- (void)bookmarkEditorWantsDismissal:
+    (BookmarksEditorViewController*)controller {
   [self dismissBookmarkEditorAnimated:YES];
 }
 
 - (void)bookmarkEditorWillCommitTitleOrUrlChange:
-    (BookmarkEditViewController*)controller {
+    (BookmarksEditorViewController*)controller {
   [self.delegate bookmarkInteractionControllerWillCommitTitleOrUrlChange:self];
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 
 #import <memory>
 #import <set>
@@ -80,9 +80,10 @@ const CGFloat kEstimatedTableRowHeight = 50;
 const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }  // namespace
 
-@interface BookmarkEditViewController () <BookmarkFolderViewControllerDelegate,
-                                          BookmarkModelBridgeObserver,
-                                          BookmarkTextFieldItemDelegate> {
+@interface BookmarksEditorViewController () <
+    BookmarkFolderViewControllerDelegate,
+    BookmarkModelBridgeObserver,
+    BookmarkTextFieldItemDelegate> {
   // Flag to ignore bookmark model changes notifications.
   BOOL _ignoresBookmarkModelChanges;
 
@@ -161,7 +162,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 #pragma mark
 
-@implementation BookmarkEditViewController
+@implementation BookmarksEditorViewController
 
 @synthesize bookmark = _bookmark;
 @synthesize bookmarkModel = _bookmarkModel;
