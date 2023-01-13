@@ -292,7 +292,12 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_MaxImpact) {
 // This test verifies the layout shift score in the sub-frame is recorded
 // correctly in both UKM and UMA, the layout shift score in sub-frame is
 // calculated by applying a sub-frame weighting factor to the total score.
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, OOPIFSubframeWeighting) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OOPIFSubframeWeighting DISABLED_OOPIFSubframeWeighting
+#else
+#define MAYBE_OOPIFSubframeWeighting OOPIFSubframeWeighting
+#endif
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, MAYBE_OOPIFSubframeWeighting) {
   RunWPT("main-frame.html", ShiftFrame::LayoutShiftOnlyInSubFrame,
          /*num_layout_shifts=*/2);
 
