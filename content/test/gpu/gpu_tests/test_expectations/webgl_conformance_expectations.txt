@@ -293,7 +293,7 @@ crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-comp
 # Failing on most platforms. Only runs with passthrough.
 crbug.com/1175371 [ android angle-opengles passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengles chromeos passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ linux ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/1175371 [ angle-opengl display-server-x linux passthrough renderer-skia-gl ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-metal monterey no-asan oop-c release ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengl mac ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -519,10 +519,10 @@ crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/renderi
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 
 # Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
-crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
+crbug.com/1276552 [ android-pixel-4 android-r passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
-crbug.com/1289303 [ android ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1289303 [ android qualcomm renderer-skia-gl target-cpu-32 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 # Samsung failures
 crbug.com/1372155 [ android android-sm-a135m ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
