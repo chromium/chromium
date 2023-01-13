@@ -99,12 +99,6 @@ inline bool IsHTMLSpace(CharType character) {
 }
 
 template <typename CharType>
-ALWAYS_INLINE bool IsHTMLSpecialWhitespace(CharType character) {
-  return character <= '\r' && (character == '\r' || character == '\n' ||
-                               character == '\t' || character == '\f');
-}
-
-template <typename CharType>
 inline bool IsComma(CharType character) {
   return character == ',';
 }

@@ -682,25 +682,6 @@ WTF_EXPORT extern const String& g_empty_string;
 WTF_EXPORT extern const String& g_empty_string16_bit;
 WTF_EXPORT extern const String& g_xmlns_with_colon;
 
-// Table representing common HTML strings of type '\n<space>*'.
-class WTF_EXPORT NewlineThenWhitespaceStringsTable {
- public:
-  static constexpr size_t kTableSize = 128;
-
-  static void Init();
-
-  static inline String GetStringForLength(size_t string_length) {
-    DCHECK_NE(string_length, 0u);
-    DCHECK_LT(string_length, kTableSize);
-    return g_table_[string_length];
-  }
-
-  static bool IsCommon(const StringView& view);
-
- private:
-  static const String (&g_table_)[kTableSize];
-};
-
 // Pretty printer for gtest and base/logging.*.  It prepends and appends
 // double-quotes, and escapes characters other than ASCII printables.
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const String&);

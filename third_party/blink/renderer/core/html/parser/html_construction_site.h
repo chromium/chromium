@@ -82,12 +82,10 @@ namespace blink {
 
 // Note: These are intentionally ordered so that when we concatonate strings and
 // whitespaces the resulting whitespace is ws = min(ws1, ws2).
-enum class WhitespaceMode {
+enum WhitespaceMode {
   kWhitespaceUnknown,
   kNotAllWhitespace,
   kAllWhitespace,
-  // Even stronger guarantee: string of type '\n[space]*'.
-  kNewlineThenWhitespace,
 };
 
 class AtomicHTMLToken;
@@ -152,8 +150,7 @@ class HTMLConstructionSite final {
   void InsertHTMLBodyElement(AtomicHTMLToken*);
   void InsertHTMLFormElement(AtomicHTMLToken*, bool is_demoted = false);
   void InsertScriptElement(AtomicHTMLToken*);
-  void InsertTextNode(const StringView&,
-                      WhitespaceMode = WhitespaceMode::kWhitespaceUnknown);
+  void InsertTextNode(const StringView&, WhitespaceMode = kWhitespaceUnknown);
   void InsertForeignElement(AtomicHTMLToken*,
                             const AtomicString& namespace_uri);
 
@@ -292,7 +289,7 @@ class HTMLConstructionSite final {
     DISALLOW_NEW();
 
    public:
-    PendingText() : whitespace_mode(WhitespaceMode::kWhitespaceUnknown) {}
+    PendingText() : whitespace_mode(kWhitespaceUnknown) {}
 
     void Append(ContainerNode* new_parent,
                 Node* new_next_child,
@@ -307,23 +304,22 @@ class HTMLConstructionSite final {
     }
 
     void Discard() {
-      if (IsEmpty()) {
+      if (IsEmpty())
         return;
-      }
 
       parent.Clear();
       next_child.Clear();
       string_builder.Clear();
-      whitespace_mode = WhitespaceMode::kWhitespaceUnknown;
+      whitespace_mode = kWhitespaceUnknown;
     }
 
-    bool IsEmpty() const {
+    bool IsEmpty() {
       // When the stringbuilder is empty, the parent and whitespace should also
       // be "empty".
       DCHECK_EQ(string_builder.empty(), !parent);
       DCHECK(!string_builder.empty() || !next_child);
       DCHECK(!string_builder.empty() ||
-             (whitespace_mode == WhitespaceMode::kWhitespaceUnknown));
+             (whitespace_mode == kWhitespaceUnknown));
       return string_builder.empty();
     }
 
@@ -353,7 +349,7 @@ class HTMLConstructionSite final {
   bool reported_duplicate_attribute_ = false;
 
   // Whether strings should be canonicalized (deduplicated).
-  bool canonicalize_whitespace_strings_ = true;
+  bool canonicalize_whitespace_strings_ = false;
 };
 
 }  // namespace blink
