@@ -455,8 +455,7 @@ TEST_F(MediaRouterViewsUITest, AddAndRemoveIssue) {
   NiceMock<MockIssuesObserver> issues_observer(mock_router_->GetIssueManager());
   issues_observer.Init();
   const std::string issue_title("Issue 1");
-  IssueInfo issue(issue_title, IssueInfo::Action::DISMISS,
-                  IssueInfo::Severity::WARNING);
+  IssueInfo issue(issue_title, IssueInfo::Severity::WARNING);
   issue.sink_id = sink2.id();
   Issue::Id issue_id = -1;
 

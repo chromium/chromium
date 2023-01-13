@@ -1006,8 +1006,7 @@ void CastActivityManager::SendFailedToCastIssue(
     const MediaRoute::Id& route_id) {
   std::string issue_title =
       l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_ISSUE_FAILED_TO_CAST);
-  IssueInfo info(issue_title, IssueInfo::Action::DISMISS,
-                 IssueInfo::Severity::WARNING);
+  IssueInfo info(issue_title, IssueInfo::Severity::WARNING);
 
   info.sink_id = sink_id;
   info.route_id = route_id;
@@ -1021,8 +1020,7 @@ void CastActivityManager::SendPendingUserAuthNotification(
       IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_PENDING_AUTHORIZATION,
       base::UTF8ToUTF16(sink_name));
 
-  IssueInfo info(issue_title, IssueInfo::Action::DISMISS,
-                 IssueInfo::Severity::NOTIFICATION);
+  IssueInfo info(issue_title, IssueInfo::Severity::NOTIFICATION);
   info.sink_id = sink_id;
   media_router_->OnIssue(info);
 }

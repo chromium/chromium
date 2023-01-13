@@ -157,14 +157,12 @@ TEST_F(CastToolbarButtonTest, UpdateIssues) {
   button_->UpdateIcon();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 
-  button_->OnIssue(
-      Issue(IssueInfo("title notification", IssueInfo::Action::DISMISS,
-                      IssueInfo::Severity::NOTIFICATION)));
+  button_->OnIssue(Issue(
+      IssueInfo("title notification", IssueInfo::Severity::NOTIFICATION)));
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 
   button_->OnIssue(
-      Issue(IssueInfo("title warning", IssueInfo::Action::LEARN_MORE,
-                      IssueInfo::Severity::WARNING)));
+      Issue(IssueInfo("title warning", IssueInfo::Severity::WARNING)));
   EXPECT_TRUE(gfx::test::AreImagesEqual(warning_icon_, GetIcon()));
 
   button_->OnIssuesCleared();

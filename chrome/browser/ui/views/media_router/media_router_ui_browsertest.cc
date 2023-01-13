@@ -43,7 +43,6 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
  public:
   MediaRouterUIBrowserTest()
       : issue_(IssueInfo("title notification",
-                         IssueInfo::Action::DISMISS,
                          IssueInfo::Severity::NOTIFICATION)) {}
   ~MediaRouterUIBrowserTest() override {}
 

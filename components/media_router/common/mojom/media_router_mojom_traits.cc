@@ -19,9 +19,6 @@ bool StructTraits<media_router::mojom::IssueDataView, media_router::IssueInfo>::
   if (!data.ReadTitle(&out->title))
     return false;
 
-  if (!data.ReadDefaultAction(&out->default_action))
-    return false;
-
   if (!data.ReadSeverity(&out->severity))
     return false;
 
@@ -31,16 +28,11 @@ bool StructTraits<media_router::mojom::IssueDataView, media_router::IssueInfo>::
 
   out->message = message.value_or(std::string());
 
-  if (!data.ReadSecondaryActions(&out->secondary_actions))
-    return false;
-
   if (!data.ReadRouteId(&out->route_id))
     return false;
 
   if (!data.ReadSinkId(&out->sink_id))
     return false;
-
-  out->help_page_id = data.help_page_id();
 
   return true;
 }

@@ -134,11 +134,6 @@ struct Issue {
     NOTIFICATION
   };
 
-  enum ActionType {
-    DISMISS,
-    LEARN_MORE
-  };
-
   // If set, the ID of the route to which this issue pertains.
   // If this is an empty string (default), then this is a global issue.
   string route_id;
@@ -156,13 +151,6 @@ struct Issue {
   // Message about issue detail or how to handle issue.
   // Messages should be suitable for end users to decide which actions to take.
   string? message;
-
-  ActionType default_action;
-
-  array<ActionType> secondary_actions;
-
-  // The ID of the help page to be opened if users select learn_more.
-  int32 help_page_id;
 };
 
 struct RouteMessage {

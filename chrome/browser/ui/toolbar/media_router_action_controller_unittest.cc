@@ -40,7 +40,6 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
   MediaRouterActionControllerUnitTest()
       : issue_(media_router::IssueInfo(
             "title notification",
-            media_router::IssueInfo::Action::DISMISS,
             media_router::IssueInfo::Severity::NOTIFICATION)) {}
 
   MediaRouterActionControllerUnitTest(

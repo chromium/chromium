@@ -88,7 +88,6 @@ IssueInfo CreateIssueInfo(const std::string& title) {
   IssueInfo issue_info;
   issue_info.title = title;
   issue_info.message = std::string("msg");
-  issue_info.default_action = IssueInfo::Action::DISMISS;
   issue_info.severity = IssueInfo::Severity::WARNING;
   return issue_info;
 }

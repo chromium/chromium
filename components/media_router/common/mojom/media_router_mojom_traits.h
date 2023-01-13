@@ -20,35 +20,6 @@ namespace mojo {
 // Issue
 
 template <>
-struct EnumTraits<media_router::mojom::Issue_ActionType,
-                  media_router::IssueInfo::Action> {
-  static media_router::mojom::Issue_ActionType ToMojom(
-      media_router::IssueInfo::Action action) {
-    switch (action) {
-      case media_router::IssueInfo::Action::DISMISS:
-        return media_router::mojom::Issue_ActionType::DISMISS;
-      case media_router::IssueInfo::Action::LEARN_MORE:
-        return media_router::mojom::Issue_ActionType::LEARN_MORE;
-    }
-    NOTREACHED() << "Unknown issue action type " << static_cast<int>(action);
-    return media_router::mojom::Issue_ActionType::DISMISS;
-  }
-
-  static bool FromMojom(media_router::mojom::Issue_ActionType input,
-                        media_router::IssueInfo::Action* output) {
-    switch (input) {
-      case media_router::mojom::Issue_ActionType::DISMISS:
-        *output = media_router::IssueInfo::Action::DISMISS;
-        return true;
-      case media_router::mojom::Issue_ActionType::LEARN_MORE:
-        *output = media_router::IssueInfo::Action::LEARN_MORE;
-        return true;
-    }
-    return false;
-  }
-};
-
-template <>
 struct EnumTraits<media_router::mojom::Issue_Severity,
                   media_router::IssueInfo::Severity> {
   static media_router::mojom::Issue_Severity ToMojom(
@@ -177,20 +148,6 @@ struct StructTraits<media_router::mojom::IssueDataView,
 
   static const std::string& message(const media_router::IssueInfo& issue) {
     return issue.message;
-  }
-
-  static media_router::IssueInfo::Action default_action(
-      const media_router::IssueInfo& issue) {
-    return issue.default_action;
-  }
-
-  static const std::vector<media_router::IssueInfo::Action>& secondary_actions(
-      const media_router::IssueInfo& issue) {
-    return issue.secondary_actions;
-  }
-
-  static int32_t help_page_id(const media_router::IssueInfo& issue) {
-    return issue.help_page_id;
   }
 };
 

@@ -415,8 +415,7 @@ void MediaRouterUI::SendIssueForRouteTimeout(
       break;
   }
 
-  IssueInfo issue_info(issue_title, IssueInfo::Action::DISMISS,
-                       IssueInfo::Severity::NOTIFICATION);
+  IssueInfo issue_info(issue_title, IssueInfo::Severity::NOTIFICATION);
   issue_info.sink_id = sink_id;
   AddIssue(issue_info);
 }
@@ -435,8 +434,7 @@ void MediaRouterUI::SendIssueForUserNotAllowed(const MediaSink::Id& sink_id) {
   std::string issue_title = l10n_util::GetStringFUTF8(
       IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_NOT_ALLOWED,
       GetSinkFriendlyNameFromId(sink_id));
-  IssueInfo issue_info(issue_title, IssueInfo::Action::DISMISS,
-                       IssueInfo::Severity::WARNING);
+  IssueInfo issue_info(issue_title, IssueInfo::Severity::WARNING);
   issue_info.sink_id = sink_id;
   AddIssue(issue_info);
 }
@@ -446,8 +444,7 @@ void MediaRouterUI::SendIssueForNotificationDisabled(
   std::string issue_title = l10n_util::GetStringFUTF8(
       IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_NOTIFICATION_DISABLED,
       GetSinkFriendlyNameFromId(sink_id));
-  IssueInfo issue_info(issue_title, IssueInfo::Action::DISMISS,
-                       IssueInfo::Severity::WARNING);
+  IssueInfo issue_info(issue_title, IssueInfo::Severity::WARNING);
   issue_info.sink_id = sink_id;
   AddIssue(issue_info);
 }
@@ -456,8 +453,7 @@ void MediaRouterUI::SendIssueForScreenPermission(const MediaSink::Id& sink_id) {
 #if BUILDFLAG(IS_MAC)
   std::string issue_title = l10n_util::GetStringUTF8(
       IDS_MEDIA_ROUTER_ISSUE_MAC_SCREEN_CAPTURE_PERMISSION_ERROR);
-  IssueInfo issue_info(issue_title, IssueInfo::Action::DISMISS,
-                       IssueInfo::Severity::WARNING);
+  IssueInfo issue_info(issue_title, IssueInfo::Severity::WARNING);
   issue_info.sink_id = sink_id;
   AddIssue(issue_info);
 #else
@@ -475,8 +471,7 @@ void MediaRouterUI::SendIssueForUnableToCast(MediaCastMode cast_mode,
                 IDS_MEDIA_ROUTER_ISSUE_UNABLE_TO_CAST_DESKTOP)
           : l10n_util::GetStringUTF8(
                 IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_TAB);
-  IssueInfo issue_info(issue_title, IssueInfo::Action::DISMISS,
-                       IssueInfo::Severity::WARNING);
+  IssueInfo issue_info(issue_title, IssueInfo::Severity::WARNING);
   issue_info.sink_id = sink_id;
   AddIssue(issue_info);
 }
@@ -485,7 +480,7 @@ void MediaRouterUI::SendIssueForTabAudioNotSupported(
     const MediaSink::Id& sink_id) {
   IssueInfo issue_info(
       l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_ISSUE_TAB_AUDIO_NOT_SUPPORTED),
-      IssueInfo::Action::DISMISS, IssueInfo::Severity::NOTIFICATION);
+      IssueInfo::Severity::NOTIFICATION);
   issue_info.sink_id = sink_id;
   AddIssue(issue_info);
 }
