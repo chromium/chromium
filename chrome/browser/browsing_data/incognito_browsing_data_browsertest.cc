@@ -462,8 +462,15 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MAYBE_WebSqlDeletion) {
   TestSiteData("WebSql");
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_EmptyWebSqlDeletion DISABLED_EmptyWebSqlDeletion
+#else
+#define MAYBE_EmptyWebSqlDeletion EmptyWebSqlDeletion
+#endif
 // Test that empty websql dbs are deleted correctly.
-IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, EmptyWebSqlDeletion) {
+IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
+                       MAYBE_EmptyWebSqlDeletion) {
   TestEmptySiteData("WebSql");
 }
 

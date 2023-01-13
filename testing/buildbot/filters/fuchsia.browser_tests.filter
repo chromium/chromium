@@ -4,8 +4,10 @@
 # Expected: blinkRequestResource XMLHttpRequest
 -ActivityLogApiTest.TriggerEvent
 
-# TODO(crbug.com/1326647): Comparison of a couple of very long strings in spanish has an unexpected
-# diff
+# TODO(crbug.com/1326647): Comparison of a couple of very long strings has an unexpected
+# diff. These tests pass when run locally, but fail on bots.
+-AllForms/FormStructureBrowserTest.DataDrivenHeuristics/87
+-AllForms/FormStructureBrowserTest.DataDrivenHeuristics/103
 -AllForms/FormStructureBrowserTest.DataDrivenHeuristics/153
 
 # TODO(crbug.com/1326648):
@@ -27,7 +29,6 @@
 -LoadingPredictorBrowserTestWithProxy.PrepareForPageLoadWithPrediction
 -LoadingPredictorBrowserTestWithProxy.PrepareForPageLoadWithoutPrediction
 -MyIpAddressProxyScriptBrowserTest.Verify
--SCTReportingServiceWithPersistenceBrowserTest.PersistedReportClearedOnClearBrowsingHistory
 
 # TODO(crbug.com/1326652):
 # ../../chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.cc:518: Failure
@@ -531,6 +532,7 @@
 -PrintPreviewDialogControllerBrowserTest.PdfPluginDisabled
 -PrintPreviewDialogControllerBrowserTest.PrintPreviewPdfAccessibility
 -ProxySettingsApiTest.ProxyEventsParseError
+-SCTReportingServiceBrowserTest.PersistedReportClearedOnClearBrowsingHistory
 -ServiceWorkerTest.MimeHandlerView
 -SitePerProcessHitTestBrowserTest.TouchpadPinchOverOOPIF
 -SitePerProcessPrintBrowserTest.*
