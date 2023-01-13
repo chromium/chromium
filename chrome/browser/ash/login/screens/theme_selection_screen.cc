@@ -61,13 +61,6 @@ bool ThemeSelectionScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (context.skip_post_login_screens_for_tests)
     return true;
 
-  if (features::IsOobeChoobeEnabled() &&
-      WizardController::default_controller()
-          ->GetChoobeFlowController()
-          ->ShouldScreenBeSkipped(ThemeSelectionScreenView::kScreenId)) {
-    return true;
-  }
-
   const PrefService::Preference* pref =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
           prefs::kDarkModeScheduleType);
@@ -75,6 +68,12 @@ bool ThemeSelectionScreen::ShouldBeSkipped(const WizardContext& context) const {
       !features::IsOobeThemeSelectionEnabled() ||
       !features::IsDarkLightModeEnabled()) {
     return true;
+  }
+
+  if (features::IsOobeChoobeEnabled()) {
+    return WizardController::default_controller()
+        ->GetChoobeFlowController()
+        ->ShouldScreenBeSkipped(ThemeSelectionScreenView::kScreenId);
   }
 
   return false;
