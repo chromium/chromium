@@ -306,6 +306,9 @@ BASE_FEATURE(kPrefetchDNSWithURL,
              "PrefetchDNSWithURL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<bool> kPrefetchDNSWithURLAllAnchorElements{
+    &kPrefetchDNSWithURL, "prefetch_dns_all_anchor_elements", true};
+
 // Preconnect to a new origin right when a redirect starts.
 BASE_FEATURE(kPreconnectOnRedirect,
              "PreconnectOnRedirect",

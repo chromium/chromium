@@ -26,6 +26,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -252,7 +253,12 @@ void HTMLAnchorElement::ParseAttribute(
       // GetDocument().GetFrame() could be null if this method is called from
       // DOMParser::parseFromString(), which internally creates a document
       // and eventually calls this.
-      if (GetDocument().IsDNSPrefetchEnabled() && GetDocument().GetFrame()) {
+      static bool enable =
+          !base::FeatureList::IsEnabled(
+              network::features::kPrefetchDNSWithURL) ||
+          network::features::kPrefetchDNSWithURLAllAnchorElements.Get();
+      if (GetDocument().IsDNSPrefetchEnabled() && GetDocument().GetFrame() &&
+          enable) {
         if (ProtocolIs(parsed_url, "http") || ProtocolIs(parsed_url, "https") ||
             parsed_url.StartsWith("//")) {
           WebPrescientNetworking* web_prescient_networking =
