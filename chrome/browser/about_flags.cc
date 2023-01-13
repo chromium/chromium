@@ -2841,26 +2841,6 @@ const FeatureEntry::FeatureVariation kVCBackgroundBlurVariations[] = {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const FeatureEntry::FeatureParam kMaxOverlays1 = {features::kMaxOverlaysParam,
-                                                  "1"};
-const FeatureEntry::FeatureParam kMaxOverlays2 = {features::kMaxOverlaysParam,
-                                                  "2"};
-const FeatureEntry::FeatureParam kMaxOverlays3 = {features::kMaxOverlaysParam,
-                                                  "3"};
-const FeatureEntry::FeatureParam kMaxOverlays4 = {features::kMaxOverlaysParam,
-                                                  "4"};
-const FeatureEntry::FeatureParam kMaxOverlays5 = {features::kMaxOverlaysParam,
-                                                  "5"};
-const FeatureEntry::FeatureParam kMaxOverlays6 = {features::kMaxOverlaysParam,
-                                                  "6"};
-
-const FeatureEntry::FeatureVariation kUseMultipleOverlaysVariations[] = {
-    {"1", &kMaxOverlays1, 1, nullptr}, {"2", &kMaxOverlays2, 1, nullptr},
-    {"3", &kMaxOverlays3, 1, nullptr}, {"4", &kMaxOverlays4, 1, nullptr},
-    {"5", &kMaxOverlays5, 1, nullptr}, {"6", &kMaxOverlays6, 1, nullptr}};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kGridTabSwitcherForTabletsPolished[] = {
     {"enable_launch_polish", "true"}};
@@ -8513,14 +8493,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"vc-portrait-relighting", flag_descriptions::kVCPortraitRelightingName,
      flag_descriptions::kVCPortraitRelightingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVCPortraitRelighting)},
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"use-multiple-overlays", flag_descriptions::kUseMultipleOverlaysName,
-     flag_descriptions::kUseMultipleOverlaysDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kUseMultipleOverlays,
-                                    kUseMultipleOverlaysVariations,
-                                    "UseMultipleOverlays")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

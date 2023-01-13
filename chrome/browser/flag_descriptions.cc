@@ -5957,11 +5957,6 @@ const char kUseFakeDeviceForMediaStreamDescription[] =
     "timestamp) instead of the system audio/video devices, for debugging "
     "purposes.";
 
-const char kUseMultipleOverlaysName[] = "Use Multiple Overlays";
-const char kUseMultipleOverlaysDescription[] =
-    "Specifies the maximum number of quads that Chrome will attempt to promote"
-    " to overlays.";
-
 const char kUXStudy1Name[] = "UX Study 1";
 const char kUXStudy1Description[] = "Opt into a group for UX Study";
 
