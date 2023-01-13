@@ -18,11 +18,9 @@
 
 namespace blink {
 
-class LayoutBoxTest : public testing::WithParamInterface<bool>,
-                      private ScopedLayoutNGForTest,
-                      public RenderingTest {
+class LayoutBoxTest : public RenderingTest {
  public:
-  LayoutBoxTest() : ScopedLayoutNGForTest(GetParam()) {}
+  LayoutBoxTest() = default;
 
  protected:
   bool ForegroundIsKnownToBeOpaqueInRect(const LayoutBox& box,
@@ -31,9 +29,7 @@ class LayoutBoxTest : public testing::WithParamInterface<bool>,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, LayoutBoxTest, testing::Bool());
-
-TEST_P(LayoutBoxTest, BackgroundIsKnownToBeObscured) {
+TEST_F(LayoutBoxTest, BackgroundIsKnownToBeObscured) {
   SetBodyInnerHTML(R"HTML(
     <style>.column { width: 295.4px; padding-left: 10.4px; }
     .white-background { background: red; position: relative; overflow:
@@ -47,7 +43,7 @@ TEST_P(LayoutBoxTest, BackgroundIsKnownToBeObscured) {
   EXPECT_TRUE(target->BackgroundIsKnownToBeObscured());
 }
 
-TEST_P(LayoutBoxTest, BackgroundNotObscuredWithCssClippedChild) {
+TEST_F(LayoutBoxTest, BackgroundNotObscuredWithCssClippedChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -76,7 +72,7 @@ TEST_P(LayoutBoxTest, BackgroundNotObscuredWithCssClippedChild) {
   EXPECT_FALSE(parent->BackgroundIsKnownToBeObscured());
 }
 
-TEST_P(LayoutBoxTest, BackgroundNotObscuredWithCssClippedGrandChild) {
+TEST_F(LayoutBoxTest, BackgroundNotObscuredWithCssClippedGrandChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -115,7 +111,7 @@ TEST_P(LayoutBoxTest, BackgroundNotObscuredWithCssClippedGrandChild) {
   EXPECT_FALSE(parent->BackgroundIsKnownToBeObscured());
 }
 
-TEST_P(LayoutBoxTest, ForegroundIsKnownToBeOpaqueInRect) {
+TEST_F(LayoutBoxTest, ForegroundIsKnownToBeOpaqueInRect) {
   SetBodyInnerHTML(R"HTML(
     <div id="target" style="width: 30px; height: 30px">
       <div style="width: 10px; height: 10px; background: blue"></div>
@@ -149,7 +145,7 @@ TEST_P(LayoutBoxTest, ForegroundIsKnownToBeOpaqueInRect) {
       ForegroundIsKnownToBeOpaqueInRect(target, PhysicalRect(0, 0, 10, 30)));
 }
 
-TEST_P(LayoutBoxTest, ForegroundIsKnownToBeOpaqueInRectVerticalRL) {
+TEST_F(LayoutBoxTest, ForegroundIsKnownToBeOpaqueInRectVerticalRL) {
   SetBodyInnerHTML(R"HTML(
     <div id="target"
          style="width: 30px; height: 30px; writing-mode: vertical-rl">
@@ -185,7 +181,7 @@ TEST_P(LayoutBoxTest, ForegroundIsKnownToBeOpaqueInRectVerticalRL) {
       ForegroundIsKnownToBeOpaqueInRect(target, PhysicalRect(20, 0, 30, 10)));
 }
 
-TEST_P(LayoutBoxTest, BackgroundRect) {
+TEST_F(LayoutBoxTest, BackgroundRect) {
   SetBodyInnerHTML(R"HTML(
     <style>
       div { position: absolute; width: 100px; height: 100px;
@@ -344,7 +340,7 @@ TEST_P(LayoutBoxTest, BackgroundRect) {
       layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent).IsEmpty());
 }
 
-TEST_P(LayoutBoxTest, LocationContainer) {
+TEST_F(LayoutBoxTest, LocationContainer) {
   SetBodyInnerHTML(R"HTML(
     <div id='div'>
       <b>Inline content<img id='img'></b>
@@ -377,7 +373,7 @@ TEST_P(LayoutBoxTest, LocationContainer) {
     EXPECT_EQ(tbody, cell->LocationContainer());
 }
 
-TEST_P(LayoutBoxTest, TopLeftLocationFlipped) {
+TEST_F(LayoutBoxTest, TopLeftLocationFlipped) {
   SetBodyInnerHTML(R"HTML(
     <div style='width: 600px; height: 200px; writing-mode: vertical-rl'>
       <div id='box1' style='width: 100px'></div>
@@ -394,7 +390,7 @@ TEST_P(LayoutBoxTest, TopLeftLocationFlipped) {
   EXPECT_EQ(PhysicalOffset(300, 0), box2->PhysicalLocation());
 }
 
-TEST_P(LayoutBoxTest, TableRowCellTopLeftLocationFlipped) {
+TEST_F(LayoutBoxTest, TableRowCellTopLeftLocationFlipped) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   SetBodyInnerHTML(R"HTML(
     <div style='writing-mode: vertical-rl'>
@@ -440,7 +436,7 @@ TEST_P(LayoutBoxTest, TableRowCellTopLeftLocationFlipped) {
   EXPECT_EQ(PhysicalOffset(0, 0), cell2->PhysicalLocation());
 }
 
-TEST_P(LayoutBoxTest, LocationContainerOfSVG) {
+TEST_F(LayoutBoxTest, LocationContainerOfSVG) {
   SetBodyInnerHTML(R"HTML(
     <svg id='svg' style='writing-mode:vertical-rl' width='500' height='500'>
       <foreignObject x='44' y='77' width='100' height='80' id='foreign'>
@@ -470,7 +466,7 @@ TEST_P(LayoutBoxTest, LocationContainerOfSVG) {
   EXPECT_TRUE(child->HasFlippedBlocksWritingMode());
 }
 
-TEST_P(LayoutBoxTest, ControlClip) {
+TEST_F(LayoutBoxTest, ControlClip) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * { margin: 0; }
@@ -488,7 +484,7 @@ TEST_P(LayoutBoxTest, ControlClip) {
   EXPECT_EQ(PhysicalRect(2, 2, 96, 46), target->ClippingRect(PhysicalOffset()));
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectWithBlockChild) {
+TEST_F(LayoutBoxTest, VisualOverflowRectWithBlockChild) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='width: 100px; height: 100px; baground: blue'>
       <div style='width: 300px; height: 300px; background: green'></div>
@@ -500,7 +496,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithBlockChild) {
   EXPECT_EQ(LayoutRect(0, 0, 300, 300), target->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectWithLegacyChild) {
+TEST_F(LayoutBoxTest, VisualOverflowRectWithLegacyChild) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='width: 100px; height: 100px; baground: blue'>
       <svg height='300' width='300' style='display: block'></svg>
@@ -512,7 +508,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithLegacyChild) {
   EXPECT_EQ(LayoutRect(0, 0, 300, 300), target->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectWithMask) {
+TEST_F(LayoutBoxTest, VisualOverflowRectWithMask) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='-webkit-mask-image: url(#a);
          width: 100px; height: 100px; baground: blue'>
@@ -528,7 +524,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithMask) {
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectWithMaskAndOverflowHidden) {
+TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskAndOverflowHidden) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='-webkit-mask-image: url(#a); overflow: hidden;
          width: 100px; height: 100px; background: blue'>
@@ -544,7 +540,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithMaskAndOverflowHidden) {
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectWithMaskWithOutset) {
+TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskWithOutset) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='-webkit-mask-box-image-source: url(#a);
     -webkit-mask-box-image-outset: 10px 20px;
@@ -561,7 +557,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithMaskWithOutset) {
   EXPECT_EQ(LayoutRect(-20, -10, 140, 120), target->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectWithMaskWithOutsetAndOverflowHidden) {
+TEST_F(LayoutBoxTest, VisualOverflowRectWithMaskWithOutsetAndOverflowHidden) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='-webkit-mask-box-image-source: url(#a);
     -webkit-mask-box-image-outset: 10px 20px; overflow: hidden;
@@ -578,7 +574,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithMaskWithOutsetAndOverflowHidden) {
   EXPECT_EQ(LayoutRect(-20, -10, 140, 120), target->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectOverflowHidden) {
+TEST_F(LayoutBoxTest, VisualOverflowRectOverflowHidden) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='overflow: hidden;
          width: 100px; height: 100px; background: blue'>
@@ -593,7 +589,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectOverflowHidden) {
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectOverflowClip) {
+TEST_F(LayoutBoxTest, VisualOverflowRectOverflowClip) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .parent { width: 100px; height: 50px; }
@@ -629,7 +625,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectOverflowClip) {
   EXPECT_EQ(LayoutRect(0, 0, 300, 50), clip_y->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
+TEST_F(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .parent { width: 100px; height: 50px; overflow: clip; }
@@ -663,7 +659,7 @@ TEST_P(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
   EXPECT_EQ(LayoutRect(0, 0, 110, 55), clip3->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
+TEST_F(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .parent { width: 100px; height: 50px; overflow: clip; }
@@ -714,7 +710,7 @@ TEST_P(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
     EXPECT_EQ(rect, layout_box->ContentsVisualOverflowRect()); \
   }
 
-TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {
+TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
   SetBodyInnerHTML(R"HTML(
     <style>
       div { width: 100px; height: 100px }
@@ -765,7 +761,7 @@ TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {
   EXPECT_EQ(LayoutRect(-70, 0, 230, 210), a->VisualOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, HitTestContainPaint) {
+TEST_F(LayoutBoxTest, HitTestContainPaint) {
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='width: 100px; height: 200px; contain: paint'>
       <div id='child' style='width: 300px; height: 400px;'></div>
@@ -779,7 +775,7 @@ TEST_P(LayoutBoxTest, HitTestContainPaint) {
   EXPECT_EQ(GetDocument().documentElement(), HitTest(10, 250));
 }
 
-TEST_P(LayoutBoxTest, OverflowRectsContainPaint) {
+TEST_F(LayoutBoxTest, OverflowRectsContainPaint) {
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='width: 100px; height: 200px; contain: paint;
                                border: 10px solid blue'>
@@ -797,7 +793,7 @@ TEST_P(LayoutBoxTest, OverflowRectsContainPaint) {
             container->OverflowClipRect(PhysicalOffset()));
 }
 
-TEST_P(LayoutBoxTest, OverflowRectsOverflowHidden) {
+TEST_F(LayoutBoxTest, OverflowRectsOverflowHidden) {
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='width: 100px; height: 200px; overflow: hidden;
                                border: 10px solid blue'>
@@ -815,7 +811,7 @@ TEST_P(LayoutBoxTest, OverflowRectsOverflowHidden) {
             container->OverflowClipRect(PhysicalOffset()));
 }
 
-TEST_P(LayoutBoxTest, SetTextFieldIntrinsicInlineSize) {
+TEST_F(LayoutBoxTest, SetTextFieldIntrinsicInlineSize) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
    <style>
@@ -844,7 +840,7 @@ class AnimatedImage : public StubImage {
   bool MaybeAnimated() override { return true; }
 };
 
-TEST_P(LayoutBoxTest, DelayedInvalidation) {
+TEST_F(LayoutBoxTest, DelayedInvalidation) {
   SetBodyInnerHTML("<img id='image' style='width: 100px; height: 100px;'/>");
   auto* obj = GetLayoutBoxByElementId("image");
   ASSERT_TRUE(obj);
@@ -876,7 +872,7 @@ TEST_P(LayoutBoxTest, DelayedInvalidation) {
   EXPECT_FALSE(obj->ShouldDelayFullPaintInvalidation());
 }
 
-TEST_P(LayoutBoxTest, MarkerContainerLayoutOverflowRect) {
+TEST_F(LayoutBoxTest, MarkerContainerLayoutOverflowRect) {
   SetBodyInnerHTML(R"HTML(
     <style>
       html { font-size: 16px; }
@@ -926,7 +922,7 @@ static String CommonStyleForGeometryWithScrollbarTests() {
   )HTML";
 }
 
-TEST_P(LayoutBoxTest, LocationOfAbsoluteChildWithContainerScrollbars) {
+TEST_F(LayoutBoxTest, LocationOfAbsoluteChildWithContainerScrollbars) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>
       .container { position: relative; }
@@ -993,7 +989,7 @@ TEST_P(LayoutBoxTest, LocationOfAbsoluteChildWithContainerScrollbars) {
   EXPECT_EQ(PhysicalOffset(150, 90), rtl_vrl->PhysicalLocation());
 }
 
-TEST_P(LayoutBoxTest,
+TEST_F(LayoutBoxTest,
        LocationOfAbsoluteChildWithContainerScrollbarsDifferentWritingModes) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>
@@ -1068,7 +1064,7 @@ TEST_P(LayoutBoxTest,
   }
 }
 
-TEST_P(LayoutBoxTest,
+TEST_F(LayoutBoxTest,
        LocationOfAbsoluteAutoTopLeftChildWithContainerScrollbars) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>
@@ -1141,7 +1137,7 @@ TEST_P(LayoutBoxTest,
   EXPECT_EQ(PhysicalOffset(325, 134), rtl_vrl->PhysicalLocation());
 }
 
-TEST_P(LayoutBoxTest,
+TEST_F(LayoutBoxTest,
        LocationOfAbsoluteAutoTopLeftGrandChildWithContainerScrollbars) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>
@@ -1209,7 +1205,7 @@ TEST_P(LayoutBoxTest,
   EXPECT_EQ(PhysicalOffset(325, 134), rtl_vrl->PhysicalLocation());
 }
 
-TEST_P(LayoutBoxTest, LocationOfInFlowChildWithContainerScrollbars) {
+TEST_F(LayoutBoxTest, LocationOfInFlowChildWithContainerScrollbars) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>.offset { width: 100px; height: 70px; }</style>
     <div class="container">
@@ -1289,7 +1285,7 @@ TEST_P(LayoutBoxTest, LocationOfInFlowChildWithContainerScrollbars) {
   EXPECT_EQ(PhysicalOffset(225, 134), rtl_vrl->PhysicalLocation());
 }
 
-TEST_P(LayoutBoxTest, LocationOfRelativeChildWithContainerScrollbars) {
+TEST_F(LayoutBoxTest, LocationOfRelativeChildWithContainerScrollbars) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>
       .offset { width: 100px; height: 70px; }
@@ -1382,7 +1378,7 @@ TEST_P(LayoutBoxTest, LocationOfRelativeChildWithContainerScrollbars) {
   }
 }
 
-TEST_P(LayoutBoxTest, LocationOfFloatLeftChildWithContainerScrollbars) {
+TEST_F(LayoutBoxTest, LocationOfFloatLeftChildWithContainerScrollbars) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>.child { float: left; }</style>
     <div class="container">
@@ -1447,7 +1443,7 @@ TEST_P(LayoutBoxTest, LocationOfFloatLeftChildWithContainerScrollbars) {
   EXPECT_EQ(PhysicalOffset(325, 30), rtl_vrl->PhysicalLocation());
 }
 
-TEST_P(LayoutBoxTest, LocationOfFloatRightChildWithContainerScrollbars) {
+TEST_F(LayoutBoxTest, LocationOfFloatRightChildWithContainerScrollbars) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>.child { float: right; }</style>
     <div class="container">
@@ -1516,7 +1512,7 @@ TEST_P(LayoutBoxTest, LocationOfFloatRightChildWithContainerScrollbars) {
   EXPECT_EQ(PhysicalOffset(325, 134), rtl_vrl->PhysicalLocation());
 }
 
-TEST_P(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
+TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <div id="normal" class="container">
       <div class="child"></div>
@@ -1618,7 +1614,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_EQ(LayoutRect(45, 20, 445, 324), rtl_vrl->LayoutOverflowRect());
 }
 
-TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
+TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   SetBodyInnerHTML(CommonStyleForGeometryWithScrollbarTests() + R"HTML(
     <style>
       .child { width: 2000px; height: 1000px; box-sizing: border-box;}
@@ -1812,7 +1808,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), rtl_vrl->PhysicalContentBoxRect());
 }
 
-TEST_P(LayoutBoxTest, HasNonCollapsedBorderDecoration) {
+TEST_F(LayoutBoxTest, HasNonCollapsedBorderDecoration) {
   SetBodyInnerHTML("<div id='div'></div>");
   auto* div = GetLayoutBoxByElementId("div");
   EXPECT_FALSE(div->HasNonCollapsedBorderDecoration());
@@ -1824,7 +1820,7 @@ TEST_P(LayoutBoxTest, HasNonCollapsedBorderDecoration) {
   EXPECT_TRUE(div->HasNonCollapsedBorderDecoration());
 }
 
-TEST_P(LayoutBoxTest,
+TEST_F(LayoutBoxTest,
        ThickScrollbarSubpixelSizeMarginNoDirtyLayoutAfterLayout) {
   // |target| creates horizontal scrollbar during layout because the contents
   // overflow horizontally, which causes vertical overflow because the
@@ -1852,7 +1848,7 @@ TEST_P(LayoutBoxTest,
 }
 
 // crbug.com/1108270
-TEST_P(LayoutBoxTest, MenuListIntrinsicBlockSize) {
+TEST_F(LayoutBoxTest, MenuListIntrinsicBlockSize) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .hidden { content-visibility: hidden; }
@@ -1864,7 +1860,7 @@ TEST_P(LayoutBoxTest, MenuListIntrinsicBlockSize) {
   // The test passes if no crash.
 }
 
-TEST_P(LayoutBoxTest, HasReflection) {
+TEST_F(LayoutBoxTest, HasReflection) {
   SetBodyInnerHTML(R"HTML(
     <style>* { -webkit-box-reflect: above; }</style>
     <table id="table">
@@ -1893,7 +1889,7 @@ TEST_P(LayoutBoxTest, HasReflection) {
   check_has_layer_and_reflection("svg-text", false);
 }
 
-TEST_P(LayoutBoxTest, PhysicalVisualOverflowRectIncludingFilters) {
+TEST_F(LayoutBoxTest, PhysicalVisualOverflowRectIncludingFilters) {
   SetBodyInnerHTML(R"HTML(
     <div style="zoom: 2">
       <div id="target" style="filter: blur(2px); width: 100px; height: 100px">
@@ -1909,7 +1905,7 @@ TEST_P(LayoutBoxTest, PhysicalVisualOverflowRectIncludingFilters) {
                 ->PhysicalVisualOverflowRectIncludingFilters());
 }
 
-TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcLayoutBox) {
+TEST_F(LayoutBoxTest, SetNeedsOverflowRecalcLayoutBox) {
   SetBodyInnerHTML(R"HTML(
     <style>
     .transform { transform: translateX(10px); }
@@ -1932,7 +1928,7 @@ TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcLayoutBox) {
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 }
 
-TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
+TEST_F(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
   SetBodyInnerHTML(R"HTML(
     <style>
     .transform { transform: translateX(10px); }
@@ -1955,17 +1951,17 @@ TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 }
 
-TEST_P(LayoutBoxTest, ScrollsWithViewportRelativePosition) {
+TEST_F(LayoutBoxTest, ScrollsWithViewportRelativePosition) {
   SetBodyInnerHTML("<div id='target' style='position: relative'></div>");
   EXPECT_FALSE(GetLayoutBoxByElementId("target")->IsFixedToView());
 }
 
-TEST_P(LayoutBoxTest, ScrollsWithViewportFixedPosition) {
+TEST_F(LayoutBoxTest, ScrollsWithViewportFixedPosition) {
   SetBodyInnerHTML("<div id='target' style='position: fixed'></div>");
   EXPECT_TRUE(GetLayoutBoxByElementId("target")->IsFixedToView());
 }
 
-TEST_P(LayoutBoxTest, ScrollsWithViewportFixedPositionInsideTransform) {
+TEST_F(LayoutBoxTest, ScrollsWithViewportFixedPositionInsideTransform) {
   SetBodyInnerHTML(R"HTML(
     <div style='transform: translateZ(0)'>
       <div id='target' style='position: fixed'></div>
@@ -1975,7 +1971,7 @@ TEST_P(LayoutBoxTest, ScrollsWithViewportFixedPositionInsideTransform) {
   EXPECT_FALSE(GetLayoutBoxByElementId("target")->IsFixedToView());
 }
 
-TEST_P(LayoutBoxTest, HitTestResizerWithTextAreaChild) {
+TEST_F(LayoutBoxTest, HitTestResizerWithTextAreaChild) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
     <div id="target"
@@ -1990,7 +1986,7 @@ TEST_P(LayoutBoxTest, HitTestResizerWithTextAreaChild) {
       GetDocument().getElementById("textarea")));
 }
 
-TEST_P(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
+TEST_F(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
     <div id="target" style="position: relative; width: 100px; height: 100px;

@@ -10,11 +10,9 @@
 
 namespace blink {
 
-class LayoutFlexibleBoxTest : public testing::WithParamInterface<bool>,
-                              private ScopedLayoutNGForTest,
-                              public RenderingTest {
+class LayoutFlexibleBoxTest : public RenderingTest {
  public:
-  LayoutFlexibleBoxTest() : ScopedLayoutNGForTest(GetParam()) {}
+  LayoutFlexibleBoxTest() = default;
 
  protected:
   void ExpectSameAsRowHTB();
@@ -24,8 +22,6 @@ class LayoutFlexibleBoxTest : public testing::WithParamInterface<bool>,
   void ExpectSameAsRowReverseVRL();
   void ExpectSameAsRTLRowHTB();
 };
-
-INSTANTIATE_TEST_SUITE_P(All, LayoutFlexibleBoxTest, testing::Bool());
 
 static String CommonStyle() {
   return R"HTML(
@@ -111,7 +107,7 @@ void LayoutFlexibleBoxTest::ExpectSameAsRowHTB() {
   EXPECT_EQ(PhysicalOffset(90, 30), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowHTB) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowHTB) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="row htb">
       <div id="child"></div>
@@ -148,7 +144,7 @@ void LayoutFlexibleBoxTest::ExpectSameAsRowVLR() {
   EXPECT_EQ(PhysicalOffset(90, 30), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowVLR) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowVLR) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="row vlr">
       <div id="child"></div>
@@ -184,7 +180,7 @@ void LayoutFlexibleBoxTest::ExpectSameAsRowVRL() {
   EXPECT_EQ(PhysicalOffset(-1525, 30), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowVRL) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowVRL) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="row vrl">
       <div id="child"></div>
@@ -193,7 +189,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowVRL) {
   ExpectSameAsRowVRL();
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowReverseHTB) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowReverseHTB) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="row-reverse htb">
       <div id="child"></div>
@@ -275,7 +271,7 @@ void LayoutFlexibleBoxTest::ExpectSameAsRowReverseVLR() {
   EXPECT_EQ(PhysicalOffset(90, -686), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowReverseVLR) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowReverseVLR) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="row-reverse vlr">
       <div id="child"></div>
@@ -317,7 +313,7 @@ void LayoutFlexibleBoxTest::ExpectSameAsRowReverseVRL() {
   EXPECT_EQ(PhysicalOffset(-1525, -686), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowReverseVRL) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowReverseVRL) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="row-reverse vrl">
       <div id="child"></div>
@@ -326,7 +322,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRowReverseVRL) {
   ExpectSameAsRowReverseVRL();
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnHTB) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnHTB) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="column htb">
       <div id="child"></div>
@@ -335,7 +331,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnHTB) {
   ExpectSameAsRowHTB();
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnVLR) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnVLR) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="column vlr">
       <div id="child"></div>
@@ -344,7 +340,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnVLR) {
   ExpectSameAsRowVLR();
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnVRL) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnVRL) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="column vrl">
       <div id="child"></div>
@@ -357,7 +353,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnVRL) {
 // numbers in the above tests. See the explanation of the same number in the
 // above tests for the steps of calculations.
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseHTB) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseHTB) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="column-reverse htb">
       <div id="child"></div>
@@ -392,7 +388,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseHTB) {
   EXPECT_EQ(PhysicalOffset(90, -686), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseVLR) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseVLR) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="column-reverse vlr">
       <div id="child"></div>
@@ -427,7 +423,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseVLR) {
   EXPECT_EQ(PhysicalOffset(-1525, 30), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseVRL) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsColumnReverseVRL) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="column-reverse vrl">
       <div id="child"></div>
@@ -489,7 +485,7 @@ void LayoutFlexibleBoxTest::ExpectSameAsRTLRowHTB() {
   EXPECT_EQ(PhysicalOffset(-1510, 30), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowHTB) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowHTB) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="rtl row htb">
       <div id="child"></div>
@@ -498,7 +494,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowHTB) {
   ExpectSameAsRTLRowHTB();
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowVLR) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowVLR) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="rtl row vlr">
       <div id="child"></div>
@@ -507,7 +503,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowVLR) {
   ExpectSameAsRowReverseVLR();
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowVRL) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowVRL) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="rtl row vrl">
       <div id="child"></div>
@@ -516,7 +512,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowVRL) {
   ExpectSameAsRowReverseVRL();
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseHTB) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseHTB) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="rtl row-reverse htb">
       <div id="child"></div>
@@ -547,7 +543,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseHTB) {
   EXPECT_EQ(PhysicalOffset(105, 30), child->PhysicalLocation());
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseVLR) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseVLR) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="rtl row-reverse vlr">
       <div id="child"></div>
@@ -556,7 +552,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseVLR) {
   ExpectSameAsRowVLR();
 }
 
-TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseVRL) {
+TEST_F(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseVRL) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" class="rtl row-reverse vrl">
       <div id="child"></div>
@@ -565,7 +561,7 @@ TEST_P(LayoutFlexibleBoxTest, GeometriesWithScrollbarsRTLRowReverseVRL) {
   ExpectSameAsRowVRL();
 }
 
-TEST_P(LayoutFlexibleBoxTest, ResizedFlexChildRequiresVisualOverflowRecalc) {
+TEST_F(LayoutFlexibleBoxTest, ResizedFlexChildRequiresVisualOverflowRecalc) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #parent {
@@ -611,7 +607,7 @@ TEST_P(LayoutFlexibleBoxTest, ResizedFlexChildRequiresVisualOverflowRecalc) {
             PhysicalRect(0, 0, 105, 960));
 }
 
-TEST_P(LayoutFlexibleBoxTest, PercentDefiniteGapUseCounter) {
+TEST_F(LayoutFlexibleBoxTest, PercentDefiniteGapUseCounter) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div id="flex-box" style="gap: 20%;"></div>
   )HTML");
@@ -624,7 +620,7 @@ TEST_P(LayoutFlexibleBoxTest, PercentDefiniteGapUseCounter) {
       GetDocument().IsUseCounted(WebFeature::kFlexRowGapPercentIndefinite));
 }
 
-TEST_P(LayoutFlexibleBoxTest, PercentIndefiniteGapUseCounter) {
+TEST_F(LayoutFlexibleBoxTest, PercentIndefiniteGapUseCounter) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div style="display: flex; row-gap: 20%;"></div>
   )HTML");
@@ -637,7 +633,7 @@ TEST_P(LayoutFlexibleBoxTest, PercentIndefiniteGapUseCounter) {
       GetDocument().IsUseCounted(WebFeature::kFlexRowGapPercentIndefinite));
 }
 
-TEST_P(LayoutFlexibleBoxTest, ZeroGapUseCounter) {
+TEST_F(LayoutFlexibleBoxTest, ZeroGapUseCounter) {
   SetBodyInnerHTML(CommonStyle() + R"HTML(
     <div style="display: flex; gap: 0;"></div>
   )HTML");
@@ -650,7 +646,7 @@ TEST_P(LayoutFlexibleBoxTest, ZeroGapUseCounter) {
       GetDocument().IsUseCounted(WebFeature::kFlexRowGapPercentIndefinite));
 }
 
-TEST_P(LayoutFlexibleBoxTest, NormalGapUseCounter) {
+TEST_F(LayoutFlexibleBoxTest, NormalGapUseCounter) {
   // 'normal' is the initial value. It resolves to non-zero for multi-col but 0
   // for flex.
   SetBodyInnerHTML(CommonStyle() + R"HTML(

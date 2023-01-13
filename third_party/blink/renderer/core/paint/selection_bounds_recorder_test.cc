@@ -13,25 +13,9 @@ using testing::ElementsAre;
 
 namespace blink {
 
-class SelectionBoundsRecorderTest : public PaintControllerPaintTestBase,
-                                    public testing::WithParamInterface<bool>,
-                                    public ScopedLayoutNGForTest {
- public:
-  SelectionBoundsRecorderTest() : ScopedLayoutNGForTest(GetParam()) {}
-};
+class SelectionBoundsRecorderTest : public PaintControllerPaintTestBase {};
 
-struct SelectionBoundsRecorderTestPassToString {
-  std::string operator()(const testing::TestParamInfo<bool> b) const {
-    return b.param ? "LayoutNG" : "LegacyLayout";
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SelectionBoundsRecorderTest,
-                         ::testing::Bool(),
-                         SelectionBoundsRecorderTestPassToString());
-
-TEST_P(SelectionBoundsRecorderTest, SelectAll) {
+TEST_F(SelectionBoundsRecorderTest, SelectAll) {
   SetBodyInnerHTML("<span>A<br>B<br>C</span>");
 
   LocalFrame* local_frame = GetDocument().GetFrame();
@@ -56,7 +40,7 @@ TEST_P(SelectionBoundsRecorderTest, SelectAll) {
   EXPECT_EQ(end.edge_end, gfx::Point(9, 11));
 }
 
-TEST_P(SelectionBoundsRecorderTest, SelectMultiline) {
+TEST_F(SelectionBoundsRecorderTest, SelectMultiline) {
   LocalFrame* local_frame = GetDocument().GetFrame();
   LoadAhem(*local_frame);
 
@@ -89,7 +73,7 @@ TEST_P(SelectionBoundsRecorderTest, SelectMultiline) {
   EXPECT_EQ(end.edge_end, gfx::Point(19, 9));
 }
 
-TEST_P(SelectionBoundsRecorderTest, SelectMultilineEmptyStartEnd) {
+TEST_F(SelectionBoundsRecorderTest, SelectMultilineEmptyStartEnd) {
   LocalFrame* local_frame = GetDocument().GetFrame();
   LoadAhem(*local_frame);
   local_frame->Selection().SetSelectionAndEndTyping(
@@ -121,7 +105,7 @@ TEST_P(SelectionBoundsRecorderTest, SelectMultilineEmptyStartEnd) {
   EXPECT_EQ(end.edge_end, gfx::Point(0, 30));
 }
 
-TEST_P(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
+TEST_F(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
   LocalFrame* local_frame = GetDocument().GetFrame();
   LoadAhem(*local_frame);
 

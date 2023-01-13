@@ -10,8 +10,7 @@
 namespace blink {
 namespace test {
 
-TEST_P(ParameterizedAccessibilityTest,
-       TextOffsetInFormattingContextWithLayoutReplaced) {
+TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutReplaced) {
   SetBodyInnerHTML(R"HTML(
       <p>
         Before <img id="replaced" alt="alt"> after.
@@ -27,8 +26,7 @@ TEST_P(ParameterizedAccessibilityTest,
   EXPECT_EQ(8, ax_replaced->TextOffsetInFormattingContext(1));
 }
 
-TEST_P(ParameterizedAccessibilityTest,
-       TextOffsetInFormattingContextWithLayoutInline) {
+TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutInline) {
   SetBodyInnerHTML(R"HTML(
       <p>
         Before <a id="inline" href="#">link</a> after.
@@ -44,7 +42,7 @@ TEST_P(ParameterizedAccessibilityTest,
   EXPECT_EQ(8, ax_inline->TextOffsetInFormattingContext(1));
 }
 
-TEST_P(ParameterizedAccessibilityTest,
+TEST_F(AccessibilityTest,
        TextOffsetInFormattingContextWithLayoutBlockFlowAtInlineLevel) {
   SetBodyInnerHTML(R"HTML(
       <p>
@@ -62,7 +60,7 @@ TEST_P(ParameterizedAccessibilityTest,
   EXPECT_EQ(8, ax_block_flow->TextOffsetInFormattingContext(1));
 }
 
-TEST_P(ParameterizedAccessibilityTest,
+TEST_F(AccessibilityTest,
        TextOffsetInFormattingContextWithLayoutBlockFlowAtBlockLevel) {
   // NGOffsetMapping does not support block flow objects that are at
   // block-level, so we do not support them as well.
@@ -83,8 +81,7 @@ TEST_P(ParameterizedAccessibilityTest,
   EXPECT_EQ(1, ax_block_flow->TextOffsetInFormattingContext(1));
 }
 
-TEST_P(ParameterizedAccessibilityTest,
-       TextOffsetInFormattingContextWithLayoutText) {
+TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutText) {
   SetBodyInnerHTML(R"HTML(
       <p>
         Before <span id="span">text</span> after.
@@ -101,8 +98,7 @@ TEST_P(ParameterizedAccessibilityTest,
   EXPECT_EQ(8, ax_text->TextOffsetInFormattingContext(1));
 }
 
-TEST_P(ParameterizedAccessibilityTest,
-       TextOffsetInFormattingContextWithLayoutBr) {
+TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutBr) {
   SetBodyInnerHTML(R"HTML(
       <p>
         Before <br id="br"> after.
@@ -117,8 +113,7 @@ TEST_P(ParameterizedAccessibilityTest,
   EXPECT_EQ(7, ax_br->TextOffsetInFormattingContext(1));
 }
 
-TEST_P(ParameterizedAccessibilityTest,
-       TextOffsetInFormattingContextWithLayoutFirstLetter) {
+TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutFirstLetter) {
   SetBodyInnerHTML(R"HTML(
       <style>
         q::first-letter {
@@ -140,7 +135,7 @@ TEST_P(ParameterizedAccessibilityTest,
   EXPECT_EQ(8, ax_first_letter->TextOffsetInFormattingContext(1));
 }
 
-TEST_P(ParameterizedAccessibilityTest,
+TEST_F(AccessibilityTest,
        TextOffsetInFormattingContextWithCSSGeneratedContent) {
   SetBodyInnerHTML(R"HTML(
       <style>

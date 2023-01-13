@@ -885,7 +885,7 @@ TEST_F(AccessibilityTest, AxNodeObjectInPageLinkTargetNonAscii) {
   }
 }
 
-TEST_P(ParameterizedAccessibilityTest, NextOnLine) {
+TEST_F(AccessibilityTest, NextOnLine) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html {
@@ -1078,7 +1078,7 @@ TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
   EXPECT_TRUE(br->IsLineBreakingObject());
 }
 
-TEST_P(ParameterizedAccessibilityTest, ListMarkerIsNotLineBreakingObject) {
+TEST_F(AccessibilityTest, ListMarkerIsNotLineBreakingObject) {
   SetBodyInnerHTML(R"HTML(
       <style>
         ul li::marker {

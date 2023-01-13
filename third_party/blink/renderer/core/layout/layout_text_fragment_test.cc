@@ -43,25 +43,7 @@ class LayoutTextFragmentTest : public RenderingTest {
   }
 };
 
-// Helper class to run the same test code with and without LayoutNG
-class ParameterizedLayoutTextFragmentTest
-    : public testing::WithParamInterface<bool>,
-      private ScopedLayoutNGForTest,
-      public LayoutTextFragmentTest {
- public:
-  ParameterizedLayoutTextFragmentTest() : ScopedLayoutNGForTest(GetParam()) {}
-
- protected:
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ParameterizedLayoutTextFragmentTest,
-                         testing::Bool());
-
-TEST_P(ParameterizedLayoutTextFragmentTest, Basics) {
+TEST_F(LayoutTextFragmentTest, Basics) {
   SetBasicBody("foo");
 
   EXPECT_EQ(0, GetFirstLetter()->CaretMinOffset());
@@ -75,7 +57,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, Basics) {
   EXPECT_TRUE(GetRemainingText()->ContainsCaretOffset(0));
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest, CaretMinMaxOffset) {
+TEST_F(LayoutTextFragmentTest, CaretMinMaxOffset) {
   SetBasicBody("(f)oo");
   EXPECT_EQ(0, GetFirstLetter()->CaretMinOffset());
   EXPECT_EQ(3, GetFirstLetter()->CaretMaxOffset());
@@ -101,7 +83,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, CaretMinMaxOffset) {
   EXPECT_EQ(2, GetRemainingText()->CaretMaxOffset());
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest, CaretMinMaxOffsetSpacesInBetween) {
+TEST_F(LayoutTextFragmentTest, CaretMinMaxOffsetSpacesInBetween) {
   SetBasicBody("(f)  oo");
   EXPECT_EQ(0, GetFirstLetter()->CaretMinOffset());
   EXPECT_EQ(3, GetFirstLetter()->CaretMaxOffset());
@@ -127,8 +109,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, CaretMinMaxOffsetSpacesInBetween) {
   EXPECT_EQ(4, GetRemainingText()->CaretMaxOffset());
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest,
-       CaretMinMaxOffsetCollapsedRemainingText) {
+TEST_F(LayoutTextFragmentTest, CaretMinMaxOffsetCollapsedRemainingText) {
   // Tests if the NG implementation matches the legacy behavior that, when the
   // remaining text is fully collapsed, its CaretMin/MaxOffset() return 0 and
   // FragmentLength().
@@ -146,7 +127,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest,
   EXPECT_EQ(2, GetRemainingText()->CaretMaxOffset());
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest, ResolvedTextLength) {
+TEST_F(LayoutTextFragmentTest, ResolvedTextLength) {
   SetBasicBody("(f)oo");
   EXPECT_EQ(3u, GetFirstLetter()->ResolvedTextLength());
   EXPECT_EQ(2u, GetRemainingText()->ResolvedTextLength());
@@ -164,7 +145,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, ResolvedTextLength) {
   EXPECT_EQ(2u, GetRemainingText()->ResolvedTextLength());
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest, ResolvedTextLengthSpacesInBetween) {
+TEST_F(LayoutTextFragmentTest, ResolvedTextLengthSpacesInBetween) {
   SetBasicBody("(f)  oo");
   EXPECT_EQ(3u, GetFirstLetter()->ResolvedTextLength());
   EXPECT_EQ(3u, GetRemainingText()->ResolvedTextLength());
@@ -182,8 +163,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, ResolvedTextLengthSpacesInBetween) {
   EXPECT_EQ(3u, GetRemainingText()->ResolvedTextLength());
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest,
-       ResolvedTextLengthCollapsedRemainingText) {
+TEST_F(LayoutTextFragmentTest, ResolvedTextLengthCollapsedRemainingText) {
   SetBasicBody("(f)  ");
   EXPECT_EQ(3u, GetFirstLetter()->ResolvedTextLength());
   EXPECT_EQ(0u, GetRemainingText()->ResolvedTextLength());
@@ -193,7 +173,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest,
   EXPECT_EQ(0u, GetRemainingText()->ResolvedTextLength());
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest, ContainsCaretOffset) {
+TEST_F(LayoutTextFragmentTest, ContainsCaretOffset) {
   SetBasicBody("(f)oo");
   EXPECT_TRUE(GetFirstLetter()->ContainsCaretOffset(0));     // "|(f)oo"
   EXPECT_TRUE(GetFirstLetter()->ContainsCaretOffset(1));     // "(|f)oo"
@@ -240,8 +220,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, ContainsCaretOffset) {
   EXPECT_FALSE(GetRemainingText()->ContainsCaretOffset(4));  // " (f)oo  |"
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest,
-       ContainsCaretOffsetSpacesInBetween) {
+TEST_F(LayoutTextFragmentTest, ContainsCaretOffsetSpacesInBetween) {
   SetBasicBody("(f)   oo");
   EXPECT_TRUE(GetFirstLetter()->ContainsCaretOffset(0));     // "|(f)   oo"
   EXPECT_TRUE(GetFirstLetter()->ContainsCaretOffset(1));     // "(|f)   oo"
@@ -255,7 +234,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest,
   EXPECT_TRUE(GetRemainingText()->ContainsCaretOffset(5));   // "(f)   oo|"
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest, ContainsCaretOffsetPre) {
+TEST_F(LayoutTextFragmentTest, ContainsCaretOffsetPre) {
   SetBodyInnerHTML("<pre id='target'>(f)   oo\n</pre>");
   EXPECT_TRUE(GetFirstLetter()->ContainsCaretOffset(0));     // "|(f)   oo\n"
   EXPECT_TRUE(GetFirstLetter()->ContainsCaretOffset(1));     // "(|f)   oo\n"
@@ -270,15 +249,12 @@ TEST_P(ParameterizedLayoutTextFragmentTest, ContainsCaretOffsetPre) {
   EXPECT_FALSE(GetRemainingText()->ContainsCaretOffset(6));  // "(f)   oo\n|"
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest, ContainsCaretOffsetPreLine) {
+TEST_F(LayoutTextFragmentTest, ContainsCaretOffsetPreLine) {
   SetBodyInnerHTML("<div id='target' style='white-space: pre-line'>F \n \noo");
   EXPECT_TRUE(GetFirstLetter()->ContainsCaretOffset(0));     // "|F \n \noo"
   EXPECT_TRUE(GetFirstLetter()->ContainsCaretOffset(1));     // "F| \n \noo"
 
-  if (LayoutNGEnabled()) {
-    // Legacy layout doesn't collapse this space correctly.
-    EXPECT_FALSE(GetRemainingText()->ContainsCaretOffset(0));  // "F| \n \noo"
-  }
+  EXPECT_FALSE(GetRemainingText()->ContainsCaretOffset(0));  // "F| \n \noo"
 
   EXPECT_TRUE(GetRemainingText()->ContainsCaretOffset(1));   // "F |\n \noo"
   EXPECT_FALSE(GetRemainingText()->ContainsCaretOffset(2));  // "F \n| \noo"
@@ -288,8 +264,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, ContainsCaretOffsetPreLine) {
   EXPECT_TRUE(GetRemainingText()->ContainsCaretOffset(6));   // "F \n \noo|"
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest,
-       IsBeforeAfterNonCollapsedCharacterNoLineWrap) {
+TEST_F(LayoutTextFragmentTest, IsBeforeAfterNonCollapsedCharacterNoLineWrap) {
   // Basic tests
   SetBasicBody("foo");
   EXPECT_TRUE(GetFirstLetter()->IsBeforeNonCollapsedCharacter(0));    // "|foo"
@@ -349,10 +324,6 @@ TEST_P(ParameterizedLayoutTextFragmentTest,
   EXPECT_TRUE(GetRemainingText()->IsAfterNonCollapsedCharacter(
       1));  // "f |<span>bar</span>"
 
-  // Legacy layout fails in the remaining test case
-  if (!LayoutNGEnabled())
-    return;
-
   // Collapsed space as remaining text
   SetBasicBody("f <br>");
   EXPECT_FALSE(
@@ -361,8 +332,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest,
       GetRemainingText()->IsAfterNonCollapsedCharacter(1));  // "f |<br>"
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest,
-       IsBeforeAfterNonCollapsedLineWrapSpace) {
+TEST_F(LayoutTextFragmentTest, IsBeforeAfterNonCollapsedLineWrapSpace) {
   LoadAhem();
 
   // Line wrapping in the middle of remaining text
@@ -370,10 +340,6 @@ TEST_P(ParameterizedLayoutTextFragmentTest,
   EXPECT_TRUE(
       GetRemainingText()->IsBeforeNonCollapsedCharacter(1));         // "xx| xx"
   EXPECT_TRUE(GetRemainingText()->IsAfterNonCollapsedCharacter(2));  // "xx |xx"
-
-  // Legacy layout fails in the remaining test cases
-  if (!LayoutNGEnabled())
-    return;
 
   // Line wrapping at remaining text start
   SetAhemBody("(x xx", 2);
@@ -396,7 +362,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest,
       1));  // "(x |<span>xx</span>"
 }
 
-TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
+TEST_F(LayoutTextFragmentTest, SetTextWithFirstLetter) {
   // Note: |V8TestingScope| is needed for |Text::splitText()|.
   V8TestingScope scope;
 
@@ -449,7 +415,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
 }
 
 // For http://crbug.com/984389
-TEST_P(ParameterizedLayoutTextFragmentTest, SplitTextWithZero) {
+TEST_F(LayoutTextFragmentTest, SplitTextWithZero) {
   // Note: |V8TestingScope| is needed for |Text::splitText()|.
   V8TestingScope scope;
 

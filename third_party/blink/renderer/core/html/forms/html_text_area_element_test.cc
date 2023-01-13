@@ -11,11 +11,9 @@
 
 namespace blink {
 
-class HTMLTextAreaElementTest : public testing::WithParamInterface<bool>,
-                                private ScopedLayoutNGForTest,
-                                public RenderingTest {
+class HTMLTextAreaElementTest : public RenderingTest {
  public:
-  HTMLTextAreaElementTest() : ScopedLayoutNGForTest(GetParam()) {}
+  HTMLTextAreaElementTest() = default;
 
  protected:
   HTMLTextAreaElement& TestElement() {
@@ -25,9 +23,7 @@ class HTMLTextAreaElementTest : public testing::WithParamInterface<bool>,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, HTMLTextAreaElementTest, testing::Bool());
-
-TEST_P(HTMLTextAreaElementTest, SanitizeUserInputValue) {
+TEST_F(HTMLTextAreaElementTest, SanitizeUserInputValue) {
   UChar kLeadSurrogate = 0xD800;
   EXPECT_EQ("", HTMLTextAreaElement::SanitizeUserInputValue("", 0));
   EXPECT_EQ("", HTMLTextAreaElement::SanitizeUserInputValue("a", 0));
@@ -51,7 +47,7 @@ TEST_P(HTMLTextAreaElementTest, SanitizeUserInputValue) {
             HTMLTextAreaElement::SanitizeUserInputValue("a\r\ncdef", 4));
 }
 
-TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
+TEST_F(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
   LoadAhem();
 
   // The textarea can contain four letters in each of lines.
@@ -82,13 +78,10 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
   inner_editor->appendChild(Text::Create(doc, "90"));
   inner_editor->appendChild(doc.CreateRawElement(html_names::kBrTag));
   RunDocumentLifecycle();
-  // Should be "1234\n5678\n90".  The legacy behavior is wrong.
-  EXPECT_EQ(textarea.GetLayoutBox()->IsLayoutNGObject() ? "1234\n5678\n90"
-                                                        : "1234567890",
-            textarea.ValueWithHardLineBreaks());
+  EXPECT_EQ("1234\n5678\n90", textarea.ValueWithHardLineBreaks());
 }
 
-TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
+TEST_F(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
   LoadAhem();
 
   SetBodyContent(R"HTML(
@@ -112,7 +105,7 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
 #undef RTO
 }
 
-TEST_P(HTMLTextAreaElementTest, DefaultToolTip) {
+TEST_F(HTMLTextAreaElementTest, DefaultToolTip) {
   LoadAhem();
 
   SetBodyContent(R"HTML(

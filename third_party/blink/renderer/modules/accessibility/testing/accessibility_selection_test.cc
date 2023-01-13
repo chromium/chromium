@@ -34,8 +34,6 @@ namespace {
 
 constexpr char kSelectionTestsRelativePath[] = "selection/";
 constexpr char kTestFileSuffix[] = ".html";
-constexpr char kLayoutNGSuffix[] = "-ax-layout-ng.txt";
-constexpr char kLayoutNGDisabledSuffix[] = "-ax-layout-ng-disabled.txt";
 constexpr char kAXTestExpectationSuffix[] = "-ax.txt";
 
 // Serialize accessibility subtree to selection text.
@@ -446,19 +444,6 @@ void AccessibilitySelectionTest::RunSelectionTest(
   // TODO(dmazzoni): make this a command-line parameter.
   // if (ax_file_contents != actual_ax_file_contents)
   //  base::WriteFile(WebStringToFilePath(ax_file), actual_ax_file_contents);
-}
-
-ParameterizedAccessibilitySelectionTest::
-    ParameterizedAccessibilitySelectionTest(
-        LocalFrameClient* local_frame_client)
-    : ScopedLayoutNGForTest(GetParam()),
-      AccessibilitySelectionTest(local_frame_client) {}
-
-void ParameterizedAccessibilitySelectionTest::RunSelectionTest(
-    const std::string& test_name) const {
-  std::string suffix =
-      LayoutNGEnabled() ? kLayoutNGSuffix : kLayoutNGDisabledSuffix;
-  AccessibilitySelectionTest::RunSelectionTest(test_name, suffix);
 }
 
 }  // namespace blink

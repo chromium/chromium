@@ -1806,8 +1806,7 @@ TEST_F(AccessibilityTest, PositionInInvalidMapLayout) {
   EXPECT_EQ(0, position_after.GetPosition().OffsetInContainerNode());
 }
 
-TEST_P(ParameterizedAccessibilityTest,
-       ToPositionWithAffinityWithMultipleInlineTextBoxes) {
+TEST_F(AccessibilityTest, ToPositionWithAffinityWithMultipleInlineTextBoxes) {
   // This test expects the starting offset of the last InlineTextBox object to
   // equate the sum of the previous inline text boxes' length, without the
   // collapsed white-spaces.

@@ -60,20 +60,6 @@ class AccessibilityTest : public RenderingTest {
       true};
 };
 
-class ParameterizedAccessibilityTest : public testing::WithParamInterface<bool>,
-                                       private ScopedLayoutNGForTest,
-                                       public AccessibilityTest {
- public:
-  ParameterizedAccessibilityTest() : ScopedLayoutNGForTest(GetParam()) {}
-
- protected:
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All, ParameterizedAccessibilityTest, testing::Bool());
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_TESTING_ACCESSIBILITY_TEST_H_

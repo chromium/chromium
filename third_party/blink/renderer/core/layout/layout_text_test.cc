@@ -101,30 +101,6 @@ class LayoutTextTest : public RenderingTest {
 
 const char kTacoText[] = "Los Compadres Taco Truck";
 
-// Helper class to run the same test code with and without LayoutNG
-class ParameterizedLayoutTextTest : public testing::WithParamInterface<bool>,
-                                    private ScopedLayoutNGForTest,
-                                    public LayoutTextTest {
- public:
-  ParameterizedLayoutTextTest() : ScopedLayoutNGForTest(GetParam()) {}
-
- protected:
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-
-  // TODO(yosin): Once we release EditingNG, this function is used for
-  // specifying legacy specific behavior.
-  const char* ValueWithLegacy(const char* ng_text,
-                              const char* legacy_text,
-                              const char* reason) {
-    DCHECK_NE(*reason, 0);
-    return LayoutNGEnabled() ? ng_text : legacy_text;
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All, ParameterizedLayoutTextTest, testing::Bool());
-
 }  // namespace
 
 TEST_F(LayoutTextTest, WidthZeroFromZeroLength) {
@@ -335,7 +311,7 @@ TEST_P(MapDOMOffsetToTextContentOffset, Basic) {
   }
 }
 
-TEST_P(ParameterizedLayoutTextTest, CharacterAfterWhitespaceCollapsing) {
+TEST_F(LayoutTextTest, CharacterAfterWhitespaceCollapsing) {
   SetBodyInnerHTML("a<span id=target> b </span>");
   LayoutText* layout_text = GetLayoutTextById("target");
   EXPECT_EQ(' ', layout_text->FirstCharacterAfterWhitespaceCollapsing());
@@ -379,7 +355,7 @@ TEST_P(ParameterizedLayoutTextTest, CharacterAfterWhitespaceCollapsing) {
   EXPECT_EQ(0x1F34D, layout_text->LastCharacterAfterWhitespaceCollapsing());
 }
 
-TEST_P(ParameterizedLayoutTextTest, CaretMinMaxOffset) {
+TEST_F(LayoutTextTest, CaretMinMaxOffset) {
   SetBasicBody("foo");
   EXPECT_EQ(0, GetBasicText()->CaretMinOffset());
   EXPECT_EQ(3, GetBasicText()->CaretMaxOffset());
@@ -397,7 +373,7 @@ TEST_P(ParameterizedLayoutTextTest, CaretMinMaxOffset) {
   EXPECT_EQ(4, GetBasicText()->CaretMaxOffset());
 }
 
-TEST_P(ParameterizedLayoutTextTest, ResolvedTextLength) {
+TEST_F(LayoutTextTest, ResolvedTextLength) {
   SetBasicBody("foo");
   EXPECT_EQ(3u, GetBasicText()->ResolvedTextLength());
 
@@ -411,7 +387,7 @@ TEST_P(ParameterizedLayoutTextTest, ResolvedTextLength) {
   EXPECT_EQ(3u, GetBasicText()->ResolvedTextLength());
 }
 
-TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffset) {
+TEST_F(LayoutTextTest, ContainsCaretOffset) {
   // This test records the behavior introduced in crrev.com/e3eb4e
   SetBasicBody(" foo   bar ");
   // text_content = "foo bar"
@@ -436,7 +412,7 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffset) {
   EXPECT_EQ("--_", GetSnapCode(*GetBasicText(), 12));  // out of range
 }
 
-TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetInPre) {
+TEST_F(LayoutTextTest, ContainsCaretOffsetInPre) {
   // These tests record the behavior introduced in crrev.com/e3eb4e
   InsertStyleElement("#target {white-space: pre; }");
 
@@ -473,7 +449,7 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetInPre) {
   EXPECT_EQ("-CA", GetSnapCode("foo\nbar|"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetInPreLine) {
+TEST_F(LayoutTextTest, ContainsCaretOffsetInPreLine) {
   InsertStyleElement("#target {white-space: pre-line; }");
 
   SetBasicBody("ab \n cd");
@@ -486,14 +462,14 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetInPreLine) {
   //  [4] I DOM:5-7 TC:3-5 "cd"
   EXPECT_EQ("BC-", GetSnapCode("|ab \n cd"));
   EXPECT_EQ("BCA", GetSnapCode("a|b \n cd"));
-  EXPECT_EQ(ValueWithLegacy("-CA", "BCA", "before collapsed trailing space"),
-            GetSnapCode("ab| \n cd"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "BCA", "after first trailing space"),
-            GetSnapCode("ab |\n cd"));
-  EXPECT_EQ(ValueWithLegacy("--A", "B-A", "before collapsed leading space"),
-            GetSnapCode("ab \n| cd"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "BCA", "after collapsed leading space"),
-            GetSnapCode("ab \n |cd"));
+  // Before collapsed trailing space.
+  EXPECT_EQ("-CA", GetSnapCode("ab| \n cd"));
+  // After first trailing space.
+  EXPECT_EQ("BC-", GetSnapCode("ab |\n cd"));
+  // Before collapsed leading space.
+  EXPECT_EQ("--A", GetSnapCode("ab \n| cd"));
+  // After collapsed leading space.
+  EXPECT_EQ("BC-", GetSnapCode("ab \n |cd"));
 
   SetBasicBody("ab  \n  cd");
   // text_content = "ab\ncd"
@@ -505,16 +481,16 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetInPreLine) {
   //  [4] I DOM:7-9 TC:3-5 "cd"
   EXPECT_EQ("BC-", GetSnapCode("|ab  \n  cd"));
   EXPECT_EQ("BCA", GetSnapCode("a|b  \n  cd"));
-  EXPECT_EQ(ValueWithLegacy("-CA", "BCA", "before collapsed trailing space"),
-            GetSnapCode("ab|  \n  cd"));
-  EXPECT_EQ(ValueWithLegacy("---", "-CA", "after first trailing space"),
-            GetSnapCode("ab | \n  cd"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "BCA", "after collapsed trailing space"),
-            GetSnapCode("ab  |\n  cd"));
-  EXPECT_EQ(ValueWithLegacy("--A", "B-A", "before collapsed leading space"),
-            GetSnapCode("ab  \n|  cd"));
-  EXPECT_EQ(ValueWithLegacy("---", "--A", "after collapsed leading space"),
-            GetSnapCode("ab  \n | cd"));
+  // Before collapsed trailing space.
+  EXPECT_EQ("-CA", GetSnapCode("ab|  \n  cd"));
+  // After first trailing space.
+  EXPECT_EQ("---", GetSnapCode("ab | \n  cd"));
+  // After collapsed trailing space.
+  EXPECT_EQ("BC-", GetSnapCode("ab  |\n  cd"));
+  // Before collapsed leading space.
+  EXPECT_EQ("--A", GetSnapCode("ab  \n|  cd"));
+  // After collapsed leading space.
+  EXPECT_EQ("---", GetSnapCode("ab  \n | cd"));
   EXPECT_EQ("BC-", GetSnapCode("ab  \n  |cd"));
   EXPECT_EQ("BCA", GetSnapCode("ab  \n  c|d"));
   EXPECT_EQ("-CA", GetSnapCode("ab  \n  cd|"));
@@ -537,18 +513,18 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetInPreLine) {
   //  [5] = C DOM:5-6 TC:3-3
   //  [6] = I DOM:6-7 TC:3-4 "b"
   EXPECT_EQ("BC-", GetSnapCode("|a \n \n b"));
-  EXPECT_EQ(ValueWithLegacy("-CA", "BCA", "before collapsed trailing space"),
-            GetSnapCode("a| \n \n b"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "BCA", "after first trailing space"),
-            GetSnapCode("a |\n \n b"));
-  EXPECT_EQ(ValueWithLegacy("--A", "B-A", "before leading collapsed space"),
-            GetSnapCode("a \n| \n b"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "BCA", "after first trailing space"),
-            GetSnapCode("a \n |\n b"));
-  EXPECT_EQ(ValueWithLegacy("--A", "B-A", "before collapsed leading space"),
-            GetSnapCode("a \n \n| b"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "BCA", "after collapsed leading space"),
-            GetSnapCode("a \n \n |b"));
+  // Before collapsed trailing space.
+  EXPECT_EQ("-CA", GetSnapCode("a| \n \n b"));
+  // After first trailing space.
+  EXPECT_EQ("BC-", GetSnapCode("a |\n \n b"));
+  // Before leading collapsed space.
+  EXPECT_EQ("--A", GetSnapCode("a \n| \n b"));
+  // After first trailing space.
+  EXPECT_EQ("BC-", GetSnapCode("a \n |\n b"));
+  // Before collapsed leading space.
+  EXPECT_EQ("--A", GetSnapCode("a \n \n| b"));
+  // After collapsed leading space.
+  EXPECT_EQ("BC-", GetSnapCode("a \n \n |b"));
   EXPECT_EQ("-CA", GetSnapCode("a \n \n b|"));
 
   SetBasicBody("a \n  \n b");
@@ -562,24 +538,23 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetInPreLine) {
   //  [5] = C DOM:6-7 TC:3-3
   //  [6] = I DOM:7-8 TC:3-4 "b"
   EXPECT_EQ("BC-", GetSnapCode("|a \n  \n b"));
-  EXPECT_EQ(ValueWithLegacy("-CA", "BCA", "before collapsed trailing space"),
-            GetSnapCode("a| \n  \n b"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "BCA", "after first trailing space"),
-            GetSnapCode("a |\n  \n b"));
-  EXPECT_EQ(ValueWithLegacy("--A", "B-A", "before collapsed leading space"),
-            GetSnapCode("a \n|  \n b"));
-  EXPECT_EQ(ValueWithLegacy("---", "--A",
-                            "after first trailing and in leading space"),
-            GetSnapCode("a \n | \n b"));
+  // Before collapsed trailing space.
+  EXPECT_EQ("-CA", GetSnapCode("a| \n  \n b"));
+  // After first trailing space.
+  EXPECT_EQ("BC-", GetSnapCode("a |\n  \n b"));
+  // Before collapsed leading space.
+  EXPECT_EQ("--A", GetSnapCode("a \n|  \n b"));
+  // After first trailing and in leading space.
+  EXPECT_EQ("---", GetSnapCode("a \n | \n b"));
   EXPECT_EQ("BC-", GetSnapCode("a \n  |\n b"));
-  EXPECT_EQ(ValueWithLegacy("--A", "B-A", "before collapsed leading space"),
-            GetSnapCode("a \n  \n| b"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "BCA", "after collapsed leading space"),
-            GetSnapCode("a \n  \n |b"));
+  // before collapsed leading space.
+  EXPECT_EQ("--A", GetSnapCode("a \n  \n| b"));
+  // After collapsed leading space.
+  EXPECT_EQ("BC-", GetSnapCode("a \n  \n |b"));
   EXPECT_EQ("-CA", GetSnapCode("a \n  \n b|"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace) {
+TEST_F(LayoutTextTest, ContainsCaretOffsetWithTrailingSpace) {
   SetBodyInnerHTML("<div id=target>ab<br>cd</div>");
   const auto& text_ab = *GetLayoutTextById("target");
   const auto& layout_br = *To<LayoutText>(text_ab.NextSibling());
@@ -595,7 +570,7 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace) {
   EXPECT_EQ("-CA", GetSnapCode(text_cd, "cd|"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace1) {
+TEST_F(LayoutTextTest, ContainsCaretOffsetWithTrailingSpace1) {
   SetBodyInnerHTML("<div id=target>ab <br> cd</div>");
   const auto& text_ab = *GetLayoutTextById("target");
   const auto& layout_br = *To<LayoutText>(text_ab.NextSibling());
@@ -610,10 +585,10 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace1) {
   //  [4] I DOM:1-3 TC:3-5 "cd"
   EXPECT_EQ("BC-", GetSnapCode(text_ab, "|ab <br>"));
   EXPECT_EQ("BCA", GetSnapCode(text_ab, "a|b <br>"));
-  EXPECT_EQ(ValueWithLegacy("-CA", "BCA", "before after first trailing space"),
-            GetSnapCode(text_ab, "ab| <br>"));
-  EXPECT_EQ(ValueWithLegacy("---", "-CA", "after first trailing space"),
-            GetSnapCode(text_ab, "ab |<br>"));
+  // Before after first trailing space.
+  EXPECT_EQ("-CA", GetSnapCode(text_ab, "ab| <br>"));
+  // After first trailing space.
+  EXPECT_EQ("---", GetSnapCode(text_ab, "ab |<br>"));
   EXPECT_EQ("BC-", GetSnapCode(layout_br, 0));
   EXPECT_EQ("--A", GetSnapCode(layout_br, 1));
   EXPECT_EQ("---", GetSnapCode(text_cd, "| cd"));
@@ -622,7 +597,7 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace1) {
   EXPECT_EQ("-CA", GetSnapCode(text_cd, " cd|"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace2) {
+TEST_F(LayoutTextTest, ContainsCaretOffsetWithTrailingSpace2) {
   SetBodyInnerHTML("<div id=target>ab  <br>  cd</div>");
   const auto& text_ab = *GetLayoutTextById("target");
   const auto& layout_br = *To<LayoutText>(text_ab.NextSibling());
@@ -637,15 +612,15 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace2) {
   //  [4] I DOM:2-4 TC:3-5 "cd"
   EXPECT_EQ("BC-", GetSnapCode(text_ab, "|ab  <br>"));
   EXPECT_EQ("BCA", GetSnapCode(text_ab, "a|b  <br>"));
-  EXPECT_EQ(ValueWithLegacy("-CA", "BCA", "after first trailing space"),
-            GetSnapCode(text_ab, "ab|  <br>"));
-  EXPECT_EQ(ValueWithLegacy("---", "-CA", "after first trailing space"),
-            GetSnapCode(text_ab, "ab | <br>"));
+  // After first trailing space.
+  EXPECT_EQ("-CA", GetSnapCode(text_ab, "ab|  <br>"));
+  // After first trailing space.
+  EXPECT_EQ("---", GetSnapCode(text_ab, "ab | <br>"));
   EXPECT_EQ("---", GetSnapCode(text_ab, "ab  |<br>"));
-  EXPECT_EQ(ValueWithLegacy("BC-", "---", "before <br>"),
-            GetSnapCode(layout_br, 0));
-  EXPECT_EQ(ValueWithLegacy("--A", "---", "after <br>"),
-            GetSnapCode(layout_br, 1));
+  // Before <br>.
+  EXPECT_EQ("BC-", GetSnapCode(layout_br, 0));
+  // After <br>.
+  EXPECT_EQ("--A", GetSnapCode(layout_br, 1));
   EXPECT_EQ("---", GetSnapCode(text_cd, "|  cd"));
   EXPECT_EQ("---", GetSnapCode(text_cd, " | cd"));
   EXPECT_EQ("BC-", GetSnapCode(text_cd, "  |cd"));
@@ -653,7 +628,7 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace2) {
   EXPECT_EQ("-CA", GetSnapCode(text_cd, "  cd|"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace3) {
+TEST_F(LayoutTextTest, ContainsCaretOffsetWithTrailingSpace3) {
   SetBodyInnerHTML("<div id=target>a<br>   <br>b<br></div>");
   const auto& text_a = *GetLayoutTextById("target");
   const auto& layout_br1 = *To<LayoutText>(text_a.NextSibling());
@@ -679,7 +654,7 @@ TEST_P(ParameterizedLayoutTextTest, ContainsCaretOffsetWithTrailingSpace3) {
   EXPECT_EQ("--A", GetSnapCode(text_b, "b|<br>"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithCollapsedWhiteSpace) {
+TEST_F(LayoutTextTest, GetTextBoxInfoWithCollapsedWhiteSpace) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>pre { font: 10px/1 Ahem; white-space: pre-line; }</style>
@@ -708,7 +683,7 @@ TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithCollapsedWhiteSpace) {
   EXPECT_EQ(LayoutRect(0, 10, 30, 10), results[3].local_rect);
 }
 
-TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithGeneratedContent) {
+TEST_F(LayoutTextTest, GetTextBoxInfoWithGeneratedContent) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -750,7 +725,7 @@ TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithGeneratedContent) {
 }
 
 // For http://crbug.com/985488
-TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithHidden) {
+TEST_F(LayoutTextTest, GetTextBoxInfoWithHidden) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -780,7 +755,7 @@ TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithHidden) {
 }
 
 // For http://crbug.com/985488
-TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithEllipsis) {
+TEST_F(LayoutTextTest, GetTextBoxInfoWithEllipsis) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -811,7 +786,7 @@ TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithEllipsis) {
 }
 
 // For http://crbug.com/1003413
-TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithEllipsisForPseudoAfter) {
+TEST_F(LayoutTextTest, GetTextBoxInfoWithEllipsisForPseudoAfter) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -842,7 +817,7 @@ TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithEllipsisForPseudoAfter) {
 }
 
 // Test the specialized code path in |PlainText| for when |!GetNode()|.
-TEST_P(ParameterizedLayoutTextTest, PlainTextInPseudo) {
+TEST_F(LayoutTextTest, PlainTextInPseudo) {
   SetBodyInnerHTML(String(R"HTML(
     <style>
     :root {
@@ -881,8 +856,7 @@ TEST_P(ParameterizedLayoutTextTest, PlainTextInPseudo) {
   EXPECT_EQ(String(u"123\u4E00456"), GetPlainText(before_parent_cjk));
 }
 
-TEST_P(ParameterizedLayoutTextTest,
-       IsBeforeAfterNonCollapsedCharacterNoLineWrap) {
+TEST_F(LayoutTextTest, IsBeforeAfterNonCollapsedCharacterNoLineWrap) {
   // Basic tests
   SetBasicBody("foo");
   EXPECT_EQ("BC-", GetSnapCode("|foo"));
@@ -963,7 +937,7 @@ TEST_P(ParameterizedLayoutTextTest,
   EXPECT_EQ("---", GetSnapCode("space", " |"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, IsBeforeAfterNonCollapsedLineWrapSpace) {
+TEST_F(LayoutTextTest, IsBeforeAfterNonCollapsedLineWrapSpace) {
   LoadAhem();
 
   // Note: Because we can place a caret before soft line wrap, "ab| cd",
@@ -978,8 +952,8 @@ TEST_P(ParameterizedLayoutTextTest, IsBeforeAfterNonCollapsedLineWrapSpace) {
   EXPECT_EQ("BC-", GetSnapCode("|ab  cd"));
   EXPECT_EQ("BCA", GetSnapCode("a|b  cd"));
   EXPECT_EQ("BCA", GetSnapCode("ab|  cd"));
-  EXPECT_EQ(ValueWithLegacy("-CA", "--A", "after soft line wrap"),
-            GetSnapCode("ab | cd"));
+  // After soft line wrap.
+  EXPECT_EQ("-CA", GetSnapCode("ab | cd"));
   EXPECT_EQ("BC-", GetSnapCode("ab  |cd"));
   EXPECT_EQ("BCA", GetSnapCode("ab  c|d"));
   EXPECT_EQ("-CA", GetSnapCode("ab  cd|"));
@@ -991,10 +965,10 @@ TEST_P(ParameterizedLayoutTextTest, IsBeforeAfterNonCollapsedLineWrapSpace) {
   // [2] C DOM:1-2 TC:3-3 " "
   // [3] I DOM:2-3 TC:3-5 "xx"
   SetAhemBody("ab<span id=span>  cd</span>", 2);
-  EXPECT_EQ(ValueWithLegacy("BC-", "---", "before soft line wrap"),
-            GetSnapCode("span", "|  cd"));
-  EXPECT_EQ(ValueWithLegacy("-CA", "---", "after soft line wrap"),
-            GetSnapCode("span", " | cd"));
+  // Before soft line wrap.
+  EXPECT_EQ("BC-", GetSnapCode("span", "|  cd"));
+  // After soft line wrap.
+  EXPECT_EQ("-CA", GetSnapCode("span", " | cd"));
   EXPECT_EQ("BC-", GetSnapCode("span", "  |cd"));
   EXPECT_EQ("BCA", GetSnapCode("span", "  c|d"));
   EXPECT_EQ("-CA", GetSnapCode("span", "  cd|"));
@@ -1007,10 +981,10 @@ TEST_P(ParameterizedLayoutTextTest, IsBeforeAfterNonCollapsedLineWrapSpace) {
   // [2] I DOM:0-2 TC:3-5 "cd"
   EXPECT_EQ("BC-", GetSnapCode("|ab "));
   EXPECT_EQ("BCA", GetSnapCode("a|b "));
-  EXPECT_EQ(ValueWithLegacy("BCA", "-CA", "before soft line wrap"),
-            GetSnapCode("ab|  "));
-  EXPECT_EQ(ValueWithLegacy("-CA", "---", "after soft line wrap"),
-            GetSnapCode("ab | "));
+  // Before soft line wrap.
+  EXPECT_EQ("BCA", GetSnapCode("ab|  "));
+  // After soft line wrap.
+  EXPECT_EQ("-CA", GetSnapCode("ab | "));
   EXPECT_EQ("---", GetSnapCode("ab  |"));
 
   // Entire node as line wrapping
@@ -1020,20 +994,21 @@ TEST_P(ParameterizedLayoutTextTest, IsBeforeAfterNonCollapsedLineWrapSpace) {
   // [1] I DOM:0-1 TC:2-3 " "
   // [2] C DOM:1-2 TC:3-3 " "
   // [3] I DOM:0-2 TC:3-5 "cd"
-  EXPECT_EQ(ValueWithLegacy("BC-", "---", "before soft line wrap"),
-            GetSnapCode("space", "|  "));
-  EXPECT_EQ(ValueWithLegacy("-CA", "---", "after soft line wrap"),
-            GetSnapCode("space", " | "));
+
+  // Before soft line wrap.
+  EXPECT_EQ("BC-", GetSnapCode("space", "|  "));
+  // After soft line wrap.
+  EXPECT_EQ("-CA", GetSnapCode("space", " | "));
   EXPECT_EQ("---", GetSnapCode("space", "  |"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, IsBeforeAfterNonCollapsedCharacterBR) {
+TEST_F(LayoutTextTest, IsBeforeAfterNonCollapsedCharacterBR) {
   SetBasicBody("<br>");
   EXPECT_EQ("BC-", GetSnapCode(*GetBasicText(), 0));
   EXPECT_EQ("--A", GetSnapCode(*GetBasicText(), 1));
 }
 
-TEST_P(ParameterizedLayoutTextTest, AbsoluteQuads) {
+TEST_F(LayoutTextTest, AbsoluteQuads) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1053,7 +1028,7 @@ TEST_P(ParameterizedLayoutTextTest, AbsoluteQuads) {
                                    gfx::QuadF(gfx::RectF(0, 10, 20, 10))));
 }
 
-TEST_P(ParameterizedLayoutTextTest, AbsoluteQuadsVRL) {
+TEST_F(LayoutTextTest, AbsoluteQuadsVRL) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1075,7 +1050,7 @@ TEST_P(ParameterizedLayoutTextTest, AbsoluteQuadsVRL) {
                                    gfx::QuadF(gfx::RectF(80, 0, 10, 20))));
 }
 
-TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBox) {
+TEST_F(LayoutTextTest, PhysicalLinesBoundingBox) {
   LoadAhem();
   SetBasicBody(
       "<style>"
@@ -1119,7 +1094,7 @@ TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBox) {
                 ->PhysicalLinesBoundingBox());
 }
 
-TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxTextCombine) {
+TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxTextCombine) {
   ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
@@ -1153,7 +1128,7 @@ TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxTextCombine) {
   EXPECT_EQ(PhysicalRect(15, 200, 100, 100), text_b.PhysicalLinesBoundingBox());
 }
 
-TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
+TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
   LoadAhem();
   SetBasicBody(R"HTML(
     <style>
@@ -1190,7 +1165,7 @@ TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
                 ->PhysicalLinesBoundingBox());
 }
 
-TEST_P(ParameterizedLayoutTextTest, WordBreakElement) {
+TEST_F(LayoutTextTest, WordBreakElement) {
   SetBasicBody("foo <wbr> bar");
 
   const Element* wbr = GetDocument().QuerySelector("wbr");
@@ -1202,7 +1177,7 @@ TEST_P(ParameterizedLayoutTextTest, WordBreakElement) {
   EXPECT_EQ(0, layout_wbr->CaretMaxOffset());
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRect) {
+TEST_F(LayoutTextTest, LocalSelectionRect) {
   LoadAhem();
   // TODO(yoichio): Fix LayoutNG incompatibility.
   EXPECT_EQ(PhysicalRect(10, 0, 50, 10), GetSelectionRectFor("f^oo ba|r"));
@@ -1222,12 +1197,10 @@ TEST_P(ParameterizedLayoutTextTest, LocalSelectionRect) {
       GetSelectionRectFor("<style>:first-letter { float: right}</style>^fo|o"));
   // Since we don't paint trimed white spaces on LayoutNG,  we don't need fix
   // this case.
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(0, 0, 0, 0)
-                              : PhysicalRect(30, 0, 10, 10),
-            GetSelectionRectFor("foo^ |"));
+  EXPECT_EQ(PhysicalRect(0, 0, 0, 0), GetSelectionRectFor("foo^ |"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectLineBreak) {
+TEST_F(LayoutTextTest, LocalSelectionRectLineBreak) {
   LoadAhem();
   EXPECT_EQ(PhysicalRect(30, 0, 10, 10),
             GetSelectionRectFor("f^oo<br id='target'><br>ba|r"));
@@ -1235,7 +1208,7 @@ TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectLineBreak) {
             GetSelectionRectFor("f^oo<br><br id='target'>ba|r"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectLineBreakPre) {
+TEST_F(LayoutTextTest, LocalSelectionRectLineBreakPre) {
   LoadAhem();
   EXPECT_EQ(
       PhysicalRect(30, 0, 10, 10),
@@ -1245,12 +1218,11 @@ TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectLineBreakPre) {
       GetSelectionRectFor("<div style='white-space:pre;'>foo\n^\n|bar</div>"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectRTL) {
+TEST_F(LayoutTextTest, LocalSelectionRectRTL) {
   LoadAhem();
   // TODO(yoichio) : Fix LastLogicalLeafIgnoringLineBreak so that 'foo' is the
   // last fragment.
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(-10, 0, 30, 20)
-                              : PhysicalRect(-10, 0, 40, 20),
+  EXPECT_EQ(PhysicalRect(-10, 0, 30, 20),
             GetSelectionRectFor("<div style='width: 2em' dir=rtl>"
                                 "f^oo ba|r baz</div>"));
   EXPECT_EQ(PhysicalRect(0, 0, 40, 20),
@@ -1258,7 +1230,7 @@ TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectRTL) {
                                 "f^oo ba|r baz</div>"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectVertical) {
+TEST_F(LayoutTextTest, LocalSelectionRectVertical) {
   LoadAhem();
   EXPECT_EQ(
       PhysicalRect(0, 0, 20, 40),
@@ -1270,38 +1242,33 @@ TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectVertical) {
                           "f^oo ba|r baz</div>"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectVerticalRTL) {
+TEST_F(LayoutTextTest, LocalSelectionRectVerticalRTL) {
   LoadAhem();
   // TODO(yoichio): Investigate diff (maybe soft line break treatment).
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(0, -10, 20, 30)
-                              : PhysicalRect(0, -10, 20, 40),
+  EXPECT_EQ(PhysicalRect(0, -10, 20, 30),
             GetSelectionRectFor(
                 "<div style='writing-mode: vertical-lr; height: 2em' dir=rtl>"
                 "f^oo ba|r baz</div>"));
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(10, -10, 20, 30)
-                              : PhysicalRect(10, -10, 20, 40),
+  EXPECT_EQ(PhysicalRect(10, -10, 20, 30),
             GetSelectionRectFor(
                 "<div style='writing-mode: vertical-rl; height: 2em' dir=rtl>"
                 "f^oo ba|r baz</div>"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectLineHeight) {
+TEST_F(LayoutTextTest, LocalSelectionRectLineHeight) {
   LoadAhem();
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(10, 0, 10, 50)
-                              : PhysicalRect(10, 20, 10, 10),
+  EXPECT_EQ(PhysicalRect(10, 0, 10, 50),
             GetSelectionRectFor("<div style='line-height: 50px; width:1em;'>"
                                 "f^o|o bar baz</div>"));
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(10, 50, 10, 50)
-                              : PhysicalRect(10, 30, 10, 50),
+  EXPECT_EQ(PhysicalRect(10, 50, 10, 50),
             GetSelectionRectFor("<div style='line-height: 50px; width:1em;'>"
                                 "foo b^a|r baz</div>"));
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(10, 100, 10, 50)
-                              : PhysicalRect(10, 80, 10, 50),
+  EXPECT_EQ(PhysicalRect(10, 100, 10, 50),
             GetSelectionRectFor("<div style='line-height: 50px; width:1em;'>"
                                 "foo bar b^a|</div>"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectNegativeLeading) {
+TEST_F(LayoutTextTest, LocalSelectionRectNegativeLeading) {
   LoadAhem();
   SetSelectionAndUpdateLayoutSelection(R"HTML(
     <div id="container" style="font: 10px/10px Ahem">
@@ -1314,30 +1281,26 @@ TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectNegativeLeading) {
   )HTML");
   LayoutObject* span = GetLayoutObjectByElementId("span");
   LayoutObject* text = span->SlowFirstChild();
-  EXPECT_EQ(PhysicalRect(0, -5, LayoutNGEnabled() ? 40 : 50, 10),
-            text->LocalSelectionVisualRect());
+  EXPECT_EQ(PhysicalRect(0, -5, 40, 10), text->LocalSelectionVisualRect());
 }
 
-TEST_P(ParameterizedLayoutTextTest, LocalSelectionRectLineHeightVertical) {
+TEST_F(LayoutTextTest, LocalSelectionRectLineHeightVertical) {
   LoadAhem();
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(0, 10, 50, 10)
-                              : PhysicalRect(20, 10, 50, 10),
+  EXPECT_EQ(PhysicalRect(0, 10, 50, 10),
             GetSelectionRectFor("<div style='line-height: 50px; height:1em; "
                                 "writing-mode:vertical-lr'>"
                                 "f^o|o bar baz</div>"));
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(50, 10, 50, 10)
-                              : PhysicalRect(70, 10, 50, 10),
+  EXPECT_EQ(PhysicalRect(50, 10, 50, 10),
             GetSelectionRectFor("<div style='line-height: 50px; height:1em; "
                                 "writing-mode:vertical-lr'>"
                                 "foo b^a|r baz</div>"));
-  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(100, 10, 50, 10)
-                              : PhysicalRect(120, 10, 10, 10),
+  EXPECT_EQ(PhysicalRect(100, 10, 50, 10),
             GetSelectionRectFor("<div style='line-height: 50px; height:1em; "
                                 "writing-mode:vertical-lr'>"
                                 "foo bar b^a|z</div>"));
 }
 
-TEST_P(ParameterizedLayoutTextTest, VisualRectInDocumentSVGTspan) {
+TEST_F(LayoutTextTest, VisualRectInDocumentSVGTspan) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1361,7 +1324,7 @@ TEST_P(ParameterizedLayoutTextTest, VisualRectInDocumentSVGTspan) {
   EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
 }
 
-TEST_P(ParameterizedLayoutTextTest, VisualRectInDocumentSVGTspanTB) {
+TEST_F(LayoutTextTest, VisualRectInDocumentSVGTspanTB) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1384,7 +1347,7 @@ TEST_P(ParameterizedLayoutTextTest, VisualRectInDocumentSVGTspanTB) {
   EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
 }
 
-TEST_P(ParameterizedLayoutTextTest, PositionForPointAtLeading) {
+TEST_F(LayoutTextTest, PositionForPointAtLeading) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1408,17 +1371,17 @@ TEST_P(ParameterizedLayoutTextTest, PositionForPointAtLeading) {
 
   // line 1
   // Note: All |PositionForPoint()| should return "line1"[1].
-  EXPECT_EQ(Position(text->GetNode(), LayoutNGEnabled() ? 1 : 7),
+  EXPECT_EQ(Position(text->GetNode(), 1),
             text->PositionForPoint({10, 0}).GetPosition());
-  EXPECT_EQ(Position(text->GetNode(), LayoutNGEnabled() ? 1 : 7),
+  EXPECT_EQ(Position(text->GetNode(), 1),
             text->PositionForPoint({10, 5}).GetPosition());
   EXPECT_EQ(Position(text->GetNode(), 1),
             text->PositionForPoint({10, 10}).GetPosition());
   EXPECT_EQ(Position(text->GetNode(), 1),
             text->PositionForPoint({10, 15}).GetPosition());
-  EXPECT_EQ(Position(text->GetNode(), LayoutNGEnabled() ? 1 : 7),
+  EXPECT_EQ(Position(text->GetNode(), 1),
             text->PositionForPoint({10, 20}).GetPosition());
-  EXPECT_EQ(Position(text->GetNode(), LayoutNGEnabled() ? 1 : 7),
+  EXPECT_EQ(Position(text->GetNode(), 1),
             text->PositionForPoint({10, 25}).GetPosition());
   // line 2
   EXPECT_EQ(Position(text->GetNode(), 7),
@@ -1436,7 +1399,7 @@ TEST_P(ParameterizedLayoutTextTest, PositionForPointAtLeading) {
 }
 
 // https://crbug.com/2654312
-TEST_P(ParameterizedLayoutTextTest, FloatFirstLetterPlainText) {
+TEST_F(LayoutTextTest, FloatFirstLetterPlainText) {
   SetBodyInnerHTML(R"HTML(
     <style>
     div::first-letter { float: left; }

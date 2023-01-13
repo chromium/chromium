@@ -245,26 +245,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   Persistent<MockPaintTimingCallbackManager> child_frame_mock_callback_manager_;
 };
 
-// Helper class to run the same test code with and without LayoutNG
-class ParameterizedTextPaintTimingDetectorTest
-    : public ::testing::WithParamInterface<bool>,
-      private ScopedLayoutNGForTest,
-      public TextPaintTimingDetectorTest {
- public:
-  ParameterizedTextPaintTimingDetectorTest()
-      : ScopedLayoutNGForTest(GetParam()) {}
-
- protected:
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-};
-
 constexpr base::TimeDelta TextPaintTimingDetectorTest::kQuantumOfTime;
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ParameterizedTextPaintTimingDetectorTest,
-                         testing::Bool());
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_NoText) {
   SetBodyInnerHTML(R"HTML(
@@ -688,7 +669,7 @@ TEST_F(TextPaintTimingDetectorTest, CaptureFileUploadController) {
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, element);
 }
 
-TEST_P(ParameterizedTextPaintTimingDetectorTest, CapturingListMarkers) {
+TEST_F(TextPaintTimingDetectorTest, CapturingListMarkers) {
   SetBodyInnerHTML(R"HTML(
     <ul>
       <li>List item</li>
@@ -698,8 +679,7 @@ TEST_P(ParameterizedTextPaintTimingDetectorTest, CapturingListMarkers) {
     </ol>
   )HTML");
 
-  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(
-      LayoutNGEnabled() ? 3u : 2u);
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(3u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, CaptureSVGText) {

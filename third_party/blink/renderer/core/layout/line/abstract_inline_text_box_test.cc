@@ -13,21 +13,9 @@
 
 namespace blink {
 
-class AbstractInlineTextBoxTest : public testing::WithParamInterface<bool>,
-                                  private ScopedLayoutNGForTest,
-                                  public RenderingTest {
- public:
-  AbstractInlineTextBoxTest() : ScopedLayoutNGForTest(GetParam()) {}
+class AbstractInlineTextBoxTest : public RenderingTest {};
 
- protected:
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All, AbstractInlineTextBoxTest, testing::Bool());
-
-TEST_P(AbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
+TEST_F(AbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>
     <div id="target">abc </div>)HTML");
@@ -43,7 +31,7 @@ TEST_P(AbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
 }
 
 // For DumpAccessibilityTreeTest.AccessibilityInputTextValue/blink
-TEST_P(AbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
+TEST_F(AbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
   // Line break at space between <label> and <input>.
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>
@@ -60,7 +48,7 @@ TEST_P(AbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
 }
 
 // For "web_tests/accessibility/inline-text-change-style.html"
-TEST_P(AbstractInlineTextBoxTest,
+TEST_F(AbstractInlineTextBoxTest,
        GetTextWithLineBreakAtMiddleCollapsedWhiteSpace) {
   // There should be a line break at the space after "012".
   SetBodyInnerHTML(R"HTML(
@@ -78,7 +66,7 @@ TEST_P(AbstractInlineTextBoxTest,
 }
 
 // DumpAccessibilityTreeTest.AccessibilitySpanLineBreak/blink
-TEST_P(AbstractInlineTextBoxTest,
+TEST_F(AbstractInlineTextBoxTest,
        GetTextWithLineBreakAtSpanCollapsedWhiteSpace) {
   // There should be a line break at the space in <span>.
   SetBodyInnerHTML(R"HTML(
@@ -105,7 +93,7 @@ TEST_P(AbstractInlineTextBoxTest,
 }
 
 // For DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
-TEST_P(AbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
+TEST_F(AbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
   // There should be a line break at the space of "abc: ".
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>
@@ -118,14 +106,10 @@ TEST_P(AbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
 
   EXPECT_EQ("abc: ", inline_text_box->GetText());
   EXPECT_EQ(5u, inline_text_box->Len());
-  if (LayoutNGEnabled()) {
-    EXPECT_TRUE(inline_text_box->NeedsTrailingSpace());
-  } else {
-    EXPECT_FALSE(inline_text_box->NeedsTrailingSpace());
-  }
+  EXPECT_TRUE(inline_text_box->NeedsTrailingSpace());
 }
 
-TEST_P(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
+TEST_F(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   // The span should not affect the offset in container of the following inline
   // text boxes in the paragraph.
   //
@@ -154,13 +138,13 @@ TEST_P(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   scoped_refptr<AbstractInlineTextBox> inline_text_box =
       layout_text.FirstAbstractInlineTextBox();
   String text = "First sentence";
-  EXPECT_EQ(LayoutNGEnabled() ? text : text + " ", inline_text_box->GetText());
+  EXPECT_EQ(text, inline_text_box->GetText());
   EXPECT_EQ(6u, inline_text_box->TextOffsetInFormattingContext(0));
 
   // We need to jump over the AbstractInlineTextBox with the line break.
   inline_text_box = inline_text_box->NextInlineTextBox()->NextInlineTextBox();
   text = "of the paragraph. Second sentence of";
-  EXPECT_EQ(LayoutNGEnabled() ? text : text + " ", inline_text_box->GetText());
+  EXPECT_EQ(text, inline_text_box->GetText());
   EXPECT_EQ(21u, inline_text_box->TextOffsetInFormattingContext(0u));
 
   // See comment above.
@@ -177,7 +161,7 @@ TEST_P(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   EXPECT_EQ(0u, inline_text_box->TextOffsetInFormattingContext(0));
 }
 
-TEST_P(AbstractInlineTextBoxTest, CharacterWidths) {
+TEST_F(AbstractInlineTextBoxTest, CharacterWidths) {
   // There should be a line break at the space after "012".
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>

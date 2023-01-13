@@ -1510,18 +1510,9 @@ TEST_F(NGOffsetMappingTest, WordBreak) {
 }
 
 // Test |GetOffsetMapping| which is available both for LayoutNG and for legacy.
-class NGOffsetMappingGetterTest : public RenderingTest,
-                                  public testing::WithParamInterface<bool>,
-                                  private ScopedLayoutNGForTest {
- public:
-  NGOffsetMappingGetterTest() : ScopedLayoutNGForTest(GetParam()) {}
-};
+class NGOffsetMappingGetterTest : public RenderingTest {};
 
-INSTANTIATE_TEST_SUITE_P(NGOffsetMappingTest,
-                         NGOffsetMappingGetterTest,
-                         testing::Bool());
-
-TEST_P(NGOffsetMappingGetterTest, Get) {
+TEST_F(NGOffsetMappingGetterTest, Get) {
   SetBodyInnerHTML(R"HTML(
     <div id=container>
       Whitespaces   in this text   should be   collapsed.

@@ -521,7 +521,7 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
 // endpoints.
 //
 
-TEST_P(ParameterizedAccessibilitySelectionTest, SetSelectionAroundListBullet) {
+TEST_F(AccessibilitySelectionTest, SetSelectionAroundListBullet) {
   SetBodyInnerHTML(R"HTML(
       <div role="main">
         <ul>
@@ -594,33 +594,19 @@ TEST_P(ParameterizedAccessibilitySelectionTest, SetSelectionAroundListBullet) {
   EXPECT_EQ(7, extended_selection.Extent().OffsetInContainerNode());
 
   std::string expectations;
-  if (LayoutNGEnabled()) {
-    expectations =
-        "++<GenericContainer>\n"
-        "++++<GenericContainer>\n"
-        "++++++<Main>\n"
-        "++++++++<List>\n"
-        "++++++++++<ListItem>\n"
-        "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
-        "^++++++++++++++<StaticText: ^\xE2\x80\xA2 >\n"
-        "++++++++++++<StaticText: Item 1.>\n"
-        "++++++++++<ListItem>\n"
-        "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
-        "++++++++++++++<StaticText: \xE2\x80\xA2 >\n"
-        "++++++++++++<StaticText: Item 2.|>\n";
-  } else {
-    expectations =
-        "++<GenericContainer>\n"
-        "++++<GenericContainer>\n"
-        "++++++<Main>\n"
-        "++++++++<List>\n"
-        "++++++++++<ListItem>\n"
-        "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
-        "^++++++++++++<StaticText: Item 1.>\n"
-        "++++++++++<ListItem>\n"
-        "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
-        "++++++++++++<StaticText: Item 2.|>\n";
-  }
+  expectations =
+      "++<GenericContainer>\n"
+      "++++<GenericContainer>\n"
+      "++++++<Main>\n"
+      "++++++++<List>\n"
+      "++++++++++<ListItem>\n"
+      "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
+      "^++++++++++++++<StaticText: ^\xE2\x80\xA2 >\n"
+      "++++++++++++<StaticText: Item 1.>\n"
+      "++++++++++<ListItem>\n"
+      "++++++++++++<ListMarker: \xE2\x80\xA2 >\n"
+      "++++++++++++++<StaticText: \xE2\x80\xA2 >\n"
+      "++++++++++++<StaticText: Item 2.|>\n";
 
   // The |AXSelection| should remain unaffected by any shrinking and should
   // include both list bullets.
@@ -1810,8 +1796,8 @@ TEST_F(AccessibilitySelectionTest, ARIAHidden) {
   RunSelectionTest("aria-hidden");
 }
 
-TEST_P(ParameterizedAccessibilitySelectionTest, List) {
-  ParameterizedAccessibilitySelectionTest::RunSelectionTest("list");
+TEST_F(AccessibilitySelectionTest, List) {
+  RunSelectionTest("list");
 }
 
 TEST_F(AccessibilitySelectionTest, ParagraphPresentational) {
