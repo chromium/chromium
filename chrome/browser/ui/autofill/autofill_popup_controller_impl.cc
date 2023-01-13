@@ -306,6 +306,13 @@ void AutofillPopupControllerImpl::SelectionCleared() {
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+  if (static_cast<size_t>(index) >= suggestions_.size()) {
+    // Prevents crashes from crbug.com/521133. It seems that in rare cases or
+    // races the suggestions_ and the user-selected index may be out of sync.
+    // If the index points out of bounds, Chrome will crash. Prevent this by
+    // ignoring the selection and wait for another signal from the user.
+    return;
+  }
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;

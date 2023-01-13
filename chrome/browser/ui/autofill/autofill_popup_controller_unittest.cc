@@ -158,6 +158,7 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   ~TestAutofillPopupController() override = default;
 
   // Making protected functions public for testing
+  using AutofillPopupControllerImpl::AcceptSuggestion;
   using AutofillPopupControllerImpl::element_bounds;
   using AutofillPopupControllerImpl::FireControlsChangedEvent;
   using AutofillPopupControllerImpl::GetLineCount;
@@ -935,6 +936,20 @@ TEST_F(AutofillPopupControllerUnitTest, TabBeforeSelectingALine) {
   bool swallow_event =
       autofill_popup_controller_->HandleKeyPressEvent(CreateTabKeyPressEvent());
   EXPECT_FALSE(swallow_event);
+}
+
+// This is a regression test for crbug.com/521133 to ensure that we don't crash
+// when suggestions updates race with user selections.
+TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
+  // Set up the popup.
+  std::vector<Suggestion> suggestions = {Suggestion("value", "", "", 1)};
+  popup_controller()->Show(suggestions, AutoselectFirstSuggestion(false),
+                           PopupType::kUnspecified);
+
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
+
+  // The following should not crash:
+  popup_controller()->AcceptSuggestion(1);  // Out of bounds!
 }
 
 }  // namespace autofill
