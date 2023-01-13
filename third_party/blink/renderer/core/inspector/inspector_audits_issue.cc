@@ -89,6 +89,9 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
     case mojom::blink::GenericIssueErrorType::kFormDuplicateIdForInputError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormDuplicateIdForInputError;
+    case mojom::blink::GenericIssueErrorType::kFormInputWithNoLabelError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormInputWithNoLabelError;
   }
 }
 

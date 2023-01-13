@@ -223,6 +223,7 @@ enum GenericIssueErrorType {
   kCrossOriginPortalPostMessageError,
   kFormLabelForNameError,
   kFormDuplicateIdForInputError,
+  kFormInputWithNoLabelError,
 };
 
 struct GenericIssueDetails {
