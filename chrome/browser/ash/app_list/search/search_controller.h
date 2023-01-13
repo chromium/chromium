@@ -39,10 +39,6 @@ class SearchMetricsManager;
 class SearchSessionMetricsManager;
 class SearchProvider;
 
-namespace test {
-class SearchControllerTest;
-}
-
 // A controller that collects queries from the AppListClient, dispatches them to
 // search providers, then ranks and publishes the results to the AppListModel.
 // Many methods are virtual for testing.
@@ -140,10 +136,13 @@ class SearchController {
     ranker_manager_ = std::move(ranker_manager);
   }
 
- private:
-  // TODO(b/265213378): Remove this and expose only what's necessary.
-  friend class test::SearchControllerTest;
+  BurnInController* burn_in_controller_for_test() {
+    return burn_in_controller_.get();
+  }
 
+  const CategoriesList& categories_for_test() { return categories_; }
+
+ private:
   // Rank the results of |provider_type|.
   void Rank(ResultType provider_type);
 
@@ -192,7 +191,7 @@ class SearchController {
 
   Profile* const profile_;
 
-  std::unique_ptr<BurnInController> burnin_controller_;
+  std::unique_ptr<BurnInController> burn_in_controller_;
   std::unique_ptr<RankerManager> ranker_manager_;
 
   std::unique_ptr<SearchMetricsManager> metrics_manager_;

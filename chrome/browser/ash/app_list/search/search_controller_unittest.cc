@@ -99,36 +99,38 @@ class SearchControllerTest : public testing::Test {
   // categories for which burn-in number is unset (i.e. = -1).
   void ExpectCategoriesToBurnInIterations(
       std::vector<std::pair<Category, int>>
-          expected_categories_to_burnin_iteration) {
-    const auto& actual_categories_list = search_controller_->categories_;
-    std::vector<std::pair<Category, int>> actual_categories_to_burnin_iteration;
+          expected_categories_to_burn_in_iteration) {
+    const auto& actual_categories_list =
+        search_controller_->categories_for_test();
+    std::vector<std::pair<Category, int>>
+        actual_categories_to_burn_in_iteration;
 
     for (const auto& category : actual_categories_list) {
-      if (category.burnin_iteration != -1) {
-        actual_categories_to_burnin_iteration.emplace_back(
-            category.category, category.burnin_iteration);
+      if (category.burn_in_iteration != -1) {
+        actual_categories_to_burn_in_iteration.emplace_back(
+            category.category, category.burn_in_iteration);
       }
     }
 
     EXPECT_THAT(
-        actual_categories_to_burnin_iteration,
-        UnorderedElementsAreArray(expected_categories_to_burnin_iteration));
+        actual_categories_to_burn_in_iteration,
+        UnorderedElementsAreArray(expected_categories_to_burn_in_iteration));
   }
 
   void ExpectIdsToBurnInIterations(std::vector<std::pair<std::string, int>>
-                                       expected_ids_to_burnin_iteration) {
-    const auto& actual_ids_to_burnin_iteration =
+                                       expected_ids_to_burn_in_iteration) {
+    const auto& actual_ids_to_burn_in_iteration =
         std::vector<std::pair<std::string, int>>(
-            search_controller_->burnin_controller_
-                ->ids_to_burnin_iteration_for_test()
+            search_controller_->burn_in_controller_for_test()
+                ->ids_to_burn_in_iteration_for_test()
                 .begin(),
-            search_controller_->burnin_controller_
-                ->ids_to_burnin_iteration_for_test()
+            search_controller_->burn_in_controller_for_test()
+                ->ids_to_burn_in_iteration_for_test()
                 .end());
-    ASSERT_EQ(actual_ids_to_burnin_iteration.size(),
-              expected_ids_to_burnin_iteration.size());
-    EXPECT_THAT(actual_ids_to_burnin_iteration,
-                UnorderedElementsAreArray(expected_ids_to_burnin_iteration));
+    ASSERT_EQ(actual_ids_to_burn_in_iteration.size(),
+              expected_ids_to_burn_in_iteration.size());
+    EXPECT_THAT(actual_ids_to_burn_in_iteration,
+                UnorderedElementsAreArray(expected_ids_to_burn_in_iteration));
   }
 
   void Wait() { task_environment_.RunUntilIdle(); }

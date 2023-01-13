@@ -12,43 +12,46 @@ namespace app_list {
 constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
 
 BurnInController::BurnInController(BurnInPeriodElapsedCallback callback)
-    : burnin_period_elapsed_callback_(std::move(callback)),
-      burnin_period_(kBurnInPeriod) {}
+    : burn_in_period_elapsed_callback_(std::move(callback)),
+      burn_in_period_(kBurnInPeriod) {}
 
-bool BurnInController::is_post_burnin() {
-  return base::Time::Now() - session_start_ > burnin_period_;
+bool BurnInController::is_post_burn_in() {
+  return base::Time::Now() - session_start_ > burn_in_period_;
 }
 
 void BurnInController::Start() {
-  burnin_timer_.Start(FROM_HERE, burnin_period_,
-                      burnin_period_elapsed_callback_);
+  burn_in_timer_.Start(FROM_HERE, burn_in_period_,
+                       burn_in_period_elapsed_callback_);
 
   session_start_ = base::Time::Now();
-  burnin_iteration_counter_ = 0;
-  ids_to_burnin_iteration_.clear();
+  burn_in_iteration_counter_ = 0;
+  ids_to_burn_in_iteration_.clear();
 }
 
 BurnInController::~BurnInController() {}
 
 void BurnInController::Stop() {
-  burnin_timer_.Stop();
+  burn_in_timer_.Stop();
 }
 
 void BurnInController::UpdateResults(ResultsMap& results,
                                      CategoriesList& categories,
                                      ash::AppListSearchResultType result_type) {
-  if (is_post_burnin())
-    ++burnin_iteration_counter_;
+  if (is_post_burn_in()) {
+    ++burn_in_iteration_counter_;
+  }
 
   // Record the burn-in iteration number for categories we are seeing for the
   // first time in this search.
   base::flat_set<Category> updated_categories;
-  for (const auto& result : results[result_type])
+  for (const auto& result : results[result_type]) {
     updated_categories.insert(result->category());
+  }
   for (auto& category : categories) {
     const auto it = updated_categories.find(category.category);
-    if (it != updated_categories.end() && category.burnin_iteration == -1)
-      category.burnin_iteration = burnin_iteration_counter_;
+    if (it != updated_categories.end() && category.burn_in_iteration == -1) {
+      category.burn_in_iteration = burn_in_iteration_counter_;
+    }
   }
 
   // Record-keeping for the burn-in iteration number of individual results.
@@ -57,15 +60,15 @@ void BurnInController::UpdateResults(ResultsMap& results,
 
   for (const auto& result : it->second) {
     const std::string result_id = result->id();
-    if (ids_to_burnin_iteration_.find(result_id) !=
-        ids_to_burnin_iteration_.end()) {
-      // Result has been seen before. Set burnin_iteration, since the result
+    if (ids_to_burn_in_iteration_.find(result_id) !=
+        ids_to_burn_in_iteration_.end()) {
+      // Result has been seen before. Set burn_in_iteration, since the result
       // object has changed since last seen.
-      result->scoring().set_burnin_iteration(
-          ids_to_burnin_iteration_[result_id]);
+      result->scoring().set_burn_in_iteration(
+          ids_to_burn_in_iteration_[result_id]);
     } else {
-      result->scoring().set_burnin_iteration(burnin_iteration_counter_);
-      ids_to_burnin_iteration_[result_id] = burnin_iteration_counter_;
+      result->scoring().set_burn_in_iteration(burn_in_iteration_counter_);
+      ids_to_burn_in_iteration_[result_id] = burn_in_iteration_counter_;
     }
   }
 }

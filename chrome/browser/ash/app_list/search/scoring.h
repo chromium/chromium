@@ -45,8 +45,8 @@ class Scoring {
   void set_best_match_rank(int best_match_rank);
   int best_match_rank() const { return best_match_rank_; }
 
-  void set_burnin_iteration(int burnin_iteration);
-  int burnin_iteration() const { return burnin_iteration_; }
+  void set_burn_in_iteration(int burn_in_iteration);
+  int burn_in_iteration() const { return burn_in_iteration_; }
 
   void override_filter_for_test(bool override);
 
@@ -77,7 +77,7 @@ class Scoring {
   // pre-burn-in state, and 1 and above signify the post-burn-in state.
   // Incremented during the post-burn-in period each time a provider
   // returns. Not applicable to zero-state search.
-  int burnin_iteration_ = 0;
+  int burn_in_iteration_ = 0;
 };
 
 ::std::ostream& operator<<(::std::ostream& os, const Scoring& result);

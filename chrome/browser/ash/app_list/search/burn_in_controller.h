@@ -27,7 +27,7 @@ class BurnInController {
   BurnInController& operator=(const BurnInController&) = delete;
 
   // True if the burn-in period has elapsed.
-  bool is_post_burnin();
+  bool is_post_burn_in();
 
   // Called at the beginning of a query search. Initiates the burn-in/ period.
   void Start();
@@ -51,8 +51,8 @@ class BurnInController {
                      CategoriesList& categories,
                      ash::AppListSearchResultType result_type);
 
-  const base::flat_map<std::string, int>& ids_to_burnin_iteration_for_test() {
-    return ids_to_burnin_iteration_;
+  const base::flat_map<std::string, int>& ids_to_burn_in_iteration_for_test() {
+    return ids_to_burn_in_iteration_;
   }
 
  private:
@@ -60,16 +60,16 @@ class BurnInController {
   base::Time session_start_;
 
   // Called when the burn-in period has elapsed.
-  BurnInPeriodElapsedCallback burnin_period_elapsed_callback_;
+  BurnInPeriodElapsedCallback burn_in_period_elapsed_callback_;
 
   // The period of time ("burn-in") to wait before publishing a first collection
   // of search results to the model updater.
-  const base::TimeDelta burnin_period_;
+  const base::TimeDelta burn_in_period_;
 
   // A timer for the burn-in period. During the burn-in period, results are
   // collected from search providers. Publication of results to the model
   // updater is delayed until the burn-in period has elapsed.
-  base::RetainingOneShotTimer burnin_timer_;
+  base::RetainingOneShotTimer burn_in_timer_;
 
   // Counter for burn-in iterations. Useful for query search only.
   //
@@ -83,7 +83,7 @@ class BurnInController {
   // (1) Results and categories to be ranked by different rules depending on
   // whether the information arrived pre- or post-burn-in.
   // (2) Sorting stability across multiple post-burn-in updates.
-  int burnin_iteration_counter_ = 0;
+  int burn_in_iteration_counter_ = 0;
 
   // Store the ID of each result we encounter in a given query, along with the
   // burn-in iteration during which it arrived. This storage is necessary
@@ -93,7 +93,7 @@ class BurnInController {
   // the previous results are swapped for new ones within SetResults(). Result
   // meta-information we wish to persist across multiple calls to SetResults
   // must therefore be stored separately.
-  base::flat_map<std::string, int> ids_to_burnin_iteration_;
+  base::flat_map<std::string, int> ids_to_burn_in_iteration_;
 };
 
 }  // namespace app_list

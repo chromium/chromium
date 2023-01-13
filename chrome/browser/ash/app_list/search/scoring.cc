@@ -35,7 +35,7 @@ double Scoring::BestMatchScore() const {
              "{%.2f | nr:%.2f rs:%.2f bm:%d cr:%d bi:%d}", scoring.FinalScore(),
              scoring.normalized_relevance(), scoring.ftrl_result_score(),
              scoring.best_match_rank(), scoring.continue_rank(),
-             scoring.burnin_iteration());
+             scoring.burn_in_iteration());
 }
 
 void Scoring::set_filtered(bool filtered) {
@@ -66,8 +66,8 @@ void Scoring::set_best_match_rank(int best_match_rank) {
   best_match_rank_ = best_match_rank;
 }
 
-void Scoring::set_burnin_iteration(int burnin_iteration) {
-  burnin_iteration_ = burnin_iteration;
+void Scoring::set_burn_in_iteration(int burn_in_iteration) {
+  burn_in_iteration_ = burn_in_iteration;
 }
 
 void Scoring::override_filter_for_test(bool override) {

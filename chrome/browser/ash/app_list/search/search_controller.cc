@@ -59,7 +59,7 @@ SearchController::SearchController(AppListModelUpdater* model_updater,
 SearchController::~SearchController() = default;
 
 void SearchController::Initialize() {
-  burnin_controller_ = std::make_unique<BurnInController>(base::BindRepeating(
+  burn_in_controller_ = std::make_unique<BurnInController>(base::BindRepeating(
       &SearchController::OnBurnInPeriodElapsed, base::Unretained(this)));
   ranker_manager_ = std::make_unique<RankerManager>(profile_, this);
   metrics_manager_ =
@@ -75,7 +75,7 @@ void SearchController::Initialize() {
 void SearchController::StartSearch(const std::u16string& query) {
   DCHECK(!query.empty());
 
-  burnin_controller_->Start();
+  burn_in_controller_->Start();
 
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
 
@@ -102,7 +102,7 @@ void SearchController::StartSearch(const std::u16string& query) {
 
 void SearchController::ClearSearch() {
   // Cancel a pending search publish if it exists.
-  burnin_controller_->Stop();
+  burn_in_controller_->Stop();
 
   ClearNonZeroStateResults(results_);
   last_query_.clear();
@@ -120,7 +120,7 @@ void SearchController::StartZeroState(base::OnceClosure on_done,
   // Clear all results - zero state search request is made when the app list
   // gets first shown, which would indicate that search is not currently active.
   results_.clear();
-  burnin_controller_->Stop();
+  burn_in_controller_->Stop();
 
   // Categories currently are not used by zero-state, but may be required for
   // sorting in SetResults.
@@ -257,11 +257,11 @@ void SearchController::SetResults(const SearchProvider* provider,
 
 void SearchController::SetSearchResults(const SearchProvider* provider) {
   Rank(provider->ResultType());
-  burnin_controller_->UpdateResults(results_, categories_,
-                                    provider->ResultType());
+  burn_in_controller_->UpdateResults(results_, categories_,
+                                     provider->ResultType());
   // If the burn-in period has not yet elapsed, don't call Publish here (this
   // case is covered by a call scheduled within the burn-in controller).
-  if (!last_query_.empty() && burnin_controller_->is_post_burnin()) {
+  if (!last_query_.empty() && burn_in_controller_->is_post_burn_in()) {
     Publish();
   }
 }
