@@ -140,6 +140,12 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
 
 void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
     base::WeakPtr<PasswordGenerationPopupController> controller) {
+  // Make sure we only receive enter/exit events when the mouse enters the whole
+  // view, even if it is entering/exiting a child view. This is needed to
+  // prevent the background highlight of the password box disappearing when
+  // entering the key icon view (see crbug.com/1393991).
+  SetNotifyEnterExitOnChild(true);
+
   controller_ = controller;
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
