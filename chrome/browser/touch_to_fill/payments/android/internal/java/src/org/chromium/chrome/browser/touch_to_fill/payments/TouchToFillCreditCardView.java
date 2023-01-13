@@ -28,8 +28,8 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     private Runnable mScanCreditCardHandler;
 
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
-        HorizontalDividerItemDecoration(int horizontalMargin, Context context) {
-            super(horizontalMargin, context);
+        HorizontalDividerItemDecoration(Context context) {
+            super(context);
         }
 
         @Override
@@ -71,10 +71,7 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
         mBottomSheetController = bottomSheetController;
         mSheetItemListView = getItemList();
 
-        mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(
-                getContentView().getResources().getDimensionPixelSize(
-                        R.dimen.ttf_for_payments_items_spacing),
-                context));
+        mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(context));
     }
 
     void setScanCreditCardButton(boolean shouldShowScanCreditCard) {
@@ -140,14 +137,12 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
 
     @Override
     protected int getConclusiveMarginHeightPx() {
-        return getContentView().getResources().getDimensionPixelSize(
-                R.dimen.ttf_for_payments_bottom_padding_button);
+        return getContentView().getResources().getDimensionPixelSize(R.dimen.ttf_sheet_padding);
     }
 
     @Override
     protected @Px int getSideMarginPx() {
-        return getContentView().getResources().getDimensionPixelSize(
-                R.dimen.ttf_for_payments_sheet_padding);
+        return getContentView().getResources().getDimensionPixelSize(R.dimen.ttf_sheet_padding);
     }
 
     @Override

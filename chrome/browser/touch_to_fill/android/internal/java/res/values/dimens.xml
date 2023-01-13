@@ -10,12 +10,11 @@ found in the LICENSE file.
     <dimen name="touch_to_fill_favicon_size_modern">32dp</dimen>
     <dimen name="touch_to_fill_sheet_margin">16dp</dimen>
     <dimen name="touch_to_fill_sheet_margin_modern">24dp</dimen>
-    <dimen name="touch_to_fill_sheet_items_spacing">1dp</dimen>
 
     <!-- Depending on the experiments that are active we might show a call to
          action button or branding message to the users, at which point we need
          different bottom paddings. They are exposed here, so that they can be
          added dynamically, depending on the state of the experiments. -->
-    <dimen name="touch_to_fill_sheet_bottom_padding_button">8dp</dimen>
-    <dimen name="touch_to_fill_sheet_bottom_padding_button_modern">16dp</dimen>
+    <dimen name="touch_to_fill_sheet_bottom_padding_button">6dp</dimen>
+    <dimen name="touch_to_fill_sheet_bottom_padding_button_modern">22dp</dimen>
 </resources>

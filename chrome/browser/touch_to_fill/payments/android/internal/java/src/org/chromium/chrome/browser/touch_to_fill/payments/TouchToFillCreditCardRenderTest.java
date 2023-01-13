@@ -66,7 +66,7 @@ public class TouchToFillCreditCardRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -131,6 +131,8 @@ public class TouchToFillCreditCardRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "touch_to_fill_credit_card_sheet_one_card");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "touch_to_fill_credit_card_sheet_one_card_half_state");
     }
 
     @Test
@@ -144,6 +146,8 @@ public class TouchToFillCreditCardRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "touch_to_fill_credit_card_sheet_two_cards");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "touch_to_fill_credit_card_sheet_two_cards_half_state");
     }
 
     @Test
@@ -157,6 +161,8 @@ public class TouchToFillCreditCardRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "touch_to_fill_credit_card_sheet_three_cards");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "touch_to_fill_credit_card_sheet_three_cards_half_state");
     }
 
     @Test
@@ -171,6 +177,8 @@ public class TouchToFillCreditCardRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "touch_to_fill_credit_card_sheet_four_cards");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "touch_to_fill_credit_card_sheet_four_cards_half_state");
     }
 
     @Test

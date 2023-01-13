@@ -6,14 +6,9 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <dimen name="ttf_for_payments_sheet_padding">24dp</dimen>
-    <dimen name="ttf_for_payments_drag_handler_margin_top">6dp</dimen>
     <dimen name="ttf_for_payments_product_icon_height">32dp</dimen>
     <dimen name="ttf_for_payments_product_icon_margin_vertical">12dp</dimen>
-    <dimen name="ttf_for_payments_buttons_vertical_margin">18dp</dimen>
     <dimen name="touch_to_fill_payments_favicon_width">40dp</dimen>
     <dimen name="touch_to_fill_payments_favicon_height">24dp</dimen>
     <dimen name="ttf_for_payments_menu_item_icon_padding">12dp</dimen>
-    <dimen name="ttf_for_payments_bottom_padding_button">16dp</dimen>
-    <dimen name="ttf_for_payments_items_spacing">2dp</dimen>
 </resources>

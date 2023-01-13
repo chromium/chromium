@@ -101,9 +101,10 @@ public class TouchToFillRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -166,6 +167,8 @@ public class TouchToFillRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "ttf_shows_one_credential_old_ui");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "ttf_shows_one_credential_old_ui_half_state");
     }
 
     @Test
@@ -192,6 +195,8 @@ public class TouchToFillRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "ttf_shows_two_credentials_old_ui");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "ttf_shows_two_credentials_old_ui_half_state");
     }
 
     @Test
@@ -215,6 +220,8 @@ public class TouchToFillRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "ttf_shows_one_credential_modern_ui");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "ttf_shows_one_credential_modern_ui_half_state");
     }
 
     @Test
@@ -239,6 +246,8 @@ public class TouchToFillRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "ttf_shows_two_credentials_modern_ui");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "ttf_shows_two_credentials_modern_ui_half_state");
     }
 
     @Test
@@ -263,6 +272,8 @@ public class TouchToFillRenderTest {
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "ttf_shows_three_credentials_modern_ui");
+        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
+        mRenderTestRule.render(rootView, "ttf_shows_three_credentials_modern_ui_half_state");
     }
 
     private MVCListAdapter.ListItem buildCredentialItem(Credential credential) {

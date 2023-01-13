@@ -30,8 +30,8 @@ class TouchToFillView extends TouchToFillViewBase {
     private final RecyclerView mSheetItemListView;
 
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
-        HorizontalDividerItemDecoration(int horizontalMargin, Context context) {
-            super(horizontalMargin, context);
+        HorizontalDividerItemDecoration(Context context) {
+            super(context);
         }
 
         @Override
@@ -78,10 +78,7 @@ class TouchToFillView extends TouchToFillViewBase {
         mSheetItemListView = getItemList();
 
         if (usesUnifiedPasswordManagerBranding()) {
-            mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(
-                    getContentView().getResources().getDimensionPixelSize(
-                            R.dimen.touch_to_fill_sheet_items_spacing),
-                    context));
+            mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(context));
         }
     }
 

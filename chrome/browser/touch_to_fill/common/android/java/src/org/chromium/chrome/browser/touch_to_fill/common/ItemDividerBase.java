@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.touch_to_fill.common;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,21 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * BottomSheets.
  */
 public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
-    protected final @Px int mHorizontalMarginPx;
     protected final Context mContext;
-
-    /**
-     * Retrieves the offsets for the given item.
-     * @param outRect Represents the inset of the item in pixels.
-     * @param view The View to decorate.
-     * @param parent The RecyclerView that contains the decorated View.
-     * @param state The current state of RecyclerView.
-     */
-    @Override
-    public void getItemOffsets(
-            Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        outRect.top = mHorizontalMarginPx;
-    }
 
     /**
      * Returns the proper background for each of the credential items depending on their
@@ -80,11 +64,9 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
 
     /**
      * Creates an instance of ItemDividerBase.
-     * @param horizontalMarginPx Is used to calculate the item offsets.
      * @param context Is used to get the drawable resources for the item backgrounds.
      */
-    protected ItemDividerBase(@Px int horizontalMarginPx, Context context) {
-        this.mHorizontalMarginPx = horizontalMarginPx;
+    protected ItemDividerBase(Context context) {
         this.mContext = context;
     }
 
