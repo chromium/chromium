@@ -349,6 +349,24 @@ void InstanceBuilder::ServeDirectory(
                     .set_availability(fcdecl::Availability::REQUIRED))));
 }
 
+void HandleCdmDataDirectoryParam(InstanceBuilder& builder,
+                                 fuchsia::web::CreateContextParams& params) {
+  if (!params.has_cdm_data_directory()) {
+    return;
+  }
+
+  static constexpr char kCdmDataPath[] = "/cdm_data";
+
+  builder.args().AppendSwitchNative(switches::kCdmDataDirectory, kCdmDataPath);
+  builder.ServeCdmDataDirectory(
+      std::move(*params.mutable_cdm_data_directory()));
+  if (params.has_cdm_data_quota_bytes()) {
+    builder.args().AppendSwitchNative(
+        switches::kCdmDataQuotaBytes,
+        base::NumberToString(params.cdm_data_quota_bytes()));
+  }
+}
+
 void HandleDataDirectoryParam(InstanceBuilder& builder,
                               fuchsia::web::CreateContextParams& params) {
   if (!params.has_data_directory()) {
@@ -428,6 +446,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
                           services);
     builder->AppendOffersForServices(services);
   }
+
+  HandleCdmDataDirectoryParam(*builder, params);
 
   HandleDataDirectoryParam(*builder, params);
 
