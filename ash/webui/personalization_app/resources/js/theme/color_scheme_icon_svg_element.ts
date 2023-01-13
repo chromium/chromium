@@ -6,10 +6,13 @@
  * @fileoverview This component is for the color scheme icon svg.
  */
 
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+
+import {SampleColorScheme} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {convertToRgbHexStr} from '../utils.js';
 
 import {getTemplate} from './color_scheme_icon_svg_element.html.js';
-import {DynamicColorScheme} from './dynamic_color_element.js';
 
 export class ColorSchemeIconSvgElement extends WithPersonalizationStore {
   static get is() {
@@ -28,7 +31,14 @@ export class ColorSchemeIconSvgElement extends WithPersonalizationStore {
       },
     };
   }
-  private scheme_: DynamicColorScheme;
+  private scheme_: SampleColorScheme;
+
+  private getHexColor_(color: SkColor): string {
+    if (!color || !color.value) {
+      return 'none';
+    }
+    return convertToRgbHexStr(color.value);
+  }
 }
 
 customElements.define(ColorSchemeIconSvgElement.is, ColorSchemeIconSvgElement);

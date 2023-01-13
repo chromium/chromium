@@ -34,6 +34,20 @@ struct ASH_EXPORT ColorPaletteSeed {
   ui::ColorProviderManager::ColorMode color_mode;
 };
 
+// Samples of color schemes for the tri-color scheme previews.
+struct ASH_EXPORT SampleColorScheme {
+  ColorScheme scheme;
+  SkColor primary;
+  SkColor secondary;
+  SkColor tertiary;
+
+  bool operator==(const SampleColorScheme& other) const {
+    return std::tie(primary, secondary, tertiary, scheme) ==
+           std::tie(other.primary, other.secondary, other.tertiary,
+                    other.scheme);
+  }
+};
+
 // Manages data for the current color scheme which is used to generate a color
 // palette. Colors are derived from the seed color, scheme type, and dark/light
 // mode state. This class is intended for other controllers. Views should
@@ -42,13 +56,6 @@ struct ASH_EXPORT ColorPaletteSeed {
 // of this class.
 class ASH_EXPORT ColorPaletteController {
  public:
-  // Samples of color schemes for the tri-color scheme previews.
-  struct SampleScheme {
-    SkColor primary;
-    SkColor secondary;
-    SkColor tertiary;
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     // Called when the color palette is about to change but before the
@@ -94,13 +101,15 @@ class ASH_EXPORT ColorPaletteController {
   // Iff a static color is the currently selected scheme, returns that color.
   virtual absl::optional<SkColor> static_color() const = 0;
 
-  // Generates a tri-color SampleScheme based on the current configuration for
-  // the provided `scheme`. i.e. uses the current seed_color and color_mode with
-  // the chosen `scheme`. The generated scheme is provided through
+  // Generates a tri-color SampleColorScheme based on the current configuration
+  // for the provided `scheme`. i.e. uses the current seed_color and color_mode
+  // with the chosen `scheme`. The generated scheme is provided through
   // `callback`.
-  using SampleSchemeCallback = base::OnceCallback<void(SampleScheme)>;
-  virtual void GenerateSampleScheme(ColorScheme scheme,
-                                    SampleSchemeCallback callback) const = 0;
+  using SampleColorSchemeCallback =
+      base::OnceCallback<void(const std::vector<ash::SampleColorScheme>&)>;
+  virtual void GenerateSampleColorSchemes(
+      const std::vector<ColorScheme>& color_scheme_buttons,
+      SampleColorSchemeCallback callback) const = 0;
 };
 
 }  // namespace ash

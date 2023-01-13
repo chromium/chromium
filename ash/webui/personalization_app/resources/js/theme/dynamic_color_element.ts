@@ -18,7 +18,7 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {ColorScheme} from '../personalization_app.mojom-webui.js';
+import {ColorScheme, SampleColorScheme} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr} from '../utils.js';
 
@@ -26,13 +26,6 @@ import {getTemplate} from './dynamic_color_element.html.js';
 import {initializeDynamicColorData, setColorSchemePref, setStaticColorPref} from './theme_controller.js';
 import {getThemeProvider} from './theme_interface_provider.js';
 import {ThemeObserver} from './theme_observer.js';
-
-export interface DynamicColorScheme {
-  id: ColorScheme;
-  primaryColor: string;
-  secondaryColor: string;
-  tertiaryColor: string;
-}
 
 export interface DynamicColorElement {
   $: {
@@ -77,39 +70,9 @@ export class DynamicColorElement extends WithPersonalizationStore {
           '#eadecd',
         ],
       },
-      colorSchemes_: {
-        type: Object,
-        readOnly: true,
-        value(): DynamicColorScheme[] {
-          return [
-            // TODO(254479725): Replace with colors fetched from the
-            // backend.
-            {
-              id: ColorScheme.kTonalSpot,
-              primaryColor: 'var(--google-blue-500)',
-              secondaryColor: 'var(--google-red-500)',
-              tertiaryColor: 'var(--google-green-500)',
-            },
-            {
-              id: ColorScheme.kNeutral,
-              primaryColor: 'var(--google-red-500)',
-              secondaryColor: 'var(--google-blue-500)',
-              tertiaryColor: 'var(--google-green-500)',
-            },
-            {
-              id: ColorScheme.kVibrant,
-              primaryColor: 'var(--google-green-500)',
-              secondaryColor: 'var(--google-red-500)',
-              tertiaryColor: 'var(--google-blue-500)',
-            },
-            {
-              id: ColorScheme.kExpressive,
-              primaryColor: 'var(--google-orange-500)',
-              secondaryColor: 'var(--google-red-500)',
-              tertiaryColor: 'var(--google-green-500)',
-            },
-          ];
-        },
+      sampleColorSchemes_: {
+        type: Array,
+        notify: true,
       },
       // The color scheme button currently highlighted by keyboard navigation.
       colorSchemeHighlightedButton_: {
@@ -130,7 +93,7 @@ export class DynamicColorElement extends WithPersonalizationStore {
   private staticColorSelected_: SkColor|null;
   private colorSchemeSelected_: ColorScheme|null;
   private staticColors_: string[];
-  private colorSchemes_: DynamicColorScheme[];
+  private sampleColorSchemes_: SampleColorScheme[];
   private colorSchemeHighlightedButton_: CrButtonElement;
   private staticColorHighlightedButton_: CrButtonElement;
 
@@ -147,6 +110,8 @@ export class DynamicColorElement extends WithPersonalizationStore {
         'staticColorSelected_', state => state.theme.staticColorSelected);
     this.watch<DynamicColorElement['colorSchemeSelected_']>(
         'colorSchemeSelected_', state => state.theme.colorSchemeSelected);
+    this.watch<DynamicColorElement['sampleColorSchemes_']>(
+        'sampleColorSchemes_', state => state.theme.sampleColorSchemes);
     this.updateFromStore();
     initializeDynamicColorData(getThemeProvider(), this.getStore());
   }

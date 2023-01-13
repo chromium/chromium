@@ -8,8 +8,12 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -19,6 +23,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -268,4 +273,33 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetColorScheme) {
 
   EXPECT_EQ(color_scheme, GetColorScheme());
 }
+
+TEST_F(PersonalizationAppThemeProviderImplJellyTest,
+       GenerateSampleColorSchemes) {
+  SetThemeObserver();
+  theme_provider_remote()->FlushForTesting();
+  ColorScheme color_scheme_buttons[] = {
+      ColorScheme::kTonalSpot,
+      ColorScheme::kNeutral,
+      ColorScheme::kVibrant,
+      ColorScheme::kExpressive,
+  };
+  std::vector<SampleColorScheme> samples;
+  for (auto scheme : color_scheme_buttons) {
+    samples.push_back({.scheme = scheme,
+                       .primary = SK_ColorRED,
+                       .secondary = SK_ColorGREEN,
+                       .tertiary = SK_ColorBLUE});
+  }
+  base::MockOnceCallback<void(const std::vector<ash::SampleColorScheme>&)>
+      generate_sample_color_schemes_callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(generate_sample_color_schemes_callback, Run(samples))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  theme_provider()->GenerateSampleColorSchemes(
+      generate_sample_color_schemes_callback.Get());
+  run_loop.Run();
+}
+
 }  // namespace ash::personalization_app

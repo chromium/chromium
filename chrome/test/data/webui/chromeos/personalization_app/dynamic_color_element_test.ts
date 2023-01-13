@@ -7,7 +7,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ColorScheme, DynamicColorElement, emptyState, SetColorSchemePrefAction, SetStaticColorPrefAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
+import {ColorScheme, DynamicColorElement, emptyState, SetColorSchemeAction, SetSampleColorSchemesAction, SetStaticColorAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
@@ -110,8 +110,19 @@ suite('DynamicColorElementTest', function() {
 
     const action =
         await personalizationStore.waitForAction(
-            ThemeActionName.SET_COLOR_SCHEME) as SetColorSchemePrefAction;
+            ThemeActionName.SET_COLOR_SCHEME) as SetColorSchemeAction;
     assertEquals(ColorScheme.kTonalSpot, action.colorScheme);
+  });
+
+  test('sets sample color schemes in store on first load', async () => {
+    personalizationStore.expectAction(ThemeActionName.SET_SAMPLE_COLOR_SCHEMES);
+
+    await initDynamicColorElement();
+
+    const action = await personalizationStore.waitForAction(
+                       ThemeActionName.SET_SAMPLE_COLOR_SCHEMES) as
+        SetSampleColorSchemesAction;
+    assertEquals(4, action.sampleColorSchemes.length);
   });
 
   test('sets color scheme data in store on changed', async () => {
@@ -124,7 +135,7 @@ suite('DynamicColorElementTest', function() {
 
     const action =
         await personalizationStore.waitForAction(
-            ThemeActionName.SET_COLOR_SCHEME) as SetColorSchemePrefAction;
+            ThemeActionName.SET_COLOR_SCHEME) as SetColorSchemeAction;
     assertEquals(colorScheme, action.colorScheme);
   });
 
@@ -138,7 +149,7 @@ suite('DynamicColorElementTest', function() {
 
     const action =
         await personalizationStore.waitForAction(
-            ThemeActionName.SET_STATIC_COLOR) as SetStaticColorPrefAction;
+            ThemeActionName.SET_STATIC_COLOR) as SetStaticColorAction;
     assertDeepEquals(staticColor, action.staticColor);
   });
 
@@ -267,7 +278,7 @@ suite('DynamicColorElementTest', function() {
 
     const action =
         await personalizationStore.waitForAction(
-            ThemeActionName.SET_COLOR_SCHEME) as SetColorSchemePrefAction;
+            ThemeActionName.SET_COLOR_SCHEME) as SetColorSchemeAction;
     assertTrue(!!action.colorScheme);
     assertEquals(
         Number(button.dataset['colorSchemeId']!),
@@ -287,7 +298,7 @@ suite('DynamicColorElementTest', function() {
 
     const action =
         await personalizationStore.waitForAction(
-            ThemeActionName.SET_STATIC_COLOR) as SetStaticColorPrefAction;
+            ThemeActionName.SET_STATIC_COLOR) as SetStaticColorAction;
     assertTrue(!!action.staticColor);
     assertDeepEquals(
         hexColorToSkColor(button.dataset['staticColor']!),

@@ -198,7 +198,7 @@ std::vector<GURL> StructTraits<
 }
 
 // Default to false as we don't ever need to convert back to
-// |backdrop::Collection|
+// `backdrop::Collection`
 bool StructTraits<ash::personalization_app::mojom::WallpaperCollectionDataView,
                   backdrop::Collection>::
     Read(ash::personalization_app::mojom::WallpaperCollectionDataView data,
@@ -245,7 +245,7 @@ StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
 }
 
 // Default to false as we don't ever need to convert back to
-// |backdrop::Image|
+// `Backdrop::Image`
 bool StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
                   backdrop::Image>::
     Read(ash::personalization_app::mojom::WallpaperImageDataView data,
@@ -505,4 +505,40 @@ bool EnumTraits<MojomColorScheme, ash::ColorScheme>::FromMojom(
   return false;
 }
 
+SkColor
+StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
+             ash::SampleColorScheme>::primary(const ash::SampleColorScheme&
+                                                  sample_color_scheme) {
+  return sample_color_scheme.primary;
+}
+
+SkColor
+StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
+             ash::SampleColorScheme>::secondary(const ash::SampleColorScheme&
+                                                    sample_color_scheme) {
+  return sample_color_scheme.secondary;
+}
+
+SkColor
+StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
+             ash::SampleColorScheme>::tertiary(const ash::SampleColorScheme&
+                                                   sample_color_scheme) {
+  return sample_color_scheme.tertiary;
+}
+
+ash::ColorScheme
+StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
+             ash::SampleColorScheme>::scheme(const ash::SampleColorScheme&
+                                                 sample_color_scheme) {
+  return sample_color_scheme.scheme;
+}
+
+// Default to false as we don't ever need to convert back to
+// `ash::ColorSchemeSample`.
+bool StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
+                  ash::SampleColorScheme>::
+    Read(ash::personalization_app::mojom::SampleColorSchemeDataView data,
+         ash::SampleColorScheme* out) {
+  return false;
+}
 }  // namespace mojo

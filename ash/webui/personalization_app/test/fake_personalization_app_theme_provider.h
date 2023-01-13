@@ -53,6 +53,9 @@ class FakePersonalizationAppThemeProvider
 
   void GetStaticColor(GetStaticColorCallback callback) override;
 
+  void GenerateSampleColorSchemes(
+      GenerateSampleColorSchemesCallback callback) override;
+
   void IsDarkModeEnabled(IsDarkModeEnabledCallback callback) override;
 
   void IsColorModeAutoScheduleEnabled(

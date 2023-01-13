@@ -67,6 +67,9 @@ class PersonalizationAppThemeProviderImpl
 
   void GetStaticColor(GetStaticColorCallback callback) override;
 
+  void GenerateSampleColorSchemes(
+      GenerateSampleColorSchemesCallback callback) override;
+
  private:
   bool IsColorModeAutoScheduleEnabled();
 

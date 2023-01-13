@@ -170,6 +170,19 @@ struct EnumTraits<ash::personalization_app::mojom::ColorScheme,
   static bool FromMojom(MojomColorScheme input, ash::ColorScheme* output);
 };
 
+template <>
+struct StructTraits<ash::personalization_app::mojom::SampleColorSchemeDataView,
+                    ash::SampleColorScheme> {
+  static ash::ColorScheme scheme(
+      const ash::SampleColorScheme& sample_color_scheme);
+  static SkColor primary(const ash::SampleColorScheme& sample_color_scheme);
+  static SkColor secondary(const ash::SampleColorScheme& sample_color_scheme);
+  static SkColor tertiary(const ash::SampleColorScheme& sample_color_scheme);
+  static bool Read(
+      ash::personalization_app::mojom::SampleColorSchemeDataView data,
+      ash::SampleColorScheme* out);
+};
+
 }  // namespace mojo
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_

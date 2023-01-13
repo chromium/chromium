@@ -60,6 +60,12 @@ void FakePersonalizationAppThemeProvider::GetColorScheme(
   std::move(callback).Run(ash::ColorScheme::kTonalSpot);
 }
 
+void FakePersonalizationAppThemeProvider::GenerateSampleColorSchemes(
+    GenerateSampleColorSchemesCallback callback) {
+  std::vector<ash::SampleColorScheme> samples;
+  std::move(callback).Run(samples);
+}
+
 void FakePersonalizationAppThemeProvider::GetStaticColor(
     GetStaticColorCallback callback) {
   std::move(callback).Run(SK_ColorBLUE);

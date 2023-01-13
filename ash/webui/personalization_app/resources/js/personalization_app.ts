@@ -78,7 +78,7 @@ export {emptyState, PersonalizationState} from './personalization_state.js';
 export {PersonalizationStore} from './personalization_store.js';
 export {PersonalizationThemeElement} from './theme/personalization_theme_element.js';
 export {PersonalizationToastElement} from './personalization_toast_element.js';
-export {setDarkModeEnabledAction, SetDarkModeEnabledAction, setColorSchemeAction, setStaticColorAction, SetStaticColorPrefAction, SetColorSchemePrefAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
+export {setDarkModeEnabledAction, SetDarkModeEnabledAction, setColorSchemeAction, setStaticColorAction, SetStaticColorAction, SetSampleColorSchemesAction, SetColorSchemeAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
 export {ColorSchemeIconSvgElement} from './theme/color_scheme_icon_svg_element.js';
 export {DynamicColorElement} from './theme/dynamic_color_element.js';

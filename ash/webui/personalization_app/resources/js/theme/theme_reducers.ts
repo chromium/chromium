@@ -42,6 +42,17 @@ export function colorSchemeSelectedReducer(
   }
 }
 
+export function sampleColorSchemesReducer(
+    state: ThemeState['sampleColorSchemes'], action: Actions,
+    _: PersonalizationState): ThemeState['sampleColorSchemes'] {
+  switch (action.name) {
+    case ThemeActionName.SET_SAMPLE_COLOR_SCHEMES:
+      return action.sampleColorSchemes;
+    default:
+      return state;
+  }
+}
+
 export function staticColorSelectedReducer(
     state: ThemeState['staticColorSelected'], action: Actions,
     _: PersonalizationState): ThemeState['staticColorSelected'] {
@@ -58,5 +69,6 @@ export const themeReducers:
       colorModeAutoScheduleEnabled: colorModeAutoScheduleEnabledReducer,
       darkModeEnabled: darkModeEnabledReducer,
       colorSchemeSelected: colorSchemeSelectedReducer,
+      sampleColorSchemes: sampleColorSchemesReducer,
       staticColorSelected: staticColorSelectedReducer,
     };

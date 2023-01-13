@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ColorScheme, ThemeObserverInterface, ThemeObserverRemote, ThemeProviderInterface} from 'chrome://personalization/js/personalization_app.js';
+import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -15,6 +16,7 @@ export class TestThemeProvider extends TestBrowserProxy implements
       'setColorModeAutoScheduleEnabled',
       'setColorScheme',
       'setStaticColor',
+      'generateSampleColorSchemes',
       'getColorScheme',
       'getStaticColor',
       'isDarkModeEnabled',
@@ -66,6 +68,24 @@ export class TestThemeProvider extends TestBrowserProxy implements
   getStaticColor() {
     this.methodCalled('getStaticColor');
     return Promise.resolve({staticColor: this.staticColor});
+  }
+
+  generateSampleColorSchemes() {
+    this.methodCalled('generateSampleColorSchemes');
+    const sampleColorSchemes = [
+      ColorScheme.kTonalSpot,
+      ColorScheme.kExpressive,
+      ColorScheme.kNeutral,
+      ColorScheme.kVibrant,
+    ].map((colorScheme) => {
+      return {
+        scheme: colorScheme,
+        primary: hexColorToSkColor('#ffffff'),
+        secondary: hexColorToSkColor('#ffffff'),
+        tertiary: hexColorToSkColor('#ffffff'),
+      };
+    });
+    return Promise.resolve({sampleColorSchemes});
   }
 
   isDarkModeEnabled() {

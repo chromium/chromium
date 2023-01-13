@@ -324,12 +324,21 @@ interface WallpaperProvider {
     CancelPreviewWallpaper();
 };
 
+// Color scheme options used to generate the system UI's color palette.
 enum ColorScheme {
   kStatic = 0,
   kTonalSpot = 1,
   kNeutral = 2,
   kExpressive = 3,
   kVibrant = 4,
+};
+
+// Samples of a color scheme for the tri-color scheme preview.
+struct SampleColorScheme {
+  ColorScheme scheme;
+  skia.mojom.SkColor primary;
+  skia.mojom.SkColor secondary;
+  skia.mojom.SkColor tertiary;
 };
 
 // Receives information whenever there are theme related changes such as color
@@ -373,6 +382,9 @@ interface ThemeProvider {
 
   // Retrieves the static seed color for dynamic color.
   GetStaticColor() => (skia.mojom.SkColor? static_color);
+
+  // Generate samples of all the color schemes.
+  GenerateSampleColorSchemes() => (array<SampleColorScheme> sample_color_schemes);
 
   // Returns whether color mode auto scheduler is enabled.
   IsColorModeAutoScheduleEnabled() => (bool enabled);

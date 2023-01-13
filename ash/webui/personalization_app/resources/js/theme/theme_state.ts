@@ -4,7 +4,7 @@
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme} from '../personalization_app.mojom-webui.js';
+import {ColorScheme, SampleColorScheme} from '../personalization_app.mojom-webui.js';
 
 /**
  * Stores theme related states.
@@ -13,6 +13,7 @@ export interface ThemeState {
   colorModeAutoScheduleEnabled: boolean|null;
   colorSchemeSelected: ColorScheme|null;
   darkModeEnabled: boolean|null;
+  sampleColorSchemes: SampleColorScheme[];
   staticColorSelected: SkColor|null;
 }
 
@@ -21,6 +22,7 @@ export function emptyState(): ThemeState {
     colorModeAutoScheduleEnabled: null,
     colorSchemeSelected: null,
     darkModeEnabled: null,
+    sampleColorSchemes: [],
     staticColorSelected: null,
   };
 }

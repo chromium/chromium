@@ -5,7 +5,7 @@
 import {Action} from 'chrome://resources/ash/common/store/store.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme} from '../personalization_app.mojom-webui.js';
+import {ColorScheme, SampleColorScheme} from '../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change theme state.
@@ -15,11 +15,13 @@ export enum ThemeActionName {
   SET_DARK_MODE_ENABLED = 'set_dark_mode_enabled',
   SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED = 'set_color_mode_auto_schedule_enabled',
   SET_COLOR_SCHEME = 'set_color_scheme',
+  SET_SAMPLE_COLOR_SCHEMES = 'set_sample_color_schemes',
   SET_STATIC_COLOR = 'set_static_color',
 }
 
-export type ThemeActions = SetColorModeAutoScheduleAction|
-    SetDarkModeEnabledAction|SetColorSchemePrefAction|SetStaticColorPrefAction;
+export type ThemeActions =
+    SetColorModeAutoScheduleAction|SetDarkModeEnabledAction|
+    SetColorSchemeAction|SetSampleColorSchemesAction|SetStaticColorAction;
 
 export type SetDarkModeEnabledAction = Action&{
   name: ThemeActionName.SET_DARK_MODE_ENABLED,
@@ -31,12 +33,17 @@ export type SetColorModeAutoScheduleAction = Action&{
   enabled: boolean,
 };
 
-export type SetColorSchemePrefAction = Action&{
+export type SetColorSchemeAction = Action&{
   name: ThemeActionName.SET_COLOR_SCHEME,
   colorScheme: ColorScheme,
 };
 
-export type SetStaticColorPrefAction = Action&{
+export type SetSampleColorSchemesAction = Action&{
+  name: ThemeActionName.SET_SAMPLE_COLOR_SCHEMES,
+  sampleColorSchemes: SampleColorScheme[],
+};
+
+export type SetStaticColorAction = Action&{
   name: ThemeActionName.SET_STATIC_COLOR,
   staticColor: SkColor | null,
 };
@@ -52,11 +59,16 @@ export function setColorModeAutoScheduleEnabledAction(enabled: boolean):
 }
 
 export function setColorSchemeAction(colorScheme: ColorScheme):
-    SetColorSchemePrefAction {
+    SetColorSchemeAction {
   return {name: ThemeActionName.SET_COLOR_SCHEME, colorScheme};
 }
 
+export function setSampleColorSchemesAction(
+    sampleColorSchemes: SampleColorScheme[]): SetSampleColorSchemesAction {
+  return {name: ThemeActionName.SET_SAMPLE_COLOR_SCHEMES, sampleColorSchemes};
+}
+
 export function setStaticColorAction(staticColor: SkColor|
-                                     null): SetStaticColorPrefAction {
+                                     null): SetStaticColorAction {
   return {name: ThemeActionName.SET_STATIC_COLOR, staticColor};
 }

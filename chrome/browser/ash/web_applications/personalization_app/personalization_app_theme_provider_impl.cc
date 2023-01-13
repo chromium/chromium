@@ -171,4 +171,17 @@ void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
   OnStaticColorChanged(static_color);
   OnColorSchemeChanged(color_palette_controller_->color_scheme());
 }
+
+void PersonalizationAppThemeProviderImpl::GenerateSampleColorSchemes(
+    GenerateSampleColorSchemesCallback callback) {
+  const std::vector<ColorScheme> color_scheme_buttons = {
+      ColorScheme::kTonalSpot,
+      ColorScheme::kNeutral,
+      ColorScheme::kVibrant,
+      ColorScheme::kExpressive,
+  };
+  color_palette_controller_->GenerateSampleColorSchemes(color_scheme_buttons,
+                                                        std::move(callback));
+}
+
 }  // namespace ash::personalization_app

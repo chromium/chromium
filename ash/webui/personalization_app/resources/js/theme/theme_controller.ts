@@ -7,7 +7,7 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 import {ColorScheme, ThemeProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setStaticColorAction} from './theme_actions.js';
+import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setSampleColorSchemesAction, setStaticColorAction} from './theme_actions.js';
 
 /**
  * @fileoverview contains all of the functions to interact with C++ side through
@@ -18,22 +18,29 @@ import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkMode
 export async function initializeData(
     provider: ThemeProviderInterface,
     store: PersonalizationStore): Promise<void> {
+  const [{enabled}, {darkModeEnabled}] = await Promise.all([
+    provider.isColorModeAutoScheduleEnabled(),
+    provider.isDarkModeEnabled(),
+  ]);
   store.beginBatchUpdate();
-  const {enabled} = await provider.isColorModeAutoScheduleEnabled();
-  store.dispatch(setColorModeAutoScheduleEnabledAction(enabled));
-  const {darkModeEnabled} = await provider.isDarkModeEnabled();
   store.dispatch(setDarkModeEnabledAction(darkModeEnabled));
+  store.dispatch(setColorModeAutoScheduleEnabledAction(enabled));
   store.endBatchUpdate();
 }
 
 export async function initializeDynamicColorData(
     provider: ThemeProviderInterface,
     store: PersonalizationStore): Promise<void> {
+  const [{staticColor}, {colorScheme}, {sampleColorSchemes}] =
+      await Promise.all([
+        provider.getStaticColor(),
+        provider.getColorScheme(),
+        provider.generateSampleColorSchemes(),
+      ]);
   store.beginBatchUpdate();
-  const {staticColor} = await provider.getStaticColor();
   store.dispatch(setStaticColorAction(staticColor));
-  const {colorScheme} = await provider.getColorScheme();
   store.dispatch(setColorSchemeAction(colorScheme));
+  store.dispatch(setSampleColorSchemesAction(sampleColorSchemes));
   store.endBatchUpdate();
 }
 

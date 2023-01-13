@@ -74,18 +74,15 @@ class ColorPaletteControllerImpl : public ColorPaletteController {
     return absl::nullopt;
   }
 
-  void GenerateSampleScheme(ColorScheme scheme,
-                            SampleSchemeCallback callback) const override {
-    // TODO(b/258719005): Return correct and different schemes for each
-    // `scheme`.
-    DCHECK_NE(scheme, ColorScheme::kStatic)
-        << "Requesting a static scheme doesn't make sense since there is no "
-           "seed color";
-    SampleScheme sample = {.primary = SK_ColorRED,
-                           .secondary = SK_ColorGREEN,
-                           .tertiary = SK_ColorBLUE};
+  void GenerateSampleColorSchemes(
+      const std::vector<ColorScheme>& color_scheme_buttons,
+      SampleColorSchemeCallback callback) const override {
+    std::vector<SampleColorScheme> samples;
+    for (auto scheme : color_scheme_buttons) {
+      samples.push_back(GenerateSampleColorScheme(scheme));
+    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(std::move(callback), sample),
+        FROM_HERE, base::BindOnce(std::move(callback), samples),
         base::Milliseconds(20));
   }
 
@@ -93,6 +90,18 @@ class ColorPaletteControllerImpl : public ColorPaletteController {
   SkColor static_color_ = SK_ColorBLUE;
   ColorScheme current_scheme_ = ColorScheme::kTonalSpot;
   base::ObserverList<ColorPaletteController::Observer> observers_;
+
+  SampleColorScheme GenerateSampleColorScheme(ColorScheme scheme) const {
+    // TODO(b/258719005): Return correct and different schemes for each
+    // `scheme`.
+    DCHECK_NE(scheme, ColorScheme::kStatic)
+        << "Requesting a static scheme doesn't make sense since there is no "
+           "seed color";
+    return {.scheme = scheme,
+            .primary = SK_ColorRED,
+            .secondary = SK_ColorGREEN,
+            .tertiary = SK_ColorBLUE};
+  }
 };
 
 }  // namespace
