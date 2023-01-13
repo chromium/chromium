@@ -368,6 +368,8 @@ static_library("browser") {
     sources += [
       "password_strength_calculation.cc",
       "password_strength_calculation.h",
+      "ui/reuse_check_utility.cc",
+      "ui/reuse_check_utility.h",
       "ui/weak_check_utility.cc",
       "ui/weak_check_utility.h",
     ]
@@ -807,6 +809,7 @@ source_set("unit_tests") {
   if (!is_android && !is_ios) {
     sources += [
       "password_strength_calculation_unittest.cc",
+      "ui/reuse_check_utility_unittest.cc",
       "ui/weak_check_utility_unittest.cc",
     ]
     deps += [ "//components/password_manager/services/password_strength:lib" ]

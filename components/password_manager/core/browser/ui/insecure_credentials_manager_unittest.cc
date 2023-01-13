@@ -1128,6 +1128,22 @@ TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialEntries) {
                           CredentialUIEntry(password_forms[1])));
 }
 
+TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialsReused) {
+  PasswordForm form1 =
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
+  PasswordForm form2 =
+      MakeSavedPassword(kExampleCom, kUsername2, kWeakPassword1);
+
+  store().AddLogin(form1);
+  store().AddLogin(form2);
+  RunUntilIdle();
+  provider().StartReuseCheck();
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(form1), CredentialUIEntry(form2)));
+}
+
 #else
 
 TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialsFiltersWeak) {

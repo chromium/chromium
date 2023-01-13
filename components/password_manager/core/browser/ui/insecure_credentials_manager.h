@@ -56,6 +56,10 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   ~InsecureCredentialsManager() override;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Computes reused credentials in a separate thread and then passes the result
+  // to OnReuseCheckDone.
+  void StartReuseCheck(base::OnceClosure on_check_done = base::DoNothing());
+
   // Computes weak credentials in a separate thread and then passes the result
   // to OnWeakCheckDone.
   void StartWeakCheck(base::OnceClosure on_check_done = base::DoNothing());
@@ -86,6 +90,11 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   void OnWeakCheckDone(base::ElapsedTimer timer_since_weak_check_start,
                        base::flat_set<std::u16string> weak_passwords);
 
+  // Updates |reused_passwords| set and notifies observers that insecure
+  // credentials were changed.
+  void OnReuseCheckDone(base::ElapsedTimer timer_since_reuse_check_start,
+                        base::flat_set<std::u16string> reused_passwords);
+
   // SavedPasswordsPresenter::Observer:
   void OnEdited(const CredentialUIEntry& credential) override;
   void OnSavedPasswordsChanged() override;
@@ -107,6 +116,9 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
 
   // Cache of the most recently obtained weak passwords.
   base::flat_set<std::u16string> weak_passwords_;
+
+  // Cache of the most recently obtained reused passwords.
+  base::flat_set<std::u16string> reused_passwords_;
 
   // A scoped observer for |presenter_|.
   base::ScopedObservation<SavedPasswordsPresenter,
