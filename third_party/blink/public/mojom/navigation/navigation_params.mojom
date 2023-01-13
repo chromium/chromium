@@ -524,7 +524,7 @@ struct CommitNavigationParams {
   // If any, the task ID of the initiator of the navigation. This is restricted
   // to same-document main-frame navigation initiated by the top-level document.
   // Used by SoftNavigationHeuristics to trace back the chain of events.
-  TaskAttributionId? soft_navigation_heuristic_task_id;
+  TaskAttributionId? soft_navigation_heuristics_task_id;
 
   // Maps the blink runtime-enabled features modified in the browser process to
   // their new enabled/disabled status:

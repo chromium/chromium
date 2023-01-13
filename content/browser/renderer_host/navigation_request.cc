@@ -1302,7 +1302,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
           /*view_transition_state=*/absl::nullopt,
-          /*soft_navigation_heuristic_task_id=*/absl::nullopt,
+          /*soft_navigation_heuristics_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
           base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
           /*fenced_frame_properties=*/absl::nullopt,
@@ -1445,7 +1445,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*navigation_delivery_type=*/
           network::mojom::NavigationDeliveryType::kDefault,
           /*view_transition_state=*/absl::nullopt,
-          /*soft_navigation_heuristic_task_id=*/absl::nullopt,
+          /*soft_navigation_heuristics_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
           base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
           /*fenced_frame_properties=*/absl::nullopt,
@@ -2746,7 +2746,7 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
   navigation_handle_timing_ = NavigationHandleTiming();
 
   policy_container_builder_->ResetForCrossDocumentRestart();
-  commit_params_->soft_navigation_heuristic_task_id = absl::nullopt;
+  commit_params_->soft_navigation_heuristics_task_id = absl::nullopt;
 }
 
 void NavigationRequest::ResetStateForSiteInstanceChange() {
@@ -5134,11 +5134,16 @@ void NavigationRequest::CommitNavigation() {
   // A navigation request should only commit once the response has been
   // processed.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+#if DCHECK_IS_ON()
   // In NavigationControllerImpl::NavigateToExistingPendingEntry we're verifying
   // that the task ID is only passed along if the initiator RFH is the same as
   // the navigated RFH.
-  DCHECK((IsSameDocument() && IsInOutermostMainFrame()) ||
-         !commit_params_->soft_navigation_heuristic_task_id);
+  if (commit_params_->soft_navigation_heuristics_task_id) {
+    DCHECK(IsSameDocument());
+    DCHECK(IsInMainFrame());
+    DCHECK(!frame_tree_node()->IsFencedFrameRoot());
+  }
+#endif
 
   if (!CoopCoepSanityCheck())
     return;
