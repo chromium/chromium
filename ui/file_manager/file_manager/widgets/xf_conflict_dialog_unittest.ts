@@ -26,6 +26,35 @@ function getConflictDialogElement(): XfConflictDialog {
 }
 
 /*
+ * Tests that the <dialog> element has the focus when the dialog opens. Child
+ * UI elements should not be focused by design.
+ */
+export async function testDialogShowFocus(done: () => void) {
+  const element = getConflictDialogElement();
+
+  // Check: the dialog should not be open.
+  const dialog = element.getDialogElement();
+  assertFalse(dialog.open);
+
+  const randomTrueFalse = () => {  // Returns random Boolean.
+    return Math.random() < 0.5;
+  };
+
+  // Open the conflict dialog for 'file-name' with random optional params.
+  element.show('file-name', randomTrueFalse(), randomTrueFalse());
+  await waitUntil(() => dialog.open);
+
+  // Check: the dialog should be visible.
+  assertNotEquals('none', window.getComputedStyle(dialog).display);
+  assertFalse(dialog.hidden);
+
+  // Check: the <dialog> must have the focus, never its child UI elements.
+  await waitUntil(() => element.shadowRoot!.activeElement === dialog);
+
+  done();
+}
+
+/*
  * Tests that the dialog opens with no 'Apply to all' checkbox shown.
  */
 export async function testDialogShow(done: () => void) {
@@ -42,8 +71,7 @@ export async function testDialogShow(done: () => void) {
   // Check: the dialog message should contain 'file.txt'.
   const message = element.getMessageElement();
   assertNotEquals('none', window.getComputedStyle(message).display);
-  assertTrue(message.innerText.includes('A file named'));
-  assertTrue(message.innerText.includes('file.txt'));
+  assertTrue(message.innerText.includes('A file named "file.txt"'));
   assertFalse(message.hidden);
 
   // Check: the 'Apply to all' checkbox should not be shown.
@@ -51,10 +79,6 @@ export async function testDialogShow(done: () => void) {
   assertEquals('none', window.getComputedStyle(checkbox).display);
   assertFalse(checkbox.checked);
   assertTrue(checkbox.hidden);
-
-  // Check: dialog must have the focus, never its child DOM elements.
-  assertNotEquals('none', window.getComputedStyle(dialog).display);
-  await waitUntil(() => element.shadowRoot!.activeElement === dialog);
 
   done();
 }
@@ -77,8 +101,7 @@ export async function testDialogShowCheckbox(done: () => void) {
   // Check: the dialog message should contain 'image.jpg'.
   const message = element.getMessageElement();
   assertNotEquals('none', window.getComputedStyle(message).display);
-  assertTrue(message.innerText.includes('A file named'));
-  assertTrue(message.innerText.includes('image.jpg'));
+  assertTrue(message.innerText.includes('A file named "image.jpg"'));
   assertFalse(message.hidden);
 
   // Check: the 'Apply to all' checkbox should be shown.
@@ -87,10 +110,6 @@ export async function testDialogShowCheckbox(done: () => void) {
   assertFalse(checkbox.hasAttribute('disabled'));
   assertFalse(checkbox.checked);
   assertFalse(checkbox.hidden);
-
-  // Check: dialog must have the focus, never its child DOM elements.
-  assertNotEquals('none', window.getComputedStyle(dialog).display);
-  await waitUntil(() => element.shadowRoot!.activeElement === dialog);
 
   done();
 }
@@ -116,8 +135,7 @@ export async function testDialogShowDirectoryMessageText(done: () => void) {
   // Check: the dialog message should contain 'Downloads'.
   const message = element.getMessageElement();
   assertNotEquals('none', window.getComputedStyle(message).display);
-  assertTrue(message.innerText.includes('A folder named'));
-  assertTrue(message.innerText.includes('Downloads'));
+  assertTrue(message.innerText.includes('A folder named "Downloads"'));
   assertFalse(message.hidden);
 
   // Check: the 'Apply to all' checkbox should not be shown.
@@ -125,10 +143,6 @@ export async function testDialogShowDirectoryMessageText(done: () => void) {
   assertEquals('none', window.getComputedStyle(checkbox).display);
   assertFalse(checkbox.checked);
   assertTrue(checkbox.hidden);
-
-  // Check: dialog must have the focus, never its child DOM elements.
-  assertNotEquals('none', window.getComputedStyle(dialog).display);
-  await waitUntil(() => element.shadowRoot!.activeElement === dialog);
 
   done();
 }
