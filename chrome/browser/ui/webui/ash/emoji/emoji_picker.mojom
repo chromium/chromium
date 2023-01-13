@@ -80,4 +80,8 @@ interface PageHandler {
   // terms or categories from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#base-url-search).
   SearchGifs(string query, string? pos) => (TenorGifResponse search_gifs);
+
+  // Returns a list of GIFs for the specified IDs
+  // (https://developers.google.com/tenor/guides/endpoints#posts).
+  GetGifsByIds(array<string> ids) => (array<GifResponse> selected_gifs);
 };

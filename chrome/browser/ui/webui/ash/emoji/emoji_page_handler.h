@@ -41,6 +41,8 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   void SearchGifs(const std::string& query,
                   const absl::optional<std::string>& pos,
                   SearchGifsCallback callback) override;
+  void GetGifsByIds(const std::vector<std::string>& ids,
+                    GetGifsByIdsCallback callback) override;
 
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;

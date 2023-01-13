@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {PageHandlerFactory, PageHandlerRemote, TenorGifResponse} from './emoji_picker.mojom-webui.js';
-import {EmojiVariants, GifSubcategoryData} from './types.js';
+import {EmojiVariants, GifSubcategoryData, VisualContent} from './types.js';
 
 /** @interface */
 export interface EmojiPickerApiProxy {
@@ -20,6 +20,8 @@ export interface EmojiPickerApiProxy {
 
   searchGifs(query: string, pos?: string):
       Promise<{searchGifs: TenorGifResponse}>;
+
+  getGifsByIds(ids: string[]): Promise<{selectedGifs: VisualContent[]}>;
 
   convertTenorGifsToEmoji(gifs: TenorGifResponse): EmojiVariants[];
 }
@@ -68,6 +70,11 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   searchGifs(query: string, pos?: string):
       Promise<{searchGifs: TenorGifResponse}> {
     return this.handler.searchGifs(query, pos || null);
+  }
+
+  /** @override */
+  getGifsByIds(ids: string[]): Promise<{selectedGifs: VisualContent[]}> {
+    return this.handler.getGifsByIds(ids);
   }
 
   convertTenorGifsToEmoji(gifs: TenorGifResponse): EmojiVariants[] {

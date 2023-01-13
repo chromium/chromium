@@ -56,4 +56,14 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
       });
     });
   }
+
+  getGifsByIds(ids) {
+    return new Promise((resolve) => {
+      resolve({
+        selectedGifs: {
+          result: this.gifs.results,
+        },
+      });
+    });
+  }
 }

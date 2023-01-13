@@ -9,9 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/common/channel_info.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/version_info/channel.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -52,6 +54,22 @@ GURL GifTenorApiFetcher::GetURL(const char* endpoint,
     url = net::AppendQueryParameter(url, kPosName, pos.value());
   }
   return url;
+}
+
+const base::Value::List* GifTenorApiFetcher::FindList(
+    data_decoder::DataDecoder::ValueOrError& result,
+    const std::string& key) {
+  if (!result.has_value()) {
+    return nullptr;
+  }
+
+  const auto* response = result->GetIfDict();
+  if (!response) {
+    return nullptr;
+  }
+
+  const auto* list = response->FindList(key);
+  return list ? list : nullptr;
 }
 
 void GifTenorApiFetcher::TenorGifsApiResponseHandler(
@@ -148,27 +166,38 @@ std::vector<emoji_picker::mojom::GifResponsePtr> GifTenorApiFetcher::ParseGifs(
 void GifTenorApiFetcher::OnGifsJsonParsed(
     TenorGifsApiCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    return;
-  }
-
-  const auto* response = result->GetIfDict();
-  if (!response) {
-    return;
-  }
-
-  const auto* results = response->FindList("results");
-  if (!results) {
-    return;
-  }
-
+  const auto* gifs = FindList(result, "results");
   const auto* next = result->FindStringKey("next");
-  if (!next) {
+  std::move(callback).Run(emoji_picker::mojom::TenorGifResponse::New(
+      next ? *next : "", ParseGifs(gifs)));
+}
+
+void GifTenorApiFetcher::OnGifsByIdsJsonParsed(
+    emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
+    data_decoder::DataDecoder::ValueOrError result) {
+  const auto* gifs = FindList(result, "results");
+  if (!gifs) {
     return;
   }
 
-  std::move(callback).Run(
-      emoji_picker::mojom::TenorGifResponse::New(*next, ParseGifs(results)));
+  std::move(callback).Run(ParseGifs(gifs));
+}
+
+std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::CreateEndpointFetcher(
+    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& url,
+    const net::NetworkTrafficAnnotationTag& annotation_tag) {
+  return std::make_unique<EndpointFetcher>(
+      /*url_loader_factory=*/url_loader_factory,
+      /*url=*/url,
+      /*http_method=*/kHttpMethod,
+      /*content_type=*/kHttpContentType,
+      /*timeout_ms=*/kTimeoutMs,
+      /*post_data=*/"",
+      /*headers=*/std::vector<std::string>(),
+      /*annotation_tag=*/annotation_tag,
+      /*is_stable_channel=*/chrome::GetChannel() ==
+          version_info::Channel::STABLE);
 }
 
 void GifTenorApiFetcher::FetchCategories(
@@ -201,18 +230,9 @@ void GifTenorApiFetcher::FetchCategories(
       }
   )");
 
-  endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
-      /*url_loader_factory=*/url_loader_factory,
-      /*url=*/GURL(kTenorBaseUrl).Resolve(kCategoriesApi),
-      /*http_method=*/kHttpMethod,
-      /*content_type=*/kHttpContentType,
-      /*timeout_ms=*/kTimeoutMs,
-      /*post_data=*/"",
-      /*headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kTrafficAnnotation,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
-
+  endpoint_fetcher_ = CreateEndpointFetcher(
+      url_loader_factory, GURL(kTenorBaseUrl).Resolve(kCategoriesApi),
+      kTrafficAnnotation);
   endpoint_fetcher_->PerformRequest(
       base::BindOnce(&GifTenorApiFetcher::FetchCategoriesResponseHandler,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -231,16 +251,7 @@ void GifTenorApiFetcher::FetchCategoriesResponseHandler(
 void GifTenorApiFetcher::OnCategoriesJsonParsed(
     PageHandler::GetCategoriesCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    return;
-  }
-
-  const auto* response = result->GetIfDict();
-  if (!response) {
-    return;
-  }
-
-  const auto* tags = response->FindList("tags");
+  const auto* tags = FindList(result, "tags");
   if (!tags) {
     return;
   }
@@ -296,18 +307,8 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
       }
   )");
 
-  endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
-      /*url_loader_factory=*/url_loader_factory,
-      /*url=*/GetURL(kFeaturedApi, pos),
-      /*http_method=*/kHttpMethod,
-      /*content_type=*/kHttpContentType,
-      /*timeout_ms=*/kTimeoutMs,
-      /*post_data=*/"",
-      /*headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kTrafficAnnotation,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
-
+  endpoint_fetcher_ = CreateEndpointFetcher(
+      url_loader_factory, GetURL(kFeaturedApi, pos), kTrafficAnnotation);
   endpoint_fetcher_->PerformRequest(
       base::BindOnce(&GifTenorApiFetcher::TenorGifsApiResponseHandler,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -352,22 +353,63 @@ void GifTenorApiFetcher::FetchGifSearch(
   GURL url = GetURL(kSearchApi, pos);
   url = net::AppendQueryParameter(url, "q", query);
 
-  endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
-      /*url_loader_factory=*/url_loader_factory,
-      /*url=*/url,
-      /*http_method=*/kHttpMethod,
-      /*content_type=*/kHttpContentType,
-      /*timeout_ms=*/kTimeoutMs,
-      /*post_data=*/"",
-      /*headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kTrafficAnnotation,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
-
+  endpoint_fetcher_ =
+      CreateEndpointFetcher(url_loader_factory, url, kTrafficAnnotation);
   endpoint_fetcher_->PerformRequest(
       base::BindOnce(&GifTenorApiFetcher::TenorGifsApiResponseHandler,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       nullptr);
 }
 
+void GifTenorApiFetcher::FetchGifsByIds(
+    PageHandler::GetGifsByIdsCallback callback,
+    const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::vector<std::string>& ids) {
+  constexpr char kPostsApi[] = "/v2/posts";
+  constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+      net::DefineNetworkTrafficAnnotation("chromeos_emoji_picker_posts_fetcher",
+                                          R"(
+      semantics {
+        sender: "ChromeOS Emoji Picker"
+        description:
+          "Gets a list of GIFs from the tenor API "
+          "(https://developers.google.com/tenor) for the specified IDs."
+        trigger:
+          "When a user opens the emoji picker and selects the GIF section, "
+          "and the recent GIFs subcategory is active."
+        data:
+          "The IDs of the GIFS saved in recent."
+          "Authentication to this API is done through Chrome's API key."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No setting. The feature does nothing by default. Users must take"
+          "an explicit action to trigger it."
+        policy_exception_justification:
+          "Not implemented, not considered useful. This request is part of a "
+          "flow which is user-initiated, and is not a background request."
+      }
+  )");
+
+  endpoint_fetcher_ = CreateEndpointFetcher(
+      url_loader_factory,
+      net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(kPostsApi), "ids",
+                                base::JoinString(ids, ",")),
+      kTrafficAnnotation);
+  endpoint_fetcher_->PerformRequest(
+      base::BindOnce(&GifTenorApiFetcher::FetchGifsByIdsResponseHandler,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      nullptr);
+}
+
+void GifTenorApiFetcher::FetchGifsByIdsResponseHandler(
+    emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
+    std::unique_ptr<EndpointResponse> response) {
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      response->response,
+      base::BindOnce(&GifTenorApiFetcher::OnGifsByIdsJsonParsed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 }  // namespace ash

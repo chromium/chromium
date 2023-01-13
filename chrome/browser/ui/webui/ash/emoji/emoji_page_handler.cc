@@ -187,6 +187,12 @@ void EmojiPageHandler::SearchGifs(const std::string& query,
                                         url_loader_factory_, query, pos);
 }
 
+void EmojiPageHandler::GetGifsByIds(const std::vector<std::string>& ids,
+                                    GetGifsByIdsCallback callback) {
+  gif_tenor_api_fetcher_.FetchGifsByIds(std::move(callback),
+                                        url_loader_factory_, ids);
+}
+
 void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
                                    bool is_variant,
                                    int16_t search_length) {
