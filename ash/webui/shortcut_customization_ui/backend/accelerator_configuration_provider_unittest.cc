@@ -640,7 +640,7 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
         EXPECT_TRUE(found_match);
       } else {
         const auto& text_accel =
-            info->layout_properties->get_text_accelerator()->text_accelerator;
+            info->layout_properties->get_text_accelerator()->parts;
         if (!TextAccelContainsReplacements(id)) {
           // Ambient accelerators that contain no replacements e.g., Drag the
           // link to the tab's address bar
@@ -803,11 +803,11 @@ TEST_P(TextAcceleratorParsingTest, TextAcceleratorParsing) {
   auto& bundle = ui::ResourceBundle::GetSharedInstance();
   int FAKE_RESOURCE_ID = 1;
   bundle.OverrideLocaleStringResource(FAKE_RESOURCE_ID, replacement_string_);
-  const auto parts = provider_->CreateTextAcceleratorProperties(
+  const auto text_accelerator = provider_->CreateTextAcceleratorProperties(
       {FAKE_RESOURCE_ID, replacements_});
-  EXPECT_EQ(expected_parts_.size(), parts->text_accelerator.size());
+  EXPECT_EQ(expected_parts_.size(), text_accelerator->parts.size());
   for (size_t i = 0; i < expected_parts_.size(); i++) {
-    ValidateTextAccelerators(expected_parts_[i], parts->text_accelerator[i]);
+    ValidateTextAccelerators(expected_parts_[i], text_accelerator->parts[i]);
   }
 }
 
