@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
@@ -174,10 +176,9 @@ IndexedDBDatabase::IndexedDBDatabase(
 
 IndexedDBDatabase::~IndexedDBDatabase() = default;
 
-void IndexedDBDatabase::RegisterAndScheduleTransaction(
-    IndexedDBTransaction* transaction) {
-  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::RegisterAndScheduleTransaction",
-               "txn.id", transaction->id());
+std::vector<PartitionedLockManager::PartitionedLockRequest>
+IndexedDBDatabase::BuildLockRequestsFromTransaction(
+    IndexedDBTransaction* transaction) const {
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
   lock_requests.reserve(1 + transaction->scope().size());
   lock_requests.emplace_back(
@@ -193,6 +194,15 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
     lock_requests.emplace_back(GetObjectStoreLockId(id(), object_store),
                                lock_type);
   }
+  return lock_requests;
+}
+
+void IndexedDBDatabase::RegisterAndScheduleTransaction(
+    IndexedDBTransaction* transaction) {
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::RegisterAndScheduleTransaction",
+               "txn.id", transaction->id());
+  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
+      BuildLockRequestsFromTransaction(transaction);
   lock_manager_->AcquireLocks(
       std::move(lock_requests),
       transaction->mutable_locks_receiver()->weak_factory.GetWeakPtr(),
@@ -1798,6 +1808,18 @@ void IndexedDBDatabase::ConnectionClosed(IndexedDBConnection* connection) {
 
 bool IndexedDBDatabase::CanBeDestroyed() {
   return !connection_coordinator_.HasTasks() && connections_.empty();
+}
+
+bool IndexedDBDatabase::IsTransactionBlockingOthers(
+    IndexedDBTransaction* transaction) const {
+  base::flat_set<PartitionedLockId> lock_ids = transaction->lock_ids();
+  for (const auto& lock_id : lock_ids) {
+    if (lock_manager_->GetQueuedLockRequestCount(lock_id) > 0) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace content

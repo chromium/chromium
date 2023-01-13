@@ -99,6 +99,10 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
   // this if the lock will never be used again.
   void RemoveLockId(const PartitionedLockId& lock_id);
 
+  // Returns 0 if the lock is not found, or the number of other active
+  // requests queued if the lock is held.
+  int64_t GetQueuedLockRequestCount(const PartitionedLockId& lock_id) const;
+
  private:
   struct LockRequest {
    public:

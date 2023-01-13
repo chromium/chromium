@@ -135,8 +135,14 @@ IndexedDBTransaction::IndexedDBTransaction(
                                     "IndexedDBTransaction::lifetime", this);
   callbacks_ = connection_->callbacks();
   database_ = connection_->database();
-  if (database_)
+  if (database_) {
     database_->TransactionCreated();
+
+    for (const PartitionedLockManager::PartitionedLockRequest& lock_request :
+         database_->BuildLockRequestsFromTransaction(this)) {
+      lock_ids_.insert(lock_request.lock_id);
+    }
+  }
 
   diagnostics_.tasks_scheduled = 0;
   diagnostics_.tasks_completed = 0;

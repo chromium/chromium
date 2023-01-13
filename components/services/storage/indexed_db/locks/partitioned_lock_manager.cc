@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
 namespace content {
 
@@ -195,6 +196,23 @@ void PartitionedLockManager::LockReleased(PartitionedLockId lock_id) {
         return;
     }
   }
+}
+
+int64_t PartitionedLockManager::GetQueuedLockRequestCount(
+    const PartitionedLockId& lock_id) const {
+  int64_t count = 0;
+
+  auto it = locks_.find(lock_id);
+  if (it == locks_.end()) {
+    return count;
+  }
+
+  for (const LockRequest& requester : it->second.queue) {
+    if (requester.locks_holder) {
+      count++;
+    }
+  }
+  return count;
 }
 
 bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,
