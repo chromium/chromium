@@ -119,7 +119,6 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "gpu/command_buffer/service/image_factory_native_pixmap.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/native_pixmap.h"
@@ -2508,12 +2507,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 #endif
   unsigned int RequiredTextureTypeForAnonymousImage();
 
-#if BUILDFLAG(IS_OZONE)
-  ImageFactoryNativePixmap* image_factory_for_nacl_swapchain() {
-    return &image_factory_for_nacl_swapchain_;
-  }
-#endif
-
   // Helper method to call glClear workaround.
   void ClearFramebufferForWorkaround(GLbitfield mask);
 
@@ -2835,10 +2828,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   std::set<scoped_refptr<TextureRef>> texture_refs_pending_destruction_;
 #endif
 
-#if BUILDFLAG(IS_OZONE)
-  ImageFactoryNativePixmap image_factory_for_nacl_swapchain_;
-#endif
-
   base::WeakPtrFactory<GLES2DecoderImpl> weak_ptr_factory_{this};
 };
 
@@ -3076,10 +3065,7 @@ BackTexture::BackTexture(GLES2DecoderImpl* decoder)
     : memory_tracker_(decoder->memory_tracker()),
       bytes_allocated_(0),
       decoder_(decoder) {
-#if BUILDFLAG(IS_OZONE)
-  DCHECK(!decoder_->should_use_native_gmb_for_backbuffer_ ||
-         decoder_->image_factory_for_nacl_swapchain());
-#else
+#if !BUILDFLAG(IS_OZONE)
   DCHECK(!decoder_->should_use_native_gmb_for_backbuffer_);
 #endif
 }
