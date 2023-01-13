@@ -2926,7 +2926,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (currentTab.isIncognito()) mTabModelSelector.selectModel(/*incognito=*/false);
 
         if (StartSurfaceUserData.getKeepTab(currentTab)
-                || ReturnToChromeUtil.isTabFromStartSurface(currentTab)) {
+                || StartSurfaceUserData.isOpenedFromStart(currentTab)) {
             // If the current tab is created from the start surface with the keepTab property,
             // shows the Start surface non-incognito homepage to prevent a loop between the
             // current tab and previous overview mode. Once in the Start surface, it will close
