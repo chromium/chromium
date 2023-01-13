@@ -15,7 +15,7 @@ std::string GetAlmanacApiUrl() {
     return command_line->GetSwitchValueASCII(ash::switches::kAlmanacApiUrl);
   }
 
-  return "https://chromeosalmanac-pa.googleapis.com";
+  return "https://chromeosalmanac-pa.googleapis.com/";
 }
 
 }  // namespace apps

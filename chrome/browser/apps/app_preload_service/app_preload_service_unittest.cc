@@ -7,11 +7,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
@@ -21,7 +18,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -45,14 +41,6 @@ constexpr char kApsStateManager[] = "apps.app_preload_service.state_manager";
 
 const base::Value::Dict& GetStateManager(Profile* profile) {
   return profile->GetPrefs()->GetDict(kApsStateManager);
-}
-
-void FillWebExtras(
-    apps::proto::AppProvisioningListAppsResponse_WebExtras* extras,
-    const std::string& manifest_url,
-    const std::string& original_manifest_url) {
-  extras->set_manifest_url(manifest_url);
-  extras->set_original_manifest_url(original_manifest_url);
 }
 
 }  // namespace
@@ -194,73 +182,6 @@ TEST_F(AppPreloadServiceTest, FirstLoginExistingUserNotStarted) {
   EXPECT_FALSE(flow_started.has_value());
 }
 
-TEST_F(AppPreloadServiceTest, WebAppInstall) {
-  proto::AppProvisioningListAppsResponse response;
-  auto* app = response.add_apps_to_install();
-  app->set_name("Example App");
-  app->set_package_id("web:https://www.example.com/id");
-  app->set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
-  FillWebExtras(
-      app->mutable_web_extras(),
-      /*manifest_url*/ "https://meltingpot.googleusercontent.com/manifest.json",
-      /*original_manifest_url*/ "https://www.example.com/");
-
-  url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl().spec(),
-      response.SerializeAsString());
-  url_loader_factory_.AddResponse(
-      "https://meltingpot.googleusercontent.com/manifest.json", R"({
-    "id": "id",
-    "name": "Example App",
-    "start_url": "/index.html"
-  })");
-
-  base::test::TestFuture<bool> result;
-  auto* service = AppPreloadService::Get(GetProfile());
-  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
-  ASSERT_TRUE(result.Get());
-
-  auto app_id =
-      web_app::GenerateAppId("id", GURL("https://www.example.com/index.html"));
-  bool found = AppServiceProxyFactory::GetForProfile(GetProfile())
-                   ->AppRegistryCache()
-                   .ForOneApp(app_id, [](const AppUpdate& update) {
-                     EXPECT_EQ(update.Name(), "Example App");
-                     EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
-                     EXPECT_EQ(update.PublisherId(),
-                               "https://www.example.com/index.html");
-                   });
-  ASSERT_TRUE(found);
-}
-
-TEST_F(AppPreloadServiceTest, IgnoreDefaultAppInstall) {
-  proto::AppProvisioningListAppsResponse response;
-  auto* app = response.add_apps_to_install();
-  app->set_name("Peanut Types");
-  app->set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_DEFAULT);
-  FillWebExtras(app->mutable_web_extras(),
-                "https://meltingpot.googleusercontent.com/manifest.json",
-                "https://peanuttypes.com/app");
-
-  url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl().spec(),
-      response.SerializeAsString());
-
-  base::test::TestFuture<bool> result;
-  auto* service = AppPreloadService::Get(GetProfile());
-  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
-  ASSERT_TRUE(result.Get());
-
-  auto app_id = web_app::GenerateAppId(absl::nullopt,
-                                       GURL("https://peanuttypes.com/app"));
-  bool found = AppServiceProxyFactory::GetForProfile(GetProfile())
-                   ->AppRegistryCache()
-                   .ForOneApp(app_id, [](const AppUpdate&) {});
-  ASSERT_FALSE(found);
-}
-
 TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
   constexpr char kPackageName[] = "com.peanuttypes";
   constexpr char kActivityName[] = "com.peanuttypes.PeanutTypesActivity";
@@ -287,49 +208,6 @@ TEST_F(AppPreloadServiceTest, IgnoreAndroidAppInstall) {
                    ->AppRegistryCache()
                    .ForOneApp(app_id, [](const AppUpdate&) {});
   ASSERT_FALSE(found);
-}
-
-TEST_F(AppPreloadServiceTest, InstallOverUserApp) {
-  constexpr char kResolvedManifestId[] = "https://www.example.com/manifest_id";
-  constexpr char kManifestUrl[] =
-      "https://meltingpot.googleusercontent.com/manifest.json";
-  constexpr char kOriginalManifestUrl[] =
-      "https://www.example.com/manifest.json";
-  constexpr char kUserAppName[] = "User Installed App";
-  constexpr char kManifest[] = R"({
-    "id": "manifest_id",
-    "name": "OEM Installed app",
-    "start_url": "/"
-  })";
-
-  auto app_id = web_app::test::InstallDummyWebApp(GetProfile(), kUserAppName,
-                                                  GURL(kResolvedManifestId));
-
-  proto::AppProvisioningListAppsResponse response;
-  auto* app = response.add_apps_to_install();
-
-  app->set_name("OEM Installed app");
-  app->set_package_id(base::StrCat({"web:", kResolvedManifestId}));
-  app->set_install_reason(
-      proto::AppProvisioningListAppsResponse::INSTALL_REASON_OEM);
-  FillWebExtras(app->mutable_web_extras(), kManifestUrl, kOriginalManifestUrl);
-
-  url_loader_factory_.AddResponse(
-      AppPreloadServerConnector::GetServerUrl().spec(),
-      response.SerializeAsString());
-  url_loader_factory_.AddResponse(kManifestUrl, kManifest);
-
-  base::test::TestFuture<bool> result;
-  auto* service = AppPreloadService::Get(GetProfile());
-  service->SetInstallationCompleteCallbackForTesting(result.GetCallback());
-  ASSERT_TRUE(result.Get());
-
-  bool found = AppServiceProxyFactory::GetForProfile(GetProfile())
-                   ->AppRegistryCache()
-                   .ForOneApp(app_id, [](const AppUpdate& update) {
-                     EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
-                   });
-  ASSERT_TRUE(found);
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginStartedNotCompletedAfterServerError) {

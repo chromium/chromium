@@ -22,7 +22,7 @@ namespace {
 
 // Endpoint for requesting app preload data on the ChromeOS Almanac API.
 constexpr char kAppPreloadAlmanacEndpoint[] =
-    "/v1/app_provisioning/apps?alt=proto";
+    "v1/app_provisioning/apps?alt=proto";
 
 // Maximum accepted size of an APS Response. 1MB.
 constexpr int kMaxResponseSizeInBytes = 1024 * 1024;

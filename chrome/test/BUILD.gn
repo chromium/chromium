@@ -3615,6 +3615,7 @@ if (!is_android) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
     if (is_chromeos_ash) {
       sources += [
+        "../browser/apps/app_preload_service/app_preload_service_browsertest.cc",
         "../browser/apps/app_preload_service/web_app_preload_installer_browsertest.cc",
         "../browser/apps/app_service/browser_app_instance_tracker_browsertest.cc",
         "../browser/apps/app_service/media_access_browsertest.cc",

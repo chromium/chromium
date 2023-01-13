@@ -61,6 +61,29 @@ AppPreloadService::AppPreloadService(Profile* profile)
       server_connector_(std::make_unique<AppPreloadServerConnector>()),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
       web_app_installer_(std::make_unique<WebAppPreloadInstaller>(profile)) {
+  StartFirstLoginFlow();
+}
+
+AppPreloadService::~AppPreloadService() = default;
+
+// static
+AppPreloadService* AppPreloadService::Get(Profile* profile) {
+  return AppPreloadServiceFactory::GetForProfile(profile);
+}
+
+// static
+void AppPreloadService::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterDictionaryPref(prefs::kApsStateManager);
+}
+
+void AppPreloadService::StartFirstLoginFlowForTesting(
+    base::OnceCallback<void(bool)> callback) {
+  SetInstallationCompleteCallbackForTesting(std::move(callback));  // IN-TEST
+  StartFirstLoginFlow();
+}
+
+void AppPreloadService::StartFirstLoginFlow() {
   // Preloads currently run for new users only. The "completed" pref is only set
   // when preloads finish successfully, so preloads will be retried if they have
   // been "started" but never "completed".
@@ -80,19 +103,6 @@ AppPreloadService::AppPreloadService(Profile* profile)
         base::BindOnce(&AppPreloadService::StartAppInstallationForFirstLogin,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-}
-
-AppPreloadService::~AppPreloadService() = default;
-
-// static
-AppPreloadService* AppPreloadService::Get(Profile* profile) {
-  return AppPreloadServiceFactory::GetForProfile(profile);
-}
-
-// static
-void AppPreloadService::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(prefs::kApsStateManager);
 }
 
 void AppPreloadService::StartAppInstallationForFirstLogin(
