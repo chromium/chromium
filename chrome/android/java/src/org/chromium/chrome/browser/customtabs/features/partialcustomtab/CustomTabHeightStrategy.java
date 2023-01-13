@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.customtabs;
+package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import android.app.Activity;
 import android.view.View;
@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;

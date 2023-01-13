@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.customtabs;
+package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import android.content.Context;
 import android.view.GestureDetector;
@@ -13,7 +13,7 @@ import androidx.core.view.MotionEventCompat;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.customtabs.PartialCustomTabHeightStrategy.HeightStatus;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabHeightStrategy.HeightStatus;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 
 import java.util.function.BooleanSupplier;

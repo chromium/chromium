@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.customtabs;
+package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,11 +19,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
-import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.DEVICE_HEIGHT;
-import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.DEVICE_WIDTH;
-import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.FULL_HEIGHT;
-import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.NAVBAR_HEIGHT;
-import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.STATUS_BAR_HEIGHT;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.FULL_HEIGHT;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.NAVBAR_HEIGHT;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.STATUS_BAR_HEIGHT;
 
 import android.animation.Animator.AnimatorListener;
 import android.content.res.Configuration;

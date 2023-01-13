@@ -73,7 +73,7 @@
         errorLine1="                    mActivity.getResources().getIdentifier(&quot;status_bar_height&quot;, &quot;dimen&quot;, &quot;android&quot;);"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/PartialCustomTabVersionCompat.java"
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompat.java"
             line="202"
             column="21"/>
     </issue>

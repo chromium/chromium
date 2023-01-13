@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.customtabs;
+package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
-import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.DEVICE_WIDTH_LANDSCAPE;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH_LANDSCAPE;
 
 import androidx.annotation.Px;
 
