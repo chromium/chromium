@@ -140,11 +140,10 @@ public class AwServiceWorkerController {
             }
 
             AwThreadUtils.postToUiThreadLooper(() -> {
-                AwOriginVerificationScheduler.getInstance().verify(
-                        url, mBrowserContext, (result) -> {
-                            verified.set(result);
-                            countDownLatch.countDown();
-                        });
+                AwOriginVerificationScheduler.getInstance().verify(url, (result) -> {
+                    verified.set(result);
+                    countDownLatch.countDown();
+                });
             });
             try {
                 countDownLatch.await(10, TimeUnit.SECONDS);

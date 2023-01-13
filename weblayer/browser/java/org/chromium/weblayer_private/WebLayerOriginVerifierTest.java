@@ -31,6 +31,7 @@ import org.chromium.components.digital_asset_links.OriginVerifierJni;
 import org.chromium.components.digital_asset_links.OriginVerifierUnitTestSupport;
 import org.chromium.components.digital_asset_links.RelationshipCheckResult;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.CountDownLatch;
@@ -85,7 +86,8 @@ public class WebLayerOriginVerifierTest {
     private class TestWebLayerOriginVerifier extends WebLayerOriginVerifier {
         public TestWebLayerOriginVerifier(String packageName, String relationship,
                 WebLayerVerificationResultStore verificationResultStore) {
-            super(packageName, relationship, verificationResultStore);
+            super(packageName, relationship, Mockito.mock(BrowserContextHandle.class),
+                    verificationResultStore);
         }
 
         @Override
@@ -100,10 +102,6 @@ public class WebLayerOriginVerifierTest {
                 shadowOf(ApplicationProvider.getApplicationContext().getPackageManager()),
                 PACKAGE_NAME, mUid);
 
-        mHandleAllUrlsVerifier = new TestWebLayerOriginVerifier(PACKAGE_NAME,
-                "delegate_permission/common.handle_all_urls",
-                WebLayerVerificationResultStore.getInstance());
-
         mJniMocker.mock(OriginVerifierJni.TEST_HOOKS, mMockOriginVerifierJni);
         Mockito.doAnswer(args -> { return 100L; })
                 .when(mMockOriginVerifierJni)
@@ -117,6 +115,10 @@ public class WebLayerOriginVerifierTest {
                 .verifyOrigin(ArgumentMatchers.anyLong(), Mockito.any(),
                         ArgumentMatchers.anyString(), Mockito.any(), ArgumentMatchers.anyString(),
                         ArgumentMatchers.anyString(), Mockito.any());
+
+        mHandleAllUrlsVerifier = new TestWebLayerOriginVerifier(PACKAGE_NAME,
+                "delegate_permission/common.handle_all_urls",
+                WebLayerVerificationResultStore.getInstance());
     }
 
     @Test
@@ -124,7 +126,7 @@ public class WebLayerOriginVerifierTest {
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHandleAllUrlsVerifier.start(resultListener, null, mHttpsOrigin));
+                () -> mHandleAllUrlsVerifier.start(resultListener, mHttpsOrigin));
         mVerificationResultLatch.await();
         Assert.assertTrue(resultListener.isVerified());
     }
@@ -134,7 +136,7 @@ public class WebLayerOriginVerifierTest {
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHandleAllUrlsVerifier.start(resultListener, null, mHttpOrigin));
+                () -> mHandleAllUrlsVerifier.start(resultListener, mHttpOrigin));
         mVerificationResultLatch.await();
         Assert.assertFalse(resultListener.isVerified());
     }
@@ -152,7 +154,7 @@ public class WebLayerOriginVerifierTest {
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHandleAllUrlsVerifier.start(resultListener, null, mHttpLocalhostOrigin));
+                () -> mHandleAllUrlsVerifier.start(resultListener, mHttpLocalhostOrigin));
         mVerificationResultLatch.await();
         Assert.assertTrue(resultListener.isVerified());
     }
@@ -173,7 +175,7 @@ public class WebLayerOriginVerifierTest {
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHandleAllUrlsVerifier.start(resultListener, null, mHttpLocalhostOrigin));
+                () -> mHandleAllUrlsVerifier.start(resultListener, mHttpLocalhostOrigin));
         mVerificationResultLatch.await();
         Assert.assertTrue(resultListener.isVerified());
     }
@@ -191,7 +193,7 @@ public class WebLayerOriginVerifierTest {
         TestOriginVerificationListener verificationResult1 =
                 new TestOriginVerificationListener(mVerificationResultLatch);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHandleAllUrlsVerifier.start(verificationResult1, null, mHttpsOrigin));
+                () -> mHandleAllUrlsVerifier.start(verificationResult1, mHttpsOrigin));
         Assert.assertFalse(verificationResult1.isVerified());
         Assert.assertEquals(mHandleAllUrlsVerifier.getNumListeners(mHttpsOrigin), 1);
 
@@ -209,7 +211,7 @@ public class WebLayerOriginVerifierTest {
         TestOriginVerificationListener verificationResult2 =
                 new TestOriginVerificationListener(mVerificationResultLatch2);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHandleAllUrlsVerifier.start(verificationResult2, null, mHttpsOrigin));
+                () -> mHandleAllUrlsVerifier.start(verificationResult2, mHttpsOrigin));
 
         Assert.assertFalse(verificationResult2.isVerified());
         // Check that both requests are registered as Listeners.

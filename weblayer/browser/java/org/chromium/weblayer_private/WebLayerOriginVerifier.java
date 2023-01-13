@@ -16,6 +16,7 @@ import org.chromium.components.digital_asset_links.OriginVerifier;
 import org.chromium.components.digital_asset_links.Relationship;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.List;
 import java.util.Locale;
@@ -38,13 +39,16 @@ public class WebLayerOriginVerifier extends OriginVerifier {
      * Use {@link WebLayerOriginVerifier#start}.
      * @param packageName The package for the Android application for verification.
      * @param relationship Digital Asset Links relationship to use during verification.
+     * @param profile profile to retrieve the browser context for creating the url
+     *         loader factory.
      * @param verificationResultStore The {@link ChromeVerificationResultStore} for persisting
      *         results.
      *
      */
     public WebLayerOriginVerifier(String packageName, String relationship,
+            BrowserContextHandle profile,
             @Nullable WebLayerVerificationResultStore verificationResultStore) {
-        super(packageName, relationship, null, verificationResultStore);
+        super(packageName, relationship, null, profile, verificationResultStore);
     }
 
     @Override

@@ -43,9 +43,11 @@ public class AwOriginVerificationScheduler extends OriginVerificationScheduler {
      * This should be called exactly only once as it parses the AndroidManifest and statement list.
      *
      * @param packageName the package name of the host application.
+     * @param browserContext the browserContext to use for the simpleUrlLoader to download the asset
+     *         links file.
      * @param context a context associated with an Activity/Service to load resources.
      */
-    public static void init(String packageName, Context context) {
+    public static void init(String packageName, AwBrowserContext browserContext, Context context) {
         ThreadUtils.assertOnUiThread();
         synchronized (sLock) {
             assert sInstance
@@ -54,16 +56,16 @@ public class AwOriginVerificationScheduler extends OriginVerificationScheduler {
 
             sInstance = new AwOriginVerificationScheduler(
                     new AwOriginVerifier(packageName, OriginVerifier.HANDLE_ALL_URLS,
-                            AwVerificationResultStore.getInstance()),
+                            browserContext, AwVerificationResultStore.getInstance()),
                     OriginVerifierHelper.getClaimedOriginsFromManifest(packageName, context));
         }
     }
 
     public static void initAndScheduleAll(String packageName, Context context,
             AwBrowserContext browserContext, @Nullable Callback<Boolean> callback) {
-        init(packageName, context);
+        init(packageName, browserContext, context);
         synchronized (sLock) {
-            sInstance.scheduleAllPendingVerifications(browserContext, callback);
+            sInstance.scheduleAllPendingVerifications(callback);
         }
     }
 

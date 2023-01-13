@@ -717,7 +717,7 @@ public final class TabImpl extends ITab.Stub {
         WebLayerOriginVerificationScheduler originVerifier =
                 WebLayerOriginVerificationScheduler.getInstance();
         String url = mWebContents.getVisibleUrl().getSpec();
-        originVerifier.verify(url, mProfile, (verified) -> {
+        originVerifier.verify(url, (verified) -> {
             // Make sure the page hasn't changed since we started verification.
             if (!url.equals(mWebContents.getVisibleUrl().getSpec())) {
                 return;

@@ -1,0 +1,4 @@
+include_rules = [
+    "+components/digital_asset_links/android/java",
+    "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test/util/TestThreadUtils.java",
+]
