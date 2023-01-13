@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chromeos/components/onc/onc_mapper.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_validator.h"
@@ -277,11 +278,12 @@ bool ResolveCertRefsOrRefToList(const CertPEMsByGUIDMap& certs_by_guid,
                                 const std::string& key_guid_ref,
                                 const std::string& key_pem_list,
                                 base::Value* onc_object) {
-  if (onc_object->FindKey(key_guid_refs)) {
-    if (onc_object->FindKey(key_guid_ref)) {
+  base::Value::Dict& onc_dict = onc_object->GetDict();
+  if (onc_dict.contains(key_guid_refs)) {
+    if (onc_dict.contains(key_guid_ref)) {
       LOG(ERROR) << "Found both " << key_guid_refs << " and " << key_guid_ref
                  << ". Ignoring and removing the latter.";
-      onc_object->RemoveKey(key_guid_ref);
+      onc_dict.Remove(key_guid_ref);
     }
     return ResolveCertRefList(certs_by_guid, key_guid_refs, key_pem_list,
                               onc_object);
