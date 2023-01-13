@@ -51,7 +51,6 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"

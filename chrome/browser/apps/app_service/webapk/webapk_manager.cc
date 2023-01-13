@@ -26,7 +26,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {

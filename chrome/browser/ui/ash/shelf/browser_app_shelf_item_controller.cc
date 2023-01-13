@@ -17,7 +17,6 @@
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/native_widget_aura.h"

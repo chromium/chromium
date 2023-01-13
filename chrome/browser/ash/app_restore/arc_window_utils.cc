@@ -12,7 +12,6 @@
 #include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display.h"

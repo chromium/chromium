@@ -12,7 +12,6 @@
 #include "chrome/browser/apps/app_service/mock_crosapi_app_service_proxy.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"

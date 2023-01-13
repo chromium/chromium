@@ -10,7 +10,6 @@
 #include "chrome/browser/apps/platform_apps/app_load_service_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host.h"

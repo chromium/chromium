@@ -39,7 +39,6 @@
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"

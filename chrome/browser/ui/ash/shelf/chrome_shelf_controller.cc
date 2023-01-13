@@ -95,7 +95,6 @@
 #include "components/app_constants/constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user_manager.h"

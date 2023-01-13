@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"

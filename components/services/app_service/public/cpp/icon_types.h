@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
