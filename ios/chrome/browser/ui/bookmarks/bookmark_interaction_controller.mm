@@ -182,7 +182,9 @@ enum class PresentedState {
     _webStateList = browser->GetWebStateList();
     _bookmarkModel =
         ios::BookmarkModelFactory::GetForBrowserState(_browserState);
-    _mediator = [[BookmarkMediator alloc] initWithBrowserState:_browserState];
+    _mediator = [[BookmarkMediator alloc]
+        initWithWithBookmarkModel:self.bookmarkModel
+                            prefs:_browserState->GetPrefs()];
     _currentPresentedState = PresentedState::NONE;
     DCHECK(_bookmarkModel);
   }

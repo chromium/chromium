@@ -35,16 +35,16 @@ namespace {
 const int64_t kLastUsedFolderNone = -1;
 }  // namespace
 
-@interface BookmarkMediator ()
+@interface BookmarkMediator () {
+  // Bookmark model for this mediator.
+  bookmarks::BookmarkModel* _bookmarkModel;
 
-// BrowserState for this mediator.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
-
+  // Prefs model for this mediator.
+  PrefService* _prefs;
+}
 @end
 
 @implementation BookmarkMediator
-
-@synthesize browserState = _browserState;
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterInt64Pref(prefs::kIosBookmarkFolderDefault,
@@ -58,10 +58,13 @@ const int64_t kLastUsedFolderNone = -1;
                                      folder->id());
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithWithBookmarkModel:
+                    (bookmarks::BookmarkModel*)bookmarkModel
+                                    prefs:(PrefService*)prefs {
   self = [super init];
   if (self) {
-    _browserState = browserState;
+    _bookmarkModel = bookmarkModel;
+    _prefs = prefs;
   }
   return self;
 }
@@ -72,14 +75,11 @@ const int64_t kLastUsedFolderNone = -1;
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
-  BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
-
-  const BookmarkNode* defaultFolder = [[self class]
-      folderForNewBookmarksInBookmarkModel:bookmarkModel
-                                     prefs:self.browserState->GetPrefs()];
-  bookmarkModel->AddNewURL(defaultFolder, defaultFolder->children().size(),
-                           base::SysNSStringToUTF16(title), URL);
+  const BookmarkNode* defaultFolder =
+      [[self class] folderForNewBookmarksInBookmarkModel:_bookmarkModel
+                                                   prefs:_prefs];
+  _bookmarkModel->AddNewURL(defaultFolder, defaultFolder->children().size(),
+                            base::SysNSStringToUTF16(title), URL);
 
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   action.handler = editAction;
@@ -89,8 +89,7 @@ const int64_t kLastUsedFolderNone = -1;
   NSString* folderTitle =
       bookmark_utils_ios::TitleForBookmarkNode(defaultFolder);
   NSString* text =
-      self.browserState->GetPrefs()->GetInt64(
-          prefs::kIosBookmarkFolderDefault) != kLastUsedFolderNone
+      _prefs->GetInt64(prefs::kIosBookmarkFolderDefault) != kLastUsedFolderNone
           ? l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER,
                                     base::SysNSStringToUTF16(folderTitle))
           : l10n_util::GetNSString(IDS_IOS_BOOKMARK_PAGE_SAVED);
@@ -105,14 +104,11 @@ const int64_t kLastUsedFolderNone = -1;
                            toFolder:(const BookmarkNode*)folder {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
-  BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
-
   for (URLWithTitle* urlWithTitle in URLs) {
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
-    bookmarkModel->AddNewURL(folder, folder->children().size(),
-                             base::SysNSStringToUTF16(urlWithTitle.title),
-                             urlWithTitle.URL);
+    _bookmarkModel->AddNewURL(folder, folder->children().size(),
+                              base::SysNSStringToUTF16(urlWithTitle.title),
+                              urlWithTitle.URL);
   }
 
   NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
