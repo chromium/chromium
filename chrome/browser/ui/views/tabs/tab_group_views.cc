@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
+#include "chrome/browser/ui/views/tabs/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -20,6 +21,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/view_utils.h"
@@ -29,14 +31,19 @@ TabGroupViews::TabGroupViews(views::View* container_view,
                              TabSlotController& tab_slot_controller,
                              const tab_groups::TabGroupId& group)
     : tab_slot_controller_(tab_slot_controller), group_(group) {
+  style_ = features::IsChromeRefresh2023()
+               ? std::make_unique<const ChromeRefresh2023TabGroupStyle>(*this)
+               : std::make_unique<const TabGroupStyle>(*this);
+  const TabGroupStyle* style = style_.get();
+
   header_ = container_view->AddChildView(
-      std::make_unique<TabGroupHeader>(*tab_slot_controller_, group_));
+      std::make_unique<TabGroupHeader>(*tab_slot_controller_, group_, *style));
   underline_ = container_view->AddChildView(
-      std::make_unique<TabGroupUnderline>(this, group_));
+      std::make_unique<TabGroupUnderline>(this, group_, *style));
   drag_underline_ = drag_container_view->AddChildView(
-      std::make_unique<TabGroupUnderline>(this, group_));
+      std::make_unique<TabGroupUnderline>(this, group_, *style));
   highlight_ = drag_container_view->AddChildView(
-      std::make_unique<TabGroupHighlight>(this, group_));
+      std::make_unique<TabGroupHighlight>(this, group_, *style));
   highlight_->SetVisible(false);
 }
 
@@ -146,7 +153,7 @@ bool TabGroupViews::InTearDown() const {
   return !header_ || !header_->GetWidget() || !drag_underline_->GetWidget();
 }
 
-std::tuple<views::View*, views::View*>
+std::tuple<const views::View*, const views::View*>
 TabGroupViews::GetLeadingTrailingGroupViews() const {
   std::vector<views::View*> children = underline_->parent()->children();
   std::vector<views::View*> dragged_children =

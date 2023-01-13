@@ -17,6 +17,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class TabSlotController;
+class TabGroupStyle;
 struct TabSizeInfo;
 
 namespace views {
@@ -34,7 +35,8 @@ class TabGroupHeader : public TabSlotView,
   METADATA_HEADER(TabGroupHeader);
 
   TabGroupHeader(TabSlotController& tab_slot_controller,
-                 const tab_groups::TabGroupId& group);
+                 const tab_groups::TabGroupId& group,
+                 const TabGroupStyle& style);
   TabGroupHeader(const TabGroupHeader&) = delete;
   TabGroupHeader& operator=(const TabGroupHeader&) = delete;
   ~TabGroupHeader() override;
@@ -82,6 +84,7 @@ class TabGroupHeader : public TabSlotView,
 
   raw_ptr<views::View> title_chip_;
   raw_ptr<views::Label> title_;
+  const raw_ref<const TabGroupStyle> style_;
 
   // Saved collapsed state for usage with activation of element tracker system.
   bool is_collapsed_;

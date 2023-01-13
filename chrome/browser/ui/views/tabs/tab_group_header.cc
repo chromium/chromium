@@ -86,8 +86,10 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
 }  // namespace
 
 TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
-                               const tab_groups::TabGroupId& group)
+                               const tab_groups::TabGroupId& group,
+                               const TabGroupStyle& style)
     : tab_slot_controller_(tab_slot_controller),
+      style_(style),
       editor_bubble_tracker_(tab_slot_controller) {
   set_group(group);
   set_context_menu_controller(this);

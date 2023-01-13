@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include <memory>
 
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -13,9 +16,16 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/views/widget/widget.h"
 
-class TabGroupViewsTest : public ChromeViewsTestBase {
+class TabGroupViewsTest : public ChromeViewsTestBase,
+                          public ::testing::WithParamInterface<bool> {
  public:
-  TabGroupViewsTest() = default;
+  TabGroupViewsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/GetParam()
+            ? std::vector<base::test::FeatureRef>{features::kChromeRefresh2023}
+            : std::vector<base::test::FeatureRef>{},
+        /*disabled_features=*/{});
+  }
   TabGroupViewsTest(const TabGroupViewsTest&) = delete;
   TabGroupViewsTest& operator=(const TabGroupViewsTest&) = delete;
   ~TabGroupViewsTest() override = default;
@@ -55,9 +65,10 @@ class TabGroupViewsTest : public ChromeViewsTestBase {
   std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
   tab_groups::TabGroupId id_ = tab_groups::TabGroupId::GenerateNew();
   std::unique_ptr<TabGroupViews> group_views_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(TabGroupViewsTest, GroupViewsCreated) {
+TEST_P(TabGroupViewsTest, GroupViewsCreated) {
   EXPECT_NE(nullptr, group_views_->header());
   EXPECT_NE(nullptr, group_views_->underline());
   EXPECT_NE(nullptr, group_views_->drag_underline());
@@ -70,7 +81,7 @@ TEST_F(TabGroupViewsTest, GroupViewsCreated) {
 }
 
 // Underline should actually underline the group.
-TEST_F(TabGroupViewsTest, UnderlineBoundsNoDrag) {
+TEST_P(TabGroupViewsTest, UnderlineBoundsNoDrag) {
   TabGroupHeader* header = group_views_->header();
   Tab* tab_1 = tab_container_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
@@ -99,9 +110,44 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsNoDrag) {
   EXPECT_FALSE(group_views_->drag_underline()->GetVisible());
 }
 
+// Underline should not be visible with chrome refresh flag when only header is
+// visible.
+TEST_P(TabGroupViewsTest, UnderlineBoundsWhenTabsAreNotVisible) {
+  TabGroupHeader* header = group_views_->header();
+  Tab* tab_1 = tab_container_->AddChildView(
+      std::make_unique<Tab>(tab_slot_controller_.get()));
+  tab_1->set_group(id_);
+  Tab* tab_2 = tab_container_->AddChildView(
+      std::make_unique<Tab>(tab_slot_controller_.get()));
+  tab_2->set_group(id_);
+
+  header->SetBounds(0, 0, 100, 0);
+  tab_1->SetBounds(50, 0, 100, 0);
+  tab_2->SetBounds(100, 0, 100, 0);
+
+  tab_1->SetVisible(false);
+  tab_2->SetVisible(false);
+  group_views_->UpdateBounds();
+
+  // The condition is true when the ChromeRefreshFlag is turned on. The
+  // underline should not be visible when collapsed in this case.
+  if (!GetParam()) {
+    EXPECT_TRUE(group_views_->underline()->GetVisible());
+    const gfx::Rect underline_bounds = group_views_->underline()->bounds();
+    // Underline should begin from the header.
+    EXPECT_GT(underline_bounds.x(), header->bounds().x());
+    // Underline should end within the last tab.
+    EXPECT_LT(underline_bounds.right(), tab_2->bounds().right());
+    EXPECT_FALSE(group_views_->drag_underline()->GetVisible());
+  } else {
+    EXPECT_FALSE(group_views_->underline()->GetVisible());
+    EXPECT_GT(group_views_->underline()->width(), 0);
+  }
+}
+
 // Drag_underline should underline the group when the group is being dragged,
 // and the highlight should highlight it.
-TEST_F(TabGroupViewsTest, UnderlineBoundsHeaderDrag) {
+TEST_P(TabGroupViewsTest, UnderlineBoundsHeaderDrag) {
   TabGroupHeader* header = group_views_->header();
   drag_context_->AddChildView(header);
   Tab* tab_1 = drag_context_->AddChildView(
@@ -143,7 +189,7 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsHeaderDrag) {
 
 // Underline and drag_underline should align with one another correctly when
 // dragging a tab within a group.
-TEST_F(TabGroupViewsTest, UnderlineBoundsDragTabInGroup) {
+TEST_P(TabGroupViewsTest, UnderlineBoundsDragTabInGroup) {
   TabGroupHeader* header = group_views_->header();
   Tab* other_tab = tab_container_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
@@ -268,3 +314,5 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsDragTabInGroup) {
     EXPECT_EQ(drag_underline_bounds.right(), dragged_tab->bounds().right());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, TabGroupViewsTest, ::testing::Bool());

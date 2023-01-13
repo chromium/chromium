@@ -694,7 +694,7 @@ void TabContainerImpl::SetTabSlotVisibility() {
       // Hide underlines if they would underline an invisible tab, but don't
       // show underlines if they're hidden during a header drag session.
       if (!group_view->header()->dragging())
-        group_view->underline()->SetVisible(last_tab_visible);
+        group_view->underline()->MaybeSetVisible(last_tab_visible);
     }
     last_tab_visible = ShouldTabBeVisible(tab);
     last_tab_group = tab->closing() ? absl::nullopt : current_group;

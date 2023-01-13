@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_
 
+#include <memory>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
@@ -17,6 +18,7 @@ class TabGroupHeader;
 class TabGroupHighlight;
 class TabGroupUnderline;
 class TabStrip;
+class TabGroupStyle;
 
 // The manager of all views associated with a tab group. This handles visual
 // calculations and updates. Painting is done in TabStrip.
@@ -61,6 +63,11 @@ class TabGroupViews {
   // tab color. Needed to layer painting for the group background highlight.
   SkColor GetGroupBackgroundColor() const;
 
+  // Finds the first and last tab or group header belonging to `group_` from the
+  // whole Tabstrip.
+  std::tuple<const views::View*, const views::View*>
+  GetLeadingTrailingGroupViews() const;
+
  private:
   const raw_ref<TabSlotController> tab_slot_controller_;
   const tab_groups::TabGroupId group_;
@@ -68,12 +75,9 @@ class TabGroupViews {
   raw_ptr<TabGroupHighlight> highlight_;
   raw_ptr<TabGroupUnderline> underline_;
   raw_ptr<TabGroupUnderline> drag_underline_;
+  std::unique_ptr<const TabGroupStyle> style_;
 
   bool InTearDown() const;
-
-  // Finds the first and last tab or group header belonging to |group_| from the
-  // whole TabStrip.
-  std::tuple<views::View*, views::View*> GetLeadingTrailingGroupViews() const;
 
   // Finds the first and last tab or group header belonging to |group_|, only
   // including views that are being dragged.

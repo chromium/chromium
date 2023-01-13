@@ -14,8 +14,9 @@
 #include "ui/views/view.h"
 
 TabGroupHighlight::TabGroupHighlight(TabGroupViews* tab_group_views,
-                                     const tab_groups::TabGroupId& group)
-    : tab_group_views_(tab_group_views), group_(group) {}
+                                     const tab_groups::TabGroupId& group,
+                                     const TabGroupStyle& style)
+    : tab_group_views_(tab_group_views), group_(group), style_(style) {}
 
 void TabGroupHighlight::UpdateBounds(views::View* leading_view,
                                      views::View* trailing_view) {

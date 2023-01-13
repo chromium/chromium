@@ -12,6 +12,7 @@
 #include "ui/views/view.h"
 
 class TabGroupViews;
+class TabGroupStyle;
 
 // View for tab group underlines in the tab strip, which are markers of group
 // members. Underlines are included in the tab
@@ -30,28 +31,39 @@ class TabGroupUnderline : public views::View {
   static int GetStrokeInset();
 
   TabGroupUnderline(TabGroupViews* tab_group_views,
-                    const tab_groups::TabGroupId& group);
+                    const tab_groups::TabGroupId& group,
+                    const TabGroupStyle& style);
   TabGroupUnderline(const TabGroupUnderline&) = delete;
   TabGroupUnderline& operator=(const TabGroupUnderline&) = delete;
 
   // Updates the bounds of the underline for painting.
-  void UpdateBounds(views::View* leading_view, views::View* trailing_view);
+  void UpdateBounds(const views::View* leading_view,
+                    const views::View* trailing_view);
+  // Checks if the `TabGroupUnderline` should be hidden before
+  // setting the visibility.
+  void MaybeSetVisible(bool visible);
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
-  // Returns the insets from |sibling_view|'s bounds this underline would have
-  // if it were underlining only |sibling_view|.
-  gfx::Insets GetInsetsForUnderline(views::View* sibling_view) const;
-
+  // Returns the insets from `sibling_view`'s bounds this underline would have
+  // if it were underlining only `sibling_view`.
+  gfx::Insets GetInsetsForUnderline(const views::View* sibling_view) const;
   // The underline is a straight line with half-rounded endcaps. Since this
   // geometry is nontrivial to represent using primitives, it's instead
   // represented using a fill path.
   SkPath GetPath() const;
+  // Returns the tab group underline bounds based on a `leading_view` and a
+  // `trailing_view`.
+  gfx::Rect CalculateTabGroupUnderlineBounds(
+      const views::View* underline_view,
+      const views::View* leading_view,
+      const views::View* trailing_view) const;
 
   const raw_ptr<TabGroupViews> tab_group_views_;
   const tab_groups::TabGroupId group_;
+  const raw_ref<const TabGroupStyle> style_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_UNDERLINE_H_
