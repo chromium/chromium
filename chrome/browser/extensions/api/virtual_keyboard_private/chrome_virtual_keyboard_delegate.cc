@@ -20,6 +20,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -499,14 +500,15 @@ void ChromeVirtualKeyboardDelegate::OnGetHistoryValuesAfterItemsUpdated(
   // Broadcast an api event for each updated item.
   for (auto& item : updated_items.GetList()) {
     keyboard_api::ClipboardItem clipboard_item;
-    if (item.FindKey("imageData")) {
-      clipboard_item.image_data = item.FindKey("imageData")->GetString();
+    const base::Value::Dict& dict = item.GetDict();
+    if (dict.FindString("imageData")) {
+      clipboard_item.image_data = *dict.FindString("imageData");
     }
-    if (item.FindKey("textData")) {
-      clipboard_item.text_data = item.FindKey("textData")->GetString();
+    if (dict.FindString("textData")) {
+      clipboard_item.text_data = *dict.FindString("textData");
     }
-    if (item.FindKey("idToken")) {
-      clipboard_item.id = item.FindKey("idToken")->GetString();
+    if (dict.FindString("idToken")) {
+      clipboard_item.id = *dict.FindString("textData");
     }
 
     auto item_value =
