@@ -269,17 +269,6 @@ struct Config {
   // on the zero state UI).
   size_t number_interesting_visits_filter_threshold = 1;
 
-  // The `kJourneysCategoryFiltering` feature and child params.
-
-  // Whether to determine whether to show/hide clusters on prominent UI surfaces
-  // based on categories annotated for a visit.
-  bool should_use_categories_to_filter_on_prominent_ui_surfaces = false;
-
-  // The category IDs used for filtering. These should represent categories that
-  // are repesentatitive of Journeys that we think the user is likely to want to
-  // re-engage with.
-  base::flat_set<std::string> categories_for_filtering;
-
   // The `kOnDeviceClusteringContentClustering` feature and child params.
 
   // Returns whether content clustering is enabled and
@@ -410,10 +399,6 @@ struct Config {
 // Returns the set of collections that should not be included for content
 // clustering.
 base::flat_set<std::string> JourneysCollectionContentClusteringBlocklist();
-
-// Returns the set of categories that should be used to filter for whether a
-// user is likely to re-engage with a cluster.
-base::flat_set<std::string> JourneysCategoryFilteringAllowlist();
 
 // Returns the set of mids that should be blocked from being used by the
 // clustering backend, particularly for potential keywords used for omnibox
