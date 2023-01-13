@@ -145,6 +145,17 @@ Another incident in August 2019.
 
   * [82a4cedbc7f61ce5cb04482aa27ea3145bb0cea58ab63ba1931a1654bfbdbb4f.pem](82a4cedbc7f61ce5cb04482aa27ea3145bb0cea58ab63ba1931a1654bfbdbb4f.pem)
 
+### TrustCor
+
+To coincide with the release of M111, the Chrome Root Program announced a
+distrust of the CA Owner "TrustCor".
+
+For details, see <https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/oxX69KFvsm4/m/PKpJf5W6AQAJ>
+
+  * [5a885db19c01d912c5759388938cafbbdf031ab2d48e91ee15589b42971d039c.pem](5a885db19c01d912c5759388938cafbbdf031ab2d48e91ee15589b42971d039c.pem)
+  * [0753e940378c1bd5e3836e395daea5cb839e5046f1bd0eae1951cf10fec7c965.pem](0753e940378c1bd5e3836e395daea5cb839e5046f1bd0eae1951cf10fec7c965.pem)
+  * [d40e9c86cd8fe468c1776959f49ea774fa548684b6c406f3909261f4dce2575c.pem](d40e9c86cd8fe468c1776959f49ea774fa548684b6c406f3909261f4dce2575c.pem)
+
 ### Trustwave
 
 For details, see <https://www.trustwave.com/Resources/SpiderLabs-Blog/Clarifying-The-Trustwave-CA-Policy-Update/>
