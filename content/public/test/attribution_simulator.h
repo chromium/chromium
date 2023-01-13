@@ -56,13 +56,6 @@ struct AttributionSimulationOptions {
 
   AttributionDelayMode delay_mode = AttributionDelayMode::kDefault;
 
-  // If true, skips debug-cookie checks when determining whether to clear debug
-  // keys from source and trigger registrations.
-  //
-  // If false, the simulation input must specify cookie state in order for
-  // debug keys to work.
-  bool skip_debug_cookie_checks = false;
-
   AttributionSimulationOutputOptions output_options;
 };
 

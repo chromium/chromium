@@ -92,11 +92,6 @@ void ParseOptions(const base::Value& dict,
         << "invalid noise seed: " << *noise_seed;
     options.noise_seed = value;
   }
-
-  if (absl::optional<bool> skip_debug_cookie_checks =
-          dict.FindBoolKey("skip_debug_cookie_checks")) {
-    options.skip_debug_cookie_checks = *skip_debug_cookie_checks;
-  }
 }
 
 class AttributionSimulatorImplTest

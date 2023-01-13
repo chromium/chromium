@@ -42,7 +42,6 @@ constexpr char kSwitchRandomizedResponseRateEvent[] =
     "randomized_response_rate_event";
 constexpr char kSwitchRemoveActualReportTimes[] = "remove_actual_report_times";
 constexpr char kSwitchRemoveAssembledReport[] = "remove_assembled_report";
-constexpr char kSwitchSkipDebugCookieChecks[] = "skip_debug_cookie_checks";
 
 constexpr const char* kAllowedSwitches[] = {
     kSwitchHelp,
@@ -58,7 +57,6 @@ constexpr const char* kAllowedSwitches[] = {
     kSwitchCopyInputToOutput,
     kSwitchRandomizedResponseRateNavigation,
     kSwitchRandomizedResponseRateEvent,
-    kSwitchSkipDebugCookieChecks,
     kSwitchRemoveActualReportTimes,
 };
 
@@ -73,7 +71,6 @@ attribution_reporting_simulator
   [--input_mode=<input_mode>]
   [--remove_report_ids]
   [--remove_assembled_report]
-  [--skip_debug_cookie_checks]
   [--remove_actual_report_times]
 
 attribution_reporting_simulator is a command-line tool that simulates the
@@ -157,9 +154,6 @@ Switches:
                               aggregatable report bodies, as they are randomly
                               generated. Use this switch to make the tool's
                               output more deterministic.
-
-  --skip_debug_cookie_checks
-                            - Optional. If present, skips debug cookie checks.
 
   --remove_actual_report_times
                             - Optional. If present, removes the `report_time`
@@ -351,8 +345,6 @@ int main(int argc, char* argv[]) {
       .noise_seed = noise_seed,
       .config = config,
       .delay_mode = delay_mode,
-      .skip_debug_cookie_checks =
-          command_line.HasSwitch(kSwitchSkipDebugCookieChecks),
       .output_options =
           content::AttributionSimulationOutputOptions{
               .remove_report_ids =

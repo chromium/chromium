@@ -37,7 +37,6 @@
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
-#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_default_random_generator.h"
@@ -86,26 +85,6 @@ base::Time GetEventTime(const AttributionSimulationEvent& event) {
       },
       event);
 }
-
-class AlwaysSetCookieChecker : public AttributionCookieChecker {
- public:
-  AlwaysSetCookieChecker() = default;
-
-  ~AlwaysSetCookieChecker() override = default;
-
-  AlwaysSetCookieChecker(const AlwaysSetCookieChecker&) = delete;
-  AlwaysSetCookieChecker(AlwaysSetCookieChecker&&) = delete;
-
-  AlwaysSetCookieChecker& operator=(const AlwaysSetCookieChecker&) = delete;
-  AlwaysSetCookieChecker& operator=(AlwaysSetCookieChecker&&) = delete;
-
- private:
-  // AttributionManagerImpl::CookieChecker:
-  void IsDebugCookieSet(const url::Origin& origin,
-                        base::OnceCallback<void(bool)> callback) override {
-    std::move(callback).Run(true);
-  }
-};
 
 struct AttributionReportJsonConverter {
   AttributionReportJsonConverter(AttributionSimulationOutputOptions options,
@@ -458,14 +437,6 @@ base::Value RunAttributionSimulation(
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
 
-  std::unique_ptr<AttributionCookieChecker> cookie_checker;
-  if (options.skip_debug_cookie_checks) {
-    cookie_checker = std::make_unique<AlwaysSetCookieChecker>();
-  } else {
-    cookie_checker =
-        std::make_unique<AttributionCookieCheckerImpl>(storage_partition);
-  }
-
   auto manager = AttributionManagerImpl::CreateForTesting(
       // Avoid creating an on-disk sqlite DB.
       /*user_data_directory=*/base::FilePath(),
@@ -474,8 +445,8 @@ base::Value RunAttributionSimulation(
       AttributionStorageDelegateImpl::CreateForTesting(
           options.noise_mode, options.delay_mode, options.config,
           std::move(rng)),
-      std::move(cookie_checker), std::make_unique<FakeReportSender>(),
-      storage_partition,
+      std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
+      std::make_unique<FakeReportSender>(), storage_partition,
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
