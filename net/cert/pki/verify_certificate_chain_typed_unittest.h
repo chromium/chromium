@@ -243,9 +243,26 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, Policies) {
 
   this->RunTest("policies-on-root-ok/main.test");
   this->RunTest("policies-on-root-ok/ta-with-constraints.test");
-
   this->RunTest("policies-on-root-wrong/main.test");
   this->RunTest("policies-on-root-wrong/ta-with-constraints.test");
+
+  this->RunTest("policies-required-by-root-ok/main.test");
+  this->RunTest("policies-required-by-root-ok/ta-with-constraints.test");
+  this->RunTest("policies-required-by-root-fail/main.test");
+  this->RunTest("policies-required-by-root-fail/ta-with-constraints.test");
+
+  this->RunTest("policies-inhibit-mapping-by-root-ok/main.test");
+  this->RunTest("policies-inhibit-mapping-by-root-ok/ta-with-constraints.test");
+  this->RunTest("policies-inhibit-mapping-by-root-fail/main.test");
+  this->RunTest(
+      "policies-inhibit-mapping-by-root-fail/ta-with-constraints.test");
+
+  this->RunTest("policies-inhibit-anypolicy-by-root-ok/main.test");
+  this->RunTest(
+      "policies-inhibit-anypolicy-by-root-ok/ta-with-constraints.test");
+  this->RunTest("policies-inhibit-anypolicy-by-root-fail/main.test");
+  this->RunTest(
+      "policies-inhibit-anypolicy-by-root-fail/ta-with-constraints.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, ManyNames) {

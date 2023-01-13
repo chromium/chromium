@@ -640,6 +640,10 @@ class PathVerifier {
   // steps a-b.
   void VerifyPolicyMappings(const ParsedCertificate& cert, CertErrors* errors);
 
+  // Applies policyConstraints and inhibitAnyPolicy. This corresponds with RFC
+  // 5280 section 6.1.4 steps i-j.
+  void ApplyPolicyConstraints(const ParsedCertificate& cert);
+
   // This function corresponds to RFC 5280 section 6.1.3's "Basic Certificate
   // Processing" procedure.
   void BasicCertificateProcessing(const ParsedCertificate& cert,
@@ -949,6 +953,42 @@ void PathVerifier::VerifyPolicyMappings(const ParsedCertificate& cert,
   }
 }
 
+void PathVerifier::ApplyPolicyConstraints(const ParsedCertificate& cert) {
+  // RFC 5280 section 6.1.4 step i-j:
+  //      (i)  If a policy constraints extension is included in the
+  //           certificate, modify the explicit_policy and policy_mapping
+  //           state variables as follows:
+  if (cert.has_policy_constraints()) {
+    //         (1)  If requireExplicitPolicy is present and is less than
+    //              explicit_policy, set explicit_policy to the value of
+    //              requireExplicitPolicy.
+    if (cert.policy_constraints().require_explicit_policy &&
+        cert.policy_constraints().require_explicit_policy.value() <
+            explicit_policy_) {
+      explicit_policy_ =
+          cert.policy_constraints().require_explicit_policy.value();
+    }
+
+    //         (2)  If inhibitPolicyMapping is present and is less than
+    //              policy_mapping, set policy_mapping to the value of
+    //              inhibitPolicyMapping.
+    if (cert.policy_constraints().inhibit_policy_mapping &&
+        cert.policy_constraints().inhibit_policy_mapping.value() <
+            policy_mapping_) {
+      policy_mapping_ =
+          cert.policy_constraints().inhibit_policy_mapping.value();
+    }
+  }
+
+  //      (j)  If the inhibitAnyPolicy extension is included in the
+  //           certificate and is less than inhibit_anyPolicy, set
+  //           inhibit_anyPolicy to the value of inhibitAnyPolicy.
+  if (cert.has_inhibit_any_policy() &&
+      cert.inhibit_any_policy() < inhibit_any_policy_) {
+    inhibit_any_policy_ = cert.inhibit_any_policy();
+  }
+}
+
 void PathVerifier::BasicCertificateProcessing(
     const ParsedCertificate& cert,
     bool is_target_cert,
@@ -1065,38 +1105,8 @@ void PathVerifier::PrepareForNextCertificate(const ParsedCertificate& cert,
       inhibit_any_policy_ -= 1;
   }
 
-  //      (i)  If a policy constraints extension is included in the
-  //           certificate, modify the explicit_policy and policy_mapping
-  //           state variables as follows:
-  if (cert.has_policy_constraints()) {
-    //         (1)  If requireExplicitPolicy is present and is less than
-    //              explicit_policy, set explicit_policy to the value of
-    //              requireExplicitPolicy.
-    if (cert.policy_constraints().require_explicit_policy &&
-        cert.policy_constraints().require_explicit_policy.value() <
-            explicit_policy_) {
-      explicit_policy_ =
-          cert.policy_constraints().require_explicit_policy.value();
-    }
-
-    //         (2)  If inhibitPolicyMapping is present and is less than
-    //              policy_mapping, set policy_mapping to the value of
-    //              inhibitPolicyMapping.
-    if (cert.policy_constraints().inhibit_policy_mapping &&
-        cert.policy_constraints().inhibit_policy_mapping.value() <
-            policy_mapping_) {
-      policy_mapping_ =
-          cert.policy_constraints().inhibit_policy_mapping.value();
-    }
-  }
-
-  //      (j)  If the inhibitAnyPolicy extension is included in the
-  //           certificate and is less than inhibit_anyPolicy, set
-  //           inhibit_anyPolicy to the value of inhibitAnyPolicy.
-  if (cert.has_inhibit_any_policy() &&
-      cert.inhibit_any_policy() < inhibit_any_policy_) {
-    inhibit_any_policy_ = cert.inhibit_any_policy();
-  }
+  // RFC 5280 section 6.1.4 step i-j:
+  ApplyPolicyConstraints(cert);
 
   // From RFC 5280 section 6.1.4 step k:
   //
@@ -1255,6 +1265,15 @@ void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
     VerifyPolicies(cert, /*is_target_cert=*/false, errors);
   }
 
+  // Process policyConstraints and inhibitAnyPolicy. This matches the
+  // handling for intermediates from RFC 5280 section 6.1.4 step i-j.
+  // This intentionally deviates from RFC 5937 section 3.2 which says to
+  // initialize the initial-any-policy-inhibit, initial-explicit-policy, and/or
+  // initial-policy-mapping-inhibit inputs to verification. Those are all
+  // bools, so they cannot properly represent the constraints encoded in the
+  // policyConstraints and inhibitAnyPolicy extensions.
+  ApplyPolicyConstraints(cert);
+
   // If keyUsage is present, verify that |cert| has correct keyUsage bits for a
   // CA. This matches the handling for intermediates from RFC 5280 section
   // 6.1.4 step n.
@@ -1274,14 +1293,6 @@ void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
   // Initialize name constraints initial-permitted/excluded-subtrees.
   if (cert.has_name_constraints())
     name_constraints_list_.push_back(&cert.name_constraints());
-
-  // TODO(eroman): Initialize inhibit any policy based on anchor constraints.
-
-  // TODO(eroman): Initialize require explicit policy based on anchor
-  // constraints.
-
-  // TODO(eroman): Initialize inhibit policy mapping based on anchor
-  // constraints.
 
   if (cert.has_basic_constraints()) {
     // Enforce CA=true if basicConstraints is present. This matches behavior of

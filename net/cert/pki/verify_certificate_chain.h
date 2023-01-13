@@ -234,8 +234,8 @@ class NET_EXPORT VerifyCertificateChainDelegate {
 //  * Name constraints:      Yes
 //  * Certificate policies:  Yes
 //  * Policy Mappings:       No
-//  * inhibitAnyPolicy:      Not currently, TODO(crbug.com/634453)
-//  * PolicyConstraints:     Not currently, TODO(crbug.com/634452)
+//  * inhibitAnyPolicy:      Yes
+//  * PolicyConstraints:     Yes
 //
 // The presence of any other unrecognized extension marked as critical fails
 // validation.

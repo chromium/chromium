@@ -4603,7 +4603,8 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints0Root) {
       chain_[0]->SetCertificatePolicies({});
       if (VerifyProcTypeIsBuiltin()) {
         EXPECT_THAT(Verify(), IsOk());
-        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(),
+                    IsError(ERR_CERT_INVALID));
       } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
                  verify_proc_type() == CERT_VERIFY_PROC_IOS ||
                  verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
@@ -4625,6 +4626,46 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints4Root) {
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints3Root) {
+  // Explicit policy is required after 3 certs. Since the chain is 4 certs
+  // long, an explicit policy is required and the chain should fail if anchor
+  // constraints are enforced.
+  chain_[3]->SetPolicyConstraints(
+      /*require_explicit_policy=*/3,
+      /*inhibit_policy_mapping=*/absl::nullopt);
+
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(Verify(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
+  } else {
+    // Windows seems to have an off-by-one error in how it enforces
+    // requireExplicitPolicy.
+    // (The mac/android verifiers are Ok here since they don't enforce
+    // policyConstraints on anchors.)
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints2Root) {
+  // Explicit policy is required after 2 certs. Since the chain is 4 certs
+  // long, an explicit policy is required and the chain should fail if anchor
+  // constraints are enforced.
+  chain_[3]->SetPolicyConstraints(
+      /*require_explicit_policy=*/2,
+      /*inhibit_policy_mapping=*/absl::nullopt);
+
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(Verify(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
+             verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+             verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   }
 }
 
@@ -4671,6 +4712,43 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints3Intermediate) {
       /*inhibit_policy_mapping=*/absl::nullopt);
 
   EXPECT_THAT(Verify(), IsOk());
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints2Intermediate) {
+  // Explicit policy is required after 2 certs. Since the chain up to
+  // |chain_[2]| is 3 certs long, an explicit policy will be required and this
+  // should fail to verify.
+  chain_[2]->SetPolicyConstraints(
+      /*require_explicit_policy=*/2,
+      /*inhibit_policy_mapping=*/absl::nullopt);
+
+  if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    // Windows seems to have an off-by-one error in how it enforces
+    // requireExplicitPolicy.
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+    if (VerifyProcTypeIsBuiltin()) {
+      EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
+    }
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints1Intermediate) {
+  // Explicit policy is required after 1 cert. Since the chain up to
+  // |chain_[2]| is 3 certs long, an explicit policy will be required and this
+  // should fail to verify.
+  chain_[2]->SetPolicyConstraints(
+      /*require_explicit_policy=*/1,
+      /*inhibit_policy_mapping=*/absl::nullopt);
+
+  EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
+  }
 }
 
 TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints0Leaf) {
@@ -4682,6 +4760,9 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints0Leaf) {
       /*inhibit_policy_mapping=*/absl::nullopt);
 
   if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    // Windows seems to have an off-by-one error in how it enforces
+    // requireExplicitPolicy in general, which also seems to mean that
+    // requireExplicitPolicy on a leaf is never enforced.
     EXPECT_THAT(Verify(), IsOk());
   } else {
     EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
@@ -4714,8 +4795,7 @@ TEST_P(CertVerifyProcConstraintsTest, InhibitPolicyMapping0Root) {
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
-    // TODO(https://crbug.com/1072083): enforce this:
-    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
              verify_proc_type() == CERT_VERIFY_PROC_IOS ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
@@ -4781,7 +4861,7 @@ TEST_P(CertVerifyProcConstraintsTest, InhibitAnyPolicy0Root) {
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
-    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
              verify_proc_type() == CERT_VERIFY_PROC_IOS ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
@@ -4792,28 +4872,52 @@ TEST_P(CertVerifyProcConstraintsTest, InhibitAnyPolicy0Root) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, InhibitAnyPolicy1Root) {
-  static const char kAnyPolicy[] = "2.5.29.32.0";
-  static const char kPolicy1[] = "1.2.3.4";
+  for (bool chain_1_has_any_policy : {false, true}) {
+    SCOPED_TRACE(chain_1_has_any_policy);
 
-  // Since inhibitAnyPolicy is 1, anyPolicy should be allowed for the root's
-  // immediate child.
-  chain_[3]->SetInhibitAnyPolicy(1);
-  chain_[3]->SetCertificatePolicies({kAnyPolicy});
+    static const char kAnyPolicy[] = "2.5.29.32.0";
+    static const char kPolicy1[] = "1.2.3.4";
 
-  // Policy constraints are specified on an intermediate so that an explicit
-  // policy will be required regardless if root constraints are applied.
-  chain_[2]->SetPolicyConstraints(
-      /*require_explicit_policy=*/0,
-      /*inhibit_policy_mapping=*/absl::nullopt);
+    // Since inhibitAnyPolicy is 1, anyPolicy should be allowed for the root's
+    // immediate child, but not after that.
+    chain_[3]->SetInhibitAnyPolicy(1);
+    chain_[3]->SetCertificatePolicies({kAnyPolicy});
 
-  chain_[2]->SetCertificatePolicies({kAnyPolicy});
+    // Policy constraints are specified on an intermediate so that an explicit
+    // policy will be required regardless if root constraints are applied.
+    chain_[2]->SetPolicyConstraints(
+        /*require_explicit_policy=*/0,
+        /*inhibit_policy_mapping=*/absl::nullopt);
 
-  chain_[1]->SetCertificatePolicies({kPolicy1});
-  chain_[0]->SetCertificatePolicies({kPolicy1});
+    // AnyPolicy should be allowed in this cert.
+    chain_[2]->SetCertificatePolicies({kAnyPolicy});
 
-  EXPECT_THAT(Verify(), IsOk());
-  if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    chain_[0]->SetCertificatePolicies({kPolicy1});
+
+    if (chain_1_has_any_policy) {
+      // AnyPolicy should not be allowed in this cert if the inhibitAnyPolicy
+      // constraint from the root is honored.
+      chain_[1]->SetCertificatePolicies({kAnyPolicy});
+
+      if (VerifyProcTypeIsBuiltin()) {
+        EXPECT_THAT(Verify(), IsOk());
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(),
+                    IsError(ERR_CERT_INVALID));
+      } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
+                 verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+                 verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+        EXPECT_THAT(Verify(), IsOk());
+      } else {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+      }
+    } else {
+      chain_[1]->SetCertificatePolicies({kPolicy1});
+
+      EXPECT_THAT(Verify(), IsOk());
+      if (VerifyProcTypeIsBuiltin()) {
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+      }
+    }
   }
 }
 
