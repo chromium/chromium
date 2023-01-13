@@ -5,9 +5,6 @@
     --disabled-text-color: var(--google-grey-600);
     --edit-footer-background: var(--google-grey-50);
     --label-selected-color: var(--google-blue-50);
-    --price-tracking-chip-background: var(--google-green-50);
-    --price-tracking-discount-color: var(--google-green-800);
-    --price-tracking-original-color: var(--cr-secondary-text-color);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -15,9 +12,6 @@
       --border-color: var(--google-grey-700);
       --disabled-text-color: var(--google-grey-500);
       --edit-footer-background: var(--google-grey-900-white-4-percent);
-      --price-tracking-chip-background: var(--google-green-900);
-      --price-tracking-discount-color: white;
-      --price-tracking-original-color: var(--google-green-200);
     }
   }
 
@@ -66,10 +60,6 @@
     overflow-y: auto;
   }
 
-  .chip-discounted {
-    --power-bookmark-chip-background: var(--price-tracking-chip-background);
-  }
-
   .column {
     display: flex;
     flex-direction: column;
@@ -107,10 +97,6 @@
     display: flex;
     font-size: var(--mwb-secondary-text-font-size);
     gap: 8px;
-  }
-
-  .icon-discounted {
-    color: var(--price-tracking-discount-color);
   }
 
   .label {
@@ -252,20 +238,14 @@
         <div slot="chips">
           <template is="dom-if"
               if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
-            <template is="dom-if" if="[[showDiscountedPrice_(item)]]" restamp>
-              <power-bookmark-chip class="chip-discounted">
-                <iron-icon icon="bookmarks:price-tracking"
-                    class="icon-discounted"></iron-icon>
-                <div class="price-discounted">[[getCurrentPrice_(item)]]</div>
-                <div class="price-original">[[getPreviousPrice_(item)]]</div>
-              </power-bookmark-chip>
-            </template>
-            <template is="dom-if" if="[[!showDiscountedPrice_(item)]]" restamp>
-              <power-bookmark-chip>
-                <iron-icon icon="bookmarks:price-tracking"></iron-icon>
-                <div>[[getCurrentPrice_(item)]]</div>
-              </power-bookmark-chip>
-            </template>
+            <sp-label updated="[[showDiscountedPrice_(item)]]">
+              <iron-icon icon="bookmarks:price-tracking"></iron-icon>
+              <div>[[getCurrentPrice_(item)]]</div>
+              <div slot="previous-label"
+                  hidden$="[[!showDiscountedPrice_(item)]]">
+                [[getPreviousPrice_(item)]]
+              </div>
+            </sp-label>
           </template>
         </div>
       </power-bookmark-row>

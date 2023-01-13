@@ -21,7 +21,6 @@ build_webui("build") {
     "bookmark_folder.ts",
     "bookmarks_list.ts",
     "commerce/shopping_list.ts",
-    "power_bookmark_chip.ts",
     "power_bookmark_row.ts",
     "power_bookmarks_context_menu.ts",
     "power_bookmarks_list.ts",

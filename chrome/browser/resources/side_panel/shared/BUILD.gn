@@ -13,6 +13,7 @@ build_webui("build") {
   web_component_files = [
     "sp_empty_state.ts",
     "sp_footer.ts",
+    "sp_label.ts",
   ]
 
   ts_composite = true
