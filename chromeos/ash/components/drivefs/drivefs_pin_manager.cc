@@ -194,6 +194,14 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::DriveError> q) {
              << "}";
 }
 
+// Rounds the given size to the next multiple of 4-KB.
+int64_t RoundToBlockSize(int64_t size) {
+  const int64_t block_size = 4 << 10;  // 4 KB
+  const int64_t mask = block_size - 1;
+  static_assert((block_size & mask) == 0, "block_size must be a power of 2");
+  return (size + mask) & ~mask;
+}
+
 int64_t GetSize(const mojom::FileMetadata& metadata) {
   const int64_t kAverageHostedFileSize = 7800;
   return metadata.type == mojom::FileMetadata::Type::kHosted
@@ -546,11 +554,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     DCHECK_GE(md.size, 0) << " for " << id << " " << Quote(path);
     const int64_t size = GetSize(md);
     progress_.total_bytes += size;
-
-    // Assumes that the underlying filesystem works with 4-KB blocks.
-    const int64_t block_size = 4096;
-    const int64_t block_count = (size + (block_size - 1)) / block_size;
-    progress_.required_space += block_count * block_size;
+    progress_.required_space += RoundToBlockSize(size);
 
     const auto [it, ok] = files_to_pin_.try_emplace(
         id, Progress{.path = path.value(), .total = size});
