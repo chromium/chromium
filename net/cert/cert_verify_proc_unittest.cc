@@ -5008,19 +5008,21 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyMappingsRoot) {
   static const char kPolicy2[] = "1.2.3.5";
   static const char kPolicy3[] = "1.2.3.6";
 
-  for (bool root_has_matching_policy : {false, true}) {
-    SCOPED_TRACE(root_has_matching_policy);
+  for (bool root_has_matching_policy_mapping : {false, true}) {
+    SCOPED_TRACE(root_has_matching_policy_mapping);
 
-    chain_[3]->SetCertificatePolicies({kPolicy1});
-    if (root_has_matching_policy) {
+    if (root_has_matching_policy_mapping) {
       // This chain should be valid if the policies and policy mapping on the
       // root are processed, or if neither is processed. It will not be valid
       // if the policies were processed and the policyMappings were not.
+      chain_[3]->SetCertificatePolicies({kPolicy1});
       chain_[3]->SetPolicyMappings({{kPolicy1, kPolicy2}});
     } else {
-      // This chain should not be valid if the policies on the root were
-      // processed, regardless if the policyMappings were processed.
-      chain_[3]->SetPolicyMappings({{kPolicy1, kPolicy3}});
+      // This chain should not be valid if the policies and policyMappings on
+      // the root were processed. It will be valid if the policies were
+      // processed and policyMappings were not.
+      chain_[3]->SetCertificatePolicies({kPolicy2});
+      chain_[3]->SetPolicyMappings({{kPolicy2, kPolicy3}});
     }
 
     // Policy constraints are specified on an intermediate so that an explicit
@@ -5033,13 +5035,10 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyMappingsRoot) {
     chain_[1]->SetCertificatePolicies({kPolicy2});
     chain_[0]->SetCertificatePolicies({kPolicy2});
 
-    if (root_has_matching_policy) {
+    if (root_has_matching_policy_mapping) {
       EXPECT_THAT(Verify(), IsOk());
       if (VerifyProcTypeIsBuiltin()) {
-        // TODO(https://crbug.com/1072083): policyMapping on root not yet
-        // implemented.
-        EXPECT_THAT(VerifyWithExpiryAndConstraints(),
-                    IsError(ERR_CERT_INVALID));
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
       }
     } else {
       if (VerifyProcTypeIsBuiltin()) {

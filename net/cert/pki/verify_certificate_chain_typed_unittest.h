@@ -257,6 +257,11 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, Policies) {
   this->RunTest(
       "policies-inhibit-mapping-by-root-fail/ta-with-constraints.test");
 
+  this->RunTest("policy-mappings-on-root-ok/main.test");
+  this->RunTest("policy-mappings-on-root-ok/ta-with-constraints.test");
+  this->RunTest("policy-mappings-on-root-fail/main.test");
+  this->RunTest("policy-mappings-on-root-fail/ta-with-constraints.test");
+
   this->RunTest("policies-inhibit-anypolicy-by-root-ok/main.test");
   this->RunTest(
       "policies-inhibit-anypolicy-by-root-ok/ta-with-constraints.test");

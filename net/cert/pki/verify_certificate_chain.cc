@@ -1265,6 +1265,10 @@ void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
     VerifyPolicies(cert, /*is_target_cert=*/false, errors);
   }
 
+  // Process policyMappings, if present. This matches the handling for
+  // intermediates from RFC 5280 section 6.1.4 step a-b.
+  VerifyPolicyMappings(cert, errors);
+
   // Process policyConstraints and inhibitAnyPolicy. This matches the
   // handling for intermediates from RFC 5280 section 6.1.4 step i-j.
   // This intentionally deviates from RFC 5937 section 3.2 which says to

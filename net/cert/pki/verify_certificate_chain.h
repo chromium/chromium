@@ -233,7 +233,7 @@ class NET_EXPORT VerifyCertificateChainDelegate {
 //  * Basic constraints:     Yes
 //  * Name constraints:      Yes
 //  * Certificate policies:  Yes
-//  * Policy Mappings:       No
+//  * Policy Mappings:       Yes
 //  * inhibitAnyPolicy:      Yes
 //  * PolicyConstraints:     Yes
 //
