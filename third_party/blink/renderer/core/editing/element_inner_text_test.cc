@@ -10,28 +10,17 @@
 
 namespace blink {
 
-class ElementInnerTest : public testing::WithParamInterface<bool>,
-                         private ScopedLayoutNGForTest,
-                         public EditingTestBase {
- protected:
-  ElementInnerTest() : ScopedLayoutNGForTest(GetParam()) {}
-
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All, ElementInnerTest, testing::Bool());
+class ElementInnerTest : public EditingTestBase {};
 
 // http://crbug.com/877498
-TEST_P(ElementInnerTest, ListItemWithLeadingWhiteSpace) {
+TEST_F(ElementInnerTest, ListItemWithLeadingWhiteSpace) {
   SetBodyContent("<li id=target> abc</li>");
   Element& target = *GetDocument().getElementById("target");
   EXPECT_EQ("abc", target.innerText());
 }
 
 // http://crbug.com/877470
-TEST_P(ElementInnerTest, SVGElementAsTableCell) {
+TEST_F(ElementInnerTest, SVGElementAsTableCell) {
   SetBodyContent(
       "<div id=target>abc"
       "<svg><rect style='display:table-cell'></rect></svg>"
@@ -41,7 +30,7 @@ TEST_P(ElementInnerTest, SVGElementAsTableCell) {
 }
 
 // http://crbug.com/878725
-TEST_P(ElementInnerTest, SVGElementAsTableRow) {
+TEST_F(ElementInnerTest, SVGElementAsTableRow) {
   SetBodyContent(
       "<div id=target>abc"
       "<svg><rect style='display:table-row'></rect></svg>"
@@ -51,7 +40,7 @@ TEST_P(ElementInnerTest, SVGElementAsTableRow) {
 }
 
 // https://crbug.com/947422
-TEST_P(ElementInnerTest, OverflowingListItemWithFloatFirstLetter) {
+TEST_F(ElementInnerTest, OverflowingListItemWithFloatFirstLetter) {
   InsertStyleElement(
       "div { display: list-item; overflow: hidden; }"
       "div::first-letter { float: right; }");
@@ -61,7 +50,7 @@ TEST_P(ElementInnerTest, OverflowingListItemWithFloatFirstLetter) {
 }
 
 // https://crbug.com/1164747
-TEST_P(ElementInnerTest, GetInnerTextWithoutUpdate) {
+TEST_F(ElementInnerTest, GetInnerTextWithoutUpdate) {
   SetBodyContent("<div id=target>ab<span>c</span></div>");
   Element& target = *GetDocument().getElementById("target");
   EXPECT_EQ("abc", target.innerText());

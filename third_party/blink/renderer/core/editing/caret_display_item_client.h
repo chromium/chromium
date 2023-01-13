@@ -82,7 +82,7 @@ class CORE_EXPORT CaretDisplayItemClient final
 
  private:
   friend class CaretDisplayItemClientTest;
-  friend class ParameterizedComputeCaretRectTest;
+  friend class ComputeCaretRectTest;
 
   struct CaretRectAndPainterBlock {
     STACK_ALLOCATED();

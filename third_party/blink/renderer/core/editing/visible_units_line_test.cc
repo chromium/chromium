@@ -83,22 +83,6 @@ class VisibleUnitsLineTest : public EditingTestBase {
   }
 };
 
-class ParameterizedVisibleUnitsLineTest
-    : public ::testing::WithParamInterface<bool>,
-      private ScopedLayoutNGForTest,
-      public VisibleUnitsLineTest {
- protected:
-  ParameterizedVisibleUnitsLineTest() : ScopedLayoutNGForTest(GetParam()) {}
-
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ParameterizedVisibleUnitsLineTest,
-                         ::testing::Bool());
-
 TEST_F(VisibleUnitsLineTest, endOfLine) {
   // Test case:
   // 5555522
@@ -317,7 +301,7 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
   EXPECT_TRUE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*seven, 7)));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, inSameLine) {
+TEST_F(VisibleUnitsLineTest, inSameLine) {
   const char* body_content =
       "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
       "id='two'>22</b>33</p>";
@@ -739,7 +723,7 @@ TEST_F(VisibleUnitsLineTest, startOfLine) {
       StartOfLine(CreateVisiblePositionInFlatTree(*seven, 1)).DeepEquivalent());
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithBidi) {
+TEST_F(VisibleUnitsLineTest, EndOfLineWithBidi) {
   LoadAhem();
   InsertStyleElement("p { font: 30px/3 Ahem; }");
 
@@ -762,7 +746,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithBidi) {
 }
 
 // http://crbug.com/1136740
-TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithHangingSpace) {
+TEST_F(VisibleUnitsLineTest, EndOfLineWithHangingSpace) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -794,7 +778,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithHangingSpace) {
   EXPECT_EQ("<p>  x abcd|efgh</p>", TestEndOfLine("<p>  x a|bcdefgh</p>"));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithPositionRelative) {
+TEST_F(VisibleUnitsLineTest, EndOfLineWithPositionRelative) {
   LoadAhem();
   InsertStyleElement(
       "b { position:relative; left: 30px; }"
@@ -819,7 +803,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithPositionRelative) {
           "<p dir=\"rtl\"><bdo dir=\"rtl\">a|b <b>cd</b> <b>ef</b></bdo></p>"));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithSoftLineWrap3) {
+TEST_F(VisibleUnitsLineTest, EndOfLineWithSoftLineWrap3) {
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -873,7 +857,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithSoftLineWrap3) {
             TestEndOfLine("<div contenteditable>abc |def ghi</div>"));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithSoftLineWrap4) {
+TEST_F(VisibleUnitsLineTest, EndOfLineWithSoftLineWrap4) {
   LoadAhem();
   InsertStyleElement("div { font: 10px/1 Ahem; width: 4ch; }");
 
@@ -898,7 +882,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithSoftLineWrap4) {
 }
 
 // http://crbug.com/1169583
-TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithWhiteSpacePre) {
+TEST_F(VisibleUnitsLineTest, EndOfLineWithWhiteSpacePre) {
   LoadAhem();
   InsertStyleElement("p { font: 10px/1 Ahem; white-space: pre; }");
 
@@ -920,7 +904,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, EndOfLineWithWhiteSpacePre) {
       << "RTL RTL";
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, LogicalEndOfLineWithSoftLineWrap3) {
+TEST_F(VisibleUnitsLineTest, LogicalEndOfLineWithSoftLineWrap3) {
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -951,7 +935,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, LogicalEndOfLineWithSoftLineWrap3) {
             TestLogicalEndOfLine("<div contenteditable>abc |def ghi</div>"));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, LogicalEndOfLineWithSoftLineWrap4) {
+TEST_F(VisibleUnitsLineTest, LogicalEndOfLineWithSoftLineWrap4) {
   LoadAhem();
   InsertStyleElement("div { font: 10px/1 Ahem; width: 4ch; }");
 
@@ -975,7 +959,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, LogicalEndOfLineWithSoftLineWrap4) {
             TestLogicalEndOfLine("<div contenteditable>abc |def ghi</div>"));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineSkippingEmptyEditableDiv) {
+TEST_F(VisibleUnitsLineTest, InSameLineSkippingEmptyEditableDiv) {
   // This test records the InSameLine() results in
   // editing/selection/skip-over-contenteditable.html
   SetBodyContent(
@@ -999,7 +983,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineSkippingEmptyEditableDiv) {
       PositionWithAffinity(Position(bar, 0), TextAffinity::kDownstream)));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithMixedEditability) {
+TEST_F(VisibleUnitsLineTest, InSameLineWithMixedEditability) {
   SelectionInDOMTree selection =
       SetSelectionTextToBody("<span contenteditable>f^oo</span>b|ar");
 
@@ -1009,8 +993,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithMixedEditability) {
   EXPECT_FALSE(InSameLine(position1, position2));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest,
-       InSameLineWithGeneratedZeroWidthSpace) {
+TEST_F(VisibleUnitsLineTest, InSameLineWithGeneratedZeroWidthSpace) {
   LoadAhem();
   InsertStyleElement(
       "p { font: 10px/1 Ahem; }"
@@ -1031,7 +1014,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest,
 }
 
 // http://crbug.com/1183269
-TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithSoftLineWrap) {
+TEST_F(VisibleUnitsLineTest, InSameLineWithSoftLineWrap) {
   LoadAhem();
   InsertStyleElement(
       "p { font: 10px/1 Ahem; }"
@@ -1046,7 +1029,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithSoftLineWrap) {
       PositionWithAffinity(selection.Base(), TextAffinity::kDownstream)));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
+TEST_F(VisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
   LoadAhem();
   InsertStyleElement(
       "p { font: 10px/1 Ahem; }"
@@ -1079,7 +1062,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
 }
 
 // http://crbug.com/1358235
-TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineBeforeEmptyLine) {
+TEST_F(VisibleUnitsLineTest, StartOfLineBeforeEmptyLine) {
   LoadAhem();
   InsertStyleElement("p { font: 30px/3 Ahem; }");
 
@@ -1098,7 +1081,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineBeforeEmptyLine) {
             TestStartOfLine("<p dir=\"rtl\">abc<br><br>|<br>xyz<br></p>"));
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithBidi) {
+TEST_F(VisibleUnitsLineTest, StartOfLineWithBidi) {
   LoadAhem();
   InsertStyleElement("p { font: 30px/3 Ahem; }");
 
@@ -1120,7 +1103,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithBidi) {
       << "RTL RTL";
 }
 
-TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithPositionRelative) {
+TEST_F(VisibleUnitsLineTest, StartOfLineWithPositionRelative) {
   LoadAhem();
   InsertStyleElement(
       "b { position:relative; left: -100px; }"

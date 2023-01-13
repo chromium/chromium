@@ -91,20 +91,6 @@ void SelectionControllerTest::SetNonDirectionalSelectionIfNeeded(
           SelectionController::kDoNotAdjustEndpoints);
 }
 
-class ParameterizedSelectionControllerTest
-    : public SelectionControllerTest,
-      public testing::WithParamInterface<bool>,
-      private ScopedLayoutNGForTest {
- public:
-  ParameterizedSelectionControllerTest() : ScopedLayoutNGForTest(GetParam()) {}
-
-  bool LayoutNGEnabled() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(SelectionControllerTest,
-                         ParameterizedSelectionControllerTest,
-                         testing::Bool());
-
 TEST_F(SelectionControllerTest, setNonDirectionalSelectionIfNeeded) {
   const char* body_content = "<span id=top>top</span><span id=host></span>";
   const char* shadow_content = "<span id=bottom>bottom</span>";
@@ -440,7 +426,7 @@ TEST_F(SelectionControllerTest, SelectWordToEndOfTableCell) {
             GetSelectionTextFromBody());
 }
 
-TEST_P(ParameterizedSelectionControllerTest, Scroll) {
+TEST_F(SelectionControllerTest, Scroll) {
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -473,8 +459,7 @@ TEST_P(ParameterizedSelectionControllerTest, Scroll) {
 
   // Hit-test on the first visible line. This should be "line3".
   HitTestResult line3_result = HitTestResultAtLocation(5, 50);
-  if (LayoutNGEnabled())  // Legacy fails this test.
-    EXPECT_EQ(line3_result.LocalPoint(), PhysicalOffset(5, 50));
+  EXPECT_EQ(line3_result.LocalPoint(), PhysicalOffset(5, 50));
   PositionWithAffinity line3 = line3_result.GetPosition();
   Node* line3_node = line3.AnchorNode();
   EXPECT_EQ(line3_node->nodeName(), "#text");
@@ -504,33 +489,27 @@ TEST_P(ParameterizedSelectionControllerTest, Scroll) {
 
   // At the padding of an inline box.
   HitTestResult line5_result = HitTestResultAtLocation(5, 250);
-  if (LayoutNGEnabled())  // Legacy fails this test.
-    EXPECT_EQ(line5_result.LocalPoint(), PhysicalOffset(5, 250));
+  EXPECT_EQ(line5_result.LocalPoint(), PhysicalOffset(5, 250));
   PositionWithAffinity line5 = line5_result.GetPosition();
   Node* line5_node = line5.AnchorNode();
   EXPECT_EQ(line5_node->nodeName(), "#text");
-  if (LayoutNGEnabled())  // Legacy fails this test.
-    EXPECT_EQ(line5_node->textContent(), "line5");
+  EXPECT_EQ(line5_node->textContent(), "line5");
 
   // At the border of an inline box.
   HitTestResult line6_result = HitTestResultAtLocation(5, 350);
-  if (LayoutNGEnabled())  // Legacy fails this test.
-    EXPECT_EQ(line6_result.LocalPoint(), PhysicalOffset(5, 350));
+  EXPECT_EQ(line6_result.LocalPoint(), PhysicalOffset(5, 350));
   PositionWithAffinity line6 = line6_result.GetPosition();
   Node* line6_node = line6.AnchorNode();
   EXPECT_EQ(line6_node->nodeName(), "#text");
-  if (LayoutNGEnabled())  // Legacy fails this test.
-    EXPECT_EQ(line6_node->textContent(), "line6");
+  EXPECT_EQ(line6_node->textContent(), "line6");
 
   // At the margin of an inline box.
   HitTestResult line7_result = HitTestResultAtLocation(5, 450);
-  if (LayoutNGEnabled())  // Legacy fails this test.
-    EXPECT_EQ(line7_result.LocalPoint(), PhysicalOffset(5, 450));
+  EXPECT_EQ(line7_result.LocalPoint(), PhysicalOffset(5, 450));
   PositionWithAffinity line7 = line7_result.GetPosition();
   Node* line7_node = line7.AnchorNode();
   EXPECT_EQ(line7_node->nodeName(), "#text");
-  if (LayoutNGEnabled())  // Legacy fails this test.
-    EXPECT_EQ(line7_node->textContent(), "line7");
+  EXPECT_EQ(line7_node->textContent(), "line7");
 
   // At the inline-block.
   HitTestResult line8_result = HitTestResultAtLocation(5, 550);

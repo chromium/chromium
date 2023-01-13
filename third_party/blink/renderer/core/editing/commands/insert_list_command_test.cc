@@ -18,23 +18,6 @@ namespace blink {
 
 class InsertListCommandTest : public EditingTestBase {};
 
-class ParameterizedInsertListCommandTest
-    : public testing::WithParamInterface<bool>,
-      private ScopedLayoutNGForTest,
-      public InsertListCommandTest {
- public:
-  ParameterizedInsertListCommandTest() : ScopedLayoutNGForTest(GetParam()) {}
-
- protected:
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ParameterizedInsertListCommandTest,
-                         testing::Bool());
-
 TEST_F(InsertListCommandTest, ShouldCleanlyRemoveSpuriousTextNode) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   // Needs to be editable to use InsertListCommand.
@@ -241,7 +224,7 @@ TEST_F(InsertListCommandTest, ListifyInputInTableCell1) {
 }
 
 // Refer https://crbug.com/1295037
-TEST_P(ParameterizedInsertListCommandTest, NonCanonicalVisiblePosition) {
+TEST_F(InsertListCommandTest, NonCanonicalVisiblePosition) {
   Document& document = GetDocument();
   document.setDesignMode("on");
   InsertStyleElement("select { width: 100vw; }");
@@ -269,11 +252,8 @@ TEST_P(ParameterizedInsertListCommandTest, NonCanonicalVisiblePosition) {
   // Crash happens here.
   EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      LayoutNGEnabled()
-          ? "<ul><li><textarea></textarea>^<svg></svg><select></select></li>"
-            "<li><input>|</li></ul>"
-          : "<ul><li><textarea></textarea><svg></svg>^<select></select></li>"
-            "<li><input>|</li></ul>",
+      "<ul><li><textarea></textarea>^<svg></svg><select></select></li>"
+      "<li><input>|</li></ul>",
       GetSelectionTextFromBody());
 }
 
