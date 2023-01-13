@@ -54,6 +54,8 @@ class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
       &kUnifiedMenuVolumeHighIcon,    // High volume.
   };
 
+  IconButton* more_button() { return more_button_; }
+
  private:
   void Update(bool by_user);
 

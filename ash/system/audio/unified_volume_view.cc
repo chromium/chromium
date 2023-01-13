@@ -15,6 +15,8 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/window_state.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -80,6 +82,14 @@ UnifiedVolumeView::UnifiedVolumeView(
       a11y_controller_(Shell::Get()->accessibility_controller()),
       device_id_(CrasAudioHandler::Get()->GetPrimaryActiveOutputNode()) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
+
+  // In the case that there is a trusted pinned window (fullscreen lock mode)
+  // and the volume slider popup is shown, do not allow the more_button_ to
+  // open quick settings.
+  auto* window = Shell::Get()->screen_pinning_controller()->pinned_window();
+  if (window && WindowState::Get(window)->IsTrustedPinned()) {
+    more_button_->SetEnabled(false);
+  }
 
   if (features::IsQsRevampEnabled()) {
     // TODO(b/257151067): Update the a11y name id.
