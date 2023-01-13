@@ -176,8 +176,7 @@ class SettingsDisplayAndMagnificationElement extends
   }
 
   private onAppearanceTap_(): void {
-    // Open browser appearance section in a new browser tab.
-    window.open('chrome://settings/appearance');
+    chrome.send('showBrowserAppearanceSettings');
   }
 }
 

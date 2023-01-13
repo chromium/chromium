@@ -35,14 +35,13 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
  private:
   friend class AccessibilityHandlerTest;
 
-  // Callback for the messages to show settings for ChromeVox or
-  // Select To Speak.
-  void HandleShowChromeVoxSettings(const base::Value::List& args);
-  void HandleShowSelectToSpeakSettings(const base::Value::List& args);
-  void HandleSetStartupSoundEnabled(const base::Value::List& args);
   void HandleRecordSelectedShowShelfNavigationButtonsValue(
       const base::Value::List& args);
+  void HandleShowBrowserAppearanceSettings(const base::Value::List& args);
+  void HandleShowChromeVoxSettings(const base::Value::List& args);
   void HandleShowChromeVoxTutorial(const base::Value::List& args);
+  void HandleShowSelectToSpeakSettings(const base::Value::List& args);
+  void HandleSetStartupSoundEnabled(const base::Value::List& args);
 
   void OpenExtensionOptionsPage(const char extension_id[]);
 

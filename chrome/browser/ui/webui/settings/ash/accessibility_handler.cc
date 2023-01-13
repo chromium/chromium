@@ -7,6 +7,7 @@
 #include <set>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
@@ -52,6 +54,11 @@ AccessibilityHandler::~AccessibilityHandler() {
 
 void AccessibilityHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
+      "showBrowserAppearanceSettings",
+      base::BindRepeating(
+          &AccessibilityHandler::HandleShowBrowserAppearanceSettings,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "showChromeVoxSettings",
       base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxSettings,
                           base::Unretained(this)));
@@ -80,6 +87,14 @@ void AccessibilityHandler::RegisterMessages() {
       "showChromeVoxTutorial",
       base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxTutorial,
                           base::Unretained(this)));
+}
+
+void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
+    const base::Value::List& args) {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAppearanceSubPage),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void AccessibilityHandler::HandleShowChromeVoxSettings(
