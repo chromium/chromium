@@ -990,6 +990,7 @@
 
       如果啟用這項政策，且 <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> 和 DownloadRestrictions 政策設為封鎖危險檔案類型，則系統會優先採用 DownloadRestrictions 的禁止下載設定。比方說，如果這項政策設為可從「website1.com」下載「exe」副檔名，且 DownloadRestrictions 設為封鎖惡意下載內容和危險檔案類型，則系統仍會禁止從所有網域下載「exe」副檔名。如果 DownloadRestrictions 未設定為封鎖危險檔案類型，那麼從指定網域下載這項政策設定的檔案類型時，系統就不會顯示檔案類型副檔名下載警告。進一步瞭解 DownloadRestrictions 政策 (https://chromeenterprise.google/policies/?policy=DownloadRestrictions)。</translation>
 <translation id="1954612656043024615">啟用剪貼簿共用功能</translation>
+<translation id="1960059835237529462">允許向使用者顯示 <ph name="IOS_NAME" /> App Store 評分宣傳</translation>
 <translation id="1960416154405676350">啟用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
 <translation id="1961091374249454164">這項政策僅適用於受管理的訪客工作階段。
       你可以透過本政策指定擴充功能 ID 清單，從有限制的受管理訪客工作階段清除程序中排除這些擴充功能 (請見 <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />)。
@@ -2266,6 +2267,8 @@
 
       這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
+<translation id="3163167792874598128">如未設定這項政策或設為啟用，系統可能會向使用者顯示 App Store 評分宣傳 (一年最多一次)。
+如果將這項政策設為停用，系統就不會向使用者顯示 App Store 評分宣傳。</translation>
 <translation id="3164531087779621747">列印 PostScript 模式</translation>
 <translation id="3165468162820163252">這項政策可控管登入畫面的 WebUI 部分要一律在啟動時載入，或是只在顯示前才載入。這項政策適用於登入畫面。
 
@@ -3514,6 +3517,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="4389073105055031853">允許使用者管理所有憑證</translation>
 <translation id="4389091865841123886">使用 TPM 機制設定遠端證明。</translation>
+<translation id="4389113579547582722">允許顯示 App Store 評分宣傳</translation>
 <translation id="4394840953265135019">壓縮物件的下載網址。物件可能採用 gzip、bzip2、lzma 或 zstd 方法進行壓縮，系統會在下載後自動偵測。如果無法自動偵測出壓縮方法，物件可能無法解壓縮。</translation>
 <translation id="439661169333921592">在登入畫面上停用鍵盤焦點醒目顯示功能</translation>
 <translation id="4397045637922200204">停用帳戶救援服務</translation>
@@ -8295,6 +8299,7 @@
 
       這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。待這項政策移除後，<ph name="PRODUCT_NAME" /> 便一律可以查詢其他 DNS 類型。</translation>
 <translation id="9167719789236691545">禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
+<translation id="9172911925443428317">不允許顯示 App Store 評分宣傳</translation>
 <translation id="9180108183162961002">允許透過瀏覽器訪客模式登入</translation>
 <translation id="9185963199234034321">在登入畫面上啟用高對比模式，並允許使用者暫時停用</translation>
 <translation id="9187743794267626640">停用外部儲存裝置掛載功能</translation>
