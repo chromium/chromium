@@ -1637,9 +1637,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDevicePolicyRefreshRate,
     prefs::kDevicePolicyRefreshRate,
     base::Value::Type::INTEGER },
-  { key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-    prefs::kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-    base::Value::Type::LIST },
   { key::kLacrosSecondaryProfilesAllowed,
     prefs::kLacrosSecondaryProfilesAllowed,
     base::Value::Type::BOOLEAN },
@@ -1677,6 +1674,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kNewWindowsInKioskAllowed,
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  { key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
+    prefs::kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls,
+    base::Value::Type::LIST },
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   { key::kAuthNegotiateDelegateByKdcPolicy,

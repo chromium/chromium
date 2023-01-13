@@ -107,7 +107,7 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
 
 bool IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
     content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
     return false;
@@ -134,7 +134,7 @@ bool IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
 bool IsGetDisplayMediaSetSelectAllScreensAllowed(
     content::BrowserContext* context,
     const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile)
     return false;
@@ -148,7 +148,7 @@ bool IsGetDisplayMediaSetSelectAllScreensAllowed(
           ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS);
   return auto_accept_enabled == ContentSetting::CONTENT_SETTING_ALLOW;
 #else
-  // This API is currently only available on ChromeOS.
+  // This API is currently only available on ChromeOS and Linux.
   return false;
 #endif
 }

@@ -19,5 +19,6 @@ schema:
   type: array
 supported_on:
 - chrome_os:102-
+- chrome.linux:111-
 tags: []
 type: list
