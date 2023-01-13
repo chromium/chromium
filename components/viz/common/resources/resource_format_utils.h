@@ -11,10 +11,7 @@
 #include "components/viz/common/viz_resource_format_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
-#include "third_party/dawn/include/dawn/webgpu.h"
-#include "third_party/dawn/include/dawn/webgpu_cpp.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)

@@ -234,6 +234,7 @@ source_set("wayland") {
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
+    "//components/viz/common:resource_format_utils",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//skia",

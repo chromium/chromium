@@ -14,7 +14,9 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/process/memory.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/viz/common/resources/resource_sizes.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -62,39 +64,39 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   // Initializes the shared memory and asks Wayland to import a shared memory
   // based wl_buffer, which can be attached to a surface and have its contents
   // shown on a screen.
-  bool Initialize(const gfx::Size& size) {
+  void Initialize(const gfx::Size& size) {
     size_ = size;
-    base::CheckedNumeric<size_t> checked_length(size.width());
-    checked_length *= size.height();
-    checked_length *= 4;
-    if (!checked_length.IsValid())
-      return false;
+
+    // The format can either be RGBA_8888 or RGBX_8888 but either way it's 4
+    // bytes per pixel.
+    size_t size_in_bytes =
+        viz::ResourceSizes::CheckedSizeInBytes<size_t>(size, viz::RGBA_8888);
 
     base::UnsafeSharedMemoryRegion shm_region =
-        base::UnsafeSharedMemoryRegion::Create(checked_length.ValueOrDie());
-    if (!shm_region.IsValid())
-      return false;
+        base::UnsafeSharedMemoryRegion::Create(size_in_bytes);
+    if (!shm_region.IsValid()) {
+      base::TerminateBecauseOutOfMemory(size_in_bytes);
+    }
 
     shm_mapping_ = shm_region.Map();
-    if (!shm_mapping_.IsValid())
-      return false;
+    if (!shm_mapping_.IsValid()) {
+      base::TerminateBecauseOutOfMemory(size_in_bytes);
+    }
 
     base::subtle::PlatformSharedMemoryRegion platform_shm =
         base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
             std::move(shm_region));
     base::subtle::ScopedFDPair fd_pair = platform_shm.PassPlatformHandle();
-    buffer_manager_->CreateShmBasedBuffer(
-        std::move(fd_pair.fd), checked_length.ValueOrDie(), size, buffer_id_);
+    buffer_manager_->CreateShmBasedBuffer(std::move(fd_pair.fd), size_in_bytes,
+                                          size, buffer_id_);
 
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     sk_surface_ = SkSurface::MakeRasterDirect(
         SkImageInfo::MakeN32Premul(size.width(), size.height()),
         shm_mapping_.memory(), CalculateStride(size.width()), &props);
-    if (!sk_surface_)
-      return false;
+    DCHECK(sk_surface_);
 
     dirty_region_.setRect(gfx::RectToSkIRect(gfx::Rect(size)));
-    return true;
   }
 
   void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
@@ -239,9 +241,6 @@ SkCanvas* WaylandCanvasSurface::GetCanvas() {
       return nullptr;
     }
     auto buffer = CreateSharedMemoryBuffer();
-    if (!buffer)
-      return nullptr;
-
     pending_buffer_ = buffer.get();
     buffers_.push_back(std::move(buffer));
   }
@@ -377,7 +376,8 @@ WaylandCanvasSurface::CreateSharedMemoryBuffer() {
 
   auto canvas_buffer =
       std::make_unique<SharedMemoryBuffer>(widget_, buffer_manager_);
-  return canvas_buffer->Initialize(size_) ? std::move(canvas_buffer) : nullptr;
+  canvas_buffer->Initialize(size_);
+  return canvas_buffer;
 }
 
 }  // namespace ui
