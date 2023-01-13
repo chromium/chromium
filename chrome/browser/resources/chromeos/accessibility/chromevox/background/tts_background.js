@@ -82,14 +82,8 @@ export class TtsBackground {
     TtsBackground.primary.updateVoice('', () => {
       // Ensure this announcement doesn't get cut off by speech triggered by
       // updateFromPrefs_().
-      // Copy properties from Personality.ANNOTATION and add the
-      // doNotInterrupt property.
-      const speechProperties = {};
-      const sourceProperties = Personality.ANNOTATION || {};
-      for (const [key, value] of Object.entries(sourceProperties)) {
-        speechProperties[key] = value;
-      }
-      speechProperties['doNotInterrupt'] = true;
+      const speechProperties = {...Personality.ANNOTATION};
+      speechProperties.doNotInterrupt = true;
 
       ChromeVox.tts.speak(
           Msgs.getMsg('announce_tts_default_settings'), QueueMode.FLUSH,
