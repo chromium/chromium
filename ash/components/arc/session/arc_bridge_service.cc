@@ -49,7 +49,6 @@
 #include "ash/components/arc/mojom/property.mojom.h"
 #include "ash/components/arc/mojom/rotation_lock.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
-#include "ash/components/arc/mojom/sensor.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
 #include "ash/components/arc/mojom/timer.mojom.h"

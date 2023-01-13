@@ -153,8 +153,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnScreenCaptureInstanceReady(
       mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote)
       override;
-  void OnSensorInstanceReady(
-      mojo::PendingRemote<mojom::SensorInstance> sensor_ptr) override;
   void OnSharesheetInstanceReady(mojo::PendingRemote<mojom::SharesheetInstance>
                                      sharesheet_remote) override;
   void OnSmartCardManagerInstanceReady(

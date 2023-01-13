@@ -48,7 +48,6 @@
 #include "ash/components/arc/mojom/property.mojom.h"
 #include "ash/components/arc/mojom/rotation_lock.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
-#include "ash/components/arc/mojom/sensor.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
 #include "ash/components/arc/mojom/system_ui.mojom.h"
@@ -213,9 +212,6 @@ void FakeArcBridgeHost::OnRotationLockInstanceReady(
 
 void FakeArcBridgeHost::OnScreenCaptureInstanceReady(
     mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote) {}
-
-void FakeArcBridgeHost::OnSensorInstanceReady(
-    mojo::PendingRemote<mojom::SensorInstance> sensor_remote) {}
 
 void FakeArcBridgeHost::OnSharesheetInstanceReady(
     mojo::PendingRemote<mojom::SharesheetInstance> sharesheet_remote) {}

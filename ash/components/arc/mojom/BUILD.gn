@@ -58,8 +58,6 @@ mojom("mojom") {
     "rotation_lock.mojom",
     "scale_factor.mojom",
     "screen_capture.mojom",
-    "sensor.mojom",
-    "sensor_service.mojom",
     "sharesheet.mojom",
     "storage_manager.mojom",
     "system_ui.mojom",

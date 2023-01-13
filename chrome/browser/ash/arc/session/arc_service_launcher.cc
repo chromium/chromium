@@ -31,7 +31,6 @@
 #include "ash/components/arc/property/arc_property_bridge.h"
 #include "ash/components/arc/rotation_lock/arc_rotation_lock_bridge.h"
 #include "ash/components/arc/sensor/arc_iio_sensor_bridge.h"
-#include "ash/components/arc/sensor/arc_sensor_bridge.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/arc_session_runner.h"
@@ -285,7 +284,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcResizeLockManager::GetForBrowserContext(profile);
   ArcRotationLockBridge::GetForBrowserContext(profile);
   ArcScreenCaptureBridge::GetForBrowserContext(profile);
-  ArcSensorBridge::GetForBrowserContext(profile);
   ArcSettingsService::GetForBrowserContext(profile);
   ArcSharesheetBridge::GetForBrowserContext(profile);
   ArcSurveyService::GetForBrowserContext(profile);

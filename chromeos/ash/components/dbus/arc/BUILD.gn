@@ -33,8 +33,6 @@ component("arc") {
     "arc_midis_client.h",
     "arc_obb_mounter_client.cc",
     "arc_obb_mounter_client.h",
-    "arc_sensor_service_client.cc",
-    "arc_sensor_service_client.h",
     "arcvm_data_migrator_client.cc",
     "arcvm_data_migrator_client.h",
     "fake_arc_appfuse_provider_client.cc",
@@ -49,8 +47,6 @@ component("arc") {
     "fake_arc_midis_client.h",
     "fake_arc_obb_mounter_client.cc",
     "fake_arc_obb_mounter_client.h",
-    "fake_arc_sensor_service_client.cc",
-    "fake_arc_sensor_service_client.h",
     "fake_arcvm_data_migrator_client.cc",
     "fake_arcvm_data_migrator_client.h",
   ]

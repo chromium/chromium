@@ -52,7 +52,6 @@
 #include "ash/components/arc/mojom/property.mojom.h"
 #include "ash/components/arc/mojom/rotation_lock.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
-#include "ash/components/arc/mojom/sensor.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
 #include "ash/components/arc/mojom/system_ui.mojom.h"
@@ -364,11 +363,6 @@ void ArcBridgeHostImpl::OnScreenCaptureInstanceReady(
     mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote) {
   OnInstanceReady(arc_bridge_service_->screen_capture(),
                   std::move(screen_capture_remote));
-}
-
-void ArcBridgeHostImpl::OnSensorInstanceReady(
-    mojo::PendingRemote<mojom::SensorInstance> sensor_remote) {
-  OnInstanceReady(arc_bridge_service_->sensor(), std::move(sensor_remote));
 }
 
 void ArcBridgeHostImpl::OnSharesheetInstanceReady(

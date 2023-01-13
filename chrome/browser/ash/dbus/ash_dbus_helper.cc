@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_midis_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_obb_mounter_client.h"
-#include "chromeos/ash/components/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
@@ -144,7 +143,6 @@ void InitializeDBus() {
   InitializeDBusClient<ArcMidisClient>(bus);
   InitializeDBusClient<ArcObbMounterClient>(bus);
   InitializeDBusClient<ArcQuotaClient>(bus);
-  InitializeDBusClient<ArcSensorServiceClient>(bus);
   InitializeDBusClient<ArcVmDataMigratorClient>(bus);
   InitializeDBusClient<AttestationClient>(bus);
   InitializeDBusClient<AuthPolicyClient>(bus);
