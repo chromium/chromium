@@ -76,6 +76,7 @@ void HTMLStyleElement::FinishParsingChildren() {
 
 Node::InsertionNotificationRequest HTMLStyleElement::InsertedInto(
     ContainerNode& insertion_point) {
+  recordreplay::Assert("[RUN-1116] HTMLStyleElement::InsertedInto FunctionEntry");
   HTMLElement::InsertedInto(insertion_point);
   if (isConnected()) {
     if (StyleElement::ProcessStyleSheet(GetDocument(), *this) ==
@@ -93,6 +94,7 @@ void HTMLStyleElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLStyleElement::ChildrenChanged(const ChildrenChange& change) {
+  recordreplay::Assert("[RUN-1116] HTMLStyleElement::ChildrenChanged FunctionEntry");
   HTMLElement::ChildrenChanged(change);
   if (StyleElement::ChildrenChanged(*this) ==
       StyleElement::kProcessingFatalError)
