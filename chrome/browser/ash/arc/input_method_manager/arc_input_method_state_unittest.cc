@@ -108,24 +108,4 @@ TEST(ArcInputMethodState, AllowDisallowInputMethods) {
   EXPECT_EQ("ime_a", state.GetAvailableInputMethods()[0].id());
 }
 
-TEST(ArcInputMethodState, Histogram) {
-  base::HistogramTester histogram_tester;
-  constexpr char kHistogramName[] = "Arc.ImeCount";
-
-  FakeDelegate delegate;
-
-  ArcInputMethodState state(&delegate);
-  std::vector<mojom::ImeInfoPtr> imes;
-  imes.push_back(GenerateImeInfo("ime_a", true, true));
-  imes.push_back(GenerateImeInfo("ime_b", true, false));
-  state.InitializeWithImeInfo("ime_id", imes);
-
-  histogram_tester.ExpectTotalCount(kHistogramName, 1);
-  histogram_tester.ExpectUniqueSample(kHistogramName, imes.size(), 1);
-
-  imes.clear();
-  state.InitializeWithImeInfo("ime_id", imes);
-  histogram_tester.ExpectTotalCount(kHistogramName, 2);
-}
-
 }  // namespace arc

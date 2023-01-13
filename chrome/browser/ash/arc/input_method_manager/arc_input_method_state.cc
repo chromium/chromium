@@ -26,9 +26,6 @@ ArcInputMethodState::~ArcInputMethodState() = default;
 void ArcInputMethodState::InitializeWithImeInfo(
     const std::string& proxy_ime_extension_id,
     const std::vector<mojom::ImeInfoPtr>& ime_info_array) {
-  if (ime_info_array.size() != installed_imes_.size())
-    UMA_HISTOGRAM_COUNTS_100("Arc.ImeCount", ime_info_array.size());
-
   installed_imes_.clear();
   for (const auto& info : ime_info_array) {
     installed_imes_.push_back({info->ime_id, info->enabled,

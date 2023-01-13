@@ -1338,15 +1338,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.ImeCount" units="units" expires_after="2023-02-12">
-  <owner>yhanada@chromium.org</owner>
-  <owner>arc-framework@chromium.org</owner>
-  <summary>
-    The number of IME apps installed. Collected at startup and when an IME app
-    is installed or uninstalled.
-  </summary>
-</histogram>
-
 <histogram name="Arc.InputOverlay.ActionRepositionOperationType"
     enum="ArcInputOverlayRepositionOperationType" expires_after="2023-06-13">
   <owner>cuicuiruan@google.com</owner>
