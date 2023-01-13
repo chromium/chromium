@@ -36,6 +36,7 @@ suite('CrSettingsCookiesPageTest', function() {
   }
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({firstPartySetsUIEnabled: false});
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -298,6 +299,17 @@ suite('CrSettingsCookiesPageTest', function() {
     testMetricsBrowserProxy.resetResolver('recordAction');
     assertFalse(page.$.toast.open);
   });
+
+  test('Block third-party cookies in Incognito bullet point', function() {
+    // Confirm the correct string is set.
+    const cookiePageBlockThirdIncognitoBulTwoLabel =
+        page.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#blockThirdPartyIncognitoBulTwo')!.innerText.trim();
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesPageBlockIncognitoBulTwo'),
+        cookiePageBlockThirdIncognitoBulTwoLabel);
+  });
 });
 
 suite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled', function() {
@@ -361,12 +373,17 @@ suite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled', function() {
     assertTrue(firstPartySetsToggle.disabled, 'expect toggle to be disabled');
   });
 
+  // TODO(crbug.com/1378703): Both paths should be tested.
   test('Block third-party cookies in Incognito FPS bullet point', function() {
     // Confirm the correct string is set.
+    const cookiePageBlockThirdIncognitoBulTwoId =
+        loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
+        '#blockThirdPartyIncognitoBulTwo' :
+        '#cookiePageBlockThirdIncognitoBulTwo';
     const cookiePageBlockThirdIncognitoBulTwoLabel =
         page.shadowRoot!
             .querySelector<HTMLElement>(
-                '#cookiePageBlockThirdIncognitoBulTwo')!.innerText.trim();
+                cookiePageBlockThirdIncognitoBulTwoId)!.innerText.trim();
     assertEquals(
         loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoFps'),
         cookiePageBlockThirdIncognitoBulTwoLabel);
@@ -402,6 +419,7 @@ suite('CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled', function() {
       isSecondaryUser: false,
       // </if>
       isPrivacySandboxSettings4: false,
+      firstPartySetsUIEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;

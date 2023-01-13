@@ -206,7 +206,14 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
-  private getCookiePageBlockThirdIncognitoBulTwoLabel(): string {
+  private getThirdPartyCookiesPageBlockThirdIncognitoBulTwoLabel_(): string {
+    return this.i18n(
+        this.enableFirstPartySetsUI_ ?
+            'cookiePageBlockThirdIncognitoBulTwoFps' :
+            'thirdPartyCookiesPageBlockIncognitoBulTwo');
+  }
+
+  private getCookiePageBlockThirdIncognitoBulTwoLabel_(): string {
     return this.i18n(
         this.enableFirstPartySetsUI_ ?
             'cookiePageBlockThirdIncognitoBulTwoFps' :

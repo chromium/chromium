@@ -71,33 +71,41 @@
           <settings-collapse-radio-button id="allowThirdParty"
               pref="[[prefs.profile.cookie_controls_mode]]"
               name="[[cookieControlsModeEnum_.OFF]]"
-              label="$i18n{privacyPageTitle}"
-              expand-aria-label="$i18n{privacyPageTitle}">
+              label="$i18n{thirdPartyCookiesPageAllowRadioLabel}"
+              expand-aria-label="
+                  $i18n{thirdPartyCookiesPageAllowExpandA11yLabel}">
             <div slot="collapse">
               <div class="bullet-line">
                 <iron-icon icon="settings:cookie"></iron-icon>
-                <div class="secondary">$i18n{privacyPageTitle}</div>
+                <div class="secondary">
+                  $i18n{thirdPartyCookiesPageAllowBulOne}
+                </div>
               </div>
               <div class="bullet-line">
                 <iron-icon icon="settings:cookie"></iron-icon>
-                <div class="secondary">$i18n{privacyPageTitle}</div>
+                <div class="secondary">
+                  $i18n{thirdPartyCookiesPageAllowBulTwo}
+                </div>
               </div>
             </div>
           </settings-collapse-radio-button>
           <settings-collapse-radio-button id="blockThirdPartyIncognito"
               pref="[[prefs.profile.cookie_controls_mode]]"
               name="[[cookieControlsModeEnum_.INCOGNITO_ONLY]]"
-              label="$i18n{privacyPageTitle}"
-              expand-aria-label="$i18n{privacyPageTitle}">
+              label="$i18n{thirdPartyCookiesPageBlockIncognitoRadioLabel}"
+              expand-aria-label="
+                  $i18n{thirdPartyCookiesPageBlockIncognitoExpandA11yLabel}">
             <div slot="collapse">
               <div class="bullet-line">
                 <iron-icon icon="settings:cookie"></iron-icon>
-                <div class="secondary">$i18n{privacyPageTitle}</div>
+                <div class="secondary">
+                  $i18n{thirdPartyCookiesPageBlockIncognitoBulOne}
+                </div>
               </div>
-              <div class="bullet-line" id="cookiePageBlockThirdIncognitoBulTwo">
+              <div class="bullet-line" id="blockThirdPartyIncognitoBulTwo">
                 <iron-icon icon="settings:block"></iron-icon>
                 <div class="secondary">
-                  [[getCookiePageBlockThirdIncognitoBulTwoLabel()]]
+                  [[getThirdPartyCookiesPageBlockThirdIncognitoBulTwoLabel_()]]
                 </div>
               </div>
             </div>
@@ -105,23 +113,28 @@
           <settings-collapse-radio-button id="blockThirdParty"
               pref="[[prefs.profile.cookie_controls_mode]]"
               name="[[cookieControlsModeEnum_.BLOCK_THIRD_PARTY]]"
-              label="$i18n{privacyPageTitle}"
-              expand-aria-label="$i18n{privacyPageTitle}">
+              label="$i18n{thirdPartyCookiesPageBlockRadioLabel}"
+              expand-aria-label="
+                  $i18n{thirdPartyCookiesPageBlockExpandA11yLabel}">
             <div slot="collapse">
               <div class="bullet-line">
                 <iron-icon icon="settings:cookie"></iron-icon>
-                <div class="secondary">$i18n{privacyPageTitle}</div>
+                <div class="secondary">
+                  $i18n{thirdPartyCookiesPageBlockBulOne}
+                </div>
               </div>
               <div class="bullet-line">
                 <iron-icon icon="settings:block"></iron-icon>
-                <div class="secondary">$i18n{privacyPageTitle}</div>
+                <div class="secondary">
+                  $i18n{thirdPartyCookiesPageBlockBulTwo}
+                </div>
               </div>
               <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
                 <settings-toggle-button
                     id="firstPartySetsToggle"
                     pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
-                    label="$i18n{privacyPageTitle}"
-                    sub-label="$i18n{privacyPageTitle}"
+                    label="$i18n{cookiePageFpsLabel}"
+                    sub-label="$i18n{cookiePageFpsSubLabel}"
                     disabled="[[firstPartySetsToggleDisabled_(
                         prefs.profile.cookie_controls_mode.value)]]">
                 </settings-toggle-button>
@@ -171,7 +184,7 @@
               <div class="bullet-line" id="cookiePageBlockThirdIncognitoBulTwo">
                 <iron-icon icon="settings:block"></iron-icon>
                 <div class="secondary">
-                  [[getCookiePageBlockThirdIncognitoBulTwoLabel()]]
+                  [[getCookiePageBlockThirdIncognitoBulTwoLabel_()]]
                 </div>
               </div>
             </div>
