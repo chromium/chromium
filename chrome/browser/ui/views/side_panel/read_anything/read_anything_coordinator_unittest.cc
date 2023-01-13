@@ -36,7 +36,7 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
 
     side_panel_coordinator_ = browser_view()->side_panel_coordinator();
     side_panel_registry_ =
-        side_panel_coordinator_->GetGlobalSidePanelRegistry();
+        SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
     read_anything_coordinator_ =
         ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
   }

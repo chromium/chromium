@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_utils.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "content/public/browser/browser_context.h"
@@ -44,7 +44,7 @@ void ExtensionSidePanelManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
   MaybeCreateExtensionSidePanelCoordinator(
-      extension, GetGlobalSidePanelRegistry(browser_));
+      extension, SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_));
 }
 
 void ExtensionSidePanelManager::OnExtensionUnloaded(

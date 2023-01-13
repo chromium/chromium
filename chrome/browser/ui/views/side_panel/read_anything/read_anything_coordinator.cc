@@ -81,10 +81,8 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view)
     return;
-  SidePanelCoordinator* side_panel_coordinator =
-      browser_view->side_panel_coordinator();
   SidePanelRegistry* global_registry =
-      side_panel_coordinator->GetGlobalSidePanelRegistry();
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
   global_registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 }

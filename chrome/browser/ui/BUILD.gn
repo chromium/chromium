@@ -4995,8 +4995,6 @@ static_library("ui") {
       "views/side_panel/extensions/extension_side_panel_coordinator.h",
       "views/side_panel/extensions/extension_side_panel_manager.cc",
       "views/side_panel/extensions/extension_side_panel_manager.h",
-      "views/side_panel/extensions/extension_side_panel_utils.cc",
-      "views/side_panel/extensions/extension_side_panel_utils.h",
       "views/side_panel/feed/feed_side_panel_coordinator.cc",
       "views/side_panel/feed/feed_side_panel_coordinator.h",
       "views/side_panel/history_clusters/history_clusters_side_panel_coordinator.cc",

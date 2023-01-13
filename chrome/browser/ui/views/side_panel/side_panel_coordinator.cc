@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -173,12 +174,19 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
 
   SidePanelUtil::PopulateGlobalEntries(browser_view->browser(),
-                                       GetGlobalSidePanelRegistry());
+                                       global_registry_);
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() {
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
   view_state_observers_.Clear();
+}
+
+// static
+SidePanelRegistry* SidePanelCoordinator::GetGlobalSidePanelRegistry(
+    Browser* browser) {
+  return static_cast<SidePanelRegistry*>(
+      browser->GetUserData(kGlobalSidePanelRegistryKey));
 }
 
 void SidePanelCoordinator::Show(
@@ -327,11 +335,6 @@ void SidePanelCoordinator::OpenInNewTab() {
                                 /*is_renderer_initiated=*/false);
   browser_view_->browser()->OpenURL(params);
   Close();
-}
-
-SidePanelRegistry* SidePanelCoordinator::GetGlobalSidePanelRegistry() {
-  return static_cast<SidePanelRegistry*>(
-      browser_view_->browser()->GetUserData(kGlobalSidePanelRegistryKey));
 }
 
 void SidePanelCoordinator::SetNoDelaysForTesting() {

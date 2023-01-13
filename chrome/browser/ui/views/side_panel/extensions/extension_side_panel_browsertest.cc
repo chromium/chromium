@@ -131,7 +131,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   }
 
   SidePanelRegistry* global_registry() {
-    return side_panel_coordinator()->GetGlobalSidePanelRegistry();
+    return SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
@@ -231,9 +231,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
   // registered for the new window's global SidePanelRegistry.
   Browser* second_browser = CreateBrowser(browser()->profile());
   SidePanelRegistry* second_global_registry =
-      BrowserView::GetBrowserViewForBrowser(second_browser)
-          ->side_panel_coordinator()
-          ->GetGlobalSidePanelRegistry();
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(second_browser);
   EXPECT_TRUE(second_global_registry->GetEntryForKey(extension_key));
 }
 
@@ -426,9 +424,7 @@ class ExtensionSidePanelDisabledBrowserTest : public ExtensionBrowserTest {
 
  protected:
   SidePanelRegistry* global_registry() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->side_panel_coordinator()
-        ->GetGlobalSidePanelRegistry();
+    return SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
   }
 
  private:

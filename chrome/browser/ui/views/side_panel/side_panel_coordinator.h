@@ -18,6 +18,7 @@
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class Browser;
 class BrowserView;
 class SidePanelComboboxModel;
 
@@ -46,6 +47,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
 
+  static SidePanelRegistry* GetGlobalSidePanelRegistry(Browser* browser);
+
   void Show(absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt,
             absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 absl::nullopt);
@@ -58,8 +61,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Opens the current side panel contents in a new tab. This is called by the
   // header button, when it's visible.
   void OpenInNewTab();
-
-  SidePanelRegistry* GetGlobalSidePanelRegistry();
 
   // Prevent content swapping delays from happening for testing.
   // This should be called before the side panel is first shown.

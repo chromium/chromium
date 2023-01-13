@@ -311,8 +311,8 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
       GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting();
   EXPECT_EQ(last_active_entry, nullptr);
   EXPECT_EQ(
-      GetSidePanelCoordinator()->GetGlobalSidePanelRegistry()->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntry::Id::kLens)),
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser())
+          ->GetEntryForKey(SidePanelEntry::Key(SidePanelEntry::Id::kLens)),
       nullptr);
   EXPECT_EQ(1, user_action_tester.GetActionCount(kCloseAction));
 }

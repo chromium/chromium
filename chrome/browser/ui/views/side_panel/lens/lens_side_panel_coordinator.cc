@@ -65,9 +65,7 @@ LensSidePanelCoordinator::~LensSidePanelCoordinator() {
 
 void LensSidePanelCoordinator::DeregisterLensFromSidePanel() {
   lens_side_panel_view_ = nullptr;
-  GetBrowserView()
-      ->side_panel_coordinator()
-      ->GetGlobalSidePanelRegistry()
+  SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser())
       ->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kLens));
 }
 
@@ -78,11 +76,8 @@ void LensSidePanelCoordinator::OnSidePanelDidClose() {
 }
 
 void LensSidePanelCoordinator::OnFaviconFetched(const gfx::Image& favicon) {
-  auto* side_panel_coordinator = GetBrowserView()->side_panel_coordinator();
-  if (side_panel_coordinator == nullptr)
-    return;
-
-  auto* global_registry = side_panel_coordinator->GetGlobalSidePanelRegistry();
+  auto* global_registry =
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
   if (global_registry == nullptr)
     return;
 
@@ -171,8 +166,8 @@ const ui::ImageModel LensSidePanelCoordinator::GetFaviconImage() {
 void LensSidePanelCoordinator::RegisterEntryAndShow(
     const content::OpenURLParams& params) {
   base::RecordAction(base::UserMetricsAction("LensUnifiedSidePanel.LensQuery"));
-  auto* side_panel_coordinator = GetBrowserView()->side_panel_coordinator();
-  auto* global_registry = side_panel_coordinator->GetGlobalSidePanelRegistry();
+  auto* global_registry =
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
 
   // check if the view is already registered
   if (global_registry->GetEntryForKey(
@@ -195,6 +190,7 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
     global_registry->Register(std::move(entry));
   }
 
+  auto* side_panel_coordinator = GetBrowserView()->side_panel_coordinator();
   if (side_panel_coordinator->GetCurrentEntryId() !=
       SidePanelEntry::Id::kLens) {
     if (!side_panel_coordinator->IsSidePanelShowing()) {

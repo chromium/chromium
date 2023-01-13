@@ -1162,7 +1162,8 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
     AddTab(browser_view()->browser(), GURL("http://foo2.com"));
 
     coordinator_ = browser_view()->side_panel_coordinator();
-    global_registry_ = coordinator_->GetGlobalSidePanelRegistry();
+    global_registry_ = SidePanelCoordinator::GetGlobalSidePanelRegistry(
+        browser_view()->browser());
 
     // Add a kSideSearch entry to the global registry with loading content not
     // available.

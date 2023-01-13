@@ -205,7 +205,8 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
           BrowserView::GetBrowserViewForBrowser(browser_)
               ->side_panel_coordinator();
       if (coordinator) {
-        SidePanelRegistry* registry = coordinator->GetGlobalSidePanelRegistry();
+        SidePanelRegistry* registry =
+            SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_);
         registry->SetActiveEntry(registry->GetEntryForKey(
             SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks)));
       } else {

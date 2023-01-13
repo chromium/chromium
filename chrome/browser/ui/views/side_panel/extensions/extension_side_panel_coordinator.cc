@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/common/extensions/api/side_panel.h"
@@ -67,7 +66,8 @@ SidePanelEntry::Key ExtensionSidePanelCoordinator::GetEntryKey() const {
 }
 
 void ExtensionSidePanelCoordinator::DeregisterGlobalEntry() {
-  if (auto* global_registry = GetGlobalSidePanelRegistry(browser_)) {
+  if (auto* global_registry =
+          SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_)) {
     global_registry->Deregister(GetEntryKey());
   }
 }
@@ -97,7 +97,8 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
     return;
   }
 
-  SidePanelRegistry* global_registry = GetGlobalSidePanelRegistry(browser_);
+  SidePanelRegistry* global_registry =
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_);
   if (!global_registry) {
     return;
   }
@@ -145,7 +146,8 @@ void ExtensionSidePanelCoordinator::OnExtensionIconImageChanged(
   // If the SidePanelEntry exists for this extension, update its icon.
   // TODO(crbug.com/1378048): Update the icon for all extension entries in
   // contextual registries.
-  if (auto* global_registry = GetGlobalSidePanelRegistry(browser_)) {
+  if (auto* global_registry =
+          SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_)) {
     if (SidePanelEntry* entry =
             global_registry->GetEntryForKey(GetEntryKey())) {
       entry->ResetIcon(ui::ImageModel::FromImage(updated_icon->image()));

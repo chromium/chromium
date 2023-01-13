@@ -36,6 +36,7 @@
 #endif
 
 namespace {
+
 std::string GetHistogramNameForId(SidePanelEntry::Id id) {
   static constexpr auto id_to_histogram_name_map =
       // Note: once provided the histogram name should not be changed since it
@@ -59,6 +60,7 @@ std::string GetHistogramNameForId(SidePanelEntry::Id id) {
   DCHECK(i != id_to_histogram_name_map.cend());
   return {i->second};
 }
+
 }  // namespace
 
 // static

@@ -112,9 +112,8 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
 
 void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
   auto* browser = &GetBrowser();
-  auto* global_registry = BrowserView::GetBrowserViewForBrowser(browser)
-                              ->side_panel_coordinator()
-                              ->GetGlobalSidePanelRegistry();
+  auto* global_registry =
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
   if (browser->profile()->GetPrefs()->GetBoolean(
           history_clusters::prefs::kVisible)) {
     if (IsSupported(browser->profile())) {

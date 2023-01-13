@@ -50,7 +50,7 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
     GetSidePanelCoordinator()->SetNoDelaysForTesting();
     auto* browser = browser_view()->browser();
     auto* global_registry =
-        GetSidePanelCoordinator()->GetGlobalSidePanelRegistry();
+        SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
     SidePanelUtil::PopulateGlobalEntries(browser, global_registry);
 
     EXPECT_EQ(global_registry->entries().size(), 2u);

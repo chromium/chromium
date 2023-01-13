@@ -796,7 +796,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
   // show bookmark tab in side panel.
   EXPECT_TRUE(promo_controller->IsPromoActive(
       feature_engagement::kIPHPriceTrackingInSidePanelFeature));
-  SidePanelRegistry* registry = coordinator->GetGlobalSidePanelRegistry();
+  SidePanelRegistry* registry =
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
   EXPECT_TRUE(registry->active_entry().has_value());
   EXPECT_EQ(registry->active_entry().value()->key().id(),
             SidePanelEntry::Id::kBookmarks);
@@ -844,7 +845,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
   // show bookmark tab in side panel.
   EXPECT_FALSE(promo_controller->IsPromoActive(
       feature_engagement::kIPHPriceTrackingInSidePanelFeature));
-  SidePanelRegistry* registry = coordinator->GetGlobalSidePanelRegistry();
+  SidePanelRegistry* registry =
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
   EXPECT_FALSE(registry->active_entry().has_value());
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
 }
