@@ -2871,7 +2871,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self doneButtonTapped:nil];
+  if (self.tabGridMode == TabGridModeSearch) {
+    [self cancelSearchButtonTapped:nil];
+  } else {
+    [self doneButtonTapped:nil];
+  }
 }
 
 @end
