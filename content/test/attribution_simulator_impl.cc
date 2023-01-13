@@ -137,10 +137,6 @@ struct AttributionReportJsonConverter {
               FormatTime(is_debug_report ? report.attribution_info().time
                                          : report.report_time()));
 
-    if (!options.remove_actual_report_times) {
-      value.Set("report_time", FormatTime(base::Time::Now()));
-    }
-
     base::Value::Dict test_info;
     if (absl::holds_alternative<AttributionReport::EventLevelData>(
             report.data())) {

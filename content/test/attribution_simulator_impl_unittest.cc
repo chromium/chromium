@@ -100,7 +100,6 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
           AttributionSimulationOutputOptions{
               .remove_report_ids = true,
               .remove_assembled_report = true,
-              .remove_actual_report_times = true,
           },
   };
 

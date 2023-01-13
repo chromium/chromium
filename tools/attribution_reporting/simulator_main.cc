@@ -36,7 +36,6 @@ constexpr char kSwitchRandomizedResponseRateNavigation[] =
     "randomized_response_rate_navigation";
 constexpr char kSwitchRandomizedResponseRateEvent[] =
     "randomized_response_rate_event";
-constexpr char kSwitchRemoveActualReportTimes[] = "remove_actual_report_times";
 constexpr char kSwitchRemoveAssembledReport[] = "remove_assembled_report";
 
 constexpr const char* kAllowedSwitches[] = {
@@ -52,7 +51,6 @@ constexpr const char* kAllowedSwitches[] = {
     kSwitchCopyInputToOutput,
     kSwitchRandomizedResponseRateNavigation,
     kSwitchRandomizedResponseRateEvent,
-    kSwitchRemoveActualReportTimes,
 };
 
 constexpr char kHelpMsg[] = R"(
@@ -65,7 +63,6 @@ attribution_reporting_simulator
   [--input_mode=<input_mode>]
   [--remove_report_ids]
   [--remove_assembled_report]
-  [--remove_actual_report_times]
 
 attribution_reporting_simulator is a command-line tool that simulates the
 Attribution Reporting API for for sources and triggers specified in an input
@@ -139,11 +136,6 @@ Switches:
                               aggregatable report bodies, as they are randomly
                               generated. Use this switch to make the tool's
                               output more deterministic.
-
-  --remove_actual_report_times
-                            - Optional. If present, removes the `report_time`
-                              field from reports, as they are subject to
-                              implementation details.
 
   --version                 - Outputs the tool version and exits.
 
@@ -317,8 +309,6 @@ int main(int argc, char* argv[]) {
                   command_line.HasSwitch(kSwitchRemoveReportIds),
               .remove_assembled_report =
                   command_line.HasSwitch(kSwitchRemoveAssembledReport),
-              .remove_actual_report_times =
-                  command_line.HasSwitch(kSwitchRemoveActualReportTimes),
           },
   });
 

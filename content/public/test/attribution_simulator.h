@@ -30,14 +30,6 @@ struct AttributionSimulationOutputOptions {
   // These fields normally encode a random GUID or the absolute time and
   // therefore are sources of nondeterminism in the output.
   bool remove_assembled_report = false;
-
-  // If true, removes the `report_time` field from reports before output.
-  //
-  // This field contains the actual time the report was sent, rather than the
-  // `intended_report_time` determined by the specification. As such, it is
-  // subject to implementation details such as delays that should not be relied
-  // upon in golden test output.
-  bool remove_actual_report_times = false;
 };
 
 struct AttributionSimulationOptions {
