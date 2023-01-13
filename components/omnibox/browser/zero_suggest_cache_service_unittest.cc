@@ -8,8 +8,11 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +54,10 @@ class ZeroSuggestCacheServiceTest : public testing::Test {
   void SetUp() override {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     ZeroSuggestProvider::RegisterProfilePrefs(prefs_->registry());
+
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching},
+        /*disabled_features=*/{});
   }
 
   void TearDown() override { prefs_.reset(); }
@@ -59,6 +66,7 @@ class ZeroSuggestCacheServiceTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ZeroSuggestCacheServiceTest, CacheStartsEmpty) {
@@ -231,43 +239,85 @@ TEST_F(ZeroSuggestCacheServiceTest, ReadResponseUpdatesRecency) {
 }
 
 TEST_F(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyCache) {
-  ZeroSuggestCacheService cache_svc(GetPrefs(), 1);
+  TestCacheEntry ntp_entry = {"", "foo"};
+  TestCacheEntry srp_entry = {"https://www.google.com/search?q=bar", "bar"};
+  TestCacheEntry web_entry = {"https://www.example.com", "eggs"};
 
-  cache_svc.StoreZeroSuggestResponse("https://www.google.com",
-                                     CacheEntry("foo"));
+  ZeroSuggestCacheService cache_svc(GetPrefs(), 3);
 
-  EXPECT_FALSE(cache_svc.IsCacheEmpty());
+  cache_svc.StoreZeroSuggestResponse(ntp_entry.url,
+                                     CacheEntry(ntp_entry.response));
+  cache_svc.StoreZeroSuggestResponse(srp_entry.url,
+                                     CacheEntry(srp_entry.response));
+  cache_svc.StoreZeroSuggestResponse(web_entry.url,
+                                     CacheEntry(web_entry.response));
+
+  EXPECT_FALSE(
+      cache_svc.ReadZeroSuggestResponse(ntp_entry.url).response_json.empty());
+  EXPECT_FALSE(
+      cache_svc.ReadZeroSuggestResponse(srp_entry.url).response_json.empty());
+  EXPECT_FALSE(
+      cache_svc.ReadZeroSuggestResponse(web_entry.url).response_json.empty());
 
   cache_svc.ClearCache();
 
-  EXPECT_TRUE(cache_svc.IsCacheEmpty());
+  EXPECT_TRUE(
+      cache_svc.ReadZeroSuggestResponse(ntp_entry.url).response_json.empty());
+  EXPECT_TRUE(
+      cache_svc.ReadZeroSuggestResponse(srp_entry.url).response_json.empty());
+  EXPECT_TRUE(
+      cache_svc.ReadZeroSuggestResponse(web_entry.url).response_json.empty());
 }
 
 TEST_F(ZeroSuggestCacheServiceTest, CacheLoadsFromPrefsOnStartup) {
   TestCacheEntry ntp_entry = {"", "foo"};
+  TestCacheEntry srp_entry = {"https://www.google.com/search?q=bar", "bar"};
+  TestCacheEntry web_entry = {"https://www.example.com", "eggs"};
+
+  base::Value::Dict prefs_dict;
+  prefs_dict.Set(ntp_entry.url, ntp_entry.response);
+  prefs_dict.Set(srp_entry.url, srp_entry.response);
+  prefs_dict.Set(web_entry.url, web_entry.response);
 
   PrefService* prefs = GetPrefs();
-  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(prefs, ntp_entry.url,
-                                                         ntp_entry.response);
-  ZeroSuggestCacheService cache_svc(prefs, 1);
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                 std::move(prefs_dict));
+
+  ZeroSuggestCacheService cache_svc(prefs, 3);
 
   EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(ntp_entry.url).response_json,
             ntp_entry.response);
+  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(srp_entry.url).response_json,
+            srp_entry.response);
+  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(web_entry.url).response_json,
+            web_entry.response);
 }
 
 TEST_F(ZeroSuggestCacheServiceTest, CacheDumpsToPrefsOnShutdown) {
   TestCacheEntry ntp_entry = {"", "foo"};
+  TestCacheEntry srp_entry = {"https://www.google.com/search?q=bar", "bar"};
+  TestCacheEntry web_entry = {"https://www.example.com", "eggs"};
 
   PrefService* prefs = GetPrefs();
   {
-    ZeroSuggestCacheService cache_svc(prefs, 1);
+    ZeroSuggestCacheService cache_svc(prefs, 3);
     cache_svc.StoreZeroSuggestResponse(ntp_entry.url,
                                        CacheEntry(ntp_entry.response));
+    cache_svc.StoreZeroSuggestResponse(srp_entry.url,
+                                       CacheEntry(srp_entry.response));
+    cache_svc.StoreZeroSuggestResponse(web_entry.url,
+                                       CacheEntry(web_entry.response));
   }
 
   EXPECT_EQ(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
                 prefs, ntp_entry.url),
             ntp_entry.response);
+  EXPECT_EQ(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                prefs, srp_entry.url),
+            srp_entry.response);
+  EXPECT_EQ(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                prefs, web_entry.url),
+            web_entry.response);
 }
 
 TEST_F(ZeroSuggestCacheServiceTest, CacheWorksGivenNullPrefService) {
