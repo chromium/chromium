@@ -2998,6 +2998,7 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-pr
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/csp-urn.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Failure Timeout ]

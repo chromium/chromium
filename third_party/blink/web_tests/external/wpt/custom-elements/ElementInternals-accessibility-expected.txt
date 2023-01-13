@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+PASS role is defined in ElementInternals
+PASS ariaActiveDescendantElement is defined in ElementInternals
+PASS ariaAtomic is defined in ElementInternals
+PASS ariaAutoComplete is defined in ElementInternals
+PASS ariaBusy is defined in ElementInternals
+PASS ariaChecked is defined in ElementInternals
+PASS ariaColCount is defined in ElementInternals
+PASS ariaColIndex is defined in ElementInternals
+PASS ariaColSpan is defined in ElementInternals
+PASS ariaControlsElements is defined in ElementInternals
+PASS ariaCurrent is defined in ElementInternals
+PASS ariaDescribedByElements is defined in ElementInternals
+PASS ariaDetailsElements is defined in ElementInternals
+PASS ariaDisabled is defined in ElementInternals
+FAIL ariaErrorMessageElements is defined in ElementInternals assert_inherits: property "ariaErrorMessageElements" not found in prototype chain
+PASS ariaExpanded is defined in ElementInternals
+PASS ariaFlowToElements is defined in ElementInternals
+PASS ariaHasPopup is defined in ElementInternals
+PASS ariaHidden is defined in ElementInternals
+PASS ariaInvalid is defined in ElementInternals
+PASS ariaKeyShortcuts is defined in ElementInternals
+PASS ariaLabel is defined in ElementInternals
+PASS ariaLabelledByElements is defined in ElementInternals
+PASS ariaLevel is defined in ElementInternals
+PASS ariaLive is defined in ElementInternals
+PASS ariaModal is defined in ElementInternals
+PASS ariaMultiLine is defined in ElementInternals
+PASS ariaMultiSelectable is defined in ElementInternals
+PASS ariaOrientation is defined in ElementInternals
+PASS ariaOwnsElements is defined in ElementInternals
+PASS ariaPlaceholder is defined in ElementInternals
+PASS ariaPosInSet is defined in ElementInternals
+PASS ariaPressed is defined in ElementInternals
+PASS ariaReadOnly is defined in ElementInternals
+PASS ariaRelevant is defined in ElementInternals
+PASS ariaRequired is defined in ElementInternals
+PASS ariaRoleDescription is defined in ElementInternals
+PASS ariaRowCount is defined in ElementInternals
+PASS ariaRowIndex is defined in ElementInternals
+PASS ariaRowSpan is defined in ElementInternals
+PASS ariaSelected is defined in ElementInternals
+PASS ariaSort is defined in ElementInternals
+PASS ariaValueMax is defined in ElementInternals
+PASS ariaValueMin is defined in ElementInternals
+PASS ariaValueNow is defined in ElementInternals
+PASS ariaValueText is defined in ElementInternals
+FAIL ariaErrorMessageElement is not defined in ElementInternals assert_false: expected false got true
+Harness: the test ran to completion.
+

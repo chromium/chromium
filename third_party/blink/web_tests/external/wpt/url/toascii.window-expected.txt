@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 352 tests; 279 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 388 tests; 306 PASS, 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS aa-- (using URL)
 PASS aa-- (using URL.host)
@@ -127,6 +127,15 @@ PASS xn--a.ß (using <a>.hostname)
 FAIL xn--a.ß (using <area>) assert_equals: expected "https://xn--a.ß/x" but got "https://xn--a.%C3%9F/x"
 PASS xn--a.ß (using <area>.host)
 PASS xn--a.ß (using <area>.hostname)
+FAIL xn--ls8h= (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
+FAIL xn--ls8h= (using URL.host) assert_equals: expected "x" but got "xn--ls8h%3D"
+FAIL xn--ls8h= (using URL.hostname) assert_equals: expected "x" but got "xn--ls8h%3D"
+FAIL xn--ls8h= (using <a>) assert_equals: expected "" but got "xn--ls8h%3D"
+FAIL xn--ls8h= (using <a>.host) assert_equals: expected "x" but got "xn--ls8h%3D"
+FAIL xn--ls8h= (using <a>.hostname) assert_equals: expected "x" but got "xn--ls8h%3D"
+FAIL xn--ls8h= (using <area>) assert_equals: expected "" but got "xn--ls8h%3D"
+FAIL xn--ls8h= (using <area>.host) assert_equals: expected "x" but got "xn--ls8h%3D"
+FAIL xn--ls8h= (using <area>.hostname) assert_equals: expected "x" but got "xn--ls8h%3D"
 PASS xn--tešla (using URL)
 PASS xn--tešla (using URL.host)
 PASS xn--tešla (using URL.hostname)
@@ -352,5 +361,32 @@ FAIL xn-- (using <a>.hostname) assert_equals: expected "x" but got "xn--"
 FAIL xn-- (using <area>) assert_equals: expected "" but got "xn--"
 FAIL xn-- (using <area>.host) assert_equals: expected "x" but got "xn--"
 FAIL xn-- (using <area>.hostname) assert_equals: expected "x" but got "xn--"
+PASS ≠ (using URL)
+PASS ≠ (using URL.host)
+PASS ≠ (using URL.hostname)
+PASS ≠ (using <a>)
+PASS ≠ (using <a>.host)
+PASS ≠ (using <a>.hostname)
+PASS ≠ (using <area>)
+PASS ≠ (using <area>.host)
+PASS ≠ (using <area>.hostname)
+PASS ≮ (using URL)
+PASS ≮ (using URL.host)
+PASS ≮ (using URL.hostname)
+PASS ≮ (using <a>)
+PASS ≮ (using <a>.host)
+PASS ≮ (using <a>.hostname)
+PASS ≮ (using <area>)
+PASS ≮ (using <area>.host)
+PASS ≮ (using <area>.hostname)
+PASS ≯ (using URL)
+PASS ≯ (using URL.host)
+PASS ≯ (using URL.hostname)
+PASS ≯ (using <a>)
+PASS ≯ (using <a>.host)
+PASS ≯ (using <a>.hostname)
+PASS ≯ (using <area>)
+PASS ≯ (using <area>.host)
+PASS ≯ (using <area>.hostname)
 Harness: the test ran to completion.
 
