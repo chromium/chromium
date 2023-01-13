@@ -53,7 +53,7 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
                     ManagementUI::GetManagementPageSubtitle(profile));
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"learnMore", IDS_LEARN_MORE},
     {"localTrustRoots", IDS_MANAGEMENT_LOCAL_TRUST_ROOTS},
     {"managementTrustRootsConfigured", IDS_MANAGEMENT_TRUST_ROOTS_CONFIGURED},
@@ -91,9 +91,11 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
     {kManagementOnFileTransferEvent, IDS_MANAGEMENT_FILE_TRANSFER_EVENT},
     {kManagementOnFileTransferVisibleData,
      IDS_MANAGEMENT_FILE_TRANSFER_VISIBLE_DATA},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     {kManagementScreenCaptureEvent, IDS_MANAGEMENT_SCREEN_CAPTURE_EVENT},
     {kManagementScreenCaptureData, IDS_MANAGEMENT_SCREEN_CAPTURE_DATA},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     {"browserReporting", IDS_MANAGEMENT_BROWSER_REPORTING},
     {"browserReportingExplanation",
      IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION},

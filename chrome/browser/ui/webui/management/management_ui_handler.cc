@@ -171,7 +171,12 @@ enum class ReportingType {
   kUserActivity
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+const char kManagementScreenCaptureEvent[] = "managementScreenCaptureEvent";
+const char kManagementScreenCaptureData[] = "managementScreenCaptureData";
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS)
 const char kManagementLogUploadEnabled[] = "managementLogUploadEnabled";
 const char kManagementReportActivityTimes[] = "managementReportActivityTimes";
 const char kManagementReportDeviceAudioStatus[] =
@@ -194,8 +199,6 @@ const char kManagementReportLoginLogout[] = "managementReportLoginLogout";
 const char kManagementReportCRDSessions[] = "managementReportCRDSessions";
 const char kManagementReportDlpEvents[] = "managementReportDlpEvents";
 const char kManagementOnFileTransferEvent[] = "managementOnFileTransferEvent";
-const char kManagementScreenCaptureEvent[] = "managementScreenCaptureEvent";
-const char kManagementScreenCaptureData[] = "managementScreenCaptureData";
 const char kManagementOnFileTransferVisibleData[] =
     "managementOnFileTransferVisibleData";
 const char kManagementPrinting[] = "managementPrinting";
@@ -205,7 +208,7 @@ const char kManagementCrostiniContainerConfiguration[] =
 const char kAccountManagedInfo[] = "accountManagedInfo";
 const char kDeviceManagedInfo[] = "deviceManagedInfo";
 const char kOverview[] = "overview";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kCustomerLogo[] = "customerLogo";
 
@@ -316,8 +319,9 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
                             const policy::StatusCollector* collector,
                             const policy::SystemLogUploader* uploader,
                             Profile* profile) {
-  if (!collector || !profile || !uploader)
+  if (!collector || !profile || !uploader) {
     return;
+  }
 
   // Elements appear on the page in the order they are added.
   bool report_device_peripherals = false;
@@ -454,8 +458,9 @@ base::Value::List GetPermissionsForExtension(
     scoped_refptr<const extensions::Extension> extension) {
   base::Value::List permission_messages;
   // Only consider force installed extensions
-  if (!extensions::Manifest::IsPolicyLocation(extension->location()))
+  if (!extensions::Manifest::IsPolicyLocation(extension->location())) {
     return permission_messages;
+  }
 
   extensions::PermissionIDSet permissions =
       extensions::PermissionMessageProvider::Get()
@@ -467,8 +472,9 @@ base::Value::List GetPermissionsForExtension(
       extensions::PermissionMessageProvider::Get()->GetPermissionMessages(
           permissions);
 
-  for (const auto& message : messages)
+  for (const auto& message : messages) {
     permission_messages.Append(message.message());
+  }
 
   return permission_messages;
 }
@@ -721,8 +727,9 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources) {
 const policy::DeviceCloudPolicyManagerAsh*
 ManagementUIHandler::GetDeviceCloudPolicyManager() const {
   // Only check for report status in managed environment.
-  if (!device_managed_)
+  if (!device_managed_) {
     return nullptr;
+  }
 
   const policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
@@ -809,8 +816,9 @@ base::Value::List ManagementUIHandler::GetDeviceReportingInfo(
   if (manager) {
     uploader = manager->GetStatusUploader();
     syslog_uploader = manager->GetSystemLogUploader();
-    if (uploader)
+    if (uploader) {
       collector = uploader->status_collector();
+    }
   }
   AddDeviceReportingInfo(&report_sources, collector, syslog_uploader, profile);
   return report_sources;
@@ -839,8 +847,9 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
   base::Value::Dict response;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string enterprise_manager = GetDeviceManager();
-  if (enterprise_manager.empty())
+  if (enterprise_manager.empty()) {
     enterprise_manager = GetAccountManager(profile);
+  }
   AddUpdateRequiredEolInfo(&response);
   AddMonitoredNetworkPrivacyDisclosure(&response);
 #else
@@ -911,8 +920,9 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
   response.Set("managed", managed_());
   GetManagementStatus(profile, &response);
   AsyncUpdateLogo();
-  if (!fetched_image_.empty())
+  if (!fetched_image_.empty()) {
     response.Set(kCustomerLogo, base::Value(fetched_image_));
+  }
   return response;
 }
 
@@ -963,13 +973,13 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
                                   kManagementOnPageVisitedVisibleData, &info);
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   if (capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
           profile)) {
     AddThreatProtectionPermission(kManagementScreenCaptureEvent,
                                   kManagementScreenCaptureData, &info);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
   const std::string enterprise_manager =
       connectors_service->GetManagementDomain();
@@ -992,11 +1002,13 @@ base::Value::List ManagementUIHandler::GetManagedWebsitesInfo(
   auto* managed_configuration =
       ManagedConfigurationAPIFactory::GetForProfile(profile);
 
-  if (!managed_configuration)
+  if (!managed_configuration) {
     return managed_websites;
+  }
 
-  for (const auto& entry : managed_configuration->GetManagedOrigins())
+  for (const auto& entry : managed_configuration->GetManagedOrigins()) {
     managed_websites.Append(entry.Serialize());
+  }
 
   return managed_websites;
 }
@@ -1027,8 +1039,9 @@ void ManagementUIHandler::AsyncUpdateLogo() {
 
 void ManagementUIHandler::OnFetchComplete(const GURL& url,
                                           const SkBitmap* bitmap) {
-  if (!bitmap)
+  if (!bitmap) {
     return;
+  }
   fetched_image_ = webui::GetBitmapDataUrl(*bitmap);
   logo_url_ = url;
   // Fire listener to reload managed data.
@@ -1071,10 +1084,12 @@ const std::string ManagementUIHandler::GetDeviceManager() const {
   std::string device_domain;
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (device_managed_)
+  if (device_managed_) {
     device_domain = connector->GetEnterpriseDomainManager();
-  if (device_domain.empty() && connector->IsActiveDirectoryManaged())
+  }
+  if (device_domain.empty() && connector->IsActiveDirectoryManaged()) {
     device_domain = connector->GetRealm();
+  }
   return device_domain;
 }
 
@@ -1100,8 +1115,9 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
   const bool primary_user_managed =
       primary_profile ? IsProfileManaged(primary_profile) : false;
 
-  if (primary_user_managed)
+  if (primary_user_managed) {
     account_manager = GetAccountManager(primary_profile);
+  }
 
   std::string device_manager = GetDeviceManager();
 
@@ -1148,8 +1164,9 @@ void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
   policy::PolicyCertService* policy_service =
       policy::PolicyCertServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));
-  if (policy_service && policy_service->has_policy_certificates())
+  if (policy_service && policy_service->has_policy_certificates()) {
     trust_roots_configured = base::Value(true);
+  }
 
   ResolveJavascriptCallback(args[0] /* callback_id */, trust_roots_configured);
 }
@@ -1268,8 +1285,9 @@ void ManagementUIHandler::UpdateManagedState() {
   account_managed_ = IsProfileManaged(profile) || IsBrowserManaged();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  if (managed_state_changed)
+  if (managed_state_changed) {
     FireWebUIListener("managed_data_changed");
+  }
 }
 
 void ManagementUIHandler::OnPolicyUpdated(
@@ -1282,8 +1300,9 @@ void ManagementUIHandler::OnPolicyUpdated(
 }
 
 void ManagementUIHandler::AddObservers() {
-  if (has_observers_)
+  if (has_observers_) {
     return;
+  }
 
   has_observers_ = true;
 
@@ -1311,8 +1330,9 @@ void ManagementUIHandler::AddObservers() {
 }
 
 void ManagementUIHandler::RemoveObservers() {
-  if (!has_observers_)
+  if (!has_observers_) {
     return;
+  }
 
   has_observers_ = false;
 

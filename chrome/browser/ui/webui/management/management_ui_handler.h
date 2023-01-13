@@ -24,9 +24,14 @@
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // Constants defining the IDs for the localized strings sent to the page as
 // load time data.
+extern const char kManagementScreenCaptureEvent[];
+extern const char kManagementScreenCaptureData[];
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kManagementLogUploadEnabled[];
 extern const char kManagementReportActivityTimes[];
 extern const char kManagementReportDeviceAudioStatus[];
@@ -48,9 +53,7 @@ extern const char kManagementReportExtensions[];
 extern const char kManagementReportAndroidApplications[];
 extern const char kManagementOnFileTransferEvent[];
 extern const char kManagementOnFileTransferVisibleData[];
-extern const char kManagementScreenCaptureEvent[];
-extern const char kManagementScreenCaptureData[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kOnPremReportingExtensionStableId[];
 extern const char kOnPremReportingExtensionBetaId[];
