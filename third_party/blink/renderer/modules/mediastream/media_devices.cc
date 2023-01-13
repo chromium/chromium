@@ -352,6 +352,12 @@ ScriptPromise MediaDevices::getUserMedia(
     ScriptState* script_state,
     const UserMediaStreamConstraints* options,
     ExceptionState& exception_state) {
+  // This timeout of base::Seconds(8) is an initial value and based on the data
+  // in Media.MediaDevices.GetUserMedia.Latency, it should be iterated upon.
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
+      script_state, "Media.MediaDevices.GetUserMedia", base::Seconds(8));
+
   DCHECK(options);  // Guaranteed by the default value in the IDL.
   DCHECK(!exception_state.HadException());
 
@@ -359,17 +365,13 @@ ScriptPromise MediaDevices::getUserMedia(
       ToMediaStreamConstraints(options, exception_state);
   if (!constraints) {
     DCHECK(exception_state.HadException());
+    // TODO(crbug.com/1373398): Change this to use
+    // ScriptPromiseResolverWithTracker.
     return ScriptPromise();
   }
 
-  // This timeout of base::Seconds(8) is an initial value and based on the data
-  // in Media.MediaDevices.GetUserMedia.Latency, it should be iterated upon.
-  return SendUserMediaRequest(
-      UserMediaRequestType::kUserMedia,
-      MakeGarbageCollected<
-          ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
-          script_state, "Media.MediaDevices.GetUserMedia", base::Seconds(8)),
-      constraints, exception_state);
+  return SendUserMediaRequest(UserMediaRequestType::kUserMedia, resolver,
+                              constraints, exception_state);
 }
 
 ScriptPromise MediaDevices::SendUserMediaRequest(
@@ -381,9 +383,11 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "No media device client available; "
-                                      "is this a detached window?");
+    resolver->RejectWithDOMException(exception_state,
+                                     DOMExceptionCode::kNotSupportedError,
+                                     "No media device client available; "
+                                     "is this a detached window?",
+                                     UserMediaRequestResult::kContextDestroyed);
     return ScriptPromise();
   }
 
@@ -406,6 +410,8 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   }
 
   if (exception_state.HadException()) {
+    // TODO(crbug.com/1373398): Change this to use
+    // ScriptPromiseResolverWithTracker.
     return ScriptPromise();
   }
 #endif
@@ -422,6 +428,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
     surface = IdentifiableSurface::FromTypeAndToken(
         surface_type, TokenFromConstraints(options));
   }
+  ScriptPromise promise = resolver->Promise();
   MediaErrorState error_state;
   UserMediaRequest* request =
       UserMediaRequest::Create(window, user_media_client, media_type, options,
@@ -429,25 +436,26 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   if (!request) {
     DCHECK(error_state.HadException());
     if (error_state.CanGenerateException()) {
+      // TODO(crbug.com/1373398): Change this to use
+      // ScriptPromiseResolverWithTracker.
       error_state.RaiseException(exception_state);
       return ScriptPromise();
     }
-    ScriptPromise rejected_promise = resolver->Promise();
     RecordIdentifiabilityMetric(
         surface, GetExecutionContext(),
         IdentifiabilityBenignStringToken(error_state.GetErrorMessage()));
     resolver->Reject(error_state.CreateError(),
                      UserMediaRequestResult::kInvalidConstraints);
-    return rejected_promise;
+    return promise;
   }
 
   String error_message;
   if (!request->IsSecureContextUse(error_message)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      error_message);
+    resolver->RejectWithDOMException(
+        exception_state, DOMExceptionCode::kNotSupportedError, error_message,
+        UserMediaRequestResult::kInsecureContext);
     return ScriptPromise();
   }
-  auto promise = resolver->Promise();
   request->Start();
   return promise;
 }
@@ -456,24 +464,25 @@ ScriptPromise MediaDevices::getDisplayMediaSet(
     ScriptState* script_state,
     const DisplayMediaStreamOptions* options,
     ExceptionState& exception_state) {
-  ExecutionContext* const context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "No media device client available; is this a detached window?");
-    return ScriptPromise();
-  }
-
   // This timeout of base::Seconds(6) is an initial value and based on the data
   // in Media.MediaDevices.GetDisplayMediaSet.Latency, it should be iterated
   // upon.
-  return SendUserMediaRequest(
-      UserMediaRequestType::kDisplayMediaSet,
-      MakeGarbageCollected<
-          ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
-          script_state, "Media.MediaDevices.GetDisplayMediaSet",
-          base::Seconds(6)),
-      ToMediaStreamConstraints(options), exception_state);
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
+      script_state, "Media.MediaDevices.GetDisplayMediaSet", base::Seconds(6));
+
+  ExecutionContext* const context = GetExecutionContext();
+  if (!context) {
+    resolver->RejectWithDOMException(
+        exception_state, DOMExceptionCode::kInvalidStateError,
+        "No media device client available; is this a detached window?",
+        UserMediaRequestResult::kContextDestroyed);
+    return ScriptPromise();
+  }
+
+  return SendUserMediaRequest(UserMediaRequestType::kDisplayMediaSet, resolver,
+                              ToMediaStreamConstraints(options),
+                              exception_state);
 }
 
 ScriptPromise MediaDevices::getDisplayMedia(
@@ -481,10 +490,17 @@ ScriptPromise MediaDevices::getDisplayMedia(
     const DisplayMediaStreamOptions* options,
     ExceptionState& exception_state) {
   LocalDOMWindow* const window = DomWindow();
+  // This timeout of base::Seconds(6) is an initial value and based on the data
+  // in Media.MediaDevices.GetDisplayMedia.Latency, it should be iterated upon.
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
+      script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(6));
+
   if (!window) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "No local DOM window; is this a detached window?");
+    resolver->RejectWithDOMException(
+        exception_state, DOMExceptionCode::kInvalidStateError,
+        "No local DOM window; is this a detached window?",
+        UserMediaRequestResult::kContextDestroyed);
     return ScriptPromise();
   }
 
@@ -506,25 +522,29 @@ ScriptPromise MediaDevices::getDisplayMedia(
           : DisplayCapturePolicyResult::kDisallowed);
 
   if (!capture_allowed_by_permissions_policy) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                      kFeaturePolicyBlocked);
+    resolver->RejectWithDOMException(
+        exception_state, DOMExceptionCode::kNotAllowedError,
+        kFeaturePolicyBlocked, UserMediaRequestResult::kNotAllowedError);
     return ScriptPromise();
   }
 
   if (options->hasAutoSelectAllScreens() && options->autoSelectAllScreens()) {
-    exception_state.ThrowTypeError(
+    resolver->RejectWithTypeError(
+        exception_state,
         "The autoSelectAllScreens property is not allowed for usage with "
-        "getDisplayMedia.");
+        "getDisplayMedia.",
+        UserMediaRequestResult::kInvalidConstraints);
     return ScriptPromise();
   }
 
   if (CaptureController* const capture_controller =
           options->getControllerOr(nullptr)) {
     if (capture_controller->IsBound()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "setFocusBehavior() can only be called before getDisplayMedia() or "
-          "immediately after.");
+      resolver->RejectWithDOMException(
+          exception_state, DOMExceptionCode::kInvalidStateError,
+          "setFocusBehavior() can only be called before getDisplayMedia() or"
+          "immediately after.",
+          UserMediaRequestResult::kInvalidStateError);
       return ScriptPromise();
     }
     capture_controller->SetIsBound(true);
@@ -538,14 +558,8 @@ ScriptPromise MediaDevices::getDisplayMedia(
     constraints->setSelfBrowserSurface("exclude");
   }
 
-  // This timeout of base::Seconds(6) is an initial value and based on the data
-  // in Media.MediaDevices.GetDisplayMedia.Latency, it should be iterated upon.
-  return SendUserMediaRequest(
-      UserMediaRequestType::kDisplayMedia,
-      MakeGarbageCollected<
-          ScriptPromiseResolverWithTracker<UserMediaRequestResult>>(
-          script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(6)),
-      constraints, exception_state);
+  return SendUserMediaRequest(UserMediaRequestType::kDisplayMedia, resolver,
+                              constraints, exception_state);
 }
 
 void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,

@@ -65,7 +65,9 @@ enum class UserMediaRequestResult {
   kAbortError = 8,
   kNotReadableError = 9,
   kNotSupportedError = 10,
-  kMaxValue = kNotSupportedError,
+  kInsecureContext = 11,
+  kInvalidStateError = 12,
+  kMaxValue = kInvalidStateError
 };
 
 class MODULES_EXPORT UserMediaRequest final

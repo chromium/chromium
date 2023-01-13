@@ -103285,6 +103285,8 @@ Full version information for the fingerprint enum values:
   <int value="8" label="Abort Error"/>
   <int value="9" label="Not Readable Error"/>
   <int value="10" label="Not Supported Error"/>
+  <int value="11" label="Insecure Context"/>
+  <int value="12" label="Invalid State Error"/>
 </enum>
 
 <enum name="UsernameDetectionMethod">

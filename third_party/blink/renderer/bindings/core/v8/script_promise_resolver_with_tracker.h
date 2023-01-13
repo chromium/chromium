@@ -74,6 +74,23 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
     resolver_->Reject(value);
   }
 
+  void RejectWithDOMException(ExceptionState& exception_state,
+                              DOMExceptionCode exception_code,
+                              const String& message,
+                              ResultEnumType result) {
+    RecordResult(result);
+    RecordLatency();
+    exception_state.ThrowDOMException(exception_code, message);
+  }
+
+  void RejectWithTypeError(ExceptionState& exception_state,
+                           const String& message,
+                           ResultEnumType result) {
+    RecordResult(result);
+    RecordLatency();
+    exception_state.ThrowTypeError(message);
+  }
+
   void Resolve() { Resolve(ToV8UndefinedGenerator()); }
 
   void RecordResult(ResultEnumType result) {
