@@ -918,19 +918,6 @@ BOOL canProcessCrossOriginIframes() {
     [self findPasswordFormsAndSendToPasswordStoreForFormChange:true
                                                        inFrame:frame];
   }
-
-  // If the form was cleared PasswordManager should be informed to decide
-  // whether it's a change password form that was submitted.
-  if (params.type == "password_form_cleared") {
-    FormData formData;
-    if (!JsonStringToFormData(SysUTF8ToNSString(params.value), &formData,
-                              pageURL)) {
-      return;
-    }
-
-    _passwordManager->OnPasswordFormCleared(
-        [_driverHelper PasswordManagerDriver:frame], formData);
-  }
 }
 
 // If the form was removed, PasswordManager should be informed to decide

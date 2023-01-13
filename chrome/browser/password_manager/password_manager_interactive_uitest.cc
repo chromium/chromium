@@ -408,23 +408,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForElementValue("username_field", "");
 }
 
-// This fixture enables detecting submission on form clear feature.
-class PasswordManagerInteractiveTestSubmissionDetectionOnFormClear
-    : public PasswordManagerInteractiveTest {
- public:
-  PasswordManagerInteractiveTestSubmissionDetectionOnFormClear() {
-    feature_list_.InitAndEnableFeature(
-        features::kDetectFormSubmissionOnFormClear);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that submission is detected when change password form is reset.
-IN_PROC_BROWSER_TEST_F(
-    PasswordManagerInteractiveTestSubmissionDetectionOnFormClear,
-    ChangePwdFormCleared) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, ChangePwdFormCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
@@ -467,9 +452,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that submission is detected when all password fields in a change
 // password form are cleared and not detected when only some fields are cleared.
-IN_PROC_BROWSER_TEST_F(
-    PasswordManagerInteractiveTestSubmissionDetectionOnFormClear,
-    ChangePwdFormFieldsCleared) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
+                       ChangePwdFormFieldsCleared) {
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
@@ -525,9 +509,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that submission is detected when the new password field outside the
 // form tag is cleared not detected when other password fields are cleared.
-IN_PROC_BROWSER_TEST_F(
-    PasswordManagerInteractiveTestSubmissionDetectionOnFormClear,
-    ChangePwdFormRelevantFormlessFieldsCleared) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
+                       ChangePwdFormRelevantFormlessFieldsCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =

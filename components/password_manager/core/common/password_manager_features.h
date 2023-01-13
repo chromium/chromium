@@ -29,7 +29,6 @@ BASE_DECLARE_FEATURE(kBiometricAuthenticationForFilling);
 BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 #endif
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
-BASE_DECLARE_FEATURE(kDetectFormSubmissionOnFormClear);
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 BASE_DECLARE_FEATURE(kEnablePasswordGenerationForClearTextFields);

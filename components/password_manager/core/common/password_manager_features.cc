@@ -30,17 +30,6 @@ BASE_FEATURE(kBiometricTouchToFill,
              "BiometricTouchToFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables submission detection for forms dynamically cleared but not removed
-// from the page.
-BASE_FEATURE(kDetectFormSubmissionOnFormClear,
-             "DetectFormSubmissionOnFormClear",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
 BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,

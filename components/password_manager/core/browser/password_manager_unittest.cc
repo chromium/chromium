@@ -3805,7 +3805,6 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
 
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
@@ -3860,7 +3859,6 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
   constexpr char16_t kEmptyName[] = u"";
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
@@ -3897,11 +3895,8 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
   manager()->OnPasswordFormCleared(&driver_, form_data);
 }
 
-// kDetectFormSubmissionOnFormClear was launched on all platforms but iOS.
-#if !BUILDFLAG(IS_IOS)
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
@@ -3966,7 +3961,6 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
   constexpr char16_t kEmptyName[] = u"";
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
@@ -4018,7 +4012,6 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
     manager()->OnPasswordFormCleared(&driver_, form_data);
   }
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_P(PasswordManagerTest, IsFormManagerPendingPasswordUpdate) {
   PasswordForm form(MakeSimpleForm());

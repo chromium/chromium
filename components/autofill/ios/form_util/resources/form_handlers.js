@@ -23,11 +23,6 @@ __gCrWeb.formHandlers = {};
 let formMutationObserver = null;
 
 /**
- * The MutationObserver tracking the latest password field that had user input.
- */
-let passwordFieldsObserver = null;
-
-/**
  * The form mutation message scheduled to be sent to browser.
  */
 let formMutationMessageToSend = null;
@@ -85,77 +80,6 @@ function isPasswordField_(element) {
 }
 
 /**
- * Installs a MutationObserver to track the last password field that had
- * user input.
- * @param {Element} A password field that should be observed.
- */
-function trackPasswordField_(field) {
-  if (passwordFieldsObserver) {
-    passwordFieldsObserver.disconnect();
-  }
-
-  passwordFieldsObserver = new MutationObserver(function(mutations) {
-    for (let i = 0; i < mutations.length; i++) {
-      const mutation = mutations[i];
-      if (mutation.attributeName !== 'value') {
-        return;
-      }
-      const target = mutation.target;
-      const form = target.form;
-      let shouldNotifyPasswordManager = true;
-      if (form) {
-        // Verify that all password fields are cleared.
-        for (let i = 0; i < form.elements.length; i++) {
-          if (isPasswordField_(form.elements[i]) &&
-              form.elements[i].value !== '') {
-            shouldNotifyPasswordManager = false;
-          }
-        }
-      }
-      if (!shouldNotifyPasswordManager) {
-        return;
-      }
-      const formData = form ?
-          __gCrWeb.passwords.getPasswordFormData(form, window) :
-          __gCrWeb.passwords.getPasswordFormDataFromUnownedElements(window);
-      if (target.value === '') {
-        const msg = {
-          'command': 'form.activity',
-          'frameID': __gCrWeb.message.getFrameId(),
-          'formName': '',
-          'uniqueFormID': '',
-          'fieldIdentifier': '',
-          'uniqueFieldID': '',
-          'fieldType': '',
-          'type': 'password_form_cleared',
-          'value': __gCrWeb.stringify(formData),
-          'hasUserGesture': false,
-        };
-        sendMessageOnNextLoop_(msg);
-      }
-    }
-  });
-  passwordFieldsObserver.observe(field, {attributes: true});
-}
-
-
-/**
- * @param {Element} A form that was reset.
- * @return {boolean} Whether the form contains password fields that had user
- * typed or manually filled input.
- */
-function shouldNotifyAboutFormReset_(form) {
-  for (let i = 0; i < form.elements.length; i++) {
-    const element = form.elements[i];
-    if (isPasswordField_(element) &&
-        __gCrWeb.form.wasEditedByUser.get(element)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
  * Focus, input, change, keyup, blur and reset events for form elements (form
  * and input elements) are messaged to the main application for broadcast to
  * WebStateObservers.
@@ -204,12 +128,7 @@ function formActivity_(evt) {
     __gCrWeb.form.wasEditedByUser.set(target, evt.isTrusted);
   }
 
-  // Notify FormActivityTabHelper about form reset if the form contains
-  // password fields that had user typed or manually filled input.
-  const isPasswordFormReset = target.tagName === 'FORM' &&
-      evt.type === 'reset' && shouldNotifyAboutFormReset_(target);
-
-  if (evt.target !== lastFocusedElement && !isPasswordFormReset) {
+  if (evt.target !== lastFocusedElement) {
     return;
   }
   const form = target.tagName === 'FORM' ? target : target.form;
@@ -222,15 +141,6 @@ function formActivity_(evt) {
 
   const fieldType = target.type || '';
   const fieldValue = target.value || '';
-  const value = isPasswordFormReset ?
-      __gCrWeb.stringify(__gCrWeb.passwords.getPasswordFormData(form, window)) :
-      fieldValue;
-  const type = isPasswordFormReset ? 'password_form_cleared' : evt.type;
-
-  if ((evt.type === 'change' || evt.type === 'input') &&
-      isPasswordField_(target)) {
-    trackPasswordField_(evt.target);
-  }
 
   const msg = {
     'command': 'form.activity',
@@ -240,8 +150,8 @@ function formActivity_(evt) {
     'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(field),
     'uniqueFieldID': fieldUniqueId,
     'fieldType': fieldType,
-    'type': type,
-    'value': value,
+    'type': evt.type,
+    'value': fieldValue,
     'hasUserGesture': evt.isTrusted,
   };
   sendMessageOnNextLoop_(msg);
