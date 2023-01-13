@@ -226,6 +226,14 @@ class HttpStreamFactory::Job
     return using_existing_quic_session_;
   }
 
+  bool expect_on_quic_session_created() const {
+    return expect_on_quic_session_created_;
+  }
+
+  bool expect_on_quic_host_resolution_for_tests() const {
+    return expect_on_quic_host_resolution_;
+  }
+
   bool using_quic() const { return using_quic_; }
 
   bool should_reconsider_proxy() const { return should_reconsider_proxy_; }
@@ -287,6 +295,11 @@ class HttpStreamFactory::Job
   // resolution completes. It's called with the next result after host
   // resolution, not the result of host resolution itself.
   void OnQuicHostResolution(int result);
+
+  // If this is a QUIC alt job, this function is called when the QUIC session is
+  // created. It's called with the result of either failed session creation or
+  // an attempted crypto connection.
+  void OnQuicSessionCreated(int result);
 
   // Invoked when the underlying connection fails on the default network.
   void OnFailedOnDefaultNetwork(int result);
@@ -423,6 +436,10 @@ class HttpStreamFactory::Job
   // Only valid for a QUIC job. Set when a QUIC connection is started. If true,
   // then OnQuicHostResolution() is expected to be called in the future.
   bool expect_on_quic_host_resolution_ = false;
+
+  // Only valid for a QUIC job. Set when a QUIC connection is started. If true,
+  // OnQuicSessionCreated() is expected to be called in the future.
+  bool expect_on_quic_session_created_ = false;
 
   // True if this job used an existing QUIC session.
   bool using_existing_quic_session_ = false;

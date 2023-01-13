@@ -380,13 +380,16 @@ class QuicStreamFactory::Job {
   int DoLoop(int rv);
   int DoResolveHost();
   int DoResolveHostComplete(int rv);
+  int DoCreateSession();
   int DoConnect();
   int DoConnectComplete(int rv);
   int DoConfirmConnection(int rv);
   int DoValidateHost();
 
+  void OnCreateSessionComplete(int rv);
+  void MaybeOnQuicSessionCreationComplete(int rv);
   void OnResolveHostComplete(int rv);
-  void OnConnectComplete(int rv);
+  void OnCryptoConnectComplete(int rv);
   void OnSessionClosed(QuicChromiumClientSession* session);
 
   const QuicSessionAliasKey& key() const { return key_; }
@@ -401,6 +404,9 @@ class QuicStreamFactory::Job {
     stream_requests_.insert(request);
     if (!host_resolution_finished_) {
       request->ExpectOnHostResolution();
+    }
+    if (!quic_session_created_) {
+      request->ExpectQuicSessionCreation();
     }
   }
 
@@ -435,6 +441,7 @@ class QuicStreamFactory::Job {
     STATE_NONE,
     STATE_RESOLVE_HOST,
     STATE_RESOLVE_HOST_COMPLETE,
+    STATE_CREATE_SESSION,
     STATE_CONNECT,
     STATE_CONNECT_COMPLETE,
     STATE_HOST_VALIDATION,
@@ -508,7 +515,9 @@ class QuicStreamFactory::Job {
   const bool retry_on_alternate_network_before_handshake_;
   const bool race_stale_dns_on_connection_;
   const NetLogWithSource net_log_;
+  bool create_session_on_stale_dns_ = false;
   bool host_resolution_finished_ = false;
+  bool quic_session_created_ = false;
   bool connection_retried_ = false;
   QuicChromiumClientSession* session_ = nullptr;
   // If connection migraiton is supported, |network_| denotes the network on
@@ -599,8 +608,10 @@ int QuicStreamFactory::Job::DoLoop(int rv) {
       case STATE_RESOLVE_HOST_COMPLETE:
         rv = DoResolveHostComplete(rv);
         break;
+      case STATE_CREATE_SESSION:
+        rv = DoCreateSession();
+        break;
       case STATE_CONNECT:
-        CHECK_EQ(OK, rv);
         rv = DoConnect();
         break;
       case STATE_CONNECT_COMPLETE:
@@ -701,7 +712,7 @@ void QuicStreamFactory::Job::OnResolveHostComplete(int rv) {
     std::move(callback_).Run(rv);
 }
 
-void QuicStreamFactory::Job::OnConnectComplete(int rv) {
+void QuicStreamFactory::Job::OnCryptoConnectComplete(int rv) {
   // This early return will be triggered when CloseSessionOnError is called
   // before crypto handshake has completed.
   if (!session_) {
@@ -795,7 +806,8 @@ int QuicStreamFactory::Job::DoResolveHost() {
   // stale result. End time for stale host resolution is recorded and connection
   // from stale host will be tried.
   dns_resolution_end_time_ = base::TimeTicks().Now();
-  io_state_ = STATE_CONNECT;
+  io_state_ = STATE_CREATE_SESSION;
+  create_session_on_stale_dns_ = true;
   LogStaleHostRacing(true);
   return OK;
 }
@@ -830,49 +842,89 @@ int QuicStreamFactory::Job::DoResolveHostComplete(int rv) {
     LogConnectionIpPooling(true);
     return OK;
   }
-
-  io_state_ = STATE_CONNECT;
+  io_state_ = STATE_CREATE_SESSION;
   return OK;
 }
 
-int QuicStreamFactory::Job::DoConnect() {
+void QuicStreamFactory::Job::OnCreateSessionComplete(int rv) {
+  DCHECK(!quic_session_created_);
+  if (!create_session_on_stale_dns_) {
+    quic_session_created_ = true;
+  }
+  if (rv != OK) {
+    DCHECK(!session_);
+    if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+      HistogramProtocolErrorLocation(
+          JobProtocolErrorLocation::kCreateSessionFailed);
+    }
+    if (!create_session_on_stale_dns_) {
+      MaybeOnQuicSessionCreationComplete(rv);
+    } else {
+      create_session_on_stale_dns_ = false;
+    }
+    return;
+  }
+  create_session_on_stale_dns_ = false;
+  DVLOG(1) << "Created session on network: " << network_;
+  if (!session_->connection()->connected()) {
+    MaybeOnQuicSessionCreationComplete(ERR_CONNECTION_CLOSED);
+    return;
+  }
+
+  session_->StartReading();
+  if (!session_->connection()->connected()) {
+    HistogramProtocolErrorLocation(
+        JobProtocolErrorLocation::kSessionStartReadingFailed);
+    MaybeOnQuicSessionCreationComplete(ERR_QUIC_PROTOCOL_ERROR);
+    return;
+  }
+
+  rv = DoLoop(rv);
+
+  if (host_resolution_finished_) {
+    for (auto* request : stream_requests_) {
+      request->OnQuicSessionCreationComplete(rv);
+    }
+  }
+
+  if (rv != ERR_IO_PENDING && !callback_.is_null()) {
+    std::move(callback_).Run(rv);
+  }
+}
+
+void QuicStreamFactory::Job::MaybeOnQuicSessionCreationComplete(int rv) {
+  if (!create_session_on_stale_dns_ && host_resolution_finished_) {
+    for (auto* request : stream_requests_) {
+      request->OnQuicSessionCreationComplete(rv);
+    }
+    if (!callback_.is_null()) {
+      std::move(callback_).Run(rv);
+    }
+  }
+}
+
+int QuicStreamFactory::Job::DoCreateSession() {
   quic_connection_start_time_ = base::TimeTicks::Now();
   DCHECK(dns_resolution_end_time_ != base::TimeTicks());
-  io_state_ = STATE_CONNECT_COMPLETE;
+  io_state_ = STATE_CONNECT;
   bool require_confirmation = was_alternative_service_recently_broken_;
   net_log_.AddEntryWithBoolParams(
       NetLogEventType::QUIC_STREAM_FACTORY_JOB_CONNECT, NetLogEventPhase::BEGIN,
       "require_confirmation", require_confirmation);
 
   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
-  int rv = factory_->CreateSession(
+  return factory_->CreateSession(
+      base::BindOnce(&QuicStreamFactory::Job::OnCreateSessionComplete,
+                     GetWeakPtr()),
       key_, quic_version_, cert_verify_flags_, require_confirmation,
       *resolve_host_request_->GetAddressResults(), dns_resolution_start_time_,
       dns_resolution_end_time_, net_log_, &session_, &network_);
-  DVLOG(1) << "Created session on network: " << network_;
+}
 
-  if (rv != OK) {
-    DCHECK(rv != ERR_IO_PENDING);
-    DCHECK(!session_);
-    if (rv == ERR_QUIC_PROTOCOL_ERROR) {
-      HistogramProtocolErrorLocation(
-          JobProtocolErrorLocation::kCreateSessionFailed);
-    }
-    return rv;
-  }
-
-  if (!session_->connection()->connected())
-    return ERR_CONNECTION_CLOSED;
-
-  session_->StartReading();
-  if (!session_->connection()->connected()) {
-    HistogramProtocolErrorLocation(
-        JobProtocolErrorLocation::kSessionStartReadingFailed);
-    return ERR_QUIC_PROTOCOL_ERROR;
-  }
-
-  rv = session_->CryptoConnect(
-      base::BindOnce(&QuicStreamFactory::Job::OnConnectComplete, GetWeakPtr()));
+int QuicStreamFactory::Job::DoConnect() {
+  io_state_ = STATE_CONNECT_COMPLETE;
+  int rv = session_->CryptoConnect(base::BindOnce(
+      &QuicStreamFactory::Job::OnCryptoConnectComplete, GetWeakPtr()));
 
   if (!session_->connection()->connected() &&
       session_->error() == quic::QUIC_PROOF_INVALID) {
@@ -883,6 +935,7 @@ int QuicStreamFactory::Job::DoConnect() {
     HistogramProtocolErrorLocation(
         JobProtocolErrorLocation::kCryptoConnectFailedSync);
   }
+
   return rv;
 }
 
@@ -1094,6 +1147,27 @@ void QuicStreamRequest::OnHostResolutionComplete(int rv) {
   expect_on_host_resolution_ = false;
   if (!host_resolution_callback_.is_null()) {
     std::move(host_resolution_callback_).Run(rv);
+  }
+}
+
+bool QuicStreamRequest::WaitForQuicSessionCreation(
+    CompletionOnceCallback callback) {
+  DCHECK(create_session_callback_.is_null());
+  if (expect_on_quic_session_creation_) {
+    create_session_callback_ = std::move(callback);
+  }
+  return expect_on_quic_session_creation_;
+}
+
+void QuicStreamRequest::ExpectQuicSessionCreation() {
+  expect_on_quic_session_creation_ = true;
+}
+
+void QuicStreamRequest::OnQuicSessionCreationComplete(int rv) {
+  // DCHECK(expect_on_quic_session_creation_);
+  expect_on_quic_session_creation_ = false;
+  if (!create_session_callback_.is_null()) {
+    std::move(create_session_callback_).Run(rv);
   }
 }
 
@@ -1327,7 +1401,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   // TODO(rtenneti): |task_runner_| is used by the Job. Initialize task_runner_
   // in the constructor after WebRequestActionWithThreadsTest.* tests are fixed.
   if (!task_runner_)
-    task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault().get();
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault().get();
 
   if (!tick_clock_)
     tick_clock_ = base::DefaultTickClock::GetInstance();
@@ -1876,7 +1950,9 @@ void QuicStreamFactory::OnJobComplete(Job* job, int rv) {
   auto iter = active_jobs_.find(job->key().session_key());
   DCHECK(iter != active_jobs_.end());
   if (rv == OK) {
-    set_is_quic_known_to_work_on_current_network(true);
+    if (!is_quic_known_to_work_on_current_network_) {
+      set_is_quic_known_to_work_on_current_network(true);
+    }
 
     auto session_it = active_sessions_.find(job->key().session_key());
     CHECK(session_it != active_sessions_.end());
@@ -1908,7 +1984,8 @@ bool QuicStreamFactory::HasActiveJob(const QuicSessionKey& session_key) const {
   return base::Contains(active_jobs_, session_key);
 }
 
-int QuicStreamFactory::CreateSession(const QuicSessionAliasKey& key,
+int QuicStreamFactory::CreateSession(CompletionOnceCallback callback,
+                                     const QuicSessionAliasKey& key,
                                      quic::ParsedQuicVersion quic_version,
                                      int cert_verify_flags,
                                      bool require_confirmation,
@@ -1919,16 +1996,44 @@ int QuicStreamFactory::CreateSession(const QuicSessionAliasKey& key,
                                      QuicChromiumClientSession** session,
                                      handles::NetworkHandle* network) {
   TRACE_EVENT0(NetTracingCategory(), "QuicStreamFactory::CreateSession");
-  IPEndPoint addr = *address_list.begin();
-  const quic::QuicServerId& server_id = key.server_id();
   std::unique_ptr<DatagramClientSocket> socket(
       CreateSocket(net_log.net_log(), net_log.source()));
+  DatagramClientSocket* socket_ptr = socket.get();
+  CompletionOnceCallback connect_and_configure_callback = base::BindOnce(
+      &QuicStreamFactory::FinishCreateSession, weak_factory_.GetWeakPtr(),
+      std::move(callback), key, quic_version, cert_verify_flags,
+      require_confirmation, address_list, dns_resolution_start_time,
+      dns_resolution_end_time, net_log, session, network, std::move(socket));
 
   // Passing in handles::kInvalidNetworkHandle binds socket to default network.
-  int rv = ConfigureSocket(socket.get(), addr, *network,
-                           key.session_key().socket_tag());
-  if (rv != OK)
-    return rv;
+  return ConnectAndConfigureSocket(std::move(connect_and_configure_callback),
+                                   socket_ptr, *address_list.begin(), *network,
+                                   key.session_key().socket_tag());
+}
+
+void QuicStreamFactory::FinishCreateSession(
+    CompletionOnceCallback callback,
+    const QuicSessionAliasKey& key,
+    quic::ParsedQuicVersion quic_version,
+    int cert_verify_flags,
+    bool require_confirmation,
+    const AddressList& address_list,
+    base::TimeTicks dns_resolution_start_time,
+    base::TimeTicks dns_resolution_end_time,
+    const NetLogWithSource& net_log,
+    QuicChromiumClientSession** session,
+    handles::NetworkHandle* network,
+    std::unique_ptr<DatagramClientSocket> socket,
+    int rv) {
+  if (rv != OK) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&QuicStreamFactory::DoCallback,
+                       weak_factory_.GetWeakPtr(), std::move(callback), rv));
+    return;
+  }
+  IPEndPoint addr = *address_list.begin();
+  const quic::QuicServerId& server_id = key.server_id();
 
   if (params_.migrate_sessions_on_network_change_v2 &&
       *network == handles::kInvalidNetworkHandle) {
@@ -2037,9 +2142,16 @@ int QuicStreamFactory::CreateSession(const QuicSessionAliasKey& key,
   if (closed_during_initialize) {
     DLOG(DFATAL) << "Session closed during initialize";
     *session = nullptr;
-    return ERR_CONNECTION_CLOSED;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&QuicStreamFactory::DoCallback,
+                                  weak_factory_.GetWeakPtr(),
+                                  std::move(callback), ERR_CONNECTION_CLOSED));
+    return;
   }
-  return OK;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&QuicStreamFactory::DoCallback, weak_factory_.GetWeakPtr(),
+                     std::move(callback), OK));
 }
 
 void QuicStreamFactory::ActivateSession(const QuicSessionAliasKey& key,

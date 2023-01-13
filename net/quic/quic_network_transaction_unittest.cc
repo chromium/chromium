@@ -2734,6 +2734,7 @@ TEST_P(QuicNetworkTransactionTest, GoAwayWithConnectionMigrationOnPortsOnly) {
   TestCompletionCallback callback;
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  base::RunLoop().RunUntilIdle();
 
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
@@ -2969,6 +2970,7 @@ TEST_P(QuicNetworkTransactionTest,
   // The second connection hasn't finish handshake, verify that QUIC is not
   // marked as broken.
   ExpectQuicAlternateProtocolMapping();
+  base::RunLoop().RunUntilIdle();
   // Explicitly confirm the handshake on the second connection.
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
@@ -3122,6 +3124,7 @@ TEST_P(
   // marked as broken.
   ExpectQuicAlternateProtocolMapping(kNetworkAnonymizationKey1);
   ExpectQuicAlternateProtocolMapping(kNetworkAnonymizationKey2);
+  base::RunLoop().RunUntilIdle();
   // Explicitly confirm the handshake on the second connection.
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
@@ -3253,6 +3256,7 @@ TEST_P(QuicNetworkTransactionTest,
 
   // Verify that QUIC is not marked as broken.
   ExpectQuicAlternateProtocolMapping();
+  base::RunLoop().RunUntilIdle();
   // Explicitly confirm the handshake on the second connection.
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
@@ -5289,7 +5293,7 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithConfirmationRequired) {
   TestCompletionCallback callback;
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
+  base::RunLoop().RunUntilIdle();
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -5547,7 +5551,7 @@ TEST_P(QuicNetworkTransactionTest,
   TestCompletionCallback callback;
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
+  base::RunLoop().RunUntilIdle();
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
@@ -5617,7 +5621,7 @@ TEST_P(QuicNetworkTransactionTest,
   TestCompletionCallback callback;
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
+  base::RunLoop().RunUntilIdle();
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
@@ -5692,6 +5696,7 @@ TEST_P(QuicNetworkTransactionTest, RstStreamErrorHandling) {
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  base::RunLoop().RunUntilIdle();
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   // Read the headers.
@@ -5765,6 +5770,7 @@ TEST_P(QuicNetworkTransactionTest, RstStreamBeforeHeaders) {
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  base::RunLoop().RunUntilIdle();
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   // Read the headers.
@@ -9918,13 +9924,13 @@ TEST_P(QuicNetworkTransactionTest, IncorrectHttp3GoAway) {
                                            "");
 
   CreateSession();
-  AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
+  AddQuicAlternateProtocolMapping(MockCryptoClientStream::ASYNC_ZERO_RTT);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
   TestCompletionCallback callback;
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
+  base::RunLoop().RunUntilIdle();
   crypto_client_stream_factory_.last_stream()
       ->NotifySessionOneRttKeyAvailable();
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));

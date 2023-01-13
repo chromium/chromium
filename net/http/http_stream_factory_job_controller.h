@@ -163,6 +163,10 @@ class HttpStreamFactory::JobController
   // Returns true if |this| has a pending alternative job that is not completed.
   bool HasPendingAltJob() const;
 
+  base::TimeDelta get_main_job_wait_time_for_tests() {
+    return main_job_wait_time_;
+  }
+
  private:
   friend class test::JobControllerPeer;
 
