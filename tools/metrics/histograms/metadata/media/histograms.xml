@@ -6249,7 +6249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.RemotePlayback.SessionStartsBeforeTimeout"
-    units="ms" expires_after="2023-06-15">
+    enum="Boolean" expires_after="2023-06-15">
   <owner>muyaoxu@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
