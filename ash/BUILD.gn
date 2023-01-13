@@ -1631,6 +1631,8 @@ component("ash") {
     "system/phonehub/phone_hub_metrics.h",
     "system/phonehub/phone_hub_notification_controller.cc",
     "system/phonehub/phone_hub_notification_controller.h",
+    "system/phonehub/phone_hub_nudge.cc",
+    "system/phonehub/phone_hub_nudge.h",
     "system/phonehub/phone_hub_recent_app_button.cc",
     "system/phonehub/phone_hub_recent_app_button.h",
     "system/phonehub/phone_hub_recent_apps_view.cc",

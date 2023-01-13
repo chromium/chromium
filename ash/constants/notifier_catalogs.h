@@ -192,7 +192,8 @@ enum class NudgeCatalogName {
   kDarkLightMode = 3,
   kAutozoom = 4,
   kAdaptiveCharging = 5,
-  kMaxValue = kAdaptiveCharging,
+  kPhoneHub = 6,
+  kMaxValue = kPhoneHub,
 };
 
 // A living catalog that registers toasts.

@@ -73546,6 +73546,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Dark Light Mode"/>
   <int value="4" label="Autozoom"/>
   <int value="5" label="Adaptive Charging"/>
+  <int value="6" label="Phone Hub"/>
 </enum>
 
 <enum name="NukeProfileResult">
