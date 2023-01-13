@@ -118,6 +118,8 @@ void TooltipLacros::Hide() {
   if (platform_window) {
     platform_window->HideTooltip();
   }
+
+  parent_window_ = nullptr;
 }
 
 bool TooltipLacros::IsVisible() {
