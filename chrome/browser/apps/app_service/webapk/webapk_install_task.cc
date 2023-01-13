@@ -86,10 +86,18 @@ constexpr net::NetworkTrafficAnnotationTag kWebApksTrafficAnnotation =
             "The contents of the web app manifest for the web app, plus system "
             "information needed to generate the app."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "tsergeant@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-01-12"
         }
         policy {
           cookies_allowed: NO
-          cookies_store: "N/A"
           setting: "No setting apart from disabling ARC"
           chrome_policy: {
             ArcAppToWebAppSharingEnabled: {

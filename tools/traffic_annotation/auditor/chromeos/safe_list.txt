@@ -9,7 +9,6 @@ all,chromeos/geolocation/simple_geolocation_request.cc
 all,components/quirks/quirks_client.cc
 all,chromeos/ash/services/device_sync/cryptauth_client_impl.cc
 all,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.cc
-all,chrome/browser/apps/app_service/webapk/webapk_install_task.cc
 all,chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.cc
 all,chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher_impl.cc
 all,chrome/browser/ui/ash/projector/screencast_manager.cc

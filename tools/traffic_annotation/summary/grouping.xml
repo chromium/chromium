@@ -281,6 +281,7 @@ after discussions on the right group.
       <annotation id="app_preload_service_web_installer"/>
       <annotation id="network_diagnostics_stun"/>
       <annotation id="network_diagnostics_tls"/>
+      <annotation id="webapk_minter_install_request"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
