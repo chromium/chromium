@@ -518,6 +518,8 @@ class CONTENT_EXPORT MediaStreamManager
       blink::mojom::MediaStreamType stream_type) const;
   void StartEnumeration(DeviceRequest* request, const std::string& label);
   std::string AddRequest(std::unique_ptr<DeviceRequest> request);
+  DeviceRequests::const_iterator FindRequestIterator(
+      const std::string& label) const;
   DeviceRequest* FindRequest(const std::string& label) const;
   // Clones an existing device identified by |existing_device_session_id| and
   // returns it. If no such device is found, it returns absl::nullopt.

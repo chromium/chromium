@@ -2280,14 +2280,20 @@ std::string MediaStreamManager::AddRequest(
   return unique_label;
 }
 
+MediaStreamManager::DeviceRequests::const_iterator
+MediaStreamManager::FindRequestIterator(const std::string& label) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  return base::ranges::find(requests_, label, &LabeledDeviceRequest::first);
+}
+
 MediaStreamManager::DeviceRequest* MediaStreamManager::FindRequest(
     const std::string& label) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  for (const LabeledDeviceRequest& labeled_request : requests_) {
-    if (labeled_request.first == label)
-      return labeled_request.second.get();
-  }
-  return nullptr;
+
+  MediaStreamManager::DeviceRequests::const_iterator it =
+      FindRequestIterator(label);
+  return (it != requests_.end()) ? it->second.get() : nullptr;
 }
 
 absl::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
@@ -2376,27 +2382,26 @@ void MediaStreamManager::UpdateDeviceTransferStatus(
 
 void MediaStreamManager::DeleteRequest(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   SendLogMessage(
       base::StringPrintf("DeleteRequest([label=%s])", label.c_str()));
-  for (auto request_it = requests_.begin(); request_it != requests_.end();
-       ++request_it) {
-    if (request_it->first == label) {
-      // Clean up permission controller subscription.
-      GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&MediaStreamManager::
-                             UnsubscribeFromPermissionControllerOnUIThread,
-                         request_it->second->requesting_process_id,
-                         request_it->second->requesting_frame_id,
-                         request_it->second->audio_subscription_id,
-                         request_it->second->video_subscription_id));
 
-      requests_.erase(request_it);
-
-      return;
-    }
+  DeviceRequests::const_iterator request_it = FindRequestIterator(label);
+  if (request_it == requests_.end()) {
+    return;
   }
-  NOTREACHED();
+
+  // Clean up permission controller subscription.
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MediaStreamManager::UnsubscribeFromPermissionControllerOnUIThread,
+          request_it->second->requesting_process_id,
+          request_it->second->requesting_frame_id,
+          request_it->second->audio_subscription_id,
+          request_it->second->video_subscription_id));
+
+  requests_.erase(request_it);
 }
 
 void MediaStreamManager::ReadOutputParamsAndPostRequestToUI(
