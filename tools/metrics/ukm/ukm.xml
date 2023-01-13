@@ -168,7 +168,9 @@ be describing additional metrics about the same event.
     </summary>
     <aggregation>
       <history>
-        <statistics/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
       </history>
     </aggregation>
   </metric>
