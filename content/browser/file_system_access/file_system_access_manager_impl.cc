@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
@@ -675,7 +676,9 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
     HandleType file_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!permission_context_) {
+  if (!permission_context_ ||
+      !base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDragAndDropCheckBlocklist)) {
     DidVerifySensitiveDirectoryAccessForDataTransfer(
         binding_context, file_path, url, file_type,
         std::move(token_resolved_callback), SensitiveEntryResult::kAllowed);

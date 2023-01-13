@@ -18,13 +18,6 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
-namespace features {
-// TODO(crbug.com/1381621): Remove this flag eventually.
-// When enabled, move() will result in a promise rejection when the specified
-// destination to move to exists.
-BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
-}  // namespace features
-
 namespace storage {
 class FileSystemContext;
 }  // namespace storage
