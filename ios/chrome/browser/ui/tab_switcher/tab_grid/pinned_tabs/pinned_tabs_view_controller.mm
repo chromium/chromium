@@ -34,6 +34,9 @@ NSInteger kNumberOfSectionsInPinnedCollection = 1;
 // Leading/trailing inset of the collection view content.
 const CGFloat kCollectionViewHorizontalInset = 11.0f;
 
+// Pinned cell identifier.
+NSString* const kCellIdentifier = @"PinnedCellIdentifier";
+
 // Creates an NSIndexPath with `index` in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
   return [NSIndexPath indexPathForItem:index inSection:0];
@@ -398,8 +401,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
               collectionView:(UICollectionView*)collectionView
         dropSessionDidUpdate:(id<UIDropSession>)session
     withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
+  UIDropOperation dropOperation =
+      [self.dragDropHandler dropOperationForDropSession:session];
   return [[UICollectionViewDropProposal alloc]
-      initWithDropOperation:UIDropOperationMove
+      initWithDropOperation:dropOperation
                      intent:
                          UICollectionViewDropIntentInsertAtDestinationIndexPath];
 }
@@ -407,7 +412,48 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)collectionView:(UICollectionView*)collectionView
     performDropWithCoordinator:
         (id<UICollectionViewDropCoordinator>)coordinator {
-  // TODO(crbug.com/1382015): Implement this.
+  NSArray<id<UICollectionViewDropItem>>* items = coordinator.items;
+  for (id<UICollectionViewDropItem> item in items) {
+    // Append to the end of the collection, unless drop index is specified.
+    // The sourceIndexPath is nil if the drop item is not from the same
+    // collection view. Set the destinationIndex to reflect the addition of an
+    // item.
+    NSUInteger destinationIndex =
+        item.sourceIndexPath ? _items.count - 1 : _items.count;
+    if (coordinator.destinationIndexPath) {
+      destinationIndex =
+          base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
+    }
+
+    NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
+    // Drop synchronously if local object is available.
+    if (item.dragItem.localObject) {
+      [coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath];
+      // The sourceIndexPath is non-nil if the drop item is from this same
+      // collection view.
+      [self.dragDropHandler dropItem:item.dragItem
+                             toIndex:destinationIndex
+                  fromSameCollection:(item.sourceIndexPath != nil)];
+    } else {
+      // Drop asynchronously if local object is not available.
+      UICollectionViewDropPlaceholder* placeholder =
+          [[UICollectionViewDropPlaceholder alloc]
+              initWithInsertionIndexPath:dropIndexPath
+                         reuseIdentifier:kCellIdentifier];
+      placeholder.previewParametersProvider =
+          ^UIDragPreviewParameters*(UICollectionViewCell* placeholderCell) {
+        PinnedCell* pinnedCell =
+            base::mac::ObjCCastStrict<PinnedCell>(placeholderCell);
+        return pinnedCell.dragPreviewParameters;
+      };
+
+      id<UICollectionViewDropPlaceholderContext> context =
+          [coordinator dropItem:item.dragItem toPlaceholder:placeholder];
+      [self.dragDropHandler dropItemFromProvider:item.dragItem.itemProvider
+                                         toIndex:destinationIndex
+                              placeholderContext:context];
+    }
+  }
 }
 
 - (BOOL)collectionView:(UICollectionView*)collectionView

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
+#import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
@@ -24,8 +25,11 @@
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -326,9 +330,18 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
 
-// TODO(crbug.com/1382015): Implement this.
 - (void)setPinState:(BOOL)pinState forItemWithIdentifier:(NSString*)identifier {
-  return;
+  SetWebStatePinnedState(self.webStateList, identifier, /*pin_state=*/pinState);
+}
+
+- (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)destinationIndex {
+  int sourceIndex = GetTabIndex(self.webStateList, itemID, /*pinned=*/YES);
+  if (sourceIndex != WebStateList::kInvalidIndex) {
+    int destinationWebStateListIndex =
+        [self webStateListIndexFromItemIndex:destinationIndex];
+    self.webStateList->MoveWebStateAt(sourceIndex,
+                                      destinationWebStateListIndex);
+  }
 }
 
 #pragma mark - TabCollectionDragDropHandler
@@ -372,17 +385,58 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   return UIDropOperationForbidden;
 }
 
-// TODO(crbug.com/1382015): Implement this.
 - (void)dropItem:(UIDragItem*)dragItem
                toIndex:(NSUInteger)destinationIndex
     fromSameCollection:(BOOL)fromSameCollection {
+  // Tab move operations only originate from Chrome so a local object is used.
+  // Local objects allow synchronous drops, whereas NSItemProvider only allows
+  // asynchronous drops.
+  if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
+    TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
+    if (!fromSameCollection) {
+      // Try to pin the tab. If the returned index is invalid that means the
+      // tab lives in another Browser.
+      int tabIndex = SetWebStatePinnedState(self.webStateList, tabInfo.tabID,
+                                            /*pin_state=*/YES);
+      if (tabIndex == WebStateList::kInvalidIndex) {
+        // Move tab across Browsers.
+        MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex);
+        return;
+      }
+    }
+    // Reorder tabs.
+    [self.consumer moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
+    return;
+  }
+
+  // Handle URLs from within Chrome synchronously using a local object.
+  if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
+    URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
+    [self insertNewItemAtIndex:destinationIndex withURL:droppedURL.URL];
+    return;
+  }
 }
 
-// TODO(crbug.com/1382015): Implement this.
 - (void)dropItemFromProvider:(NSItemProvider*)itemProvider
                      toIndex:(NSUInteger)destinationIndex
           placeholderContext:
               (id<UICollectionViewDropPlaceholderContext>)placeholderContext {
+  if (![itemProvider canLoadObjectOfClass:[NSURL class]]) {
+    [placeholderContext deletePlaceholder];
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  auto loadHandler =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [placeholderContext deletePlaceholder];
+          NSURL* droppedURL = static_cast<NSURL*>(providedItem);
+          [weakSelf insertNewItemAtIndex:destinationIndex
+                                 withURL:net::GURLWithNSURL(droppedURL)];
+        });
+      };
+  [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];
 }
 
 #pragma mark - Private
@@ -422,6 +476,50 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 
   return UIDropOperationMove;
+}
+
+// Inserts a new item with the given`newTabURL` at `index`.
+- (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
+  // There are some circumstances where a new tab insertion can be erroniously
+  // triggered while another web state list mutation is happening. To ensure
+  // those bugs don't become crashes, check that the web state list is OK to
+  // mutate.
+  if (self.webStateList->IsMutating()) {
+    // Shouldn't have happened!
+    DCHECK(false) << "Reentrant web state insertion!";
+    return;
+  }
+
+  DCHECK(self.browserState);
+  web::WebState::CreateParams params(self.browserState);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+
+  web::NavigationManager::WebLoadParams loadParams(newTabURL);
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  // Insert a new webState using the `INSERT_PINNED` flag.
+  self.webStateList->InsertWebState(
+      base::checked_cast<int>(index), std::move(webState),
+      (WebStateList::INSERT_PINNED), WebStateOpener());
+}
+
+// Converts the collection view's item index to WebStateList index.
+// Returns `kInvalidIndex` if `index` is out of range.
+- (int)webStateListIndexFromItemIndex:(NSUInteger)index {
+  if (index == NSNotFound) {
+    return WebStateList::kInvalidIndex;
+  }
+
+  int webStateListIndex = index;
+  int webStateListLastIndex =
+      self.webStateList->GetIndexOfFirstNonPinnedWebState() - 1;
+
+  if (webStateListIndex > webStateListLastIndex) {
+    return WebStateList::kInvalidIndex;
+  }
+
+  return webStateListIndex;
 }
 
 @end
