@@ -163,23 +163,12 @@ TEST_F(TabGridViewControllerTest, Metrics) {
 // * the key command find is available when the tab grid is currently visible,
 // * the key command associated title is correct.
 TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
-  // Load the view.
-  std::ignore = view_controller_.view;
+  view_controller_ = [[TabGridViewController alloc]
+      initWithPageConfiguration:TabGridPageConfiguration::kIncognitoPageOnly];
   EXPECT_FALSE(CanPerform(@"keyCommand_find"));
-  // Create a view revealing vertical pan handler.
-  ViewRevealingVerticalPanHandler* pan_handler =
-      [[ViewRevealingVerticalPanHandler alloc]
-          initWithPeekedHeight:212.0f
-                baseViewHeight:800.0f
-                  initialState:ViewRevealState::Peeked];
 
-  // Displays the tab grid.
-  [pan_handler addAnimatee:view_controller_];
-  [pan_handler setNextState:ViewRevealState::Revealed
-                   animated:NO
-                    trigger:ViewRevealTrigger::Unknown];
+  [view_controller_ contentWillAppearAnimated:NO];
 
-  // Ensures that the command is available.
   EXPECT_TRUE(CanPerform(@"keyCommand_find"));
   id findTarget = [view_controller_ targetForAction:@selector(keyCommand_find)
                                          withSender:nil];
@@ -197,25 +186,13 @@ TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
 }
 
 TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
-  // Load the view.
-  [view_controller_.view self];
+  view_controller_ = [[TabGridViewController alloc]
+      initWithPageConfiguration:TabGridPageConfiguration::kIncognitoPageOnly];
   EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
   EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
-  // Create a view revealing vertical pan handler.
-  ViewRevealingVerticalPanHandler* pan_handler =
-      [[ViewRevealingVerticalPanHandler alloc]
-          initWithPeekedHeight:212.0f
-                baseViewHeight:800.0f
-                  initialState:ViewRevealState::Peeked];
 
-  [pan_handler addAnimatee:view_controller_];
+  [view_controller_ contentWillAppearAnimated:NO];
 
-  [pan_handler setNextState:ViewRevealState::Revealed
-                   animated:NO
-                    trigger:ViewRevealTrigger::Unknown];
-
-  [view_controller_ setCurrentPageAndPageControl:TabGridPageIncognitoTabs
-                                        animated:NO];
   EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
   EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
   TabGridMediator* incognitoMediator = [[TabGridMediator alloc]
@@ -229,31 +206,9 @@ TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
   EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
   EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
 
-  [view_controller_ setCurrentPageAndPageControl:TabGridPageRegularTabs
-                                        animated:NO];
-  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
-  TabGridMediator* regularMediator = [[TabGridMediator alloc]
-      initWithConsumer:view_controller_.regularTabsConsumer];
-  [regularMediator setBrowser:browser_.get()];
-  view_controller_.regularTabsDelegate = regularMediator;
-  [view_controller_.regularTabsDelegate addNewItem];
-  EXPECT_TRUE(CanPerform(@"keyCommand_closeAll"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
-  [view_controller_.incognitoTabsDelegate closeAllItems];
-  EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
-
-  // closeAllItems from the mediator do not change the value of the boolean, set
-  // it manually.
-  view_controller_.undoCloseAllAvailable = YES;
-  EXPECT_TRUE(CanPerform(@"keyCommand_undo"));
-
   // Forces the TabGridMediator to removes its Observer from WebStateList
   // before the Browser is destroyed.
   incognitoMediator.browser = nullptr;
   incognitoMediator = nil;
-
-  regularMediator.browser = nullptr;
-  regularMediator = nil;
 }
 }  // namespace

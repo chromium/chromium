@@ -143,9 +143,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      UIGestureRecognizerDelegate,
                                      UIScrollViewAccessibilityDelegate,
                                      UISearchBarDelegate>
-// Whether the view is visible. Bookkeeping is based on `-viewWillAppear:` and
-// `-viewWillDisappear methods. Note that the `Did` methods are not reliably
-// called (e.g., edge case in multitasking).
+// Whether the view is visible. Bookkeeping is based on
+// `-contentWillAppearAnimated:` and
+// `-contentWillDisappearAnimated methods. Note that the `Did` methods are not
+// reliably called (e.g., edge case in multitasking).
 @property(nonatomic, assign) BOOL viewVisible;
 // Child view controllers.
 @property(nonatomic, strong) GridViewController* regularTabsViewController;
@@ -206,6 +207,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 @property(nonatomic, assign, getter=isDragSeesionInProgress)
     BOOL dragSeesionInProgress;
+
+// YES if it is possible to undo the close all conditions.
+@property(nonatomic, assign) BOOL undoCloseAllAvailable;
 
 @end
 
@@ -2744,19 +2748,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // * There are tabs to close in the current page,
 // * Not in an undo scenario.
 - (BOOL)canCloseAllTab {
-  return self.currentState == ViewRevealState::Revealed &&
-         ((self.currentPage == TabGridPageIncognitoTabs &&
-           !self.incognitoTabsViewController.gridEmpty) ||
-          (self.currentPage == TabGridPageRegularTabs &&
-           !self.regularTabsViewController.gridEmpty &&
-           !self.undoCloseAllAvailable));
+  return self.viewVisible && ((self.currentPage == TabGridPageIncognitoTabs &&
+                               !self.incognitoTabsViewController.gridEmpty) ||
+                              (self.currentPage == TabGridPageRegularTabs &&
+                               !self.regularTabsViewController.gridEmpty &&
+                               !self.undoCloseAllAvailable));
 }
 
 // Returns YES if "undo" the close all action can be performed.
 - (BOOL)canUndoCloseAllTab {
-  return /* Ensure the tab grid is currently displayed. */ self.currentState ==
-             ViewRevealState::Revealed &&
-         self.currentPage == TabGridPageRegularTabs &&
+  return self.viewVisible && self.currentPage == TabGridPageRegularTabs &&
          self.undoCloseAllAvailable;
 }
 
@@ -2796,7 +2797,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return self.currentPage != TabGridPageRemoteTabs;
   }
   if (sel_isEqual(action, @selector(keyCommand_find))) {
-    return self.currentState == ViewRevealState::Revealed;
+    return self.viewVisible;
   }
   if (sel_isEqual(action, @selector(keyCommand_closeAll))) {
     return [self canCloseAllTab];
