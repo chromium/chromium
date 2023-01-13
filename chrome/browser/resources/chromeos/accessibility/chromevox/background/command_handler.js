@@ -1775,12 +1775,10 @@ export class CommandHandler extends CommandHandlerInterface {
    */
   toggleSelection_() {
     if (!ChromeVoxState.instance.pageSel) {
-      ChromeVox.earcons.playEarcon(EarconId.SELECTION);
       ChromeVoxState.instance.pageSel = ChromeVoxRange.current;
       DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
           true);
     } else {
-      ChromeVox.earcons.playEarcon(EarconId.SELECTION_REVERSE);
       const root = ChromeVoxRange.current.start.node.root;
       if (root && root.selectionStartObject && root.selectionEndObject &&
           !isNaN(Number(root.selectionStartOffset)) &&
