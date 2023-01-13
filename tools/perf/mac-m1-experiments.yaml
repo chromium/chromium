@@ -1,0 +1,69 @@
+# This preset yaml file is used in conjunction with the Pinpoint CLI
+# For more information, see https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/chromeperf/doc/pinpoint/cli/job-presets.md
+# Example command:
+# /path/to/depot_tools/pinpoint experiment-telemetry-start \
+#   --base-commit=$baseCommit \
+#   --exp-commit=$expCommit \
+#   --attempts=$numAttempts \
+#   --presets-file /path/to/this/file \
+#   --preset=all-composite
+# baseCommit and expCommit are git hashes
+presets:
+  all-composites:
+    telemetry_batch_experiment:
+      - benchmark: speedometer2
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - Speedometer2
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - motionmark_ramp_composite
+      - benchmark: jetstream2
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - JetStream2
+  speedometer2:
+    telemetry_batch_experiment:
+      - benchmark: speedometer2
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - Speedometer2
+  jetstream2:
+    telemetry_batch_experiment:
+      - benchmark: jetstream2
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - JetStream2
+  motionmark-composite:
+    telemetry_batch_experiment:
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - motionmark_ramp_composite
+  motionmark-all:
+    telemetry_batch_experiment:
+      - benchmark: rendering.desktop
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - motionmark_ramp_canvas_arcs
+          - motionmark_ramp_canvas_lines
+          - motionmark_ramp_design
+          - motionmark_ramp_focus
+          - motionmark_ramp_images
+          - motionmark_ramp_leaves
+          - motionmark_ramp_multiply
+          - motionmark_ramp_paths
+          - motionmark_ramp_suits
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-m1_mini_2020-perf-pgo
+        stories:
+          - motionmark_ramp_composite
