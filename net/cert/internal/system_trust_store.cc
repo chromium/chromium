@@ -377,6 +377,10 @@ TrustStoreWin* GetGlobalTrustStoreWinForCRS() {
   static base::NoDestructor<TrustStoreWin> static_trust_store_win;
   return static_trust_store_win.get();
 }
+
+void InitializeTrustStoreForCRSOnWorkerThread() {
+  GetGlobalTrustStoreWinForCRS()->InitializeStores();
+}
 }  // namespace
 
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
@@ -384,6 +388,19 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
   return std::make_unique<SystemTrustStoreChromeWithUnOwnedSystemStore>(
       std::move(chrome_root), GetGlobalTrustStoreWinForCRS());
 }
+
+// We do this in a separate thread as loading the Windows Cert Stores can cause
+// quite a bit of I/O. See crbug.com/1399974 for more context.
+void InitializeTrustStoreWinSystem() {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&InitializeTrustStoreForCRSOnWorkerThread));
+}
+
+#else
+
+void InitializeTrustStoreWinSystem() {}
 
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 

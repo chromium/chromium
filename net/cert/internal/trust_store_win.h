@@ -6,6 +6,7 @@
 #define NET_CERT_INTERNAL_TRUST_STORE_WIN_H_
 
 #include "base/memory/ptr_util.h"
+#include "base/synchronization/lock.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/net_export.h"
@@ -19,9 +20,7 @@ namespace net {
 // TODO(https://crbug.com/1239270): confirm this is thread safe.
 class NET_EXPORT TrustStoreWin : public TrustStore {
  public:
-  // Creates a TrustStoreWin by reading user settings from Windows system
-  // CertStores. If there are errors, will return a TrustStoreWin object
-  // that may not read all Windows system CertStores.
+  // Creates a TrustStoreWin.
   TrustStoreWin();
 
   ~TrustStoreWin() override;
@@ -37,6 +36,11 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
       crypto::ScopedHCERTSTORE intermediate_cert_store,
       crypto::ScopedHCERTSTORE disallowed_cert_store);
 
+  // Loads user settings from Windows CertStores. If there are errors,
+  // the underlyingTrustStoreWin object may not read all Windows
+  // CertStores when making trust decisions.
+  void InitializeStores();
+
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
 
@@ -44,22 +48,17 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
                             base::SupportsUserData* debug_data) override;
 
  private:
-  TrustStoreWin(crypto::ScopedHCERTSTORE root_cert_store,
-                crypto::ScopedHCERTSTORE intermediate_cert_store,
-                crypto::ScopedHCERTSTORE disallowed_cert_store,
-                crypto::ScopedHCERTSTORE all_certs_store);
+  // Inner Impl class for use in initializing stores.
+  class Impl;
 
-  // Cert Collection containing all user-added trust anchors.
-  crypto::ScopedHCERTSTORE root_cert_store_;
+  explicit TrustStoreWin(std::unique_ptr<Impl> impl);
 
-  // Cert Collection containing all user-added intermediates.
-  crypto::ScopedHCERTSTORE intermediate_cert_store_;
+  // Loads user settings from Windows CertStores if not already done and
+  // returns pointer to the Impl.
+  Impl* MaybeInitializeAndGetImpl();
 
-  // Cert Collection for searching via SyncGetIssuersOf()
-  crypto::ScopedHCERTSTORE all_certs_store_;
-
-  // Cert Collection for all disallowed certs.
-  crypto::ScopedHCERTSTORE disallowed_cert_store_;
+  base::Lock init_lock_;
+  std::unique_ptr<Impl> impl_ GUARDED_BY(init_lock_);
 };
 
 }  // namespace net

@@ -103,6 +103,12 @@ NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
 NET_EXPORT void InitializeTrustStoreMacCache();
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Initializes windows system trust store on a worker thread, if the builtin
+// verifier is enabled.
+NET_EXPORT void InitializeTrustStoreWinSystem();
+#endif
+
 }  // namespace net
 
 #endif  // NET_CERT_INTERNAL_SYSTEM_TRUST_STORE_H_
