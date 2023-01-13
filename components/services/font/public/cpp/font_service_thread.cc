@@ -34,6 +34,11 @@ void FontServiceThread::Init(
   // https://linear.app/replay/issue/RUN-999
   CHECK(!recordreplay::AreEventsDisallowed());
 
+  // https://linear.app/replay/issue/RUN-999
+  recordreplay::Diagnostic("[RUN-999] FontServiceThread::Init %d %d",
+                           recordreplay::AreEventsDisallowed(),
+                           recordreplay::AreEventsPassedThrough());
+
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&FontServiceThread::InitImpl, this,
                                         std::move(pending_font_service)));

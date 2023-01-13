@@ -404,6 +404,11 @@ MultiplexRouter::MultiplexRouter(
 }
 
 void MultiplexRouter::StartReceiving() {
+  // https://linear.app/replay/issue/RUN-999
+  recordreplay::Diagnostic("[RUN-999] MultiplexRouter::StartReceiving %d %d",
+                           recordreplay::AreEventsDisallowed(),
+                           recordreplay::AreEventsPassedThrough());
+
   connector_.set_connection_error_handler(
       base::BindOnce(&MultiplexRouter::OnPipeConnectionError,
                      base::Unretained(this), false /* force_async_dispatch */));

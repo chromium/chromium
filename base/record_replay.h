@@ -53,11 +53,13 @@ void OnNetworkStreamStart(const char* id, const char* kind, const char* parentId
 void OnNetworkStreamData(const char* id, size_t offset, size_t length, uint64_t bookmark);
 void OnNetworkStreamEnd(const char* id, size_t length);
 
-bool AreEventsDisallowed();
 void BeginPassThroughEvents();
 void EndPassThroughEvents();
+bool AreEventsPassedThrough();
+
 void BeginDisallowEvents();
 void EndDisallowEvents();
+bool AreEventsDisallowed();
 
 bool FeatureEnabled(const char* feature);
 

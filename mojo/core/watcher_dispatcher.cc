@@ -23,9 +23,14 @@ WatcherDispatcher::WatcherDispatcher(MojoTrapEventHandler handler)
   recordreplay::RegisterPointer("WatcherDispatcher", this);
 
   // https://linear.app/replay/issue/RUN-999
-  CHECK(!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording());
+  recordreplay::Diagnostic("[RUN-999] WatcherDispatcher::WatcherDispatcher %p %d %d %d",
+                           this,
+                           recordreplay::AreEventsDisallowed(),
+                           recordreplay::AreEventsPassedThrough(),
+                           recordreplay::PointerId(this));
 
-  // https://linear.app/replay/issue/RUN-816
+  // https://linear.app/replay/issue/RUN-999
+  CHECK(!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording());
   if (recordreplay::IsRecordingOrReplaying("pointer-ids"))
     CHECK(recordreplay::PointerId(this) || recordreplay::HasDivergedFromRecording());
 }
@@ -295,6 +300,9 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
 }
 
 WatcherDispatcher::~WatcherDispatcher() {
+  // https://linear.app/replay/issue/RUN-999
+  recordreplay::Diagnostic("[RUN-999] WatcherDispatcher::~WatcherDispatcher %p", this);
+
   recordreplay::UnregisterPointer(this);
 }
 
