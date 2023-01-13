@@ -104,8 +104,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
 
   PA_ALWAYS_INLINE raw_ref(raw_ref&& p) noexcept : inner_(std::move(p.inner_)) {
     PA_RAW_PTR_CHECK(inner_.get());  // Catch use-after-move.
-    if constexpr (need_clear_after_move)
+    if constexpr (need_clear_after_move) {
       p.inner_ = nullptr;
+    }
   }
 
   PA_ALWAYS_INLINE raw_ref& operator=(const raw_ref& p) noexcept {
@@ -117,8 +118,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   PA_ALWAYS_INLINE raw_ref& operator=(raw_ref&& p) noexcept {
     PA_RAW_PTR_CHECK(p.inner_.get());  // Catch use-after-move.
     inner_.operator=(std::move(p.inner_));
-    if constexpr (need_clear_after_move)
+    if constexpr (need_clear_after_move) {
       p.inner_ = nullptr;
+    }
     return *this;
   }
 
@@ -135,8 +137,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   PA_ALWAYS_INLINE raw_ref(raw_ref<U, RawPtrType>&& p) noexcept
       : inner_(std::move(p.inner_)) {
     PA_RAW_PTR_CHECK(inner_.get());  // Catch use-after-move.
-    if constexpr (need_clear_after_move)
+    if constexpr (need_clear_after_move) {
       p.inner_ = nullptr;
+    }
   }
 
   static PA_ALWAYS_INLINE raw_ref from_ptr(T* ptr) noexcept {
@@ -156,8 +159,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   PA_ALWAYS_INLINE raw_ref& operator=(raw_ref<U, RawPtrType>&& p) noexcept {
     PA_RAW_PTR_CHECK(p.inner_.get());  // Catch use-after-move.
     inner_.operator=(std::move(p.inner_));
-    if constexpr (need_clear_after_move)
+    if constexpr (need_clear_after_move) {
       p.inner_ = nullptr;
+    }
     return *this;
   }
 

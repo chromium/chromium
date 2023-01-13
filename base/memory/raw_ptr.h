@@ -103,7 +103,7 @@ template <typename RawPtrType>
 inline constexpr bool IsValidRawPtrTypeV =
     std::is_same_v<RawPtrType, RawPtrMayDangle> ||
     std::is_same_v<RawPtrType, RawPtrBanDanglingIfSupported>;
-}
+}  // namespace raw_ptr_traits
 
 namespace internal {
 // These classes/structures are part of the raw_ptr implementation.
@@ -287,8 +287,9 @@ struct MTECheckedPtrImpl {
       uintptr_t read_tag =
           *static_cast<volatile partition_alloc::PartitionTag*>(
               PartitionAllocSupport::TagPointer(ExtractAddress(wrapped_addr)));
-      if (PA_UNLIKELY(tag != read_tag))
+      if (PA_UNLIKELY(tag != read_tag)) {
         PA_IMMEDIATE_CRASH();
+      }
       // See the disambiguation comment above.
       // TODO(kdlee): Ensure that ptr's hardware MTE tag is preserved.
       // TODO(kdlee): Ensure that hardware and software MTE tags don't conflict.
@@ -652,8 +653,10 @@ struct BackupRefPtrImpl {
       PA_BASE_CHECK(ptr_pos_within_alloc !=
                     partition_alloc::PtrPosWithinAlloc::kFarOOB);
 #if PA_CONFIG(USE_OOB_POISON)
-      if (ptr_pos_within_alloc == partition_alloc::PtrPosWithinAlloc::kAllocEnd)
+      if (ptr_pos_within_alloc ==
+          partition_alloc::PtrPosWithinAlloc::kAllocEnd) {
         new_ptr = PoisonOOBPtr(new_ptr);
+      }
 #endif
     } else {
       // Check that the new address didn't migrate into the BRP pool, as it

@@ -146,8 +146,9 @@ int GetCurrentThreadId() {
 
 // static
 void RawPtrAsanService::ErrorReportCallback(const char* report, bool*) {
-  if (strcmp(__asan_get_report_description(), "heap-use-after-free") != 0)
+  if (strcmp(__asan_get_report_description(), "heap-use-after-free") != 0) {
     return;
+  }
 
   struct {
     ProtectionStatus protection_status;

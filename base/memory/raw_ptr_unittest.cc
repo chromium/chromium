@@ -273,11 +273,13 @@ TEST_F(RawPtrTest, BoolOpNotCast) {
   CountingRawPtr<int> ptr = nullptr;
   volatile bool is_valid = !!ptr;  // !! to avoid implicit cast
   is_valid = ptr || is_valid;      // volatile, so won't be optimized
-  if (ptr)
+  if (ptr) {
     is_valid = true;
+  }
   [[maybe_unused]] bool is_not_valid = !ptr;
-  if (!ptr)
+  if (!ptr) {
     is_not_valid = true;
+  }
   std::ignore = IsValidNoCast(ptr);
   std::ignore = IsValidNoCast2(ptr);
   FuncThatAcceptsBool(!ptr);
@@ -1247,8 +1249,9 @@ TEST_F(RawPtrTest, TrivialRelocability) {
   size_t number_of_capacity_changes = 0;
   do {
     size_t previous_capacity = vector.capacity();
-    while (vector.capacity() == previous_capacity)
+    while (vector.capacity() == previous_capacity) {
       vector.emplace_back(&x);
+    }
     number_of_capacity_changes++;
   } while (number_of_capacity_changes < 10);
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
@@ -1837,8 +1840,9 @@ TEST_F(BackupRefPtrTest, DanglingPtrComparison) {
   void* ptr_1 = allocator_.root()->Alloc(16, "");
   void* ptr_2 = allocator_.root()->Alloc(16, "");
 
-  if (ptr_1 > ptr_2)
+  if (ptr_1 > ptr_2) {
     std::swap(ptr_1, ptr_2);
+  }
 
   raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_1 = ptr_1;
   raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_2 = ptr_2;
@@ -2091,8 +2095,9 @@ TEST(MTECheckedPtrImpl, WrapAndSafelyUnwrap) {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
   uintptr_t mask = 0xFFFFFFFFFFFFFFFF;
-  if (sizeof(partition_alloc::PartitionTag) < 2)
+  if (sizeof(partition_alloc::PartitionTag) < 2) {
     mask = 0x00FFFFFFFFFFFFFF;
+  }
 
   uintptr_t wrapped =
       reinterpret_cast<uintptr_t>(MTECheckedPtrImplForTest::WrapRawPtr(ptr));
