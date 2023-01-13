@@ -55,7 +55,7 @@
             label="$i18n{accessibleImageLabelsTitle}"
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
-<if expr="not is_chromeos">
+<if expr="is_win or is_linux or is_macosx">
         <settings-toggle-button id="pdfOcrToggle"
             class="hr"
             hidden$="[[!showPdfOcrToggle_]]"

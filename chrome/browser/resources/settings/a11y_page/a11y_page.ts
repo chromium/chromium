@@ -101,7 +101,11 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       showPdfOcrToggle_: {
         type: Boolean,
         value: function() {
-          return loadTimeData.getBoolean('pdfOcrEnabled');
+          let isPdfOcrEnabled = false;
+          // <if expr="is_win or is_linux or is_macosx">
+          isPdfOcrEnabled = loadTimeData.getBoolean('pdfOcrEnabled');
+          // </if>
+          return isPdfOcrEnabled;
         },
       },
 

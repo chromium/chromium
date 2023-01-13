@@ -46,6 +46,7 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -477,6 +478,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kLiveCaptionLanguageCode] =
       settings_api::PrefType::PREF_TYPE_STRING;
+#endif
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   (*s_allowlist)[::prefs::kAccessibilityPdfOcrAlwaysActive] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif

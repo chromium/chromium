@@ -72,6 +72,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -274,8 +275,10 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
       "showFocusHighlightOption",
       base::FeatureList::IsEnabled(features::kAccessibilityFocusHighlight));
 #endif
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(features::kPdfOcr));
+#endif
 
   AddCaptionSubpageStrings(html_source);
 }
