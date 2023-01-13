@@ -6,7 +6,7 @@ include_rules = [
   '+prng',
   '+testing',
   # Base test_runner includes.
-  '+base/bind.h',
+  '+base/functional/bind.h',
   '+base/test',
   # Hooking up internal logging references.
   '+base/logging.h',

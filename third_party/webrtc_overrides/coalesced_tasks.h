@@ -9,7 +9,7 @@
 #include <memory>
 #include <set>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/functional/any_invocable.h"

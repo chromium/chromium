@@ -33,7 +33,7 @@
 #include "maldoca/ole/stream.h"
 
 #ifdef MALDOCA_IN_CHROMIUM
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #endif
 
 // Directory entry ID constants (from AAF specifications). These are

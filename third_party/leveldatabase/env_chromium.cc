@@ -9,11 +9,11 @@
 #include <limits>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

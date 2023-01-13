@@ -72,7 +72,7 @@ index 2b63bc3f174f..472ca11da960 100644
  #include "maldoca/ole/stream.h"
  
 +#ifdef MALDOCA_IN_CHROMIUM
-+#include "base/callback_helpers.h"
++#include "base/functional/callback_helpers.h"
 +#endif
 +
  // Directory entry ID constants (from AAF specifications). These are
