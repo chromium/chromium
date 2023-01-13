@@ -7335,6 +7335,7 @@ test("unit_tests") {
       "../browser/ui/window_sizer/window_sizer_unittest.cc",
     ]
     sources += [
+      "../browser/apps/app_deduplication_service/app_deduplication_server_connector_unittest.cc",
       "../browser/apps/app_deduplication_service/app_deduplication_service_unittest.cc",
       "../browser/apps/app_discovery_service/app_discovery_service_unittest.cc",
       "../browser/apps/app_discovery_service/game_fetcher_unittest.cc",
@@ -7602,6 +7603,7 @@ test("unit_tests") {
       "//ash/webui/projector_app:test_support",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/scanning",
+      "//chrome/browser/apps/app_deduplication_service/proto:proto",
       "//chrome/browser/apps/app_preload_service/proto:proto",
       "//chrome/browser/apps/app_provisioning_service/proto:proto",
       "//chrome/browser/ash",

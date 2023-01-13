@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace apps::deduplication {
 
 AppDeduplicationService::AppDeduplicationService(Profile* profile)
-    : profile_(profile) {
+    : profile_(profile),
+      server_connector_(std::make_unique<AppDeduplicationServerConnector>()) {
   app_provisioning_data_observeration_.Observe(
       AppProvisioningDataManager::Get());
   app_registry_cache_observation_.Observe(
@@ -181,6 +185,19 @@ absl::optional<uint32_t> AppDeduplicationService::FindDuplicationIndex(
   }
 
   return absl::nullopt;
+}
+
+void AppDeduplicationService::GetDeduplicateDataFromServer() {
+  server_connector_->GetDeduplicateAppsFromServer(
+      profile_->GetURLLoaderFactory(),
+      base::BindOnce(
+          &AppDeduplicationService::OnGetDeduplicateDataFromServerCompleted,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AppDeduplicationService::OnGetDeduplicateDataFromServerCompleted(
+    absl::optional<proto::DeduplicateResponse> response) {
+  // TODO(b/264216262): handle response data and store in disk.
 }
 
 }  // namespace apps::deduplication

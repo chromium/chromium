@@ -8,9 +8,13 @@
 #include <map>
 #include <string>
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 #include "chrome/browser/apps/app_deduplication_service/duplicate_group.h"
 #include "chrome/browser/apps/app_deduplication_service/entry_types.h"
+#include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 #include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -65,6 +69,14 @@ class AppDeduplicationService : public KeyedService,
   // and duplicate group.
   absl::optional<uint32_t> FindDuplicationIndex(const EntryId& entry_id);
 
+  // Calls server connector to make a request to the Fondue server to retrieve
+  // duplicate app group data.
+  void GetDeduplicateDataFromServer();
+
+  // Processes data retrieved by server connector and stores in disk.
+  void OnGetDeduplicateDataFromServerCompleted(
+      absl::optional<proto::DeduplicateResponse> response);
+
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<EntryId, uint32_t> entry_to_group_map_;
   std::map<EntryId, EntryStatus> entry_status_;
@@ -76,6 +88,11 @@ class AppDeduplicationService : public KeyedService,
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observation_{this};
+
+  std::unique_ptr<AppDeduplicationServerConnector> server_connector_;
+
+  // `weak_ptr_factory_` must be the last member of this class.
+  base::WeakPtrFactory<AppDeduplicationService> weak_ptr_factory_{this};
 };
 
 }  // namespace apps::deduplication

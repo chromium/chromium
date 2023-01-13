@@ -4601,6 +4601,8 @@ static_library("browser") {
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
     sources += [
+      "apps/app_deduplication_service/app_deduplication_server_connector.cc",
+      "apps/app_deduplication_service/app_deduplication_server_connector.h",
       "apps/app_deduplication_service/app_deduplication_service.cc",
       "apps/app_deduplication_service/app_deduplication_service.h",
       "apps/app_deduplication_service/app_deduplication_service_factory.cc",
@@ -5017,6 +5019,8 @@ static_library("browser") {
       "//ash/webui/system_extensions_internals_ui/mojom",
       "//build:chromeos_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser/apps/app_deduplication_service/proto",
+      "//chrome/browser/apps/app_deduplication_service/proto:proto",
       "//chrome/browser/apps/app_preload_service/proto",
       "//chrome/browser/apps/app_preload_service/proto:proto",
       "//chrome/browser/apps/app_provisioning_service/proto",
