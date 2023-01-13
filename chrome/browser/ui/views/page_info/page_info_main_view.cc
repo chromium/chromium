@@ -654,6 +654,10 @@ PageInfoMainView::CreateAdPersonalizationSection() {
       base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
           ? IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP
           : IDS_PAGE_INFO_AD_PERSONALIZATION_TOOLTIP;
+  const auto icon =
+      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
+          ? PageInfoViewFactory::GetPrivacySandboxIcon()
+          : PageInfoViewFactory::GetAdPersonalizationIcon();
   ads_personalization_section
       ->AddChildView(std::make_unique<RichHoverButton>(
           base::BindRepeating(
@@ -661,8 +665,7 @@ PageInfoMainView::CreateAdPersonalizationSection() {
                 view->navigation_handler_->OpenAdPersonalizationPage();
               },
               this),
-          PageInfoViewFactory::GetAdPersonalizationIcon(),
-          l10n_util::GetStringUTF16(header_id), std::u16string(),
+          icon, l10n_util::GetStringUTF16(header_id), std::u16string(),
           l10n_util::GetStringUTF16(tooltip_id), std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()))
       ->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);

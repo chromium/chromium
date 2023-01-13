@@ -463,6 +463,12 @@ const ui::ImageModel PageInfoViewFactory::GetAdPersonalizationIcon() {
 }
 
 // static
+const ui::ImageModel PageInfoViewFactory::GetPrivacySandboxIcon() {
+  return ui::ImageModel::FromVectorIcon(vector_icons::kPrivacySandboxIcon,
+                                        ui::kColorIcon, GetIconSize());
+}
+
+// static
 const ui::ImageModel PageInfoViewFactory::GetManagedPermissionIcon(
     const PageInfo::PermissionInfo& info) {
   const gfx::VectorIcon& managed_vector_icon =

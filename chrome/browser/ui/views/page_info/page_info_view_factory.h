@@ -134,6 +134,9 @@ class PageInfoViewFactory {
   // Returns the icon for the 'Ad personalization' button.
   static const ui::ImageModel GetAdPersonalizationIcon();
 
+  // Returns the icon for the 'Ad privacy' button.
+  static const ui::ImageModel GetPrivacySandboxIcon();
+
   static const ui::ImageModel GetEnforcedByPolicyIcon();
   static const ui::ImageModel GetEnforcedByExtensionIcon();
   static const ui::ImageModel GetEnforcedBySettingsIcon();
