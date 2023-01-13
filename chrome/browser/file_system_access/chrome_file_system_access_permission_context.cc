@@ -1111,7 +1111,7 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
            &has_extended_permissions](const std::unique_ptr<Object>& object) {
             auto last_activity_time =
                 base::ValueToTime(
-                    object->value.FindKey(kPermissionLastUsedTimeKey))
+                    object->value.GetDict().Find(kPermissionLastUsedTimeKey))
                     .value_or(base::Time::Min());
             return this->PersistentPermissionIsExpired(
                 last_activity_time, has_extended_permissions);
@@ -1148,8 +1148,8 @@ ChromeFileSystemAccessPermissionContext::GetAllGrantedObjects() {
                             OriginHasExtendedPermissions(origin);
                       }
                       auto last_activity_time =
-                          base::ValueToTime(
-                              object->value.FindKey(kPermissionLastUsedTimeKey))
+                          base::ValueToTime(object->value.GetDict().Find(
+                                                kPermissionLastUsedTimeKey))
                               .value_or(base::Time::Min());
                       return this->PersistentPermissionIsExpired(
                           last_activity_time, has_extended_permissions);
@@ -1163,7 +1163,7 @@ std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
     const base::Value& object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto optional_path =
-      base::ValueToFilePath(object.FindKey(kPermissionPathKey));
+      base::ValueToFilePath(object.GetDict().Find(kPermissionPathKey));
   DCHECK(optional_path);
   return std::string(PathAsPermissionKey(optional_path.value()));
 }
@@ -1171,15 +1171,28 @@ std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
 bool ChromeFileSystemAccessPermissionContext::IsValidObject(
     const base::Value& object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // At least one of the readable/writable keys needs to be set.
-  if (!object.is_dict() || (object.DictSize() != 4 && object.DictSize() != 5) ||
-      !object.FindKey(kPermissionPathKey) ||
-      !object.FindBoolKey(kPermissionIsDirectoryKey) ||
-      (!object.FindBoolKey(kPermissionWritableKey) &&
-       !object.FindBoolKey(kPermissionReadableKey)) ||
-      !object.FindKey(kPermissionLastUsedTimeKey)) {
+
+  if (!object.is_dict()) {
     return false;
   }
+
+  const base::Value::Dict& dict = object.GetDict();
+  if (dict.size() != 4 && dict.size() != 5) {
+    return false;
+  }
+
+  // At least one of the readable/writable keys needs to be set.
+  if (!dict.FindBool(kPermissionWritableKey) &&
+      !dict.FindBool(kPermissionReadableKey)) {
+    return false;
+  }
+
+  if (!dict.contains(kPermissionPathKey) ||
+      !dict.FindBool(kPermissionIsDirectoryKey) ||
+      !dict.contains(kPermissionLastUsedTimeKey)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -1187,7 +1200,7 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetObjectDisplayName(
     const base::Value& object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto optional_path =
-      base::ValueToFilePath(object.FindKey(kPermissionPathKey));
+      base::ValueToFilePath(object.GetDict().Find(kPermissionPathKey));
   DCHECK(optional_path);
   return optional_path->LossyDisplayName();
 }
@@ -1349,7 +1362,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
     // dict, it should be first in line for eviction.
     auto timestamp = base::Time::Min();
     if (entry.second.is_dict()) {
-      timestamp = base::ValueToTime(entry.second.FindKey(kTimestampKey))
+      timestamp = base::ValueToTime(entry.second.GetDict().Find(kTimestampKey))
                       .value_or(base::Time::Min());
     }
     entries.emplace_back(timestamp, entry.first);
@@ -1417,7 +1430,7 @@ ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
   path_info.type = type_int == static_cast<int>(PathType::kExternal)
                        ? PathType::kExternal
                        : PathType::kLocal;
-  path_info.path = base::ValueToFilePath(entry->FindKey(kPathKey))
+  path_info.path = base::ValueToFilePath(entry->GetDict().Find(kPathKey))
                        .value_or(base::FilePath());
   return path_info;
 }
@@ -1532,7 +1545,7 @@ ChromeFileSystemAccessPermissionContext::GetPermissionGrants(
     for (auto& persisted_grant_object : persisted_grant_objects) {
       const base::FilePath persisted_path =
           base::ValueToFilePath(
-              persisted_grant_object->value.FindKey(kPermissionPathKey))
+              persisted_grant_object->value.GetDict().Find(kPermissionPathKey))
               .value();
       HandleType handle_type =
           persisted_grant_object->value.FindBoolKey(kPermissionIsDirectoryKey)
@@ -1843,7 +1856,7 @@ void ChromeFileSystemAccessPermissionContext::
   bool found = false;
   if (it != origins_.end()) {
     base::FilePath path =
-        base::ValueToFilePath(value.FindKey(kPermissionPathKey)).value();
+        base::ValueToFilePath(value.GetDict().Find(kPermissionPathKey)).value();
     HandleType handle_type =
         value.FindBoolKey(kPermissionIsDirectoryKey).value()
             ? HandleType::kDirectory
@@ -1872,7 +1885,7 @@ void ChromeFileSystemAccessPermissionContext::
     GrantObjectPermission(origin, std::move(value));
   } else {
     auto last_activity_time =
-        base::ValueToTime(value.FindKey(kPermissionLastUsedTimeKey))
+        base::ValueToTime(value.GetDict().Find(kPermissionLastUsedTimeKey))
             .value_or(base::Time::Min());
     // Allow a grace period before revoking permissions to allow for better
     // metrics regarding permission timeouts.
@@ -1952,7 +1965,8 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
 
   auto has_extended_permissions = OriginHasExtendedPermissions(origin);
   auto last_activity_time =
-      base::ValueToTime(grant->FindKey(kPermissionLastUsedTimeKey)).value();
+      base::ValueToTime(grant->GetDict().Find(kPermissionLastUsedTimeKey))
+          .value();
 
   if (options == MetricsOptions::kRecord) {
     base::UmaHistogramCustomTimes(
