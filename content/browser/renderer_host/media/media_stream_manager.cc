@@ -1073,6 +1073,9 @@ class MediaStreamManager::DeviceRequest {
     multi_capture_service->MultiCaptureStopped(label);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
     content::GetMultiCaptureService().NotifyMultiCaptureStopped(label);
+#else
+    // TOOD(crbug.com/1404185): Implement usage indicators for linux.
+    NOT_REACHED();
 #endif
   }
 
