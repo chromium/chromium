@@ -244,8 +244,8 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
     }
     case ash::SHUTDOWN_GUEST_OS:
       if (app_id() == guest_os::kTerminalSystemAppId) {
-        crostini::CrostiniManager::GetForProfile(profile())->StopVm(
-            crostini::kCrostiniDefaultVmName, base::DoNothing());
+        crostini::CrostiniManager::GetForProfile(profile())->StopRunningVms(
+            base::DoNothing());
       } else if (app_id() == plugin_vm::kPluginVmShelfAppId) {
         plugin_vm::PluginVmManagerFactory::GetForProfile(profile())
             ->StopPluginVm(plugin_vm::kPluginVmName, /*force=*/false);

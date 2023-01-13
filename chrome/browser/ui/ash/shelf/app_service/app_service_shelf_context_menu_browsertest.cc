@@ -10,12 +10,16 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -257,4 +261,33 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
                 .GetVectorIcon()
                 .vector_icon(),
             &views::kOpenIcon);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
+                       ShutDownGuestOs) {
+  ash::SystemWebAppManager::Get(browser()->profile())
+      ->InstallSystemAppsForTesting();
+  auto menu_section = GetContextMenuSectionForAppCommand(
+      guest_os::kTerminalSystemAppId, ash::SHUTDOWN_GUEST_OS);
+  ASSERT_FALSE(menu_section);
+
+  auto* crostini_manager =
+      crostini::CrostiniManager::GetForProfile(browser()->profile());
+  crostini_manager->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+
+  menu_section = GetContextMenuSectionForAppCommand(
+      guest_os::kTerminalSystemAppId, ash::SHUTDOWN_GUEST_OS);
+  ASSERT_TRUE(menu_section);
+
+  EXPECT_GT(menu_section->command_index, 0u);
+  EXPECT_FALSE(
+      menu_section->menu_model->GetSubmenuModelAt(menu_section->command_index));
+  EXPECT_EQ(menu_section->menu_model->GetLabelAt(menu_section->command_index),
+            u"Shut down Linux");
+  EXPECT_EQ(menu_section->menu_model->GetIconAt(menu_section->command_index)
+                .GetVectorIcon()
+                .vector_icon(),
+            &kShutdownGuestOsIcon);
 }

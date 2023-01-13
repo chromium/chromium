@@ -185,7 +185,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
     case ash::SHUTDOWN_GUEST_OS:
       if (item().id.app_id == guest_os::kTerminalSystemAppId) {
         crostini::CrostiniManager::GetForProfile(controller()->profile())
-            ->StopVm(crostini::kCrostiniDefaultVmName, base::DoNothing());
+            ->StopRunningVms(base::DoNothing());
       } else if (item().id.app_id == plugin_vm::kPluginVmShelfAppId) {
         plugin_vm::PluginVmManagerFactory::GetForProfile(
             controller()->profile())

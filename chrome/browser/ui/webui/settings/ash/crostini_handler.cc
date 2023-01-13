@@ -701,10 +701,8 @@ void CrostiniHandler::OnContainerShutdown(
 void CrostiniHandler::HandleShutdownCrostini(const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
 
-  const std::string vm_name = "termina";
-
-  crostini::CrostiniManager::GetForProfile(profile_)->StopVm(std::move(vm_name),
-                                                             base::DoNothing());
+  crostini::CrostiniManager::GetForProfile(profile_)->StopRunningVms(
+      base::DoNothing());
 }
 
 void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {

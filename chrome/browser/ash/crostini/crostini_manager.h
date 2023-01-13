@@ -279,6 +279,10 @@ class CrostiniManager : public KeyedService,
   // or after the method call finishes.
   void StopVm(std::string name, CrostiniResultCallback callback);
 
+  // Calls |StopVm| for each member of |running_vms_| not already in state
+  // |STOPPING|.
+  void StopRunningVms(CrostiniResultCallback callback);
+
   // Asynchronously retrieve the Termina VM kernel version using concierge's
   // GetVmEnterpriseReportingInfo method and store it in prefs.
   void UpdateTerminaVmKernelVersion();

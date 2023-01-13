@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -1571,6 +1572,36 @@ void CrostiniManager::StopVm(std::string name,
       std::move(request),
       base::BindOnce(&CrostiniManager::OnStopVm, weak_ptr_factory_.GetWeakPtr(),
                      std::move(name), std::move(callback)));
+}
+
+void CrostiniManager::StopRunningVms(CrostiniResultCallback callback) {
+  std::vector<std::string> names;
+  LOG(WARNING) << "StopRunningVms";
+  for (const auto& it : running_vms_) {
+    if (it.second.state != VmState::STOPPING) {
+      names.push_back(it.first);
+    }
+  }
+  auto barrier = base::BarrierCallback<CrostiniResult>(
+      names.size(), base::BindOnce(
+                        [](CrostiniResultCallback callback,
+                           std::vector<CrostiniResult> results) {
+                          auto result = CrostiniResult::SUCCESS;
+                          for (auto res : results) {
+                            if (res != CrostiniResult::SUCCESS) {
+                              LOG(ERROR) << "StopVm failure code "
+                                         << static_cast<int>(res);
+                              result = res;
+                              break;
+                            }
+                          }
+                          std::move(callback).Run(result);
+                        },
+                        std::move(callback)));
+  for (const auto& name : names) {
+    LOG(WARNING) << "Stopping vm " << name;
+    StopVm(name, barrier);
+  }
 }
 
 void CrostiniManager::UpdateTerminaVmKernelVersion() {
