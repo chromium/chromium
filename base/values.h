@@ -33,9 +33,6 @@
 
 namespace base {
 
-class DictAdapterForMigration;
-class DictionaryValue;
-
 // The `Value` class is a variant type can hold one of the following types:
 // - null
 // - bool
@@ -176,25 +173,6 @@ class DictionaryValue;
 //     return base::Value(std::move(dict));
 //   }
 //
-// To avoid losing type information with the new variant-based design, migration
-// off the deprecated types should use more specific subtypes where possible:
-//
-// OLD WAY:
-//
-//   void AlwaysTakesDict(std::unique_ptr<base::DictionaryValue> dict);
-//
-// DEPRECATED (PREVIOUS) WAY:
-//
-//   void AlwaysTakesList(std::vector<base::Value> list);
-//   void AlwaysTakesListAlterantive3(base::Value::ListStorage);
-//   void AlwaysTakesDict(base::flat_map<std::string, base::Value> dict);
-//   void AlwaysTakesDictAlternative(base::Value::DictStorage);
-//
-// NEW WAY:
-//
-//   void AlwaysTakesList(base::Value::List list);
-//   void AlwaysTakesDict(base::Value::Dict dict);
-//
 // Migrating code may require conversions on API boundaries. If something seems
 // awkward/inefficient, please reach out to #code-health-rotation on Slack for
 // consultation: it is entirely possible that certain classes of APIs may be
@@ -227,13 +205,8 @@ class BASE_EXPORT GSL_OWNER Value {
   };
 
   // Adaptors for converting from the old way to the new way and vice versa.
-  // Note: `DictionaryValue` has been deprecated.
-  // `AsDictionaryValue()` performs a `static_cast` to these types (as opposed
-  // to the preferred `GetDict()` API - which uses a variant lookup
-  // `absl::get<>()`).
   static Value FromUniquePtrValue(std::unique_ptr<Value> val);
   static std::unique_ptr<Value> ToUniquePtrValue(Value val);
-  static const DictionaryValue& AsDictionaryValue(const Value& val);
 
   Value() noexcept;
 
@@ -1170,88 +1143,6 @@ class BASE_EXPORT GSL_OWNER Value {
       data_;
 };
 
-// DictAdapterForMigration is an adapter class to help the migration of
-// base::DictionaryValue to base::Value::Dict.
-//
-// DictAdapterForMigration mirrors the API of base::Value::Dict,
-// and is implicitly constructable from both base::DictionaryValue
-// and base::Value::Dict. Currently this is read-only, similar to StringPiece.
-//
-// To migrate a function that takes a base::DictionaryValue, change the
-// signature to take DictAdapterForMigration instead, and update the
-// function body to use the Dict::Value API.
-// The call sites can be left unchanged and migrated later.
-//
-// Note that DictAdapterForMigration is intended as a shim to help migrations,
-// and will go away with base::DictionaryValue.
-class BASE_EXPORT GSL_POINTER DictAdapterForMigration {
- public:
-  using iterator = detail::dict_iterator;
-  using const_iterator = detail::const_dict_iterator;
-
-  DictAdapterForMigration() = delete;
-
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  DictAdapterForMigration(const Value::Dict&) noexcept;
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  DictAdapterForMigration(const DictionaryValue&) noexcept;
-
-  bool empty() const;
-  size_t size() const;
-
-  const_iterator begin() const;
-  const_iterator cbegin() const;
-  const_iterator end() const;
-  const_iterator cend() const;
-
-  bool contains(base::StringPiece key) const;
-
-  Value::Dict Clone() const;
-
-  const Value* Find(StringPiece key) const;
-  absl::optional<bool> FindBool(StringPiece key) const;
-  absl::optional<int> FindInt(StringPiece key) const;
-  absl::optional<double> FindDouble(StringPiece key) const;
-  const std::string* FindString(StringPiece key) const;
-  const Value::BlobStorage* FindBlob(StringPiece key) const;
-  const Value::Dict* FindDict(StringPiece key) const;
-  const Value::List* FindList(StringPiece key) const;
-
-  const Value* FindByDottedPath(StringPiece path) const;
-
-  absl::optional<bool> FindBoolByDottedPath(StringPiece path) const;
-  absl::optional<int> FindIntByDottedPath(StringPiece path) const;
-  absl::optional<double> FindDoubleByDottedPath(StringPiece path) const;
-  const std::string* FindStringByDottedPath(StringPiece path) const;
-  const Value::BlobStorage* FindBlobByDottedPath(StringPiece path) const;
-  const Value::Dict* FindDictByDottedPath(StringPiece path) const;
-  const Value::List* FindListByDottedPath(StringPiece path) const;
-
-  std::string DebugString() const;
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  void WriteIntoTrace(perfetto::TracedValue) const;
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-
-  const Value::Dict& dict_for_test() const;
-
- private:
-  const raw_ref<const Value::Dict> dict_;
-};
-
-// DictionaryValue provides a key-value dictionary with (optional) "path"
-// parsing for recursive access; see the comment at the top of the file. Keys
-// are std::string's and should be UTF-8 encoded.
-//
-// DEPRECATED: prefer `Value::Dict`.
-class BASE_EXPORT DictionaryValue : public Value {
- public:
-  // Returns `value` if it is a dictionary, nullptr otherwise.
-  static std::unique_ptr<DictionaryValue> From(std::unique_ptr<Value> value);
-
-  DictionaryValue();
-};
-
 // Adapter so `Value::Dict` or `Value::List` can be directly passed to JSON
 // serialization methods without having to clone the contents and transfer
 // ownership of the clone to a `Value` wrapper object.
@@ -1382,13 +1273,6 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& out,
                                      const Value::Dict& dict);
 BASE_EXPORT std::ostream& operator<<(std::ostream& out,
                                      const Value::List& list);
-
-// Hints for DictionaryValue otherwise, gtest tends to prefer the default
-// template implementation over an upcast to Value.
-BASE_EXPORT inline std::ostream& operator<<(std::ostream& out,
-                                            const DictionaryValue& value) {
-  return out << static_cast<const Value&>(value);
-}
 
 // Stream operator so that enum class Types can be used in log statements.
 BASE_EXPORT std::ostream& operator<<(std::ostream& out,

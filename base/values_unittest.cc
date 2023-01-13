@@ -2031,20 +2031,19 @@ TEST(ValuesTest, Comparisons) {
 }
 
 TEST(ValuesTest, DeepCopyCovariantReturnTypes) {
-  DictionaryValue original_dict;
-  Value* null_weak = original_dict.SetKey("null", Value());
-  Value* bool_weak = original_dict.SetKey("bool", Value(true));
-  Value* int_weak = original_dict.SetKey("int", Value(42));
-  Value* double_weak = original_dict.SetKey("double", Value(3.14));
-  Value* string_weak = original_dict.SetKey("string", Value("hello"));
-  Value* string16_weak = original_dict.SetKey("string16", Value(u"hello16"));
-  Value* binary_weak =
-      original_dict.SetKey("binary", Value(Value::BlobStorage(42, '!')));
+  Value::Dict original_dict;
+  Value* null_weak = original_dict.Set("null", Value());
+  Value* bool_weak = original_dict.Set("bool", true);
+  Value* int_weak = original_dict.Set("int", 42);
+  Value* double_weak = original_dict.Set("double", 3.14);
+  Value* string_weak = original_dict.Set("string", "hello");
+  Value* string16_weak = original_dict.Set("string16", u"hello16");
+  Value* binary_weak = original_dict.Set("binary", Value::BlobStorage(42, '!'));
 
   Value::List list;
   list.Append(0);
   list.Append(1);
-  Value* list_weak = original_dict.SetKey("list", Value(std::move(list)));
+  Value* list_weak = original_dict.Set("list", std::move(list));
 
   auto copy_dict = std::make_unique<Value>(original_dict.Clone());
   auto copy_null = std::make_unique<Value>(null_weak->Clone());
@@ -2125,25 +2124,25 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
   //
   // Just remove this test when the old API is removed.
 
-  std::unique_ptr<DictionaryValue> child(new DictionaryValue);
-  child->SetStringKey("test", "value");
-  EXPECT_EQ(1U, child->DictSize());
+  Value::Dict child;
+  child.Set("test", "value");
+  EXPECT_EQ(1U, child.size());
 
-  std::string* value = child->GetDict().FindString("test");
+  std::string* value = child.FindString("test");
   ASSERT_TRUE(value);
   EXPECT_EQ("value", *value);
 
-  std::unique_ptr<DictionaryValue> base(new DictionaryValue);
-  base->GetDict().Set("dict", std::move(child->GetDict()));
-  EXPECT_EQ(1U, base->DictSize());
+  Value base(Value::Type::DICT);
+  base.GetDict().Set("dict", std::move(child));
+  EXPECT_EQ(1U, base.GetDict().size());
 
-  base::Value::Dict* original_child = base->GetDict().FindDict("dict");
+  base::Value::Dict* original_child = base.GetDict().FindDict("dict");
   EXPECT_FALSE(original_child->empty());
 
-  std::unique_ptr<DictionaryValue> merged(new DictionaryValue);
-  merged->MergeDictionary(base.get());
-  EXPECT_EQ(1U, merged->DictSize());
-  base::Value::Dict* ptr = merged->GetDict().FindDict("dict");
+  Value merged(Value::Type::DICT);
+  merged.MergeDictionary(&base);
+  EXPECT_EQ(1U, merged.GetDict().size());
+  base::Value::Dict* ptr = merged.GetDict().FindDict("dict");
   EXPECT_FALSE(ptr->empty());
   EXPECT_NE(original_child, ptr);
   value = ptr->FindString("test");
@@ -2151,7 +2150,6 @@ TEST(ValuesTest, MergeDictionaryDeepCopy) {
   EXPECT_EQ("value", *value);
 
   original_child->Set("test", "overwrite");
-  base.reset();
   value = ptr->FindString("test");
   ASSERT_TRUE(value);
   EXPECT_EQ("value", *value);
@@ -2253,9 +2251,9 @@ TEST(ValuesTest, SelfSwap) {
 }
 
 TEST(ValuesTest, FromToUniquePtrValue) {
-  std::unique_ptr<DictionaryValue> dict = std::make_unique<DictionaryValue>();
-  dict->SetStringKey("name", "Froogle");
-  dict->SetStringKey("url", "http://froogle.com");
+  std::unique_ptr<Value> dict = std::make_unique<Value>(Value::Type::DICT);
+  dict->GetDict().Set("name", "Froogle");
+  dict->GetDict().Set("url", "http://froogle.com");
   Value dict_copy = dict->Clone();
 
   Value dict_converted = Value::FromUniquePtrValue(std::move(dict));
@@ -2309,78 +2307,6 @@ TEST(ValuesTest, TracingSupport) {
   }
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-
-TEST(DictAdapterForMigrationTest, ImplicitConstruction) {
-  {
-    Value::Dict dict;
-    dict.Set("hello", "world");
-    DictAdapterForMigration a = dict;
-    EXPECT_EQ(&dict, &a.dict_for_test());
-  }
-  {
-    DictionaryValue dict;
-    dict.SetStringKey("hello", "world");
-    DictAdapterForMigration v = dict;
-    EXPECT_EQ(&dict.GetDict(), &v.dict_for_test());
-  }
-}
-
-TEST(DictAdapterForMigrationTest, BasicFunctions) {
-  Value::Dict dict;
-  DictAdapterForMigration a = dict;
-
-  EXPECT_TRUE(a.empty());
-  EXPECT_EQ(a.size(), 0u);
-
-  dict.Set("hello", "world");
-  EXPECT_FALSE(a.empty());
-  EXPECT_EQ(a.size(), 1u);
-
-  EXPECT_EQ(dict.cbegin(), a.begin());
-  EXPECT_EQ(dict.cend(), a.end());
-  EXPECT_EQ(dict.cbegin(), a.cbegin());
-  EXPECT_EQ(dict.cend(), a.cend());
-
-  EXPECT_TRUE(a.contains("hello"));
-  EXPECT_FALSE(a.contains("world"));
-
-  EXPECT_EQ(a.Clone(), dict);
-
-  EXPECT_EQ(a.DebugString(), dict.DebugString());
-}
-
-TEST(DictAdapterForMigrationTest, Find) {
-  Value::Dict dict;
-  dict.Set("null", Value());
-  dict.Set("bool", true);
-  dict.Set("int", 2);
-  dict.Set("double", 3.0);
-  dict.Set("string", std::string("4"));
-  dict.Set("blob", Value(Value::BlobStorage()));
-  dict.Set("list", Value::List());
-  dict.Set("dict", Value::Dict());
-  DictAdapterForMigration a = dict;
-
-  EXPECT_EQ(a.Find("n/a"), nullptr);
-  EXPECT_EQ(*a.Find("null"), Value());
-  EXPECT_EQ(a.FindBool("bool"), true);
-  EXPECT_EQ(a.FindInt("int"), 2);
-  EXPECT_EQ(a.FindDouble("double"), 3.0);
-  EXPECT_EQ(*a.FindString("string"), "4");
-  EXPECT_EQ(*a.FindBlob("blob"), Value::BlobStorage());
-  EXPECT_EQ(*a.FindList("list"), Value::List());
-  EXPECT_EQ(*a.FindDict("dict"), Value::Dict());
-
-  EXPECT_EQ(a.FindByDottedPath("n/a"), nullptr);
-  EXPECT_EQ(*a.FindByDottedPath("null"), Value());
-  EXPECT_EQ(a.FindBoolByDottedPath("bool"), true);
-  EXPECT_EQ(a.FindIntByDottedPath("int"), 2);
-  EXPECT_EQ(a.FindDoubleByDottedPath("double"), 3.0);
-  EXPECT_EQ(*a.FindStringByDottedPath("string"), "4");
-  EXPECT_EQ(*a.FindBlobByDottedPath("blob"), Value::BlobStorage());
-  EXPECT_EQ(*a.FindListByDottedPath("list"), Value::List());
-  EXPECT_EQ(*a.FindDictByDottedPath("dict"), Value::Dict());
-}
 
 TEST(ValueViewTest, BasicConstruction) {
   {
