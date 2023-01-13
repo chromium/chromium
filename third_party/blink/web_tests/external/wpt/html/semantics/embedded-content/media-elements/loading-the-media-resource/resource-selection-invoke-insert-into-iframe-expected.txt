@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL NOT invoking resource selection by inserting into other document with src set assert_unreached: Reached unreachable code
+Harness: the test ran to completion.
+

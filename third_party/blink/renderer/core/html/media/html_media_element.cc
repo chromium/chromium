@@ -603,10 +603,20 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   // Experimental: Try to avoid destroying the media player when transferring a
   // media element to a new document. This is a work in progress, and may cause
   // security and/or stability issues.
+  // Normally, moving a player between documents requires destroying the
+  // media player because web media player cannot outlive the render frame that
+  // holds the element which creates the player. However, when transferring a
+  // media player to a same-origin picture-in-picture window opened by this
+  // document, it is safe to reuse because a picture-in-picture window is
+  // guaranteed not to outlive its opener document because
+  // DocumentPictureInPictureController watches the destruction and navigation
+  // of the opener's WebContents.
   const bool reuse_player =
       RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled() &&
       new_origin && old_origin &&
-      old_origin->IsSameOriginWith(new_origin.get());
+      old_origin->IsSameOriginWith(new_origin.get()) &&
+      (GetDocument().domWindow()->IsPictureInPictureWindow() ||
+       old_document.domWindow()->IsPictureInPictureWindow());
   if (!reuse_player) {
     // Don't worry about notifications from any previous document if we're not
     // re-using the player.
