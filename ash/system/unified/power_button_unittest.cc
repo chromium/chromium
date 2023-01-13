@@ -33,8 +33,7 @@ class PowerButtonTest : public NoSessionAshTestBase {
   ~PowerButtonTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
     NoSessionAshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
@@ -63,27 +62,31 @@ class PowerButtonTest : public NoSessionAshTestBase {
   bool IsMenuShowing() { return button_->IsMenuShowing(); }
 
   views::View* GetRestartButton() {
-    if (!IsMenuShowing())
+    if (!IsMenuShowing()) {
       return nullptr;
+    }
     return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_RESTART_MENU_BUTTON);
   }
 
   views::View* GetPowerOffButton() {
-    if (!IsMenuShowing())
+    if (!IsMenuShowing()) {
       return nullptr;
+    }
     return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_OFF_MENU_BUTTON);
   }
 
   views::View* GetSignOutButton() {
-    if (!IsMenuShowing())
+    if (!IsMenuShowing()) {
       return nullptr;
+    }
 
     return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_SIGNOUT_MENU_BUTTON);
   }
 
   views::View* GetLockButton() {
-    if (!IsMenuShowing())
+    if (!IsMenuShowing()) {
       return nullptr;
+    }
 
     return GetMenuView()->GetMenuItemByID(VIEW_ID_QS_POWER_LOCK_MENU_BUTTON);
   }

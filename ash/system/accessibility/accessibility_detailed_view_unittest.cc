@@ -130,8 +130,9 @@ bool IsCheckedForAccessibility(views::View* view) {
 // toggled.
 bool IsToggleButtonToggled(HoverHighlightView* item) {
   views::View* right_view = item->right_view();
-  if (!views::IsViewClass<TrayToggleButton>(right_view))
+  if (!views::IsViewClass<TrayToggleButton>(right_view)) {
     return false;
+  }
   return static_cast<TrayToggleButton*>(right_view)->GetIsOn();
 }
 
@@ -542,8 +543,9 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     // UnifiedAccessibilityDetailedViewController calls
     // AccessibilityDetailedView::OnAccessibilityStatusChanged. Spoof that
     // by calling it directly here.
-    if (detailed_menu_)
+    if (detailed_menu_) {
       detailed_menu_->OnAccessibilityStatusChanged();
+    }
   }
 
   AccessibilityControllerImpl* controller_ = nullptr;
@@ -557,8 +559,7 @@ class AccessibilityDetailedViewQsRevampTest
     : public AccessibilityDetailedViewTest {
  public:
   AccessibilityDetailedViewQsRevampTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
  private:
@@ -1160,8 +1161,9 @@ class AccessibilityDetailedViewSodaTest
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
     std::vector<base::test::FeatureRef> enabled_features(
         {ash::features::kOnDeviceSpeechRecognition});
-    if (GetParam() == SodaFeature::kLiveCaption)
+    if (GetParam() == SodaFeature::kLiveCaption) {
       enabled_features.push_back(media::kLiveCaptionMultiLanguage);
+    }
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();

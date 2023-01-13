@@ -30,11 +30,9 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
  public:
   IMEFeaturePodControllerTest() {
     if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures(
-          {features::kQsRevamp, features::kQsRevampWip}, {});
+      feature_list_.InitAndEnableFeature(features::kQsRevamp);
     } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kQsRevamp, features::kQsRevampWip});
+      feature_list_.InitAndDisableFeature(features::kQsRevamp);
     }
   }
 
@@ -97,19 +95,22 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
   // Creates |count| simulated active IMEs.
   void SetActiveIMECount(int count) {
     available_imes_.resize(count);
-    for (int i = 0; i < count; ++i)
+    for (int i = 0; i < count; ++i) {
       available_imes_[i].id = base::NumberToString(i);
+    }
     RefreshImeController();
   }
 
   void RefreshImeController() {
     std::vector<ImeInfo> available_imes;
-    for (const auto& ime : available_imes_)
+    for (const auto& ime : available_imes_) {
       available_imes.push_back(ime);
+    }
 
     std::vector<ImeMenuItem> menu_items;
-    for (const auto& item : menu_items_)
+    for (const auto& item : menu_items_) {
       menu_items_.push_back(item);
+    }
 
     Shell::Get()->ime_controller()->RefreshIme(
         current_ime_.id, std::move(available_imes), std::move(menu_items));

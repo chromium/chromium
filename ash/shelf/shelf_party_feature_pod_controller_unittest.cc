@@ -27,12 +27,10 @@ class ShelfPartyFeaturePodControllerTest
   ShelfPartyFeaturePodControllerTest() {
     if (IsQsRevampEnabled()) {
       feature_list_.InitWithFeatures(
-          {features::kShelfParty, features::kQsRevamp, features::kQsRevampWip},
-          {});
+          {features::kShelfParty, features::kQsRevamp}, {});
     } else {
-      feature_list_.InitWithFeatures(
-          {features::kShelfParty},
-          {features::kQsRevamp, features::kQsRevampWip});
+      feature_list_.InitWithFeatures({features::kShelfParty},
+                                     {features::kQsRevamp});
     }
   }
 

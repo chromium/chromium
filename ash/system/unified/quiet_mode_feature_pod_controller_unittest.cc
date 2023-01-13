@@ -38,7 +38,6 @@ class QuietModeFeaturePodControllerTest
     }
     if (IsQsRevampEnabled()) {
       enabled_features.push_back(features::kQsRevamp);
-      enabled_features.push_back(features::kQsRevampWip);
     }
     feature_list_.InitWithFeatures(enabled_features, /*disabled_features*/ {});
     NoSessionAshTestBase::SetUp();

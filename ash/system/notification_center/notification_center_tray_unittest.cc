@@ -31,8 +31,7 @@ class NotificationCenterTrayTest : public AshTestBase {
 
   void SetUp() override {
     // Enable quick settings revamp feature.
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
 
     AshTestBase::SetUp();
 

@@ -34,9 +34,7 @@ TrayNetworkStateModel* GetNetworkStateModel() {
 class VPNFeaturePodControllerTest : public AshTestBase {
  public:
   VPNFeaturePodControllerTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kQsRevamp, features::kQsRevampWip},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   // AshTestBase:

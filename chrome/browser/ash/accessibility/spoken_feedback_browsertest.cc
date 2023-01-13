@@ -350,8 +350,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
 class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  protected:
   NotificationCenterSpokenFeedbackTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
   ~NotificationCenterSpokenFeedbackTest() override = default;
 
@@ -1747,8 +1746,9 @@ class TestBacklightsObserver : public ScreenBacklightObserver {
 
   // ScreenBacklightObserver:
   void OnBacklightsForcedOffChanged(bool backlights_forced_off) override {
-    if (backlights_forced_off_ == backlights_forced_off)
+    if (backlights_forced_off_ == backlights_forced_off) {
       return;
+    }
 
     backlights_forced_off_ = backlights_forced_off;
     if (run_loop_) {
@@ -1784,8 +1784,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
   sm_.ExpectSpeech("Turn off screen?");
   sm_.ExpectSpeech("Dialog");
-  // TODO(crbug.com/1228418) - Improve the generation of summaries across ChromeOS.
-  // Expect the content to be spoken once it has been improved.
+  // TODO(crbug.com/1228418) - Improve the generation of summaries across
+  // ChromeOS. Expect the content to be spoken once it has been improved.
   /*sm_.ExpectSpeech(
       "Turn off screen? This improves privacy by turning off your screen so it "
       "isn’t visible to others. You can always turn the screen back on by "
@@ -1806,8 +1806,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.ExpectSpeech("Screen off");
   // Make sure Ash gets the backlight change request.
   sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
-    if (observer.backlights_forced_off())
+    if (observer.backlights_forced_off()) {
       return;
+    }
     observer.WaitForBacklightStateChange();
     EXPECT_TRUE(backlights_setter->backlights_forced_off());
   });
@@ -1816,8 +1817,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.ExpectNextSpeechIsNot("Continue");
   sm_.ExpectSpeech("Screen on");
   sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
-    if (!observer.backlights_forced_off())
+    if (!observer.backlights_forced_off()) {
       return;
+    }
     observer.WaitForBacklightStateChange();
     EXPECT_FALSE(backlights_setter->backlights_forced_off());
   });
@@ -1826,8 +1828,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.ExpectNextSpeechIsNot("Continue");
   sm_.ExpectSpeech("Screen off");
   sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
-    if (observer.backlights_forced_off())
+    if (observer.backlights_forced_off()) {
       return;
+    }
     observer.WaitForBacklightStateChange();
     EXPECT_TRUE(backlights_setter->backlights_forced_off());
   });

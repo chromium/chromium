@@ -96,13 +96,10 @@ class NetworkFeaturePodControllerTest
     auto disabled_features = std::vector<base::test::FeatureRef>();
     enabled_features.push_back(features::kQuickSettingsNetworkRevamp);
     if (IsQsRevampEnabled()) {
-      enabled_features.push_back(features::kQsRevamp);
-      enabled_features.push_back(features::kQsRevampWip);
+      feature_list_.InitAndEnableFeature(features::kQsRevamp);
     } else {
-      disabled_features.push_back(features::kQsRevamp);
-      disabled_features.push_back(features::kQsRevampWip);
+      feature_list_.InitAndDisableFeature(features::kQsRevamp);
     }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     AshTestBase::SetUp();
 

@@ -96,14 +96,9 @@ class SystemTrayTrayCastMediaRouterChromeOSTest
  protected:
   SystemTrayTrayCastMediaRouterChromeOSTest() {
     if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kQsRevamp,
-                                ash::features::kQsRevampWip},
-          /*disabled_features=*/{});
+      feature_list_.InitAndEnableFeature(ash::features::kQsRevamp);
     } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{}, /*disabled_features=*/{
-              ash::features::kQsRevamp, ash::features::kQsRevampWip});
+      feature_list_.InitAndDisableFeature(ash::features::kQsRevamp);
     }
   }
 
@@ -127,8 +122,9 @@ class SystemTrayTrayCastMediaRouterChromeOSTest
     message_center::NotificationList::Notifications notification_set =
         message_center::MessageCenter::Get()->GetVisibleNotifications();
     for (auto* notification : notification_set) {
-      if (notification->id() == kNotificationId)
+      if (notification->id() == kNotificationId) {
         return notification->title();
+      }
     }
     return std::u16string();
   }
@@ -283,14 +279,9 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
  public:
   SystemTrayTrayCastAccessCodeChromeOSTest() {
     if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kQsRevamp,
-                                ash::features::kQsRevampWip},
-          /*disabled_features=*/{});
+      feature_list_.InitAndEnableFeature(ash::features::kQsRevamp);
     } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{}, /*disabled_features=*/{
-              ash::features::kQsRevamp, ash::features::kQsRevampWip});
+      feature_list_.InitAndDisableFeature(ash::features::kQsRevamp);
     }
 
     // Use consumer emails to avoid having to fake a policy fetch.

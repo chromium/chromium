@@ -98,10 +98,7 @@ class MockFeaturePodController : public FeaturePodControllerBase {
 
 class FeatureTileTest : public AshTestBase {
  public:
-  FeatureTileTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
-  }
+  FeatureTileTest() { feature_list_.InitAndEnableFeature(features::kQsRevamp); }
 
   FeatureTileTest(const FeatureTileTest&) = delete;
   FeatureTileTest& operator=(const FeatureTileTest&) = delete;

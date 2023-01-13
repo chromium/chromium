@@ -134,8 +134,7 @@ class UnifiedAudioDetailedViewControllerTest
   // AshTestBase:
   void SetUp() override {
     if (IsQsRevampEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kQsRevamp, features::kQsRevampWip}, {});
+      scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
     }
     AshTestBase::SetUp();
 
@@ -430,8 +429,7 @@ TEST_P(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
   } else {
     scoped_feature_list_.InitWithFeatures(
         {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-         ash::features::kOnDeviceSpeechRecognition, features::kQsRevamp,
-         features::kQsRevampWip},
+         ash::features::kOnDeviceSpeechRecognition, features::kQsRevamp},
         {});
   }
 

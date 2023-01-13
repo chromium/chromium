@@ -29,8 +29,7 @@ class UnifiedBrightnessViewTest : public AshTestBase {
   ~UnifiedBrightnessViewTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
     AshTestBase::SetUp();
     GetPrimaryUnifiedSystemTray()->ShowBubble();
     brightness_slider_controller_ =

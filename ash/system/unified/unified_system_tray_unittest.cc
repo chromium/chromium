@@ -52,9 +52,9 @@ class UnifiedSystemTrayTest : public AshTestBase,
   ~UnifiedSystemTrayTest() override = default;
 
   void SetUp() override {
-    if (IsQsRevampEnabled())
-      feature_list_.InitWithFeatures(
-          {features::kQsRevamp, features::kQsRevampWip}, {});
+    if (IsQsRevampEnabled()) {
+      feature_list_.InitAndEnableFeature(features::kQsRevamp);
+    }
     AshTestBase::SetUp();
   }
 
@@ -294,8 +294,9 @@ TEST_P(UnifiedSystemTrayTest, HorizontalImeAndTimeLabelAlignment) {
 }
 
 TEST_P(UnifiedSystemTrayTest, FocusMessageCenter) {
-  if (IsQsRevampEnabled())
+  if (IsQsRevampEnabled()) {
     return;
+  }
 
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
@@ -321,8 +322,9 @@ TEST_P(UnifiedSystemTrayTest, FocusMessageCenter) {
 }
 
 TEST_P(UnifiedSystemTrayTest, FocusMessageCenter_MessageCenterBubbleNotShown) {
-  if (IsQsRevampEnabled())
+  if (IsQsRevampEnabled()) {
     return;
+  }
 
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
@@ -336,8 +338,9 @@ TEST_P(UnifiedSystemTrayTest, FocusMessageCenter_MessageCenterBubbleNotShown) {
 }
 
 TEST_P(UnifiedSystemTrayTest, FocusMessageCenter_VoxEnabled) {
-  if (IsQsRevampEnabled())
+  if (IsQsRevampEnabled()) {
     return;
+  }
 
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
@@ -504,8 +507,9 @@ TEST_P(UnifiedSystemTrayTest, CalendarAcceleratorFocusesDateCell) {
 // Tests that CalendarView switches back to Quick Settings when screen size is
 // limited and the bubble requires a collapsed state.
 TEST_P(UnifiedSystemTrayTest, CalendarGoesToMainView) {
-  if (IsQsRevampEnabled())
+  if (IsQsRevampEnabled()) {
     return;
+  }
 
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
@@ -681,8 +685,9 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
 // bubble becomes visible, and otherwise does not automatically show or hide.
 TEST_P(UnifiedSystemTrayTest, BubbleHideBehavior) {
   // This hiding behavior only applies when QsRevamp is enabled.
-  if (!IsQsRevampEnabled())
+  if (!IsQsRevampEnabled()) {
     return;
+  }
 
   // Basic verification test that the unified system tray bubble can show/hide
   // itself when no other bubbles are visible.

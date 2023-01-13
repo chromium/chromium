@@ -203,9 +203,7 @@ class NetworkListViewControllerTest : public AshTestBase,
   void SetUp() override {
     if (IsQsRevampEnabled()) {
       feature_list_.InitWithFeatures(
-          {features::kQsRevamp, features::kQsRevampWip,
-           features::kQuickSettingsNetworkRevamp},
-          {});
+          {features::kQsRevamp, features::kQuickSettingsNetworkRevamp}, {});
     } else {
       feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
     }

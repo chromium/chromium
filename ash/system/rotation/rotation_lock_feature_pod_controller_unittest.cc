@@ -22,8 +22,7 @@ class RotationLockFeaturePodControllerTest : public AshTestBase {
  public:
   RotationLockFeaturePodControllerTest() {
     // Disable QsRevamp.
-    feature_list_.InitWithFeatures(
-        {}, {features::kQsRevamp, features::kQsRevampWip});
+    feature_list_.InitAndDisableFeature(features::kQsRevamp);
   }
 
   RotationLockFeaturePodControllerTest(
@@ -216,8 +215,7 @@ TEST_F(RotationLockFeaturePodControllerTest, LabelUMATracking) {
 class RotationLockFeaturePodControllerQsRevampTest : public AshTestBase {
  public:
   RotationLockFeaturePodControllerQsRevampTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   // AshTestBase:

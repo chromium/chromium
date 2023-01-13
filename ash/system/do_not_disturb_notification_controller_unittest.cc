@@ -30,8 +30,7 @@ class DoNotDisturbNotificationControllerTest
 
   void SetUp() override {
     if (IsQsRevampEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kQsRevamp, features::kQsRevampWip}, {});
+      scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
     }
     AshTestBase::SetUp();
   }

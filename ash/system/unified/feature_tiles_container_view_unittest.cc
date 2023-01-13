@@ -69,8 +69,7 @@ class FeatureTilesContainerViewTest : public AshTestBase,
                                       public views::ViewObserver {
  public:
   FeatureTilesContainerViewTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   FeatureTilesContainerViewTest(const FeatureTilesContainerViewTest&) = delete;

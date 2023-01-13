@@ -30,8 +30,7 @@ class NotificationCenterBubbleTest : public AshTestBase {
 
   void SetUp() override {
     // Enable quick settings revamp feature.
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
 
     AshTestBase::SetUp();
 
@@ -54,8 +53,9 @@ TEST_F(NotificationCenterBubbleTest, BubbleHeightConstrainedByDisplay) {
 
   // Add a large number of notifications to overflow the scroll view in the
   // notification center.
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 100; i++) {
     test_api()->AddNotification();
+  }
 
   // Show notification center bubble.
   test_api()->ToggleBubble();
@@ -71,8 +71,9 @@ TEST_F(NotificationCenterBubbleTest, BubbleHeightUpdatedByDisplaySizeChange) {
 
   // Add a large number of notifications to overflow the scroll view in the
   // notification center.
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 100; i++) {
     test_api()->AddNotification();
+  }
 
   // Show notification center bubble.
   test_api()->ToggleBubble();
@@ -97,8 +98,9 @@ TEST_F(NotificationCenterBubbleTest, BubbleHeightUpdatedByDisplayRotation) {
 
   // Add a large number of notifications to overflow the scroll view in the
   // notification center.
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 100; i++) {
     test_api()->AddNotification();
+  }
 
   // Show notification center bubble.
   test_api()->ToggleBubble();

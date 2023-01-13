@@ -49,13 +49,9 @@ class NotificationGroupingControllerTest
 
   void SetUp() override {
     if (IsQsRevampEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kQsRevamp, features::kQsRevampWip},
-          /*disabled_features=*/{});
+      scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kQsRevamp, features::kQsRevampWip});
+      scoped_feature_list_.InitAndDisableFeature(features::kQsRevamp);
     }
 
     AshTestBase::SetUp();

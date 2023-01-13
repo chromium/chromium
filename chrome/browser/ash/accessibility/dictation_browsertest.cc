@@ -2088,12 +2088,7 @@ class NotificationCenterDictationTest : public DictationTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DictationTest::SetUpCommandLine(command_line);
-
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.emplace_back(features::kQsRevamp);
-    enabled_features.emplace_back(features::kQsRevampWip);
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features, std::vector<base::test::FeatureRef>());
+    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   void SetUpOnMainThread() override {

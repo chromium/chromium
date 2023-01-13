@@ -49,9 +49,7 @@ class TestCastConfigController : public CastConfigController {
 class CastFeaturePodControllerTest : public AshTestBase {
  public:
   CastFeaturePodControllerTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kQsRevamp, features::kQsRevampWip},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   // AshTestBase:

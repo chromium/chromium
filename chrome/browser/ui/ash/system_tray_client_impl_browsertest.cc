@@ -79,8 +79,7 @@ class SystemTrayClientEnterpriseTest
  public:
   SystemTrayClientEnterpriseTest() {
     if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {ash::features::kQsRevamp, ash::features::kQsRevampWip}, {});
+      feature_list_.InitAndEnableFeature(ash::features::kQsRevamp);
     }
   }
 

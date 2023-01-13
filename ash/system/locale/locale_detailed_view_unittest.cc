@@ -25,8 +25,7 @@ namespace {
 class LocaleDetailedViewTest : public AshTestBase {
  public:
   LocaleDetailedViewTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   void CreateDetailedView() {

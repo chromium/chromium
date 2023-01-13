@@ -42,11 +42,9 @@ class VPNListViewTest : public AshTestBase,
  public:
   VPNListViewTest() {
     if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures(
-          {features::kQsRevamp, features::kQsRevampWip}, {});
+      feature_list_.InitAndEnableFeature(features::kQsRevamp);
     } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kQsRevamp, features::kQsRevampWip});
+      feature_list_.InitAndDisableFeature(features::kQsRevamp);
     }
   }
 
@@ -117,38 +115,43 @@ class VPNListViewTest : public AshTestBase,
 
   std::vector<const views::View*> GetProviderViews() {
     std::vector<const views::View*> views;
-    for (const auto& it : vpn_list_view_->provider_view_map_)
+    for (const auto& it : vpn_list_view_->provider_view_map_) {
       views.push_back(it.first);
+    }
     return views;
   }
 
   std::vector<const views::View*> GetNetworkViews() {
     std::vector<const views::View*> views;
-    for (const auto& it : vpn_list_view_->network_view_guid_map_)
+    for (const auto& it : vpn_list_view_->network_view_guid_map_) {
       views.push_back(it.first);
+    }
     return views;
   }
 
   const views::View* GetBuiltInProviderView() {
     for (const auto& it : vpn_list_view_->provider_view_map_) {
-      if (it.second->type == VpnType::kOpenVPN)
+      if (it.second->type == VpnType::kOpenVPN) {
         return it.first;
+      }
     }
     return nullptr;
   }
 
   const views::View* GetExtensionProviderView() {
     for (const auto& it : vpn_list_view_->provider_view_map_) {
-      if (it.second->type == VpnType::kExtension)
+      if (it.second->type == VpnType::kExtension) {
         return it.first;
+      }
     }
     return nullptr;
   }
 
   const views::View* GetArcProviderView() {
     for (const auto& it : vpn_list_view_->provider_view_map_) {
-      if (it.second->type == VpnType::kArc)
+      if (it.second->type == VpnType::kArc) {
         return it.first;
+      }
     }
     return nullptr;
   }
@@ -176,17 +179,19 @@ TEST_P(VPNListViewTest, ParentContainerConfiguration) {
   AddVpnProvidersAndNetwork();
   for (const views::View* view : GetProviderViews()) {
     const views::View* parent = view->parent();
-    if (IsQsRevampEnabled())
+    if (IsQsRevampEnabled()) {
       EXPECT_STREQ(parent->GetClassName(), "RoundedContainer");
-    else
+    } else {
       EXPECT_STREQ(parent->GetClassName(), "ScrollContentsView");
+    }
   }
   for (const views::View* view : GetNetworkViews()) {
     const views::View* parent = view->parent();
-    if (IsQsRevampEnabled())
+    if (IsQsRevampEnabled()) {
       EXPECT_STREQ(parent->GetClassName(), "RoundedContainer");
-    else
+    } else {
       EXPECT_STREQ(parent->GetClassName(), "ScrollContentsView");
+    }
   }
 }
 
@@ -206,8 +211,9 @@ TEST_P(VPNListViewTest, ClickOnBuiltInProviderRowToAddNetwork) {
   EXPECT_TRUE(arc_provider->GetEnabled());
 
   // Only QsRevamp has clickable provider rows.
-  if (!IsQsRevampEnabled())
+  if (!IsQsRevampEnabled()) {
     return;
+  }
 
   // Clicking on the built-in provider row creates a built-in VPN network.
   LeftClickOn(built_in_provider);

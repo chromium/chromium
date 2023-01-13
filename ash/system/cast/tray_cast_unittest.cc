@@ -63,9 +63,7 @@ class TestCastConfigController : public CastConfigController {
 class CastDetailedViewTest : public AshTestBase {
  public:
   CastDetailedViewTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kQsRevamp, features::kQsRevampWip},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   // AshTestBase:
@@ -88,8 +86,9 @@ class CastDetailedViewTest : public AshTestBase {
 
   std::vector<views::View*> GetDeviceViews() {
     std::vector<views::View*> views;
-    for (const auto& it : detailed_view_->view_to_sink_map_)
+    for (const auto& it : detailed_view_->view_to_sink_map_) {
       views.push_back(it.first);
+    }
     return views;
   }
 

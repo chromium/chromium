@@ -36,8 +36,7 @@ EnterpriseDomainModel* GetEnterpriseDomainModel() {
 class QuickSettingsHeaderTest : public NoSessionAshTestBase {
  public:
   QuickSettingsHeaderTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kQsRevampWip}, {});
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   // AshTestBase:

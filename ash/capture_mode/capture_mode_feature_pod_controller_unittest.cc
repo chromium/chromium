@@ -27,11 +27,9 @@ class CaptureModeFeaturePodControllerTest
  public:
   CaptureModeFeaturePodControllerTest() {
     if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures(
-          {features::kQsRevamp, features::kQsRevampWip}, {});
+      feature_list_.InitAndEnableFeature(features::kQsRevamp);
     } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kQsRevamp, features::kQsRevampWip});
+      feature_list_.InitAndDisableFeature(features::kQsRevamp);
     }
   }
 
