@@ -53,16 +53,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       "Network.Ash.Cellular.Apn.DisableCustomApn.Result";
   static constexpr char kDisableCustomApnApnTypesHistogram[] =
       "Network.Ash.Cellular.Apn.DisableCustomApn.ApnTypes";
-  static constexpr char kConnectResultHasEnabledCustomApnsAllHistogram[] =
-      "Network.Ash.Cellular.ConnectionResult.HasEnabledCustomApns.All";
-  static constexpr char kConnectResultNoEnabledCustomApnsAllHistogram[] =
-      "Network.Ash.Cellular.ConnectionResult.NoEnabledCustomApns.All";
-  static constexpr char kCustomApnsCountHistogram[] =
-      "Network.Ash.Cellular.Apn.CustomApns.Count";
-  static constexpr char kCustomApnsEnabledCountHistogram[] =
-      "Network.Ash.Cellular.Apn.CustomApns.Enabled.Count";
-  static constexpr char kCustomApnsDisabledCountHistogram[] =
-      "Network.Ash.Cellular.Apn.CustomApns.Disabled.Count";
 
   CellularNetworkMetricsLogger(
       NetworkStateHandler* network_state_handler,

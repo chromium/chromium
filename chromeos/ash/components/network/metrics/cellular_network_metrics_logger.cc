@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
@@ -12,7 +11,6 @@
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/onc/onc_constants.h"
 
 namespace ash {
 namespace {
@@ -173,45 +171,32 @@ void CellularNetworkMetricsLogger::OnConnectionResult(
       shill_error ? ShillErrorToConnectResult(*shill_error)
                   : ShillConnectResult::kSuccess;
 
-  size_t custom_apns_count = 0u;
   size_t enabled_custom_apns_count = 0u;
   const base::Value::List* custom_apn_list =
       network_metadata_store_->GetCustomApnList(network_state->guid());
   if (custom_apn_list) {
-    custom_apns_count = custom_apn_list->size();
-
-    if (ash::features::IsApnRevampEnabled()) {
-      enabled_custom_apns_count = std::count_if(
-          custom_apn_list->begin(), custom_apn_list->end(),
-          [](const base::Value& apn) -> bool {
-            const std::string* apn_type =
-                apn.GetDict().FindString(::onc::cellular_apn::kState);
-            return *apn_type == ::onc::cellular_apn::kStateEnabled;
-          });
-    }
+    // TODO(b/162365553): Filter on enabled custom APNs when the revamp flag is
+    // on.
+    enabled_custom_apns_count = custom_apn_list->size();
   }
 
   // If the connection was successful, log the number of custom APNs the network
   // has saved for it.
   if (!shill_error) {
-    base::UmaHistogramCounts100(kCustomApnsCountHistogram, custom_apns_count);
-
-    if (ash::features::IsApnRevampEnabled() && custom_apns_count > 0) {
-      base::UmaHistogramCounts100(kCustomApnsEnabledCountHistogram,
-                                  enabled_custom_apns_count);
-      base::UmaHistogramCounts100(
-          kCustomApnsDisabledCountHistogram,
-          custom_apns_count - enabled_custom_apns_count);
-    }
+    // TODO(b/162365553): Log the number of enabled/disabled APNs.
+    base::UmaHistogramCounts100("Network.Ash.Cellular.Apn.CustomApns.Count",
+                                enabled_custom_apns_count);
   }
 
-  // For pre-revamp cases, we consider all custom APNs to be enabled.
-  const bool has_enabled_custom_apns = ash::features::IsApnRevampEnabled()
-                                           ? (enabled_custom_apns_count > 0)
-                                           : (custom_apns_count > 0);
+  if (enabled_custom_apns_count > 0) {
+    base::UmaHistogramEnumeration(
+        "Network.Ash.Cellular.ConnectionResult.HasEnabledCustomApns.All",
+        connect_result);
+    return;
+  }
+
   base::UmaHistogramEnumeration(
-      has_enabled_custom_apns ? kConnectResultHasEnabledCustomApnsAllHistogram
-                              : kConnectResultNoEnabledCustomApnsAllHistogram,
+      "Network.Ash.Cellular.ConnectionResult.NoEnabledCustomApns.All",
       connect_result);
 }
 
