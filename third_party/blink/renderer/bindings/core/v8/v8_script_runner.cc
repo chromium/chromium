@@ -206,6 +206,8 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       }
       return script;
     }
+    default:
+      NOTREACHED();
   }
 
   // All switch branches should return and we should never get here.
@@ -351,6 +353,8 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
                 cached_data->length, cached_data->rejected));
         break;
       }
+      default:
+        NOTREACHED();
     }
   }
 
