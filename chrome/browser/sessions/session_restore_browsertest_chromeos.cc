@@ -155,9 +155,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreBrowserWindows) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Assigns three browser windows to three different desks.
-// https://crbug.com/1337306
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
-                       DISABLED_PRE_RestoreBrowserWindowsToDesks) {
+                       PRE_RestoreBrowserWindowsToDesks) {
   // Create two more desks so we have three desks in total.
   ash::AutotestDesksApi().CreateNewDesk();
   ash::AutotestDesksApi().CreateNewDesk();
@@ -190,9 +189,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
 
 // Verifies that three windows restored to their right desk after restored. Also
 // verifies that the fourth window is visible on all desks after being restored.
-// https://crbug.com/1337306
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
-                       DISABLED_RestoreBrowserWindowsToDesks) {
+                       RestoreBrowserWindowsToDesks) {
   auto* browser_list = BrowserList::GetInstance();
   ASSERT_EQ(3u, browser_list->size());
 
