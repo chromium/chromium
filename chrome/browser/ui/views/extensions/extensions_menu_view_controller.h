@@ -9,6 +9,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 
+namespace views {
+class BubbleDialogDelegate;
+class View;
+}  // namespace views
+
 class Browser;
 class PageSwitcherView;
 class ExtensionsContainer;
@@ -20,7 +25,8 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
  public:
   ExtensionsMenuViewController(Browser* browser,
                                ExtensionsContainer* extensions_container,
-                               PageSwitcherView* contents_view);
+                               PageSwitcherView* contents_view,
+                               views::BubbleDialogDelegate* dialog_delegate);
   ExtensionsMenuViewController(const ExtensionsMenuViewController&) = delete;
   const ExtensionsMenuViewController& operator=(
       const ExtensionsMenuViewController&) = delete;
@@ -47,9 +53,14 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
   ExtensionsMenuMainPageView* GetMainPageViewForTesting();
 
  private:
+  // Switches the current page to `page`.
+  void SwitchToPage(std::unique_ptr<views::View> page);
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsContainer> extensions_container_;
   const raw_ptr<PageSwitcherView> contents_view_;
+  const raw_ptr<views::BubbleDialogDelegate> dialog_delegate_;
+
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
 };
 

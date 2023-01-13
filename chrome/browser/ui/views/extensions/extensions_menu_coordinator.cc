@@ -13,7 +13,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_tracker.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 ExtensionsMenuCoordinator::ExtensionsMenuCoordinator(Browser* browser)
@@ -46,7 +45,7 @@ void ExtensionsMenuCoordinator::Show(
   bubble_tracker_.SetView(contents_view);
 
   controller_ = std::make_unique<ExtensionsMenuViewController>(
-      browser_, extensions_container, contents_view);
+      browser_, extensions_container, contents_view, bubble_delegate.get());
   controller_->OpenMainPage();
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -36,10 +37,12 @@ std::vector<std::string> SortExtensionsByName(
 ExtensionsMenuViewController::ExtensionsMenuViewController(
     Browser* browser,
     ExtensionsContainer* extensions_container,
-    PageSwitcherView* contents_view)
+    PageSwitcherView* contents_view,
+    views::BubbleDialogDelegate* dialog_delegate)
     : browser_(browser),
       extensions_container_(extensions_container),
       contents_view_(contents_view),
+      dialog_delegate_(dialog_delegate),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
   browser_->tab_strip_model()->AddObserver(this);
 }
@@ -61,13 +64,13 @@ void ExtensionsMenuViewController::OpenMainPage() {
                                        allow_pinning, i);
   }
 
-  contents_view_->SwitchToPage(std::move(main_page));
+  SwitchToPage(std::move(main_page));
 }
 
 void ExtensionsMenuViewController::OpenSitePermissionsPage() {
   auto site_permissions_page =
       std::make_unique<ExtensionsMenuSitePermissionsPage>(this);
-  contents_view_->SwitchToPage(std::move(site_permissions_page));
+  SwitchToPage(std::move(site_permissions_page));
 }
 
 void ExtensionsMenuViewController::CloseBubble() {
@@ -102,4 +105,17 @@ ExtensionsMenuMainPageView*
 ExtensionsMenuViewController::GetMainPageViewForTesting() {
   return views::AsViewClass<ExtensionsMenuMainPageView>(
       contents_view_->GetCurrentPage());
+}
+
+// TODO(crbug.com/1390952): Move page switching logic from the PageSwitcherView
+// to the view controller, as PageSwitcherView doesn't actually have "view"
+// responsibilities
+void ExtensionsMenuViewController::SwitchToPage(
+    std::unique_ptr<views::View> page) {
+  contents_view_->SwitchToPage(std::move(page));
+  // Only resize the menu if the bubble is created, since page could be added to
+  // the menu beforehand and delegate wouldn't know the bubble bounds.
+  if (dialog_delegate_->GetBubbleFrameView()) {
+    dialog_delegate_->SizeToContents();
+  }
 }
