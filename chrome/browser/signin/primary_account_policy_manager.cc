@@ -97,7 +97,7 @@ class PrimaryAccountPolicyManager::DeleteProfileDialogManager
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
-                       weak_factory_.GetWeakPtr(), browser));
+                       weak_factory_.GetWeakPtr(), browser->AsWeakPtr()));
   }
 
   // Called immediately after a browser becomes not active.
@@ -112,21 +112,23 @@ class PrimaryAccountPolicyManager::DeleteProfileDialogManager
   }
 
  private:
-  void ShowDeleteProfileDialog(Browser* browser) {
+  void ShowDeleteProfileDialog(base::WeakPtr<Browser> active_browser) {
     // Block opening dialog from nested task.
     static bool is_dialog_shown = false;
     if (is_dialog_shown)
       return;
     base::AutoReset<bool> auto_reset(&is_dialog_shown, true);
 
-    // Check that |browser| is still active.
-    if (!active_browser_ || active_browser_ != browser)
+    // Check the |active_browser_| hasn't changed while waiting for the task to
+    // be executed.
+    if (!active_browser_ || active_browser_ != active_browser.get()) {
       return;
+    }
 
     // Show the dialog.
-    DCHECK(browser->window()->GetNativeWindow());
+    DCHECK(active_browser_->window()->GetNativeWindow());
     chrome::MessageBoxResult result = chrome::ShowWarningMessageBox(
-        browser->window()->GetNativeWindow(),
+        active_browser_->window()->GetNativeWindow(),
         l10n_util::GetStringUTF16(IDS_PROFILE_WILL_BE_DELETED_DIALOG_TITLE),
         l10n_util::GetStringFUTF16(
             IDS_PROFILE_WILL_BE_DELETED_DIALOG_DESCRIPTION,
@@ -138,12 +140,13 @@ class PrimaryAccountPolicyManager::DeleteProfileDialogManager
       case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_NO: {
         // If the warning dialog is automatically dismissed or the user closed
         // the dialog by clicking on the close "X" button, then re-present the
-        // dialog (the user should not be able to interact with the browser
-        // window as the profile must be deleted).
+        // dialog (the user should not be able to interact with the
+        // `active_browser_` window as the profile must be deleted).
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
-                           weak_factory_.GetWeakPtr(), browser));
+                           weak_factory_.GetWeakPtr(),
+                           active_browser_->AsWeakPtr()));
         break;
       }
       case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_YES:
