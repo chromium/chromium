@@ -89,6 +89,24 @@ crbug.com/1311091 WebCodecs_WebRTCPeerConnection_* [ Skip ]
 
 
 crbug.com/1371749 [ mac-x86_64 ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-hardware [ Failure ]
+
+
+# TexImage2d tests crashes GPU on Sherlock devices.
+crbug.com/1400465 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_* [ Failure ]
+
+# EncodeDecode tests fail to call flush on the decoder.
+crbug.com/1400465 [ fuchsia fuchsia-board-sherlock ] WebCodecs_EncodeDecode_* [ Failure ]
+
+# Camera tests fail with NotFoundError on Sherlock devices.
+crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_DrawImage_camera [ Failure ]
+crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_Encode_camera_* [ Failure ]
+crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_GPUExternalTexture_expired_camera [ Failure ]
+crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_GPUExternalTexture_expired_worker_camera [ Failure ]
+crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_TexImage2d_camera [ Failure ]
+crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ Failure ]
+crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_device_destroy_expired_texture_camera [ Failure ]
+crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_texture_expired_from_destroyed_device_camera [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
