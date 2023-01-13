@@ -309,11 +309,14 @@ std::unique_ptr<GLTexturePassthroughImageRepresentation>
 AngleVulkanImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  if (!passthrough_texture_ && !InitializePassthroughTexture())
+  if (!passthrough_texture_ && !InitializePassthroughTexture()) {
     return nullptr;
+  }
 
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures = {
+      passthrough_texture_};
   return std::make_unique<GLTexturePassthroughGLCommonRepresentation>(
-      manager, this, this, tracker, passthrough_texture_);
+      manager, this, this, tracker, std::move(gl_textures));
 }
 
 std::unique_ptr<SkiaImageRepresentation> AngleVulkanImageBacking::ProduceSkia(

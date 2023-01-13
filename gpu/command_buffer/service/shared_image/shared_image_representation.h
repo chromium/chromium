@@ -109,6 +109,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
     backing_->OnContextLost();
   }
 
+  // Returns the number of image planes expected based on the backing format.
+  size_t NumPlanesExpected() const;
+
  protected:
   SharedImageManager* manager() const { return manager_; }
   SharedImageBacking* backing() const { return backing_; }

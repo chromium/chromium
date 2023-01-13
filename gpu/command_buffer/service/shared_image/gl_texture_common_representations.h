@@ -30,7 +30,7 @@ class GLTextureGLCommonRepresentation : public GLTextureImageRepresentation {
                                   SharedImageBacking* backing,
                                   GLTextureImageRepresentationClient* client,
                                   MemoryTypeTracker* tracker,
-                                  gles2::Texture* texture);
+                                  std::vector<raw_ptr<gles2::Texture>> texture);
   ~GLTextureGLCommonRepresentation() override;
 
  private:
@@ -40,7 +40,7 @@ class GLTextureGLCommonRepresentation : public GLTextureImageRepresentation {
   void EndAccess() override;
 
   const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
-  raw_ptr<gles2::Texture> texture_;
+  std::vector<raw_ptr<gles2::Texture>> textures_;
   GLenum mode_ = 0;
 };
 
@@ -58,7 +58,7 @@ class GLTexturePassthroughGLCommonRepresentation
       SharedImageBacking* backing,
       GLTextureImageRepresentationClient* client,
       MemoryTypeTracker* tracker,
-      scoped_refptr<gles2::TexturePassthrough> texture_passthrough);
+      std::vector<scoped_refptr<gles2::TexturePassthrough>> textures);
   ~GLTexturePassthroughGLCommonRepresentation() override;
 
  private:
@@ -69,7 +69,7 @@ class GLTexturePassthroughGLCommonRepresentation
   void EndAccess() override;
 
   const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
-  scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_;
   GLenum mode_ = 0;
 };
 
@@ -81,12 +81,13 @@ class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
     virtual bool OnSkiaBeginReadAccess() = 0;
     virtual bool OnSkiaBeginWriteAccess() = 0;
   };
-  SkiaGLCommonRepresentation(SharedImageManager* manager,
-                             SharedImageBacking* backing,
-                             GLTextureImageRepresentationClient* client,
-                             scoped_refptr<SharedContextState> context_state,
-                             sk_sp<SkPromiseImageTexture> promise_texture,
-                             MemoryTypeTracker* tracker);
+  SkiaGLCommonRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      GLTextureImageRepresentationClient* client,
+      scoped_refptr<SharedContextState> context_state,
+      std::vector<sk_sp<SkPromiseImageTexture>> promise_texture,
+      MemoryTypeTracker* tracker);
   ~SkiaGLCommonRepresentation() override;
 
   void SetBeginReadAccessCallback(
@@ -117,8 +118,8 @@ class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
 
   const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
   scoped_refptr<SharedContextState> context_state_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
-  sk_sp<SkSurface> write_surface_;
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures_;
+  std::vector<sk_sp<SkSurface>> write_surfaces_;
 #if DCHECK_IS_ON()
   raw_ptr<gl::GLContext> context_ = nullptr;
 #endif

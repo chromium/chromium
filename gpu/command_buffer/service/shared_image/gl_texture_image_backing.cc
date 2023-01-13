@@ -365,16 +365,19 @@ std::unique_ptr<GLTextureImageRepresentation>
 GLTextureImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                         MemoryTypeTracker* tracker) {
   DCHECK(texture_);
+  std::vector<raw_ptr<gles2::Texture>> gl_textures = {texture_};
   return std::make_unique<GLTextureGLCommonRepresentation>(
-      manager, this, nullptr, tracker, texture_);
+      manager, this, nullptr, tracker, std::move(gl_textures));
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 GLTextureImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                    MemoryTypeTracker* tracker) {
   DCHECK(passthrough_texture_);
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures = {
+      passthrough_texture_};
   return std::make_unique<GLTexturePassthroughGLCommonRepresentation>(
-      manager, this, nullptr, tracker, passthrough_texture_);
+      manager, this, nullptr, tracker, std::move(gl_textures));
 }
 
 std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
@@ -437,9 +440,11 @@ std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
         context_state->gr_context()->threadSafeProxy(), &backend_texture);
     cached_promise_texture_ = SkPromiseImageTexture::Make(backend_texture);
   }
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures = {
+      cached_promise_texture_};
   return std::make_unique<SkiaGLCommonRepresentation>(
-      manager, this, nullptr, std::move(context_state), cached_promise_texture_,
-      tracker);
+      manager, this, nullptr, std::move(context_state),
+      std::move(promise_textures), tracker);
 }
 
 void GLTextureImageBacking::InitializeGLTexture(

@@ -45,6 +45,14 @@ SharedImageRepresentation::~SharedImageRepresentation() {
   }
 }
 
+size_t SharedImageRepresentation::NumPlanesExpected() const {
+  if (format().PrefersExternalSampler()) {
+    return 1;
+  }
+
+  return static_cast<size_t>(format().NumberOfPlanes());
+}
+
 std::unique_ptr<GLTextureImageRepresentation::ScopedAccess>
 GLTextureImageRepresentationBase::BeginScopedAccess(
     GLenum mode,
