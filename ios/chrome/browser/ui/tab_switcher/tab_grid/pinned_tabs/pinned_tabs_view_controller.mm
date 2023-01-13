@@ -30,6 +30,9 @@ namespace {
 // The number of sections for the pinned collection view.
 NSInteger kNumberOfSectionsInPinnedCollection = 1;
 
+// Leading/trailing inset of the collection view content.
+const CGFloat kCollectionViewHorizontalInset = 11.0f;
+
 // Creates an NSIndexPath with `index` in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
   return [NSIndexPath indexPathForItem:index inSection:0];
@@ -481,6 +484,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.dropDelegate = self;
   collectionView.dragInteractionEnabled = YES;
   collectionView.showsHorizontalScrollIndicator = NO;
+  collectionView.contentInset = UIEdgeInsetsMake(
+      0, kCollectionViewHorizontalInset, 0, kCollectionViewHorizontalInset);
 
   self.view = collectionView;
 
