@@ -16,7 +16,13 @@
             'tablet': 2,
             'automotive': 3,
           }[cast_device_type] %}
-          android:versionCode="{{ cast_build_incremental }}{{ device_type_digit }}" >
+          {% set architecture_digit = {
+            'arm': 1,
+            'x86': 2,
+            'arm64': 3,
+            'x64': 4,
+          }[target_cpu] %}
+          android:versionCode="{{ cast_build_incremental }}{{ device_type_digit }}{{ architecture_digit }}" >
     <dist:module
         dist:onDemand="false"
         dist:title="cast_browser">

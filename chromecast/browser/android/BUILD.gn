@@ -25,6 +25,7 @@ foreach(device_type, android_device_types) {
     variables = [
       "cast_build_incremental=$cast_build_incremental",
       "cast_device_type=${device_type}",
+      "target_cpu=${target_cpu}",
     ]
   }
 }
