@@ -11,11 +11,8 @@
 
 namespace blink {
 
-WebIdentityRequester::WebIdentityRequester(
-    ExecutionContext* context,
-    std::unique_ptr<ScopedAbortState> scoped_abort_state)
-    : execution_context_(context),
-      scoped_abort_state_(std::move(scoped_abort_state)) {}
+WebIdentityRequester::WebIdentityRequester(ExecutionContext* context)
+    : execution_context_(context) {}
 
 void WebIdentityRequester::OnRequestToken(
     mojom::blink::RequestTokenStatus status,
@@ -136,6 +133,11 @@ void WebIdentityRequester::AppendGetCall(
       ->PostTask(FROM_HERE, WTF::BindOnce(&WebIdentityRequester::RequestToken,
                                           WrapPersistent(this)));
   has_posted_task_ = true;
+}
+
+void WebIdentityRequester::InsertScopedAbortState(
+    std::unique_ptr<ScopedAbortState> scoped_abort_state) {
+  scoped_abort_states_.insert(std::move(scoped_abort_state));
 }
 
 void WebIdentityRequester::Trace(Visitor* visitor) const {

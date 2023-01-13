@@ -22,9 +22,7 @@ class WebIdentityWindowOnloadEventListener;
 class WebIdentityRequester final
     : public GarbageCollected<WebIdentityRequester> {
  public:
-  explicit WebIdentityRequester(
-      ExecutionContext* context,
-      std::unique_ptr<ScopedAbortState> scoped_abort_state);
+  explicit WebIdentityRequester(ExecutionContext* context);
 
   void OnRequestToken(mojom::blink::RequestTokenStatus status,
                       const absl::optional<KURL>& selected_idp_config_url,
@@ -37,6 +35,8 @@ class WebIdentityRequester final
       const HeapVector<Member<IdentityProviderConfig>>& providers,
       bool prefer_auto_sign_in,
       mojom::blink::RpContext rp_context);
+  void InsertScopedAbortState(
+      std::unique_ptr<ScopedAbortState> scoped_abort_state);
   void Trace(Visitor* visitor) const;
 
  private:
@@ -47,7 +47,7 @@ class WebIdentityRequester final
   // array of IDPs in FederatedAuthRequestImpl::RequestToken.
   Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params_;
   Member<ExecutionContext> execution_context_;
-  std::unique_ptr<ScopedAbortState> scoped_abort_state_;
+  HashSet<std::unique_ptr<ScopedAbortState>> scoped_abort_states_;
   Member<WebIdentityWindowOnloadEventListener> window_onload_event_listener_;
   HeapHashMap<KURL, Member<ScriptPromiseResolver>> provider_to_resolver_;
   bool is_requesting_token_{false};

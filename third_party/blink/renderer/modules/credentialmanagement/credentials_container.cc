@@ -1371,8 +1371,13 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     }
 
     if (!web_identity_requester_) {
-      web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
-          WrapPersistent(context), std::move(scoped_abort_state));
+      web_identity_requester_ =
+          MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
+    }
+
+    if (scoped_abort_state) {
+      web_identity_requester_->InsertScopedAbortState(
+          std::move(scoped_abort_state));
     }
 
     web_identity_requester_->AppendGetCall(WrapPersistent(resolver),
