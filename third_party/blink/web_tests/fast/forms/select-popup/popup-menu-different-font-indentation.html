@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
+<select>
+  <optgroup label="Standard fonts">
+    <option style="font-family: serif;">Serif</option>
+    <option selected style="font-family: sans-serif;">Sans serif</option>
+    <option style="font-family: monospace;">Monospace</option>
+  </optgroup>
+  <optgroup label="Script fonts">
+    <option style="font-family: cursive;">Cursive</option>
+    <option style="font-family: fantasy;">Fantasy</option>
+  </optgroup>
+  <option style="font-family: system-ui;">System UI</option>
+</select>
+
+<script>
+  window.onload = openPickerAppearanceOnly(document.querySelector('select'));
+</script>

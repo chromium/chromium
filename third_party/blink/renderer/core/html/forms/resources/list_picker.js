@@ -471,6 +471,9 @@ class ListPicker extends Picker {
       else element.removeAttribute('aria-label');
       element.style.paddingInlineStart = this.config_.paddingStart + 'px';
       if (inGroup) {
+        const extraPaddingForOptionInsideOptgroup = 20;
+        element.style.paddingInlineStart = Number(this.config_.paddingStart) +
+            extraPaddingForOptionInsideOptgroup + 'px';
         element.style.marginInlineStart = (-this.config_.paddingStart) + 'px';
         // Should be synchronized with padding-end in list_picker.css.
         element.style.marginInlineEnd = '-2px';
