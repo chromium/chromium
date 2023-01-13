@@ -1001,6 +1001,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.Prerender.PageEndReason{PrerenderTriggerType}"
+    enum="PageEndReason" expires_after="2023-04-27">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
+  <summary>
+    The reason how the page load ended on the prerender's activation.
+  </summary>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstContentfulPaint{PrerenderTriggerType}"
     units="ms" expires_after="2023-04-27">
   <owner>ksakamoto@chromium.org</owner>

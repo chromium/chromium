@@ -18065,6 +18065,18 @@ be describing additional metrics about the same event.
       for main frame request.
     </summary>
   </metric>
+  <metric name="PageEndReason" enum="PageEndReason">
+    <summary>
+      The |page_load_metrics::PageEndReason| for the prerender's activation.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Timing.ActivationToFirstContentfulPaint">
     <summary>
       The duration in milliseconds from time of activation navigation start to

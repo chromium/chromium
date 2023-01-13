@@ -38,6 +38,8 @@ const char
         [] = "PageLoad.Clients.Prerender.LayoutInstability."
              "MaxCumulativeShiftScore.SessionWindow."
              "Gap1000ms.Max5000ms2";
+const char kHistogramPrerenderPageEndReason[] =
+    "PageLoad.Clients.Prerender.PageEndReason";
 
 // Responsiveness metrics.
 const char
@@ -177,24 +179,39 @@ void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
 
 void PrerenderPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  RecordSessionEndHistograms(timing);
+  RecordSessionEndHistograms(timing, /*app_entering_background=*/false);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  RecordSessionEndHistograms(timing);
+  RecordSessionEndHistograms(timing, /*app_entering_background=*/true);
   return STOP_OBSERVING;
 }
 
 void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
-    const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
+    const page_load_metrics::mojom::PageLoadTiming& main_frame_timing,
+    bool app_entering_background) {
   if (!GetDelegate().WasPrerenderedThenActivatedInForeground() ||
       !main_frame_timing.activation_start) {
     // Even if the page was activated, activation_start may not yet been
     // notified by the renderer. Ignore such page loads.
     return;
   }
+
+  // Records the reason how a page load ends.
+  auto page_end_reason = GetDelegate().GetPageEndReason();
+  if (page_end_reason == page_load_metrics::PageEndReason::END_NONE &&
+      app_entering_background) {
+    page_end_reason =
+        page_load_metrics::PageEndReason::END_APP_ENTER_BACKGROUND;
+  }
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetPageEndReason(page_end_reason)
+      .Record(ukm::UkmRecorder::Get());
+  base::UmaHistogramEnumeration(
+      AppendSuffix(internal::kHistogramPrerenderPageEndReason), page_end_reason,
+      page_load_metrics::PAGE_END_REASON_COUNT);
 
   // Records Largest Contentful Paint (LCP) to UMA and UKM.
   const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
