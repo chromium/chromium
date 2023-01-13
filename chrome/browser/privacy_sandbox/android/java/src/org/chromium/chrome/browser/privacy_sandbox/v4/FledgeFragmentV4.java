@@ -110,6 +110,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onLearnMoreClicked(View view) {
+        RecordUserAction.record("Settings.PrivacySandbox.Fledge.LearnMoreClicked");
         launchSettingsActivity(FledgeLearnMoreFragment.class);
     }
 

@@ -99,6 +99,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onLearnMoreClicked(View view) {
+        RecordUserAction.record("Settings.PrivacySandbox.Topics.LearnMoreClicked");
         launchSettingsActivity(TopicsLearnMoreFragment.class);
     }
 

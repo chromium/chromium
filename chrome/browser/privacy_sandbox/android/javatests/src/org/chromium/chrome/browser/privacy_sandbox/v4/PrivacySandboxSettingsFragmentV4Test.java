@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -170,14 +169,11 @@ public final class PrivacySandboxSettingsFragmentV4Test {
 
     @Test
     @SmallTest
-    @DisabledTest(
-            message = "The test is tempoprary disabled until we fix the duplicate string problem")
-    public void
-    testNavigateToTopicsPage() {
+    public void testNavigateToTopicsPage() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
 
-        onViewWaiting(withText(R.string.settings_topics_page_title));
+        onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label));
         assertThat(
                 mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Topics.Opened"));
     }
