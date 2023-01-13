@@ -2220,11 +2220,11 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_STATUS_PERCENT_COMPLETE_ACCESSIBLE_ALERT"
                desc="The title of a download notification: the current download status is in progress and time remaining is known. This message is for screen reader users.">
-               Downloading, <ph name="PERCENT_REMAINING">$1<ex>33</ex></ph>% remaining
+               Downloading <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>, <ph name="PERCENT_REMAINING">$2<ex>33</ex></ph>% remaining
       </message>
       <message name="IDS_DOWNLOAD_STATUS_TIME_REMAINING_ACCESSIBLE_ALERT"
                desc="The title of a download notification: the current download status is in progress and time remaining is known. This message is for screen reader users.">
-               Downloading, <ph name="STATUS">$1<ex>42 mins left</ex></ph>
+               Downloading <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>, <ph name="STATUS">$2<ex>42 mins left</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_FAILED_ACCESSIBLE_ALERT"
                desc="The title of a download notification: the current download status is failed. This message is for screen reader users.">
