@@ -26,7 +26,6 @@ import browsertester.server
 
 import memcheck_analyze
 
-import test_env
 
 def BuildArgParser():
   usage = 'usage: %prog [options]'
@@ -207,9 +206,6 @@ def RunTestsOnce(url, options):
     options.hard_timeout = options.timeout * 4
 
   options.files.append(os.path.join(script_dir, 'browserdata', 'nacltest.js'))
-
-  # Setup the environment with the setuid sandbox path.
-  os.environ.update(test_env.get_sandbox_env(os.environ))
 
   # Create server
   host = GetHostName()
