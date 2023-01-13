@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/lens/lens_core_tab_side_panel_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/chrome_switches.h"
@@ -101,10 +102,8 @@ void CoreTabHelper::UpdateContentRestrictions(int content_restrictions) {
 
 void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
                                    const GURL& src_url,
-                                   lens::EntryPoint entry_point,
-                                   bool is_side_panel_enabled_for_feature) {
-  bool use_side_panel =
-      is_side_panel_enabled_for_feature && IsSidePanelEnabled();
+                                   lens::EntryPoint entry_point) {
+  bool use_side_panel = lens::IsSidePanelEnabledForLens(web_contents());
 
   SearchByImageImpl(render_frame_host, src_url, kImageSearchThumbnailMinSize,
                     lens::features::GetMaxPixelsForImageSearch(),
@@ -125,53 +124,21 @@ TemplateURLService* CoreTabHelper::GetTemplateURLService() {
   return template_url_service;
 }
 
-bool CoreTabHelper::IsInProgressiveWebApp() {
-#if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  return browser && (browser->is_type_app() || browser->is_type_app_popup());
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-bool CoreTabHelper::IsSidePanelEnabled() {
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  return GetTemplateURLService()
-             ->IsSideImageSearchSupportedForDefaultSearchProvider() &&
-         !IsInProgressiveWebApp();
-#else
-  return false;
-#endif
-}
-
-bool CoreTabHelper::IsSidePanelEnabledFor3PDse() {
-  return IsSidePanelEnabled() &&
-         !search::DefaultSearchProviderIsGoogle(GetTemplateURLService()) &&
-         lens::features::GetEnableImageSearchUnifiedSidePanelFor3PDse();
-}
-
-void CoreTabHelper::SearchWithLens(gfx::Image image,
-                                   const gfx::Size& image_original_size,
-                                   lens::EntryPoint entry_point,
-                                   bool is_region_search_request,
-                                   bool is_side_panel_enabled_for_feature) {
-  SearchWithLens(image, image_original_size, entry_point,
-                 is_region_search_request, is_side_panel_enabled_for_feature,
-                 std::vector<lens::mojom::LatencyLogPtr>());
-}
-
-void CoreTabHelper::SearchWithLens(
+void CoreTabHelper::RegionSearchWithLens(
     gfx::Image image,
     const gfx::Size& image_original_size,
-    lens::EntryPoint entry_point,
-    bool is_region_search_request,
-    bool is_side_panel_enabled_for_feature,
     std::vector<lens::mojom::LatencyLogPtr> log_data) {
-  bool use_side_panel =
-      is_side_panel_enabled_for_feature && IsSidePanelEnabled();
+  // Do not show the side panel on region searches and modify the entry point
+  // if Lens fullscreen search features are enabled.
   bool is_full_screen_region_search_request =
-      is_region_search_request &&
       lens::features::IsLensFullscreenSearchEnabled();
+  lens::EntryPoint entry_point =
+      is_full_screen_region_search_request
+          ? lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM
+          : lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
+  bool use_side_panel =
+      lens::IsSidePanelEnabledForLensRegionSearch(web_contents());
+
   auto lens_query_params = lens::GetQueryParametersForLensRequest(
       entry_point, use_side_panel,
       /* is_full_screen_region_search_request= */
@@ -185,14 +152,14 @@ void CoreTabHelper::SearchByImage(content::RenderFrameHost* render_frame_host,
   SearchByImageImpl(render_frame_host, src_url, kImageSearchThumbnailMinSize,
                     kImageSearchThumbnailMaxWidth,
                     kImageSearchThumbnailMaxHeight, std::string(),
-                    IsSidePanelEnabledFor3PDse());
+                    lens::IsSidePanelEnabledFor3PDse(web_contents()));
 }
 
 void CoreTabHelper::SearchByImage(const gfx::Image& image,
                                   const gfx::Size& image_original_size) {
   SearchByImageImpl(image, image_original_size,
                     /*additional_query_params=*/std::string(),
-                    IsSidePanelEnabledFor3PDse(),
+                    lens::IsSidePanelEnabledFor3PDse(web_contents()),
                     std::vector<lens::mojom::LatencyLogPtr>());
 }
 
@@ -491,6 +458,7 @@ void CoreTabHelper::DoSearchByImage(
                      ->GenerateSideImageSearchURLForDefaultSearchProvider(
                          search_url, kUnifiedSidePanelVersion);
   }
+
   PostContentToURL(post_content, search_url, use_side_panel);
 }
 

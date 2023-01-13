@@ -3606,9 +3606,7 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
     return;
   core_tab_helper->SearchWithLens(
       render_frame_host, params().src_url,
-      lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
-      /* is_side_panel_enabled_for_feature= */
-      lens::features::IsLensSidePanelEnabled());
+      lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM);
 }
 
 void RenderViewContextMenu::ExecAddANote() {
