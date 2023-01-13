@@ -37,40 +37,59 @@ using ::testing::Return;
 struct DriveItem {
   static int64_t counter;
   int64_t stable_id = ++counter;
-  int64_t size;
+  int64_t size = 0;
   base::FilePath path;
-  bool pinned;
-  // Whether to send a status update for this drive item, if false this will get
-  // filtered out when converting `DriveItem` in `CreateSyncingStatusUpdate`.
+  mojom::FileMetadata::Type type = mojom::FileMetadata::Type::kFile;
+  bool pinned = false;
+  bool available_offline = false;
+  // Whether to send a status update for this drive item. If false this will get
+  // filtered out when converting `DriveItem` in `MakeSyncingStatus`.
   bool status_update = true;
 };
 
 int64_t DriveItem::counter = 0;
+
+mojom::FileMetadataPtr MakeMetadata(const bool available_offline,
+                                    const int64_t size) {
+  mojom::FileMetadataPtr md = mojom::FileMetadata::New();
+  md->available_offline = available_offline;
+  md->size = size;
+  return md;
+}
+
+mojom::FileMetadataPtr MakeMetadata(const DriveItem& item) {
+  mojom::FileMetadataPtr md = mojom::FileMetadata::New();
+  md->stable_id = item.stable_id;
+  md->type = item.type;
+  md->size = item.size;
+  md->pinned = item.pinned;
+  md->available_offline = item.available_offline;
+  md->capabilities = mojom::Capabilities::New();
+  return md;
+}
 
 // An action that takes a `std::vector<DriveItem>` and is used to update the
 // items that are returned via the `GetNextPage` callback. These shorthand items
 // are converted to mojo types that represent the actual types returned.
 // NOTE: `arg0` in the below represents the pointer passed via parameters to the
 // `MOCK_METHOD` of `OnGetNextPage`.
-ACTION_P(PopulateSearchItems, drive_items) {
-  std::vector<mojom::QueryItemPtr> items;
-  for (const auto& item : drive_items) {
-    items.emplace_back(mojom::QueryItem::New());
-    items.back()->metadata = mojom::FileMetadata::New();
-    items.back()->metadata->capabilities = mojom::Capabilities::New();
-    items.back()->metadata->size = item.size;
-    items.back()->metadata->pinned = item.pinned;
-    items.back()->path = item.path;
+ACTION_P(PopulateSearchItems, items) {
+  std::vector<mojom::QueryItemPtr> result;
+  result.reserve(items.size());
+  for (const DriveItem& item : items) {
+    mojom::QueryItemPtr p = mojom::QueryItem::New();
+    p->path = item.path;
+    p->metadata = MakeMetadata(item);
+    result.push_back(std::move(p));
   }
-  *arg0 = std::move(items);
+  *arg0 = std::move(result);
 }
 
 // An action that populates no search results. This is required as the final
 // `GetNextPage` query will return 0 items and this ensures the `MOCK_METHOD`
 // returns the appropriate type (instead of `absl::nullopt`).
 ACTION(PopulateNoSearchItems) {
-  std::vector<mojom::QueryItemPtr> items;
-  *arg0 = std::move(items);
+  *arg0 = std::vector<mojom::QueryItemPtr>();
 }
 
 class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
@@ -102,7 +121,9 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   void GetNextPage(GetNextPageCallback callback) override {
     absl::optional<std::vector<mojom::QueryItemPtr>> items;
     auto error = OnGetNextPage(&items);
-    std::move(callback).Run(error, std::move(items));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), error, std::move(items)));
   }
 
   MOCK_METHOD(void,
@@ -112,10 +133,22 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
                base::OnceCallback<void(drive::FileError)>),
               (override));
 
+  MOCK_METHOD(void,
+              SetPinnedByStableId,
+              (int64_t, bool, base::OnceCallback<void(drive::FileError)>),
+              (override));
+
   MOCK_METHOD(
       void,
       GetMetadata,
       (const base::FilePath&,
+       base::OnceCallback<void(drive::FileError, mojom::FileMetadataPtr)>),
+      (override));
+
+  MOCK_METHOD(
+      void,
+      GetMetadataByStableId,
+      (int64_t,
        base::OnceCallback<void(drive::FileError, mojom::FileMetadataPtr)>),
       (override));
 
@@ -144,40 +177,34 @@ class DriveFsPinManagerTest : public testing::Test {
     gcache_dir_ = temp_dir_.GetPath().Append("GCache");
   }
 
-  mojom::SyncingStatusPtr CreateSyncingStatusUpdate(
-      const std::vector<DriveItem>& items) {
+  static mojom::SyncingStatusPtr MakeSyncingStatus(
+      const std::vector<DriveItem>& items,
+      mojom::ItemEvent::State state = mojom::ItemEvent::State::kQueued) {
     mojom::SyncingStatusPtr status = mojom::SyncingStatus::New();
 
-    std::vector<mojom::ItemEventPtr> item_events;
+    std::vector<mojom::ItemEventPtr> events;
     for (const DriveItem& item : items) {
       if (item.pinned || !item.status_update) {
         continue;
       }
-      mojom::ItemEventPtr item_event = mojom::ItemEvent::New();
-      item_event->stable_id = item.stable_id;
-      item_event->path = item.path.value();
-      item_event->state = mojom::ItemEvent::State::kQueued;
-      item_event->bytes_to_transfer = item.size;
-      item_events.push_back(std::move(item_event));
+      mojom::ItemEventPtr event = mojom::ItemEvent::New();
+      event->stable_id = item.stable_id;
+      event->path = item.path.value();
+      event->state = state;
+      event->bytes_to_transfer = item.size;
+      events.push_back(std::move(event));
     }
 
-    status->item_events = std::move(item_events);
+    status->item_events = std::move(events);
     return status;
   }
 
-  void ChangeAllItemEventsToState(std::vector<mojom::ItemEventPtr>& item_events,
-                                  mojom::ItemEvent::State state) {
-    for (auto& item : item_events) {
-      item->state = state;
+  static void SetState(std::vector<mojom::ItemEventPtr>& events,
+                       const mojom::ItemEvent::State state) {
+    for (mojom::ItemEventPtr& event : events) {
+      DCHECK(event);
+      event->state = state;
     }
-  }
-
-  mojom::FileMetadataPtr CreateFileMetadataItem(bool available_offline,
-                                                int64_t size) {
-    auto metadata_item = mojom::FileMetadata::New();
-    metadata_item->available_offline = available_offline;
-    metadata_item->size = size;
-    return metadata_item;
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -199,15 +226,22 @@ TEST_F(DriveFsPinManagerTest, DisabledPinManagerShouldNotStartSearching) {
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(mock_free_space_, GetFreeSpace(_, _)).Times(0);
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/false, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->Start(mock_callback.Get());
+  manager.Start(mock_callback.Get());
   run_loop.Run();
+
+  const SetupProgress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, SetupStage::kDisabled);
+  EXPECT_EQ(progress.free_space, 0);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
 }
 
-TEST_F(DriveFsPinManagerTest, OnFreeSpaceFailingShouldNotSearchDrive) {
+TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
 
   base::RunLoop run_loop;
@@ -219,15 +253,22 @@ TEST_F(DriveFsPinManagerTest, OnFreeSpaceFailingShouldNotSearchDrive) {
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(-1));
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->Start(mock_callback.Get());
+  manager.Start(mock_callback.Get());
   run_loop.Run();
+
+  const SetupProgress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, SetupStage::kCannotCalculateFreeSpace);
+  EXPECT_EQ(progress.free_space, 0);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
 }
 
-TEST_F(DriveFsPinManagerTest, DriveReturningAnErrorShouldFail) {
+TEST_F(DriveFsPinManagerTest, CannotListFiles) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
 
   base::RunLoop run_loop;
@@ -241,15 +282,22 @@ TEST_F(DriveFsPinManagerTest, DriveReturningAnErrorShouldFail) {
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->Start(mock_callback.Get());
+  manager.Start(mock_callback.Get());
   run_loop.Run();
+
+  const SetupProgress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, SetupStage::kCannotRetrieveSearchResults);
+  EXPECT_EQ(progress.free_space, 1 << 30);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
 }
 
-TEST_F(DriveFsPinManagerTest, DriveReturnedSuccessButInvalidResultsShouldFail) {
+TEST_F(DriveFsPinManagerTest, InvalidFileList) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
 
   base::RunLoop run_loop;
@@ -262,28 +310,34 @@ TEST_F(DriveFsPinManagerTest, DriveReturnedSuccessButInvalidResultsShouldFail) {
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->Start(mock_callback.Get());
+  manager.Start(mock_callback.Get());
   run_loop.Run();
+
+  const SetupProgress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, SetupStage::kCannotRetrieveSearchResults);
+  EXPECT_EQ(progress.free_space, 1 << 30);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
 }
 
-TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeSpaceShouldFail) {
+TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-
   base::RunLoop run_loop;
 
-  // Mock Drive search to return 2 unpinned files that total to 600 MB. The
-  // available space of 1 GB is not enough if you take in account the 512 MB
+  // Mock Drive search to return 3 unpinned files that total just above 512 MB.
+  // The available space of 1 GB is not enough if you take in account the 512 MB
   // margin.
-  std::vector<DriveItem> expected_drive_items = {{.size = 300 << 20},
-                                                 {.size = 300 << 20}};
+  const std::vector<DriveItem> items = {
+      {.size = 300 << 20}, {.size = 212 << 20}, {.size = 1}};
 
   EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+      .WillOnce(DoAll(PopulateSearchItems(items),
                       Return(drive::FileError::FILE_ERROR_OK)))
       .WillOnce(DoAll(PopulateNoSearchItems(),
                       Return(drive::FileError::FILE_ERROR_OK)));
@@ -292,33 +346,79 @@ TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeSpaceShouldFail) {
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->Start(mock_callback.Get());
+  manager.Start(mock_callback.Get());
   run_loop.Run();
+
+  const SetupProgress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, SetupStage::kNotEnoughSpace);
+  EXPECT_EQ(progress.free_space, 1 << 30);
+  EXPECT_EQ(progress.required_space, (512 << 20) + (4 << 10));
+  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
+}
+
+TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
+  base::MockOnceCallback<void(SetupStage)> mock_callback;
+  base::RunLoop run_loop;
+
+  // Mock Drive search to return 2 unpinned files that total to 512 MB. The
+  // available space of 1 GB is just enough if you take in account the 512 MB
+  // margin.
+  const std::vector<DriveItem> items = {{.size = 300 << 20},
+                                        {.size = 212 << 20}};
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
+  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
+      .WillOnce(DoAll(PopulateSearchItems(items),
+                      Return(drive::FileError::FILE_ERROR_OK)))
+      .WillOnce(DoAll(PopulateNoSearchItems(),
+                      Return(drive::FileError::FILE_ERROR_OK)));
+  EXPECT_CALL(mock_callback, Run(SetupStage::kSuccess))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
+
+  DriveFsPinManager manager(
+      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
+
+  // Just check the required space. Don't try to pin any file.
+  const bool should_pin = false;
+  manager.Start(mock_callback.Get(), should_pin);
+  run_loop.Run();
+
+  const SetupProgress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, SetupStage::kSuccess);
+  EXPECT_EQ(progress.free_space, 1 << 30);
+  EXPECT_EQ(progress.required_space, 512 << 20);
+  EXPECT_EQ(progress.transferred_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
 }
 
 TEST_F(DriveFsPinManagerTest,
-       DISABLED_FailingToPinOneItemShouldFailCompletely) {
+       DISABLED_FailingToPinOneItemShouldNotFailCompletely) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
 
   base::RunLoop run_loop;
 
-  std::vector<DriveItem> expected_drive_items = {{.size = 128}, {.size = 128}};
+  const std::vector<DriveItem> items = {{.size = 128}, {.size = 128}};
 
   EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(2);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       // Results returned whilst calculating free disk space.
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+      .WillOnce(DoAll(PopulateSearchItems(items),
                       Return(drive::FileError::FILE_ERROR_OK)))
       .WillOnce(DoAll(PopulateNoSearchItems(),
                       Return(drive::FileError::FILE_ERROR_OK)))
       // Results returned when actually performing the pinning, don't return a
       // final empty list as this should be aborted due to one of the pinning
       // operations being mock failed.
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+      .WillOnce(DoAll(PopulateSearchItems(items),
                       Return(drive::FileError::FILE_ERROR_OK)));
   EXPECT_CALL(mock_callback, Run(SetupStage::kSuccess))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -330,11 +430,11 @@ TEST_F(DriveFsPinManagerTest,
       // Mock the second file to unsuccessfully get pinned.
       .WillOnce(RunOnceCallback<2>(drive::FILE_ERROR_FAILED));
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->Start(mock_callback.Get());
+  manager.Start(mock_callback.Get());
   run_loop.Run();
 }
 
@@ -343,82 +443,81 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
 
   base::RunLoop run_loop;
 
-  std::vector<DriveItem> expected_drive_items = {
+  std::vector<DriveItem> items = {
       {.size = 128, .path = base::FilePath("/a")},
       {.size = 128, .path = base::FilePath("/b")},
       {.size = 128, .path = base::FilePath("/c"), .pinned = true}};
 
-  // The `PeriodicallyRemoveUnpinnedItems` will get ran when the task queue is
-  // idle so ensure the `GetMetadata` call returns values that enable the flow
-  // to continue.
   ON_CALL(mock_drivefs_, GetMetadata(_, _))
-      .WillByDefault(RunOnceCallback<1>(
-          drive::FILE_ERROR_OK,
-          CreateFileMetadataItem(/*available_offline=*/true, /*size=*/128)));
+      .WillByDefault(
+          [&items](
+              const base::FilePath& path,
+              base::OnceCallback<void(drive::FileError, mojom::FileMetadataPtr)>
+                  callback) {
+            for (const DriveItem& item : items) {
+              if (item.path == path) {
+                std::move(callback).Run(drive::FILE_ERROR_OK,
+                                        MakeMetadata(item));
+                return;
+              }
+            }
+            std::move(callback).Run(drive::FILE_ERROR_NOT_FOUND, nullptr);
+          });
 
-  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(2);
+  EXPECT_CALL(mock_drivefs_, GetMetadata(_, _)).Times(0);
+
+  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       // Results returned whilst calculating free disk space.
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+      .WillOnce(DoAll(PopulateSearchItems(items),
                       Return(drive::FileError::FILE_ERROR_OK)))
       .WillOnce(DoAll(PopulateNoSearchItems(),
-                      Return(drive::FileError::FILE_ERROR_OK)))
-      // Results returned when actually performing the pinning, the final
-      // response (i.e. PopulateNoSearchItems()) happens after the
-      // `OnSyncingStatusUpdate` instead.
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
                       Return(drive::FileError::FILE_ERROR_OK)));
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
-  EXPECT_CALL(mock_drivefs_, SetPinned(_, true, _))
-      .Times(2)
-      .WillOnce(RunOnceCallback<2>(drive::FILE_ERROR_OK))
-      // `RunOnceCallback` can't be chained together in a `DoAll` action
-      // combinator, so use an inline lambda instead.
-      .WillOnce(
-          [&run_loop](const base::FilePath& path, bool pinned,
-                      base::OnceCallback<void(drive::FileError)> callback) {
-            std::move(callback).Run(drive::FILE_ERROR_OK);
-            run_loop.QuitClosure().Run();
-          });
+  EXPECT_CALL(mock_drivefs_, SetPinnedByStableId(items[0].stable_id, true, _))
+      .WillOnce([&items](int64_t, bool,
+                         base::OnceCallback<void(drive::FileError)> callback) {
+        items[0].pinned = true;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), drive::FILE_ERROR_OK));
+      });
+  EXPECT_CALL(mock_drivefs_, SetPinnedByStableId(items[1].stable_id, true, _))
+      .WillOnce([&items](int64_t, bool,
+                         base::OnceCallback<void(drive::FileError)> callback) {
+        items[1].pinned = true;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), drive::FILE_ERROR_OK));
+      });
+  EXPECT_CALL(mock_callback, Run(SetupStage::kSuccess))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->Start(mock_callback.Get());
+  manager.Start(mock_callback.Get());
   run_loop.Run();
 
-  // Create the syncing status update and emit the update to the manager.
-  mojom::SyncingStatusPtr status =
-      CreateSyncingStatusUpdate(expected_drive_items);
-  manager->OnSyncingStatusUpdate(*status);
+  {
+    const mojom::SyncingStatusPtr status =
+        MakeSyncingStatus(items, mojom::ItemEvent::State::kQueued);
+    manager.OnSyncingStatusUpdate(*status);
+  }
 
-  // When all items are in progress, they should not start iterating over the
-  // next search page.
-  ChangeAllItemEventsToState(status->item_events,
-                             mojom::ItemEvent::State::kInProgress);
-  manager->OnSyncingStatusUpdate(*status);
+  {
+    const mojom::SyncingStatusPtr status =
+        MakeSyncingStatus(items, mojom::ItemEvent::State::kInProgress);
+    manager.OnSyncingStatusUpdate(*status);
+  }
 
-  // Flipping all the events to `kCompleted` should then start the next query.
-  // By populating no search items this indicates the end of the available items
-  // and thus it finished.
-  base::RunLoop new_run_loop;
-  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
-      .WillOnce(DoAll(PopulateNoSearchItems(),
-                      Return(drive::FileError::FILE_ERROR_OK)));
-  EXPECT_CALL(mock_callback, Run(SetupStage::kSuccess))
-      .WillOnce(RunClosure(new_run_loop.QuitClosure()));
-  EXPECT_CALL(mock_drivefs_, GetMetadata(_, _))
-      .Times(2)
-      .WillOnce(RunOnceCallback<1>(drive::FILE_ERROR_OK,
-                                   CreateFileMetadataItem(true, 128)))
-      .WillOnce(RunOnceCallback<1>(drive::FILE_ERROR_OK,
-                                   CreateFileMetadataItem(true, 128)));
-  ChangeAllItemEventsToState(status->item_events,
-                             mojom::ItemEvent::State::kCompleted);
-  manager->OnSyncingStatusUpdate(*status);
-  new_run_loop.Run();
+  {
+    const mojom::SyncingStatusPtr status =
+        MakeSyncingStatus(items, mojom::ItemEvent::State::kCompleted);
+    manager.OnSyncingStatusUpdate(*status);
+  }
 }
 
 TEST_F(DriveFsPinManagerTest,
@@ -429,7 +528,7 @@ TEST_F(DriveFsPinManagerTest,
 
   base::FilePath gdoc_path("/a.gdoc");
   base::FilePath b_path("/b");
-  std::vector<DriveItem> expected_drive_items = {
+  const std::vector<DriveItem> items = {
       // The `a.gdoc` file will never receive an `OnSyncingStatusUpdate` and
       // thus needs to be removed via the periodic removal task.
       {.size = 0, .path = gdoc_path, .status_update = false},
@@ -438,14 +537,14 @@ TEST_F(DriveFsPinManagerTest,
   EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(2);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       // Results returned whilst calculating free disk space.
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+      .WillOnce(DoAll(PopulateSearchItems(items),
                       Return(drive::FileError::FILE_ERROR_OK)))
       .WillOnce(DoAll(PopulateNoSearchItems(),
                       Return(drive::FileError::FILE_ERROR_OK)))
       // Results returned when actually performing the pinning, the final
       // response (i.e. PopulateNoSearchItems()) happens after the
       // `OnSyncingStatusUpdate` instead.
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+      .WillOnce(DoAll(PopulateSearchItems(items),
                       Return(drive::FileError::FILE_ERROR_OK)));
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
@@ -461,17 +560,16 @@ TEST_F(DriveFsPinManagerTest,
             run_loop.QuitClosure().Run();
           });
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->Start(mock_callback.Get());
+  manager.Start(mock_callback.Get());
   run_loop.Run();
 
   // Create the syncing status update and emit the update to the manager.
-  mojom::SyncingStatusPtr status =
-      CreateSyncingStatusUpdate(expected_drive_items);
-  manager->OnSyncingStatusUpdate(*status);
+  const mojom::SyncingStatusPtr status = MakeSyncingStatus(items);
+  manager.OnSyncingStatusUpdate(*status);
 
   // Flipping all the events to `kCompleted` will not start the next search
   // query as the `a.gdoc` file is still remaining in the syncing items. As the
@@ -482,20 +580,19 @@ TEST_F(DriveFsPinManagerTest,
   EXPECT_CALL(mock_drivefs_, GetMetadata(b_path, _))
       .WillOnce(RunOnceCallback<1>(
           drive::FILE_ERROR_OK,
-          CreateFileMetadataItem(/*available_offline=*/true, /*size=*/128)));
+          MakeMetadata(/*available_offline=*/true, /*size=*/128)));
   EXPECT_CALL(mock_drivefs_, GetMetadata(gdoc_path, _))
       // Mock the first file to be available offline with a 0 size.
       .WillOnce(RunOnceCallback<1>(
           drive::FILE_ERROR_OK,
-          CreateFileMetadataItem(/*available_offline=*/true, /*size=*/0)));
+          MakeMetadata(/*available_offline=*/true, /*size=*/0)));
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       .WillOnce(DoAll(PopulateNoSearchItems(),
                       Return(drive::FileError::FILE_ERROR_OK)));
   EXPECT_CALL(mock_callback, Run(SetupStage::kSuccess))
       .WillOnce(RunClosure(new_run_loop.QuitClosure()));
-  ChangeAllItemEventsToState(status->item_events,
-                             mojom::ItemEvent::State::kCompleted);
-  manager->OnSyncingStatusUpdate(*status);
+  SetState(status->item_events, mojom::ItemEvent::State::kCompleted);
+  manager.OnSyncingStatusUpdate(*status);
   new_run_loop.Run();
 }
 
@@ -518,20 +615,19 @@ TEST_F(DriveFsPinManagerTest,
   base::RunLoop run_loop;
 
   base::FilePath file_path("/b");
-  std::vector<DriveItem> expected_drive_items = {
-      {.size = 128, .path = file_path}};
+  const std::vector<DriveItem> items = {{.size = 128, .path = file_path}};
 
   EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(2);
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_))
       // Results returned whilst calculating free disk space.
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+      .WillOnce(DoAll(PopulateSearchItems(items),
                       Return(drive::FileError::FILE_ERROR_OK)))
       .WillOnce(DoAll(PopulateNoSearchItems(),
                       Return(drive::FileError::FILE_ERROR_OK)))
       // Results returned when actually performing the pinning, the final
       // response (i.e. PopulateNoSearchItems()) happens after the
       // `OnSyncingStatusUpdate` instead.
-      .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
+      .WillOnce(DoAll(PopulateSearchItems(items),
                       Return(drive::FileError::FILE_ERROR_OK)));
   EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
@@ -549,24 +645,22 @@ TEST_F(DriveFsPinManagerTest,
   TestBulkPinObserver mock_pin_observer;
   EXPECT_CALL(mock_pin_observer, OnSetupProgress(_)).Times(AnyNumber());
 
-  auto manager = std::make_unique<DriveFsPinManager>(
+  DriveFsPinManager manager(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
-  manager->AddObserver(&mock_pin_observer);
-  manager->Start(mock_callback.Get());
+  manager.AddObserver(&mock_pin_observer);
+  manager.Start(mock_callback.Get());
   run_loop.Run();
 
   // Create the syncing status update and emit the update to the manager.
-  mojom::SyncingStatusPtr status =
-      CreateSyncingStatusUpdate(expected_drive_items);
-  manager->OnSyncingStatusUpdate(*status);
+  const mojom::SyncingStatusPtr status = MakeSyncingStatus(items);
+  manager.OnSyncingStatusUpdate(*status);
 
   // Update the item in the syncing status to have transferred 10 bytes and
   // expect the progress to return that information.
   base::RunLoop setup_progress_run_loop;
-  ChangeAllItemEventsToState(status->item_events,
-                             mojom::ItemEvent::State::kInProgress);
+  SetState(status->item_events, mojom::ItemEvent::State::kInProgress);
   status->item_events.at(0)->bytes_transferred = 10;
   EXPECT_CALL(mock_pin_observer,
               OnSetupProgress(
@@ -574,7 +668,7 @@ TEST_F(DriveFsPinManagerTest,
                         Field(&SetupProgress::stage, SetupStage::kSyncing))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
-  manager->OnSyncingStatusUpdate(*status);
+  manager.OnSyncingStatusUpdate(*status);
   setup_progress_run_loop.Run();
 
   // Flip all the items to `kCompleted` and move the `bytes_transferred` size to
@@ -587,11 +681,10 @@ TEST_F(DriveFsPinManagerTest,
   EXPECT_CALL(mock_drivefs_, GetMetadata(_, _))
       .WillOnce(RunOnceCallback<1>(
           drive::FILE_ERROR_OK,
-          CreateFileMetadataItem(/*available_offline=*/true, /*size=*/128)));
+          MakeMetadata(/*available_offline=*/true, /*size=*/128)));
   EXPECT_CALL(mock_callback, Run(SetupStage::kSuccess))
       .WillOnce(RunClosure(new_run_loop.QuitClosure()));
-  ChangeAllItemEventsToState(status->item_events,
-                             mojom::ItemEvent::State::kCompleted);
+  SetState(status->item_events, mojom::ItemEvent::State::kCompleted);
   status->item_events.at(0)->bytes_transferred = 128;
   EXPECT_CALL(mock_pin_observer,
               OnSetupProgress(
@@ -599,7 +692,7 @@ TEST_F(DriveFsPinManagerTest,
                         Field(&SetupProgress::stage, SetupStage::kSuccess))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
-  manager->OnSyncingStatusUpdate(*status);
+  manager.OnSyncingStatusUpdate(*status);
   new_run_loop.Run();
 }
 

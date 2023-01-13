@@ -454,19 +454,20 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(complete_callback);
 
+  should_pin_ = should_pin;
+  complete_callback_ = std::move(complete_callback);
+  progress_ = {};
+  files_to_pin_.clear();
+  files_to_track_.clear();
+
   if (!enabled_) {
     LOG(ERROR) << "The pin manager is not enabled";
-    std::move(complete_callback).Run(SetupStage::kDisabled);
-    return;
+    return Complete(SetupStage::kDisabled);
   }
 
   VLOG(1) << "Calculating free space...";
-  should_pin_ = should_pin;
   timer_ = base::ElapsedTimer();
-  complete_callback_ = std::move(complete_callback);
-  files_to_pin_.clear();
-  files_to_track_.clear();
-  progress_ = {.stage = SetupStage::kCalculatingFreeSpace};
+  progress_.stage = SetupStage::kCalculatingFreeSpace;
   NotifyProgress();
 
   get_free_space_.Run(profile_path_.AppendASCII("GCache"),
