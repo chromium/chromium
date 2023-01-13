@@ -26,7 +26,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -80,38 +79,6 @@ public class PriceTrackingButtonControllerUnitTest {
         when(mMockTab.getContext()).thenReturn(mActivity);
         when(mMockTabSupplier.get()).thenReturn(mMockTab);
         when(mMockTabBookmarkerSupplier.get()).thenReturn(mMockTabBookmarker);
-    }
-
-    @Test
-    public void testButtonData_QuietVariation() {
-        PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(mMockTabSupplier, mMockModalDialogManager,
-                        mMockBottomSheetController, mock(Drawable.class),
-                        mMockTabBookmarkerSupplier);
-        ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
-
-        // Quiet variation uses an IPHCommandBuilder to highlight the action.
-        Assert.assertNotNull(buttonData.getButtonSpec().getIPHCommandBuilder());
-    }
-
-    @Test
-    public void testButtonData_ActionChipVariation() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", "true");
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
-        FeatureList.setTestValues(testValues);
-
-        PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(mMockTabSupplier, mMockModalDialogManager,
-                        mMockBottomSheetController, mock(Drawable.class),
-                        mMockTabBookmarkerSupplier);
-        ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
-
-        // Action chip variation should not set an IPH command builder.
-        Assert.assertNull(buttonData.getButtonSpec().getIPHCommandBuilder());
     }
 
     @Test

@@ -288,6 +288,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/BaseButtonDataProviderTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ConstraintsCheckerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/TabCountProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarTest.java",

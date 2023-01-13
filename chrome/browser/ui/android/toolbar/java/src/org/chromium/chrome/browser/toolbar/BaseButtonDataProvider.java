@@ -36,7 +36,6 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
     private ModalDialogManagerObserver mModalDialogObserver;
 
     private boolean mShouldShowOnIncognitoTabs;
-    private @StringRes int mActionChipResourceId;
 
     /**
      * Creates a new instance of {@code BaseButtonDataProvider}.
@@ -124,31 +123,11 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
         mButtonData.updateIPHCommandBuilder(getIphCommandBuilder(tab));
     }
 
-    private void maybeSetActionChipResourceId() {
-        if (!mButtonData.getButtonSpec().isDynamicAction() || !FeatureList.isInitialized()
-                || !AdaptiveToolbarFeatures.shouldShowActionChip(
-                        mButtonData.getButtonSpec().getButtonVariant())
-                || mButtonData.getButtonSpec().getActionChipLabelResId() != Resources.ID_NULL) {
-            return;
-        }
-
-        mButtonData.updateActionChipResourceId(mActionChipResourceId);
-    }
-
     /**
      * Sets whether the button should be shown on incognito tabs, default is false.
      */
     protected void setShouldShowOnIncognitoTabs(boolean shouldShowOnIncognitoTabs) {
         mShouldShowOnIncognitoTabs = shouldShowOnIncognitoTabs;
-    }
-
-    /**
-     * Sets a string resource ID to be used when the action chip variant is enabled, only used on
-     * dynamic actions.
-     * @param actionChipResourceId A string resource to use as the action chip label.
-     */
-    protected void setActionChipResourceId(@StringRes int actionChipResourceId) {
-        mActionChipResourceId = actionChipResourceId;
     }
 
     /**
@@ -177,7 +156,6 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
     public ButtonData get(Tab tab) {
         mButtonData.setCanShow(shouldShowButton(tab));
         maybeSetIphCommandBuilder(tab);
-        maybeSetActionChipResourceId();
 
         return mButtonData;
     }
