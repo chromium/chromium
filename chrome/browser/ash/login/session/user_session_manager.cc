@@ -1686,12 +1686,8 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
       always_on_vpn_manager_ =
           std::make_unique<arc::AlwaysOnVpnManager>(profile->GetPrefs());
 
-      // SecureDnsManager is only needed if DNS-over-HTTPS is enabled for the
-      // dns-proxy service.
-      if (base::FeatureList::IsEnabled(::features::kDnsProxyEnableDOH)) {
-        secure_dns_manager_ = std::make_unique<SecureDnsManager>(
-            g_browser_process->local_state());
-      }
+      secure_dns_manager_ =
+          std::make_unique<SecureDnsManager>(g_browser_process->local_state());
     }
 
     UpdateEasyUnlockKeys(user_context_);

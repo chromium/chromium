@@ -283,12 +283,7 @@ const std::vector<SearchConcept>& GetPrivacyControlsSearchConcepts() {
 }
 
 bool IsSecureDnsAvailable() {
-  return
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      base::FeatureList::IsEnabled(features::kEnableDnsProxy) &&
-      base::FeatureList::IsEnabled(::features::kDnsProxyEnableDOH) &&
-#endif
-      ::features::kDnsOverHttpsShowUiParam.Get();
+  return ::features::kDnsOverHttpsShowUiParam.Get();
 }
 
 }  // namespace

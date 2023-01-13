@@ -417,11 +417,13 @@ void ChromeFeaturesServiceProvider::IsPeripheralDataAccessEnabled(
                peripheral_data_access_enabled);
 }
 
+// TODO(b/265091596): Remove
 void ChromeFeaturesServiceProvider::IsDnsProxyEnabled(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
-  SendResponse(method_call, std::move(response_sender),
-               base::FeatureList::IsEnabled(features::kEnableDnsProxy));
+  // dnsproxy is always enabled now, so always return true; this method will be
+  // removed in a follow-up patch once CrOS is no longer dependent on it.
+  SendResponse(method_call, std::move(response_sender), true);
 }
 
 }  // namespace ash
