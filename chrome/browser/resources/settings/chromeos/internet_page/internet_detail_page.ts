@@ -291,14 +291,6 @@ class SettingsInternetDetailPageElement extends
         },
       },
 
-      isCaptivePortalUI2022Enabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('captivePortalUI2022') &&
-              loadTimeData.getBoolean('captivePortalUI2022');
-        },
-      },
-
       isApnRevampEnabled_: {
         type: Boolean,
         value() {
@@ -380,7 +372,6 @@ class SettingsInternetDetailPageElement extends
   private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
-  private isCaptivePortalUI2022Enabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
   private isWifiSyncEnabled_: boolean;
@@ -1069,8 +1060,7 @@ class SettingsInternetDetailPageElement extends
           this.i18n('networkOutOfRange');
     }
 
-    if (this.isCaptivePortalUI2022Enabled_ &&
-        OncMojo.connectionStateIsConnected(managedProperties.connectionState)) {
+    if (OncMojo.connectionStateIsConnected(managedProperties.connectionState)) {
       if (this.isPortalState_(managedProperties.portalState)) {
         return this.i18n('networkListItemSignIn');
       }
@@ -1107,22 +1097,12 @@ class SettingsInternetDetailPageElement extends
 
   private showConnectedState_(managedProperties: ManagedProperties|
                               undefined): boolean {
-    // Only check that state is connected if feature flag is disabled.
-    if (!this.isCaptivePortalUI2022Enabled_) {
-      return this.isConnectedState_(managedProperties);
-    }
-
     return this.isConnectedState_(managedProperties) &&
         !this.isRestrictedConnectivity_(managedProperties);
   }
 
   private showRestrictedConnectivity_(managedProperties: ManagedProperties|
                                       undefined): boolean {
-    // Do not show warning color if feature flag is disabled.
-    if (!this.isCaptivePortalUI2022Enabled_) {
-      return false;
-    }
-
     if (!managedProperties) {
       return false;
     }
@@ -1249,9 +1229,6 @@ class SettingsInternetDetailPageElement extends
   }
 
   private showSignin_(managedProperties: ManagedProperties|undefined): boolean {
-    if (!this.isCaptivePortalUI2022Enabled_) {
-      return false;
-    }
     if (!managedProperties) {
       return false;
     }
@@ -1329,9 +1306,6 @@ class SettingsInternetDetailPageElement extends
 
   private disableSignin_(managedProperties: ManagedProperties|
                          undefined): boolean {
-    if (!this.isCaptivePortalUI2022Enabled_) {
-      return true;
-    }
     if (this.disabled_ || !managedProperties) {
       return true;
     }

@@ -317,13 +317,11 @@ void NetworkListNetworkItemView::SetupNetworkSubtext() {
     return;
   }
 
-  if (ash::features::IsCaptivePortalUI2022Enabled()) {
-    absl::optional<std::u16string> portal_subtext =
-        GetPortalStateSubtext(network_properties()->portal_state);
-    if (portal_subtext) {
-      SetWarningSubText(this, *portal_subtext);
-      return;
-    }
+  absl::optional<std::u16string> portal_subtext =
+      GetPortalStateSubtext(network_properties()->portal_state);
+  if (portal_subtext) {
+    SetWarningSubText(this, *portal_subtext);
+    return;
   }
 
   SetupConnectedScrollListItem(this);

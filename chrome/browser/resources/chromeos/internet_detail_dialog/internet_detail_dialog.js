@@ -79,17 +79,6 @@ Polymer({
             loadTimeData.getBoolean('showTechnologyBadge');
       },
     },
-    /**
-     * Return true if captivePortalUI2022 feature flag is enabled.
-     * @private
-     */
-    isCaptivePortalUI2022Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('captivePortalUI2022') &&
-            loadTimeData.getBoolean('captivePortalUI2022');
-      },
-    },
 
     /**
      * Whether network configuration properties sections should be shown. The
@@ -355,8 +344,7 @@ Polymer({
       return '';
     }
 
-    if (this.isCaptivePortalUI2022Enabled_ &&
-        OncMojo.connectionStateIsConnected(managedProperties.connectionState)) {
+    if (OncMojo.connectionStateIsConnected(managedProperties.connectionState)) {
       if (this.isPortalState_(managedProperties.portalState)) {
         return this.i18n('networkListItemSignIn');
       }
@@ -410,11 +398,6 @@ Polymer({
    * @private
    */
   showConnectedState_(managedProperties) {
-    // Only check that state is connected if feature flag is disabled.
-    if (!this.isCaptivePortalUI2022Enabled_) {
-      return this.isConnectedState_(managedProperties);
-    }
-
     return this.isConnectedState_(managedProperties) &&
         !this.isRestrictedConnectivity_(managedProperties);
   },
@@ -427,10 +410,6 @@ Polymer({
    * @private
    */
   showRestrictedConnectivity_(managedProperties) {
-    // Do not show warning color if feature flag is disabled.
-    if (!this.isCaptivePortalUI2022Enabled_) {
-      return false;
-    }
     if (!managedProperties) {
       return false;
     }
@@ -548,9 +527,6 @@ Polymer({
    * @private
    */
   showSignin_(managedProperties) {
-    if (!this.isCaptivePortalUI2022Enabled_) {
-      return false;
-    }
     if (!managedProperties) {
       return false;
     }
@@ -567,9 +543,6 @@ Polymer({
    * @private
    */
   disableSignin_(managedProperties) {
-    if (!this.isCaptivePortalUI2022Enabled_) {
-      return true;
-    }
     if (this.disabled_ || !managedProperties) {
       return true;
     }

@@ -47,8 +47,6 @@ class NetworkPortalNotificationController
   // Ignores "No network" errors in browser tests.
   void SetIgnoreNoNetworkForTesting();
 
-  bool IsDialogShownForTesting() const;
-
  private:
   friend NetworkPortalNotificationControllerTest;
 

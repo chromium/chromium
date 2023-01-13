@@ -18,11 +18,7 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
   enum class SigninMode {
     // Show in a dialog window using the signin (oobe/login) profile.
     kSigninDialog = 1,
-    // Show in a singleton tab (i.e. reuse a tab with the same URL if it exists)
-    // using the active user profile. In practice since the signin page will
-    // immediately redirect, this will behave the same as kNormalTab unless
-    // the probe URL fails to redirect.
-    kSingletonTab = 2,
+    // kSingletonTab (2) was deprecated in M110
     // Show in a new tab using the active user profile.
     kNormalTab = 3,
     // Show in a new tab in an OTR window with the portal signin profile.

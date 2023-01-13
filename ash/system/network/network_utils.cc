@@ -64,9 +64,6 @@ void RecordNetworkTypeToggled(
 
 absl::optional<std::u16string> GetPortalStateSubtext(
     const chromeos::network_config::mojom::PortalState& portal_state) {
-  if (!ash::features::IsCaptivePortalUI2022Enabled()) {
-    return absl::nullopt;
-  }
   using chromeos::network_config::mojom::PortalState;
   switch (portal_state) {
     case PortalState::kUnknown:

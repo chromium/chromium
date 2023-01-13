@@ -72214,7 +72214,8 @@ Called by update_net_trust_anchors.py.-->
     how to display captive portal signin UI.
   </summary>
   <int value="1" label="Dialog using the signin Profile"/>
-  <int value="2" label="Singleton tab using the active user Profile"/>
+  <int value="2"
+      label="DEPRECATED: Singleton tab using the active user Profile"/>
   <int value="3" label="Browser tab using the active user Profile"/>
   <int value="4" label="Browser tab using an OTR Profile"/>
   <int value="5" label="Dialog using an incognito Profile (deprecated)"/>

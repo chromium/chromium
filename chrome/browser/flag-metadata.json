@@ -859,11 +859,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "captive-portal-ui-2022",
-    "owners": [ "michaelrygiel", "stevenjb", "cros-network-health-team@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "cast-streaming-hardware-h264",
     "owners": [ "jophba", "openscreen-eng" ],
     "expiry_milestone": 121

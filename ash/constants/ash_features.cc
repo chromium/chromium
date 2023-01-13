@@ -492,12 +492,6 @@ BASE_FEATURE(kBruschettaAlphaMigrate,
              "BruschettaAlphaMigrate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Captive Portal UI 2022 changes, which includes updates to
-// notifications, network details page, quick settings, and portal signin UI.
-BASE_FEATURE(kCaptivePortalUI2022,
-             "CaptivePortalUI2022",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Captive Portal Error Page changes, which shows a suggestion in
 // the Chrome error page on ChromeOS when behind a captive portal.
 BASE_FEATURE(kCaptivePortalErrorPage,
@@ -2373,10 +2367,6 @@ bool IsCalendarModelDebugModeEnabled() {
 
 bool IsCalendarJellyEnabled() {
   return base::FeatureList::IsEnabled(kCalendarJelly);
-}
-
-bool IsCaptivePortalUI2022Enabled() {
-  return base::FeatureList::IsEnabled(kCaptivePortalUI2022);
 }
 
 bool IsCaptivePortalErrorPageEnabled() {

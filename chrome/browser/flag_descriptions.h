@@ -3395,9 +3395,6 @@ extern const char kSystemJapanesePhysicalTypingDescription[];
 extern const char kQuickSettingsNetworkRevampName[];
 extern const char kQuickSettingsNetworkRevampDescription[];
 
-extern const char kCaptivePortalUI2022Name[];
-extern const char kCaptivePortalUI2022Description[];
-
 extern const char kCaptivePortalErrorPageName[];
 extern const char kCaptivePortalErrorPageDescription[];
 

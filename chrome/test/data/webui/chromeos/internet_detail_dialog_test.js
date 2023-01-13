@@ -69,9 +69,8 @@ suite('internet-detail-dialog', () => {
     mojoApi_.resetForTest();
   });
 
-  async function init(captive_portal_2022) {
+  async function init() {
     internetDetailDialog = document.createElement('internet-detail-dialog');
-    internetDetailDialog.isCaptivePortalUI2022Enabled_ = captive_portal_2022;
     document.body.appendChild(internetDetailDialog);
     await flushAsync();
   }
@@ -129,7 +128,7 @@ suite('internet-detail-dialog', () => {
       wifiNetwork.portalState = PortalState.kPortal;
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-      init(/*captive_portal_2022=*/ true);
+      init();
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailDialog.shadowRoot.querySelector(`#networkState`);
@@ -153,7 +152,7 @@ suite('internet-detail-dialog', () => {
       wifiNetwork.portalState = PortalState.kNoInternet;
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-      init(/*captive_portal_2022=*/ true);
+      init();
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailDialog.shadowRoot.querySelector(`#networkState`);
@@ -178,7 +177,7 @@ suite('internet-detail-dialog', () => {
       wifiNetwork.portalState = PortalState.kProxyAuthRequired;
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-      init(/*captive_portal_2022=*/ true);
+      init();
       return flushAsync().then(() => {
         const networkStateText =
             internetDetailDialog.shadowRoot.querySelector(`#networkState`);
@@ -190,30 +189,6 @@ suite('internet-detail-dialog', () => {
         assertTrue(!!signinButton);
         assertFalse(signinButton.hasAttribute('hidden'));
         assertFalse(signinButton.disabled);
-      });
-    });
-
-    test('WiFi in a portal portalState and feature flag disabled', function() {
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
-      wifiNetwork.source = OncSource.kUser;
-      wifiNetwork.connectable = true;
-      wifiNetwork.connectionState = ConnectionStateType.kPortal;
-      wifiNetwork.portalState = PortalState.kPortal;
-
-      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-      init(/*captive_portal_2022=*/ false);
-      return flushAsync().then(() => {
-        const networkStateText =
-            internetDetailDialog.shadowRoot.querySelector(`#networkState`);
-        assertTrue(networkStateText.hasAttribute('connected'));
-        assertEquals(
-            networkStateText.textContent.trim(),
-            internetDetailDialog.i18n('OncConnected'));
-        const signinButton =
-            internetDetailDialog.shadowRoot.querySelector(`#signinButton`);
-        // Button does not exist because feature flag is disabled.
-        assertTrue(!signinButton);
       });
     });
   });

@@ -737,7 +737,7 @@ suite('NetworkListItemTest', function() {
       });
 
   suite('Portal', function() {
-    function initWithPortalState(flagEnabled, portalState) {
+    function initWithPortalState(portalState) {
       const managedProperties =
           OncMojo.getDefaultManagedProperties(NetworkType.kWiFi, 'wifiguid');
       managedProperties.source = OncSource.kUser;
@@ -747,28 +747,13 @@ suite('NetworkListItemTest', function() {
           OncMojo.managedPropertiesToNetworkState(managedProperties);
       networkState.portalState = portalState;
       networkState.connectionState = ConnectionStateType.kPortal;
-      listItem.isCaptivePortalUI2022Enabled_ = flagEnabled;
       listItem.item = networkState;
       flush();
     }
 
-    test('kPortal portalState flag disabled', async () => {
-      init();
-      initWithPortalState(false /* flagEnabled */, PortalState.kPortal);
-      const getNetworkStateText = () => {
-        const element = listItem.$$('#networkStateText');
-        return element ? element.textContent.trim() : '';
-      };
-      assertNotEquals(
-          getNetworkStateText(), listItem.i18n('networkListItemSignIn'));
-      assertFalse(
-          listItem.$$('#networkStateText').classList.contains('warning'));
-      assertTrue(!!listItem.$$('#networkStateText').hasAttribute('active'));
-    });
-
     test('kPortal portalState show sign in description', async () => {
       init();
-      initWithPortalState(true /* flagEnabled */, PortalState.kPortal);
+      initWithPortalState(PortalState.kPortal);
       const getNetworkStateText = () => {
         const element = listItem.$$('#networkStateText');
         return element ? element.textContent.trim() : '';
@@ -782,8 +767,7 @@ suite('NetworkListItemTest', function() {
 
     test('kPortalProxyAuth portalState show sign in description', async () => {
       init();
-      initWithPortalState(
-          true /* flagEnabled */, PortalState.kProxyAuthRequired);
+      initWithPortalState(PortalState.kProxyAuthRequired);
       const getNetworkStateText = () => {
         const element = listItem.$$('#networkStateText');
         return element ? element.textContent.trim() : '';
@@ -799,8 +783,7 @@ suite('NetworkListItemTest', function() {
         'kPortalSuspected portalState show limited connectivity description',
         async () => {
           init();
-          initWithPortalState(
-              true /* flagEnabled */, PortalState.kPortalSuspected);
+          initWithPortalState(PortalState.kPortalSuspected);
           const getNetworkStateText = () => {
             const element = listItem.$$('#networkStateText');
             return element ? element.textContent.trim() : '';
@@ -818,7 +801,7 @@ suite('NetworkListItemTest', function() {
         'kNoInternet portalState show no connectivity description',
         async () => {
           init();
-          initWithPortalState(true /* flagEnabled */, PortalState.kNoInternet);
+          initWithPortalState(PortalState.kNoInternet);
           const getNetworkStateText = () => {
             const element = listItem.$$('#networkStateText');
             return element ? element.textContent.trim() : '';

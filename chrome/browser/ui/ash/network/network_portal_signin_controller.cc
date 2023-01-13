@@ -99,9 +99,6 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
     case SigninMode::kSigninDialog:
       ShowDialog(ProfileHelper::GetSigninProfile(), url);
       break;
-    case SigninMode::kSingletonTab:
-      ShowSingletonTab(ProfileManager::GetActiveUserProfile(), url);
-      break;
     case SigninMode::kNormalTab:
       ShowTab(ProfileManager::GetActiveUserProfile(), url);
       break;
@@ -136,17 +133,6 @@ NetworkPortalSigninController::GetSigninMode() const {
     NET_LOG(DEBUG) << "GetSigninMode: No profile";
     return SigninMode::kSigninDialog;
   }
-
-  if (!ash::features::IsCaptivePortalUI2022Enabled()) {
-    if (profile->GetPrefs()->GetBoolean(
-            prefs::kCaptivePortalAuthenticationIgnoresProxy)) {
-      // If allowed, use an incognito dialog to ignore any proxies.
-      return SigninMode::kSigninDialog;
-    }
-    return SigninMode::kSingletonTab;
-  }
-
-  NET_LOG(DEBUG) << "GetSigninMode: 2022 UI Enabled";
 
   // This pref defaults to true but may be set to false by policy.
   // Note: Generally we always want to show the portal signin UI in an incognito
@@ -231,9 +217,6 @@ std::ostream& operator<<(
   switch (signin_mode) {
     case NetworkPortalSigninController::SigninMode::kSigninDialog:
       stream << "Signin Dialog";
-      break;
-    case NetworkPortalSigninController::SigninMode::kSingletonTab:
-      stream << "Singleton Tab";
       break;
     case NetworkPortalSigninController::SigninMode::kNormalTab:
       stream << "Normal Tab";

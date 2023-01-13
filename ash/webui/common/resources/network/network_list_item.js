@@ -16,13 +16,12 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import './network_icon.js';
 
+import {assert} from '//resources/ash/common/assert.js';
 import {CellularSetupPageName} from '//resources/ash/common/cellular_setup/cellular_types.js';
 import {getESimProfileProperties} from '//resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {assert} from '//resources/ash/common/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ActivationStateType, CrosNetworkConfigRemote, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
@@ -239,18 +238,6 @@ Polymer({
     isCellularUnlockDialogOpen_: {
       type: Boolean,
       value: false,
-    },
-
-    /**
-     * Return true if captivePortalUI2022 feature flag is enabled.
-     * @private
-     */
-    isCaptivePortalUI2022Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('captivePortalUI2022') &&
-            loadTimeData.getBoolean('captivePortalUI2022');
-      },
     },
   },
 
@@ -656,19 +643,16 @@ Polymer({
 
     const connectionState = this.networkState.connectionState;
     if (OncMojo.connectionStateIsConnected(connectionState)) {
-      if (this.isCaptivePortalUI2022Enabled_) {
-        if (this.isPortalState_(this.networkState.portalState)) {
-          return this.i18n('networkListItemSignIn');
-        }
-        if (this.networkState.portalState === PortalState.kPortalSuspected) {
-          return this.i18n('networkListItemConnectedLimited');
-        }
-        if (this.networkState.portalState === PortalState.kNoInternet) {
-          return this.i18n('networkListItemConnectedNoConnectivity');
-        }
+      if (this.isPortalState_(this.networkState.portalState)) {
+        return this.i18n('networkListItemSignIn');
       }
-      // TODO(khorimoto): Consider differentiating between Portal, Connected,
-      // and Online.
+      if (this.networkState.portalState === PortalState.kPortalSuspected) {
+        return this.i18n('networkListItemConnectedLimited');
+      }
+      if (this.networkState.portalState === PortalState.kNoInternet) {
+        return this.i18n('networkListItemConnectedNoConnectivity');
+      }
+      // TODO(khorimoto): Consider differentiating between Connected and Online.
       return this.i18n('networkListItemConnected');
     }
     if (connectionState === ConnectionStateType.kConnecting) {
@@ -707,7 +691,7 @@ Polymer({
     }
 
     // Warning is shown when there is restricted connectivity.
-    if (this.isCaptivePortalUI2022Enabled_ && this.networkState &&
+    if (this.networkState &&
         OncMojo.isRestrictedConnectivity(this.networkState.portalState)) {
       return true;
     }
@@ -755,8 +739,7 @@ Polymer({
     if (this.isESimUnactivatedProfile_) {
       return false;
     }
-    if (this.isCaptivePortalUI2022Enabled_ &&
-        OncMojo.isRestrictedConnectivity(this.networkState.portalState)) {
+    if (OncMojo.isRestrictedConnectivity(this.networkState.portalState)) {
       return false;
     }
     return OncMojo.connectionStateIsConnected(

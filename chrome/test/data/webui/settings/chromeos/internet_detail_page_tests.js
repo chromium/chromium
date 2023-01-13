@@ -240,7 +240,6 @@ suite('InternetDetailPage', function() {
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
       internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       return flushAsync().then(() => {
         const networkStateText =
@@ -268,7 +267,6 @@ suite('InternetDetailPage', function() {
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
       internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       return flushAsync().then(() => {
         const networkStateText =
@@ -296,7 +294,6 @@ suite('InternetDetailPage', function() {
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
       internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       return flushAsync().then(() => {
         const networkStateText =
@@ -324,7 +321,6 @@ suite('InternetDetailPage', function() {
 
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
       internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
       return flushAsync().then(() => {
         const networkStateText =
@@ -339,37 +335,6 @@ suite('InternetDetailPage', function() {
         assertFalse(signinButton.disabled);
       });
     });
-
-    test(
-        'WiFi in a portal portalState with the feature flag disabled',
-        function() {
-          init();
-          mojoApi_.resetForTest();
-          mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-          const wifiNetwork =
-              getManagedProperties(NetworkType.kWiFi, 'wifi_user');
-          wifiNetwork.source = OncSource.kUser;
-          wifiNetwork.connectable = true;
-          wifiNetwork.connectionState = ConnectionStateType.kPortal;
-          wifiNetwork.portalState = PortalState.kProxyAuthRequired;
-
-          mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-
-          internetDetailPage.isCaptivePortalUI2022Enabled_ = false;
-          internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
-          return flushAsync().then(() => {
-            const networkStateText =
-                internetDetailPage.shadowRoot.querySelector(`#networkState`);
-            assertTrue(networkStateText.hasAttribute('connected'));
-            assertEquals(
-                networkStateText.textContent.trim(),
-                internetDetailPage.i18n('OncConnected'));
-            const signinButton =
-                internetDetailPage.shadowRoot.querySelector(`#signinButton`);
-            // Button does not exist because feature flag is disabled.
-            assertTrue(!signinButton);
-          });
-        });
 
     test('Hidden toggle enabled', function() {
       init();

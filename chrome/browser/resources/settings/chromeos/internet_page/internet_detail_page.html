@@ -90,14 +90,12 @@
       </cr-policy-indicator>
     </template>
   </div>
-  <template is="dom-if" if="[[isCaptivePortalUI2022Enabled_]]">
-    <cr-button class="signin-button" id="signinButton" on-click="onSigninTap_"
+  <cr-button class="signin-button" id="signinButton" on-click="onSigninTap_"
       hidden$="[[!showSignin_(managedProperties_)]]"
       disabled="[[disableSignin_(managedProperties_, disabled_)]]">
-      <div class="signin-icon cr-icon icon-external"></div>
+    <div class="signin-icon cr-icon icon-external"></div>
       $i18n{networkButtonSignin}
-    </cr-button>
-  </template>
+  </cr-button>
   <cr-button id="forgetButton" on-click="onForgetTap_"
       hidden$="[[!showForget_(managedProperties_)]]"
       disabled="[[disableForget_(managedProperties_,

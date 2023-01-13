@@ -613,8 +613,7 @@ TEST_F(NetworkDetailedViewControllerTest,
        PortalNetworkListItemSelectedWithFlagEnabled) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kCaptivePortalUI2022,
-                            features::kQuickSettingsNetworkRevamp},
+      /*enabled_features=*/{features::kQuickSettingsNetworkRevamp},
       /*disabled_features=*/{});
 
   AddWifiService(shill::kStateRedirectFound);

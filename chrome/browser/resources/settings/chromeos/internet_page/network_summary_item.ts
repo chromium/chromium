@@ -96,17 +96,6 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
         },
       },
 
-      /**
-       * Return true if captivePortalUI2022 feature flag is enabled.
-       */
-      isCaptivePortalUI2022Enabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('captivePortalUI2022') &&
-              loadTimeData.getBoolean('captivePortalUI2022');
-        },
-      },
-
       globalPolicy: Object,
     };
   }
@@ -118,7 +107,6 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
   networkTitleText: string|undefined;
   tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
   private browserProxy_: InternetPageBrowserProxy;
-  private isCaptivePortalUI2022Enabled_: boolean;
   private showTechnologyBadge_: boolean;
 
   constructor() {
@@ -141,8 +129,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       return this.i18n('internetDeviceBusy');
     }
 
-    if (this.isCaptivePortalUI2022Enabled_ &&
-        this.isPortalState_(this.activeNetworkState!.portalState)) {
+    if (this.isPortalState_(this.activeNetworkState!.portalState)) {
       return this.i18n('networkListItemSignIn');
     }
 
@@ -236,8 +223,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
   private getNetworkStateClass_(
       activeNetworkState: OncMojo.NetworkStateProperties|undefined,
       deviceState: OncMojo.DeviceStateProperties|undefined): string {
-    if ((this.isCaptivePortalUI2022Enabled_ &&
-         this.isPortalState_(activeNetworkState!.portalState)) ||
+    if ((this.isPortalState_(activeNetworkState!.portalState)) ||
         this.shouldShowLockedWarningMessage_(deviceState)) {
       return 'warning-message';
     }
@@ -468,9 +454,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
             });
         this.dispatchEvent(deviceEnabledToggledEvent);
       }
-    } else if (
-        this.isCaptivePortalUI2022Enabled_ &&
-        this.isPortalState_(this.activeNetworkState!.portalState)) {
+    } else if (this.isPortalState_(this.activeNetworkState!.portalState)) {
       this.browserProxy_.showPortalSignin(this.activeNetworkState!.guid);
     } else if (this.shouldShowSubpage_(
                    this.deviceState, this.networkStateList)) {
@@ -553,8 +537,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     }
 
     // Item is actionable if tapping should show the user to the portal signin.
-    if (this.isCaptivePortalUI2022Enabled_ &&
-        this.isPortalState_(this.activeNetworkState!.portalState)) {
+    if (this.isPortalState_(this.activeNetworkState!.portalState)) {
       return true;
     }
 
@@ -606,8 +589,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     if (this.networkTitleText) {
       return this.networkTitleText;
     }
-    if (this.isCaptivePortalUI2022Enabled_ &&
-        this.isPortalState_(this.activeNetworkState!.portalState)) {
+    if (this.isPortalState_(this.activeNetworkState!.portalState)) {
       const stateText = this.getConnectionStateText_(this.activeNetworkState);
       if (stateText) {
         return stateText;

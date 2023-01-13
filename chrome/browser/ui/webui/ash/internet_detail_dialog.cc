@@ -172,8 +172,6 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui), chrome::kChromeUIInternetDetailDialogHost);
   source->AddBoolean("showTechnologyBadge",
                      !features::IsSeparateNetworkIconsEnabled());
-  source->AddBoolean("captivePortalUI2022",
-                     features::IsCaptivePortalUI2022Enabled());
   source->AddBoolean("apnRevamp", features::IsApnRevampEnabled());
   cellular_setup::AddNonStringLoadTimeData(source);
   AddInternetStrings(source);
