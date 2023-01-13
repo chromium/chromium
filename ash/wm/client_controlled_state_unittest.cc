@@ -4,20 +4,24 @@
 
 #include "ash/wm/client_controlled_state.h"
 
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -683,6 +687,40 @@ TEST_F(ClientControlledStateTest,
   // After exiting the transitional state, works normally.
   widget()->Maximize();
   EXPECT_EQ(WindowStateType::kMaximized, delegate()->new_state());
+}
+
+TEST_F(ClientControlledStateTest, ResizeSnappedWindowInTabletMode) {
+  window()->SetProperty(aura::client::kAppType,
+                        static_cast<int>(AppType::ARC_APP));
+  ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            GetCurrentScreenOrientation());
+  auto* const split_view_controller = SplitViewController::Get(window());
+
+  // Enter tablet mode
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_EQ(true, Shell::Get()->tablet_mode_controller()->InTabletMode());
+
+  // Snap a window
+  widget_delegate()->EnableSnap();
+  split_view_controller->SnapWindow(
+      window(), SplitViewController::SnapPosition::kPrimary);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsSnapped());
+
+  // Move the divider
+  const gfx::Rect initial_bounds = delegate()->requested_bounds();
+  auto* const split_view_divider = split_view_controller->split_view_divider();
+  const gfx::Rect divider_bounds =
+      split_view_divider->GetDividerBoundsInScreen(false);
+  ui::test::EventGenerator* const generator = GetEventGenerator();
+  generator->set_current_screen_location(divider_bounds.CenterPoint());
+  const gfx::Rect display_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          window());
+  const gfx::Point resize_point(display_bounds.width() * 0.33f, 0);
+  generator->DragMouseTo(resize_point);
+  EXPECT_GT(initial_bounds.width(), delegate()->requested_bounds().width());
 }
 
 }  // namespace ash

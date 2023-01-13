@@ -40,11 +40,17 @@ class TabletModeWindowState : public WindowState::State {
 
   ~TabletModeWindowState() override;
 
-  // Called when the window position might need to be updated.
+  // Called when the window position might need to be updated. Note that this
+  // method is not supposed to be called for client-controlled windows (e.g.
+  // ARC++) as the bounds change with `SetBoundsDirect` is not ack'ed by the
+  // client. (b/264962634)
   // TODO(sammiequon): Consolidate with `UpdateBounds`.
   static void UpdateWindowPosition(
       WindowState* window_state,
       WindowState::BoundsChangeAnimationType animation_type);
+
+  // Returns the maximized/full screen and/or centered bounds of a window.
+  static gfx::Rect GetBoundsInTabletMode(WindowState* state_object);
 
   // Leaves the tablet mode by reverting to previous state object.
   void LeaveTabletMode(WindowState* window_state, bool was_in_overview);

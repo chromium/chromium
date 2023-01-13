@@ -88,52 +88,6 @@ gfx::Rect GetCenteredBounds(const gfx::Rect& bounds_in_parent,
   return work_area_in_parent;
 }
 
-// Returns the maximized/full screen and/or centered bounds of a window.
-gfx::Rect GetBoundsInTabletMode(WindowState* state_object) {
-  aura::Window* window = state_object->window();
-
-  if (state_object->IsFullscreen() || state_object->IsPinned())
-    return screen_util::GetFullscreenWindowBoundsInParent(window);
-
-  if (state_object->GetStateType() == WindowStateType::kPrimarySnapped) {
-    return SplitViewController::Get(Shell::GetPrimaryRootWindow())
-        ->GetSnappedWindowBoundsInParent(
-            SplitViewController::SnapPosition::kPrimary, window,
-            state_object->snap_ratio().value_or(kDefaultSnapRatio));
-  }
-
-  if (state_object->GetStateType() == WindowStateType::kSecondarySnapped) {
-    return SplitViewController::Get(Shell::GetPrimaryRootWindow())
-        ->GetSnappedWindowBoundsInParent(
-            SplitViewController::SnapPosition::kSecondary, window,
-            state_object->snap_ratio().value_or(kDefaultSnapRatio));
-  }
-
-  if (chromeos::wm::features::IsFloatWindowEnabled() &&
-      state_object->IsFloated()) {
-    return FloatController::GetPreferredFloatWindowTabletBounds(window);
-  }
-
-  gfx::Rect bounds_in_parent;
-  // Make the window as big as possible.
-
-  // Do no maximize the transient children, which should be stacked
-  // above the transient parent.
-  if ((state_object->CanMaximize() || state_object->CanResize()) &&
-      ::wm::GetTransientParent(state_object->window()) == nullptr) {
-    bounds_in_parent.set_size(GetMaximumSizeOfWindow(state_object));
-  } else {
-    // We prefer the user given window dimensions over the current windows
-    // dimensions since they are likely to be the result from some other state
-    // object logic.
-    if (state_object->HasRestoreBounds())
-      bounds_in_parent = state_object->GetRestoreBoundsInParent();
-    else
-      bounds_in_parent = state_object->window()->bounds();
-  }
-  return GetCenteredBounds(bounds_in_parent, state_object);
-}
-
 gfx::Rect GetRestoreBounds(WindowState* window_state) {
   if (window_state->IsMinimized() || window_state->IsMaximized() ||
       window_state->IsFullscreen()) {
@@ -271,6 +225,53 @@ void TabletModeWindowState::UpdateWindowPosition(
       NOTREACHED();
       break;
   }
+}
+
+// static
+gfx::Rect TabletModeWindowState::GetBoundsInTabletMode(
+    WindowState* state_object) {
+  aura::Window* window = state_object->window();
+
+  if (state_object->IsFullscreen() || state_object->IsPinned())
+    return screen_util::GetFullscreenWindowBoundsInParent(window);
+
+  if (state_object->GetStateType() == WindowStateType::kPrimarySnapped) {
+    return SplitViewController::Get(Shell::GetPrimaryRootWindow())
+        ->GetSnappedWindowBoundsInParent(
+            SplitViewController::SnapPosition::kPrimary, window,
+            state_object->snap_ratio().value_or(kDefaultSnapRatio));
+  }
+
+  if (state_object->GetStateType() == WindowStateType::kSecondarySnapped) {
+    return SplitViewController::Get(Shell::GetPrimaryRootWindow())
+        ->GetSnappedWindowBoundsInParent(
+            SplitViewController::SnapPosition::kSecondary, window,
+            state_object->snap_ratio().value_or(kDefaultSnapRatio));
+  }
+
+  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+      state_object->IsFloated()) {
+    return FloatController::GetPreferredFloatWindowTabletBounds(window);
+  }
+
+  gfx::Rect bounds_in_parent;
+  // Make the window as big as possible.
+
+  // Do no maximize the transient children, which should be stacked
+  // above the transient parent.
+  if ((state_object->CanMaximize() || state_object->CanResize()) &&
+      ::wm::GetTransientParent(state_object->window()) == nullptr) {
+    bounds_in_parent.set_size(GetMaximumSizeOfWindow(state_object));
+  } else {
+    // We prefer the user given window dimensions over the current windows
+    // dimensions since they are likely to be the result from some other state
+    // object logic.
+    if (state_object->HasRestoreBounds())
+      bounds_in_parent = state_object->GetRestoreBoundsInParent();
+    else
+      bounds_in_parent = state_object->window()->bounds();
+  }
+  return GetCenteredBounds(bounds_in_parent, state_object);
 }
 
 void TabletModeWindowState::LeaveTabletMode(WindowState* window_state,

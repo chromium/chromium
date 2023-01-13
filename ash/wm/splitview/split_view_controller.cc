@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -231,6 +232,16 @@ void UpdateSnappedBounds(aura::Window* window) {
   window_state->UpdateSnapRatio();
   const bool in_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
   if (in_tablet) {
+    // TODO(b/264962634): Remove this workaround. Probably, we can rewrite
+    // `TabletModeWindowState::UpdateWindowPosition` to include this logic.
+    if (window->GetProperty(aura::client::kAppType) ==
+        static_cast<int>(AppType::ARC_APP)) {
+      const SetBoundsWMEvent event(
+          TabletModeWindowState::GetBoundsInTabletMode(window_state),
+          /*animate=*/true);
+      window_state->OnWMEvent(&event);
+      return;
+    }
     TabletModeWindowState::UpdateWindowPosition(
         window_state, WindowState::BoundsChangeAnimationType::kAnimate);
   } else {
