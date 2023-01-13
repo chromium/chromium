@@ -27,9 +27,10 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/mock_privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -175,17 +176,6 @@ class TestInterestGroupManager : public content::InterestGroupManager {
 
  private:
   std::vector<InterestGroupDataKey> data_keys_;
-};
-
-class MockPrivacySandboxSettings
-    : public privacy_sandbox::PrivacySandboxSettings {
- public:
-  void SetUpDefaultResponse() {
-    ON_CALL(*this, IsPrivacySandboxRestricted).WillByDefault([]() {
-      return false;
-    });
-  }
-  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
 };
 
 struct PromptTestState {
@@ -895,7 +885,7 @@ class PrivacySandboxServiceTest : public testing::Test {
         /*restricted=*/false);
 
     privacy_sandbox_settings_ =
-        std::make_unique<privacy_sandbox::PrivacySandboxSettings>(
+        std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
             std::move(mock_delegate), host_content_settings_map(),
             cookie_settings(), prefs());
 #if !BUILDFLAG(IS_ANDROID)
@@ -2861,7 +2851,8 @@ class PrivacySandboxServicePromptTestBase {
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return &pref_service_;
   }
-  MockPrivacySandboxSettings* privacy_sandbox_settings() {
+  privacy_sandbox_test_util::MockPrivacySandboxSettings*
+  privacy_sandbox_settings() {
     return &privacy_sandbox_settings_;
   }
 
@@ -2871,7 +2862,8 @@ class PrivacySandboxServicePromptTestBase {
   std::unique_ptr<ash::FakeChromeUserManager> user_manager_;
 #endif
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  MockPrivacySandboxSettings privacy_sandbox_settings_;
+  privacy_sandbox_test_util::MockPrivacySandboxSettings
+      privacy_sandbox_settings_;
 };
 
 class PrivacySandboxServicePromptTest

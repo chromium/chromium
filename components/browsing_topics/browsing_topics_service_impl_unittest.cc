@@ -27,7 +27,7 @@
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -198,7 +198,7 @@ class BrowsingTopicsServiceImplTest
     privacy_sandbox_delegate->SetUpIsIncognitoProfileResponse(
         /*incognito=*/false);
     privacy_sandbox_settings_ =
-        std::make_unique<privacy_sandbox::PrivacySandboxSettings>(
+        std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
             std::move(privacy_sandbox_delegate),
             host_content_settings_map_.get(), cookie_settings_, &prefs_);
     privacy_sandbox_settings_->SetAllPrivacySandboxAllowedForTesting();

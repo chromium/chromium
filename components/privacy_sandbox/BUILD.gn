@@ -33,8 +33,9 @@ source_set("privacy_sandbox") {
   sources = [
     "canonical_topic.cc",
     "canonical_topic.h",
-    "privacy_sandbox_settings.cc",
     "privacy_sandbox_settings.h",
+    "privacy_sandbox_settings_impl.cc",
+    "privacy_sandbox_settings_impl.h",
   ]
 
   deps = [
@@ -62,7 +63,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "canonical_topic_unittest.cc",
-    "privacy_sandbox_settings_unittest.cc",
+    "privacy_sandbox_settings_impl_unittest.cc",
   ]
 
   deps = [
@@ -85,6 +86,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_privacy_sandbox_settings.cc",
+    "mock_privacy_sandbox_settings.h",
     "privacy_sandbox_test_util.cc",
     "privacy_sandbox_test_util.h",
   ]

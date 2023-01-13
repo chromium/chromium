@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 
 PrivacySandboxSettingsFactory* PrivacySandboxSettingsFactory::GetInstance() {
   return base::Singleton<PrivacySandboxSettingsFactory>::get();
@@ -41,7 +41,7 @@ KeyedService* PrivacySandboxSettingsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new privacy_sandbox::PrivacySandboxSettings(
+  return new privacy_sandbox::PrivacySandboxSettingsImpl(
       std::make_unique<PrivacySandboxSettingsDelegate>(profile),
       HostContentSettingsMapFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs());

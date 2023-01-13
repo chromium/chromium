@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 
 #include "base/json/values_util.h"
 #include "base/test/gtest_util.h"
@@ -139,7 +139,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
     InitializeFeaturesBeforeStart();
     InitializeDelegateBeforeStart();
 
-    privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
+    privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettingsImpl>(
         std::move(mock_delegate), host_content_settings_map(), cookie_settings_,
         prefs());
   }
@@ -1008,7 +1008,7 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
   }
 
  protected:
-  using Status = PrivacySandboxSettings::Status;
+  using Status = PrivacySandboxSettingsImpl::Status;
 
   void RunTestCase(const TestState& test_state,
                    const TestInput& test_input,

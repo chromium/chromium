@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include <cstddef>
 
 #include "base/feature_list.h"
@@ -62,11 +62,11 @@ base::Value CreateBlockedTopicEntry(const CanonicalTopic& topic) {
 }  // namespace
 
 // static
-bool PrivacySandboxSettings::IsAllowed(Status status) {
+bool PrivacySandboxSettingsImpl::IsAllowed(Status status) {
   return status == Status::kAllowed;
 }
 
-PrivacySandboxSettings::PrivacySandboxSettings(
+PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
     std::unique_ptr<Delegate> delegate,
     HostContentSettingsMap* host_content_settings_map,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
@@ -89,24 +89,25 @@ PrivacySandboxSettings::PrivacySandboxSettings(
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       prefs::kPrivacySandboxApisEnabledV2,
-      base::BindRepeating(&PrivacySandboxSettings::OnPrivacySandboxPrefChanged,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &PrivacySandboxSettingsImpl::OnPrivacySandboxPrefChanged,
+          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kPrivacySandboxFirstPartySetsEnabled,
       base::BindRepeating(
-          &PrivacySandboxSettings::OnFirstPartySetsEnabledPrefChanged,
+          &PrivacySandboxSettingsImpl::OnFirstPartySetsEnabledPrefChanged,
           base::Unretained(this)));
 }
 
-PrivacySandboxSettings::~PrivacySandboxSettings() = default;
+PrivacySandboxSettingsImpl::~PrivacySandboxSettingsImpl() = default;
 
-PrivacySandboxSettings::Status PrivacySandboxSettings::GetM1TopicAllowedStatus()
-    const {
+PrivacySandboxSettingsImpl::Status
+PrivacySandboxSettingsImpl::GetM1TopicAllowedStatus() const {
   return GetM1PrivacySandboxApiEnabledStatus(
       prefs::kPrivacySandboxM1TopicsEnabled);
 }
 
-bool PrivacySandboxSettings::IsTopicsAllowed() const {
+bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
   // M1 specific
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
     Status status = GetM1TopicAllowedStatus();
@@ -129,7 +130,7 @@ bool PrivacySandboxSettings::IsTopicsAllowed() const {
   return IsPrivacySandboxEnabled() && !third_party_cookies_blocked;
 }
 
-bool PrivacySandboxSettings::IsTopicsAllowedForContext(
+bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
     const url::Origin& top_frame_origin,
     const GURL& url) const {
   // M1 specific
@@ -149,7 +150,7 @@ bool PrivacySandboxSettings::IsTopicsAllowedForContext(
          IsPrivacySandboxEnabledForContext(top_frame_origin, url);
 }
 
-bool PrivacySandboxSettings::IsTopicAllowed(const CanonicalTopic& topic) {
+bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
   const auto& blocked_topics =
       pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
 
@@ -167,8 +168,8 @@ bool PrivacySandboxSettings::IsTopicAllowed(const CanonicalTopic& topic) {
   return true;
 }
 
-void PrivacySandboxSettings::SetTopicAllowed(const CanonicalTopic& topic,
-                                             bool allowed) {
+void PrivacySandboxSettingsImpl::SetTopicAllowed(const CanonicalTopic& topic,
+                                                 bool allowed) {
   ScopedListPrefUpdate scoped_pref_update(pref_service_,
                                           prefs::kPrivacySandboxBlockedTopics);
 
@@ -195,8 +196,8 @@ void PrivacySandboxSettings::SetTopicAllowed(const CanonicalTopic& topic,
   }
 }
 
-void PrivacySandboxSettings::ClearTopicSettings(base::Time start_time,
-                                                base::Time end_time) {
+void PrivacySandboxSettingsImpl::ClearTopicSettings(base::Time start_time,
+                                                    base::Time end_time) {
   ScopedListPrefUpdate scoped_pref_update(pref_service_,
                                           prefs::kPrivacySandboxBlockedTopics);
 
@@ -213,13 +214,13 @@ void PrivacySandboxSettings::ClearTopicSettings(base::Time start_time,
   });
 }
 
-base::Time PrivacySandboxSettings::TopicsDataAccessibleSince() const {
+base::Time PrivacySandboxSettingsImpl::TopicsDataAccessibleSince() const {
   return pref_service_->GetTime(
       prefs::kPrivacySandboxTopicsDataAccessibleSince);
 }
 
-PrivacySandboxSettings::Status
-PrivacySandboxSettings::GetM1AttributionReportingAllowedStatus(
+PrivacySandboxSettingsImpl::Status
+PrivacySandboxSettingsImpl::GetM1AttributionReportingAllowedStatus(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   Status status = GetM1PrivacySandboxApiEnabledStatus(
@@ -232,7 +233,7 @@ PrivacySandboxSettings::GetM1AttributionReportingAllowedStatus(
                                     reporting_origin.GetURL());
 }
 
-bool PrivacySandboxSettings::IsAttributionReportingAllowed(
+bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   // M1 specific
@@ -248,7 +249,7 @@ bool PrivacySandboxSettings::IsAttributionReportingAllowed(
                                            reporting_origin.GetURL());
 }
 
-bool PrivacySandboxSettings::MaySendAttributionReport(
+bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
     const url::Origin& source_origin,
     const url::Origin& destination_origin,
     const url::Origin& reporting_origin) const {
@@ -278,7 +279,7 @@ bool PrivacySandboxSettings::MaySendAttributionReport(
              reporting_origin.GetURL());
 }
 
-void PrivacySandboxSettings::SetFledgeJoiningAllowed(
+void PrivacySandboxSettingsImpl::SetFledgeJoiningAllowed(
     const std::string& top_frame_etld_plus1,
     bool allowed) {
   ScopedDictPrefUpdate scoped_pref_update(
@@ -323,7 +324,7 @@ void PrivacySandboxSettings::SetFledgeJoiningAllowed(
   }
 }
 
-void PrivacySandboxSettings::ClearFledgeJoiningAllowedSettings(
+void PrivacySandboxSettingsImpl::ClearFledgeJoiningAllowedSettings(
     base::Time start_time,
     base::Time end_time) {
   ScopedDictPrefUpdate scoped_pref_update(
@@ -350,7 +351,7 @@ void PrivacySandboxSettings::ClearFledgeJoiningAllowedSettings(
   }
 }
 
-bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
+bool PrivacySandboxSettingsImpl::IsFledgeJoiningAllowed(
     const url::Origin& top_frame_origin) const {
   ScopedDictPrefUpdate scoped_pref_update(
       pref_service_, prefs::kPrivacySandboxFledgeJoinBlocked);
@@ -367,7 +368,8 @@ bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
   return true;
 }
 
-PrivacySandboxSettings::Status PrivacySandboxSettings::GetM1FledgeAllowedStatus(
+PrivacySandboxSettingsImpl::Status
+PrivacySandboxSettingsImpl::GetM1FledgeAllowedStatus(
     const url::Origin& top_frame_origin,
     const url::Origin& auction_party) const {
   Status status = GetM1PrivacySandboxApiEnabledStatus(
@@ -379,7 +381,7 @@ PrivacySandboxSettings::Status PrivacySandboxSettings::GetM1FledgeAllowedStatus(
   return GetSiteAccessAllowedStatus(top_frame_origin, auction_party.GetURL());
 }
 
-bool PrivacySandboxSettings::IsFledgeAllowed(
+bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& auction_party) const {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
@@ -392,7 +394,7 @@ bool PrivacySandboxSettings::IsFledgeAllowed(
                                            auction_party.GetURL());
 }
 
-bool PrivacySandboxSettings::IsSharedStorageAllowed(
+bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin) const {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
@@ -412,7 +414,7 @@ bool PrivacySandboxSettings::IsSharedStorageAllowed(
                                            accessing_origin.GetURL());
 }
 
-bool PrivacySandboxSettings::IsSharedStorageSelectURLAllowed(
+bool PrivacySandboxSettingsImpl::IsSharedStorageSelectURLAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin) const {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
@@ -426,7 +428,7 @@ bool PrivacySandboxSettings::IsSharedStorageSelectURLAllowed(
   return IsSharedStorageAllowed(top_frame_origin, accessing_origin);
 }
 
-bool PrivacySandboxSettings::IsPrivateAggregationAllowed(
+bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
@@ -441,8 +443,8 @@ bool PrivacySandboxSettings::IsPrivateAggregationAllowed(
                                            reporting_origin.GetURL());
 }
 
-bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
-  PrivacySandboxSettings::Status status = GetPrivacySandboxAllowedStatus();
+bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
+  PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
   if (!IsAllowed(status)) {
     return false;
   }
@@ -458,7 +460,7 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
   return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
 }
 
-void PrivacySandboxSettings::SetAllPrivacySandboxAllowedForTesting() {
+void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
@@ -470,7 +472,7 @@ void PrivacySandboxSettings::SetAllPrivacySandboxAllowedForTesting() {
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
 }
 
-void PrivacySandboxSettings::SetTopicsBlockedForTesting() {
+void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     return;
@@ -479,29 +481,29 @@ void PrivacySandboxSettings::SetTopicsBlockedForTesting() {
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
 }
 
-void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
+void PrivacySandboxSettingsImpl::SetPrivacySandboxEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
 }
 
-bool PrivacySandboxSettings::IsTrustTokensAllowed() {
+bool PrivacySandboxSettingsImpl::IsTrustTokensAllowed() {
   return IsPrivacySandboxEnabled();
 }
 
-bool PrivacySandboxSettings::IsPrivacySandboxRestricted() const {
+bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
   return delegate_->IsPrivacySandboxRestricted();
 }
 
-void PrivacySandboxSettings::OnCookiesCleared() {
+void PrivacySandboxSettingsImpl::OnCookiesCleared() {
   SetTopicsDataAccessibleFromNow();
 }
 
-void PrivacySandboxSettings::OnPrivacySandboxPrefChanged() {
+void PrivacySandboxSettingsImpl::OnPrivacySandboxPrefChanged() {
   for (auto& observer : observers_) {
     observer.OnTrustTokenBlockingChanged(!IsTrustTokensAllowed());
   }
 }
 
-void PrivacySandboxSettings::OnFirstPartySetsEnabledPrefChanged() {
+void PrivacySandboxSettingsImpl::OnFirstPartySetsEnabledPrefChanged() {
   if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
     return;
   }
@@ -512,22 +514,20 @@ void PrivacySandboxSettings::OnFirstPartySetsEnabledPrefChanged() {
   }
 }
 
-void PrivacySandboxSettings::AddObserver(Observer* observer) {
+void PrivacySandboxSettingsImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void PrivacySandboxSettings::RemoveObserver(Observer* observer) {
+void PrivacySandboxSettingsImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void PrivacySandboxSettings::SetDelegateForTesting(
+void PrivacySandboxSettingsImpl::SetDelegateForTesting(
     std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
-PrivacySandboxSettings::PrivacySandboxSettings() = default;
-
-bool PrivacySandboxSettings::IsPrivacySandboxEnabledForContext(
+bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabledForContext(
     const absl::optional<url::Origin>& top_frame_origin,
     const GURL& url) const {
   if (!IsPrivacySandboxEnabled()) {
@@ -542,7 +542,7 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabledForContext(
       content_settings::CookieSettings::QueryReason::kPrivacySandbox);
 }
 
-void PrivacySandboxSettings::SetTopicsDataAccessibleFromNow() const {
+void PrivacySandboxSettingsImpl::SetTopicsDataAccessibleFromNow() const {
   pref_service_->SetTime(prefs::kPrivacySandboxTopicsDataAccessibleSince,
                          base::Time::Now());
 
@@ -551,8 +551,8 @@ void PrivacySandboxSettings::SetTopicsDataAccessibleFromNow() const {
   }
 }
 
-PrivacySandboxSettings::Status
-PrivacySandboxSettings::GetSiteAccessAllowedStatus(
+PrivacySandboxSettingsImpl::Status
+PrivacySandboxSettingsImpl::GetSiteAccessAllowedStatus(
     const url::Origin& top_frame_origin,
     const GURL& url) const {
   // Relying on |host_content_settings_map_| instead of |cookie_settings_|
@@ -566,8 +566,8 @@ PrivacySandboxSettings::GetSiteAccessAllowedStatus(
              : Status::kSiteDataAccessBlocked;
 }
 
-PrivacySandboxSettings::Status
-PrivacySandboxSettings::GetPrivacySandboxAllowedStatus() const {
+PrivacySandboxSettingsImpl::Status
+PrivacySandboxSettingsImpl::GetPrivacySandboxAllowedStatus() const {
   if (delegate_->IsIncognitoProfile()) {
     return Status::kIncognitoProfile;
   }
@@ -579,14 +579,14 @@ PrivacySandboxSettings::GetPrivacySandboxAllowedStatus() const {
   return Status::kAllowed;
 }
 
-PrivacySandboxSettings::Status
-PrivacySandboxSettings::GetM1PrivacySandboxApiEnabledStatus(
+PrivacySandboxSettingsImpl::Status
+PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
     const std::string& pref_name) const {
   DCHECK(pref_name == prefs::kPrivacySandboxM1TopicsEnabled ||
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
 
-  PrivacySandboxSettings::Status status = GetPrivacySandboxAllowedStatus();
+  PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
   if (!IsAllowed(status)) {
     return status;
   }
