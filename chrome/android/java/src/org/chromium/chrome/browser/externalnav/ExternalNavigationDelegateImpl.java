@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -111,12 +110,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public boolean canLoadUrlInCurrentTab() {
         return !(mTab == null || mTab.isClosing() || !mTab.isInitialized());
-    }
-
-    @Override
-    public void loadUrlIfPossible(LoadUrlParams loadUrlParams) {
-        if (!hasValidTab()) return;
-        mTab.loadUrl(loadUrlParams);
     }
 
     @Override

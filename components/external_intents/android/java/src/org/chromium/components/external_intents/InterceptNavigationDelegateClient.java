@@ -7,6 +7,7 @@ package org.chromium.components.external_intents;
 import android.app.Activity;
 
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 
@@ -61,4 +62,11 @@ public interface InterceptNavigationDelegateClient {
      * |navigationHandle|. |overrideUrlLoadingResult| specifies the decision. */
     void onDecisionReachedForNavigation(
             NavigationHandle navigationHandle, OverrideUrlLoadingResult overrideUrlLoadingResult);
+
+    /**
+     * Loads a URL as specified by |loadUrlParams| if possible. May fail in exceptional conditions
+     * (e.g., if there is no valid tab).
+     * @param loadUrlParams parameters of the URL to be loaded
+     */
+    void loadUrlIfPossible(LoadUrlParams loadUrlParams);
 }

@@ -4,37 +4,76 @@
 
 package org.chromium.components.external_intents;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.RequiredCallback;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A container object for passing navigation parameters to {@link ExternalNavigationHandler}.
  */
 public class ExternalNavigationParams {
     /**
-     * A container for parameters passed to the AsyncActionTakenInMainFrameCallback.
+     * A container for parameters passed to the AsyncActionTakenCallback.
      */
     public static class AsyncActionTakenParams {
+        @IntDef({AsyncActionTakenType.NO_ACTION, AsyncActionTakenType.EXTERNAL_INTENT_LAUNCHED,
+                AsyncActionTakenType.NAVIGATE})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface AsyncActionTakenType {
+            /* Action was cancelled/rejected. */
+            int NO_ACTION = 0;
+            /* An external intent was launched as a result of the action. */
+            int EXTERNAL_INTENT_LAUNCHED = 1;
+            /* A navigation should occur as the result of the action */
+            int NAVIGATE = 2;
+        }
+
+        @AsyncActionTakenType
+        public int actionType;
+
         // Whether the async action taken allows the tab to be closed.
         public boolean canCloseTab;
 
-        // Whether the tab will be clobbered as a result of this async action.
-        public boolean willClobberTab;
-
         public ExternalNavigationParams externalNavigationParams;
 
-        public AsyncActionTakenParams(
-                boolean canCloseTab, boolean willClobberTab, ExternalNavigationParams params) {
-            this.canCloseTab = canCloseTab;
-            this.willClobberTab = willClobberTab;
-            this.externalNavigationParams = params;
+        public GURL targetUrl;
 
-            // We can't both close the tab and clobber it.
-            assert !willClobberTab || !canCloseTab;
+        private AsyncActionTakenParams() {
+            this.actionType = AsyncActionTakenType.NO_ACTION;
+        }
+
+        private AsyncActionTakenParams(GURL targetUrl, ExternalNavigationParams params) {
+            this.actionType = AsyncActionTakenType.NAVIGATE;
+            this.targetUrl = targetUrl;
+            this.externalNavigationParams = params;
+        }
+
+        private AsyncActionTakenParams(boolean canCloseTab, ExternalNavigationParams params) {
+            this.actionType = AsyncActionTakenType.EXTERNAL_INTENT_LAUNCHED;
+            this.canCloseTab = canCloseTab;
+            this.externalNavigationParams = params;
+        }
+
+        public static AsyncActionTakenParams forNoAction() {
+            return new AsyncActionTakenParams();
+        }
+
+        public static AsyncActionTakenParams forNavigate(
+                GURL targetUrl, ExternalNavigationParams params) {
+            return new AsyncActionTakenParams(targetUrl, params);
+        }
+
+        public static AsyncActionTakenParams forExternalIntentLaunched(
+                boolean canCloseTab, ExternalNavigationParams params) {
+            return new AsyncActionTakenParams(canCloseTab, params);
         }
     }
 
@@ -51,17 +90,20 @@ public class ExternalNavigationParams {
     private final boolean mIsMainFrame;
     private final String mNativeClientPackageName;
     private final boolean mHasUserGesture;
-    private final Callback<AsyncActionTakenParams> mAsyncActionTakenInMainFrameCallback;
+    private final Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
     private boolean mIsRendererInitiated;
     private Origin mInitiatorOrigin;
+
+    // Populated when an async action is taken, ensuring the callback gets called.
+    private RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
 
     private ExternalNavigationParams(GURL url, boolean isIncognito, GURL referrerUrl,
             int pageTransition, boolean isRedirect, boolean appMustBeInForeground,
             RedirectHandler redirectHandler, boolean openInNewTab,
             boolean isBackgroundTabNavigation, boolean intentLaunchesAllowedInBackgroundTabs,
             boolean isMainFrame, String nativeClientPackageName, boolean hasUserGesture,
-            Callback<AsyncActionTakenParams> asyncActionTakenInMainFrameCallback,
-            boolean isRendererInitiated, @Nullable Origin initiatorOrigin) {
+            Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean isRendererInitiated,
+            @Nullable Origin initiatorOrigin) {
         mUrl = url;
         assert mUrl != null;
         mIsIncognito = isIncognito;
@@ -76,9 +118,15 @@ public class ExternalNavigationParams {
         mIsMainFrame = isMainFrame;
         mNativeClientPackageName = nativeClientPackageName;
         mHasUserGesture = hasUserGesture;
-        mAsyncActionTakenInMainFrameCallback = asyncActionTakenInMainFrameCallback;
+        mAsyncActionTakenCallback = asyncActionTakenCallback;
         mIsRendererInitiated = isRendererInitiated;
         mInitiatorOrigin = initiatorOrigin;
+    }
+
+    public void onAsyncActionStarted() {
+        if (mAsyncActionTakenCallback != null) {
+            mRequiredAsyncActionTakenCallback = new RequiredCallback(mAsyncActionTakenCallback);
+        }
     }
 
     /** @return The URL to potentially open externally. */
@@ -155,8 +203,8 @@ public class ExternalNavigationParams {
     /**
      * @return A callback to be run when an async action is taken.
      */
-    public Callback<AsyncActionTakenParams> getAsyncActionTakenInMainFrameCallback() {
-        return mAsyncActionTakenInMainFrameCallback;
+    public RequiredCallback<AsyncActionTakenParams> getRequiredAsyncActionTakenCallback() {
+        return mRequiredAsyncActionTakenCallback;
     }
 
     /**
@@ -196,7 +244,7 @@ public class ExternalNavigationParams {
         private boolean mIsMainFrame;
         private String mNativeClientPackageName;
         private boolean mHasUserGesture;
-        private Callback<AsyncActionTakenParams> mAsyncActionTakenInMainFrameCallback;
+        private Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
         private boolean mIsRendererInitiated;
         private Origin mInitiatorOrigin;
 
@@ -265,8 +313,8 @@ public class ExternalNavigationParams {
         /**
          * Sets the callback to be run when an async action is taken.
          */
-        public Builder setAsyncActionTakenInMainFrameCallback(Callback<AsyncActionTakenParams> v) {
-            mAsyncActionTakenInMainFrameCallback = v;
+        public Builder setAsyncActionTakenCallback(Callback<AsyncActionTakenParams> v) {
+            mAsyncActionTakenCallback = v;
             return this;
         }
 
@@ -292,7 +340,7 @@ public class ExternalNavigationParams {
                     mIsRedirect, mApplicationMustBeInForeground, mRedirectHandler, mOpenInNewTab,
                     mIsBackgroundTabNavigation, mIntentLaunchesAllowedInBackgroundTabs,
                     mIsMainFrame, mNativeClientPackageName, mHasUserGesture,
-                    mAsyncActionTakenInMainFrameCallback, mIsRendererInitiated, mInitiatorOrigin);
+                    mAsyncActionTakenCallback, mIsRendererInitiated, mInitiatorOrigin);
         }
     }
 }

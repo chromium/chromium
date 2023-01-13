@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -57,12 +56,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public boolean shouldAvoidDisambiguationDialog(Intent intent) {
         // Don't show the disambiguation dialog if WebLayer can handle the intent.
         return UrlUtilities.isAcceptedScheme(intent.toUri(0));
-    }
-
-    @Override
-    public void loadUrlIfPossible(LoadUrlParams loadUrlParams) {
-        if (!hasValidTab()) return;
-        mTab.loadUrl(loadUrlParams);
     }
 
     @Override

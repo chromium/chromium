@@ -44,14 +44,16 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PathUtils;
+import org.chromium.base.RequiredCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.task.PostTask;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -60,12 +62,8 @@ import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.content_public.common.Referrer;
-import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -284,15 +282,15 @@ public class ExternalNavigationHandler {
      * should be removed from the IntDef{} if an alternate solution for that bug is found.
      */
     @IntDef({OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-            OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB,
+            OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB,
             OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
             OverrideUrlLoadingResultType.NO_OVERRIDE, OverrideUrlLoadingResultType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface OverrideUrlLoadingResultType {
         /* We should override the URL loading and launch an intent. */
         int OVERRIDE_WITH_EXTERNAL_INTENT = 0;
-        /* We should override the URL loading and clobber the current tab. */
-        int OVERRIDE_WITH_CLOBBERING_TAB = 1;
+        /* We should override the URL loading and perform a new navigation in the current tab. */
+        int OVERRIDE_WITH_NAVIGATE_TAB = 1;
         /* We should override the URL loading.  The desired action will be determined
          * asynchronously (e.g. by requiring user confirmation). */
         int OVERRIDE_WITH_ASYNC_ACTION = 2;
@@ -332,8 +330,18 @@ public class ExternalNavigationHandler {
 
         boolean mWasExternalFallbackUrlLaunch;
 
+        GURL mTargetUrl;
+        ExternalNavigationParams mExternalNavigationParams;
+
         private OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType) {
             this(resultType, OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION, false);
+        }
+
+        private OverrideUrlLoadingResult(GURL targetUrl, ExternalNavigationParams params) {
+            this(OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB,
+                    OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION, false);
+            mTargetUrl = targetUrl;
+            mExternalNavigationParams = params;
         }
 
         private OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType,
@@ -367,6 +375,16 @@ public class ExternalNavigationHandler {
             return mWasExternalFallbackUrlLaunch;
         }
 
+        public GURL getTargetUrl() {
+            assert mResultType == OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB;
+            return mTargetUrl;
+        }
+
+        public ExternalNavigationParams getExternalNavigationParams() {
+            assert mResultType == OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB;
+            return mExternalNavigationParams;
+        }
+
         /**
          * Use this result when an asynchronous action needs to be carried out before deciding
          * whether to block the external navigation.
@@ -389,11 +407,11 @@ public class ExternalNavigationHandler {
 
         /**
          * Use this result when the current external navigation should be blocked and a new
-         * navigation will be started in the Tab, clobbering the previous one.
+         * navigation will be started in the Tab, replacing the previous one.
          */
-        public static OverrideUrlLoadingResult forClobberingTab() {
-            return new OverrideUrlLoadingResult(
-                    OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB);
+        public static OverrideUrlLoadingResult forNavigateTab(
+                GURL targetUrl, ExternalNavigationParams params) {
+            return new OverrideUrlLoadingResult(targetUrl, params);
         }
 
         /**
@@ -477,6 +495,9 @@ public class ExternalNavigationHandler {
         if (debug()) printDebugShouldOverrideUrlLoadingResultType(result);
         if (isIntentUrl) captureIntentSchemeMetrics(result, browserFallbackUrl);
 
+        if (result.getResultType() == OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION) {
+            params.onAsyncActionStarted();
+        }
         return result;
     }
 
@@ -528,14 +549,6 @@ public class ExternalNavigationHandler {
             }
         }
 
-        // For subframes, we don't support fallback url for now. If we ever do implement this, be
-        // careful to prevent sandbox escapes.
-        // http://crbug.com/364522.
-        if (!params.isMainFrame()) {
-            if (debug()) Log.i(TAG, "Don't support fallback url in subframes");
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
-
         // NOTE: any further redirection from fall-back URL should not override URL loading.
         // Otherwise, it can be used in chain for fingerprinting multiple app installation
         // status in one shot. In order to prevent this scenario, we notify redirection
@@ -545,9 +558,9 @@ public class ExternalNavigationHandler {
                             .getAndClearShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain()) {
             params.getRedirectHandler().setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
         }
-        if (debug()) Log.i(TAG, "clobberCurrentTab called");
-        return clobberCurrentTab(
-                browserFallbackUrl, params.getReferrerUrl(), params.isRendererInitiated());
+
+        if (debug()) Log.i(TAG, "redirecting to fallback URL");
+        return OverrideUrlLoadingResult.forNavigateTab(browserFallbackUrl, params);
     }
 
     private void printDebugShouldOverrideUrlLoadingResultType(OverrideUrlLoadingResult result) {
@@ -556,8 +569,8 @@ public class ExternalNavigationHandler {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 resultString = "OVERRIDE_WITH_EXTERNAL_INTENT";
                 break;
-            case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
-                resultString = "OVERRIDE_WITH_CLOBBERING_TAB";
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
+                resultString = "OVERRIDE_WITH_NAVIGATE_TAB";
                 break;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
                 resultString = "OVERRIDE_WITH_ASYNC_ACTION";
@@ -585,7 +598,7 @@ public class ExternalNavigationHandler {
                 case OverrideUrlLoadingResultType.NO_OVERRIDE:
                     value = IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE;
                     break;
-                case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
+                case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
                     // Quirk of incognito intent scheme URLs synchronously clobbering the tab with
                     // the target URL when the dialog can't be shown.
                     value = IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE;
@@ -609,7 +622,7 @@ public class ExternalNavigationHandler {
                 case OverrideUrlLoadingResultType.NO_OVERRIDE:
                     value = IntentUriNavigationResult.WITH_FALLBACK_NO_OVERRIDE;
                     break;
-                case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
+                case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
                     value = IntentUriNavigationResult.WITH_FALLBACK_USED_FALLBACK;
                     break;
                 default:
@@ -739,22 +752,16 @@ public class ExternalNavigationHandler {
             public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && mDelegate.hasValidTab()) {
-                    if (params.isMainFrame()
-                            && params.getAsyncActionTakenInMainFrameCallback() != null) {
-                        params.getAsyncActionTakenInMainFrameCallback().onResult(
-                                new ExternalNavigationParams.AsyncActionTakenParams(
-                                        false, true, params));
+                    if (params.getRequiredAsyncActionTakenCallback() != null) {
+                        params.getRequiredAsyncActionTakenCallback().onResult(
+                                AsyncActionTakenParams.forNavigate(params.getUrl(), params));
                     }
-                    clobberCurrentTab(
-                            params.getUrl(), params.getReferrerUrl(), params.isRendererInitiated());
                 } else {
                     // TODO(tedchoc): Show an indication to the user that the navigation failed
                     //                instead of silently dropping it on the floor.
-                    if (params.isMainFrame()
-                            && params.getAsyncActionTakenInMainFrameCallback() != null) {
-                        params.getAsyncActionTakenInMainFrameCallback().onResult(
-                                new ExternalNavigationParams.AsyncActionTakenParams(
-                                        true, false, params));
+                    if (params.getRequiredAsyncActionTakenCallback() != null) {
+                        params.getRequiredAsyncActionTakenCallback().onResult(
+                                AsyncActionTakenParams.forNoAction());
                     }
                 }
             }
@@ -762,46 +769,6 @@ public class ExternalNavigationHandler {
         if (!mDelegate.hasValidTab()) return;
         mDelegate.getWindowAndroid().requestPermissions(
                 new String[] {permissionNeeded}, permissionCallback);
-    }
-
-    /**
-     * Clobber the current tab and try not to pass an intent when it should be handled internally
-     * so that we can deliver HTTP referrer information safely.
-     *
-     * @param url The new URL after clobbering the current tab.
-     * @param referrerUrl The HTTP referrer URL.
-     * @param initiatorOrigin The Origin the navigation intiated from.
-     * @return OverrideUrlLoadingResultType (if the tab has been clobbered, or we're launching an
-     *         intent.)
-     */
-    @VisibleForTesting
-    protected OverrideUrlLoadingResult clobberCurrentTab(
-            GURL url, GURL referrerUrl, boolean isRendererInitiated) {
-        int transitionType = PageTransition.LINK;
-        final LoadUrlParams loadUrlParams = new LoadUrlParams(url, transitionType);
-        if (!referrerUrl.isEmpty()) {
-            Referrer referrer = new Referrer(referrerUrl.getSpec(), ReferrerPolicy.ALWAYS);
-            loadUrlParams.setReferrer(referrer);
-        }
-        // Ideally this navigation would be part of the navigation chain that triggered it and get,
-        // the correct SameSite cookie behavior, but this is impractical as Tab clobbering is
-        // frequently async and would require complex changes that are probably not worth doing for
-        // fallback URLs. Instead, we treat the navigation as coming from an opaque Origin so that
-        // SameSite cookies aren't mistakenly sent.
-        loadUrlParams.setIsRendererInitiated(isRendererInitiated);
-        loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
-
-        assert mDelegate.hasValidTab() : "clobberCurrentTab was called with an empty tab.";
-        // Loading URL will start a new navigation which cancels the current one
-        // that this clobbering is being done for. It leads to UAF. To avoid that,
-        // we're loading URL asynchronously. See https://crbug.com/732260.
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                mDelegate.loadUrlIfPossible(loadUrlParams);
-            }
-        });
-        return OverrideUrlLoadingResult.forClobberingTab();
     }
 
     // https://crbug.com/1232514: On Android S, since WebAPKs aren't verified apps they are
@@ -1364,11 +1331,10 @@ public class ExternalNavigationHandler {
         if (shouldLaunch) {
             try {
                 startActivity(intent);
-                if (params.isMainFrame()
-                        && params.getAsyncActionTakenInMainFrameCallback() != null) {
-                    params.getAsyncActionTakenInMainFrameCallback().onResult(
-                            new ExternalNavigationParams.AsyncActionTakenParams(
-                                    mDelegate.canCloseTabOnIncognitoIntentLaunch(), false, params));
+                if (params.getRequiredAsyncActionTakenCallback() != null) {
+                    params.getRequiredAsyncActionTakenCallback().onResult(
+                            AsyncActionTakenParams.forExternalIntentLaunched(
+                                    mDelegate.canCloseTabOnIncognitoIntentLaunch(), params));
                 }
                 return;
             } catch (ActivityNotFoundException e) {
@@ -1379,17 +1345,17 @@ public class ExternalNavigationHandler {
         }
 
         OverrideUrlLoadingResult result = handleFallbackUrl(params, intent, fallbackUrl, false);
-        if (params.isMainFrame() && params.getAsyncActionTakenInMainFrameCallback() != null) {
+        if (params.getRequiredAsyncActionTakenCallback() != null) {
             if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
                 // There was no fallback URL and we can't handle the URL the intent was targeting.
                 // In this case we'll return to the last committed URL.
-                params.getAsyncActionTakenInMainFrameCallback().onResult(
-                        new ExternalNavigationParams.AsyncActionTakenParams(false, false, params));
+                params.getRequiredAsyncActionTakenCallback().onResult(
+                        AsyncActionTakenParams.forNoAction());
             } else {
                 assert result.getResultType()
-                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB;
-                params.getAsyncActionTakenInMainFrameCallback().onResult(
-                        new ExternalNavigationParams.AsyncActionTakenParams(false, true, params));
+                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB;
+                params.getRequiredAsyncActionTakenCallback().onResult(
+                        AsyncActionTakenParams.forNavigate(result.getTargetUrl(), params));
             }
         }
     }
@@ -1616,8 +1582,7 @@ public class ExternalNavigationHandler {
         }
 
         return startActivity(targetIntent, requiresIntentChooser, resolvingInfos, resolveActivity,
-                browserFallbackUrl, intentDataUrl, params.getReferrerUrl(),
-                params.getInitiatorOrigin(), params.isRendererInitiated());
+                browserFallbackUrl, intentDataUrl, params);
     }
 
     // https://crbug.com/1249964
@@ -1949,7 +1914,7 @@ public class ExternalNavigationHandler {
      * @param intent The intent we want to send.
      */
     private void startActivity(Intent intent) {
-        startActivity(intent, false, null, null, null, null, null, null, false);
+        startActivity(intent, false, null, null, null, null, null);
     }
 
     /**
@@ -1965,15 +1930,12 @@ public class ExternalNavigationHandler {
      * @param resolveActivity The resolving Activity |intent| matches against.
      * @param browserFallbackUrl The fallback URL if the user chooses not to leave this app.
      * @param intentDataUrl The URL |intent| is targeting.
-     * @param referrerUrl The referrer for the navigation.
-     * @param initiatorOrigin The Origin that initiated the navigation, if any.
-     * @param isRendererInitiated True if the navigation was renderer initiated.
+     * @param params The ExternalNavigationParams for the navigation.
      * @returns The OverrideUrlLoadingResult for starting (or not starting) the Activity.
      */
     protected OverrideUrlLoadingResult startActivity(Intent intent, boolean requiresIntentChooser,
             QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
-            GURL browserFallbackUrl, GURL intentDataUrl, GURL referrerUrl, Origin initiatorOrigin,
-            boolean isRendererInitiated) {
+            GURL browserFallbackUrl, GURL intentDataUrl, ExternalNavigationParams params) {
         // Only touches disk on Kitkat. See http://crbug.com/617725 for more context.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
@@ -1985,8 +1947,7 @@ public class ExternalNavigationHandler {
             }
             if (requiresIntentChooser) {
                 return startActivityWithChooser(intent, resolvingInfos, resolveActivity,
-                        browserFallbackUrl, intentDataUrl, referrerUrl, context, initiatorOrigin,
-                        isRendererInitiated);
+                        browserFallbackUrl, intentDataUrl, params, context);
             }
             return doStartActivity(intent, context);
         } catch (SecurityException e) {
@@ -2020,8 +1981,8 @@ public class ExternalNavigationHandler {
     @SuppressWarnings({"UseCompatLoadingForDrawables", "DiscouragedApi"})
     private OverrideUrlLoadingResult startActivityWithChooser(final Intent intent,
             QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
-            GURL browserFallbackUrl, GURL intentDataUrl, GURL referrerUrl, Context context,
-            Origin initiatorOrigin, boolean isRendererInitiated) {
+            GURL browserFallbackUrl, GURL intentDataUrl, final ExternalNavigationParams params,
+            Context context) {
         ResolveInfo intentResolveInfo = resolveActivity.get();
         // If this is null, then the intent was only previously matching
         // non-default filters, so just drop it.
@@ -2076,8 +2037,14 @@ public class ExternalNavigationHandler {
                 pickerIntent, new WindowAndroid.IntentCallback() {
                     @Override
                     public void onIntentCompleted(int resultCode, Intent data) {
+                        RequiredCallback<AsyncActionTakenParams> callback =
+                                params.getRequiredAsyncActionTakenCallback();
+                        assert callback != null;
                         // If |data| is null, the user backed out of the intent chooser.
-                        if (data == null) return;
+                        if (data == null) {
+                            callback.onResult(AsyncActionTakenParams.forNoAction());
+                            return;
+                        }
 
                         // Quirk of how we use the ActivityChooser - if the embedding app is
                         // chosen we get an intent back with ACTION_CREATE_SHORTCUT.
@@ -2089,10 +2056,13 @@ public class ExternalNavigationHandler {
                             // matches what would have happened had the regular chooser dialog shown
                             // up and the user selected this app.
                             if (UrlUtilities.isAcceptedScheme(intentDataUrl)) {
-                                clobberCurrentTab(intentDataUrl, referrerUrl, isRendererInitiated);
+                                callback.onResult(
+                                        AsyncActionTakenParams.forNavigate(intentDataUrl, params));
                             } else if (!browserFallbackUrl.isEmpty()) {
-                                clobberCurrentTab(
-                                        browserFallbackUrl, referrerUrl, isRendererInitiated);
+                                callback.onResult(AsyncActionTakenParams.forNavigate(
+                                        browserFallbackUrl, params));
+                            } else {
+                                callback.onResult(AsyncActionTakenParams.forNoAction());
                             }
                             return;
                         }
@@ -2102,6 +2072,8 @@ public class ExternalNavigationHandler {
                         intent.setSelector(null);
                         intent.setPackage(data.getComponent().getPackageName());
                         startActivity(intent);
+                        callback.onResult(
+                                AsyncActionTakenParams.forExternalIntentLaunched(true, params));
                     }
                 }, null);
         return OverrideUrlLoadingResult.forAsyncAction(
@@ -2180,12 +2152,20 @@ public class ExternalNavigationHandler {
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
                                     startActivity(targetIntent);
-                                    if (params.getAsyncActionTakenInMainFrameCallback() != null) {
-                                        params.getAsyncActionTakenInMainFrameCallback().onResult(
-                                                new ExternalNavigationParams.AsyncActionTakenParams(
-                                                        true, false, params));
+                                    if (params.getRequiredAsyncActionTakenCallback() != null) {
+                                        params.getRequiredAsyncActionTakenCallback().onResult(
+                                                AsyncActionTakenParams.forExternalIntentLaunched(
+                                                        true, params));
                                     }
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .with(MessageBannerProperties.ON_DISMISSED,
+                                (dismissReason) -> {
+                                    if (dismissReason == DismissReason.PRIMARY_ACTION) return;
+                                    if (params.getRequiredAsyncActionTakenCallback() != null) {
+                                        params.getRequiredAsyncActionTakenCallback().onResult(
+                                                AsyncActionTakenParams.forNoAction());
+                                    }
                                 })
                         .build();
         messageDispatcher.enqueueMessage(message, webContents, MessageScopeType.NAVIGATION, false);

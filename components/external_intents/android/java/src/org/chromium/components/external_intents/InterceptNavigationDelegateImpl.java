@@ -20,11 +20,14 @@ import org.chromium.components.external_intents.ExternalNavigationHandler.Overri
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ConsoleMessageLevel;
+import org.chromium.content_public.common.Referrer;
+import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -155,16 +158,17 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 navigationHandle.hasUserGesture(), navigationHandle.isRendererInitiated(),
                 navigationHandle.getReferrerUrl(), navigationHandle.isInPrimaryMainFrame(),
                 navigationHandle.getInitiatorOrigin(), navigationHandle.isExternalProtocol(),
-                mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle));
+                mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle),
+                this::onDidAsyncActionInMainFrame);
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
-                onDidFinishMainFrameUrlOverriding(true, false, escapedUrl);
+                onDidFinishMainFrameIntentLaunch(true, escapedUrl);
                 return true;
-            case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
-                mShouldClearRedirectHistoryForTabClobbering = true;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
+                clobberMainFrame(result.getTargetUrl(), result.getExternalNavigationParams());
                 return true;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
                 return true;
@@ -197,12 +201,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 transition, false /* isRedirect */, hasUserGesture, true /* isRendererInitiated */,
                 GURL.emptyGURL() /* referrerUrl */, false /* isInPrimaryMainFrame */,
                 initiatorOrigin, true /* isExternalProtocol */,
-                false /* areIntentLaunchesAllowedInHiddenTabsForNavigation */);
+                false /* areIntentLaunchesAllowedInHiddenTabsForNavigation */,
+                this::onDidAsyncActionInSubFrame);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 return null;
-            case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
                 // TODO(https://crbug.com/1365100): Pass the clobbering URL to native and do a
                 // redirect rather than clobbering the tab.
                 return null;
@@ -219,7 +224,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             GURL escapedUrl, @PageTransition int pageTransition, boolean isRedirect,
             boolean hasUserGesture, boolean isRendererInitiated, GURL referrerUrl,
             boolean isInPrimaryMainFrame, Origin initiatorOrigin, boolean isExternalProtocol,
-            boolean areIntentLaunchesAllowedInHiddenTabsForNavigation) {
+            boolean areIntentLaunchesAllowedInHiddenTabsForNavigation,
+            Callback<AsyncActionTakenParams> asyncActionTakenCallback) {
         redirectHandler.updateNewUrlLoading(pageTransition, isRedirect, hasUserGesture,
                 mClient.getLastUserInteractionTime(), getLastCommittedEntryIndex(),
                 isInitialNavigation(), isRendererInitiated);
@@ -245,7 +251,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setHasUserGesture(hasUserGesture)
                         .setIsRendererInitiated(isRendererInitiated)
                         .setInitiatorOrigin(initiatorOrigin)
-                        .setAsyncActionTakenInMainFrameCallback(this::onDidTakeMainFrameAsyncAction)
+                        .setAsyncActionTakenCallback(asyncActionTakenCallback)
                         .build();
 
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
@@ -319,19 +325,26 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         return false;
     }
 
-    private void onDidTakeMainFrameAsyncAction(AsyncActionTakenParams params) {
-        onDidFinishMainFrameUrlOverriding(params.canCloseTab, params.willClobberTab,
-                params.externalNavigationParams.getUrl());
+    private void onDidAsyncActionInMainFrame(AsyncActionTakenParams params) {
+        switch (params.actionType) {
+            case AsyncActionTakenParams.AsyncActionTakenType.NAVIGATE:
+                clobberMainFrame(params.targetUrl, params.externalNavigationParams);
+                break;
+            case AsyncActionTakenParams.AsyncActionTakenType.EXTERNAL_INTENT_LAUNCHED:
+                onDidFinishMainFrameIntentLaunch(
+                        params.canCloseTab, params.externalNavigationParams.getUrl());
+                break;
+            default: // NO_ACTION
+                break;
+        }
     }
 
-    /**
-     * Called when Chrome decides to override URL loading and launch an intent or an asynchronous
-     * action.
-     */
-    private void onDidFinishMainFrameUrlOverriding(
-            boolean canCloseTab, boolean willClobberTab, GURL escapedUrl) {
-        if (mClient.getWebContents() == null) return;
+    private void onDidAsyncActionInSubFrame(AsyncActionTakenParams params) {
+        // TODO(https://crbug.com/1365100): Implement navigate action.
+    }
 
+    private void onDidFinishMainFrameIntentLaunch(boolean canCloseTab, GURL escapedUrl) {
+        if (mClient.getWebContents() == null) return;
         boolean shouldCloseTab = canCloseTab && isTabOnInitialNavigationChain();
 
         @MainFrameIntentLaunch
@@ -389,16 +402,41 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 mClient.getOrCreateRedirectHandler()
                         .getLastCommittedEntryIndexBeforeStartingNavigation();
         if (getLastCommittedEntryIndex() <= lastCommittedEntryIndexBeforeNavigation) return;
-        if (willClobberTab) {
-            mShouldClearRedirectHistoryForTabClobbering = true;
-        } else {
-            // http://crbug/426679 : we want to go back to the last committed entry index which
-            // was saved before this navigation, and remove the empty entries from the
-            // navigation history.
-            mClearAllForwardHistoryRequired = true;
-            mClient.getWebContents().getNavigationController().goToNavigationIndex(
-                    lastCommittedEntryIndexBeforeNavigation);
+
+        // http://crbug/426679 : we want to go back to the last committed entry index which
+        // was saved before this navigation, and remove the empty entries from the
+        // navigation history.
+        mClearAllForwardHistoryRequired = true;
+        mClient.getWebContents().getNavigationController().goToNavigationIndex(
+                lastCommittedEntryIndexBeforeNavigation);
+    }
+
+    private void clobberMainFrame(GURL targetUrl, ExternalNavigationParams params) {
+        int transitionType = PageTransition.LINK;
+        final LoadUrlParams loadUrlParams = new LoadUrlParams(targetUrl, transitionType);
+        if (!params.getReferrerUrl().isEmpty()) {
+            Referrer referrer =
+                    new Referrer(params.getReferrerUrl().getSpec(), ReferrerPolicy.ALWAYS);
+            loadUrlParams.setReferrer(referrer);
         }
+        // Ideally this navigation would be part of the navigation chain that triggered it and get,
+        // the correct SameSite cookie behavior, but this is impractical as Tab clobbering is
+        // frequently async and would require complex changes that are probably not worth doing for
+        // fallback URLs. Instead, we treat the navigation as coming from an opaque Origin so that
+        // SameSite cookies aren't mistakenly sent.
+        loadUrlParams.setIsRendererInitiated(params.isRendererInitiated());
+        loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
+
+        // Loading URL will start a new navigation which cancels the current one
+        // that this clobbering is being done for. It leads to UAF. To avoid that,
+        // we're loading URL asynchronously. See https://crbug.com/732260.
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+            @Override
+            public void run() {
+                mClient.loadUrlIfPossible(loadUrlParams);
+            }
+        });
+        mShouldClearRedirectHistoryForTabClobbering = true;
     }
 
     private void logBlockedNavigationToDevToolsConsole(GURL url) {
