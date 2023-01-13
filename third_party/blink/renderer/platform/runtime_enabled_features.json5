@@ -1044,11 +1044,20 @@
       status: "stable",
       base_feature: "DisableTextDecorationColorOverride",
     },
-    // This feature should only be enabled if ThirdPartyStoragePartitioning
-    // is enabled, but as ThirdPartyStoragePartitioning will be linked to a
-    // deprecation trial it isn't possible to set a `depends_on`.
+    // This feature should only be enabled if
+    // DisableThirdPartyStoragePartitioning is enabled, but as
+    // DisableThirdPartyStoragePartitioning will be linked to a deprecation
+    // trial it isn't possible to set a `depends_on`.
     {
       name: "DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning",
+      status: "experimental",
+      browser_process_read_write_access: true,
+    },
+    // This feature will represent the deprecation trial that allows first
+    // parties to temporarily use unpartitioned storage in embeds loaded
+    // on their site.
+    {
+      name: "DisableThirdPartyStoragePartitioning",
       status: "experimental",
       browser_process_read_write_access: true,
     },
@@ -2811,6 +2820,8 @@
       name: "TextFragmentTapOpensContextMenu",
       status: {"Android": "stable"},
     },
+    // To enable the deprecation trial, use the
+    // `DisableThirdPartyStoragePartitioning` feature instead.
     {
       name: "ThirdPartyStoragePartitioning",
       status: "experimental",
