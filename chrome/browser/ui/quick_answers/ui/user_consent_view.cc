@@ -350,7 +350,14 @@ void UserConsentView::UpdateWidgetBounds() {
     y = anchor_view_bounds_.bottom() + kMarginDip;
   }
   gfx::Rect bounds({x, y}, size);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // For Ash, convert the position relative to the screen.
+  // For Lacros, `bounds` is already relative to the toplevel window and the
+  // position will be calculated on server side.
   wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
+#endif
+
   GetWidget()->SetBounds(bounds);
 }
 
