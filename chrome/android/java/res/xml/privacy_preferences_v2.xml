@@ -44,10 +44,6 @@ found in the LICENSE file.
         android:title="@string/settings_incognito_tab_lock_title"
         android:summary="@string/settings_incognito_tab_lock_summary_android_setting_off"
         android:persistent="false" />
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="usage_stats_reporting"
-        android:title="@string/usage_stats_setting_title"
-        android:persistent="false" />
 
     <PreferenceCategory
         android:key="security_section"

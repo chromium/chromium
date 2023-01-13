@@ -54,6 +54,10 @@ found in the LICENSE file.
         android:fragment="org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment"
         app:isPreferenceVisible="false"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="usage_stats_reporting"
+        android:title="@string/usage_stats_setting_title"
+        app:isPreferenceVisible="false" />
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="contextual_search"
         android:title="@string/contextual_search_title"
         android:fragment="org.chromium.chrome.browser.contextualsearch.ContextualSearchPreferenceFragment"/>

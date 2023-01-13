@@ -9,6 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -21,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -276,6 +279,69 @@ public class GoogleServicesSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertNull(googleServicesSettings.findPreference(
                     GoogleServicesSettings.PREF_PRICE_TRACKING_ANNOTATIONS));
+        });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.Q,
+            message = "Digital Wellbeing is only available from Q.")
+    public void
+    testUsageStatsReportingShown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.USAGE_STATS_ENABLED, true);
+        });
+
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNotNull("Usage stats should exist when the flag and pref are set.",
+                    googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_USAGE_STATS_REPORTING));
+        });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.Q,
+            message = "Digital Wellbeing is only available from Q.")
+    public void
+    testUsageStatsReportingNotShown_FeatureEnabledPrefDisabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.USAGE_STATS_ENABLED, false);
+        });
+
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("Usage stats should not exist when the pref is not set.",
+                    googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_USAGE_STATS_REPORTING));
+        });
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.Q,
+            message = "Digital Wellbeing is only available from Q.")
+    public void
+    testUsageStatsReportingNotShown_FeatureDisabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.setBoolean(Pref.USAGE_STATS_ENABLED, true);
+        });
+
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("Usage stats should not exist when the feature is not enabled.",
+                    googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_USAGE_STATS_REPORTING));
         });
     }
 

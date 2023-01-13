@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
+import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -65,6 +67,8 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
     @VisibleForTesting
     public static final String PREF_AUTOFILL_ASSISTANT_SUBSECTION = "autofill_assistant_subsection";
     @VisibleForTesting
+    public static final String PREF_USAGE_STATS_REPORTING = "usage_stats_reporting";
+    @VisibleForTesting
     public static final String PREF_METRICS_SETTINGS = "metrics_settings";
     @VisibleForTesting
     public static final String PREF_PRICE_TRACKING_ANNOTATIONS = "price_tracking_annotations";
@@ -83,6 +87,7 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mPriceTrackingAnnotations;
     private @Nullable Preference mContextualSearch;
     private Preference mPriceNotificationSection;
+    private Preference mUsageStatsReporting;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
@@ -149,6 +154,14 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
         } else {
             removePreference(getPreferenceScreen(), mPriceNotificationSection);
             mPriceNotificationSection = null;
+        }
+
+        mUsageStatsReporting = findPreference(PREF_USAGE_STATS_REPORTING);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
+            mUsageStatsReporting.setVisible(true);
+        } else {
+            removePreference(getPreferenceScreen(), mUsageStatsReporting);
+            mUsageStatsReporting = null;
         }
 
         updatePreferences();
@@ -248,6 +261,25 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
         if (mPriceTrackingAnnotations != null) {
             mPriceTrackingAnnotations.setChecked(
                     PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
+        }
+        if (mUsageStatsReporting != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    && mPrefService.getBoolean(Pref.USAGE_STATS_ENABLED)) {
+                mUsageStatsReporting.setOnPreferenceClickListener(preference -> {
+                    UsageStatsConsentDialog
+                            .create(getActivity(), true,
+                                    (didConfirm) -> {
+                                        if (didConfirm) {
+                                            updatePreferences();
+                                        }
+                                    })
+                            .show();
+                    return true;
+                });
+            } else {
+                removePreference(getPreferenceScreen(), mUsageStatsReporting);
+                mUsageStatsReporting = null;
+            }
         }
     }
 
