@@ -228,6 +228,24 @@ struct AudioEventInfo {
   State state@0;
 };
 
+// Audio jack event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct AudioJackEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // Audio jack added.
+    kAdd,
+    // Aduio jack removed.
+    kRemove,
+  };
+
+  State state@0;
+};
+
 // Implemented by clients who desire events.
 //
 // NextMinVersion: 1, NextIndex: 1
@@ -239,7 +257,7 @@ interface EventObserver {
 
 // Union of event info.
 //
-// NextMinVersion: 1, NextIndex: 7
+// NextMinVersion: 2, NextIndex: 8
 [Stable, Extensible]
 union EventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -257,11 +275,13 @@ union EventInfo {
   PowerEventInfo power_event_info@5;
   // Audio event info.
   AudioEventInfo audio_event_info@6;
+  // Audio jack event info.
+  [MinVersion=1] AudioJackEventInfo audio_jack_event_info@7;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 1, NextIndex: 7
+// NextMinVersion: 2, NextIndex: 8
 [Stable, Extensible]
 enum EventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -272,4 +292,5 @@ enum EventCategoryEnum {
   kBluetooth = 4,
   kPower = 5,
   kAudio = 6,
+  [MinVersion=1] kAudioJack = 7,
 };
