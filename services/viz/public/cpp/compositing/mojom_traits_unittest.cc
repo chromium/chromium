@@ -227,7 +227,7 @@ TEST_F(StructTraitsTest, FilterOperations) {
 
 TEST_F(StructTraitsTest, LocalSurfaceId) {
   LocalSurfaceId input(
-      42, base::UnguessableToken::Deserialize(0x12345678, 0x9abcdef0));
+      42, base::UnguessableToken::CreateForTesting(0x12345678, 0x9abcdef0));
 
   LocalSurfaceId output;
   mojo::test::SerializeAndDeserialize<mojom::LocalSurfaceId>(input, output);
@@ -243,7 +243,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_BitmapRequest) {
       CopyOutputRequest::ResultDestination::kSystemMemory;
   const gfx::Rect area(5, 7, 44, 55);
   const auto source =
-      base::UnguessableToken::Deserialize(0xdeadbeef, 0xdeadf00d);
+      base::UnguessableToken::CreateForTesting(0xdeadbeef, 0xdeadf00d);
   // Requesting 2:3 scale in X dimension, 5:4 in Y dimension.
   const gfx::Vector2d scale_from(2, 5);
   const gfx::Vector2d scale_to(3, 4);
@@ -655,7 +655,7 @@ TEST_F(StructTraitsTest, SurfaceInfo) {
   const SurfaceId surface_id(
       FrameSinkId(1234, 4321),
       LocalSurfaceId(5678,
-                     base::UnguessableToken::Deserialize(143254, 144132)));
+                     base::UnguessableToken::CreateForTesting(143254, 144132)));
   constexpr float device_scale_factor = 1.234f;
   constexpr gfx::Size size(987, 123);
 

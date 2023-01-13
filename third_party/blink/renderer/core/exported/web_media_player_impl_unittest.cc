@@ -903,8 +903,9 @@ class WebMediaPlayerImplTest
   media::MockCdmContext mock_cdm_context_;
 
   viz::FrameSinkId frame_sink_id_ = viz::FrameSinkId(1, 1);
-  viz::LocalSurfaceId local_surface_id_ =
-      viz::LocalSurfaceId(11, base::UnguessableToken::Deserialize(0x111111, 0));
+  viz::LocalSurfaceId local_surface_id_ = viz::LocalSurfaceId(
+      11,
+      base::UnguessableToken::CreateForTesting(0x111111, 0));
   viz::SurfaceId surface_id_ =
       viz::SurfaceId(frame_sink_id_, local_surface_id_);
 

@@ -95,8 +95,8 @@ class VideoWakeLockMediaPlayer final : public EmptyWebMediaPlayer {
     // Use a fake but valid viz::SurfaceId.
     surface_id_ = viz::SurfaceId(
         viz::FrameSinkId(1, 1),
-        viz::LocalSurfaceId(11,
-                            base::UnguessableToken::Deserialize(0x111111, 0)));
+        viz::LocalSurfaceId(
+            11, base::UnguessableToken::CreateForTesting(0x111111, 0)));
   }
   absl::optional<viz::SurfaceId> GetSurfaceId() override { return surface_id_; }
 

@@ -14,7 +14,8 @@ TEST(UnguessableTokenAndroid, BasicCreateToken) {
   JNIEnv* env = AttachCurrentThread();
   uint64_t high = 0x1234567812345678;
   uint64_t low = 0x0583503029282304;
-  base::UnguessableToken token = base::UnguessableToken::Deserialize(high, low);
+  base::UnguessableToken token =
+      base::UnguessableToken::CreateForTesting(high, low);
   ScopedJavaLocalRef<jobject> jtoken =
       UnguessableTokenAndroid::Create(env, token);
   base::UnguessableToken result =
@@ -27,7 +28,8 @@ TEST(UnguessableTokenAndroid, ParcelAndUnparcel) {
   JNIEnv* env = AttachCurrentThread();
   uint64_t high = 0x1234567812345678;
   uint64_t low = 0x0583503029282304;
-  base::UnguessableToken token = base::UnguessableToken::Deserialize(high, low);
+  base::UnguessableToken token =
+      base::UnguessableToken::CreateForTesting(high, low);
   ScopedJavaLocalRef<jobject> jtoken =
       UnguessableTokenAndroid::Create(env, token);
   ScopedJavaLocalRef<jobject> jtoken_clone =

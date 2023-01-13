@@ -119,9 +119,9 @@ namespace cc {
 namespace {
 
 static auto kArbitrarySourceId1 =
-    base::UnguessableToken::Deserialize(0xdead, 0xbeef);
+    base::UnguessableToken::CreateForTesting(0xdead, 0xbeef);
 static auto kArbitrarySourceId2 =
-    base::UnguessableToken::Deserialize(0xdead, 0xbee0);
+    base::UnguessableToken::CreateForTesting(0xdead, 0xbee0);
 
 // http://google.github.io/googletest/gmock_for_dummies.html#using-mocks-in-tests
 // says that it is undefined behavior if we alternate between calls to

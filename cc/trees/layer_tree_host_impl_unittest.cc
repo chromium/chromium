@@ -128,7 +128,7 @@ viz::SurfaceId MakeSurfaceId(const viz::FrameSinkId& frame_sink_id,
   return viz::SurfaceId(
       frame_sink_id,
       viz::LocalSurfaceId(parent_id,
-                          base::UnguessableToken::Deserialize(0, 1u)));
+                          base::UnguessableToken::CreateForTesting(0, 1u)));
 }
 
 struct TestFrameData : public LayerTreeHostImpl::FrameData {
@@ -245,8 +245,8 @@ class LayerTreeHostImplTest : public testing::Test,
   }
   void DidActivateSyncTree() override {
     // Make sure the active tree always has a valid LocalSurfaceId.
-    host_impl_->active_tree()->SetLocalSurfaceIdFromParent(
-        viz::LocalSurfaceId(1, base::UnguessableToken::Deserialize(2u, 3u)));
+    host_impl_->active_tree()->SetLocalSurfaceIdFromParent(viz::LocalSurfaceId(
+        1, base::UnguessableToken::CreateForTesting(2u, 3u)));
   }
   void WillPrepareTiles() override {}
   void DidPrepareTiles() override { did_prepare_tiles_ = true; }
@@ -323,8 +323,8 @@ class LayerTreeHostImplTest : public testing::Test,
     bool init = host_impl_->InitializeFrameSink(layer_tree_frame_sink_.get());
     host_impl_->active_tree()->SetDeviceViewportRect(gfx::Rect(10, 10));
     host_impl_->active_tree()->PushPageScaleFromMainThread(1, 1, 1);
-    host_impl_->active_tree()->SetLocalSurfaceIdFromParent(
-        viz::LocalSurfaceId(1, base::UnguessableToken::Deserialize(2u, 3u)));
+    host_impl_->active_tree()->SetLocalSurfaceIdFromParent(viz::LocalSurfaceId(
+        1, base::UnguessableToken::CreateForTesting(2u, 3u)));
     // Set the viz::BeginFrameArgs so that methods which use it are able to.
     auto args = viz::CreateBeginFrameArgsForTesting(
         BEGINFRAME_FROM_HERE, 0, 1, base::TimeTicks() + base::Milliseconds(1));
@@ -5310,8 +5310,8 @@ class LayerTreeHostImplTestScrollbarAnimation : public LayerTreeHostImplTest {
 
     host_impl_->active_tree()->DidBecomeActive();
     host_impl_->active_tree()->HandleScrollbarShowRequests();
-    host_impl_->active_tree()->SetLocalSurfaceIdFromParent(
-        viz::LocalSurfaceId(1, base::UnguessableToken::Deserialize(2u, 3u)));
+    host_impl_->active_tree()->SetLocalSurfaceIdFromParent(viz::LocalSurfaceId(
+        1, base::UnguessableToken::CreateForTesting(2u, 3u)));
 
     DrawFrame();
 
@@ -11272,7 +11272,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
   CopyProperties(root, child);
   child->SetOffsetToTransformParent(gfx::Vector2dF(12, 13));
   layer_tree_host_impl->active_tree()->SetLocalSurfaceIdFromParent(
-      viz::LocalSurfaceId(1, base::UnguessableToken::Deserialize(2u, 3u)));
+      viz::LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(2u, 3u)));
   UpdateDrawProperties(layer_tree_host_impl->active_tree());
 
   TestFrameData frame;

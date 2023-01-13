@@ -49,12 +49,12 @@ media::AudioParameters Params() {
 
 media::AudioSourceParameters SourceParams() {
   return media::AudioSourceParameters(
-      base::UnguessableToken::Deserialize(1234, 5678));
+      base::UnguessableToken::CreateForTesting(1234, 5678));
 }
 
 media::AudioSourceParameters SourceParamsWithProcessing() {
   media::AudioSourceParameters params(
-      base::UnguessableToken::Deserialize(1234, 5678));
+      base::UnguessableToken::CreateForTesting(1234, 5678));
   params.processing = media::AudioProcessingSettings();
   return params;
 }

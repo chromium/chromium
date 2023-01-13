@@ -103,7 +103,7 @@ AutofillEnvironment::~AutofillEnvironment() {
 }
 
 LocalFrameToken AutofillEnvironment::NextLocalFrameToken() {
-  return LocalFrameToken(base::UnguessableToken::Deserialize(
+  return LocalFrameToken(base::UnguessableToken::CreateForTesting(
       ++local_frame_token_counter_high_, ++local_frame_token_counter_low_));
 }
 
@@ -120,7 +120,8 @@ LocalFrameToken MakeLocalFrameToken(RandomizeFrame randomize) {
     return LocalFrameToken(
         AutofillEnvironment::GetCurrent().NextLocalFrameToken());
   } else {
-    return LocalFrameToken(base::UnguessableToken::Deserialize(98765, 43210));
+    return LocalFrameToken(
+        base::UnguessableToken::CreateForTesting(98765, 43210));
   }
 }
 

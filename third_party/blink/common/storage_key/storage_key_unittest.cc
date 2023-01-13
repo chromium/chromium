@@ -252,16 +252,16 @@ TEST(StorageKeyTest, SerializeNonce) {
     const char* expected_serialization;
   } kTestCases[] = {
       {{"https://example.com/",
-        base::UnguessableToken::Deserialize(12345ULL, 67890ULL)},
+        base::UnguessableToken::CreateForTesting(12345ULL, 67890ULL)},
        "https://example.com/^112345^267890"},
       {{"https://test.example",
-        base::UnguessableToken::Deserialize(22222ULL, 99999ULL)},
+        base::UnguessableToken::CreateForTesting(22222ULL, 99999ULL)},
        "https://test.example/^122222^299999"},
       {{"https://sub.test.example/",
-        base::UnguessableToken::Deserialize(9876ULL, 54321ULL)},
+        base::UnguessableToken::CreateForTesting(9876ULL, 54321ULL)},
        "https://sub.test.example/^19876^254321"},
       {{"https://other.example/",
-        base::UnguessableToken::Deserialize(3735928559ULL, 110521ULL)},
+        base::UnguessableToken::CreateForTesting(3735928559ULL, 110521ULL)},
        "https://other.example/^13735928559^2110521"},
   };
 
@@ -444,13 +444,13 @@ TEST(StorageKeyTest, SerializeDeserializeNonce) {
     const base::UnguessableToken nonce;
   } kTestCases[] = {
       {"https://example.com/",
-       base::UnguessableToken::Deserialize(12345ULL, 67890ULL)},
+       base::UnguessableToken::CreateForTesting(12345ULL, 67890ULL)},
       {"https://test.example",
-       base::UnguessableToken::Deserialize(22222ULL, 99999ULL)},
+       base::UnguessableToken::CreateForTesting(22222ULL, 99999ULL)},
       {"https://sub.test.example/",
-       base::UnguessableToken::Deserialize(9876ULL, 54321ULL)},
+       base::UnguessableToken::CreateForTesting(9876ULL, 54321ULL)},
       {"https://other.example/",
-       base::UnguessableToken::Deserialize(3735928559ULL, 110521ULL)},
+       base::UnguessableToken::CreateForTesting(3735928559ULL, 110521ULL)},
       {"https://other2.example/", base::UnguessableToken::Create()},
   };
 

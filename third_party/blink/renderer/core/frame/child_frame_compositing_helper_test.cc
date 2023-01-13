@@ -43,7 +43,7 @@ viz::SurfaceId MakeSurfaceId(const viz::FrameSinkId& frame_sink_id,
   return viz::SurfaceId(
       frame_sink_id,
       viz::LocalSurfaceId(parent_sequence_number, child_sequence_number,
-                          base::UnguessableToken::Deserialize(0, 1u)));
+                          base::UnguessableToken::CreateForTesting(0, 1u)));
 }
 
 }  // namespace

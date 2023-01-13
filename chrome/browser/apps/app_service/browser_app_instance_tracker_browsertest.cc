@@ -54,7 +54,7 @@ uint64_t ToUint64(base::UnguessableToken id) {
 }
 
 base::UnguessableToken TestId(uint64_t id) {
-  return base::UnguessableToken::Deserialize(0, id);
+  return base::UnguessableToken::CreateForTesting(0, id);
 }
 
 // Make test sequence easier to scan

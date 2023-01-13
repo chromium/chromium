@@ -211,10 +211,10 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
   // If Picture-in-Picture there shouldn't be an active session.
   EXPECT_FALSE(controller->active_session_for_testing());
 
-  viz::SurfaceId surface_id =
-      viz::SurfaceId(viz::FrameSinkId(1, 1),
-                     viz::LocalSurfaceId(
-                         11, base::UnguessableToken::Deserialize(0x111111, 0)));
+  viz::SurfaceId surface_id = viz::SurfaceId(
+      viz::FrameSinkId(1, 1),
+      viz::LocalSurfaceId(
+          11, base::UnguessableToken::CreateForTesting(0x111111, 0)));
 
   EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
       .WillRepeatedly(testing::Return(PictureInPictureResult::kSuccess));
@@ -257,10 +257,10 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
 
   mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>
       observer_remote;
-  viz::SurfaceId surface_id =
-      viz::SurfaceId(viz::FrameSinkId(1, 1),
-                     viz::LocalSurfaceId(
-                         11, base::UnguessableToken::Deserialize(0x111111, 0)));
+  viz::SurfaceId surface_id = viz::SurfaceId(
+      viz::FrameSinkId(1, 1),
+      viz::LocalSurfaceId(
+          11, base::UnguessableToken::CreateForTesting(0x111111, 0)));
 
   EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
       .WillRepeatedly(testing::Return(PictureInPictureResult::kNotSupported));

@@ -158,7 +158,7 @@ void InstallDelegatedFrameHostClient(
 
 const viz::LocalSurfaceId kArbitraryLocalSurfaceId(
     1,
-    base::UnguessableToken::Deserialize(2, 3));
+    base::UnguessableToken::CreateForTesting(2, 3));
 
 std::string GetMessageNames(
     const MockWidgetInputHandler::MessageVector& events) {

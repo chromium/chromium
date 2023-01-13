@@ -742,7 +742,7 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   // Set renderer id related fields.
   FormData form_data;
   form_data.host_frame = autofill::LocalFrameToken(
-      base::UnguessableToken::Deserialize(98765, 43210));
+      base::UnguessableToken::CreateForTesting(98765, 43210));
   form_data.unique_renderer_id = FormRendererId(42);
   form_data.is_form_tag = true;
   form_on_page.form_data = form_data;

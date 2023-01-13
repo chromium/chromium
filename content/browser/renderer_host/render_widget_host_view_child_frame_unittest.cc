@@ -52,7 +52,7 @@ namespace {
 
 const viz::LocalSurfaceId kArbitraryLocalSurfaceId(
     1,
-    base::UnguessableToken::Deserialize(2, 3));
+    base::UnguessableToken::CreateForTesting(2, 3));
 
 blink::mojom::ScrollResultDataPtr MakeDefaultScrollResultData() {
   return blink::mojom::ScrollResultData::New(

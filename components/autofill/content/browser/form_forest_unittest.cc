@@ -1652,7 +1652,7 @@ TEST(FormForestTest, FrameDataComparator) {
   auto x = std::make_unique<FrameData>(test::MakeLocalFrameToken());
   auto xx = std::make_unique<FrameData>(test::MakeLocalFrameToken());
   auto y = std::make_unique<FrameData>(
-      LocalFrameToken(base::UnguessableToken::Deserialize(
+      LocalFrameToken(base::UnguessableToken::CreateForTesting(
           x->frame_token->GetHighForSerialization() + 1,
           x->frame_token->GetLowForSerialization() + 1)));
   ASSERT_TRUE(x->frame_token < y->frame_token);

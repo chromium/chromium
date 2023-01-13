@@ -124,7 +124,7 @@ viz::SurfaceId TestSurfaceId() {
   // Use a fake but valid viz::SurfaceId.
   return {viz::FrameSinkId(1, 1),
           viz::LocalSurfaceId(
-              11, base::UnguessableToken::Deserialize(0x111111, 0))};
+              11, base::UnguessableToken::CreateForTesting(0x111111, 0))};
 }
 
 // The MockPictureInPictureSession implements a PictureInPicture session in the

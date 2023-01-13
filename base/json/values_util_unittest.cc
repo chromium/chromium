@@ -95,7 +95,7 @@ TEST(ValuesUtilTest, UnguessableToken) {
   };
   for (const auto& test_case : kTestCases) {
     UnguessableToken input =
-        UnguessableToken::Deserialize(test_case.high, test_case.low);
+        UnguessableToken::CreateForTesting(test_case.high, test_case.low);
     Value expected(test_case.expected);
     SCOPED_TRACE(testing::Message() << "expected: " << test_case.expected);
 

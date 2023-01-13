@@ -90,7 +90,7 @@ class MockFrameSinkBundleClient
 
 const viz::LocalSurfaceId kTestSurfaceId(
     1,
-    base::UnguessableToken::Deserialize(1, 2));
+    base::UnguessableToken::CreateForTesting(1, 2));
 
 class VideoFrameSinkBundleTest : public testing::Test {
  public:

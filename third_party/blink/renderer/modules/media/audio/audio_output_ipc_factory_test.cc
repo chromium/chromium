@@ -33,7 +33,7 @@ const int kRenderFrameId = 0;
 
 blink::LocalFrameToken TokenFromInt(int i) {
   static base::UnguessableToken base_token = base::UnguessableToken::Create();
-  return blink::LocalFrameToken(base::UnguessableToken::Deserialize(
+  return blink::LocalFrameToken(base::UnguessableToken::CreateForTesting(
       base_token.GetHighForSerialization() + i,
       base_token.GetLowForSerialization() + i));
 }

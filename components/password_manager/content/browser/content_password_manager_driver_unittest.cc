@@ -153,7 +153,7 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   form_on_page.signon_realm = "https://foo.com/";
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
   form_on_page.form_data.host_frame = autofill::LocalFrameToken(
-      base::UnguessableToken::Deserialize(98765, 43210));
+      base::UnguessableToken::CreateForTesting(98765, 43210));
 
   // Create an exact match in the database.
   PasswordForm preferred_match = form_on_page;

@@ -25,7 +25,7 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
     manager_->clear_requests_for_testing();
 
     last_received_request_ = 0;
-    dummy_token_ = base::UnguessableToken::Deserialize(123, 456);
+    dummy_token_ = base::UnguessableToken::CreateForTesting(123, 456);
 
     mock_texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
         0, nullptr, nullptr);
