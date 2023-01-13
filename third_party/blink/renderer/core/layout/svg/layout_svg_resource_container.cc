@@ -287,7 +287,7 @@ void LayoutSVGResourceContainer::StyleChanged(LayoutObject& object,
   // If this LayoutObject is the child of a resource container and
   // it requires repainting because of changes to CSS properties
   // such as 'visibility', upgrade to invalidate layout.
-  bool needs_layout = diff.NeedsPaintInvalidation() &&
+  bool needs_layout = diff.NeedsNormalPaintInvalidation() &&
                       IsLayoutObjectOfResourceContainer(object);
   MarkForLayoutAndParentResourceInvalidation(object, needs_layout);
 }

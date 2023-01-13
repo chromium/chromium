@@ -730,13 +730,13 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (DiffNeedsReshapeAndFullLayoutAndPaintInvalidation(*this, other)) {
     diff.SetNeedsReshape();
     diff.SetNeedsFullLayout();
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
   }
 
-  if ((!diff.NeedsFullLayout() || !diff.NeedsPaintInvalidation()) &&
+  if ((!diff.NeedsFullLayout() || !diff.NeedsNormalPaintInvalidation()) &&
       DiffNeedsFullLayoutAndPaintInvalidation(other)) {
     diff.SetNeedsFullLayout();
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
   }
 
   if (!diff.NeedsFullLayout() && DiffNeedsFullLayout(document, other)) {
@@ -946,13 +946,13 @@ void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
     const Document& document) const {
   if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other) ||
       !BorderVisuallyEqual(other) || !RadiiEqual(other)) {
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
   }
 
   AdjustDiffForClipPath(other, diff);
   AdjustDiffForBackgroundVisuallyEqual(other, diff);
 
-  if (diff.NeedsPaintInvalidation()) {
+  if (diff.NeedsNormalPaintInvalidation()) {
     return;
   }
 
@@ -960,7 +960,7 @@ void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
     for (const auto& image : *PaintImagesInternal()) {
       DCHECK(image);
       if (DiffNeedsPaintInvalidationForPaintImage(*image, other, document)) {
-        diff.SetNeedsPaintInvalidation();
+        diff.SetNeedsNormalPaintInvalidation();
         return;
       }
     }
@@ -994,7 +994,7 @@ void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
   }
 
   if (!BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
     return;
   }
   // If the background image depends on currentColor
@@ -1005,7 +1005,7 @@ void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
       (GetCurrentColor() != other.GetCurrentColor() ||
        GetInternalVisitedCurrentColor() !=
            other.GetInternalVisitedCurrentColor())) {
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
   }
 }
 
@@ -1124,7 +1124,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetNeedsRecomputeVisualOverflow();
   }
 
-  if (!diff.NeedsPaintInvalidation() &&
+  if (!diff.NeedsNormalPaintInvalidation() &&
       ComputedStyleBase::UpdatePropertySpecificDifferencesTextDecorationOrColor(
           *this, other)) {
     diff.SetTextDecorationOrColorChanged();

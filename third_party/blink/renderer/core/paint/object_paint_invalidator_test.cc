@@ -124,4 +124,28 @@ TEST_F(ObjectPaintInvalidatorTest, VisibilityHidden) {
   EXPECT_FALSE(IsValidDisplayItemClient(target));
 }
 
+TEST_F(ObjectPaintInvalidatorTest,
+       DirectPaintInvalidationSkipsPaintInvalidationChecking) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' style="color: rgb(80, 230, 175);">Text</div>
+  )HTML");
+
+  auto* div = GetDocument().getElementById("target");
+  auto* text = div->firstChild();
+  const auto* object = text->GetLayoutObject();
+  ValidateDisplayItemClient(object);
+  EXPECT_TRUE(IsValidDisplayItemClient(object));
+  EXPECT_FALSE(object->ShouldCheckForPaintInvalidation());
+
+  div->setAttribute(html_names::kStyleAttr, "color: rgb(80, 100, 175)");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(IsValidDisplayItemClient(object));
+  EXPECT_FALSE(object->ShouldCheckForPaintInvalidation());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsValidDisplayItemClient(object));
+  EXPECT_FALSE(object->ShouldCheckForPaintInvalidation());
+}
+
 }  // namespace blink

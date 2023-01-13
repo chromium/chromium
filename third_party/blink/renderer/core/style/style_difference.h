@@ -39,7 +39,8 @@ class StyleDifference {
   };
 
   StyleDifference()
-      : needs_paint_invalidation_(false),
+      : paint_invalidation_type_(
+            static_cast<unsigned>(PaintInvalidationType::kNone)),
         layout_type_(kNoLayout),
         needs_reshape_(false),
         recompute_visual_overflow_(false),
@@ -49,7 +50,8 @@ class StyleDifference {
         compositable_paint_effect_changed_(false) {}
 
   void Merge(StyleDifference other) {
-    needs_paint_invalidation_ |= other.needs_paint_invalidation_;
+    paint_invalidation_type_ =
+        std::max(paint_invalidation_type_, other.paint_invalidation_type_);
     layout_type_ = std::max(layout_type_, other.layout_type_);
     needs_reshape_ |= other.needs_reshape_;
     recompute_visual_overflow_ |= other.recompute_visual_overflow_;
@@ -62,21 +64,42 @@ class StyleDifference {
   }
 
   bool HasDifference() const {
-    return needs_paint_invalidation_ || layout_type_ || needs_reshape_ ||
-           property_specific_differences_ || recompute_visual_overflow_ ||
+    return (paint_invalidation_type_ !=
+            static_cast<unsigned>(PaintInvalidationType::kNone)) ||
+           layout_type_ || needs_reshape_ || property_specific_differences_ ||
+           recompute_visual_overflow_ ||
            scroll_anchor_disabling_property_changed_ ||
            compositing_reasons_changed_ || compositable_paint_effect_changed_;
   }
 
   bool HasAtMostPropertySpecificDifferences(
       unsigned property_differences) const {
-    return !needs_paint_invalidation_ && !layout_type_ &&
-           !compositing_reasons_changed_ &&
+    return (paint_invalidation_type_ ==
+            static_cast<unsigned>(PaintInvalidationType::kNone)) &&
+           !layout_type_ && !compositing_reasons_changed_ &&
            !(property_specific_differences_ & ~property_differences);
   }
 
-  bool NeedsPaintInvalidation() const { return needs_paint_invalidation_; }
-  void SetNeedsPaintInvalidation() { needs_paint_invalidation_ = true; }
+  // For simple paint invalidation, we can directly invalidate the
+  // DisplayItemClients during style update, without paint invalidation during
+  // PrePaintTreeWalk.
+  bool NeedsSimplePaintInvalidation() const {
+    return paint_invalidation_type_ ==
+           static_cast<unsigned>(PaintInvalidationType::kSimple);
+  }
+  bool NeedsNormalPaintInvalidation() const {
+    return paint_invalidation_type_ ==
+           static_cast<unsigned>(PaintInvalidationType::kNormal);
+  }
+  void SetNeedsSimplePaintInvalidation() {
+    DCHECK(!NeedsNormalPaintInvalidation());
+    paint_invalidation_type_ =
+        static_cast<unsigned>(PaintInvalidationType::kSimple);
+  }
+  void SetNeedsNormalPaintInvalidation() {
+    paint_invalidation_type_ =
+        static_cast<unsigned>(PaintInvalidationType::kNormal);
+  }
 
   bool NeedsLayout() const { return layout_type_ != kNoLayout; }
   void ClearNeedsLayout() { layout_type_ = kNoLayout; }
@@ -198,7 +221,8 @@ class StyleDifference {
   friend CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                               const StyleDifference&);
 
-  unsigned needs_paint_invalidation_ : 1;
+  enum class PaintInvalidationType { kNone, kSimple, kNormal };
+  unsigned paint_invalidation_type_ : 2;
 
   enum LayoutType { kNoLayout = 0, kPositionedMovement, kFullLayout };
   unsigned layout_type_ : 2;
@@ -217,7 +241,7 @@ class StyleDifference {
   // data back again with a large read can cause store-to-load forward
   // stalls). Feel free to take bits from here if you need them
   // for something else.
-  unsigned padding_ [[maybe_unused]] : 13;
+  unsigned padding_ [[maybe_unused]] : 12;
 };
 static_assert(sizeof(StyleDifference) == 4, "Remove some padding bits!");
 

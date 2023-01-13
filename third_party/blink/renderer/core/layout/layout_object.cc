@@ -235,12 +235,12 @@ StyleDifference AdjustForCompositableAnimationPaint(
   // whether the background color changed.
   if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       (had_background_color_animation != has_background_color_animation))
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
 
   bool skip_background_color_paint_invalidation =
       !diff.BackgroundColorChanged() || HasNativeBackgroundPainter(node);
   if (!skip_background_color_paint_invalidation)
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
 
   bool had_clip_path_animation =
       old_style ? old_style->HasCurrentClipPathAnimation() : false;
@@ -250,12 +250,12 @@ StyleDifference AdjustForCompositableAnimationPaint(
   // whether the background color changed.
   if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
       (had_clip_path_animation != has_clip_path_animation))
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
 
   bool skip_clip_path_paint_invalidation =
       !diff.ClipPathChanged() || HasClipPathPaintWorklet(node);
   if (!skip_clip_path_paint_invalidation)
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
 
   return diff;
 }
@@ -1124,7 +1124,7 @@ PaintLayer* LayoutObject::EnclosingLayer() const {
   return nullptr;
 }
 
-PaintLayer* LayoutObject::PaintingLayer() const {
+PaintLayer* LayoutObject::PaintingLayer(int max_depth) const {
   NOT_DESTROYED();
   auto FindContainer = [](const LayoutObject& object) -> const LayoutObject* {
     // Column spanners paint through their multicolumn containers which can
@@ -1141,9 +1141,12 @@ PaintLayer* LayoutObject::PaintingLayer() const {
       return object.GetFrame()->OwnerLayoutObject();
     return object.Parent();
   };
-
+  int depth = 0;
   for (const LayoutObject* current = this; current;
        current = FindContainer(*current)) {
+    if (max_depth != -1 && ++depth > max_depth) {
+      break;
+    }
     if (current->HasLayer() &&
         To<LayoutBoxModelObject>(current)->Layer()->IsSelfPaintingLayer())
       return To<LayoutBoxModelObject>(current)->Layer();
@@ -2448,7 +2451,9 @@ StyleDifference LayoutObject::AdjustStyleDifference(
 
   // Optimization: for decoration/color property changes, invalidation is only
   // needed if we have style or text affected by these properties.
-  if (diff.TextDecorationOrColorChanged() && !diff.NeedsPaintInvalidation()) {
+  if (diff.TextDecorationOrColorChanged() &&
+      !diff.NeedsNormalPaintInvalidation() &&
+      !diff.NeedsSimplePaintInvalidation()) {
     if (StyleRef().HasOutlineWithCurrentColor() ||
         StyleRef().HasBackgroundRelatedColorReferencingCurrentColor() ||
         // Skip any text nodes that do not contain text boxes. Whitespace cannot
@@ -2458,15 +2463,16 @@ StyleDifference LayoutObject::AdjustStyleDifference(
         (IsText() && !IsBR() && To<LayoutText>(this)->HasInlineFragments()) ||
         (IsSVG() && StyleRef().IsFillColorCurrentColor()) ||
         (IsSVG() && StyleRef().IsStrokeColorCurrentColor()) ||
-        IsListMarkerForNormalContent() || IsMathML())
-      diff.SetNeedsPaintInvalidation();
+        IsListMarkerForNormalContent() || IsMathML()) {
+      diff.SetNeedsSimplePaintInvalidation();
+    }
   }
 
   // TODO(1088373): Pixel_WebGLHighToLowPower fails without this. This isn't the
   // right way to ensure GPU switching. Investigate and do it in the right way.
-  if (!diff.NeedsPaintInvalidation() && IsLayoutView() && Style() &&
+  if (!diff.NeedsNormalPaintInvalidation() && IsLayoutView() && Style() &&
       !Style()->GetFont().IsFallbackValid()) {
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
   }
 
   // The answer to layerTypeRequired() for plugins, iframes, and canvas can
@@ -2613,7 +2619,7 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
           diff.Merge(pseudo_old_style->VisualInvalidationDiff(
               GetDocument(), *pseudo_new_style));
         } else {
-          diff.SetNeedsPaintInvalidation();
+          diff.SetNeedsNormalPaintInvalidation();
         }
       }
     };
@@ -2665,6 +2671,18 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
   // invalidate paints.
   StyleDifference updated_diff = AdjustStyleDifference(diff);
 
+  if (updated_diff.NeedsSimplePaintInvalidation()) {
+    DCHECK(!diff.NeedsNormalPaintInvalidation());
+    constexpr int kMaxDepth = 5;
+    if (auto* painting_layer = PaintingLayer(kMaxDepth)) {
+      painting_layer->SetNeedsRepaint();
+      InvalidateDisplayItemClients(PaintInvalidationReason::kStyle);
+      GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
+    } else {
+      updated_diff.SetNeedsNormalPaintInvalidation();
+    }
+  }
+
   if (!diff.NeedsFullLayout()) {
     if (updated_diff.NeedsFullLayout()) {
       SetNeedsLayoutAndIntrinsicWidthsRecalc(
@@ -2706,7 +2724,8 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
 #endif
   }
 
-  if (diff.NeedsPaintInvalidation() || updated_diff.NeedsPaintInvalidation()) {
+  if (diff.NeedsNormalPaintInvalidation() ||
+      updated_diff.NeedsNormalPaintInvalidation()) {
     if (IsSVGRoot()) {
       // LayoutSVGRoot::LocalVisualRect() depends on some styles.
       SetShouldDoFullPaintInvalidation();
@@ -2718,7 +2737,7 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
     }
   }
 
-  if (diff.NeedsPaintInvalidation() && old_style &&
+  if (diff.NeedsNormalPaintInvalidation() && old_style &&
       !old_style->ClipPathDataEquivalent(*style_)) {
     SetNeedsPaintPropertyUpdate();
     PaintingLayer()->SetNeedsCompositingInputsUpdate();
@@ -3098,7 +3117,7 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     }
   }
 
-  if (diff.NeedsPaintInvalidation() && old_style) {
+  if (diff.NeedsNormalPaintInvalidation() && old_style) {
     if (ResolveColor(*old_style, GetCSSPropertyBackgroundColor()) !=
             ResolveColor(GetCSSPropertyBackgroundColor()) ||
         old_style->BackgroundLayers() != StyleRef().BackgroundLayers())
@@ -3170,12 +3189,12 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
     }
   }
   if (!has_diff) {
-    diff.SetNeedsPaintInvalidation();
+    diff.SetNeedsNormalPaintInvalidation();
     diff.SetNeedsFullLayout();
   }
 
-  if (BehavesLikeBlockContainer() &&
-      (diff.NeedsPaintInvalidation() || diff.TextDecorationOrColorChanged())) {
+  if (BehavesLikeBlockContainer() && (diff.NeedsNormalPaintInvalidation() ||
+                                      diff.TextDecorationOrColorChanged())) {
     if (auto* first_line_container =
             To<LayoutBlock>(this)->NearestInnerBlockWithFirstLine())
       first_line_container->SetShouldDoFullPaintInvalidationForFirstLine();
@@ -4623,8 +4642,9 @@ void LayoutObject::SetShouldCheckForPaintInvalidation() {
 
 void LayoutObject::SetShouldCheckForPaintInvalidationWithoutLayoutChange() {
   NOT_DESTROYED();
-  if (ShouldCheckForPaintInvalidation())
+  if (ShouldCheckForPaintInvalidation()) {
     return;
+  }
   GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
   bitfields_.SetShouldCheckForPaintInvalidation(true);

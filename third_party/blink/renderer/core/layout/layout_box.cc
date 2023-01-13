@@ -612,7 +612,8 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
     // The background of the root element or the body element could propagate up
     // to the canvas. Just dirty the entire canvas when our style changes
     // substantially.
-    if ((diff.NeedsPaintInvalidation() || diff.NeedsLayout()) && GetNode() &&
+    if ((diff.NeedsNormalPaintInvalidation() || diff.NeedsLayout()) &&
+        GetNode() &&
         (IsDocumentElement() || IsA<HTMLBodyElement>(*GetNode()))) {
       View()->SetShouldDoFullPaintInvalidation();
     }
@@ -827,7 +828,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   if (IsCustomItem())
     GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), StyleRef());
 
-  if (diff.NeedsPaintInvalidation()) {
+  if (diff.NeedsNormalPaintInvalidation()) {
     if (const AnchorScrollValue* old_anchor_scroll =
             old_style ? old_style->AnchorScroll() : nullptr;
         !base::ValuesEquivalent(StyleRef().AnchorScroll().Get(),

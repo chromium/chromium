@@ -26,7 +26,7 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   if (diff.HasDifference()) {
     if (LayoutNGTable* table = Table()) {
-      if (old_style && diff.NeedsPaintInvalidation()) {
+      if (old_style && diff.NeedsNormalPaintInvalidation()) {
         // Regenerate table borders if needed
         if (!old_style->BorderVisuallyEqual(StyleRef()))
           table->GridBordersChanged();

@@ -449,7 +449,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns the layer that will paint this object. During paint invalidation,
   // we should use the faster PaintInvalidatorContext::painting_layer instead.
-  PaintLayer* PaintingLayer() const;
+  PaintLayer* PaintingLayer(int max_depth = -1) const;
 
   bool IsFixedPositionObjectInPagedMedia() const;
 
