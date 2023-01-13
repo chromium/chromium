@@ -48,7 +48,7 @@ promise_test(async t => {
 
   // Navigate the frame from about:blink to its final location to ensure that
   // that code path is covered, too.
-  frames[0].location = "https://{{domains[www1]}}:{{location[port]}}/wpt_internal/origin-agent-cluster-default/resources/frame.html"
+  frames[0].location = "https://{{domains[www1]}}:{{location[port]}}/wpt_internal/origin-agent-cluster-default-warning/resources/frame.html"
   await onframeload(document.getElementsByTagName("iframe")[0]);
 
   // Now proceed as above: Tell the frame to relax its same-origin restriction
