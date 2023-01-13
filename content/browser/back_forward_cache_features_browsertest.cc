@@ -2998,18 +2998,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
   // 5) The service worker calls clients.claim(). |rfh_a| would normally be
   //    claimed but because it's in bfcache, it is evicted from the cache.
   EXPECT_EQ("DONE", EvalJs(tab_to_execute_service_worker, "claim()"));
+  deleted.WaitUntilDeleted();
 
   // 6) Navigate to A in |tab_to_be_bfcached|.
   ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_TRUE(deleted.deleted());
   ExpectNotRestored({NotRestoredReason::kServiceWorkerClaim}, {}, {}, {}, {},
                     FROM_HERE);
 }
 
-// TODO(crbug.com/1405319): Test is flaky on every platform.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DISABLED_EvictOnServiceWorkerUnregistration) {
+                       EvictOnServiceWorkerUnregistration) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.RegisterRequestHandler(
       base::BindRepeating(&RequestHandlerForUpdateWorker));
@@ -3060,11 +3058,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       "DONE",
       EvalJs(tab_to_unregister_service_worker,
              "unregister('service_worker_registration.html?to_be_bfcached')"));
-
+  deleted.WaitUntilDeleted();
   // 7) Navigate back to A in |tab_to_be_bfcached|.
   ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_TRUE(deleted.deleted());
   ExpectNotRestored({NotRestoredReason::kServiceWorkerUnregistration}, {}, {},
                     {}, {}, FROM_HERE);
 }
