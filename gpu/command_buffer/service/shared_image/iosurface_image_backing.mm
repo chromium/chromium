@@ -4,7 +4,9 @@
 
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing.h"
 
+#include "base/mac/scoped_nsobject.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -55,6 +57,43 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
   }
   NOTREACHED();
   return gfx::BufferFormat::RGBA_8888;
+}
+
+base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
+    id<MTLDevice> mtl_device,
+    IOSurfaceRef io_surface,
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    int plane_index) {
+  TRACE_EVENT0("gpu", "IOSurfaceImageBackingFactory::CreateMetalTexture");
+  base::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
+  MTLPixelFormat mtl_pixel_format =
+      static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
+  if (mtl_pixel_format == MTLPixelFormatInvalid) {
+    return mtl_texture;
+  }
+
+  base::scoped_nsobject<MTLTextureDescriptor> mtl_tex_desc(
+      [MTLTextureDescriptor new]);
+  [mtl_tex_desc setTextureType:MTLTextureType2D];
+  [mtl_tex_desc
+      setUsage:MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget];
+  [mtl_tex_desc setPixelFormat:mtl_pixel_format];
+  [mtl_tex_desc setWidth:size.width()];
+  [mtl_tex_desc setHeight:size.height()];
+  [mtl_tex_desc setDepth:1];
+  [mtl_tex_desc setMipmapLevelCount:1];
+  [mtl_tex_desc setArrayLength:1];
+  [mtl_tex_desc setSampleCount:1];
+  // TODO(https://crbug.com/952063): For zero-copy resources that are populated
+  // on the CPU (e.g, video frames), it may be that MTLStorageModeManaged will
+  // be more appropriate.
+  [mtl_tex_desc setStorageMode:MTLStorageModePrivate];
+  mtl_texture.reset([mtl_device newTextureWithDescriptor:mtl_tex_desc
+                                               iosurface:io_surface
+                                                   plane:plane_index]);
+  DCHECK(mtl_texture);
+  return mtl_texture;
 }
 
 }  // namespace
@@ -615,9 +654,7 @@ std::unique_ptr<SkiaImageRepresentation> IOSurfaceImageBacking::ProduceSkia(
     sk_sp<SkPromiseImageTexture> promise_texture;
     if (context_state->GrContextIsMetal()) {
       int plane = format().is_single_plane() ? io_surface_plane_ : plane_index;
-      promise_texture =
-          IOSurfaceImageBackingFactory::ProduceSkiaPromiseTextureMetal(
-              this, context_state, io_surface_, plane);
+      promise_texture = ProduceSkiaPromiseTextureMetal(context_state, plane);
       DCHECK(promise_texture);
     } else {
       bool angle_rgbx_internal_format = context_state->feature_info()
@@ -643,6 +680,26 @@ std::unique_ptr<SkiaImageRepresentation> IOSurfaceImageBacking::ProduceSkia(
   return std::make_unique<SkiaIOSurfaceRepresentation>(
       manager, this, egl_state, std::move(context_state), promise_textures,
       tracker);
+}
+
+sk_sp<SkPromiseImageTexture>
+IOSurfaceImageBacking::ProduceSkiaPromiseTextureMetal(
+    scoped_refptr<SharedContextState> context_state,
+    int plane_index) {
+  DCHECK(context_state->GrContextIsMetal());
+  auto plane_size = format().GetPlaneSize(plane_index, size());
+
+  id<MTLDevice> mtl_device =
+      context_state->metal_context_provider()->GetMTLDevice();
+  auto mtl_texture = CreateMetalTexture(mtl_device, io_surface_.get(),
+                                        plane_size, format(), plane_index);
+  DCHECK(mtl_texture);
+
+  GrMtlTextureInfo info;
+  info.fTexture.retain(mtl_texture.get());
+  auto gr_backend_texture = GrBackendTexture(
+      plane_size.width(), plane_size.height(), GrMipMapped::kNo, info);
+  return SkPromiseImageTexture::Make(gr_backend_texture);
 }
 
 void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {

@@ -39,11 +39,6 @@ struct Mailbox;
 class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
     : public SharedImageBackingFactory {
  public:
-  static sk_sp<SkPromiseImageTexture> ProduceSkiaPromiseTextureMetal(
-      SharedImageBacking* backing,
-      scoped_refptr<SharedContextState> context_state,
-      gfx::ScopedIOSurface io_surface,
-      int plane_index);
   static std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       SharedImageBacking* backing,

@@ -5,10 +5,8 @@
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -42,42 +40,6 @@
 namespace gpu {
 
 namespace {
-base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
-    id<MTLDevice> mtl_device,
-    IOSurfaceRef io_surface,
-    const gfx::Size& size,
-    viz::SharedImageFormat format,
-    int plane_index) {
-  TRACE_EVENT0("gpu", "IOSurfaceImageBackingFactory::CreateMetalTexture");
-  base::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
-  MTLPixelFormat mtl_pixel_format =
-      static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
-  if (mtl_pixel_format == MTLPixelFormatInvalid)
-    return mtl_texture;
-
-  base::scoped_nsobject<MTLTextureDescriptor> mtl_tex_desc(
-      [MTLTextureDescriptor new]);
-  [mtl_tex_desc setTextureType:MTLTextureType2D];
-  [mtl_tex_desc
-      setUsage:MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget];
-  [mtl_tex_desc setPixelFormat:mtl_pixel_format];
-  [mtl_tex_desc setWidth:size.width()];
-  [mtl_tex_desc setHeight:size.height()];
-  [mtl_tex_desc setDepth:1];
-  [mtl_tex_desc setMipmapLevelCount:1];
-  [mtl_tex_desc setArrayLength:1];
-  [mtl_tex_desc setSampleCount:1];
-  // TODO(https://crbug.com/952063): For zero-copy resources that are populated
-  // on the CPU (e.g, video frames), it may be that MTLStorageModeManaged will
-  // be more appropriate.
-  [mtl_tex_desc setStorageMode:MTLStorageModePrivate];
-  mtl_texture.reset([mtl_device newTextureWithDescriptor:mtl_tex_desc
-                                               iosurface:io_surface
-                                                   plane:plane_index]);
-  DCHECK(mtl_texture);
-  return mtl_texture;
-}
-
 bool IsFormatSupported(viz::ResourceFormat resource_format) {
   switch (resource_format) {
     case viz::ResourceFormat::RGBA_8888:
@@ -296,29 +258,6 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
   DawnProcTable dawn_procs_;
 };
 #endif  // BUILDFLAG(USE_DAWN)
-
-// static
-sk_sp<SkPromiseImageTexture>
-IOSurfaceImageBackingFactory::ProduceSkiaPromiseTextureMetal(
-    SharedImageBacking* backing,
-    scoped_refptr<SharedContextState> context_state,
-    gfx::ScopedIOSurface io_surface,
-    int plane_index) {
-  DCHECK(context_state->GrContextIsMetal());
-  gfx::Size size = backing->format().GetPlaneSize(plane_index, backing->size());
-
-  id<MTLDevice> mtl_device =
-      context_state->metal_context_provider()->GetMTLDevice();
-  auto mtl_texture = CreateMetalTexture(mtl_device, io_surface.get(), size,
-                                        backing->format(), plane_index);
-  DCHECK(mtl_texture);
-
-  GrMtlTextureInfo info;
-  info.fTexture.retain(mtl_texture.get());
-  auto gr_backend_texture =
-      GrBackendTexture(size.width(), size.height(), GrMipMapped::kNo, info);
-  return SkPromiseImageTexture::Make(gr_backend_texture);
-}
 
 // static
 std::unique_ptr<DawnImageRepresentation>

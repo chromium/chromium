@@ -260,6 +260,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       IOSurfaceBackingEGLState* egl_state,
       bool have_context) override;
 
+  sk_sp<SkPromiseImageTexture> ProduceSkiaPromiseTextureMetal(
+      scoped_refptr<SharedContextState> context_state,
+      int plane_index);
+
   bool IsPassthrough() const { return true; }
 
   gfx::ScopedIOSurface io_surface_;
