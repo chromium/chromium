@@ -19,7 +19,7 @@ import tempfile
 
 SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator', 'maccatalyst')
 SUPPORTED_CONFIGS = ('Debug', 'Release', 'Profile', 'Official')
-ADDITIONAL_FILE_ROOTS = ('//ios', '//ios_internal', '//docs')
+ADDITIONAL_FILE_ROOTS = ('//ios', '//ios_internal', '//docs', '//components')
 
 # Pattern matching lines from ~/.lldbinit that must not be copied to the
 # generated .lldbinit file. They match what the user were told to add to

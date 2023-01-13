@@ -880,6 +880,11 @@ In `//components/feature_engagement/public/feature_constants.h`:
 
 ```c++
 BASE_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
+```
+
+In `//components/feature_engagement/public/event_constants.h`
+
+```c++
 extern const char kPasswordInfobarIgnored[];  // "password_infobar_ignored"
 extern const char kPasswordInfobarAccepted[];  // "password_infobar_accepted"
 ```
