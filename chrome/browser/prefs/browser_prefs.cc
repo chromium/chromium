@@ -812,6 +812,10 @@ const char kAutofillAssistantTriggerScriptsIsFirstTimeUser[] =
 const char kAutofillWalletImportStorageCheckboxState[] =
     "autofill.wallet_import_storage_checkbox_state";
 
+// Deprecated 01/2023
+const char kSendDownloadToCloudPref[] =
+    "enterprise_connectors.send_download_to_cloud";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -880,6 +884,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 11/2022.
   registry->RegisterDictionaryPref(kLocalConsentsDictionary);
+
+  // Deprecated 01/2023
+  registry->RegisterListPref(kSendDownloadToCloudPref);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1829,6 +1836,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 11/2022.
   local_state->ClearPref(kLocalConsentsDictionary);
+
+  // Added 01/2023
+  local_state->ClearPref(kSendDownloadToCloudPref);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
