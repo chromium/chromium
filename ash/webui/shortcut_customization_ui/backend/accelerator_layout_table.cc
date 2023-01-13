@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
+#include <string>
 
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
@@ -30,6 +32,14 @@ std::u16string GetTextForModifier(ui::EventFlags modifier) {
   NOTREACHED();
   return std::u16string();
 }
+
+std::u16string GetTextForDelimiter(TextAcceleratorDelimiter delimiter) {
+  // Note: Use a switch statement to perform string lookup if/when more
+  // delimiters are added to the TextAcceleratorDelimiter enum.
+  CHECK_EQ(delimiter, TextAcceleratorDelimiter::kPlusSign);
+  return u"+";
+}
+
 }  // namespace
 
 TextAcceleratorPart::TextAcceleratorPart(ui::EventFlags modifier) {
@@ -45,6 +55,11 @@ TextAcceleratorPart::TextAcceleratorPart(ui::KeyboardCode key_code) {
 TextAcceleratorPart::TextAcceleratorPart(const std::u16string& plain_text) {
   text = plain_text;
   type = mojom::TextAcceleratorPartType::kPlainText;
+}
+
+TextAcceleratorPart::TextAcceleratorPart(TextAcceleratorDelimiter delimiter) {
+  text = GetTextForDelimiter(delimiter);
+  type = mojom::TextAcceleratorPartType::kDelimiter;
 }
 
 TextAcceleratorPart::TextAcceleratorPart(const TextAcceleratorPart&) = default;
@@ -87,6 +102,7 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
            NonConfigurableAcceleratorDetails(
                IDS_TEXT_ACCELERATOR_GO_TO_TAB_IN_RANGE,
                {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(TextAcceleratorDelimiter::kPlusSign),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_1),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_8)})},
           {NonConfigurableActions::kBrowserNewTab,

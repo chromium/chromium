@@ -73,6 +73,11 @@ enum NonConfigurableActions {
   kAmbientDragLinkInSameTab,
 };
 
+// Used to separate text accelerator parts in the UI e.g ctrl + 1.
+enum TextAcceleratorDelimiter {
+  kPlusSign,
+};
+
 // Contains details for UI styling of an accelerator.
 struct AcceleratorLayoutDetails {
   // The accelerator action id associated for a source. Concat `source` and
@@ -199,6 +204,7 @@ class TextAcceleratorPart : public mojom::TextAcceleratorPart {
   explicit TextAcceleratorPart(ui::EventFlags modifier);
   explicit TextAcceleratorPart(ui::KeyboardCode key_code);
   explicit TextAcceleratorPart(const std::u16string& plain_text);
+  explicit TextAcceleratorPart(TextAcceleratorDelimiter delimiter);
   TextAcceleratorPart(const TextAcceleratorPart&);
   TextAcceleratorPart& operator=(const TextAcceleratorPart&);
   ~TextAcceleratorPart();

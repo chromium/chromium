@@ -92,6 +92,7 @@ enum TextAcceleratorPartType {
   kPlainText,
   kModifier,
   kKey,
+  kDelimiter,
 };
 
 // The text to display as well as its corresponding type which determines how

@@ -662,9 +662,11 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
 }
 
 using FlagsKeyboardCodesVariant =
-    std::variant<ui::EventFlags, ui::KeyboardCode>;
-using FlagsKeyboardCodeStringVariant =
-    std::variant<ui::EventFlags, ui::KeyboardCode, std::u16string>;
+    std::variant<ui::EventFlags, ui::KeyboardCode, TextAcceleratorDelimiter>;
+using FlagsKeyboardCodeStringVariant = std::variant<ui::EventFlags,
+                                                    ui::KeyboardCode,
+                                                    std::u16string,
+                                                    TextAcceleratorDelimiter>;
 
 class TextAcceleratorParsingTest
     : public AcceleratorConfigurationProviderTest,
@@ -682,8 +684,10 @@ class TextAcceleratorParsingTest
     for (const auto& r : replacements_parts) {
       if (std::holds_alternative<ui::KeyboardCode>(r)) {
         replacements_.emplace_back(std::get<ui::KeyboardCode>(r));
-      } else {
+      } else if (std::holds_alternative<ui::EventFlags>(r)) {
         replacements_.emplace_back(std::get<ui::EventFlags>(r));
+      } else {
+        replacements_.emplace_back(std::get<TextAcceleratorDelimiter>(r));
       }
     }
 
@@ -692,8 +696,10 @@ class TextAcceleratorParsingTest
         expected_parts_.emplace_back(std::get<std::u16string>(v));
       } else if (std::holds_alternative<ui::KeyboardCode>(v)) {
         expected_parts_.emplace_back(std::get<ui::KeyboardCode>(v));
-      } else {
+      } else if (std::holds_alternative<ui::EventFlags>(v)) {
         expected_parts_.emplace_back(std::get<ui::EventFlags>(v));
+      } else {
+        expected_parts_.emplace_back(std::get<TextAcceleratorDelimiter>(v));
       }
     }
   }
@@ -716,10 +722,11 @@ INSTANTIATE_TEST_SUITE_P(
                                std::vector<FlagsKeyboardCodesVariant>,
                                std::vector<FlagsKeyboardCodeStringVariant>>>{
             {
-                u"$1 + $2 through $3",
-                {ui::EF_CONTROL_DOWN, ui::VKEY_1, ui::VKEY_8},
-                {ui::EF_CONTROL_DOWN, u" + ", ui::VKEY_1, u" through ",
-                 ui::VKEY_8},
+                u"$1 $2 $3 through $4",
+                {ui::EF_CONTROL_DOWN, TextAcceleratorDelimiter::kPlusSign,
+                 ui::VKEY_1, ui::VKEY_8},
+                {ui::EF_CONTROL_DOWN, u" ", TextAcceleratorDelimiter::kPlusSign,
+                 u" ", ui::VKEY_1, u" through ", ui::VKEY_8},
             },
             {
                 u"Press $1 and $2",
@@ -765,6 +772,21 @@ INSTANTIATE_TEST_SUITE_P(
                 u" $1",
                 {ui::VKEY_B},
                 {u" ", ui::VKEY_B},
+            },
+            {
+                u"$1",
+                {TextAcceleratorDelimiter::kPlusSign},
+                {TextAcceleratorDelimiter::kPlusSign},
+            },
+            {
+                u"$1 ",
+                {TextAcceleratorDelimiter::kPlusSign},
+                {TextAcceleratorDelimiter::kPlusSign, u" "},
+            },
+            {
+                u" $1",
+                {TextAcceleratorDelimiter::kPlusSign},
+                {u" ", TextAcceleratorDelimiter::kPlusSign},
             },
             {
                 u"Drag the link to a blank area on the tab strip",
