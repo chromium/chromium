@@ -1038,11 +1038,14 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ConnectionMigrationCause" separator=".">
+  <suffix name="ChangePortOnPathDegrading" label=""/>
+  <suffix name="NewNetworkConnectedPostPathDegrading" label=""/>
   <suffix name="OnMigrateBackToDefaultNetwork" label=""/>
   <suffix name="OnNetworkConnected" label=""/>
   <suffix name="OnNetworkDisconnected" label=""/>
   <suffix name="OnNetworkMadeDefault" label=""/>
   <suffix name="OnPathDegrading" label=""/>
+  <suffix name="OnServerPreferredAddressAvailable" label=""/>
   <suffix name="OnWriteError" label=""/>
   <suffix name="Unknown" label=""/>
   <affected-histogram name="Net.QuicSession.ConnectionMigration"/>

@@ -3162,6 +3162,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.QuicSession.HandshakeStatusOnMigratingToServerPreferredAddress"
+    enum="BooleanConfirmed" expires_after="2024-05-11">
+  <owner>fayang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The handshake status when the session attempts to validate received server
+    preferred address.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.HandshakeStatusOnPortMigration"
     enum="BooleanConfirmed" expires_after="2023-05-11">
   <owner>dschinazi@chromium.org</owner>
@@ -3469,6 +3480,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.OnServerPreferredAddressAvailable"
+    enum="QuicConnectionMigrationStatus" expires_after="2024-06-04">
+  <owner>fayang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The result of a QUIC server preferred address migration attempt.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.OutOfOrderGapReceived" units="units"
     expires_after="2023-05-11">
   <owner>dschinazi@chromium.org</owner>
@@ -3565,7 +3585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PathValidationSuccess" enum="BooleanSuccess"
-    expires_after="2023-06-18">
+    expires_after="2024-06-18">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
