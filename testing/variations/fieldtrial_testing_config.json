@@ -537,6 +537,21 @@
             ]
         }
     ],
+    "ArcGameMode": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Holdback_20230111",
+                    "disable_features": [
+                        "ArcGameModeFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcGuestZram": [
         {
             "platforms": [
