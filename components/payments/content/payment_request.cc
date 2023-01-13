@@ -901,6 +901,10 @@ void PaymentRequest::WillBeDestroyed(
 }
 
 void PaymentRequest::Pay() {
+  if (observer_for_testing_) {
+    observer_for_testing_->OnPayCalled();
+  }
+
   journey_logger_.SetPayClicked();
   journey_logger_.RecordCheckoutStep(
       JourneyLogger::CheckoutFunnelStep::kPaymentHandlerInvoked);

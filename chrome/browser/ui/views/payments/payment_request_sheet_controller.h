@@ -27,7 +27,7 @@ class PaymentRequestState;
 // views shown in the PaymentRequestDialog.
 class PaymentRequestSheetController {
  public:
-  using ButtonCallback = base::RepeatingClosure;
+  using ButtonCallback = views::Button::PressedCallback;
 
   // Objects of this class are owned by |dialog|, so it's a non-owned pointer
   // that should be valid throughout this object's lifetime.
@@ -215,7 +215,7 @@ class PaymentRequestSheetController {
   // otherwise sets it to false. The |is_enabled| is an out-param to enable
   // binding the method with a base::WeakPtr, which prohibits non-void return
   // values.
-  void PerformPrimaryButtonAction(bool* is_enabled);
+  void PerformPrimaryButtonAction(bool* is_enabled, const ui::Event& event);
 
   base::WeakPtr<PaymentRequestSpec> const spec_;
   base::WeakPtr<PaymentRequestState> const state_;

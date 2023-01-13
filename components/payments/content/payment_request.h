@@ -73,6 +73,7 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
     virtual void OnErrorDisplayed() {}
     virtual void OnNotSupportedError() = 0;
     virtual void OnConnectionTerminated() = 0;
+    virtual void OnPayCalled() = 0;
     virtual void OnAbortCalled() = 0;
     virtual void OnCompleteCalled() {}
 

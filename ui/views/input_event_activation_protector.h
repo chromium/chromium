@@ -24,7 +24,7 @@ class VIEWS_EXPORT InputEventActivationProtector {
   InputEventActivationProtector& operator=(
       const InputEventActivationProtector&) = delete;
 
-  ~InputEventActivationProtector() = default;
+  virtual ~InputEventActivationProtector() = default;
 
   // Updates the state of the protector based off of visibility changes. This
   // method must be called when the visibility of the view is changed.
@@ -37,7 +37,7 @@ class VIEWS_EXPORT InputEventActivationProtector {
 
   // Returns true if the event is a mouse, touch, or pointer event that took
   // place within the double-click time interval after |view_shown_time_stamp_|.
-  bool IsPossiblyUnintendedInteraction(const ui::Event& event);
+  virtual bool IsPossiblyUnintendedInteraction(const ui::Event& event);
 
   // Resets the state for click tracking.
   void ResetForTesting();

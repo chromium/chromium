@@ -5,6 +5,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_sheet_view_controller.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -16,10 +17,67 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/test/mock_input_event_activation_protector.h"
 
 namespace payments {
 
-using PaymentSheetViewControllerTest = PaymentRequestBrowserTestBase;
+class PaymentSheetViewControllerTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentSheetViewControllerTest() = default;
+  ~PaymentSheetViewControllerTest() override = default;
+
+  void OnPayCalled() override { pay_was_called_ = true; }
+
+ protected:
+  bool pay_was_called_ = false;
+};
+
+// The [Continue] button should be protected against accidental double-inputs.
+IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
+                       ContinueButtonIgnoresAccidentalInputs) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_no_shipping_test.html");
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
+
+  ASSERT_TRUE(IsViewVisible(DialogViewID::PAY_BUTTON));
+  ASSERT_TRUE(IsViewVisible(DialogViewID::CANCEL_BUTTON));
+  ASSERT_TRUE(IsPayButtonEnabled());
+  ASSERT_FALSE(pay_was_called_);
+
+  // Set up a mock input protector, which ignores the first input and then
+  // accepts all subsequent inputs.
+  auto input_protector =
+      std::make_unique<views::MockInputEventActivationProtector>();
+  EXPECT_CALL(*input_protector, IsPossiblyUnintendedInteraction)
+      .WillOnce(testing::Return(true))
+      .WillRepeatedly(testing::Return(false));
+
+  views::View* sheet_view = dialog_view()->GetViewByID(
+      static_cast<int>(DialogViewID::PAYMENT_REQUEST_SHEET));
+  static_cast<PaymentSheetViewController*>(
+      dialog_view()->controller_map_for_testing()->at(sheet_view).get())
+      ->SetInputEventActivationProtectorForTesting(std::move(input_protector));
+
+  // Because of the input protector, the first press of the button should be
+  // ignored.
+  views::View* button_view =
+      dialog_view()->GetViewByID(static_cast<int>(DialogViewID::PAY_BUTTON));
+  ClickOnDialogView(button_view);
+  EXPECT_FALSE(pay_was_called_);
+
+  // However a subsequent press should result in Pay() being called.
+  ClickOnDialogView(button_view);
+  EXPECT_TRUE(pay_was_called_);
+}
 
 // The 'Continue' or 'Cancel' buttons should not be auto-focused; see
 // https://crbug.com/1403539

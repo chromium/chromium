@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_SHEET_VIEW_CONTROLLER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_request_state.h"
+#include "ui/views/input_event_activation_protector.h"
 
 namespace payments {
 
@@ -44,8 +46,14 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
 
   void ButtonPressed(base::RepeatingClosure closure);
 
+  void SetInputEventActivationProtectorForTesting(
+      std::unique_ptr<views::InputEventActivationProtector> input_protector) {
+    input_protector_ = std::move(input_protector);
+  }
+
  private:
   // PaymentRequestSheetController:
+  ButtonCallback GetPrimaryButtonCallback() override;
   std::u16string GetSecondaryButtonLabel() override;
   bool ShouldShowHeaderBackArrow() override;
   std::u16string GetSheetTitle() override;
@@ -70,6 +78,13 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
 
   void AddShippingButtonPressed();
   void AddContactInfoButtonPressed();
+
+  // Used to mitigate against accidental clicks on the primary button if a user
+  // e.g., double-clicks on a web-content button that then launches
+  // PaymentRequest. See https://crbug.com/1403493
+  void PossiblyIgnorePrimaryButtonPress(ButtonCallback callback,
+                                        const ui::Event& event);
+  std::unique_ptr<views::InputEventActivationProtector> input_protector_;
 
   // Must be the last member of a leaf class.
   base::WeakPtrFactory<PaymentSheetViewController> weak_ptr_factory_{this};

@@ -52,6 +52,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/input_event_activation_protector.h"
 
 namespace payments {
 
@@ -113,6 +114,10 @@ void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
 
   // Register all prefs with our pref testing service.
   payments::RegisterProfilePrefs(prefs_.registry());
+
+  // Clicks from tests should always be allowed, even on dialogs that have
+  // protection against accidental double-clicking/etc.
+  views::InputEventActivationProtector::DisableForTesting();
 }
 
 void PaymentRequestBrowserTestBase::NavigateTo(const std::string& file_path) {
@@ -167,6 +172,8 @@ void PaymentRequestBrowserTestBase::OnNotSupportedError() {
 }
 
 void PaymentRequestBrowserTestBase::OnConnectionTerminated() {}
+
+void PaymentRequestBrowserTestBase::OnPayCalled() {}
 
 void PaymentRequestBrowserTestBase::OnAbortCalled() {
   if (event_waiter_)
@@ -567,6 +574,14 @@ void PaymentRequestBrowserTestBase::ClickOnDialogViewAndWait(
     views::View* view,
     PaymentRequestDialogView* dialog_view,
     bool wait_for_animation) {
+  ClickOnDialogView(view);
+  if (wait_for_animation) {
+    WaitForAnimation(dialog_view);
+  }
+  WaitForObservedEvent();
+}
+
+void PaymentRequestBrowserTestBase::ClickOnDialogView(views::View* view) {
   DCHECK(view);
   ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
@@ -576,11 +591,6 @@ void PaymentRequestBrowserTestBase::ClickOnDialogViewAndWait(
       ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   view->OnMouseReleased(released_event);
-
-  if (wait_for_animation)
-    WaitForAnimation(dialog_view);
-
-  WaitForObservedEvent();
 }
 
 void PaymentRequestBrowserTestBase::ClickOnChildInListViewAndWait(

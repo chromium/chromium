@@ -72,6 +72,7 @@ class PaymentRequestTestController::ObserverConverter
   void OnConnectionTerminated() override {
     controller_->OnConnectionTerminated();
   }
+  void OnPayCalled() override {}
   void OnAbortCalled() override { controller_->OnAbortCalled(); }
   void OnCompleteCalled() override { controller_->OnCompleteCalled(); }
 

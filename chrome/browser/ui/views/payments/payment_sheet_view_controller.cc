@@ -347,11 +347,19 @@ PaymentSheetViewController::PaymentSheetViewController(
     base::WeakPtr<PaymentRequestSpec> spec,
     base::WeakPtr<PaymentRequestState> state,
     base::WeakPtr<PaymentRequestDialogView> dialog)
-    : PaymentRequestSheetController(spec, state, dialog) {
+    : PaymentRequestSheetController(spec, state, dialog),
+      input_protector_(
+          std::make_unique<views::InputEventActivationProtector>()) {
   DCHECK(spec);
   DCHECK(state);
   spec->AddObserver(this);
   state->AddObserver(this);
+
+  // This class is constructed as the view is being shown, so we mark it as
+  // visible now. The view may become hidden again in the future (if the user
+  // clicks into a sub-view), but we only need to defend the initial showing
+  // against acccidental clicks on [Continue] and so this location suffices.
+  input_protector_->VisibilityChanged(/*is_visible=*/true);
 }
 
 PaymentSheetViewController::~PaymentSheetViewController() {
@@ -381,6 +389,15 @@ void PaymentSheetViewController::ButtonPressed(base::RepeatingClosure closure) {
     spec()->reset_retry_error_message();
     UpdateContentView();
   }
+}
+
+PaymentRequestSheetController::ButtonCallback
+PaymentSheetViewController::GetPrimaryButtonCallback() {
+  PaymentRequestSheetController::ButtonCallback parent_callback =
+      PaymentRequestSheetController::GetPrimaryButtonCallback();
+  return base::BindRepeating(
+      &PaymentSheetViewController::PossiblyIgnorePrimaryButtonPress,
+      weak_ptr_factory_.GetWeakPtr(), std::move(parent_callback));
 }
 
 std::u16string PaymentSheetViewController::GetSecondaryButtonLabel() {
@@ -901,6 +918,15 @@ void PaymentSheetViewController::AddContactInfoButtonPressed() {
       base::BindRepeating(&PaymentRequestState::AddAutofillContactProfile,
                           state(), true),
       nullptr);
+}
+
+void PaymentSheetViewController::PossiblyIgnorePrimaryButtonPress(
+    PaymentRequestSheetController::ButtonCallback callback,
+    const ui::Event& event) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
+    return;
+  }
+  callback.Run(event);
 }
 
 }  // namespace payments

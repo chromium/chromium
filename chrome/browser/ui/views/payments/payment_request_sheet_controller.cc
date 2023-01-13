@@ -50,8 +50,9 @@ namespace internal {
 class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
  public:
   METADATA_HEADER(SheetView);
-  explicit SheetView(const base::RepeatingCallback<void(bool*)>&
-                         enter_key_accelerator_callback)
+  explicit SheetView(
+      const base::RepeatingCallback<void(bool*, const ui::Event&)>&
+          enter_key_accelerator_callback)
       : enter_key_accelerator_callback_(enter_key_accelerator_callback) {
     if (enter_key_accelerator_callback_)
       AddAccelerator(enter_key_accelerator_);
@@ -115,7 +116,8 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
       return views::View::AcceleratorPressed(accelerator);
 
     bool is_enabled = false;
-    enter_key_accelerator_callback_.Run(&is_enabled);
+    enter_key_accelerator_callback_.Run(&is_enabled,
+                                        enter_key_accelerator_.ToKeyEvent());
     return is_enabled;
   }
 
@@ -131,7 +133,8 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
                                            /*cycle=*/true,
                                            /*accessibility_mode=*/false);
   ui::Accelerator enter_key_accelerator_{ui::VKEY_RETURN, ui::EF_NONE};
-  base::RepeatingCallback<void(bool*)> enter_key_accelerator_callback_;
+  base::RepeatingCallback<void(bool*, const ui::Event&)>
+      enter_key_accelerator_callback_;
 };
 
 BEGIN_METADATA(SheetView, views::BoxLayoutView)
@@ -263,7 +266,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
                   ? base::BindRepeating(&PaymentRequestSheetController::
                                             PerformPrimaryButtonAction,
                                         GetWeakPtr())
-                  : base::RepeatingCallback<void(bool*)>()))
+                  : base::RepeatingCallback<void(bool*, const ui::Event&)>()))
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .CustomConfigure(base::BindOnce(
               [](PaymentRequestSheetController* controller,
@@ -588,7 +591,8 @@ void PaymentRequestSheetController::AddSecondaryButton(views::View* container) {
 }
 
 void PaymentRequestSheetController::PerformPrimaryButtonAction(
-    bool* is_enabled) {
+    bool* is_enabled,
+    const ui::Event& event) {
   // Set |is_enabled| to "true" to prevent other views from handling the event.
   *is_enabled = true;
 
@@ -596,7 +600,7 @@ void PaymentRequestSheetController::PerformPrimaryButtonAction(
       primary_button_->GetEnabled()) {
     ButtonCallback callback = GetPrimaryButtonCallback();
     if (callback)
-      callback.Run();
+      callback.Run(event);
   }
 }
 

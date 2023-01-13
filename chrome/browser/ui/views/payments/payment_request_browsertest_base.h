@@ -125,6 +125,7 @@ class PaymentRequestBrowserTestBase
   void OnHasEnrolledInstrumentReturned() override;
   void OnNotSupportedError() override;
   void OnConnectionTerminated() override;
+  void OnPayCalled() override;
   void OnAbortCalled() override;
 
   // PaymentRequestDialogView::ObserverForTest:
@@ -211,6 +212,12 @@ class PaymentRequestBrowserTestBase
                                      size_t total_num_children,
                                      DialogViewID list_view_id,
                                      bool wait_for_animation = true);
+
+  // Click on a view from within the dialog. Does NOT wait for asynchronous
+  // effects including any animation. Most use-cases should use
+  // ClickOnDialogViewAndWait instead.
+  void ClickOnDialogView(views::View* view);
+
   // Returns profile label values under |parent_view|.
   std::vector<std::u16string> GetProfileLabelValues(
       DialogViewID parent_view_id);
