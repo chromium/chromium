@@ -52,6 +52,7 @@ extern const HatsConfig kHatsCameraAppSurvey;
 extern const HatsConfig kHatsPhotosExperienceSurvey;
 extern const HatsConfig kHatsGeneralCameraSurvey;
 extern const HatsConfig kHatsBluetoothRevampSurvey;
+extern const HatsConfig kPrivacyHubBaselineSurvey;
 
 }  // namespace ash
 

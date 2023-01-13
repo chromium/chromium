@@ -178,4 +178,13 @@ const HatsConfig kHatsBluetoothRevampSurvey = {
     prefs::kHatsBluetoothRevampCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Privacy Hub Baseline experience survey -- shown 40 seconds after the user
+// stayed for more than 5 seconds on the Security and Privacy page.
+const HatsConfig kPrivacyHubBaselineSurvey = {
+    ::features::kHappinessTrackingPrivacyHubBaseline,  // feature
+    base::Days(1),                                     // new_device_threshold
+    prefs::kHatsPrivacyHubBaselineIsSelected,          // is_selected_pref_name
+    prefs::kHatsPrivacyHubBaselineCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 }  // namespace ash

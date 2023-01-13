@@ -603,6 +603,10 @@ BASE_FEATURE(kHappinessTrackingPhotosExperience,
 BASE_FEATURE(kHappinessTrackingGeneralCamera,
              "HappinessTrackingGeneralCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for Privacy Hub baseline survey.
+BASE_FEATURE(kHappinessTrackingPrivacyHubBaseline,
+             "HappinessTrackingPrivacyHubBaseline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

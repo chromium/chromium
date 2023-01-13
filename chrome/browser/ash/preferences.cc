@@ -469,6 +469,11 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsBluetoothRevampIsSelected, false);
 
+  registry->RegisterBooleanPref(::prefs::kHatsPrivacyHubBaselineIsSelected,
+                                false);
+
+  registry->RegisterInt64Pref(::prefs::kHatsPrivacyHubBaselineCycleEndTs, 0);
+
   // Personalization HaTS survey prefs for avatar, screensaver, and wallpaper
   // features.
   registry->RegisterInt64Pref(

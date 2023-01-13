@@ -1119,6 +1119,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="Survey">
     <variant name="General"/>
     <variant name="Performance"/>
+    <variant name="PrivacyHubBaseline"/>
     <variant name="Stability"/>
   </token>
 </histogram>
