@@ -898,7 +898,6 @@ B AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 }
 
 TEST_F(NGLineBreakerTest, SplitTextIntoSegements) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedSVGTextNG svg_text_ng(true);
   NGInlineNode node = CreateInlineNode(
       uR"HTML(
       <!DOCTYPE html>
@@ -926,7 +925,6 @@ TEST_F(NGLineBreakerTest, SplitTextIntoSegements) {
 
 // crbug.com/1251960
 TEST_F(NGLineBreakerTest, SplitTextIntoSegementsCrash) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedSVGTextNG svg_text_ng(true);
   NGInlineNode node = CreateInlineNode(R"HTML(<!DOCTYPE html>
       <svg viewBox="0 0 800 600">
       <text id="container" x="50 100 150">&#x0343;&#x2585;&#x0343;&#x2585;<!--

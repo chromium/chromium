@@ -208,7 +208,6 @@ TEST_P(NGBoxFragmentPainterTest, ClippedText) {
 }
 
 TEST_P(NGBoxFragmentPainterTest, NodeAtPointWithSvgInline) {
-  ScopedSVGTextNGForTest enable_svg_text_ng(true);
   SetBodyInnerHTML(R"HTML(
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="900"
      viewBox="0 0 100 100" id="svg">

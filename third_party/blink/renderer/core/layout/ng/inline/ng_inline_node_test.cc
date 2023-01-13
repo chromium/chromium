@@ -1620,7 +1620,6 @@ TEST_F(NGInlineNodeTest, TextCombineWordSpacing) {
 
 // crbug.com/1034464 bad.svg
 TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash1) {
-  ScopedSVGTextNGForTest enable_svg_text_ng(true);
   SetBodyInnerHTML(
       "<svg><text id='text' xml:space='preserve'>"
       "<tspan unicode-bidi='embed' x='0'>(</tspan>"
@@ -1637,7 +1636,6 @@ TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash1) {
 
 // crbug.com/1034464 good.svg
 TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash2) {
-  ScopedSVGTextNGForTest enable_svg_text_ng(true);
   SetBodyInnerHTML(
       "<svg><text id='text' xml:space='preserve'>\n"
       "<tspan unicode-bidi='embed' x='0'>(</tspan>\n"

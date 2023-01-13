@@ -1255,9 +1255,6 @@ TEST_F(AccessibilityTest, IsSelectedFromFocusSupported) {
 }
 
 TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
-  // This test doesn't work with the legacy SVG text.
-  if (!RuntimeEnabledFeatures::SVGTextNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
   <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
     <text id="t1" x="100">Text1</text>

@@ -6,13 +6,7 @@
 
 namespace blink {
 
-class NGSVGTextLayoutAlgorithmTest : public NGLayoutTest {
- public:
-  NGSVGTextLayoutAlgorithmTest() : svg_text_ng_(true) {}
-
- private:
-  ScopedSVGTextNGForTest svg_text_ng_;
-};
+class NGSVGTextLayoutAlgorithmTest : public NGLayoutTest {};
 
 // We had a crash in a case where connected characters are hidden.
 TEST_F(NGSVGTextLayoutAlgorithmTest, PositionOnPathCrash) {

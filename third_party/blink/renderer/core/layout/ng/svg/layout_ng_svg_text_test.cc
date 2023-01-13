@@ -6,13 +6,7 @@
 
 namespace blink {
 
-class LayoutNGSVGTextTest : public NGLayoutTest {
- public:
-  LayoutNGSVGTextTest() = default;
-
- private:
-  ScopedSVGTextNGForTest svg_text_ng_{true};
-};
+class LayoutNGSVGTextTest : public NGLayoutTest {};
 
 // DevTools element overlay uses AbsoluteQuads().
 TEST_F(LayoutNGSVGTextTest, AbsoluteQuads) {

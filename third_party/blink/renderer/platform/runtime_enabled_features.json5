@@ -2759,11 +2759,6 @@
       base_feature: "SvgContainersRejectSvgInDisplayContents",
     },
     {
-      name: "SVGTextNG",
-      depends_on: ["LayoutNG"],
-      status: "stable"
-    },
-    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
     },

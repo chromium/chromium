@@ -361,7 +361,6 @@ LayoutObject& NGFragmentItem::BlockInInline() const {
 void NGFragmentItem::ConvertToSvgText(std::unique_ptr<NGSvgFragmentData> data,
                                       const PhysicalRect& unscaled_rect,
                                       bool is_hidden) {
-  DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK_EQ(Type(), kText);
   is_hidden_for_paint_ = is_hidden;
   text_.~TextItem();

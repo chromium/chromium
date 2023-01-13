@@ -1125,7 +1125,6 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
 // NGInlineItems to NGInlineItemResults.
 void NGLineBreaker::SplitTextIntoSegments(const NGInlineItem& item,
                                           NGLineInfo* line_info) {
-  DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK(is_svg_text_);
   DCHECK_EQ(offset_, item.StartOffset());
 
