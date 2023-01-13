@@ -10,6 +10,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_cell.h"
@@ -344,15 +345,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
      dragSessionDidEnd:(id<UIDragSession>)session {
+  [self.dragDropHandler dragSessionDidEnd];
   [self dragSessionEnabled:NO];
 }
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/1382015): Implement this.
-  return @[ [[UIDragItem alloc]
-      initWithItemProvider:[[NSItemProvider alloc] initWithObject:@""]] ];
+  TabSwitcherItem* item = _items[indexPath.item];
+  UIDragItem* dragItem =
+      [self.dragDropHandler dragItemForItemWithID:item.identifier];
+  return [NSArray arrayWithObjects:dragItem, nil];
 }
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView

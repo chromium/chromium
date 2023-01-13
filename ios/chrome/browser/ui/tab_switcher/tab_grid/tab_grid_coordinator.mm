@@ -666,13 +666,20 @@
       initWithConsumer:baseViewController.incognitoTabsConsumer];
   self.incognitoTabsMediator.browser = _incognitoBrowser;
   self.incognitoTabsMediator.delegate = self;
+
   baseViewController.regularTabsDelegate = self.regularTabsMediator;
   baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
+
   baseViewController.regularTabsDragDropHandler = self.regularTabsMediator;
   baseViewController.incognitoTabsDragDropHandler = self.incognitoTabsMediator;
+  if (IsPinnedTabsEnabled()) {
+    baseViewController.pinnedTabsDragDropHandler = self.pinnedTabsMediator;
+  }
+
   baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
   baseViewController.priceCardDataSource = self.priceCardMediator;
   baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
+
   baseViewController.regularTabsShareableItemsProvider =
       self.regularTabsMediator;
   baseViewController.incognitoTabsShareableItemsProvider =
@@ -1158,7 +1165,7 @@
 }
 
 - (void)pinTabWithIdentifier:(NSString*)identifier {
-  [self.regularTabsMediator pinItemWithID:identifier];
+  [self.regularTabsMediator setPinState:YES forItemWithIdentifier:identifier];
 }
 
 - (void)closeTabWithIdentifier:(NSString*)identifier

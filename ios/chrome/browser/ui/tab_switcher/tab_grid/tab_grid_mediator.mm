@@ -532,13 +532,8 @@ void RecordTabGridCloseTabsCount(int count) {
   return index == self.webStateList->active_index();
 }
 
-- (void)pinItemWithID:(NSString*)itemID {
-  int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/NO);
-  if (index == WebStateList::kInvalidIndex) {
-    return;
-  }
-
-  self.webStateList->SetWebStatePinnedAt(index, true);
+- (void)setPinState:(BOOL)pinState forItemWithIdentifier:(NSString*)identifier {
+  SetWebStatePinnedState(self.webStateList, identifier, /*pin_state=*/pinState);
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
@@ -900,9 +895,15 @@ void RecordTabGridCloseTabsCount(int count) {
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
     if (!fromSameCollection) {
-      // Move tab across Browsers.
-      MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex);
-      return;
+      // Try to unpin the tab. If the returned index is invalid that means the
+      // tab lives in another Browser.
+      int tabIndex = SetWebStatePinnedState(self.webStateList, tabInfo.tabID,
+                                            /*pin_state=*/NO);
+      if (tabIndex == WebStateList::kInvalidIndex) {
+        // Move tab across Browsers.
+        MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex);
+        return;
+      }
     }
     // Reorder tab within same grid.
     [self moveItemWithID:tabInfo.tabID toIndex:destinationIndex];

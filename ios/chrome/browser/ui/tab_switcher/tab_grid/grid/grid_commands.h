@@ -25,9 +25,6 @@
 // there is no item with that identifier, no move should be made. It is an error
 // to pass a value for `index` outside of the bounds of the items array.
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)index;
-// Tells the receiver to pin the item with identifier `itemID`. If there is
-// no item with that identifier, no item is pinned.
-- (void)pinItemWithID:(NSString*)itemID;
 // Tells the receiver to close the items with the identifiers in `itemIDs`.
 // ItemIDs which are not associated with any item are ignored.
 - (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs;

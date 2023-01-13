@@ -11,6 +11,7 @@
 
 @class PinnedTabsViewController;
 @protocol GridImageDataSource;
+@protocol TabCollectionDragDropHandler;
 @protocol TabContextMenuProvider;
 
 // Protocol used to relay relevant user interactions from the
@@ -46,6 +47,9 @@
 
 // Provides context menus.
 @property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
+
+// Handles drag and drop interactions that involved the model layer.
+@property(nonatomic, weak) id<TabCollectionDragDropHandler> dragDropHandler;
 
 // Updates the view when starting or ending a drag action.
 - (void)dragSessionEnabled:(BOOL)enabled;

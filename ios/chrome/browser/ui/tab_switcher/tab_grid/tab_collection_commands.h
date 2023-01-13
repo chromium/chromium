@@ -18,6 +18,9 @@
 // no pinned item with that identifier, no item is closed.
 - (void)closeItemWithID:(NSString*)itemID;
 
+// Tells the receiver to pin or unpin the tab with identifier `identifier`.
+- (void)setPinState:(BOOL)pinState forItemWithIdentifier:(NSString*)identifier;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_COLLECTION_COMMANDS_H_

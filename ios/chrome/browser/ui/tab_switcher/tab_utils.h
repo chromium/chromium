@@ -50,4 +50,12 @@ TabItem* GetTabItem(WebStateList* web_state_list,
                     NSString* identifier,
                     BOOL pinned);
 
+// Pin or Unpin the the tab with `identifier` in `web_state_list` according to
+// `pin_state` and returns the new index of the tab.
+// Returns WebStateList::kInvalidIndex if the pinned state of the tab is already
+// `pin_state` or if the tab is not found.
+int SetWebStatePinnedState(WebStateList* web_state_list,
+                           NSString* identifier,
+                           BOOL pin_state);
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_UTILS_H_

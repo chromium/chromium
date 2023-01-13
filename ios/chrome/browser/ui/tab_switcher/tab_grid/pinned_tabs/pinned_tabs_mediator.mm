@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 
+#import <MobileCoreServices/UTCoreTypes.h>
 #import <UIKit/UIKit.h>
 
 #import "base/metrics/histogram_functions.h"
@@ -12,6 +13,7 @@
 #import "base/scoped_multi_source_observation.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -69,6 +71,10 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   std::unique_ptr<
       base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>
       _scopedWebStateObservation;
+
+  // ItemID of the dragged tab. Used to check if the dropped tab is from the
+  // same Chrome window.
+  NSString* _dragItemID;
 }
 
 - (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer {
@@ -320,6 +326,65 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
 
+// TODO(crbug.com/1382015): Implement this.
+- (void)setPinState:(BOOL)pinState forItemWithIdentifier:(NSString*)identifier {
+  return;
+}
+
+#pragma mark - TabCollectionDragDropHandler
+
+- (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
+  _dragItemID = [itemID copy];
+  web::WebState* webState =
+      GetWebState(self.webStateList, itemID, /*pinned=*/YES);
+
+  return CreateTabDragItem(webState);
+}
+
+- (void)dragSessionDidEnd {
+  _dragItemID = nil;
+}
+
+- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session {
+  UIDragItem* dragItem = session.localDragSession.items.firstObject;
+
+  // Tab move operations only originate from Chrome so a local object is used.
+  // Local objects allow synchronous drops, whereas NSItemProvider only allows
+  // asynchronous drops.
+  if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
+    TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
+    [self dropOperationForTabInfo:tabInfo];
+  }
+
+  // All URLs originating from Chrome create a new tab (as opposed to moving a
+  // tab).
+  if ([dragItem.localObject isKindOfClass:[NSURL class]]) {
+    return UIDropOperationCopy;
+  }
+
+  // URLs are accepted when drags originate from outside Chrome.
+  NSArray<NSString*>* acceptableTypes = @[ (__bridge NSString*)kUTTypeURL ];
+  if ([session hasItemsConformingToTypeIdentifiers:acceptableTypes]) {
+    return UIDropOperationCopy;
+  }
+
+  // Other UTI types such as image data or file data cannot be dropped.
+  return UIDropOperationForbidden;
+}
+
+// TODO(crbug.com/1382015): Implement this.
+- (void)dropItem:(UIDragItem*)dragItem
+               toIndex:(NSUInteger)destinationIndex
+    fromSameCollection:(BOOL)fromSameCollection {
+}
+
+// TODO(crbug.com/1382015): Implement this.
+- (void)dropItemFromProvider:(NSItemProvider*)itemProvider
+                     toIndex:(NSUInteger)destinationIndex
+          placeholderContext:
+              (id<UICollectionViewDropPlaceholderContext>)placeholderContext {
+}
+
 #pragma mark - Private
 
 - (void)addWebStateObservations {
@@ -337,6 +402,26 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   [self.consumer
        populateItems:CreatePinnedTabConsumerItems(self.webStateList)
       selectedItemID:GetActiveWebStateIdentifier(self.webStateList, YES)];
+}
+
+// Returns the `UIDropOperation` corresponding to the given `tabInfo`.
+- (UIDropOperation)dropOperationForTabInfo:(TabInfo*)tabInfo {
+  // If the dropped tab is from the same Chrome window and has been removed,
+  // cancel the drop operation.
+  if (_dragItemID == tabInfo.tabID) {
+    const BOOL tabExists =
+        GetTabIndex(self.webStateList, tabInfo.tabID,
+                    /*pinned=*/YES) == WebStateList::kInvalidIndex;
+    if (!tabExists) {
+      return UIDropOperationCancel;
+    }
+  }
+
+  if (tabInfo.incognito) {
+    return UIDropOperationForbidden;
+  }
+
+  return UIDropOperationMove;
 }
 
 @end

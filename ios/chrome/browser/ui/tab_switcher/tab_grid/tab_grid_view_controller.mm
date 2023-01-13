@@ -1495,6 +1495,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   PinnedTabsViewController* pinnedTabsViewController =
       self.pinnedTabsViewController;
   pinnedTabsViewController.delegate = self;
+  pinnedTabsViewController.dragDropHandler = self.pinnedTabsDragDropHandler;
+
   [self.view addSubview:pinnedTabsViewController.view];
 
   NSMutableArray* pinnedTabsConstraints =

@@ -132,6 +132,8 @@ enum class TabGridPageConfiguration {
     regularTabsDragDropHandler;
 @property(nonatomic, weak) id<TabCollectionDragDropHandler>
     incognitoTabsDragDropHandler;
+@property(nonatomic, weak) id<TabCollectionDragDropHandler>
+    pinnedTabsDragDropHandler;
 
 // Data sources provide lazy access to heavy-weight resources.
 @property(nonatomic, weak) id<GridImageDataSource> regularTabsImageDataSource;

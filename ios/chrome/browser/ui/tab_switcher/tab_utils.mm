@@ -102,3 +102,15 @@ TabItem* GetTabItem(WebStateList* web_state_list,
                                  url:web_state->GetVisibleURL()];
   return item;
 }
+
+int SetWebStatePinnedState(WebStateList* web_state_list,
+                           NSString* identifier,
+                           BOOL pin_state) {
+  int index = GetTabIndex(web_state_list, identifier,
+                          /*pinned=*/!pin_state);
+  if (index == WebStateList::kInvalidIndex) {
+    return WebStateList::kInvalidIndex;
+  }
+
+  return web_state_list->SetWebStatePinnedAt(index, pin_state);
+}
