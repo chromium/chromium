@@ -69,14 +69,14 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 }  // namespace
 
-@interface ConfirmationAlertViewController () <UIToolbarDelegate>
+@interface ConfirmationAlertViewController ()
 
 // References to the UI properties that need to be updated when the trait
 // collection changes.
 @property(nonatomic, strong) UIButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
-@property(nonatomic, strong) UIToolbar* topToolbar;
+@property(nonatomic, strong) UINavigationBar* navigationBar;
 @property(nonatomic, strong) UIImageView* imageView;
 @property(nonatomic, strong) UIView* imageContainerView;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
@@ -101,9 +101,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
-  if (self.hasTopToolbar) {
-    self.topToolbar = [self createTopToolbar];
-    [self.view addSubview:self.topToolbar];
+  if (self.hasNavigationBar) {
+    self.navigationBar = [self createNavigationBar];
+    [self.view addSubview:self.navigationBar];
   }
 
   if (self.imageEnclosedWithShadowAndBadge) {
@@ -139,10 +139,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
   self.view.preservesSuperviewLayoutMargins = YES;
   UILayoutGuide* margins = self.view.layoutMarginsGuide;
 
-  if (self.hasTopToolbar) {
-    // Toolbar constraints to the top.
+  if (self.hasNavigationBar) {
+    // Constraints the navigation bar to the top.
     AddSameConstraintsToSides(
-        self.topToolbar, self.view.safeAreaLayoutGuide,
+        self.navigationBar, self.view.safeAreaLayoutGuide,
         LayoutSides::kTrailing | LayoutSides::kTop | LayoutSides::kLeading);
   }
 
@@ -257,11 +257,11 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
   NSLayoutYAxisAnchor* scrollViewTopAnchor;
   CGFloat scrollViewTopConstant = 0;
-  if (self.hasTopToolbar) {
-    scrollViewTopAnchor = self.topToolbar.bottomAnchor;
+  if (self.hasNavigationBar) {
+    scrollViewTopAnchor = self.navigationBar.bottomAnchor;
   } else {
     scrollViewTopAnchor = self.view.safeAreaLayoutGuide.topAnchor;
-    scrollViewTopConstant = self.customSpacingBeforeImageIfNoToolbar;
+    scrollViewTopConstant = self.customSpacingBeforeImageIfNoNavigationBar;
   }
   if (self.topAlignedLayout) {
     [scrollView.topAnchor constraintEqualToAnchor:scrollViewTopAnchor
@@ -277,8 +277,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
     NSLayoutConstraint* centerYConstraint = [scrollView.centerYAnchor
         constraintEqualToAnchor:margins.centerYAnchor];
     // This needs to be lower than the height constraint, so it's deprioritized.
-    // If this breaks, the scroll view is still constrained to the top toolbar
-    // and the bottom safe area or button.
+    // If this breaks, the scroll view is still constrained to the navigation
+    // bar and the bottom safe area or button.
     centerYConstraint.priority = heightConstraint.priority - 1;
     centerYConstraint.active = YES;
   }
@@ -349,8 +349,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [self.imageContainerView setHidden:isVerticalCompact];
   self.imageViewAspectRatioConstraint.active = !isVerticalCompact;
 
-  // Allow toolbar to update its height based on new layout.
-  [self.topToolbar invalidateIntrinsicContentSize];
+  // Allow the navigation bar to update its height based on new layout.
+  [self.navigationBar invalidateIntrinsicContentSize];
 
   [super updateViewConstraints];
 }
@@ -363,12 +363,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 - (void)updateStylingForSubtitleLabel:(UILabel*)subtitleLabel {
   // The subclass need to overwrite this method if it wants a different style
   // than the default.
-}
-
-#pragma mark - UIToolbarDelegate
-
-- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
-  return UIBarPositionTopAttached;
 }
 
 #pragma mark - Private
@@ -412,23 +406,21 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 }
 
-// Helper to create the top toolbar.
-- (UIToolbar*)createTopToolbar {
-  UIToolbar* topToolbar = [[UIToolbar alloc] init];
-  topToolbar.translucent = NO;
-  [topToolbar setShadowImage:[[UIImage alloc] init]
-          forToolbarPosition:UIBarPositionAny];
-  [topToolbar setBarTintColor:[UIColor colorNamed:kBackgroundColor]];
-  topToolbar.delegate = self;
+// Helper to create the navigation bar.
+- (UINavigationBar*)createNavigationBar {
+  UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
+  navigationBar.translucent = NO;
+  [navigationBar setShadowImage:[[UIImage alloc] init]];
+  [navigationBar setBarTintColor:[UIColor colorNamed:kBackgroundColor]];
 
-  NSMutableArray* toolbarItems = [[NSMutableArray alloc] init];
+  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
   if (self.helpButtonAvailable) {
     UIBarButtonItem* helpButton =
         [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"help_icon"]
                                          style:UIBarButtonItemStylePlain
                                         target:self
                                         action:@selector(didTapHelpButton)];
-    [toolbarItems addObject:helpButton];
+    navigationItem.leftBarButtonItem = helpButton;
 
     if (self.helpButtonAccessibilityLabel) {
       helpButton.isAccessibilityElement = YES;
@@ -442,24 +434,22 @@ const CGFloat kFaviconBadgeSideLength = 24;
     _helpButton = helpButton;
   }
 
-  UIBarButtonItem* spacer = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
-  [toolbarItems addObject:spacer];
+  if (self.titleView) {
+    navigationItem.titleView = self.titleView;
+  }
 
   if (self.showDismissBarButton) {
     UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:self.dismissBarButtonSystemItem
                              target:self
                              action:@selector(didTapDismissBarButton)];
-    [toolbarItems addObject:dismissButton];
+    navigationItem.rightBarButtonItem = dismissButton;
   }
 
-  topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  [topToolbar setItems:toolbarItems];
+  navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
+  [navigationBar setItems:@[ navigationItem ]];
 
-  return topToolbar;
+  return navigationBar;
 }
 
 - (void)setImage:(UIImage*)image {
@@ -602,8 +592,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   return subtitle;
 }
 
-- (BOOL)hasTopToolbar {
-  return self.helpButtonAvailable || self.showDismissBarButton;
+- (BOOL)hasNavigationBar {
+  return self.helpButtonAvailable || self.showDismissBarButton ||
+         self.titleView;
 }
 
 // Helper to create the scroll view.

@@ -21,7 +21,7 @@
 
 namespace {
 
-constexpr CGFloat customSpacingBeforeImageIfNoToolbar = 24;
+constexpr CGFloat customSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat customSpacingAfterImage = 24;
 
 }  // namespace
@@ -47,8 +47,8 @@ constexpr CGFloat customSpacingAfterImage = 24;
   self.imageHasFixedSize = YES;
   self.imageEnclosedWithShadowAndBadge = YES;
   self.showDismissBarButton = NO;
-  self.customSpacingBeforeImageIfNoToolbar =
-      customSpacingBeforeImageIfNoToolbar;
+  self.customSpacingBeforeImageIfNoNavigationBar =
+      customSpacingBeforeImageIfNoNavigationBar;
   self.customSpacingAfterImage = customSpacingAfterImage;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;

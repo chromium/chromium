@@ -16,7 +16,7 @@ namespace {
 
 constexpr CGFloat customImageWidth = 60;
 constexpr CGFloat customImageHeight = 60;
-constexpr CGFloat customSpacingBeforeImageIfNoToolbar = 36;
+constexpr CGFloat customSpacingBeforeImageIfNoNavigationBar = 36;
 constexpr CGFloat customSpacingAfterImage = 24;
 
 }  // namespace
@@ -25,8 +25,8 @@ constexpr CGFloat customSpacingAfterImage = 24;
 
 - (void)viewDidLoad {
   self.imageHasFixedSize = YES;
-  self.customSpacingBeforeImageIfNoToolbar =
-      customSpacingBeforeImageIfNoToolbar;
+  self.customSpacingBeforeImageIfNoNavigationBar =
+      customSpacingBeforeImageIfNoNavigationBar;
   self.customSpacingAfterImage = customSpacingAfterImage;
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
