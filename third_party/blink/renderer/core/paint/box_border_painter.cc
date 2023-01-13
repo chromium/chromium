@@ -1429,12 +1429,8 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
       return;
     }
     case EBorderStyle::kInset:
-      if (side == BoxSide::kTop || side == BoxSide::kLeft)
-        color = color.Dark();
-      break;
     case EBorderStyle::kOutset:
-      if (side == BoxSide::kBottom || side == BoxSide::kRight)
-        color = color.Dark();
+      color = CalculateBorderStyleColor(border_style, side, color);
       break;
     default:
       break;
