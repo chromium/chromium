@@ -795,11 +795,10 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
 
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, the "Virtual card" label is added as a prefix
-    // to the cardholder name, and the label is added as the suffix.
+    // to the cardholder name.
     EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
-              u"Virtual card");
-    EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value,
-              u"Elvis Presley");
+              u"Virtual card  Elvis Presley");
+    EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value, u"");
   } else {
     // On other platforms, the cardholder name is shown on the first line.
     EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
