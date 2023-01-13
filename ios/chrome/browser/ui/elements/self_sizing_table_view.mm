@@ -17,9 +17,11 @@
 
 - (CGSize)intrinsicContentSize {
   CGFloat height = self.contentSize.height;
+  // Use directionalLayoutMargins instead of ContentInset, as the later is used
+  // to inset the content above the keyboard.
+  NSDirectionalEdgeInsets layoutMargins = self.directionalLayoutMargins;
   CGFloat viewHeight =
-      (height == 0) ? 0
-                    : height + self.contentInset.top + self.contentInset.bottom;
+      (height == 0) ? 0 : height + layoutMargins.top + layoutMargins.bottom;
 
   return CGSizeMake(UIViewNoIntrinsicMetric, viewHeight);
 }

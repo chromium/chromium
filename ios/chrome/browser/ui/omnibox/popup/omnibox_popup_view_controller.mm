@@ -62,6 +62,13 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 const CGFloat kHeaderPaddingBottom = 10.0f;
 /// Leading, trailing, and top padding for table view headers.
 const CGFloat kHeaderPadding = 2.0f;
+
+/// Returns whether the keyboard is dismissed when scrolling suggestions.
+BOOL ShouldDismissKeyboardOnScroll() {
+  return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
+         base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad);
+}
+
 }  // namespace
 
 @interface OmniboxPopupViewController () <UITableViewDataSource,
@@ -122,8 +129,8 @@ const CGFloat kHeaderPadding = 2.0f;
 /// updated.
 @property(nonatomic, assign) BOOL shouldHideCarousel;
 
-/// Cached `tableView.contentSize.height` used in `viewDidLayoutSubviews` to
-/// avoid infinite loop and redudant computation when updating table view's
+/// Cached `tableView.visibleContentSize.height` used in `viewDidLayoutSubviews`
+/// to avoid infinite loop and redudant computation when updating table view's
 /// content inset.
 @property(nonatomic, assign) CGFloat cachedContentHeight;
 
@@ -138,7 +145,7 @@ const CGFloat kHeaderPadding = 2.0f;
     _visibleSuggestionCount = 0;
     _cachedContentHeight = 0;
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (!ShouldDismissKeyboardOnScroll()) {
       // The iPad keyboard can cover some of the rows of the scroll view. The
       // scroll view's content inset may need to be updated when the keyboard is
       // displayed.
@@ -253,11 +260,9 @@ const CGFloat kHeaderPadding = 2.0f;
     [self.tableView setLayoutMargins:UIEdgeInsetsZero];
   }
   self.tableView.contentInsetAdjustmentBehavior =
-      IsOmniboxActionsVisualTreatment2()
-          ? UIScrollViewContentInsetAdjustmentNever
-          : UIScrollViewContentInsetAdjustmentAutomatic;
-  [self.tableView setContentInset:UIEdgeInsetsMake(self.topPadding, 0,
-                                                   self.bottomPadding, 0)];
+      UIScrollViewContentInsetAdjustmentAutomatic;
+  [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                                  0, 0, self.bottomPadding, 0)];
 
   self.tableView.sectionHeaderHeight = 0.1;
   self.tableView.estimatedRowHeight = 0;
@@ -294,8 +299,10 @@ const CGFloat kHeaderPadding = 2.0f;
 }
 
 - (void)viewDidLayoutSubviews {
-  if (self.tableView.contentSize.height != self.cachedContentHeight) {
-    self.cachedContentHeight = self.tableView.contentSize.height;
+  [super viewDidLayoutSubviews];
+  if (!ShouldDismissKeyboardOnScroll() &&
+      self.tableView.visibleSize.height != self.cachedContentHeight) {
+    self.cachedContentHeight = self.tableView.visibleSize.height;
     [self updateContentInsetForKeyboard];
   }
 }
@@ -910,7 +917,7 @@ const CGFloat kHeaderPadding = 2.0f;
 /// below the keyboard.
 - (void)updateContentInsetForKeyboard {
   // Disable content inset update when scrolling dismisses the keyboard.
-  if (base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad) ||
+  if (ShouldDismissKeyboardOnScroll() ||
       self.tableView.contentSize.height <= 0) {
     return;
   }
@@ -985,6 +992,8 @@ const CGFloat kHeaderPadding = 2.0f;
 
 #pragma mark - Keyboard events
 
+/// Handles `UIKeyboardDidShowNotification`, only active when
+/// `ShouldDismissKeyboardOnScroll` is false.
 - (void)keyboardDidShow:(NSNotification*)notification {
   self.keyboardHeight =
       [KeyboardObserverHelper keyboardHeightInWindow:self.tableView.window];
