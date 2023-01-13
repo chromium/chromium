@@ -29,12 +29,6 @@ const TARGET = BridgeConstants.ChromeVoxPrefs.TARGET;
  */
 export class ChromeVoxPrefs {
   constructor() {
-    LocalStorage.set('lastRunVersion', chrome.runtime.getManifest().version);
-
-    // Clear per session preferences.
-    // This is to keep the position dictionary from growing excessively large.
-    LocalStorage.set('position', {});
-
     // Default per session sticky to off.
     LocalStorage.set('sticky', false);
   }
@@ -78,7 +72,6 @@ export class ChromeVoxPrefs {
     for (const pref in ChromeVoxPrefs.DEFAULT_PREFS) {
       prefs[pref] = LocalStorage.get(pref);
     }
-    prefs['version'] = chrome.runtime.getManifest().version;
     return prefs;
   }
 
