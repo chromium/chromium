@@ -10,7 +10,6 @@
 #include "third_party/nearby/src/internal/platform/exception.h"
 #include "third_party/nearby/src/internal/platform/input_stream.h"
 
-namespace location {
 namespace nearby {
 namespace connections {
 namespace {
@@ -149,4 +148,3 @@ TEST_F(NearbyConnectionsStreamBufferManagerTest, Exception) {
 
 }  // namespace connections
 }  // namespace nearby
-}  // namespace location

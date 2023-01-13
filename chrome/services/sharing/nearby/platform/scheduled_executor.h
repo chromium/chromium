@@ -18,7 +18,6 @@
 #include "third_party/abseil-cpp/absl/time/time.h"
 #include "third_party/nearby/src/internal/platform/implementation/scheduled_executor.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -86,6 +85,5 @@ class ScheduledExecutor : public api::ScheduledExecutor {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_SCHEDULED_EXECUTOR_H_

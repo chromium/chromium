@@ -25,7 +25,6 @@ class SequencedTaskRunner;
 class WaitableEvent;
 }  // namespace base
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -118,6 +117,5 @@ class WifiLanServerSocket : public api::WifiLanServerSocket {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_LAN_SERVER_SOCKET_H_

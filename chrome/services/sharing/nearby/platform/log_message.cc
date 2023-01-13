@@ -8,7 +8,6 @@
 
 #include "base/strings/stringprintf.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -61,4 +60,3 @@ bool LogMessage::ShouldCreateLogMessage(Severity severity) {
 
 }  // namespace api
 }  // namespace nearby
-}  // namespace location

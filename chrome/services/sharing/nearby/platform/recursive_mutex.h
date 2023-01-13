@@ -10,7 +10,6 @@
 #include "base/threading/platform_thread.h"
 #include "third_party/nearby/src/internal/platform/implementation/mutex.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -45,6 +44,5 @@ class RecursiveMutex : public api::Mutex {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_RECURSIVE_MUTEX_H_

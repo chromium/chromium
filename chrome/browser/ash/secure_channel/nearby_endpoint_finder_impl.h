@@ -22,13 +22,12 @@ namespace secure_channel {
 //   (4) Stopping discovery.
 class NearbyEndpointFinderImpl
     : public NearbyEndpointFinder,
-      public location::nearby::connections::mojom::EndpointDiscoveryListener {
+      public ::nearby::connections::mojom::EndpointDiscoveryListener {
  public:
   class Factory {
    public:
     static std::unique_ptr<NearbyEndpointFinder> Create(
-        const mojo::SharedRemote<
-            location::nearby::connections::mojom::NearbyConnections>&
+        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
             nearby_connections);
     static void SetFactoryForTesting(Factory* test_factory);
 
@@ -36,14 +35,12 @@ class NearbyEndpointFinderImpl
 
    protected:
     virtual std::unique_ptr<NearbyEndpointFinder> CreateInstance(
-        const mojo::SharedRemote<
-            location::nearby::connections::mojom::NearbyConnections>&
+        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
             nearby_connections) = 0;
   };
 
   NearbyEndpointFinderImpl(
-      const mojo::SharedRemote<
-          location::nearby::connections::mojom::NearbyConnections>&
+      const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
           nearby_connections);
   ~NearbyEndpointFinderImpl() override;
 
@@ -53,26 +50,23 @@ class NearbyEndpointFinderImpl
   // NearbyEndpointFinder:
   void PerformFindEndpoint() override;
 
-  // location::nearby::connections::mojom::EndpointDiscoveryListener:
+  // ::nearby::connections::mojom::EndpointDiscoveryListener:
   void OnEndpointFound(
       const std::string& endpoint_id,
-      location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info)
-      override;
+      ::nearby::connections::mojom::DiscoveredEndpointInfoPtr info) override;
   void OnEndpointLost(const std::string& endpoint_id) override {}
 
-  void OnStartDiscoveryResult(
-      location::nearby::connections::mojom::Status status);
+  void OnStartDiscoveryResult(::nearby::connections::mojom::Status status);
   void OnInjectBluetoothEndpointResult(
-      location::nearby::connections::mojom::Status status);
+      ::nearby::connections::mojom::Status status);
   void OnStopDiscoveryResult(
-      location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info,
-      location::nearby::connections::mojom::Status status);
+      ::nearby::connections::mojom::DiscoveredEndpointInfoPtr info,
+      ::nearby::connections::mojom::Status status);
 
-  mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
+  mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       nearby_connections_;
 
-  mojo::Receiver<
-      location::nearby::connections::mojom::EndpointDiscoveryListener>
+  mojo::Receiver<::nearby::connections::mojom::EndpointDiscoveryListener>
       endpoint_discovery_listener_receiver_{this};
   bool is_discovery_active_ = false;
   std::string endpoint_id_;

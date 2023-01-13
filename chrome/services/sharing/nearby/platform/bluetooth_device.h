@@ -12,7 +12,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -48,6 +47,5 @@ class BluetoothDevice : public api::BluetoothDevice {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_DEVICE_H_

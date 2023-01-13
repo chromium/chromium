@@ -9,7 +9,6 @@
 
 #include "third_party/nearby/src/internal/platform/implementation/atomic_reference.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -32,6 +31,5 @@ class AtomicUint32 : public api::AtomicUint32 {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_ATOMIC_UINT32_H_

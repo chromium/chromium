@@ -21,7 +21,6 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -74,6 +73,5 @@ class InputStreamImpl : public InputStream {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_INPUT_STREAM_IMPL_H_

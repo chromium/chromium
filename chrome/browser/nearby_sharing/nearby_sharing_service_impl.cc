@@ -2499,8 +2499,7 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendPayloads(
 void NearbySharingServiceImpl::OnUniquePathFetched(
     int64_t attachment_id,
     int64_t payload_id,
-    base::OnceCallback<void(location::nearby::connections::mojom::Status)>
-        callback,
+    base::OnceCallback<void(nearby::connections::mojom::Status)> callback,
     base::FilePath path) {
   attachment_info_map_[attachment_id].file_path = path;
   nearby_connections_manager_->RegisterPayloadPath(payload_id, path,
@@ -2510,8 +2509,8 @@ void NearbySharingServiceImpl::OnUniquePathFetched(
 void NearbySharingServiceImpl::OnPayloadPathRegistered(
     base::ScopedClosureRunner closure_runner,
     bool* aggregated_success,
-    location::nearby::connections::mojom::Status status) {
-  if (status != location::nearby::connections::mojom::Status::kSuccess)
+    ::nearby::connections::mojom::Status status) {
+  if (status != ::nearby::connections::mojom::Status::kSuccess)
     *aggregated_success = false;
 }
 
@@ -2840,7 +2839,7 @@ void NearbySharingServiceImpl::OnOpenFiles(
     return;
   }
 
-  std::vector<location::nearby::connections::mojom::PayloadPtr> payloads;
+  std::vector<nearby::connections::mojom::PayloadPtr> payloads;
   payloads.reserve(files.size());
 
   for (size_t i = 0; i < files.size(); ++i) {
@@ -2849,21 +2848,20 @@ void NearbySharingServiceImpl::OnOpenFiles(
     base::File& file = files[i].file;
     int64_t payload_id = GeneratePayloadId();
     SetAttachmentPayloadId(attachment, payload_id);
-    payloads.push_back(location::nearby::connections::mojom::Payload::New(
+    payloads.push_back(nearby::connections::mojom::Payload::New(
         payload_id,
-        location::nearby::connections::mojom::PayloadContent::NewFile(
-            location::nearby::connections::mojom::FilePayload::New(
-                std::move(file)))));
+        nearby::connections::mojom::PayloadContent::NewFile(
+            nearby::connections::mojom::FilePayload::New(std::move(file)))));
   }
 
   info->set_file_payloads(std::move(payloads));
   std::move(callback).Run(std::move(share_target), /*success=*/true);
 }
 
-std::vector<location::nearby::connections::mojom::PayloadPtr>
+std::vector<nearby::connections::mojom::PayloadPtr>
 NearbySharingServiceImpl::CreateTextPayloads(
     const std::vector<TextAttachment>& attachments) {
-  std::vector<location::nearby::connections::mojom::PayloadPtr> payloads;
+  std::vector<nearby::connections::mojom::PayloadPtr> payloads;
   payloads.reserve(attachments.size());
   for (const TextAttachment& attachment : attachments) {
     const std::string& body = attachment.text_body();
@@ -2871,11 +2869,10 @@ NearbySharingServiceImpl::CreateTextPayloads(
 
     int64_t payload_id = GeneratePayloadId();
     SetAttachmentPayloadId(attachment, payload_id);
-    payloads.push_back(location::nearby::connections::mojom::Payload::New(
+    payloads.push_back(nearby::connections::mojom::Payload::New(
         payload_id,
-        location::nearby::connections::mojom::PayloadContent::NewBytes(
-            location::nearby::connections::mojom::BytesPayload::New(
-                std::move(bytes)))));
+        nearby::connections::mojom::PayloadContent::NewBytes(
+            nearby::connections::mojom::BytesPayload::New(std::move(bytes)))));
   }
   return payloads;
 }
@@ -3906,7 +3903,7 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
       return false;
     }
 
-    location::nearby::connections::mojom::Payload* incoming_payload =
+    nearby::connections::mojom::Payload* incoming_payload =
         nearby_connections_manager_->GetIncomingPayload(*payload_id);
     if (!incoming_payload || !incoming_payload->content ||
         !incoming_payload->content->is_file()) {
@@ -3927,7 +3924,7 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
       return false;
     }
 
-    location::nearby::connections::mojom::Payload* incoming_payload =
+    nearby::connections::mojom::Payload* incoming_payload =
         nearby_connections_manager_->GetIncomingPayload(*payload_id);
     if (!incoming_payload || !incoming_payload->content ||
         !incoming_payload->content->is_bytes()) {
@@ -3962,7 +3959,7 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
       return false;
     }
 
-    location::nearby::connections::mojom::Payload* incoming_payload =
+    nearby::connections::mojom::Payload* incoming_payload =
         nearby_connections_manager_->GetIncomingPayload(*payload_id);
     if (!incoming_payload || !incoming_payload->content ||
         !incoming_payload->content->is_bytes()) {

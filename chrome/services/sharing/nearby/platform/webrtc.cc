@@ -24,7 +24,6 @@
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 #include "unicode/locid.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -155,7 +154,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
  public:
   WebRtcSignalingMessengerImpl(
       const std::string& self_id,
-      const connections::LocationHint& location_hint,
+      const location::nearby::connections::LocationHint& location_hint,
       const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
           messenger)
       : self_id_(self_id),
@@ -275,7 +274,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
  private:
   bool receiving_messages_ = false;
   std::string self_id_;
-  connections::LocationHint location_hint_;
+  location::nearby::connections::LocationHint location_hint_;
   // This is received and stored on a successful StartReceiveMessages(). We
   // choose to not bind right away because multiple threads end up
   // creating/calling/destroying WebRtcSignalingMessengerImpl by the design
@@ -546,11 +545,10 @@ void WebRtcMedium::OnIceServersFetched(
 std::unique_ptr<api::WebRtcSignalingMessenger>
 WebRtcMedium::GetSignalingMessenger(
     absl::string_view self_id,
-    const connections::LocationHint& location_hint) {
+    const location::nearby::connections::LocationHint& location_hint) {
   return std::make_unique<WebRtcSignalingMessengerImpl>(
       std::string(self_id), location_hint, webrtc_signaling_messenger_);
 }
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

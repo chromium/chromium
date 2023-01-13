@@ -213,48 +213,46 @@ TransferFinalStatus TransferMetadataStatusToTransferFinalStatus(
 
 StartAdvertisingFailureReason
 NearbyConnectionsStatusToStartAdvertisingFailureReason(
-    location::nearby::connections::mojom::Status status) {
+    nearby::connections::mojom::Status status) {
   switch (status) {
-    case location::nearby::connections::mojom::Status::kError:
+    case nearby::connections::mojom::Status::kError:
       return StartAdvertisingFailureReason::kError;
-    case location::nearby::connections::mojom::Status::kOutOfOrderApiCall:
+    case nearby::connections::mojom::Status::kOutOfOrderApiCall:
       return StartAdvertisingFailureReason::kOutOfOrderApiCall;
-    case location::nearby::connections::mojom::Status::
-        kAlreadyHaveActiveStrategy:
+    case nearby::connections::mojom::Status::kAlreadyHaveActiveStrategy:
       return StartAdvertisingFailureReason::kAlreadyHaveActiveStrategy;
-    case location::nearby::connections::mojom::Status::kAlreadyAdvertising:
+    case nearby::connections::mojom::Status::kAlreadyAdvertising:
       return StartAdvertisingFailureReason::kAlreadyAdvertising;
-    case location::nearby::connections::mojom::Status::kBluetoothError:
+    case nearby::connections::mojom::Status::kBluetoothError:
       return StartAdvertisingFailureReason::kBluetoothError;
-    case location::nearby::connections::mojom::Status::kBleError:
+    case nearby::connections::mojom::Status::kBleError:
       return StartAdvertisingFailureReason::kBleError;
-    case location::nearby::connections::mojom::Status::kWifiLanError:
+    case nearby::connections::mojom::Status::kWifiLanError:
       return StartAdvertisingFailureReason::kWifiLanError;
-    case location::nearby::connections::mojom::Status::kSuccess:
+    case nearby::connections::mojom::Status::kSuccess:
       NOTREACHED();
       [[fallthrough]];
-    case location::nearby::connections::mojom::Status::kAlreadyDiscovering:
-    case location::nearby::connections::mojom::Status::kEndpointIOError:
-    case location::nearby::connections::mojom::Status::kEndpointUnknown:
-    case location::nearby::connections::mojom::Status::kConnectionRejected:
-    case location::nearby::connections::mojom::Status::
-        kAlreadyConnectedToEndpoint:
-    case location::nearby::connections::mojom::Status::kNotConnectedToEndpoint:
-    case location::nearby::connections::mojom::Status::kPayloadUnknown:
+    case nearby::connections::mojom::Status::kAlreadyDiscovering:
+    case nearby::connections::mojom::Status::kEndpointIOError:
+    case nearby::connections::mojom::Status::kEndpointUnknown:
+    case nearby::connections::mojom::Status::kConnectionRejected:
+    case nearby::connections::mojom::Status::kAlreadyConnectedToEndpoint:
+    case nearby::connections::mojom::Status::kNotConnectedToEndpoint:
+    case nearby::connections::mojom::Status::kPayloadUnknown:
       return StartAdvertisingFailureReason::kUnknown;
   }
 }
 
 FinalStatus PayloadStatusToFinalStatus(
-    location::nearby::connections::mojom::PayloadStatus status) {
+    nearby::connections::mojom::PayloadStatus status) {
   switch (status) {
-    case location::nearby::connections::mojom::PayloadStatus::kSuccess:
+    case nearby::connections::mojom::PayloadStatus::kSuccess:
       return FinalStatus::kSuccess;
-    case location::nearby::connections::mojom::PayloadStatus::kFailure:
+    case nearby::connections::mojom::PayloadStatus::kFailure:
       return FinalStatus::kFailure;
-    case location::nearby::connections::mojom::PayloadStatus::kCanceled:
+    case nearby::connections::mojom::PayloadStatus::kCanceled:
       return FinalStatus::kCanceled;
-    case location::nearby::connections::mojom::PayloadStatus::kInProgress:
+    case nearby::connections::mojom::PayloadStatus::kInProgress:
       NOTREACHED();
       return FinalStatus::kFailure;
   }
@@ -283,77 +281,75 @@ std::string GetShareTargetTypeSubcategoryName(
 }
 
 std::string GetPayloadStatusSubcategoryName(
-    location::nearby::connections::mojom::PayloadStatus status) {
+    nearby::connections::mojom::PayloadStatus status) {
   switch (status) {
-    case location::nearby::connections::mojom::PayloadStatus::kSuccess:
+    case nearby::connections::mojom::PayloadStatus::kSuccess:
       return ".Succeeded";
-    case location::nearby::connections::mojom::PayloadStatus::kFailure:
+    case nearby::connections::mojom::PayloadStatus::kFailure:
       return ".Failed";
-    case location::nearby::connections::mojom::PayloadStatus::kCanceled:
+    case nearby::connections::mojom::PayloadStatus::kCanceled:
       return ".Cancelled";
-    case location::nearby::connections::mojom::PayloadStatus::kInProgress:
+    case nearby::connections::mojom::PayloadStatus::kInProgress:
       NOTREACHED();
       return ".Failed";
   }
 }
 
 std::string GetUpgradedMediumSubcategoryName(
-    absl::optional<location::nearby::connections::mojom::Medium>
-        last_upgraded_medium) {
+    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium) {
   if (!last_upgraded_medium) {
     return ".NoMediumUpgrade";
   }
 
   switch (*last_upgraded_medium) {
-    case location::nearby::connections::mojom::Medium::kWebRtc:
+    case nearby::connections::mojom::Medium::kWebRtc:
       return ".WebRtcUpgrade";
-    case location::nearby::connections::mojom::Medium::kWifiLan:
+    case nearby::connections::mojom::Medium::kWifiLan:
       return ".WifiLanUpgrade";
-    case location::nearby::connections::mojom::Medium::kUnknown:
-    case location::nearby::connections::mojom::Medium::kMdns:
-    case location::nearby::connections::mojom::Medium::kBluetooth:
-    case location::nearby::connections::mojom::Medium::kWifiHotspot:
-    case location::nearby::connections::mojom::Medium::kBle:
-    case location::nearby::connections::mojom::Medium::kWifiAware:
-    case location::nearby::connections::mojom::Medium::kNfc:
-    case location::nearby::connections::mojom::Medium::kWifiDirect:
-    case location::nearby::connections::mojom::Medium::kBleL2Cap:
-    case location::nearby::connections::mojom::Medium::kUsb:
+    case nearby::connections::mojom::Medium::kUnknown:
+    case nearby::connections::mojom::Medium::kMdns:
+    case nearby::connections::mojom::Medium::kBluetooth:
+    case nearby::connections::mojom::Medium::kWifiHotspot:
+    case nearby::connections::mojom::Medium::kBle:
+    case nearby::connections::mojom::Medium::kWifiAware:
+    case nearby::connections::mojom::Medium::kNfc:
+    case nearby::connections::mojom::Medium::kWifiDirect:
+    case nearby::connections::mojom::Medium::kBleL2Cap:
+    case nearby::connections::mojom::Medium::kUsb:
       return ".UnknownMediumUpgrade";
   }
 }
 
 UpgradedMedium GetUpgradedMediumForMetrics(
-    absl::optional<location::nearby::connections::mojom::Medium>
-        last_upgraded_medium) {
+    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium) {
   if (!last_upgraded_medium) {
     return UpgradedMedium::kNoUpgrade;
   }
 
   switch (*last_upgraded_medium) {
-    case location::nearby::connections::mojom::Medium::kUnknown:
+    case nearby::connections::mojom::Medium::kUnknown:
       return UpgradedMedium::kUnknown;
-    case location::nearby::connections::mojom::Medium::kMdns:
+    case nearby::connections::mojom::Medium::kMdns:
       return UpgradedMedium::kMdns;
-    case location::nearby::connections::mojom::Medium::kBluetooth:
+    case nearby::connections::mojom::Medium::kBluetooth:
       return UpgradedMedium::kBluetooth;
-    case location::nearby::connections::mojom::Medium::kWifiHotspot:
+    case nearby::connections::mojom::Medium::kWifiHotspot:
       return UpgradedMedium::kWifiHotspot;
-    case location::nearby::connections::mojom::Medium::kBle:
+    case nearby::connections::mojom::Medium::kBle:
       return UpgradedMedium::kBle;
-    case location::nearby::connections::mojom::Medium::kWifiLan:
+    case nearby::connections::mojom::Medium::kWifiLan:
       return UpgradedMedium::kWifiLan;
-    case location::nearby::connections::mojom::Medium::kWifiAware:
+    case nearby::connections::mojom::Medium::kWifiAware:
       return UpgradedMedium::kWifiAware;
-    case location::nearby::connections::mojom::Medium::kNfc:
+    case nearby::connections::mojom::Medium::kNfc:
       return UpgradedMedium::kNfc;
-    case location::nearby::connections::mojom::Medium::kWifiDirect:
+    case nearby::connections::mojom::Medium::kWifiDirect:
       return UpgradedMedium::kWifiDirect;
-    case location::nearby::connections::mojom::Medium::kWebRtc:
+    case nearby::connections::mojom::Medium::kWebRtc:
       return UpgradedMedium::kWebRtc;
-    case location::nearby::connections::mojom::Medium::kBleL2Cap:
+    case nearby::connections::mojom::Medium::kBleL2Cap:
       return UpgradedMedium::kBleL2Cap;
-    case location::nearby::connections::mojom::Medium::kUsb:
+    case nearby::connections::mojom::Medium::kUsb:
       return UpgradedMedium::kUsb;
   }
 }
@@ -361,7 +357,7 @@ UpgradedMedium GetUpgradedMediumForMetrics(
 void RecordNearbySharePayloadAttachmentTypeMetric(
     AttachmentType type,
     bool is_incoming,
-    location::nearby::connections::mojom::PayloadStatus status) {
+    nearby::connections::mojom::PayloadStatus status) {
   const std::string prefix = "Nearby.Share.Payload.AttachmentType";
   base::UmaHistogramEnumeration(prefix, type);
   base::UmaHistogramEnumeration(
@@ -436,7 +432,7 @@ void RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
     sharing::mojom::FileMetadata::Type type,
     bool is_incoming,
-    location::nearby::connections::mojom::PayloadStatus status) {
+    nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(
       FileMetadataTypeToAttachmentType(type), is_incoming, status);
 }
@@ -444,14 +440,14 @@ void RecordNearbySharePayloadFileAttachmentTypeMetric(
 void RecordNearbySharePayloadTextAttachmentTypeMetric(
     sharing::mojom::TextMetadata::Type type,
     bool is_incoming,
-    location::nearby::connections::mojom::PayloadStatus status) {
+    nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(
       TextMetadataTypeToAttachmentType(type), is_incoming, status);
 }
 
 void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
     bool is_incoming,
-    location::nearby::connections::mojom::PayloadStatus status) {
+    nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(AttachmentType::kWifiCredentials,
                                                is_incoming, status);
 }
@@ -491,10 +487,9 @@ void RecordNearbySharePayloadFileOperationMetrics(
 }
 
 void RecordNearbySharePayloadFinalStatusMetric(
-    location::nearby::connections::mojom::PayloadStatus status,
-    absl::optional<location::nearby::connections::mojom::Medium> medium) {
-  DCHECK_NE(status,
-            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+    nearby::connections::mojom::PayloadStatus status,
+    absl::optional<nearby::connections::mojom::Medium> medium) {
+  DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
   base::UmaHistogramEnumeration("Nearby.Share.Payload.FinalStatus",
                                 PayloadStatusToFinalStatus(status));
   base::UmaHistogramEnumeration("Nearby.Share.Payload.FinalStatus" +
@@ -503,7 +498,7 @@ void RecordNearbySharePayloadFinalStatusMetric(
 }
 
 void RecordNearbySharePayloadMediumMetric(
-    absl::optional<location::nearby::connections::mojom::Medium> medium,
+    absl::optional<nearby::connections::mojom::Medium> medium,
     nearby_share::mojom::ShareTargetType type,
     uint64_t num_bytes_transferred) {
   base::UmaHistogramEnumeration("Nearby.Share.Payload.Medium",
@@ -538,12 +533,10 @@ void RecordNearbySharePayloadNumAttachmentsMetric(
 void RecordNearbySharePayloadSizeMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    absl::optional<location::nearby::connections::mojom::Medium>
-        last_upgraded_medium,
-    location::nearby::connections::mojom::PayloadStatus status,
+    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
+    nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes) {
-  DCHECK_NE(status,
-            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+  DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
 
   int kilobytes =
       base::saturated_cast<int>(payload_size_bytes / kBytesPerKilobyte);
@@ -564,13 +557,11 @@ void RecordNearbySharePayloadSizeMetric(
 void RecordNearbySharePayloadTransferRateMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    absl::optional<location::nearby::connections::mojom::Medium>
-        last_upgraded_medium,
-    location::nearby::connections::mojom::PayloadStatus status,
+    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
+    nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,
     base::TimeDelta time_elapsed) {
-  DCHECK_NE(status,
-            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+  DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
 
   int kilobytes_per_second = base::saturated_cast<int>(base::ClampDiv(
       base::ClampDiv(transferred_payload_bytes, time_elapsed.InSecondsF()),
@@ -591,11 +582,10 @@ void RecordNearbySharePayloadTransferRateMetric(
 
 void RecordNearbyShareStartAdvertisingResultMetric(
     bool is_high_visibility,
-    location::nearby::connections::mojom::Status status) {
+    nearby::connections::mojom::Status status) {
   const std::string mode_suffix =
       is_high_visibility ? ".HighVisibility" : ".BLE";
-  const bool success =
-      status == location::nearby::connections::mojom::Status::kSuccess;
+  const bool success = status == nearby::connections::mojom::Status::kSuccess;
 
   const std::string result_prefix = "Nearby.Share.StartAdvertising.Result";
   base::UmaHistogramBoolean(result_prefix, success);

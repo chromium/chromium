@@ -38,7 +38,7 @@ class TargetDeviceConnectionBroker {
   // StartAdvertising().
   //
   // This interface is a simplification of
-  // location::nearby::connections::mojom::ConnectionLifecycleListener, for ease
+  // nearby::connections::mojom::ConnectionLifecycleListener, for ease
   // of client use.
   class ConnectionLifecycleListener {
    public:

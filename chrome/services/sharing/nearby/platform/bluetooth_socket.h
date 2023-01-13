@@ -18,7 +18,6 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -84,6 +83,5 @@ class BluetoothSocket : public api::BluetoothSocket {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SOCKET_H_

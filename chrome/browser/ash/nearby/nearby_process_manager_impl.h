@@ -55,8 +55,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
       : public NearbyProcessManager::NearbyProcessReference {
    public:
     NearbyReferenceImpl(
-        const mojo::SharedRemote<
-            location::nearby::connections::mojom::NearbyConnections>&
+        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
             connections,
         const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
         base::OnceClosure destructor_callback);
@@ -64,13 +63,12 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
    private:
     // NearbyProcessManager::NearbyProcessReference:
-    const mojo::SharedRemote<
-        location::nearby::connections::mojom::NearbyConnections>&
+    const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
     GetNearbyConnections() const override;
     const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const override;
 
-    mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
+    mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
         connections_;
     mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
     base::OnceClosure destructor_callback_;
@@ -109,7 +107,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
   // Implemented as SharedRemote because copies of these are intended to be used
   // by multiple clients.
-  mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
+  mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       connections_;
   mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
 

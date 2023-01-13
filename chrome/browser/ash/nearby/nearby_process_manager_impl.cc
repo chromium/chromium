@@ -26,7 +26,7 @@ constexpr base::TimeDelta kProcessCleanupTimeout = base::Seconds(5);
 
 void OnSharingShutDownComplete(
     mojo::Remote<sharing::mojom::Sharing> sharing,
-    mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
+    mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
         connections,
     mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder) {
   NS_LOG(INFO) << "Asynchronous process shutdown complete.";
@@ -55,8 +55,8 @@ void NearbyProcessManagerImpl::Factory::SetFactoryForTesting(Factory* factory) {
 }
 
 NearbyProcessManagerImpl::NearbyReferenceImpl::NearbyReferenceImpl(
-    const mojo::SharedRemote<
-        location::nearby::connections::mojom::NearbyConnections>& connections,
+    const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
+        connections,
     const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
     base::OnceClosure destructor_callback)
     : connections_(connections),
@@ -73,8 +73,7 @@ NearbyProcessManagerImpl::NearbyReferenceImpl::~NearbyReferenceImpl() {
   std::move(destructor_callback_).Run();
 }
 
-const mojo::SharedRemote<
-    location::nearby::connections::mojom::NearbyConnections>&
+const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
 NearbyProcessManagerImpl::NearbyReferenceImpl::GetNearbyConnections() const {
   return connections_;
 }
@@ -157,9 +156,9 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
 
   // Remotes for NearbyConnections and NearbySharingDecoder are bound on the
   // calling sequence by providing a null |bind_task_runner|.
-  mojo::PendingRemote<location::nearby::connections::mojom::NearbyConnections>
+  mojo::PendingRemote<::nearby::connections::mojom::NearbyConnections>
       connections;
-  mojo::PendingReceiver<location::nearby::connections::mojom::NearbyConnections>
+  mojo::PendingReceiver<::nearby::connections::mojom::NearbyConnections>
       connections_receiver = connections.InitWithNewPipeAndPassReceiver();
   connections_.Bind(std::move(connections), /*bind_task_runner=*/nullptr);
   connections_.set_disconnect_handler(

@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 
-namespace location::nearby {
+namespace nearby {
 
 // Container for the SharedRemote objects required by Nearby Connections and
 // Nearby Presence.
@@ -41,6 +41,6 @@ struct NearbySharedRemotes {
   mojo::SharedRemote<sharing::mojom::TcpSocketFactory> tcp_socket_factory;
 };
 
-}  // namespace location::nearby
+}  // namespace nearby
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_NEARBY_SHARED_REMOTES_H_

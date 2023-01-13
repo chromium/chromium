@@ -26,7 +26,6 @@ namespace sharing {
 class IpcPacketSocketFactory;
 }  // namespace sharing
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -52,7 +51,7 @@ class WebRtcMedium : public api::WebRtcMedium {
                             PeerConnectionCallback callback) override;
   std::unique_ptr<api::WebRtcSignalingMessenger> GetSignalingMessenger(
       absl::string_view self_id,
-      const connections::LocationHint& location_hint) override;
+      const location::nearby::connections::LocationHint& location_hint) override;
 
  private:
   void FetchIceServers(webrtc::PeerConnectionObserver* observer,
@@ -110,6 +109,5 @@ class WebRtcMedium : public api::WebRtcMedium {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WEBRTC_H_

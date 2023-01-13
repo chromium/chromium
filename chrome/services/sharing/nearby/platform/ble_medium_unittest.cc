@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -365,4 +364,3 @@ TEST_F(BleMediumTest, TestConnect) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

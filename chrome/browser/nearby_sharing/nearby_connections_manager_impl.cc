@@ -23,8 +23,8 @@ namespace {
 
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
-const location::nearby::connections::mojom::Strategy kStrategy =
-    location::nearby::connections::mojom::Strategy::kP2pPointToPoint;
+const nearby::connections::mojom::Strategy kStrategy =
+    nearby::connections::mojom::Strategy::kP2pPointToPoint;
 
 bool ShouldUseInternet(DataUsage data_usage, PowerLevel power_level) {
   // We won't use internet if the user requested we don't.
@@ -82,7 +82,7 @@ bool ShouldEnableWifiLan(DataUsage data_usage, PowerLevel power_level) {
 }
 
 std::string MediumSelectionToString(
-    const location::nearby::connections::mojom::MediumSelection& mediums) {
+    const nearby::connections::mojom::MediumSelection& mediums) {
   std::stringstream ss;
   ss << "{";
   if (mediums.bluetooth)
@@ -124,7 +124,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   DCHECK(listener);
   DCHECK(!incoming_connection_listener_);
 
-  location::nearby::connections::mojom::NearbyConnections* nearby_connections =
+  nearby::connections::mojom::NearbyConnections* nearby_connections =
       GetNearbyConnections();
   if (!nearby_connections) {
     std::move(callback).Run(ConnectionsStatus::kError);
@@ -194,7 +194,7 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
   DCHECK(listener);
   DCHECK(!discovery_listener_);
 
-  location::nearby::connections::mojom::NearbyConnections* nearby_connections =
+  nearby::connections::mojom::NearbyConnections* nearby_connections =
       GetNearbyConnections();
   if (!nearby_connections) {
     std::move(callback).Run(ConnectionsStatus::kError);
@@ -722,7 +722,7 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
       payload_it->second->content->get_bytes()->bytes);
 }
 
-location::nearby::connections::mojom::NearbyConnections*
+nearby::connections::mojom::NearbyConnections*
 NearbyConnectionsManagerImpl::GetNearbyConnections() {
   if (!process_reference_) {
     process_reference_ = process_manager_->GetNearbyProcessReference(
@@ -736,7 +736,7 @@ NearbyConnectionsManagerImpl::GetNearbyConnections() {
     }
   }
 
-  location::nearby::connections::mojom::NearbyConnections* nearby_connections =
+  nearby::connections::mojom::NearbyConnections* nearby_connections =
       process_reference_->GetNearbyConnections().get();
 
   if (!nearby_connections)
@@ -776,7 +776,7 @@ void NearbyConnectionsManagerImpl::Reset() {
   pending_outgoing_connections_.clear();
 }
 
-absl::optional<location::nearby::connections::mojom::Medium>
+absl::optional<nearby::connections::mojom::Medium>
 NearbyConnectionsManagerImpl::GetUpgradedMedium(
     const std::string& endpoint_id) const {
   const auto it = current_upgraded_mediums_.find(endpoint_id);

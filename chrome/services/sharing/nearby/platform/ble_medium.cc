@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -400,4 +399,3 @@ chrome::BlePeripheral* BleMedium::GetDiscoveredBlePeripheral(
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

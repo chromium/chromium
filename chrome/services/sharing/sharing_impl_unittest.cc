@@ -83,8 +83,7 @@ class SharingImplTest : public testing::Test {
   }
 
   void Connect(
-      mojo::PendingReceiver<
-          location::nearby::connections::mojom::NearbyConnections>
+      mojo::PendingReceiver<nearby::connections::mojom::NearbyConnections>
           connections_receiver,
       mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
           decoder_receiver,
@@ -110,7 +109,7 @@ class SharingImplTest : public testing::Test {
     auto dependencies = sharing::mojom::NearbyDependencies::New(
         std::move(bluetooth_adapter), std::move(webrtc_dependencies),
         std::move(wifilan_dependencies),
-        location::nearby::api::LogMessage::Severity::kInfo);
+        nearby::api::LogMessage::Severity::kInfo);
     base::RunLoop run_loop;
     service_->Connect(std::move(dependencies), std::move(connections_receiver),
                       std::move(decoder_receiver));
@@ -142,8 +141,7 @@ class SharingImplTest : public testing::Test {
   mojo::Remote<mojom::Sharing> remote_;
   std::unique_ptr<SharingImpl> service_;
 
-  mojo::Remote<location::nearby::connections::mojom::NearbyConnections>
-      connections_;
+  mojo::Remote<nearby::connections::mojom::NearbyConnections> connections_;
   mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder_;
   bluetooth::FakeAdapter bluetooth_adapter_;
   sharing::MockWebRtcDependencies webrtc_dependencies_;

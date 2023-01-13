@@ -62,16 +62,16 @@ void RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
     sharing::mojom::FileMetadata::Type type,
     bool is_incoming,
-    location::nearby::connections::mojom::PayloadStatus status);
+    nearby::connections::mojom::PayloadStatus status);
 
 void RecordNearbySharePayloadTextAttachmentTypeMetric(
     sharing::mojom::TextMetadata::Type type,
     bool is_incoming,
-    location::nearby::connections::mojom::PayloadStatus status);
+    nearby::connections::mojom::PayloadStatus status);
 
 void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
     bool is_incoming,
-    location::nearby::connections::mojom::PayloadStatus status);
+    nearby::connections::mojom::PayloadStatus status);
 
 void RecordNearbySharePayloadFileOperationMetrics(
     Profile* profile,
@@ -80,11 +80,11 @@ void RecordNearbySharePayloadFileOperationMetrics(
     const bool success);
 
 void RecordNearbySharePayloadFinalStatusMetric(
-    location::nearby::connections::mojom::PayloadStatus status,
-    absl::optional<location::nearby::connections::mojom::Medium> medium);
+    nearby::connections::mojom::PayloadStatus status,
+    absl::optional<nearby::connections::mojom::Medium> medium);
 
 void RecordNearbySharePayloadMediumMetric(
-    absl::optional<location::nearby::connections::mojom::Medium> medium,
+    absl::optional<nearby::connections::mojom::Medium> medium,
     nearby_share::mojom::ShareTargetType type,
     uint64_t num_bytes_transferred);
 
@@ -96,23 +96,21 @@ void RecordNearbySharePayloadNumAttachmentsMetric(
 void RecordNearbySharePayloadSizeMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    absl::optional<location::nearby::connections::mojom::Medium>
-        last_upgraded_medium,
-    location::nearby::connections::mojom::PayloadStatus status,
+    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
+    nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes);
 
 void RecordNearbySharePayloadTransferRateMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    absl::optional<location::nearby::connections::mojom::Medium>
-        last_upgraded_medium,
-    location::nearby::connections::mojom::PayloadStatus status,
+    absl::optional<nearby::connections::mojom::Medium> last_upgraded_medium,
+    nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,
     base::TimeDelta time_elapsed);
 
 void RecordNearbyShareStartAdvertisingResultMetric(
     bool is_high_visibility,
-    location::nearby::connections::mojom::Status status);
+    nearby::connections::mojom::Status status);
 
 void RecordNearbyShareTransferFinalStatusMetric(
     NearbyShareFeatureUsageMetrics* feature_usage_metrics,

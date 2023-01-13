@@ -12,7 +12,6 @@
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -45,6 +44,5 @@ class BlePeripheral : public api::BlePeripheral {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLE_PERIPHERAL_H_

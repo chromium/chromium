@@ -4,7 +4,6 @@
 
 #include "chrome/services/sharing/nearby/platform/recursive_mutex.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -61,4 +60,3 @@ void RecursiveMutex::Unlock() UNLOCK_FUNCTION() {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

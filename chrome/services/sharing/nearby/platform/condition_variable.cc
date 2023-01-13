@@ -7,7 +7,6 @@
 #include "base/time/time.h"
 #include "chrome/services/sharing/nearby/platform/mutex.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -33,4 +32,3 @@ void ConditionVariable::Notify() {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

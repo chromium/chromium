@@ -4,7 +4,6 @@
 
 #include "chrome/services/sharing/nearby/platform/atomic_uint32.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -23,4 +22,3 @@ void AtomicUint32::Set(std::uint32_t value) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

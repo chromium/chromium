@@ -109,8 +109,7 @@ void PayloadTracker::OnTransferUpdate() {
         (GetTotalTransferred() >= total_transfer_size_) ? true : false;
     if (is_transfer_complete) {
       NS_LOG(VERBOSE) << __func__ << ": All payloads are complete.";
-      EmitFinalMetrics(
-          location::nearby::connections::mojom::PayloadStatus::kSuccess);
+      EmitFinalMetrics(nearby::connections::mojom::PayloadStatus::kSuccess);
       update_callback_.Run(share_target_,
                            TransferMetadataBuilder()
                                .set_status(TransferMetadata::Status::kComplete)
@@ -120,8 +119,7 @@ void PayloadTracker::OnTransferUpdate() {
     }
 
     NS_LOG(VERBOSE) << __func__ << ": Payloads incomplete.";
-    EmitFinalMetrics(
-        location::nearby::connections::mojom::PayloadStatus::kFailure);
+    EmitFinalMetrics(nearby::connections::mojom::PayloadStatus::kFailure);
     update_callback_.Run(
         share_target_,
         TransferMetadataBuilder()
@@ -134,8 +132,7 @@ void PayloadTracker::OnTransferUpdate() {
 
   if (IsCancelled()) {
     NS_LOG(VERBOSE) << __func__ << ": Payloads cancelled.";
-    EmitFinalMetrics(
-        location::nearby::connections::mojom::PayloadStatus::kCanceled);
+    EmitFinalMetrics(nearby::connections::mojom::PayloadStatus::kCanceled);
     update_callback_.Run(share_target_,
                          TransferMetadataBuilder()
                              .set_status(TransferMetadata::Status::kCancelled)
@@ -145,8 +142,7 @@ void PayloadTracker::OnTransferUpdate() {
 
   if (HasFailed()) {
     NS_LOG(VERBOSE) << __func__ << ": Payloads failed.";
-    EmitFinalMetrics(
-        location::nearby::connections::mojom::PayloadStatus::kFailure);
+    EmitFinalMetrics(nearby::connections::mojom::PayloadStatus::kFailure);
     update_callback_.Run(share_target_,
                          TransferMetadataBuilder()
                              .set_status(TransferMetadata::Status::kFailed)
@@ -175,7 +171,7 @@ void PayloadTracker::OnTransferUpdate() {
 bool PayloadTracker::IsComplete() const {
   for (const auto& state : payload_state_) {
     if (state.second.status !=
-        location::nearby::connections::mojom::PayloadStatus::kSuccess) {
+        nearby::connections::mojom::PayloadStatus::kSuccess) {
       return false;
     }
   }
@@ -185,7 +181,7 @@ bool PayloadTracker::IsComplete() const {
 bool PayloadTracker::IsCancelled() const {
   for (const auto& state : payload_state_) {
     if (state.second.status ==
-        location::nearby::connections::mojom::PayloadStatus::kCanceled) {
+        nearby::connections::mojom::PayloadStatus::kCanceled) {
       return true;
     }
   }
@@ -195,7 +191,7 @@ bool PayloadTracker::IsCancelled() const {
 bool PayloadTracker::HasFailed() const {
   for (const auto& state : payload_state_) {
     if (state.second.status ==
-        location::nearby::connections::mojom::PayloadStatus::kFailure) {
+        nearby::connections::mojom::PayloadStatus::kFailure) {
       return true;
     }
   }
@@ -220,9 +216,8 @@ double PayloadTracker::CalculateProgressPercent() const {
 }
 
 void PayloadTracker::EmitFinalMetrics(
-    location::nearby::connections::mojom::PayloadStatus status) const {
-  DCHECK_NE(status,
-            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+    nearby::connections::mojom::PayloadStatus status) const {
+  DCHECK_NE(status, nearby::connections::mojom::PayloadStatus::kInProgress);
   RecordNearbySharePayloadFinalStatusMetric(status, last_upgraded_medium_);
   RecordNearbySharePayloadMediumMetric(
       last_upgraded_medium_, share_target_.type, GetTotalTransferred());

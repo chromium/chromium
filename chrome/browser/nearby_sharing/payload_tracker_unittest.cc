@@ -94,21 +94,18 @@ class PayloadTrackerTest : public testing::Test {
   MockUpdateCallback& callback() { return callback_; }
 
   void MarkSuccessful(int payload_id) {
-    UpdatePayloadStatus(
-        payload_id,
-        location::nearby::connections::mojom::PayloadStatus::kSuccess);
+    UpdatePayloadStatus(payload_id,
+                        nearby::connections::mojom::PayloadStatus::kSuccess);
   }
 
   void MarkCancelled(int payload_id) {
-    UpdatePayloadStatus(
-        payload_id,
-        location::nearby::connections::mojom::PayloadStatus::kCanceled);
+    UpdatePayloadStatus(payload_id,
+                        nearby::connections::mojom::PayloadStatus::kCanceled);
   }
 
   void MarkFailure(int payload_id) {
-    UpdatePayloadStatus(
-        payload_id,
-        location::nearby::connections::mojom::PayloadStatus::kFailure);
+    UpdatePayloadStatus(payload_id,
+                        nearby::connections::mojom::PayloadStatus::kFailure);
   }
 
   void WaitBetweenUpdates() {
@@ -116,16 +113,14 @@ class PayloadTrackerTest : public testing::Test {
   }
 
  private:
-  void UpdatePayloadStatus(
-      int payload_id,
-      location::nearby::connections::mojom::PayloadStatus status) {
-    location::nearby::connections::mojom::PayloadTransferUpdatePtr payload =
-        location::nearby::connections::mojom::PayloadTransferUpdate::New(
+  void UpdatePayloadStatus(int payload_id,
+                           nearby::connections::mojom::PayloadStatus status) {
+    nearby::connections::mojom::PayloadTransferUpdatePtr payload =
+        nearby::connections::mojom::PayloadTransferUpdate::New(
             payload_id, status,
             /*total_bytes=*/kTotalSize, /*bytes_transferred=*/kTotalSize);
     payload_tracker_->OnStatusUpdate(
-        std::move(payload),
-        location::nearby::connections::mojom::Medium::kWebRtc);
+        std::move(payload), nearby::connections::mojom::Medium::kWebRtc);
   }
 
   content::BrowserTaskEnvironment task_environment_;

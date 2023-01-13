@@ -10,7 +10,6 @@
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
 #include "third_party/nearby/src/internal/platform/exception.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -63,4 +62,3 @@ Exception BluetoothServerSocket::Close() {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

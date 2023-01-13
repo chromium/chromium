@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -112,6 +111,5 @@ class BleMedium : public api::BleMedium,
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLE_MEDIUM_H_

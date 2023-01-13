@@ -29,8 +29,8 @@
 namespace {
 
 const char kServiceId[] = "NearbySharing";
-const location::nearby::connections::mojom::Strategy kStrategy =
-    location::nearby::connections::mojom::Strategy::kP2pPointToPoint;
+const nearby::connections::mojom::Strategy kStrategy =
+    nearby::connections::mojom::Strategy::kP2pPointToPoint;
 const char kEndpointId[] = "endpoint_id";
 const char kRemoteEndpointId[] = "remote_endpoint_id";
 const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
@@ -81,19 +81,18 @@ base::FilePath InitializeTemporaryFile(base::File& file) {
 
 }  // namespace
 
-using Status = location::nearby::connections::mojom::Status;
+using Status = nearby::connections::mojom::Status;
 using DiscoveredEndpointInfo =
-    location::nearby::connections::mojom::DiscoveredEndpointInfo;
-using ConnectionInfo = location::nearby::connections::mojom::ConnectionInfo;
-using Medium = location::nearby::connections::mojom::Medium;
-using MediumSelection = location::nearby::connections::mojom::MediumSelection;
-using PayloadContent = location::nearby::connections::mojom::PayloadContent;
-using PayloadStatus = location::nearby::connections::mojom::PayloadStatus;
-using PayloadTransferUpdate =
-    location::nearby::connections::mojom::PayloadTransferUpdate;
-using Payload = location::nearby::connections::mojom::Payload;
-using BytesPayload = location::nearby::connections::mojom::BytesPayload;
-using FilePayload = location::nearby::connections::mojom::FilePayload;
+    nearby::connections::mojom::DiscoveredEndpointInfo;
+using ConnectionInfo = nearby::connections::mojom::ConnectionInfo;
+using Medium = nearby::connections::mojom::Medium;
+using MediumSelection = nearby::connections::mojom::MediumSelection;
+using PayloadContent = nearby::connections::mojom::PayloadContent;
+using PayloadStatus = nearby::connections::mojom::PayloadStatus;
+using PayloadTransferUpdate = nearby::connections::mojom::PayloadTransferUpdate;
+using Payload = nearby::connections::mojom::Payload;
+using BytesPayload = nearby::connections::mojom::BytesPayload;
+using FilePayload = nearby::connections::mojom::FilePayload;
 
 class MockDiscoveryListener
     : public NearbyConnectionsManager::DiscoveryListener {

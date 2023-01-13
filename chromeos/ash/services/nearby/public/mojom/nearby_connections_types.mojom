@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module location.nearby.connections.mojom;
+module nearby.connections.mojom;
 
 import "device/bluetooth/public/mojom/uuid.mojom";
 import "mojo/public/mojom/base/file.mojom";
@@ -278,7 +278,7 @@ enum Medium {
 // Log severity levels. This is passed as a member of
 // NearbyConnectionsDependencies to set the minimum log level in the Nearby
 // Connections library. Entries should be kept in sync with the values in
-// location::nearby::api::LogMessage::Severity.
+// nearby::api::LogMessage::Severity.
 enum LogSeverity {
   kVerbose = -1,
   kInfo = 0,

@@ -10,7 +10,6 @@
 #include "chrome/services/sharing/nearby/platform/input_stream_impl.h"
 #include "chrome/services/sharing/nearby/platform/output_stream_impl.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -82,4 +81,3 @@ void BidirectionalStream::DestroyStreams(
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

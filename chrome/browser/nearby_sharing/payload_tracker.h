@@ -37,8 +37,8 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
 
     uint64_t amount_transferred = 0;
     const uint64_t total_size;
-    location::nearby::connections::mojom::PayloadStatus status =
-        location::nearby::connections::mojom::PayloadStatus::kInProgress;
+    nearby::connections::mojom::PayloadStatus status =
+        nearby::connections::mojom::PayloadStatus::kInProgress;
   };
 
   void OnTransferUpdate();
@@ -50,8 +50,7 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
   uint64_t GetTotalTransferred() const;
   double CalculateProgressPercent() const;
 
-  void EmitFinalMetrics(
-      location::nearby::connections::mojom::PayloadStatus status) const;
+  void EmitFinalMetrics(nearby::connections::mojom::PayloadStatus status) const;
 
   ShareTarget share_target_;
   base::RepeatingCallback<void(ShareTarget, TransferMetadata)> update_callback_;

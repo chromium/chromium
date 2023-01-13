@@ -25,7 +25,7 @@ class MockNearbyProcessManager : public NearbyProcessManager {
     ~MockNearbyProcessReference() override;
 
     MOCK_METHOD(const mojo::SharedRemote<
-                    location::nearby::connections::mojom::NearbyConnections>&,
+                    ::nearby::connections::mojom::NearbyConnections>&,
                 GetNearbyConnections,
                 (),
                 (const, override));

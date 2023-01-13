@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -95,4 +94,3 @@ TEST_F(AtomicBooleanTest, GetOnNewThread) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

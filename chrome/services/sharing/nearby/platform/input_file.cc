@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -59,4 +58,3 @@ base::File InputFile::ExtractUnderlyingFile() {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

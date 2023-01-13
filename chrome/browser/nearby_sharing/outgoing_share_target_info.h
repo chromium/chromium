@@ -15,7 +15,7 @@
 // A description of the outgoing connection to a remote device.
 class OutgoingShareTargetInfo : public ShareTargetInfo {
  public:
-  using PayloadPtr = location::nearby::connections::mojom::PayloadPtr;
+  using PayloadPtr = ::nearby::connections::mojom::PayloadPtr;
 
   OutgoingShareTargetInfo();
   OutgoingShareTargetInfo(OutgoingShareTargetInfo&&);

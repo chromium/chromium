@@ -42,8 +42,7 @@ class FakeEndpointFinderFactory : public NearbyEndpointFinderImpl::Factory {
  private:
   // NearbyEndpointFinderImpl::Factory:
   std::unique_ptr<NearbyEndpointFinder> CreateInstance(
-      const mojo::SharedRemote<
-          location::nearby::connections::mojom::NearbyConnections>&
+      const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
           nearby_connections) override {
     return std::make_unique<FakeNearbyEndpointFinder>();
   }
@@ -65,8 +64,7 @@ class FakeConnectionBrokerFactory : public NearbyConnectionBrokerImpl::Factory {
       mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
-      const mojo::SharedRemote<
-          location::nearby::connections::mojom::NearbyConnections>&
+      const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
           nearby_connections,
       base::OnceClosure on_connected_callback,
       base::OnceClosure on_disconnected_callback,

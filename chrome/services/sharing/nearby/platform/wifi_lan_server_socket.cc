@@ -12,7 +12,6 @@
 #include "base/task/thread_pool.h"
 #include "net/base/net_errors.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -239,4 +238,3 @@ void WifiLanServerSocket::OnFirewallHoleDisconnected() {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

@@ -12,22 +12,16 @@ namespace secure_channel {
 namespace util {
 
 // Logs the result of Nearby Connections API functions.
-void RecordStartDiscoveryResult(
-    location::nearby::connections::mojom::Status status);
-void RecordInjectEndpointResult(
-    location::nearby::connections::mojom::Status status);
-void RecordStopDiscoveryResult(
-    location::nearby::connections::mojom::Status status);
-void RecordRequestConnectionResult(
-    location::nearby::connections::mojom::Status status);
-void RecordAcceptConnectionResult(
-    location::nearby::connections::mojom::Status status);
-void RecordSendPayloadResult(
-    location::nearby::connections::mojom::Status status);
+void RecordStartDiscoveryResult(::nearby::connections::mojom::Status status);
+void RecordInjectEndpointResult(::nearby::connections::mojom::Status status);
+void RecordStopDiscoveryResult(::nearby::connections::mojom::Status status);
+void RecordRequestConnectionResult(::nearby::connections::mojom::Status status);
+void RecordAcceptConnectionResult(::nearby::connections::mojom::Status status);
+void RecordSendPayloadResult(::nearby::connections::mojom::Status status);
 void RecordDisconnectFromEndpointResult(
-    location::nearby::connections::mojom::Status status);
+    ::nearby::connections::mojom::Status status);
 void RecordRegisterPayloadFilesResult(
-    location::nearby::connections::mojom::Status status);
+    ::nearby::connections::mojom::Status status);
 
 // Enumeration of possible file payload transfer actions via Nearby Connection
 // library. Keep in sync with corresponding enum in

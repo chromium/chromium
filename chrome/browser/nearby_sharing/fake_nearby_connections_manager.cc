@@ -123,7 +123,7 @@ void FakeNearbyConnectionsManager::RegisterPayloadPath(
   auto it = payload_path_status_.find(payload_id);
   if (it == payload_path_status_.end()) {
     std::move(callback).Run(
-        location::nearby::connections::mojom::Status::kPayloadUnknown);
+        nearby::connections::mojom::Status::kPayloadUnknown);
     return;
   }
 
@@ -146,9 +146,8 @@ void FakeNearbyConnectionsManager::Cancel(int64_t payload_id) {
       GetRegisteredPayloadStatusListener(payload_id);
   if (listener) {
     listener->OnStatusUpdate(
-        location::nearby::connections::mojom::PayloadTransferUpdate::New(
-            payload_id,
-            location::nearby::connections::mojom::PayloadStatus::kCanceled,
+        nearby::connections::mojom::PayloadTransferUpdate::New(
+            payload_id, nearby::connections::mojom::PayloadStatus::kCanceled,
             /*total_bytes=*/0,
             /*bytes_transferred=*/0),
         /*upgraded_medium=*/absl::nullopt);
@@ -195,7 +194,7 @@ FakeNearbyConnectionsManager::GetWeakPtr() {
 
 void FakeNearbyConnectionsManager::OnEndpointFound(
     const std::string& endpoint_id,
-    location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info) {
+    nearby::connections::mojom::DiscoveredEndpointInfoPtr info) {
   if (!discovery_listener_)
     return;
 

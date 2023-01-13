@@ -8,7 +8,6 @@
 #include "base/files/file.h"
 #include "third_party/nearby/src/internal/platform/implementation/input_file.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -37,6 +36,5 @@ class InputFile : public api::InputFile {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_INPUT_FILE_H_

@@ -19,7 +19,6 @@
 #include "chrome/services/sharing/nearby/platform/mutex.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -125,4 +124,3 @@ TEST_F(ConditionVariableTest,
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

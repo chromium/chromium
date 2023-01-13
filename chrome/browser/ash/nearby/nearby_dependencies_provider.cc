@@ -121,7 +121,7 @@ NearbyDependenciesProvider::GetDependencies() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kNearbyShareVerboseLogging)) {
     dependencies->min_log_severity =
-        location::nearby::api::LogMessage::Severity::kVerbose;
+        ::nearby::api::LogMessage::Severity::kVerbose;
   }
 
   return dependencies;

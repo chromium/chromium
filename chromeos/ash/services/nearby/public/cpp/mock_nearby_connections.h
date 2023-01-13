@@ -11,20 +11,16 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using NearbyConnectionsMojom =
-    location::nearby::connections::mojom::NearbyConnections;
-using AdvertisingOptionsPtr =
-    location::nearby::connections::mojom::AdvertisingOptionsPtr;
+using NearbyConnectionsMojom = ::nearby::connections::mojom::NearbyConnections;
+using AdvertisingOptionsPtr = ::nearby::connections::mojom::AdvertisingOptionsPtr;
 using ConnectionLifecycleListener =
-    location::nearby::connections::mojom::ConnectionLifecycleListener;
-using ConnectionOptionsPtr =
-    location::nearby::connections::mojom::ConnectionOptionsPtr;
-using DiscoveryOptionsPtr =
-    location::nearby::connections::mojom::DiscoveryOptionsPtr;
+    ::nearby::connections::mojom::ConnectionLifecycleListener;
+using ConnectionOptionsPtr = ::nearby::connections::mojom::ConnectionOptionsPtr;
+using DiscoveryOptionsPtr = ::nearby::connections::mojom::DiscoveryOptionsPtr;
 using EndpointDiscoveryListener =
-    location::nearby::connections::mojom::EndpointDiscoveryListener;
-using PayloadListener = location::nearby::connections::mojom::PayloadListener;
-using PayloadPtr = location::nearby::connections::mojom::PayloadPtr;
+    ::nearby::connections::mojom::EndpointDiscoveryListener;
+using PayloadListener = ::nearby::connections::mojom::PayloadListener;
+using PayloadPtr = ::nearby::connections::mojom::PayloadPtr;
 
 namespace ash {
 namespace nearby {

@@ -38,8 +38,8 @@ class NearbyEndpointFinder;
 // performs cleanup if necessary.
 class NearbyConnectionBrokerImpl
     : public NearbyConnectionBroker,
-      public location::nearby::connections::mojom::ConnectionLifecycleListener,
-      public location::nearby::connections::mojom::PayloadListener {
+      public ::nearby::connections::mojom::ConnectionLifecycleListener,
+      public ::nearby::connections::mojom::PayloadListener {
  public:
   class Factory {
    public:
@@ -53,8 +53,7 @@ class NearbyConnectionBrokerImpl
             file_payload_handler_receiver,
         mojo::PendingRemote<mojom::NearbyMessageReceiver>
             message_receiver_remote,
-        const mojo::SharedRemote<
-            location::nearby::connections::mojom::NearbyConnections>&
+        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
             nearby_connections,
         base::OnceClosure on_connected_callback,
         base::OnceClosure on_disconnected_callback,
@@ -74,8 +73,7 @@ class NearbyConnectionBrokerImpl
             file_payload_handler_receiver,
         mojo::PendingRemote<mojom::NearbyMessageReceiver>
             message_receiver_remote,
-        const mojo::SharedRemote<
-            location::nearby::connections::mojom::NearbyConnections>&
+        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
             nearby_connections,
         base::OnceClosure on_connected_callback,
         base::OnceClosure on_disconnected_callback,
@@ -107,8 +105,7 @@ class NearbyConnectionBrokerImpl
       mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
-      const mojo::SharedRemote<
-          location::nearby::connections::mojom::NearbyConnections>&
+      const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
           nearby_connections,
       base::OnceClosure on_connected_callback,
       base::OnceClosure on_disconnected_callback,
@@ -120,24 +117,22 @@ class NearbyConnectionBrokerImpl
 
   void OnEndpointDiscovered(
       const std::string& endpoint_id,
-      location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info);
+      ::nearby::connections::mojom::DiscoveredEndpointInfoPtr info);
   void OnDiscoveryFailure();
 
-  void OnRequestConnectionResult(
-      location::nearby::connections::mojom::Status status);
-  void OnAcceptConnectionResult(
-      location::nearby::connections::mojom::Status status);
+  void OnRequestConnectionResult(::nearby::connections::mojom::Status status);
+  void OnAcceptConnectionResult(::nearby::connections::mojom::Status status);
   void OnSendPayloadResult(SendMessageCallback callback,
-                           location::nearby::connections::mojom::Status status);
+                           ::nearby::connections::mojom::Status status);
   void OnDisconnectFromEndpointResult(
-      location::nearby::connections::mojom::Status status);
+      ::nearby::connections::mojom::Status status);
   void OnConnectionStatusChangeTimeout();
 
   void OnPayloadFileRegistered(
       int64_t payload_id,
       mojo::PendingRemote<mojom::FilePayloadListener> listener,
       RegisterPayloadFileCallback callback,
-      location::nearby::connections::mojom::Status status);
+      ::nearby::connections::mojom::Status status);
   void OnFilePayloadListenerDisconnect(int64_t payload_id);
   void CleanUpPendingFileTransfers();
 
@@ -155,37 +150,33 @@ class NearbyConnectionBrokerImpl
       mojo::PendingRemote<mojom::FilePayloadListener> listener,
       RegisterPayloadFileCallback callback) override;
 
-  // location::nearby::connections::mojom::ConnectionLifecycleListener:
+  // ::nearby::connections::mojom::ConnectionLifecycleListener:
   void OnConnectionInitiated(
       const std::string& endpoint_id,
-      location::nearby::connections::mojom::ConnectionInfoPtr info) override;
+      ::nearby::connections::mojom::ConnectionInfoPtr info) override;
   void OnConnectionAccepted(const std::string& endpoint_id) override;
-  void OnConnectionRejected(
-      const std::string& endpoint_id,
-      location::nearby::connections::mojom::Status status) override;
+  void OnConnectionRejected(const std::string& endpoint_id,
+                            ::nearby::connections::mojom::Status status) override;
   void OnDisconnected(const std::string& endpoint_id) override;
-  void OnBandwidthChanged(
-      const std::string& endpoint_id,
-      location::nearby::connections::mojom::Medium medium) override;
+  void OnBandwidthChanged(const std::string& endpoint_id,
+                          ::nearby::connections::mojom::Medium medium) override;
 
-  // location::nearby::connections::mojom::PayloadListener:
+  // ::nearby::connections::mojom::PayloadListener:
   void OnPayloadReceived(
       const std::string& endpoint_id,
-      location::nearby::connections::mojom::PayloadPtr payload) override;
+      ::nearby::connections::mojom::PayloadPtr payload) override;
   void OnPayloadTransferUpdate(
       const std::string& endpoint_id,
-      location::nearby::connections::mojom::PayloadTransferUpdatePtr update)
-      override;
+      ::nearby::connections::mojom::PayloadTransferUpdatePtr update) override;
 
   NearbyEndpointFinder* endpoint_finder_;
-  mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
+  mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       nearby_connections_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
-  mojo::Receiver<
-      location::nearby::connections::mojom::ConnectionLifecycleListener>
+  mojo::Receiver<::nearby::connections::mojom::ConnectionLifecycleListener>
       connection_lifecycle_listener_receiver_{this};
-  mojo::Receiver<location::nearby::connections::mojom::PayloadListener>
+  mojo::Receiver<::nearby::connections::mojom::PayloadListener>
       payload_listener_receiver_{this};
 
   ConnectionStatus connection_status_ = ConnectionStatus::kUninitialized;

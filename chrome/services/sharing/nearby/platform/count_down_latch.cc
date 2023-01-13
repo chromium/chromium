@@ -6,7 +6,6 @@
 
 #include "base/time/time.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -42,4 +41,3 @@ void CountDownLatch::CountDown() {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

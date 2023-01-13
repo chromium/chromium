@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -220,4 +219,3 @@ TEST_F(BluetoothServerSocketTest, TestDestroy) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

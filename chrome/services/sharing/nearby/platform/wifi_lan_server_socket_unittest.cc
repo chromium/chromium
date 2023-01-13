@@ -23,7 +23,6 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -279,4 +278,3 @@ TEST_F(WifiLanServerSocketTest, Disconnect_WhileWaitingForAccept_FirewallHole) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

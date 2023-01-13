@@ -22,9 +22,9 @@
 #include "services/network/public/mojom/mdns_responder.mojom-forward.h"
 #include "services/network/public/mojom/p2p.mojom-forward.h"
 
-namespace location::nearby::connections {
+namespace nearby::connections {
 class NearbyConnections;
-}  // namespace location::nearby::connections
+}  // namespace nearby::connections
 
 namespace sharing {
 
@@ -32,9 +32,8 @@ class NearbySharingDecoder;
 
 class SharingImpl : public mojom::Sharing {
  public:
-  using NearbyConnectionsMojom =
-      location::nearby::connections::mojom::NearbyConnections;
-  using NearbyConnections = location::nearby::connections::NearbyConnections;
+  using NearbyConnectionsMojom = nearby::connections::mojom::NearbyConnections;
+  using NearbyConnections = nearby::connections::NearbyConnections;
   using NearbyDependenciesPtr = sharing::mojom::NearbyDependenciesPtr;
 
   SharingImpl(mojo::PendingReceiver<mojom::Sharing> receiver,
@@ -78,7 +77,7 @@ class SharingImpl : public mojom::Sharing {
   mojo::Receiver<mojom::Sharing> receiver_;
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
-  std::unique_ptr<location::nearby::NearbySharedRemotes> nearby_shared_remotes_;
+  std::unique_ptr<nearby::NearbySharedRemotes> nearby_shared_remotes_;
 
   std::unique_ptr<NearbyConnections> nearby_connections_;
 

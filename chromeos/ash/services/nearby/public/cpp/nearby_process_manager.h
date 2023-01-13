@@ -23,7 +23,7 @@ class NearbyProcessManager : public KeyedService {
    public:
     virtual ~NearbyProcessReference() = default;
     virtual const mojo::SharedRemote<
-        location::nearby::connections::mojom::NearbyConnections>&
+        ::nearby::connections::mojom::NearbyConnections>&
     GetNearbyConnections() const = 0;
     virtual const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const = 0;

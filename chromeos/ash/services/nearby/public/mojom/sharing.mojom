@@ -38,8 +38,8 @@ struct NearbyDependencies {
   // Null if the WifiLan feature flag is disabled.
   WifiLanDependencies? wifilan_dependencies;
 
-  location.nearby.connections.mojom.LogSeverity min_log_severity =
-      location.nearby.connections.mojom.LogSeverity.kInfo;
+  nearby.connections.mojom.LogSeverity min_log_severity =
+      nearby.connections.mojom.LogSeverity.kInfo;
 };
 
 // Interface for sharing related services. Lives in a sandboxed utility process
@@ -54,7 +54,7 @@ interface Sharing {
   Connect(
       NearbyDependencies deps,
       pending_receiver<
-          location.nearby.connections.mojom.NearbyConnections>
+          nearby.connections.mojom.NearbyConnections>
               nearby_connections,
       pending_receiver<sharing.mojom.NearbySharingDecoder>
           decoder);

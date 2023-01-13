@@ -31,8 +31,8 @@ class NearbyConnectionImpl : public NearbyConnection {
   void WriteMessage(std::vector<uint8_t> bytes);
 
  private:
-  using PayloadContent = location::nearby::connections::mojom::PayloadContent;
-  using BytesPayload = location::nearby::connections::mojom::BytesPayload;
+  using PayloadContent = nearby::connections::mojom::PayloadContent;
+  using BytesPayload = nearby::connections::mojom::BytesPayload;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

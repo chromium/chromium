@@ -5,7 +5,6 @@
 #include "chrome/services/sharing/nearby/platform/bluetooth_adapter.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -93,4 +92,3 @@ std::string BluetoothAdapter::GetMacAddress() const {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

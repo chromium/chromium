@@ -15,8 +15,7 @@ namespace nearby {
 
 FakeNearbyProcessManager::FakeNearbyProcessReference::
     FakeNearbyProcessReference(
-        const mojo::SharedRemote<
-            location::nearby::connections::mojom::NearbyConnections>&
+        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
             connections,
         const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
         base::OnceClosure destructor_callback)
@@ -29,8 +28,7 @@ FakeNearbyProcessManager::FakeNearbyProcessReference::
   std::move(destructor_callback_).Run();
 }
 
-const mojo::SharedRemote<
-    location::nearby::connections::mojom::NearbyConnections>&
+const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
 FakeNearbyProcessManager::FakeNearbyProcessReference::GetNearbyConnections()
     const {
   return connections_;

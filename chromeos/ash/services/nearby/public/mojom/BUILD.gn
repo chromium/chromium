@@ -41,8 +41,8 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "location.nearby.connections.mojom.LogSeverity"
-          cpp = "location::nearby::api::LogMessage::Severity"
+          mojom = "nearby.connections.mojom.LogSeverity"
+          cpp = "nearby::api::LogMessage::Severity"
         },
       ]
       traits_headers = [ "nearby_connections_mojom_traits.h" ]

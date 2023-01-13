@@ -31,7 +31,7 @@ void NearbyEndpointFinder::FindEndpoint(
 
 void NearbyEndpointFinder::NotifyEndpointFound(
     const std::string& endpoint_id,
-    location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info) {
+    ::nearby::connections::mojom::DiscoveredEndpointInfoPtr info) {
   std::move(success_callback_).Run(endpoint_id, std::move(info));
 }
 

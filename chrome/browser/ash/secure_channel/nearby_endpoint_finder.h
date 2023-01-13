@@ -23,7 +23,7 @@ class NearbyEndpointFinder {
   // discovered endpoint.
   using EndpointCallback = base::OnceCallback<void(
       const std::string&,
-      location::nearby::connections::mojom::DiscoveredEndpointInfoPtr)>;
+      ::nearby::connections::mojom::DiscoveredEndpointInfoPtr)>;
 
   // Attempts to find an endpoint for the device with the provided Bluetooth
   // address, which is expected to be a 6-byte MAC address.
@@ -43,7 +43,7 @@ class NearbyEndpointFinder {
 
   void NotifyEndpointFound(
       const std::string& endpoint_id,
-      location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info);
+      ::nearby::connections::mojom::DiscoveredEndpointInfoPtr info);
   void NotifyEndpointDiscoveryFailure();
 
   virtual void PerformFindEndpoint() = 0;

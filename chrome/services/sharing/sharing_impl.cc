@@ -35,8 +35,7 @@ void SharingImpl::Connect(
   DCHECK(!nearby_connections_);
   DCHECK(!nearby_decoder_);
 
-  location::nearby::api::LogMessage::Severity min_log_severity =
-      deps->min_log_severity;
+  nearby::api::LogMessage::Severity min_log_severity = deps->min_log_severity;
 
   InitializeNearbySharedRemotes(std::move(deps));
 
@@ -55,7 +54,7 @@ void SharingImpl::ShutDown(ShutDownCallback callback) {
 }
 
 void SharingImpl::DoShutDown(bool is_expected) {
-  location::nearby::NearbySharedRemotes::SetInstance(nullptr);
+  nearby::NearbySharedRemotes::SetInstance(nullptr);
 
   if (!nearby_connections_ && !nearby_decoder_)
     return;
@@ -81,10 +80,8 @@ void SharingImpl::OnDisconnect(MojoDependencyName mojo_dependency_name) {
 }
 
 void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
-  nearby_shared_remotes_ =
-      std::make_unique<location::nearby::NearbySharedRemotes>();
-  location::nearby::NearbySharedRemotes::SetInstance(
-      nearby_shared_remotes_.get());
+  nearby_shared_remotes_ = std::make_unique<nearby::NearbySharedRemotes>();
+  nearby::NearbySharedRemotes::SetInstance(nearby_shared_remotes_.get());
 
   if (deps->bluetooth_adapter) {
     nearby_shared_remotes_->bluetooth_adapter.Bind(

@@ -4,7 +4,6 @@
 
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -22,4 +21,3 @@ bool AtomicBoolean::Set(bool value) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

@@ -11,7 +11,6 @@
 
 #include <vector>
 
-namespace location {
 namespace nearby {
 
 void Crypto::Init() {}
@@ -33,4 +32,3 @@ ByteArray Crypto::Sha256(absl::string_view input) {
 }
 
 }  // namespace nearby
-}  // namespace location

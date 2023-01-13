@@ -12,8 +12,7 @@ namespace util {
 
 namespace {
 
-using ::location::nearby::connections::mojom::Status;
-
+using ::nearby::connections::mojom::Status;
 }
 
 void RecordStartDiscoveryResult(Status status) {
@@ -57,7 +56,7 @@ void RecordDisconnectFromEndpointResult(Status status) {
 }
 
 void RecordRegisterPayloadFilesResult(
-    location::nearby::connections::mojom::Status status) {
+    ::nearby::connections::mojom::Status status) {
   base::UmaHistogramEnumeration(
       "MultiDevice.SecureChannel.Nearby.OperationResult.RegisterPayloadFiles",
       status);

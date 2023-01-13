@@ -6,7 +6,6 @@
 
 #include "base/numerics/safe_conversions.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -44,4 +43,3 @@ Exception OutputFile::Close() {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

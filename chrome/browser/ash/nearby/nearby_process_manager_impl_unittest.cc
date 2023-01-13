@@ -146,7 +146,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
               std::move(cros_network_config_remote),
               std::move(firewall_hole_factory_remote),
               std::move(tcp_socket_factory_remote)),
-          location::nearby::api::LogMessage::Severity::kInfo);
+          ::nearby::api::LogMessage::Severity::kInfo);
     }
 
     void PrepareForShutdown() override { prepare_for_shutdown_count_++; }

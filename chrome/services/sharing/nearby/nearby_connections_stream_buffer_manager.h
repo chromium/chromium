@@ -11,7 +11,6 @@
 #include "third_party/nearby/src/connections/payload.h"
 #include "third_party/nearby/src/internal/platform/byte_array.h"
 
-namespace location {
 namespace nearby {
 namespace connections {
 
@@ -68,6 +67,5 @@ class NearbyConnectionsStreamBufferManager {
 
 }  // namespace connections
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_NEARBY_CONNECTIONS_STREAM_BUFFER_MANAGER_H_

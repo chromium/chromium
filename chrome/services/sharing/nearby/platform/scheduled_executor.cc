@@ -14,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -185,4 +184,3 @@ bool ScheduledExecutor::OnTaskCancelled(const base::UnguessableToken& id) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

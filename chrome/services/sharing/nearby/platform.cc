@@ -49,7 +49,7 @@
 #include "third_party/nearby/src/internal/platform/implementation/wifi_direct.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_hotspot.h"
 
-namespace location::nearby::api {
+namespace nearby::api {
 
 int GetCurrentTid() {
   // SubmittableExecutor and ScheduledExecutor does not own a thread pool
@@ -114,8 +114,8 @@ std::unique_ptr<AtomicUint32> ImplementationPlatform::CreateAtomicUint32(
 
 std::unique_ptr<BluetoothAdapter>
 ImplementationPlatform::CreateBluetoothAdapter() {
-  location::nearby::NearbySharedRemotes* nearby_shared_remotes =
-      location::nearby::NearbySharedRemotes::GetInstance();
+  nearby::NearbySharedRemotes* nearby_shared_remotes =
+      nearby::NearbySharedRemotes::GetInstance();
   if (nearby_shared_remotes &&
       nearby_shared_remotes->bluetooth_adapter.is_bound()) {
     return std::make_unique<chrome::BluetoothAdapter>(
@@ -180,8 +180,8 @@ std::unique_ptr<LogMessage> ImplementationPlatform::CreateLogMessage(
 std::unique_ptr<BluetoothClassicMedium>
 ImplementationPlatform::CreateBluetoothClassicMedium(
     api::BluetoothAdapter& adapter) {
-  location::nearby::NearbySharedRemotes* nearby_shared_remotes =
-      location::nearby::NearbySharedRemotes::GetInstance();
+  nearby::NearbySharedRemotes* nearby_shared_remotes =
+      nearby::NearbySharedRemotes::GetInstance();
   // Ignore the provided |adapter| argument; it is a reference to the object
   // created by ImplementationPlatform::CreateBluetoothAdapter(). Instead,
   // directly use the cached bluetooth::mojom::Adapter.
@@ -195,8 +195,8 @@ ImplementationPlatform::CreateBluetoothClassicMedium(
 
 std::unique_ptr<BleMedium> ImplementationPlatform::CreateBleMedium(
     api::BluetoothAdapter& adapter) {
-  location::nearby::NearbySharedRemotes* nearby_shared_remotes =
-      location::nearby::NearbySharedRemotes::GetInstance();
+  nearby::NearbySharedRemotes* nearby_shared_remotes =
+      nearby::NearbySharedRemotes::GetInstance();
   // Ignore the provided |adapter| argument; it is a reference to the object
   // created by ImplementationPlatform::CreateBluetoothAdapter(). Instead,
   // directly use the cached bluetooth::mojom::Adapter.
@@ -234,8 +234,8 @@ ImplementationPlatform::CreateWifiHotspotMedium() {
 }
 
 std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
-  location::nearby::NearbySharedRemotes* nearby_shared_remotes =
-      location::nearby::NearbySharedRemotes::GetInstance();
+  nearby::NearbySharedRemotes* nearby_shared_remotes =
+      nearby::NearbySharedRemotes::GetInstance();
   if (!nearby_shared_remotes) {
     return nullptr;
   }
@@ -272,8 +272,8 @@ std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
 }
 
 std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {
-  location::nearby::NearbySharedRemotes* nearby_shared_remotes =
-      location::nearby::NearbySharedRemotes::GetInstance();
+  nearby::NearbySharedRemotes* nearby_shared_remotes =
+      nearby::NearbySharedRemotes::GetInstance();
 
   if (!nearby_shared_remotes) {
     LOG(ERROR) << "No NearbySharedRemotes instance. Returning null medium.";
@@ -336,4 +336,4 @@ ImplementationPlatform::CreateConditionVariable(Mutex* mutex) {
       static_cast<chrome::Mutex*>(mutex));
 }
 
-}  // namespace location::nearby::api
+}  // namespace nearby::api

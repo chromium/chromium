@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace location {
 namespace nearby {
 
 TEST(CryptoTest, Md5GeneratesHash) {
@@ -33,4 +32,3 @@ TEST(CryptoTest, Sha256ReturnsEmptyOnError) {
 }
 
 }  // namespace nearby
-}  // namespace location

@@ -4,7 +4,6 @@
 
 #include "chrome/services/sharing/nearby/platform/ble_peripheral.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -57,4 +56,3 @@ void BlePeripheral::UpdateIdToUuidMap(
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

@@ -13,7 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -142,4 +141,3 @@ TEST_F(InputFileTest, TestExtractUnderlyingFile_Invalid) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

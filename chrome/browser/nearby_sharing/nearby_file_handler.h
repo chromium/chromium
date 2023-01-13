@@ -27,7 +27,7 @@ class NearbyFileHandler {
     base::File input_file;
     base::File output_file;
   };
-  using PayloadPtr = location::nearby::connections::mojom::PayloadPtr;
+  using PayloadPtr = nearby::connections::mojom::PayloadPtr;
   using OpenFilesCallback = base::OnceCallback<void(std::vector<FileInfo>)>;
   using CreateFileCallback = base::OnceCallback<void(CreateFileResult)>;
   using GetUniquePathCallback = base::OnceCallback<void(base::FilePath)>;

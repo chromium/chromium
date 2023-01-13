@@ -39,7 +39,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -586,4 +585,3 @@ TEST_F(WifiLanMediumTest, GetDynamicPortRange) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

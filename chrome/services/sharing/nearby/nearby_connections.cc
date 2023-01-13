@@ -19,7 +19,7 @@
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "third_party/nearby/src/connections/core.h"
 
-namespace location::nearby::connections {
+namespace nearby::connections {
 
 namespace {
 
@@ -91,11 +91,11 @@ NearbyConnections& NearbyConnections::GetInstance() {
 
 NearbyConnections::NearbyConnections(
     mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
-    location::nearby::api::LogMessage::Severity min_log_severity,
+    nearby::api::LogMessage::Severity min_log_severity,
     base::OnceClosure on_disconnect)
     : nearby_connections_(this, std::move(nearby_connections)),
       thread_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  location::nearby::api::LogMessage::SetMinLogSeverity(min_log_severity);
+  nearby::api::LogMessage::SetMinLogSeverity(min_log_severity);
 
   nearby_connections_.set_disconnect_handler(std::move(on_disconnect));
 
@@ -520,4 +520,4 @@ void NearbyConnections::SetServiceControllerRouterForTesting(
   service_controller_router_ = std::move(service_controller_router);
 }
 
-}  // namespace location::nearby::connections
+}  // namespace nearby::connections

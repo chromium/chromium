@@ -4,7 +4,7 @@
 
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
 
-namespace location::nearby {
+namespace nearby {
 
 namespace {
 
@@ -27,4 +27,4 @@ void NearbySharedRemotes::SetInstance(NearbySharedRemotes* instance) {
 NearbySharedRemotes::NearbySharedRemotes() = default;
 NearbySharedRemotes::~NearbySharedRemotes() = default;
 
-}  // namespace location::nearby
+}  // namespace nearby

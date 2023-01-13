@@ -15,11 +15,11 @@ namespace ash {
 namespace secure_channel {
 namespace {
 
-using ::location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
-using ::location::nearby::connections::mojom::DiscoveryOptions;
-using ::location::nearby::connections::mojom::MediumSelection;
-using ::location::nearby::connections::mojom::Status;
-using ::location::nearby::connections::mojom::Strategy;
+using ::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
+using ::nearby::connections::mojom::DiscoveryOptions;
+using ::nearby::connections::mojom::MediumSelection;
+using ::nearby::connections::mojom::Status;
+using ::nearby::connections::mojom::Strategy;
 
 NearbyEndpointFinderImpl::Factory* g_test_factory = nullptr;
 
@@ -69,8 +69,7 @@ std::vector<uint8_t> GenerateEndpointInfo(const std::vector<uint8_t>& eid) {
 
 // static
 std::unique_ptr<NearbyEndpointFinder> NearbyEndpointFinderImpl::Factory::Create(
-    const mojo::SharedRemote<
-        location::nearby::connections::mojom::NearbyConnections>&
+    const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
         nearby_connections) {
   if (g_test_factory)
     return g_test_factory->CreateInstance(nearby_connections);
@@ -85,8 +84,7 @@ void NearbyEndpointFinderImpl::Factory::SetFactoryForTesting(
 }
 
 NearbyEndpointFinderImpl::NearbyEndpointFinderImpl(
-    const mojo::SharedRemote<
-        location::nearby::connections::mojom::NearbyConnections>&
+    const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
         nearby_connections)
     : nearby_connections_(nearby_connections),
       endpoint_id_(GenerateEndpointId()) {}
@@ -162,7 +160,7 @@ void NearbyEndpointFinderImpl::OnInjectBluetoothEndpointResult(Status status) {
 }
 
 void NearbyEndpointFinderImpl::OnStopDiscoveryResult(
-    location::nearby::connections::mojom::DiscoveredEndpointInfoPtr info,
+    ::nearby::connections::mojom::DiscoveredEndpointInfoPtr info,
     Status status) {
   util::RecordStopDiscoveryResult(status);
 

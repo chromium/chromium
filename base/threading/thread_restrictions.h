@@ -294,10 +294,10 @@ class WebViewBrowserState;
 namespace leveldb::port {
 class ScopedAllowWait;
 }  // namespace leveldb::port
-namespace location::nearby::chrome {
+namespace nearby::chrome {
 class ScheduledExecutor;
 class SubmittableExecutor;
-}  // namespace location::nearby::chrome
+}  // namespace nearby::chrome
 namespace media {
 class AudioInputDevice;
 class AudioOutputDevice;
@@ -737,8 +737,8 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class history_report::HistoryReportJniBridge;
   friend class internal::TaskTracker;
   friend class leveldb::port::ScopedAllowWait;
-  friend class location::nearby::chrome::ScheduledExecutor;
-  friend class location::nearby::chrome::SubmittableExecutor;
+  friend class nearby::chrome::ScheduledExecutor;
+  friend class nearby::chrome::SubmittableExecutor;
   friend class media::AudioOutputDevice;
   friend class media::BlockingUrlProtocol;
   friend class media::MojoVideoEncodeAccelerator;

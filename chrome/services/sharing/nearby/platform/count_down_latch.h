@@ -10,7 +10,6 @@
 #include "third_party/abseil-cpp/absl/time/time.h"
 #include "third_party/nearby/src/internal/platform/implementation/count_down_latch.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -35,6 +34,5 @@ class CountDownLatch : public api::CountDownLatch {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_COUNT_DOWN_LATCH_H_

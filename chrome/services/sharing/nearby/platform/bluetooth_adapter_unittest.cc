@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -130,4 +129,3 @@ TEST_F(BluetoothAdapterTest, TestGetAddress) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

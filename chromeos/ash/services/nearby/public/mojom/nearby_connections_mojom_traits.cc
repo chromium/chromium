@@ -6,46 +6,46 @@
 
 namespace mojo {
 
-location::nearby::connections::mojom::LogSeverity
-EnumTraits<location::nearby::connections::mojom::LogSeverity,
-           location::nearby::api::LogMessage::Severity>::
-    ToMojom(location::nearby::api::LogMessage::Severity input) {
+nearby::connections::mojom::LogSeverity
+EnumTraits<nearby::connections::mojom::LogSeverity,
+           nearby::api::LogMessage::Severity>::
+    ToMojom(nearby::api::LogMessage::Severity input) {
   switch (input) {
-    case location::nearby::api::LogMessage::Severity::kVerbose:
-      return location::nearby::connections::mojom::LogSeverity::kVerbose;
-    case location::nearby::api::LogMessage::Severity::kInfo:
-      return location::nearby::connections::mojom::LogSeverity::kInfo;
-    case location::nearby::api::LogMessage::Severity::kWarning:
-      return location::nearby::connections::mojom::LogSeverity::kWarning;
-    case location::nearby::api::LogMessage::Severity::kError:
-      return location::nearby::connections::mojom::LogSeverity::kError;
-    case location::nearby::api::LogMessage::Severity::kFatal:
-      return location::nearby::connections::mojom::LogSeverity::kFatal;
+    case nearby::api::LogMessage::Severity::kVerbose:
+      return nearby::connections::mojom::LogSeverity::kVerbose;
+    case nearby::api::LogMessage::Severity::kInfo:
+      return nearby::connections::mojom::LogSeverity::kInfo;
+    case nearby::api::LogMessage::Severity::kWarning:
+      return nearby::connections::mojom::LogSeverity::kWarning;
+    case nearby::api::LogMessage::Severity::kError:
+      return nearby::connections::mojom::LogSeverity::kError;
+    case nearby::api::LogMessage::Severity::kFatal:
+      return nearby::connections::mojom::LogSeverity::kFatal;
   }
 
   NOTREACHED();
-  return location::nearby::connections::mojom::LogSeverity::kInfo;
+  return nearby::connections::mojom::LogSeverity::kInfo;
 }
 
-bool EnumTraits<location::nearby::connections::mojom::LogSeverity,
-                location::nearby::api::LogMessage::Severity>::
-    FromMojom(location::nearby::connections::mojom::LogSeverity input,
-              location::nearby::api::LogMessage::Severity* out) {
+bool EnumTraits<nearby::connections::mojom::LogSeverity,
+                nearby::api::LogMessage::Severity>::
+    FromMojom(nearby::connections::mojom::LogSeverity input,
+              nearby::api::LogMessage::Severity* out) {
   switch (input) {
-    case location::nearby::connections::mojom::LogSeverity::kVerbose:
-      *out = location::nearby::api::LogMessage::Severity::kVerbose;
+    case nearby::connections::mojom::LogSeverity::kVerbose:
+      *out = nearby::api::LogMessage::Severity::kVerbose;
       return true;
-    case location::nearby::connections::mojom::LogSeverity::kInfo:
-      *out = location::nearby::api::LogMessage::Severity::kInfo;
+    case nearby::connections::mojom::LogSeverity::kInfo:
+      *out = nearby::api::LogMessage::Severity::kInfo;
       return true;
-    case location::nearby::connections::mojom::LogSeverity::kWarning:
-      *out = location::nearby::api::LogMessage::Severity::kWarning;
+    case nearby::connections::mojom::LogSeverity::kWarning:
+      *out = nearby::api::LogMessage::Severity::kWarning;
       return true;
-    case location::nearby::connections::mojom::LogSeverity::kError:
-      *out = location::nearby::api::LogMessage::Severity::kError;
+    case nearby::connections::mojom::LogSeverity::kError:
+      *out = nearby::api::LogMessage::Severity::kError;
       return true;
-    case location::nearby::connections::mojom::LogSeverity::kFatal:
-      *out = location::nearby::api::LogMessage::Severity::kFatal;
+    case nearby::connections::mojom::LogSeverity::kFatal:
+      *out = nearby::api::LogMessage::Severity::kFatal;
       return true;
   }
 

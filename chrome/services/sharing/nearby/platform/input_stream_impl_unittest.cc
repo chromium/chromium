@@ -18,7 +18,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -222,4 +221,3 @@ TEST_F(InputStreamImplTest, ResetHandle) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

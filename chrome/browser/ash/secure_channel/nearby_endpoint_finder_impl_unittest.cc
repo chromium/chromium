@@ -20,10 +20,10 @@ namespace ash {
 namespace secure_channel {
 namespace {
 
-using ::location::nearby::connections::mojom::DiscoveredEndpointInfo;
-using ::location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
-using ::location::nearby::connections::mojom::EndpointDiscoveryListener;
-using ::location::nearby::connections::mojom::Status;
+using ::nearby::connections::mojom::DiscoveredEndpointInfo;
+using ::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
+using ::nearby::connections::mojom::EndpointDiscoveryListener;
+using ::nearby::connections::mojom::Status;
 using ::testing::_;
 using ::testing::Invoke;
 

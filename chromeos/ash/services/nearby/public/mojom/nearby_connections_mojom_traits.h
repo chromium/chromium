@@ -11,13 +11,13 @@
 namespace mojo {
 
 template <>
-class EnumTraits<location::nearby::connections::mojom::LogSeverity,
-                 location::nearby::api::LogMessage::Severity> {
+class EnumTraits<nearby::connections::mojom::LogSeverity,
+                 nearby::api::LogMessage::Severity> {
  public:
-  static location::nearby::connections::mojom::LogSeverity ToMojom(
-      location::nearby::api::LogMessage::Severity input);
-  static bool FromMojom(location::nearby::connections::mojom::LogSeverity input,
-                        location::nearby::api::LogMessage::Severity* out);
+  static nearby::connections::mojom::LogSeverity ToMojom(
+      nearby::api::LogMessage::Severity input);
+  static bool FromMojom(nearby::connections::mojom::LogSeverity input,
+                        nearby::api::LogMessage::Severity* out);
 };
 
 }  // namespace mojo

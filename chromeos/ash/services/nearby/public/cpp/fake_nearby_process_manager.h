@@ -44,8 +44,7 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
       : public NearbyProcessManager::NearbyProcessReference {
    public:
     FakeNearbyProcessReference(
-        const mojo::SharedRemote<
-            location::nearby::connections::mojom::NearbyConnections>&
+        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
             connections,
         const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
         base::OnceClosure destructor_callback);
@@ -53,13 +52,12 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
 
    private:
     // NearbyProcessManager::NearbyProcessReference:
-    const mojo::SharedRemote<
-        location::nearby::connections::mojom::NearbyConnections>&
+    const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
     GetNearbyConnections() const override;
     const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const override;
 
-    mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
+    mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
         connections_;
     mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
     base::OnceClosure destructor_callback_;
@@ -80,7 +78,7 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
   std::unique_ptr<MockNearbySharingDecoder> active_decoder_;
 
   // Unbound if no outstanding references exist.
-  mojo::SharedRemote<location::nearby::connections::mojom::NearbyConnections>
+  mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       connections_remote_;
   mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_remote_;
 

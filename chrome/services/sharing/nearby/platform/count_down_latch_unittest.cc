@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace location {
 namespace nearby {
 namespace chrome {
 
@@ -217,4 +216,3 @@ TEST_F(CountDownLatchTest, InitializeCount2_LongerTimedAwaitDoesNotTimeOut) {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location

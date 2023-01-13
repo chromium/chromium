@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module location.nearby.connections.mojom;
+module nearby.connections.mojom;
 
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom";
 import "mojo/public/mojom/base/file.mojom";

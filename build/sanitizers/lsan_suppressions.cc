@@ -93,7 +93,7 @@ char kLSanDefaultSuppressions[] =
     // Suppress leak in SurfaceDrawContext. crbug.com/1265033
     "leak:skgpu::v1::SurfaceDrawContext::drawGlyphRunList\n"
     // Suppress leak in BluetoothServerSocket. crbug.com/1278970
-    "leak:location::nearby::chrome::BluetoothServerSocket::"
+    "leak:nearby::chrome::BluetoothServerSocket::"
     "BluetoothServerSocket\n"
     // Suppress leak in NearbyConnectionBrokerImpl. crbug.com/1279578
     "leak:ash::secure_channel::NearbyConnectionBrokerImpl\n"

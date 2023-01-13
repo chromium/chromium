@@ -17,7 +17,6 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace location {
 namespace nearby {
 
 class InputStream;
@@ -59,6 +58,5 @@ class BidirectionalStream {
 
 }  // namespace chrome
 }  // namespace nearby
-}  // namespace location
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BIDIRECTIONAL_STREAM_H_
