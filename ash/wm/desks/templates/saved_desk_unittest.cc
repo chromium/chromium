@@ -703,6 +703,28 @@ TEST_F(SavedDeskTest, HideOverviewItemsOnSavedDeskGridShow) {
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
 }
 
+// Verifies that we don't get a crash when: creating a window, minimizing it,
+// entering the saved desk library and finally exiting overview. Regression test
+// for http://b/260001863.
+TEST_F(SavedDeskTest, HideMinimizedWindowOverviewItemsOnSavedDeskGridShow) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  auto test_window = CreateAppWindow();
+  WindowState::Get(test_window.get())->Minimize();
+
+  // Enter overview mode and the saved desk library. Entering the library will
+  // hide the overview item.
+  OpenOverviewAndShowSavedDeskGrid();
+
+  // Exit overview mode. This needs to be done with a non-zero duration so that
+  // the fade-out animation happens.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  ToggleOverview();
+}
+
 // Tests that when the saved desk grid is shown and the active desk is closed,
 // overview items stay hidden.
 TEST_F(SavedDeskTest, OverviewItemsStayHiddenInSavedDeskGridOnDeskClose) {
