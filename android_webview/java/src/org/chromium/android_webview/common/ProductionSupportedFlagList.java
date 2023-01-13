@@ -360,6 +360,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.METRICS_SERVICE_ASYNC_COLLECTION,
                     "Controls whether the metrics service creates periodic logs"
                             + " in a background thread or on the main thread."),
+            Flag.baseFeature(ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
+                    "When enabled runs the main thread at compositing priority."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
