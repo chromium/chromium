@@ -16,6 +16,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
@@ -50,6 +51,8 @@ public class AdPersonalizationRemovedFragment extends PrivacySandboxSettingsBase
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        assert (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4));
+
         super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.privacy_sandbox_remove_interest_title);
 

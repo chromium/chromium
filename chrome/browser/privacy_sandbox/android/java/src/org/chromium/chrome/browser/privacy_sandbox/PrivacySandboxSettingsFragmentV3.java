@@ -12,6 +12,7 @@ import android.text.style.ForegroundColorSpan;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -32,6 +33,8 @@ public class PrivacySandboxSettingsFragmentV3 extends PrivacySandboxSettingsBase
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        assert (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4));
+
         super.onCreatePreferences(bundle, s);
 
         // Add all preferences and set the title.

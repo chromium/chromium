@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.os.Bundle;
 import android.view.View;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -24,6 +25,8 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment {
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        assert (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4));
+
         super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.privacy_sandbox_ad_measurement_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_measurement_preference);

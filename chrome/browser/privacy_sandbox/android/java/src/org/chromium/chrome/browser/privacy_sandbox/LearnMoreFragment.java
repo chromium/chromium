@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.SpanApplier;
@@ -32,6 +33,8 @@ public class LearnMoreFragment extends PreferenceFragmentCompat {
      */
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        assert (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4));
+
         getActivity().setTitle(R.string.privacy_sandbox_learn_more_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.learn_more_preference);
         LongSummaryTextMessagePreference topicDescription =
