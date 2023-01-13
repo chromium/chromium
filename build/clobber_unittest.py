@@ -6,12 +6,99 @@
 import os
 import pathlib
 import shutil
-import sys
 import tempfile
+import textwrap
 import unittest
 from unittest import mock
 
 import clobber
+
+
+class TestExtractBuildCommand(unittest.TestCase):
+  def setUp(self):
+    _, self.build_ninja_path = tempfile.mkstemp(text=True)
+
+  def tearDown(self):
+    os.remove(self.build_ninja_path)
+
+  def test_normal_extraction(self):
+    build_ninja_file_contents = textwrap.dedent("""
+        ninja_required_version = 1.7.2
+
+        rule gn
+          command = ../../buildtools/gn --root=../.. -q --regeneration gen .
+          pool = console
+          description = Regenerating ninja files
+
+        build build.ninja.stamp: gn
+          generator = 1
+          depfile = build.ninja.d
+
+        build build.ninja: phony build.ninja.stamp
+          generator = 1
+
+        pool build_toolchain_action_pool
+          depth = 72
+
+        pool build_toolchain_link_pool
+          depth = 23
+
+        subninja toolchain.ninja
+        subninja clang_newlib_x64/toolchain.ninja
+        subninja glibc_x64/toolchain.ninja
+        subninja irt_x64/toolchain.ninja
+        subninja nacl_bootstrap_x64/toolchain.ninja
+        subninja newlib_pnacl/toolchain.ninja
+
+        build blink_python_tests: phony obj/blink_python_tests.stamp
+        build blink_tests: phony obj/blink_tests.stamp
+
+        default all
+    """)  # Based off of a standard linux build dir.
+    with open(self.build_ninja_path, 'w') as f:
+      f.write(build_ninja_file_contents)
+
+    expected_build_ninja_file_contents = textwrap.dedent("""
+        ninja_required_version = 1.7.2
+
+        rule gn
+          command = ../../buildtools/gn --root=../.. -q --regeneration gen .
+          pool = console
+          description = Regenerating ninja files
+
+        build build.ninja.stamp: gn
+          generator = 1
+          depfile = build.ninja.d
+
+        build build.ninja: phony build.ninja.stamp
+          generator = 1
+
+    """)
+
+    self.assertEqual(clobber.extract_gn_build_commands(self.build_ninja_path),
+                     expected_build_ninja_file_contents)
+
+  def test_unexpected_format(self):
+    # No "build build.ninja:" line should make it return an empty string.
+    build_ninja_file_contents = textwrap.dedent("""
+        ninja_required_version = 1.7.2
+
+        rule gn
+          command = ../../buildtools/gn --root=../.. -q --regeneration gen .
+          pool = console
+          description = Regenerating ninja files
+
+        subninja toolchain.ninja
+
+        build blink_python_tests: phony obj/blink_python_tests.stamp
+        build blink_tests: phony obj/blink_tests.stamp
+
+    """)
+    with open(self.build_ninja_path, 'w') as f:
+      f.write(build_ninja_file_contents)
+
+    self.assertEqual(clobber.extract_gn_build_commands(self.build_ninja_path),
+                     '')
 
 
 class TestDelete(unittest.TestCase):
