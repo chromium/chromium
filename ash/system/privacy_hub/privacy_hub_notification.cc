@@ -6,12 +6,20 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "base/containers/contains.h"
-#include "base/dcheck_is_on.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+
+namespace {
+
+void RemoveNotification(const std::string& id) {
+  message_center::MessageCenter::Get()->RemoveNotification(id,
+                                                           /*by_user=*/false);
+}
+
+}  // namespace
 
 namespace ash {
 
@@ -67,13 +75,22 @@ PrivacyHubNotification::PrivacyHubNotification(
       .SetWarningLevel(message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
-PrivacyHubNotification::PrivacyHubNotification(PrivacyHubNotification&&) =
-    default;
-PrivacyHubNotification& PrivacyHubNotification::operator=(
-    PrivacyHubNotification&&) = default;
 PrivacyHubNotification::~PrivacyHubNotification() = default;
 
 void PrivacyHubNotification::Show() {
+  if (remove_timer_.IsRunning()) {
+    // Calling `Show()` soon after calling `Hide()` for the same notification
+    // usually happens for two cases. In both the update should not be a silent
+    // update of just the text but instead resurface the notifiaction:
+    // 1. We're updating the app names in the notification and want to make the
+    // user aware that the app they just launched also tries to use a sensor
+    // that is currently disabled.
+    // 2. The user misclicked the app in the tray and closed the 'wrong' app
+    // again just to launch the right app a few seconds later. Both apps use
+    // the same sensor that is currently disabled.
+    remove_timer_.Stop();
+    RemoveNotification(id_);
+  }
   const std::vector<std::u16string> apps = GetAppsAccessingSensors();
 
   if (const size_t num_apps = apps.size(); num_apps < message_ids_.size()) {
@@ -83,11 +100,24 @@ void PrivacyHubNotification::Show() {
   }
 
   message_center::MessageCenter::Get()->AddNotification(builder_.BuildPtr());
+  last_time_shown_ = last_time_shown_.value_or(base::Time::Now());
 }
 
 void PrivacyHubNotification::Hide() {
-  message_center::MessageCenter::Get()->RemoveNotification(id_,
-                                                           /*by_user=*/false);
+  if (!last_time_shown_) {
+    return;
+  }
+
+  if (const base::TimeDelta remaining_show_time =
+          kMinShowTime - (base::Time::Now() - last_time_shown_.value());
+      remaining_show_time.is_positive()) {
+    remove_timer_.Start(FROM_HERE, remaining_show_time,
+                        base::BindOnce(RemoveNotification, id_));
+  } else {
+    RemoveNotification(id_);
+  }
+
+  last_time_shown_.reset();
 }
 
 std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors()

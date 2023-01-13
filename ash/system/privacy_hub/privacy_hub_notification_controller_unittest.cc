@@ -12,6 +12,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
@@ -22,6 +23,7 @@
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -36,13 +38,39 @@ class FakeSensorDisabledNotificationDelegate
   }
 };
 
+class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
+ public:
+  explicit RemoveNotificationWaiter(const std::string& notification_id)
+      : notification_id_(notification_id) {
+    message_center::MessageCenter::Get()->AddObserver(this);
+  }
+  ~RemoveNotificationWaiter() override {
+    message_center::MessageCenter::Get()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationRemoved(const std::string& notification_id,
+                             const bool by_user) override {
+    if (notification_id == notification_id_) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  const std::string notification_id_;
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 using Sensor = PrivacyHubNotificationController::Sensor;
 
 class PrivacyHubNotificationControllerTest : public AshTestBase {
  public:
-  PrivacyHubNotificationControllerTest() {
+  PrivacyHubNotificationControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(features::kCrosPrivacyHubV2);
   }
 
@@ -125,6 +153,11 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     return histogram_tester_;
   }
 
+  void WaitUntilNotificationRemoved(const std::string& notification_id) {
+    RemoveNotificationWaiter notification_waiter(notification_id);
+    notification_waiter.Wait();
+  }
+
  private:
   base::raw_ptr<PrivacyHubNotificationController> controller_;
   const FakeSensorDisabledNotificationDelegate delegate_;
@@ -146,6 +179,8 @@ TEST_F(PrivacyHubNotificationControllerTest, ShowMicrophoneNotification) {
       GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 
   RemoveNotification(Sensor::kMicrophone);
+  WaitUntilNotificationRemoved(
+      MicrophonePrivacySwitchController::kNotificationId);
   EXPECT_FALSE(
       GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 }
@@ -154,6 +189,8 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationActive) {
   ExpectNoNotificationActive();
 
   ShowCombinedNotification();
+  WaitUntilNotificationRemoved(kPrivacyHubCameraOffNotificationId);
+
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
@@ -170,6 +207,8 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationBuilding) {
       GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 
   ShowNotification(Sensor::kCamera);
+  WaitUntilNotificationRemoved(
+      MicrophonePrivacySwitchController::kNotificationId);
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
@@ -184,6 +223,8 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationBuilding) {
 
   // Remove the camera notification as well.
   RemoveNotification(Sensor::kCamera);
+  WaitUntilNotificationRemoved(kPrivacyHubCameraOffNotificationId);
+
   ExpectNoNotificationActive();
 }
 
@@ -192,6 +233,8 @@ TEST_F(PrivacyHubNotificationControllerTest,
   ExpectNoNotificationActive();
 
   ShowCombinedNotification();
+  WaitUntilNotificationRemoved(kPrivacyHubCameraOffNotificationId);
+
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
@@ -227,6 +270,8 @@ TEST_F(PrivacyHubNotificationControllerTest,
   // Now that no sensor is in use anymore when accessing both again the
   // combined notification should show up again.
   ShowCombinedNotification();
+  WaitUntilNotificationRemoved(kPrivacyHubCameraOffNotificationId);
+
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
@@ -250,6 +295,8 @@ TEST_F(PrivacyHubNotificationControllerTest, ClickOnNotificationButton) {
             0);
 
   ClickOnNotificationButton();
+
+  WaitUntilNotificationRemoved(kPrivacyHubCameraOffNotificationId);
 
   ExpectNoNotificationActive();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -276,6 +323,8 @@ TEST_F(PrivacyHubNotificationControllerTest, ClickOnNotificationBody) {
             0);
 
   ClickOnNotificationBody();
+
+  WaitUntilNotificationRemoved(kPrivacyHubCameraOffNotificationId);
 
   ExpectNoNotificationActive();
   EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);

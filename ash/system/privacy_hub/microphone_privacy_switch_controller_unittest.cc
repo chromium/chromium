@@ -82,7 +82,8 @@ class MockFrontendAPI : public PrivacyHubDelegate {
 
 class PrivacyHubMicrophoneControllerTest : public AshTestBase {
  public:
-  PrivacyHubMicrophoneControllerTest() {
+  PrivacyHubMicrophoneControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
 
     auto delegate = std::make_unique<MockNewWindowDelegate>();
@@ -162,6 +163,10 @@ class PrivacyHubMicrophoneControllerTest : public AshTestBase {
   void SetNumberOfActiveInputStreams(int number_of_active_input_streams) {
     FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
         {{"CRAS_CLIENT_TYPE_CHROME", number_of_active_input_streams}});
+  }
+
+  void WaitUntilNotificationRemoved() {
+    task_environment()->FastForwardBy(PrivacyHubNotification::kMinShowTime);
   }
 
   void LaunchApp(absl::optional<std::u16string> app_name) {
@@ -288,6 +293,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest, LaunchAppUsingMicrophone) {
 
   // Unmute again, notification goes down.
   UnMuteMicrophone();
+  WaitUntilNotificationRemoved();
   EXPECT_FALSE(GetNotification());
 }
 
@@ -354,6 +360,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest, RemovingStreamDoesNotShowPopup) {
   // The notification should be removed if all input streams are removed.
   LaunchApp(absl::nullopt);
   SetNumberOfActiveInputStreams(0);
+  WaitUntilNotificationRemoved();
 
   EXPECT_FALSE(GetNotification());
 }
@@ -478,6 +485,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
 
   SetMicrophoneMuteSwitchState(/*muted=*/false);
   ASSERT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
+  WaitUntilNotificationRemoved();
   EXPECT_FALSE(GetNotification());
 }
 
@@ -501,6 +509,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
 
   SetMicrophoneMuteSwitchState(/*muted=*/false);
   ASSERT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
+  WaitUntilNotificationRemoved();
   EXPECT_FALSE(GetNotification());
 }
 
@@ -514,6 +523,7 @@ TEST_F(PrivacyHubMicrophoneControllerTest,
   EXPECT_TRUE(GetPopupNotification());
 
   SetNumberOfActiveInputStreams(0);
+  WaitUntilNotificationRemoved();
 
   EXPECT_FALSE(GetNotification());
 }

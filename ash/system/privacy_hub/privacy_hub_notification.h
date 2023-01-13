@@ -13,7 +13,10 @@
 #include "ash/public/cpp/system_notification_builder.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
@@ -52,6 +55,9 @@ class ASH_EXPORT PrivacyHubNotification {
                     SensorDisabledNotificationDelegate::Sensor::kMinValue,
                     SensorDisabledNotificationDelegate::Sensor::kMaxValue>;
 
+  constexpr static base::TimeDelta kMinShowTime =
+      base::Seconds(message_center::kAutocloseDefaultDelaySeconds);
+
   // Create a new notification. When calling `Show()` and `sensors_for_apps`
   // contains at least one sensor it will try to replace currently used apps
   // by the sensor(s) in the message. This is only possible if there are less
@@ -66,16 +72,19 @@ class ASH_EXPORT PrivacyHubNotification {
       scoped_refptr<PrivacyHubNotificationClickDelegate> delegate,
       ash::NotificationCatalogName catalog_name,
       int action_button_id);
-  PrivacyHubNotification(PrivacyHubNotification&&);
-  PrivacyHubNotification& operator=(PrivacyHubNotification&&);
+  PrivacyHubNotification(PrivacyHubNotification&&) = delete;
+  PrivacyHubNotification& operator=(PrivacyHubNotification&&) = delete;
   ~PrivacyHubNotification();
 
-  // Show the notification to the user. If more than
-  // one `message_ids_` exists will attempt to use the correct one for the
-  // number of apps accessing the `sensors_for_apps_`.
+  // Show the notification to the user for at least `kMinShowTime`. Calls to
+  // `Hide()` are delayed until this time has passed and the notification is
+  // hidden then. If more than one `message_ids_` exists will attempt to use
+  // the correct one for the number of apps accessing the `sensors_for_apps_`.
   void Show();
 
-  // Hide the notification from the user.
+  // Hide the notification from the user if it has already been shown for at
+  // least `kMinShowTime`. If not the notification will be shown for the
+  // remaining time and then hidden.
   void Hide();
 
  private:
@@ -87,6 +96,8 @@ class ASH_EXPORT PrivacyHubNotification {
   SystemNotificationBuilder builder_;
   MessageIds message_ids_;
   SensorSet sensors_for_apps_;
+  absl::optional<base::Time> last_time_shown_;
+  base::OneShotTimer remove_timer_;
 };
 
 }  // namespace ash

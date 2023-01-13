@@ -12,9 +12,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 
 namespace ash {
 namespace {
+
+static constexpr char kNotificationId[] = "unit.test";
 
 class FakeSensorDisabledNotificationDelegate
     : public SensorDisabledNotificationDelegate {
@@ -29,15 +32,37 @@ class FakeSensorDisabledNotificationDelegate
   std::vector<std::u16string> apps_;
 };
 
+class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
+ public:
+  RemoveNotificationWaiter() {
+    message_center::MessageCenter::Get()->AddObserver(this);
+  }
+  ~RemoveNotificationWaiter() override {
+    message_center::MessageCenter::Get()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationRemoved(const std::string& notification_id,
+                             const bool by_user) override {
+    if (notification_id == kNotificationId) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 class PrivacyHubNotificationTest : public AshTestBase {
  public:
-  static constexpr char kId[] = "unit.test";
-
   PrivacyHubNotificationTest()
-      : notification_(
-            kId,
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        notification_(
+            kNotificationId,
             IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
             {IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
              IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
@@ -108,15 +133,25 @@ TEST_F(PrivacyHubNotificationClickDelegateTest, Click) {
 }
 
 TEST_F(PrivacyHubNotificationTest, ShowAndHide) {
-  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(kId));
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      kNotificationId));
 
   notification().Show();
 
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(kId));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      kNotificationId));
 
   notification().Hide();
 
-  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(kId));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      kNotificationId));
+
+  RemoveNotificationWaiter waiter;
+
+  waiter.Wait();
+
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      kNotificationId));
 }
 
 TEST_F(PrivacyHubNotificationTest, WithApps) {
@@ -124,7 +159,8 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
   notification().Show();
 
   message_center::Notification* notification_ptr =
-      message_center::MessageCenter::Get()->FindNotificationById(kId);
+      message_center::MessageCenter::Get()->FindNotificationById(
+          kNotificationId);
 
   ASSERT_TRUE(notification_ptr);
   EXPECT_EQ(
@@ -137,8 +173,8 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
   sensor_delegate().LaunchApp(app1);
 
   notification().Show();
-  notification_ptr =
-      message_center::MessageCenter::Get()->FindNotificationById(kId);
+  notification_ptr = message_center::MessageCenter::Get()->FindNotificationById(
+      kNotificationId);
   EXPECT_EQ(
       notification_ptr->message(),
       l10n_util::GetStringFUTF16(
@@ -150,8 +186,8 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
   sensor_delegate().LaunchApp(app2);
 
   notification().Show();
-  notification_ptr =
-      message_center::MessageCenter::Get()->FindNotificationById(kId);
+  notification_ptr = message_center::MessageCenter::Get()->FindNotificationById(
+      kNotificationId);
   EXPECT_TRUE(base::Contains(notification_ptr->message(), app1));
   EXPECT_TRUE(base::Contains(notification_ptr->message(), app2));
 
@@ -160,8 +196,8 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
   sensor_delegate().LaunchApp(app3);
 
   notification().Show();
-  notification_ptr =
-      message_center::MessageCenter::Get()->FindNotificationById(kId);
+  notification_ptr = message_center::MessageCenter::Get()->FindNotificationById(
+      kNotificationId);
   EXPECT_EQ(
       notification_ptr->message(),
       l10n_util::GetStringUTF16(

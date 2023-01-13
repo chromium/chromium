@@ -24,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 using testing::_;
@@ -72,11 +73,35 @@ message_center::Notification* FindNotificationById(const std::string& id) {
   return message_center::MessageCenter::Get()->FindNotificationById(id);
 }
 
+class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
+ public:
+  RemoveNotificationWaiter() {
+    message_center::MessageCenter::Get()->AddObserver(this);
+  }
+  ~RemoveNotificationWaiter() override {
+    message_center::MessageCenter::Get()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationRemoved(const std::string& notification_id,
+                             const bool by_user) override {
+    if (notification_id == kPrivacyHubCameraOffNotificationId) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 class PrivacyHubCameraControllerTests : public AshTestBase {
  protected:
-  PrivacyHubCameraControllerTests() {
+  PrivacyHubCameraControllerTests()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
   }
 
@@ -106,6 +131,11 @@ class PrivacyHubCameraControllerTests : public AshTestBase {
 
   void LaunchAppAccessingCamera(const std::u16string& app_name) {
     delegate_.LaunchAppAccessingCamera(app_name);
+  }
+
+  void WaitUntilNotificationRemoved() {
+    RemoveNotificationWaiter waiter;
+    waiter.Wait();
   }
 
   ::testing::NiceMock<MockFrontendAPI> mock_frontend_;
@@ -446,6 +476,7 @@ TEST_F(PrivacyHubCameraControllerTests,
   // Enabling camera via the user pref should clear the notification
   SetUserPref(true);
   EXPECT_TRUE(GetUserPref());
+  WaitUntilNotificationRemoved();
   EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
 }
 
@@ -502,6 +533,8 @@ TEST_F(PrivacyHubCameraControllerTests,
 
   // The only active application stops accessing the camera the camera.
   controller_->ActiveApplicationsChanged(/*application_added=*/false);
+
+  WaitUntilNotificationRemoved();
 
   // Existing notification `kPrivacyHubCameraOffNotificationId` should be
   // removed as the number of active applications is 0 now.
