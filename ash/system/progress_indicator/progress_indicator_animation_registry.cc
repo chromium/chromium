@@ -59,15 +59,19 @@ base::CallbackListSubscription AddAnimationChangedCallbackForKey(
     it->second.set_removal_callback(base::BindRepeating(
         [](KeyedAnimationChangedCallbackListMap<CallbackListType>*
                animation_changed_callback_lists_by_key,
-           const void* key) {
+           MayBeDangling<const void> key) {
           auto it = animation_changed_callback_lists_by_key->find(key);
           if (it != animation_changed_callback_lists_by_key->end() &&
               it->second.empty()) {
             animation_changed_callback_lists_by_key->erase(it);
           }
         },
+        // base::Unretained is safe, because this object is owning the callback.
         base::Unretained(animation_changed_callback_lists_by_key),
-        base::Unretained(key)));
+        // TODO(b/265440023) `key` may be a pointer to freed memory. Consider
+        // using base::IdType instead of void* to key the
+        // ProgressIndicatorAnimationRegistry.
+        base::UnsafeDangling(key)));
   }
 
   return it->second.Add(std::move(callback));
