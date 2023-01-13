@@ -121,9 +121,10 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
       sandbox::mojom::Sandbox sandbox_type);
 };
 
+// Add a block list DLL to a configuration |config| based on the name of the DLL
+// passed as |module_name|. The DLL must be loaded in the current process.
 SANDBOX_POLICY_EXPORT
 void BlocklistAddOneDllForTesting(const wchar_t* module_name,
-                                  bool check_in_browser,
                                   TargetConfig* config);
 
 }  // namespace policy

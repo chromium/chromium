@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -30,6 +31,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -197,69 +199,52 @@ bool AddDirectory(int path,
 }
 #endif  // !defined(NACL_WIN64)
 
-// Compares the loaded |module| file name matches |module_name|.
-bool IsExpandedModuleName(HMODULE module, const wchar_t* module_name) {
-  wchar_t path[MAX_PATH];
-  DWORD sz = ::GetModuleFileNameW(module, path, std::size(path));
-  if ((sz == std::size(path)) || (sz == 0)) {
-    // XP does not set the last error properly, so we bail out anyway.
-    return false;
+// Return a mapping between the long and short names for all loaded modules in
+// the current process. The mapping excludes modules which don't have a typical
+// short name, e.g. EXAMPL~1.DLL.
+std::map<std::wstring, std::wstring> GetShortNameModules() {
+  std::vector<HMODULE> modules;
+  if (!base::win::GetLoadedModulesSnapshot(::GetCurrentProcess(), &modules)) {
+    return {};
   }
-  if (!::GetLongPathName(path, path, std::size(path)))
-    return false;
-  base::FilePath fname(path);
-  return (fname.BaseName().value() == module_name);
+  std::map<std::wstring, std::wstring> names;
+  for (HMODULE module : modules) {
+    wchar_t path[MAX_PATH];
+    DWORD sz = ::GetModuleFileNameW(module, path, std::size(path));
+    if ((sz == std::size(path)) || (sz == 0)) {
+      continue;
+    }
+    base::FilePath module_path(path);
+    base::FilePath name = module_path.BaseName();
+    if (name.RemoveExtension().value().size() > 8 ||
+        name.Extension().size() > 4 ||
+        name.value().find(L"~") == std::wstring::npos) {
+      continue;
+    }
+    base::FilePath fname = base::MakeLongFilePath(module_path);
+    names.insert_or_assign(base::ToLowerASCII(fname.BaseName().value()),
+                           name.value());
+  }
+  return names;
 }
 
-std::vector<std::wstring> GetShortNameVariants(const std::wstring& name) {
-  std::vector<std::wstring> alt_names;
-  size_t period = name.rfind(L'.');
-  DCHECK_NE(std::string::npos, period);
-  DCHECK_LE(3U, (name.size() - period));
-  if (period <= 8)
-    return alt_names;
-
-  // The module could have been loaded with a 8.3 short name. We check
-  // the three most common cases: 'thelongname.dll' becomes
-  // 'thelon~1.dll', 'thelon~2.dll' and 'thelon~3.dll'.
-  alt_names.reserve(3);
-  for (wchar_t ix = '1'; ix <= '3'; ++ix) {
-    const wchar_t suffix[] = {'~', ix, 0};
-    alt_names.push_back(
-        base::StrCat({name.substr(0, 6), suffix, name.substr(period)}));
-  }
-  return alt_names;
-}
-
-// Adds a single dll by |module_name| into the |policy| blocklist.
-// If |check_in_browser| is true we only add an unload policy only if the dll
-// is also loaded in this process.
+// Add a block list DLL to a configuration |config| based on the name of the DLL
+// passed as |module_name|. The DLL must be loaded in the current process. A
+// mapping from long names to short names should also be passed in |modules| to
+// attempt to map a long name to the actual loaded name, this can be initialized
+// with a call to GetShortNameModules.
 void BlocklistAddOneDll(const wchar_t* module_name,
-                        bool check_in_browser,
+                        const std::map<std::wstring, std::wstring>& modules,
                         TargetConfig* config) {
   DCHECK(!config->IsConfigured());
-  if (check_in_browser) {
-    HMODULE module = ::GetModuleHandleW(module_name);
-    if (module) {
-      config->AddDllToUnload(module_name);
-      DVLOG(1) << "dll to unload found: " << module_name;
-    } else {
-      for (const auto& alt_name : GetShortNameVariants(module_name)) {
-        module = ::GetModuleHandleW(alt_name.c_str());
-        // We found it, but because it only has 6 significant letters, we
-        // want to make sure it is the right one.
-        if (module && IsExpandedModuleName(module, module_name)) {
-          // Found a match. We add both forms to the policy.
-          config->AddDllToUnload(alt_name.c_str());
-          config->AddDllToUnload(module_name);
-          return;
-        }
-      }
-    }
-  } else {
+  if (::GetModuleHandleW(module_name) != nullptr) {
     config->AddDllToUnload(module_name);
-    for (const auto& alt_name : GetShortNameVariants(module_name)) {
-      config->AddDllToUnload(alt_name.c_str());
+    DVLOG(1) << "dll to unload found: " << module_name;
+  } else {
+    auto short_name = modules.find(base::ToLowerASCII(module_name));
+    if (short_name != modules.end()) {
+      config->AddDllToUnload(short_name->second.c_str());
+      config->AddDllToUnload(module_name);
     }
   }
 }
@@ -334,11 +319,12 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   }
 #endif
 
+  std::map<std::wstring, std::wstring> modules = GetShortNameModules();
   // Adds policy rules for unloading the known dlls that cause Chrome to crash.
   // Eviction of injected DLLs is done by the sandbox so that the injected
   // module does not get a chance to execute any code.
   for (int ix = 0; ix != std::size(kTroublesomeDlls); ++ix)
-    BlocklistAddOneDll(kTroublesomeDlls[ix], true, config);
+    BlocklistAddOneDll(kTroublesomeDlls[ix], modules, config);
 
   return SBOX_ALL_OK;
 }
@@ -1131,9 +1117,9 @@ ResultCode SandboxWin::GetPolicyDiagnostics(
 }
 
 void BlocklistAddOneDllForTesting(const wchar_t* module_name,
-                                  bool check_in_browser,
                                   TargetConfig* config) {
-  BlocklistAddOneDll(module_name, check_in_browser, config);
+  std::map<std::wstring, std::wstring> modules = GetShortNameModules();
+  BlocklistAddOneDll(module_name, modules, config);
 }
 
 // static

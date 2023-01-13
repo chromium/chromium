@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -177,6 +178,16 @@ void CompareSidList(const std::set<std::wstring>& sid_set,
   std::set<std::wstring> compare_set;
   AddSidsToSet(compare_set, compare_sids);
   EXPECT_EQ(sid_set, compare_set);
+}
+
+base::FilePath GetShortPathName(const base::FilePath& path) {
+  WCHAR short_path[MAX_PATH];
+  DWORD size = ::GetShortPathName(path.value().c_str(), short_path,
+                                  std::size(short_path));
+  if (size == 0 || size >= MAX_PATH) {
+    return {};
+  }
+  return base::FilePath(short_path);
 }
 
 struct AppContainerProfileTest {
@@ -378,13 +389,12 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
   test.Check(profile.get(), {L"cap1", L"cap2"});
 }
 
-// Disabled due to crbug.com/1210614
-TEST_F(SandboxWinTest, DISABLED_BlocklistAddOneDllCheckInBrowser) {
+TEST_F(SandboxWinTest, BlocklistAddOneDllCheckInBrowser) {
   {  // Block loaded module.
     TestTargetPolicy policy;
     TestTargetConfig* config =
         static_cast<TestTargetConfig*>(policy.GetConfig());
-    BlocklistAddOneDllForTesting(L"kernel32.dll", true, config);
+    BlocklistAddOneDllForTesting(L"kernel32.dll", config);
     EXPECT_EQ(config->blocklisted_dlls(),
               std::vector<std::wstring>({L"kernel32.dll"}));
   }
@@ -393,57 +403,35 @@ TEST_F(SandboxWinTest, DISABLED_BlocklistAddOneDllCheckInBrowser) {
     TestTargetPolicy policy;
     TestTargetConfig* config =
         static_cast<TestTargetConfig*>(policy.GetConfig());
-    BlocklistAddOneDllForTesting(L"notloaded.dll", true, config);
+    BlocklistAddOneDllForTesting(L"notloaded.dll", config);
     EXPECT_TRUE(config->blocklisted_dlls().empty());
   }
 
-  {  // Block module loaded by short name.
-#if defined(ARCH_CPU_X86)
-    const std::wstring short_dll_name = L"pe_ima~1.dll";
-    const std::wstring full_dll_name = L"pe_image_test_32.dll";
-#elif defined(ARCH_CPU_X86_64)
-    const std::wstring short_dll_name = L"pe_ima~2.dll";
-    const std::wstring full_dll_name = L"pe_image_test_64.dll";
-#elif defined(ARCH_CPU_ARM64)
-    const std::wstring short_dll_name = L"pe_ima~3.dll";
-    const std::wstring full_dll_name = L"pe_image_test_arm64.dll";
-#endif
+  {
+    base::FilePath executable_path;
+    ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &executable_path));
+    constexpr wchar_t kFullDllName[] = L"longfilename.dll";
+    base::FilePath dll_path = temp_dir_.GetPath().Append(kFullDllName);
 
-    base::FilePath test_data_dir;
-    base::PathService::Get(base::DIR_TEST_DATA, &test_data_dir);
-    auto dll_path =
-        test_data_dir.AppendASCII("pe_image").Append(short_dll_name);
+    ASSERT_TRUE(base::CopyFile(executable_path, dll_path));
+    base::FilePath short_path = GetShortPathName(dll_path);
+    base::FilePath short_name = short_path.BaseName();
+    if (short_path.empty() ||
+        base::EqualsCaseInsensitiveASCII(short_name.value(), kFullDllName)) {
+      LOG(WARNING) << short_path.value()
+                   << " doesn't have a short path. Ignoring remaining tests.";
+      return;
+    }
 
-    base::ScopedNativeLibrary library(dll_path);
-    EXPECT_TRUE(library.is_valid());
+    base::ScopedNativeLibrary library(short_path);
+    ASSERT_TRUE(library.is_valid());
 
     TestTargetPolicy policy;
     TestTargetConfig* config =
         static_cast<TestTargetConfig*>(policy.GetConfig());
-    BlocklistAddOneDllForTesting(full_dll_name.c_str(), true, config);
+    BlocklistAddOneDllForTesting(kFullDllName, config);
     EXPECT_EQ(config->blocklisted_dlls(),
-              std::vector<std::wstring>({short_dll_name, full_dll_name}));
-  }
-}
-
-TEST_F(SandboxWinTest, BlocklistAddOneDllDontCheckInBrowser) {
-  {  // Block module with short name.
-    TestTargetPolicy policy;
-    TestTargetConfig* config =
-        static_cast<TestTargetConfig*>(policy.GetConfig());
-    BlocklistAddOneDllForTesting(L"short.dll", false, config);
-    EXPECT_EQ(config->blocklisted_dlls(),
-              std::vector<std::wstring>({L"short.dll"}));
-  }
-
-  {  // Block module with long name.
-    TestTargetPolicy policy;
-    TestTargetConfig* config =
-        static_cast<TestTargetConfig*>(policy.GetConfig());
-    BlocklistAddOneDllForTesting(L"thelongname.dll", false, config);
-    EXPECT_EQ(config->blocklisted_dlls(),
-              std::vector<std::wstring>({L"thelongname.dll", L"thelon~1.dll",
-                                         L"thelon~2.dll", L"thelon~3.dll"}));
+              std::vector<std::wstring>({short_name.value(), kFullDllName}));
   }
 }
 
