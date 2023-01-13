@@ -122,6 +122,9 @@ void ArcIntentHelperMojoAsh::OnRequestTextSelectionActions(
     RequestTextSelectionActionsCallback callback,
     std::vector<mojom::TextSelectionActionPtr> actions) {
   size_t actions_count = actions.size();
+  if (actions_count == 0) {
+    return;
+  }
   auto converted_actions = std::vector<TextSelectionAction*>(actions_count);
   TextSelectionAction** converted_actions_ptr = &converted_actions[0];
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
