@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -222,6 +223,10 @@ class NewTabPageHandlerTest : public testing::Test {
     web_contents_->SetColorProviderSource(&mock_color_provider_source_);
     const std::vector<std::pair<const std::string, int>> module_id_names = {
         {"recipe_tasks", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE}};
+    CustomizeChromeTabHelper::CreateForWebContents(web_contents_.get());
+    auto* customize_chrome_tab_helper_ =
+        CustomizeChromeTabHelper::FromWebContents(web_contents_.get());
+    EXPECT_FALSE(customize_chrome_tab_helper_->IsCustomizeChromeEntryShowing());
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
@@ -292,7 +297,7 @@ class NewTabPageHandlerTest : public testing::Test {
 
 class NewTabPageHandlerThemeTest
     : public NewTabPageHandlerTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   NewTabPageHandlerThemeTest() {
     std::vector<base::test::FeatureRef> enabled_features;
@@ -310,12 +315,19 @@ class NewTabPageHandlerThemeTest
       disabled_features.push_back(ntp_features::kNtpComprehensiveTheming);
     }
 
+    if (CustomizeChromeSidePanel()) {
+      enabled_features.push_back(ntp_features::kCustomizeChromeSidePanel);
+    } else {
+      disabled_features.push_back(ntp_features::kCustomizeChromeSidePanel);
+    }
+
     feature_list_.InitWithFeatures(std::move(enabled_features),
                                    std::move(disabled_features));
   }
 
   bool RemoveScrim() const { return std::get<0>(GetParam()); }
   bool ComprehensiveTheme() const { return std::get<1>(GetParam()); }
+  bool CustomizeChromeSidePanel() const { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -428,6 +440,8 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
   custom_background.collection_id = "baz collection";
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(testing::Return(absl::make_optional(custom_background)));
+  ON_CALL(mock_theme_provider_, HasCustomImage(IDR_THEME_NTP_BACKGROUND))
+      .WillByDefault(testing::Return(true));
   mock_color_provider_source_.SetColor(kColorNewTabPageBackground,
                                        SkColorSetRGB(0, 0, 1));
   mock_color_provider_source_.SetColor(kColorNewTabPageTextUnthemed,
@@ -444,15 +458,24 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
   mock_page_.FlushForTesting();
 
   ASSERT_TRUE(theme);
-  EXPECT_TRUE(theme->is_custom_background);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 1), theme->background_color);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->logo_color);
-  EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
-  EXPECT_EQ("foo line", theme->background_image_attribution_1);
-  EXPECT_EQ("bar line", theme->background_image_attribution_2);
-  EXPECT_EQ("https://foo.com/action", theme->background_image_attribution_url);
-  EXPECT_EQ("baz collection", theme->daily_refresh_collection_id);
+  if (CustomizeChromeSidePanel()) {
+    EXPECT_FALSE(theme->is_custom_background);
+    EXPECT_FALSE(theme->background_image_attribution_1.has_value());
+    EXPECT_FALSE(theme->background_image_attribution_2.has_value());
+    EXPECT_FALSE(theme->background_image_attribution_url.has_value());
+  } else {
+    ASSERT_TRUE(theme);
+    EXPECT_TRUE(theme->is_custom_background);
+    EXPECT_EQ(SkColorSetRGB(0, 0, 1), theme->background_color);
+    EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
+    EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->logo_color);
+    EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
+    EXPECT_EQ("foo line", theme->background_image_attribution_1);
+    EXPECT_EQ("bar line", theme->background_image_attribution_2);
+    EXPECT_EQ("https://foo.com/action",
+              theme->background_image_attribution_url);
+    EXPECT_EQ("baz collection", theme->daily_refresh_collection_id);
+  }
   if (RemoveScrim()) {
     EXPECT_TRUE(theme->background_image->scrim_display.has_value());
     EXPECT_EQ("none", theme->background_image->scrim_display.value());
@@ -470,6 +493,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
 INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageHandlerThemeTest,
                          ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
                                             ::testing::Bool()));
 
 TEST_F(NewTabPageHandlerTest, Histograms) {
