@@ -80,6 +80,12 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                     },
                 },
             },
+            'MOCK Try Linux (CQ duplicate)': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'is_try_builder': True,
+                'is_cq_builder': True,
+            },
         })
 
         self.raw_web_test_results = {

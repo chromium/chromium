@@ -249,13 +249,12 @@ class TestImporter(object):
 
     def _trigger_try_jobs(self):
         _log.info('Triggering try jobs for updating expectations.')
-        try_bots = set(self.blink_try_bots())
+        rebaselining_builders = self.host.builders.builders_for_rebaselining()
         wptrunner_builders = {
             builder
-            for builder in try_bots
+            for builder in self.host.builders.all_try_builder_names()
             if self.host.builders.uses_wptrunner(builder)
         }
-        rebaselining_builders = try_bots - wptrunner_builders
         if rebaselining_builders:
             _log.info('For rebaselining:')
             for builder in sorted(rebaselining_builders):
@@ -264,7 +263,8 @@ class TestImporter(object):
             _log.info('For updating WPT metadata:')
             for builder in sorted(wptrunner_builders):
                 _log.info('  %s', builder)
-        self.git_cl.trigger_try_jobs(try_bots)
+        self.git_cl.trigger_try_jobs(rebaselining_builders
+                                     | wptrunner_builders)
 
     def run_commit_queue_for_cl(self):
         """Triggers CQ and either commits or aborts; returns True on success."""
@@ -337,10 +337,6 @@ class TestImporter(object):
             else:
                 raise e
         return False
-
-    def blink_try_bots(self):
-        """Returns the collection of builders used for updating expectations."""
-        return self.host.builders.filter_builders(is_try=True)
 
     def parse_args(self, argv):
         parser = argparse.ArgumentParser()

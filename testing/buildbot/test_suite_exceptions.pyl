@@ -434,6 +434,11 @@
           '--debug',
         ],
       },
+      'linux-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
+        },
+      },
       'linux-blink-web-tests-force-accessibility-rel': {
         'args': [
           '--flag-specific=force-renderer-accessibility',
@@ -738,6 +743,11 @@
         'args': [
           '--debug',
         ],
+      },
+      'linux-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
+        },
       },
       'linux-blink-web-tests-force-accessibility-rel': {
         'args': [

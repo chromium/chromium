@@ -221,25 +221,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             for builder_names in self._builders:
                 try_builders.update(builder_names.split(','))
         else:
-            try_builders = frozenset(
-                self._tool.builders.filter_builders(
-                    is_try=True, exclude_specifiers={'android'}))
+            try_builders.update(
+                self._tool.builders.builders_for_rebaselining())
 
         if self._use_blink_try_bots_only:
             try_builders = try_builders - self.cq_try_bots
-        elif not self._builders:
-            # User did not specify builders and --use-blink-try-bots-only in
-            # command line. Trigger default set of builders in this case, that
-            # is CQ builders plus blink-rel builders that covers additional platforms.
-            # Running duplicated builders for the same platform wastes resource, and
-            # causes problem to rebaseline as we will randomly choose a builder later.
-            to_remove = set()
-            for try_builder, cq_builder in self.try_bots_with_cq_mirror:
-                if (try_builder in try_builders
-                        and cq_builder in try_builders):
-                    to_remove.add(try_builder)
-            try_builders = try_builders - to_remove
-
         return set([
             builder for builder in try_builders
             if not self._tool.builders.uses_wptrunner(builder)

@@ -32,10 +32,12 @@ corresponding port names and TestExpectations specifiers.
 """
 
 import json
+from typing import Set
 
 from blinkpy.common.path_finder import PathFinder
 
-class BuilderList(object):
+
+class BuilderList:
     def __init__(self, builders_dict):
         """Creates and validates a builders list.
 
@@ -101,6 +103,20 @@ class BuilderList(object):
 
     def all_flag_specific_try_builder_names(self, flag_specific):
         return self.filter_builders(is_try=True, flag_specific=flag_specific)
+
+    def builders_for_rebaselining(self) -> Set[str]:
+        try_builders = {
+            builder
+            for builder in self.filter_builders(is_try=True,
+                                                exclude_specifiers={'android'})
+            if not self.uses_wptrunner(builder)
+        }
+        # Remove CQ builders whose port is a duplicate of a *-blink-rel builder
+        # to avoid wasting resources.
+        for blink_builder, cq_builder in self.try_bots_with_cq_mirror():
+            if blink_builder in try_builders and cq_builder in try_builders:
+                try_builders.remove(cq_builder)
+        return try_builders
 
     def try_bots_with_cq_mirror(self):
         """Returns a sorted list of (try_builder_names, cq_mirror_builder_names).
