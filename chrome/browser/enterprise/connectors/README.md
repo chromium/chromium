@@ -6,5 +6,4 @@ includes:
     * Code shared with user downloads cloud scanning should be added to `//chrome/browser/safe_browsing/cloud_content_scanning/` instead.
     * Code specific to user downloads cloud scanning should be added to `//chrome/browser/safe_browsing/download_protection/` instead.
   * Code specific to reporting Connectors (in reporting/).
-  * Code specific to the file system Connectors (in file_system/).
 
