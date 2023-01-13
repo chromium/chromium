@@ -29,24 +29,13 @@ DictationFocusHandlerTest = class extends DictationE2ETestBase {
    * @return {!Promise}
    */
   async waitForFocusHandlerActive(active) {
-    const focusHandler = this.getFocusHandler();
-    const activeOk = () => {
-      return focusHandler.active_ === active;
-    };
-
-    if (activeOk()) {
-      return;
-    }
-
-    await new Promise(resolve => {
-      const onActiveChanged = () => {
-        if (activeOk()) {
-          focusHandler.onActiveChangedForTesting_ = null;
+    return new Promise(resolve => {
+      const intervalId = setInterval(() => {
+        if (this.getFocusHandler().active_ === active) {
+          clearInterval(intervalId);
           resolve();
         }
-      };
-
-      focusHandler.onActiveChangedForTesting_ = onActiveChanged;
+      }, 100);
     });
   }
 
@@ -55,24 +44,13 @@ DictationFocusHandlerTest = class extends DictationE2ETestBase {
    * @return {!Promise}
    */
   async waitForFocus(target) {
-    const focusHandler = this.getFocusHandler();
-    const isTargetFocused = () => {
-      return focusHandler.editableNode_ === target;
-    };
-
-    if (isTargetFocused()) {
-      return;
-    }
-
-    await new Promise(resolve => {
-      const onFocusChanged = () => {
-        if (isTargetFocused()) {
-          focusHandler.onFocusChangedForTesting_ = null;
+    return new Promise(resolve => {
+      const intervalId = setInterval(() => {
+        if (this.getFocusHandler().editableNode_ === target) {
+          clearInterval(intervalId);
           resolve();
         }
-      };
-
-      focusHandler.onFocusChangedForTesting_ = onFocusChanged;
+      }, 100);
     });
   }
 

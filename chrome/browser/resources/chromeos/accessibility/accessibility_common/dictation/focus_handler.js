@@ -29,10 +29,9 @@ export class FocusHandler {
 
     /** @private {?function(): void} */
     this.onActiveChangedForTesting_ = null;
+
     /** @private {?function(): void} */
     this.onEditableNodeChangedForTesting_ = null;
-    /** @private {?function(): void} */
-    this.onFocusChangedForTesting_ = null;
   }
 
   /**
@@ -97,10 +96,6 @@ export class FocusHandler {
     }
 
     this.setEditableNode_(node);
-
-    if (this.onFocusChangedForTesting_) {
-      this.onFocusChangedForTesting_();
-    }
   }
 
   /** @return {?AutomationNode} */

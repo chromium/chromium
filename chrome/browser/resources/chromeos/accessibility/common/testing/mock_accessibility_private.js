@@ -108,9 +108,6 @@ class MockAccessibilityPrivate {
      */
     this.dictationBubbleProps_ = null;
 
-    /** @private {Function} */
-    this.onUpdateDictationBubble_ = null;
-
     /** @private {Set<string>} */
     this.enabledFeatures_ = new Set();
 
@@ -384,21 +381,9 @@ class MockAccessibilityPrivate {
     return this.dictationActivated_;
   }
 
-  /** @param {!Function} listener */
-  addUpdateDictationBubbleListener(listener) {
-    this.onUpdateDictationBubble_ = listener;
-  }
-
-  removeUpdateDictationBubbleListener() {
-    this.onUpdateDictationBubble_ = null;
-  }
-
   /** @param {!chrome.accessibilityPrivate.DictationBubbleProperties} props */
   updateDictationBubble(props) {
     this.dictationBubbleProps_ = props;
-    if (this.onUpdateDictationBubble_) {
-      this.onUpdateDictationBubble_();
-    }
   }
 
   /** @return {!chrome.accessibilityPrivate.DictationBubbleProperties|null} */

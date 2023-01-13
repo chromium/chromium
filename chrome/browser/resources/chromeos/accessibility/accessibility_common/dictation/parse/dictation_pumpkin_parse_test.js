@@ -19,9 +19,6 @@ DictationPumpkinParseTest = class extends DictationE2ETestBase {
     await importModule(
         'SpeechParser',
         '/accessibility_common/dictation/parse/speech_parser.js');
-    await importModule(
-        'SUPPORTED_LOCALES',
-        '/accessibility_common/dictation/parse/pumpkin/pumpkin_constants.js');
 
     await super.setUpDeferred();
 
@@ -32,35 +29,19 @@ DictationPumpkinParseTest = class extends DictationE2ETestBase {
 
   /**
    * @return {!Promise}
-   * @param {string=} locale An optional locale. If the locale is provided,
-   * this method will wait for Pumpkin to initialize in that locale. If the
-   * locale isn't provided, then this method will wait for Pumpkin to
-   * initialize in any locale.
    * @private
    */
-  async waitForPumpkinParseStrategy_(locale) {
+  async waitForPumpkinParseStrategy_() {
     const strategy = this.getPumpkinParseStrategy();
-    const isReady = () => {
-      let localeOk = true;
-      if (locale) {
-        const pumpkinLocale = SUPPORTED_LOCALES[locale] || null;
-        localeOk = pumpkinLocale === strategy.locale_;
-      }
-
-      return localeOk && strategy.pumpkinTaggerReady_;
-    };
-
-    if (isReady()) {
-      return;
-    }
-
-    await new Promise(resolve => {
-      strategy.onPumpkinTaggerReadyChangedForTesting_ = () => {
-        if (isReady()) {
-          strategy.onPumpkinTaggerReadyChangedForTesting_ = null;
+    // TODO(crbug.com/1258190): Consider adding an observer or callback and
+    // remove the polling below.
+    return new Promise(resolve => {
+      const intervalId = setInterval(() => {
+        if (strategy.pumpkinTaggerReady_) {
+          clearInterval(intervalId);
           resolve();
         }
-      };
+      }, 300);
     });
   }
 };
@@ -218,7 +199,7 @@ AX_TEST_F('DictationPumpkinParseTest', 'ChangeLocale', async function() {
   ];
   for (const {locale, testCase} of testCases) {
     await this.setPref(Dictation.DICTATION_LOCALE_PREF, locale);
-    await this.waitForPumpkinParseStrategy_(locale);
+    await this.waitForPumpkinParseStrategy_();
     await this.runPumpkinParseTestCase(testCase);
   }
 });
@@ -227,15 +208,13 @@ AX_TEST_F('DictationPumpkinParseTest', 'UnsupportedLocale', async function() {
   await this.waitForPumpkinParseStrategy_();
   this.alwaysEnableCommands();
   await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'ja');
-  // Don't pass in a locale below because 'ja' is an unsupported locale (and
-  // thus Pumpkin will never initialize in that locale).
   await this.waitForPumpkinParseStrategy_();
   await this.runPumpkinParseTestCase(
       new ParseTestCase('copy selected text', {}));
   // Would produce an UNDO_TEXT_EDIT macro if Japanese was supported.
   await this.runPumpkinParseTestCase(new ParseTestCase('もとどおりにする', {}));
   await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
-  await this.waitForPumpkinParseStrategy_('en-US');
+  await this.waitForPumpkinParseStrategy_();
   await this.runPumpkinParseTestCase(
       new ParseTestCase('copy selected text', {name: 'COPY_SELECTED_TEXT'}));
 });
