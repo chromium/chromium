@@ -815,7 +815,8 @@ class NET_EXPORT TransportSecurityState {
 
   // The values in host_pins_ maps are references to PinSet objects in the
   // pinsets_ vector.
-  absl::optional<std::map<std::string, std::pair<const PinSet*, bool>>>
+  absl::optional<
+      std::map<std::string, std::pair<const PinSet*, bool>, std::less<>>>
       host_pins_;
   base::Time key_pins_list_last_update_time_;
   std::vector<PinSet> pinsets_;

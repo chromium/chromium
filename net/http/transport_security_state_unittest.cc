@@ -4053,6 +4053,23 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
                 host_port_pair, true, good_hashes, cert1.get(), cert2.get(),
                 TransportSecurityState::ENABLE_PIN_REPORTS,
                 network_anonymization_key, &unused_failure_log));
+
+  // Hashes should also be rejected if the hostname has a trailing dot.
+  host_port_pair = HostPortPair("example.test.", kPort);
+  EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, good_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
+
+  // Hashes should also be rejected if the hostname has different
+  // capitalization.
+  host_port_pair = HostPortPair("ExAmpLe.tEsT", kPort);
+  EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, good_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
@@ -4096,6 +4113,218 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
             state.CheckPublicKeyPins(
                 host_port_pair, true, bad_hashes, cert1.get(), cert2.get(),
                 TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
+}
+
+TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
+  HostPortPair host_port_pair("example.sub.test", kPort);
+  GURL report_uri(kReportUri);
+  NetworkAnonymizationKey network_anonymization_key =
+      NetworkAnonymizationKey::CreateTransient();
+  // Two dummy certs to use as the server-sent and validated chains. The
+  // contents don't matter.
+  scoped_refptr<X509Certificate> cert1 =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(cert1);
+  scoped_refptr<X509Certificate> cert2 =
+      ImportCertFromFile(GetTestCertsDirectory(), "expired_cert.pem");
+  ASSERT_TRUE(cert2);
+
+  // unpinned_hashes is a set of hashes that (after the update) won't match the
+  // expected hashes for the tld of this domain. kGoodPath is used here because
+  // it's a path that is accepted prior to any updates, and this test will
+  // validate it is rejected afterwards.
+  HashValueVector unpinned_hashes;
+  for (size_t i = 0; kGoodPath[i]; i++) {
+    EXPECT_TRUE(AddHash(kGoodPath[i], &unpinned_hashes));
+  }
+
+  TransportSecurityState state;
+  EnableStaticPins(&state);
+  std::string unused_failure_log;
+
+  // Prior to updating the list, unpinned_hashes should be accepted
+  EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, unpinned_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
+
+  // Update the pins list, adding kBadPath to the accepted hashes for this
+  // host, relying on include_subdomains for enforcement. The contents of the
+  // hashes don't matter as long as they are different from unpinned_hashes,
+  // kBadPath is used for convenience.
+  std::vector<std::vector<uint8_t>> accepted_hashes;
+  for (size_t i = 0; kBadPath[i]; i++) {
+    HashValue hash;
+    ASSERT_TRUE(hash.FromString(kBadPath[i]));
+    accepted_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+  }
+  TransportSecurityState::PinSet test_pinset(
+      /*name=*/"test",
+      /*static_spki_hashes=*/{accepted_hashes},
+      /*bad_static_spki_hashes=*/{},
+      /*report_uri=*/kReportUri);
+  // The host used in the test is "example.sub.test", so this pinset will only
+  // match due to include subdomains.
+  TransportSecurityState::PinSetInfo test_pinsetinfo(
+      /*hostname=*/"sub.test", /* pinset_name=*/"test",
+      /*include_subdomains=*/true);
+  state.UpdatePinList({test_pinset}, {test_pinsetinfo}, base::Time::Now());
+
+  // The path that was accepted before updating the pins should now be rejected.
+  EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, unpinned_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
+}
+
+TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
+  HostPortPair host_port_pair(kHost, kPort);
+  GURL report_uri(kReportUri);
+  NetworkAnonymizationKey network_anonymization_key =
+      NetworkAnonymizationKey::CreateTransient();
+  // Two dummy certs to use as the server-sent and validated chains. The
+  // contents don't matter.
+  scoped_refptr<X509Certificate> cert1 =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(cert1);
+  scoped_refptr<X509Certificate> cert2 =
+      ImportCertFromFile(GetTestCertsDirectory(), "expired_cert.pem");
+  ASSERT_TRUE(cert2);
+
+  // unpinned_hashes is a set of hashes that (after the update) won't match the
+  // expected hashes for the tld of this domain. kGoodPath is used here because
+  // it's a path that is accepted prior to any updates, and this test will
+  // validate it is rejected afterwards.
+  HashValueVector unpinned_hashes;
+  for (size_t i = 0; kGoodPath[i]; i++) {
+    EXPECT_TRUE(AddHash(kGoodPath[i], &unpinned_hashes));
+  }
+
+  TransportSecurityState state;
+  EnableStaticPins(&state);
+  std::string unused_failure_log;
+
+  // Prior to updating the list, unpinned_hashes should be accepted
+  EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, unpinned_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
+
+  // Update the pins list, adding kBadPath to the accepted hashes for this
+  // host, relying on include_subdomains for enforcement. The contents of the
+  // hashes don't matter as long as they are different from unpinned_hashes,
+  // kBadPath is used for convenience.
+  std::vector<std::vector<uint8_t>> accepted_hashes;
+  for (size_t i = 0; kBadPath[i]; i++) {
+    HashValue hash;
+    ASSERT_TRUE(hash.FromString(kBadPath[i]));
+    accepted_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+  }
+  TransportSecurityState::PinSet test_pinset(
+      /*name=*/"test",
+      /*static_spki_hashes=*/{accepted_hashes},
+      /*bad_static_spki_hashes=*/{},
+      /*report_uri=*/kReportUri);
+  // The host used in the test is "example.test", so this pinset will only match
+  // due to include subdomains.
+  TransportSecurityState::PinSetInfo test_pinsetinfo(
+      /*hostname=*/"test", /* pinset_name=*/"test",
+      /*include_subdomains=*/true);
+  state.UpdatePinList({test_pinset}, {test_pinsetinfo}, base::Time::Now());
+
+  // The path that was accepted before updating the pins should now be rejected.
+  EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, unpinned_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
+}
+
+TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
+  HostPortPair host_port_pair(kHost, kPort);
+  GURL report_uri(kReportUri);
+  NetworkAnonymizationKey network_anonymization_key =
+      NetworkAnonymizationKey::CreateTransient();
+  // Two dummy certs to use as the server-sent and validated chains. The
+  // contents don't matter.
+  scoped_refptr<X509Certificate> cert1 =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(cert1);
+  scoped_refptr<X509Certificate> cert2 =
+      ImportCertFromFile(GetTestCertsDirectory(), "expired_cert.pem");
+  ASSERT_TRUE(cert2);
+
+  // unpinned_hashes is a set of hashes that (after the update) won't match the
+  // expected hashes for the tld of this domain. kGoodPath is used here because
+  // it's a path that is accepted prior to any updates, and this test will
+  // validate it is accepted or rejected afterwards depending on whether the
+  // domain is an exact match.
+  HashValueVector unpinned_hashes;
+  for (size_t i = 0; kGoodPath[i]; i++) {
+    EXPECT_TRUE(AddHash(kGoodPath[i], &unpinned_hashes));
+  }
+
+  TransportSecurityState state;
+  EnableStaticPins(&state);
+  std::string unused_failure_log;
+
+  // Prior to updating the list, unpinned_hashes should be accepted
+  EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, unpinned_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
+
+  // Update the pins list, adding kBadPath to the accepted hashes for the
+  // tld of this host, but without include_subdomains set. The contents of the
+  // hashes don't matter as long as they are different from unpinned_hashes,
+  // kBadPath is used for convenience.
+  std::vector<std::vector<uint8_t>> accepted_hashes;
+  for (size_t i = 0; kBadPath[i]; i++) {
+    HashValue hash;
+    ASSERT_TRUE(hash.FromString(kBadPath[i]));
+    accepted_hashes.emplace_back(hash.data(), hash.data() + hash.size());
+  }
+  TransportSecurityState::PinSet test_pinset(
+      /*name=*/"test",
+      /*static_spki_hashes=*/{accepted_hashes},
+      /*bad_static_spki_hashes=*/{},
+      /*report_uri=*/kReportUri);
+  // The host used in the test is "example.test", so this pinset will not match
+  // due to include subdomains not being set.
+  TransportSecurityState::PinSetInfo test_pinsetinfo(
+      /*hostname=*/"test", /* pinset_name=*/"test",
+      /*include_subdomains=*/false);
+  state.UpdatePinList({test_pinset}, {test_pinsetinfo}, base::Time::Now());
+
+  // Hashes that were accepted before the update should still be accepted since
+  // include subdomains is not set for the pinset, and this is not an exact
+  // match.
+  EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, unpinned_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_anonymization_key, &unused_failure_log));
+
+  // Hashes should be rejected for an exact match of the hostname.
+  HostPortPair exact_match_host("test", kPort);
+  EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
+            state.CheckPublicKeyPins(
+                exact_match_host, true, unpinned_hashes, cert1.get(),
+                cert2.get(), TransportSecurityState::ENABLE_PIN_REPORTS,
                 network_anonymization_key, &unused_failure_log));
 }
 
