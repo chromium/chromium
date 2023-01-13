@@ -118,6 +118,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(Bluetooth);
     MAKE_INSTANCE_READY(BootPhaseMonitor);
     MAKE_INSTANCE_READY(Camera);
+    MAKE_INSTANCE_READY(CertStore);
     MAKE_INSTANCE_READY(Clipboard);
     MAKE_INSTANCE_READY(CompatibilityMode);
     MAKE_INSTANCE_READY(CrashCollector);
@@ -153,6 +154,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(ScreenCapture);
     MAKE_INSTANCE_READY(Sensor);
     MAKE_INSTANCE_READY(Sharesheet);
+    MAKE_INSTANCE_READY(SmartCardManager);
     MAKE_INSTANCE_READY(StorageManager);
     MAKE_INSTANCE_READY(Timer);
     MAKE_INSTANCE_READY(Tracing);
