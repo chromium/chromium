@@ -95,6 +95,14 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
   root_transform_id_ = flatland_.NextTransformId();
   flatland_.flatland()->CreateTransform(root_transform_id_);
 
+  // Create the infinite hit region that will cover the surface. Do not set clip
+  // boundaries on this transform, so that the hit region retains maximal size.
+  shield_transform_id_ = flatland_.NextTransformId();
+  flatland_.flatland()->CreateTransform(shield_transform_id_);
+  flatland_.flatland()->SetInfiniteHitRegion(
+      shield_transform_id_,
+      fuchsia::ui::composition::HitTestInteraction::DEFAULT);
+
   platform_window_delegate_->OnAcceleratedWidgetAvailable(window_id_);
 
   if (properties.enable_keyboard) {
@@ -121,9 +129,12 @@ void FlatlandWindow::ResetSurfaceContent() {
     return;
   }
   flatland_.flatland()->RemoveChild(root_transform_id_, surface_transform_id_);
+  flatland_.flatland()->RemoveChild(root_transform_id_, shield_transform_id_);
+
   flatland_.flatland()->ReleaseViewport(surface_content_id_, [](auto) {});
-  surface_content_id_ = {};
   flatland_.flatland()->ReleaseTransform(surface_transform_id_);
+
+  surface_content_id_ = {};
   surface_transform_id_ = {};
 }
 
@@ -143,7 +154,12 @@ void FlatlandWindow::AttachSurfaceContent(
 
   surface_transform_id_ = flatland_.NextTransformId();
   flatland_.flatland()->CreateTransform(surface_transform_id_);
+  // Hit-testing starts from the last child transform added, and propagates
+  // forward to the first. Adding the shield transform last therefore allows it
+  // to consume all hit-tests, preventing the surface from handling them to
+  // capture input.
   flatland_.flatland()->AddChild(root_transform_id_, surface_transform_id_);
+  flatland_.flatland()->AddChild(root_transform_id_, shield_transform_id_);
 
   fuchsia::ui::composition::ViewportProperties properties;
   properties.set_logical_size({static_cast<uint32_t>(logical_size_->width()),

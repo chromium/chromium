@@ -138,6 +138,8 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
 
   fuchsia::ui::composition::TransformId root_transform_id_;
   fuchsia::ui::composition::TransformId surface_transform_id_;
+  fuchsia::ui::composition::TransformId shield_transform_id_;
+
   fuchsia::ui::composition::ContentId surface_content_id_;
 
   // Pending Viewport creation callback waiting on |logical_size_|.

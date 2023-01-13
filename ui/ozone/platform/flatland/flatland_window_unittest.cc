@@ -32,6 +32,7 @@ using ::scenic::FakeView;
 using ::scenic::FakeViewport;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
@@ -47,9 +48,13 @@ Matcher<FakeGraph> IsWindowGraph(
     const fuchsia::ui::composition::ParentViewportWatcherPtr&
         parent_viewport_watcher,
     const fuchsia::ui::views::ViewportCreationToken& viewport_creation_token,
-    std::vector<Matcher<FakeTransformPtr>> child_transform_matchers) {
-  auto view_token_koid = base::GetRelatedKoid(viewport_creation_token.value);
-  auto watcher_koid = base::GetRelatedKoid(parent_viewport_watcher.channel());
+    Matcher<std::vector<FakeTransformPtr>> children_transform_matcher) {
+  absl::optional<zx_koid_t> view_token_koid =
+      base::GetRelatedKoid(viewport_creation_token.value);
+  EXPECT_TRUE(view_token_koid.has_value());
+  absl::optional<zx_koid_t> watcher_koid =
+      base::GetRelatedKoid(parent_viewport_watcher.channel());
+  EXPECT_TRUE(watcher_koid.has_value());
 
   return AllOf(
       Field("root_transform", &FakeGraph::root_transform,
@@ -60,7 +65,7 @@ Matcher<FakeGraph> IsWindowGraph(
                           Field("opacity", &FakeTransform::opacity,
                                 FakeTransform::kDefaultOpacity),
                           Field("children", &FakeTransform::children,
-                                ElementsAreArray(child_transform_matchers))))),
+                                children_transform_matcher)))),
       Field("view", &FakeGraph::view,
             Optional(AllOf(
                 Field("view_token", &FakeView::view_token, view_token_koid),
@@ -96,6 +101,16 @@ Matcher<FakeTransformPtr> IsViewport(
                       IsViewportProperties(viewport_logical_size)),
                 Field("viewport_token", &FakeViewport::viewport_token,
                       viewport_koid)))))));
+}
+
+Matcher<FakeTransformPtr> IsHitShield() {
+  return Pointee(AllOf(
+      // Must not clip the hit region.
+      Field("clip_bounds", &FakeTransform::clip_bounds,
+            testing::Eq(std::nullopt)),
+      // Hit region must be "infinite".
+      Field("hit_regions", &FakeTransform::hit_regions,
+            testing::Contains(scenic::kInfiniteHitRegion))));
 }
 
 }  // namespace
@@ -208,8 +223,9 @@ TEST_F(FlatlandWindowTest, PresentsOnShow) {
   EXPECT_EQ(0u, presents_called);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, presents_called);
-  EXPECT_THAT(fake_flatland_.graph(),
-              IsWindowGraph(parent_viewport_watcher(), viewport_token_, {}));
+  EXPECT_THAT(
+      fake_flatland_.graph(),
+      IsWindowGraph(parent_viewport_watcher(), viewport_token_, IsEmpty()));
 }
 
 // Tests that FlatlandWindow processes and delegates focus signal.
@@ -341,12 +357,14 @@ TEST_F(FlatlandWindowTest, WaitsForNonZeroSizeToAttachSurfaceContent) {
   on_next_frame_begin_values.set_additional_present_credits(1);
   fake_flatland_.FireOnNextFrameBeginEvent(
       std::move(on_next_frame_begin_values));
+
+  // Spin the loop to process Present().
   task_environment_.RunUntilIdle();
   EXPECT_EQ(2u, presents_called);
-  EXPECT_THAT(
-      fake_flatland_.graph(),
-      IsWindowGraph(parent_viewport_watcher(), viewport_token_,
-                    {IsViewport(token_pair.view_token, expected_size)}));
+  EXPECT_THAT(fake_flatland_.graph(),
+              IsWindowGraph(
+                  parent_viewport_watcher(), viewport_token_,
+                  Contains(IsViewport(token_pair.view_token, expected_size))));
 }
 
 // Verify that surface is cleared when the window is disconnected from the
@@ -368,15 +386,18 @@ TEST_F(FlatlandWindowTest, ResetSurfaceOnDisconnect) {
   on_next_frame_begin_values.set_additional_present_credits(1);
   fake_flatland_.FireOnNextFrameBeginEvent(
       std::move(on_next_frame_begin_values));
+
+  // Spin the loop to process Present().
   task_environment_.RunUntilIdle();
 
   // surface view should be attached once the window is shown.
   EXPECT_THAT(fake_flatland_.graph(),
-              IsWindowGraph(parent_viewport_watcher(), viewport_token_, {_}));
+              IsWindowGraph(parent_viewport_watcher(), viewport_token_, _));
 
   // Remove the window from the screen and verify that it simulates destruction
   // of AcceleratedWidget, which is necessary to ensure that WindowSurface is
   // re-initialized.
+  testing::Mock::VerifyAndClearExpectations(&window_delegate_);
   EXPECT_CALL(window_delegate_, OnAcceleratedWidgetDestroyed());
   EXPECT_CALL(window_delegate_, OnAcceleratedWidgetAvailable(window_widget_));
 
@@ -386,11 +407,50 @@ TEST_F(FlatlandWindowTest, ResetSurfaceOnDisconnect) {
   on_next_frame_begin_values.set_additional_present_credits(1);
   fake_flatland_.FireOnNextFrameBeginEvent(
       std::move(on_next_frame_begin_values));
+
+  // Spin the loop to process Present().
   task_environment_.RunUntilIdle();
 
-  // Verify that the surface view is clered.
+  // Verify that the surface view is cleared.
+  EXPECT_THAT(
+      fake_flatland_.graph(),
+      IsWindowGraph(parent_viewport_watcher(), viewport_token_, IsEmpty()));
+}
+
+// Verify that when surface is attached, a hit region accompanies the surface.
+TEST_F(FlatlandWindowTest, SurfaceHasHitTestHitShield) {
+  CreateWindow();
+
+  EXPECT_CALL(window_delegate_, OnBoundsChanged(_));
+  const uint32_t kWidth = 200;
+  const uint32_t kHeight = 100;
+  const fuchsia::math::SizeU expected_size = {kWidth, kHeight};
+  SetLayoutInfo(kWidth, kHeight, 1.f);
+
+  // Spin the loop to propagate layout.
+  task_environment_.RunUntilIdle();
+
+  auto token_pair = scenic::ViewCreationTokenPair::New();
+  flatland_window_->AttachSurfaceContent(std::move(token_pair.viewport_token));
+
+  // Show() the window, to trigger creation of the scene graph, including
+  // surface and hit shield.
+  flatland_window_->Show(/*inactive=*/false);
+  fuchsia::ui::composition::OnNextFrameBeginValues on_next_frame_begin_values;
+  on_next_frame_begin_values.set_additional_present_credits(1);
+  fake_flatland_.FireOnNextFrameBeginEvent(
+      std::move(on_next_frame_begin_values));
+
+  // Spin the loop to process Present().
+  task_environment_.RunUntilIdle();
+
+  // Surface should be accompanied by input shield, in that order.
   EXPECT_THAT(fake_flatland_.graph(),
-              IsWindowGraph(parent_viewport_watcher(), viewport_token_, {}));
+              Field("root_transform", &FakeGraph::root_transform,
+                    Pointee(Field("children", &FakeTransform::children,
+                                  ElementsAre(IsViewport(token_pair.view_token,
+                                                         expected_size),
+                                              IsHitShield())))));
 }
 
 class ParameterizedViewInsetTest : public FlatlandWindowTest,
