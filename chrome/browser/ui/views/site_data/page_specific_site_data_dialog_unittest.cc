@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -13,6 +14,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/page_info/core/features.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -62,6 +64,21 @@ class PageSpecificSiteDataDialogUnitTest
   content_settings::PageSpecificContentSettings* GetContentSettings() {
     return content_settings::PageSpecificContentSettings::GetForFrame(
         main_rfh());
+  }
+
+  // To prevent tests from being flaky, all |DeleteStoredObjects| calls need to
+  // be used with a RunLoop.
+  void RunDeleteStoredObjects(test::PageSpecificSiteDataDialogTestApi* delegate,
+                              const url::Origin& origin) {
+    base::RunLoop loop;
+    auto* remover = profile()->GetBrowsingDataRemover();
+    remover->SetWouldCompleteCallbackForTesting(
+        base::BindLambdaForTesting([&](base::OnceClosure callback) {
+          std::move(callback).Run();
+          loop.Quit();
+        }));
+    delegate->DeleteStoredObjects(origin);
+    loop.Run();
   }
 
   void SetUp() override {
@@ -211,7 +228,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveOnlyBrowsingData) {
   }
 
   // Remove origins from the dialog.
-  delegate->DeleteStoredObjects(thirdPartyUrlOrigin);
+  RunDeleteStoredObjects(delegate.get(), thirdPartyUrlOrigin);
 
   // Validate that sites are removed from the browsing data model.
 
@@ -269,7 +286,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveOnlyCookieTreeData) {
   }
 
   // Remove origins from the dialog.
-  delegate->DeleteStoredObjects(currentUrlOrigin);
+  RunDeleteStoredObjects(delegate.get(), currentUrlOrigin);
 
   // Validate that sites are removed from the cookie tree model.
   {
@@ -347,7 +364,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveMixedModelData) {
   }
 
   // Remove origins from the dialog.
-  delegate->DeleteStoredObjects(exampleUrlOrigin);
+  RunDeleteStoredObjects(delegate.get(), exampleUrlOrigin);
 
   // Validate that sites are removed from both models.
   {
@@ -360,6 +377,21 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveMixedModelData) {
 
     EXPECT_THAT(sites, testing::UnorderedElementsAreArray(expected_sites));
   }
+}
+
+TEST_F(PageSpecificSiteDataDialogUnitTest, RemovePartitionedStorage) {
+  url::Origin exampleUrlOrigin = url::Origin::Create(GURL(kExampleUrl));
+  auto delegate =
+      std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
+  // Remove origins from the dialog.
+  RunDeleteStoredObjects(delegate.get(), exampleUrlOrigin);
+  // Verify that the data remover was called.
+  auto* remover = profile()->GetBrowsingDataRemover();
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,
+            remover->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(base::Time::Min(), remover->GetLastUsedBeginTimeForTesting());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            remover->GetLastUsedOriginTypeMaskForTesting());
 }
 
 TEST_F(PageSpecificSiteDataDialogUnitTest, ServiceWorkerAccessed) {

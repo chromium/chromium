@@ -28,6 +28,8 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
@@ -290,6 +292,10 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     DeleteMatchingHostNodeFromModel(allowed_cookies_tree_model_.get(), origin);
     DeleteMatchingHostNodeFromModel(blocked_cookies_tree_model_.get(), origin);
 
+    // Correctly remove partitioned storage (needs to be done separately), since
+    // the existing calls don't apply the necessary filtering.
+    DeletePartitionedStorage(origin);
+
     // Removing origin from Browsing Data Model to support new storage types.
     // The UI assumes deletion completed successfully, so we're passing
     // `base::DoNothing` callback.
@@ -335,6 +341,23 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
                 CookieTreeNode::DetailedInfo::TYPE_HOST);
       model->DeleteCookieNode(node_to_delete);
     }
+  }
+
+  // TODO(crbug.com/1405808): Add an end-to-end browser test for this.
+  void DeletePartitionedStorage(const url::Origin& origin) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
+    auto filter = content::BrowsingDataFilterBuilder::Create(
+        content::BrowsingDataFilterBuilder::Mode::kDelete,
+        content::BrowsingDataFilterBuilder::OriginMatchingMode::
+            kOriginInAllContexts);
+    filter->AddOrigin(origin);
+    remover->RemoveWithFilter(
+        base::Time::Min(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+        std::move(filter));
   }
 
   bool CanCreateContentException(GURL url) const { return !url.SchemeIsFile(); }
