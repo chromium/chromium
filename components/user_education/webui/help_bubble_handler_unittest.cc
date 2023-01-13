@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -68,6 +70,11 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
   // macros.
   testing::StrictMock<MockHelpBubbleClient>& mock() {
     return static_cast<ClientProvider*>(client_provider())->client_;
+  }
+
+  content::WebUIController* GetController() override {
+    NOTREACHED() << "Should not call this in tests.";
+    return nullptr;
   }
 
  private:

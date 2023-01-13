@@ -55,7 +55,7 @@ class HelpBubbleViewTimeoutTest : public TestWithBrowserView {
 
   TestHelpBubbleView* CreateHelpBubbleView(HelpBubbleParams params) {
     return new TestHelpBubbleView(GetHelpBubbleDelegate(),
-                                  browser_view()->contents_container(),
+                                  {browser_view()->contents_container()},
                                   std::move(params));
   }
 };

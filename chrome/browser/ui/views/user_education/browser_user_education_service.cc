@@ -35,10 +35,14 @@
 #include "components/user_education/common/tutorial_registry.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/webui/floating_webui_help_bubble_factory.h"
+#include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
+#include "components/user_education/webui/tracked_element_webui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/color/color_id.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -119,6 +123,43 @@ class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
   }
 };
 
+// Help bubble factory that can show a floating (Views-based) help bubble on a
+// WebUI element, but only for non-tab WebUI.
+class FloatingWebUIHelpBubbleFactoryBrowser
+    : public user_education::FloatingWebUIHelpBubbleFactory {
+ public:
+  explicit FloatingWebUIHelpBubbleFactoryBrowser(
+      const user_education::HelpBubbleDelegate* delegate)
+      : FloatingWebUIHelpBubbleFactory(delegate) {}
+  ~FloatingWebUIHelpBubbleFactoryBrowser() override = default;
+
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
+  // HelpBubbleFactoryWebUIViews:
+  bool CanBuildBubbleForTrackedElement(
+      const ui::TrackedElement* element) const override {
+    if (!element->IsA<user_education::TrackedElementWebUI>()) {
+      return false;
+    }
+
+    // If this is a WebUI in a tab, then don't use this factory.
+    const auto* contents = element->AsA<user_education::TrackedElementWebUI>()
+                               ->handler()
+                               ->GetWebContents();
+    // Note: this checks all tabs for their WebContents.
+    if (chrome::FindBrowserWithWebContents(contents)) {
+      return false;
+    }
+
+    // Ensure that this WebUI fulfils the requirements for a floating help
+    // bubble.
+    return FloatingWebUIHelpBubbleFactory::CanBuildBubbleForTrackedElement(
+        element);
+  }
+};
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(FloatingWebUIHelpBubbleFactoryBrowser)
+
 }  // namespace
 
 const char kTabGroupTutorialId[] = "Tab Group Tutorial";
@@ -137,6 +178,9 @@ void RegisterChromeHelpBubbleFactories(
   const user_education::HelpBubbleDelegate* const delegate =
       GetHelpBubbleDelegate();
   registry.MaybeRegister<user_education::HelpBubbleFactoryViews>(delegate);
+  // Try to create a floating bubble first, if it's allowed.
+  registry.MaybeRegister<FloatingWebUIHelpBubbleFactoryBrowser>(delegate);
+  // Fall back to in-WebUI help bubble if the floating bubble doesn't apply.
   registry.MaybeRegister<user_education::HelpBubbleFactoryWebUI>();
 #if BUILDFLAG(IS_MAC)
   registry.MaybeRegister<user_education::HelpBubbleFactoryMac>(delegate);
@@ -480,7 +524,7 @@ void MaybeRegisterChromeTutorials(
         0, IDS_TUTORIAL_SIDE_PANEL_READING_LIST_ADD_TAB,
         ui::InteractionSequence::StepType::kShown,
         kAddCurrentTabToReadingListElementId, std::string(),
-        HelpBubbleArrow::kTopLeft, ui::CustomElementEventType(), absl::nullopt,
+        HelpBubbleArrow::kRightTop, ui::CustomElementEventType(), absl::nullopt,
         /* transition_only_on_event =*/false,
         user_education::TutorialDescription::NameElementsCallback(),
         TutorialDescription::ContextMode::kAny);
@@ -506,7 +550,7 @@ void MaybeRegisterChromeTutorials(
     TutorialDescription::Step mark_as_read_step(
         0, IDS_TUTORIAL_SIDE_PANEL_READING_LIST_MARK_READ,
         ui::InteractionSequence::StepType::kShown, ui::ElementIdentifier(),
-        kReadingListItemElementName, HelpBubbleArrow::kTopLeft);
+        kReadingListItemElementName, HelpBubbleArrow::kRightTop);
     side_panel_description.steps.emplace_back(mark_as_read_step);
 
     TutorialDescription::Step detect_mark_as_read_step(

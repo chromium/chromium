@@ -184,11 +184,24 @@ HelpBubbleFactoryViews::~HelpBubbleFactoryViews() = default;
 std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubble(
     ui::TrackedElement* element,
     HelpBubbleParams params) {
-  views::View* const anchor_view =
-      element->AsA<views::TrackedElementViews>()->view();
-  anchor_view->SetProperty(kHasInProductHelpPromoKey, true);
+  internal::HelpBubbleAnchorParams anchor;
+  anchor.view = element->AsA<views::TrackedElementViews>()->view();
+  return CreateBubbleImpl(element, anchor, std::move(params));
+}
+
+bool HelpBubbleFactoryViews::CanBuildBubbleForTrackedElement(
+    const ui::TrackedElement* element) const {
+  return element->IsA<views::TrackedElementViews>();
+}
+
+std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubbleImpl(
+    ui::TrackedElement* element,
+    const internal::HelpBubbleAnchorParams& anchor,
+    HelpBubbleParams params,
+    absl::optional<gfx::Rect> anchor_rect) {
+  anchor.view->SetProperty(kHasInProductHelpPromoKey, true);
   auto result = base::WrapUnique(new HelpBubbleViews(
-      new HelpBubbleView(delegate_, anchor_view, std::move(params)), element));
+      new HelpBubbleView(delegate_, anchor, std::move(params)), element));
   for (const auto& accelerator :
        delegate_->GetPaneNavigationAccelerators(element)) {
     result->bubble_view()->GetFocusManager()->RegisterAccelerator(
@@ -196,11 +209,6 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubble(
         result.get());
   }
   return result;
-}
-
-bool HelpBubbleFactoryViews::CanBuildBubbleForTrackedElement(
-    const ui::TrackedElement* element) const {
-  return element->IsA<views::TrackedElementViews>();
 }
 
 }  // namespace user_education

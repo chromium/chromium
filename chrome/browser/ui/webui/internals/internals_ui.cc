@@ -144,8 +144,7 @@ void InternalsUI::CreateHelpBubbleHandler(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
         pending_handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(pending_handler), std::move(pending_client),
-      web_ui()->GetWebContents(),
+      std::move(pending_handler), std::move(pending_client), this,
       std::vector<ui::ElementIdentifier>{kWebUIIPHDemoElementIdentifier});
 }
 

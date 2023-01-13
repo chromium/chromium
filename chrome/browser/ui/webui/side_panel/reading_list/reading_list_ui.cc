@@ -110,7 +110,7 @@ void ReadingListUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), web_ui()->GetWebContents(),
+      std::move(handler), std::move(client), this,
       std::vector<ui::ElementIdentifier>{
           kAddCurrentTabToReadingListElementId,
           kSidePanelReadingListUnreadElementId,

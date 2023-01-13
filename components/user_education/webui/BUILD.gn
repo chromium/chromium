@@ -4,6 +4,8 @@
 
 source_set("webui") {
   sources = [
+    "floating_webui_help_bubble_factory.cc",
+    "floating_webui_help_bubble_factory.h",
     "help_bubble_handler.cc",
     "help_bubble_handler.h",
     "help_bubble_webui.cc",
@@ -15,11 +17,15 @@ source_set("webui") {
   deps = [
     "//base",
     "//components/user_education/common",
+    "//components/user_education/views",
     "//components/vector_icons",
+    "//content/public/browser",
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility",
     "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   ]
 }
@@ -39,6 +45,7 @@ source_set("unit_tests") {
     "//components/user_education/test",
     "//components/variations",
     "//components/vector_icons",
+    "//content/public/browser",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

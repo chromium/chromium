@@ -5,6 +5,9 @@
 #include "components/user_education/webui/tracked_element_webui.h"
 
 #include "base/check.h"
+#include "components/user_education/webui/help_bubble_handler.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 
@@ -19,6 +22,18 @@ TrackedElementWebUI::TrackedElementWebUI(HelpBubbleHandlerBase* handler,
 
 TrackedElementWebUI::~TrackedElementWebUI() {
   SetVisible(false);
+}
+
+gfx::Rect TrackedElementWebUI::GetScreenBounds() const {
+  gfx::Rect result;
+  content::WebContents* const contents =
+      handler_->GetController()->web_ui()->GetWebContents();
+  if (contents) {
+    // TODO(dfried): this is a placeholder; the actual bounds of the element in
+    // the view should be offset by the origin of this rectangle.
+    result = contents->GetContainerBounds();
+  }
+  return result;
 }
 
 void TrackedElementWebUI::SetVisible(bool visible) {

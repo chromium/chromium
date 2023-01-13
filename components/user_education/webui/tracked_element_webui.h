@@ -23,7 +23,10 @@ class TrackedElementWebUI : public ui::TrackedElement {
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
-  HelpBubbleHandlerBase* handler() { return handler_; }
+  HelpBubbleHandlerBase* handler() const { return handler_; }
+
+  // ui::TrackedElement:
+  gfx::Rect GetScreenBounds() const override;
 
  private:
   friend class HelpBubbleHandlerBase;

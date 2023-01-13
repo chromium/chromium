@@ -24,8 +24,12 @@
 
 namespace user_education {
 
-class HelpBubbleView;
 class HelpBubbleDelegate;
+class HelpBubbleView;
+
+namespace internal {
+struct HelpBubbleAnchorParams;
+}
 
 // Views-specific implementation of the help bubble.
 //
@@ -97,6 +101,13 @@ class HelpBubbleFactoryViews : public HelpBubbleFactory {
                                            HelpBubbleParams params) override;
   bool CanBuildBubbleForTrackedElement(
       const ui::TrackedElement* element) const override;
+
+ protected:
+  std::unique_ptr<HelpBubble> CreateBubbleImpl(
+      ui::TrackedElement* element,
+      const internal::HelpBubbleAnchorParams& anchor,
+      HelpBubbleParams params,
+      absl::optional<gfx::Rect> anchor_rect = absl::nullopt);
 
  private:
   base::raw_ptr<const HelpBubbleDelegate> delegate_;
