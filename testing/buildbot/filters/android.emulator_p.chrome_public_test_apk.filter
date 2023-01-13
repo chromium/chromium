@@ -52,7 +52,6 @@
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarContinueButton_EmptyName_launchesNameFixFlow
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonth
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonthAndYear
--org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyName
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyYear
 
 # crbug.com/1062055
@@ -78,9 +77,6 @@
 
 # crbug.com/1067673
 -org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerViewTest.testDismissArticleWithContextMenu
-
-# crbug.com/1153888
--org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyName
 
 # crbug.com/1159805
 -org.chromium.chrome.browser.customtabs.DetachedResourceRequestTest.testRepeatedIntents
