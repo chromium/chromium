@@ -1,11 +1,16 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
+<meta name=variant content="">
+<meta name=variant content="?cross-origin">
+<script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
 const uuidPattern = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
+
+const reportingOrigin = getDefaultReportingOrigin();
 
 attribution_reporting_promise_test(async t => {
   const source = {
@@ -14,10 +19,10 @@ attribution_reporting_promise_test(async t => {
   };
   const trigger = {event_trigger_data: [{trigger_data: '2'}]};
 
-  await registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/'});
-  await registerAttributionSrc(t, {trigger});
+  await registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/', reportingOrigin});
+  await registerAttributionSrc(t, {trigger, reportingOrigin});
 
-  const payload = await pollEventLevelReports();
+  const payload = await pollEventLevelReports(reportingOrigin);
   assert_equals(payload.reports.length, 1);
 
   const report = JSON.parse(payload.reports[0].body);

@@ -1,6 +1,9 @@
 <!doctype html>
 <meta charset=utf-8>
 <meta name=timeout content=long>
+<meta name=variant content="">
+<meta name=variant content="?cross-origin">
+<script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/helpers.js"></script>
@@ -30,10 +33,12 @@ attribution_reporting_promise_test(async t => {
     },
   };
 
-  await registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/'});
-  await registerAttributionSrc(t, {trigger});
+  const reportingOrigin = getDefaultReportingOrigin();
 
-  const payload = await pollAggregatableReports();
+  await registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/', reportingOrigin});
+  await registerAttributionSrc(t, {trigger, reportingOrigin});
+
+  const payload = await pollAggregatableReports(reportingOrigin);
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
   const headers = payload.reports[0].headers;
