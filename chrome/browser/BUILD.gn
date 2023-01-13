@@ -556,8 +556,6 @@ static_library("browser") {
     "gpu/gpu_mode_manager.cc",
     "gpu/gpu_mode_manager.h",
     "hang_monitor/hang_crash_dump.h",
-    "headless/headless_mode_util.cc",
-    "headless/headless_mode_util.h",
     "heavy_ad_intervention/heavy_ad_service_factory.cc",
     "heavy_ad_intervention/heavy_ad_service_factory.h",
     "history/chrome_history_backend_client.cc",
@@ -1927,6 +1925,7 @@ static_library("browser") {
   public_deps = [
     "//base",
     "//chrome/browser/google",
+    "//chrome/browser/headless",
     "//chrome/common",
     "//chrome/common:buildflags",
     "//chrome/common:constants",

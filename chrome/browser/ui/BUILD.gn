@@ -367,6 +367,7 @@ static_library("ui") {
   # have the same dependencies. Once browser_ui is untangled from
   # browser, then we can clean up these dependencies.
   public_deps = [
+    "//chrome/browser/headless",
     "//components/dom_distiller/core",
     "//components/paint_preview/buildflags",
     "//components/safe_browsing:buildflags",

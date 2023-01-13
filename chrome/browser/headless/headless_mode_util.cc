@@ -15,8 +15,8 @@
 #include "base/base_switches.h"
 
 #if BUILDFLAG(IS_LINUX)
-#include "ui/gl/gl_switches.h"
-#include "ui/ozone/public/ozone_switches.h"
+#include "ui/gl/gl_switches.h"               // nogncheck
+#include "ui/ozone/public/ozone_switches.h"  // nogncheck
 #endif  // BUILDFLAG(IS_LINUX)
 
 namespace headless {

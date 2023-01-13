@@ -1256,6 +1256,7 @@ if (!is_android) {
       "//chrome/browser/dips:browser_tests",
       "//chrome/browser/favicon",
       "//chrome/browser/first_party_sets",
+      "//chrome/browser/headless:browser_tests",
       "//chrome/browser/image_decoder:browser_tests",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/media/router:test_support",
@@ -1791,8 +1792,6 @@ if (!is_android) {
       "../browser/first_run/first_run_browsertest.cc",
       "../browser/geolocation/geolocation_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",
-      "../browser/headless/headless_mode_browsertest.cc",
-      "../browser/headless/headless_mode_browsertest.h",
       "../browser/heavy_ad_intervention/heavy_ad_helper_browsertest.cc",
       "../browser/hid/hid_browsertest.cc",
       "../browser/history/history_browsertest.cc",
@@ -2545,7 +2544,6 @@ if (!is_android) {
     if (is_linux) {
       sources += [
         "../browser/chrome_main_process_singleton_browsertest.cc",
-        "../browser/headless/headless_mode_browsertest_linux.cc",
         "../browser/process_singleton_browsertest.cc",
       ]
     }
@@ -2557,7 +2555,6 @@ if (!is_android) {
         "../browser/enterprise/platform_auth/platform_auth_policy_observer_browsertest.cc",
         "../browser/enterprise/platform_auth/platform_auth_provider_manager_browsertest.cc",
         "../browser/font_prewarmer_tab_helper_browsertest.cc",
-        "../browser/headless/headless_mode_browsertest_win.cc",
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
         "../browser/net/chrome_mojo_proxy_resolver_win_browsertest.cc",
@@ -2614,7 +2611,6 @@ if (!is_android) {
         "../browser/apps/app_shim/app_shim_listener_browsertest_mac.mm",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.cc",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.h",
-        "../browser/headless/headless_mode_browsertest_mac.mm",
         "../browser/mac/auth_session_request_browsertest.mm",
         "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_browsertest.mm",
         "../browser/spellchecker/spell_check_host_chrome_impl_mac_browsertest.cc",

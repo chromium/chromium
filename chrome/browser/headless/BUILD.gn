@@ -1,0 +1,63 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/ozone.gni")
+import("//testing/test.gni")
+
+source_set("headless") {
+  sources = [
+    "headless_mode_util.cc",
+    "headless_mode_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+
+  if (is_linux) {
+    deps += [
+      "//ui/gl",
+      "//ui/ozone",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "headless_mode_browsertest.cc",
+      "headless_mode_browsertest.h",
+    ]
+
+    if (is_linux) {
+      sources += [ "headless_mode_browsertest_linux.cc" ]
+    }
+
+    if (is_win) {
+      sources += [ "headless_mode_browsertest_win.cc" ]
+    }
+
+    if (is_mac) {
+      sources += [ "headless_mode_browsertest_mac.mm" ]
+    }
+
+    deps = [
+      ":headless",
+      "//base",
+      "//chrome/browser",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+
+    if (use_ozone && is_linux) {
+      deps += [ "//ui/ozone" ]
+    }
+  }
+}
