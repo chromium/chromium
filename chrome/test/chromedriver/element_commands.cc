@@ -1147,33 +1147,34 @@ Status ExecuteElementScreenshot(Session* session,
   if (status.IsError())
     return status;
 
-  double scroll_left = browser_info->FindKey("x")->GetDouble();
-  double scroll_top = browser_info->FindKey("y")->GetDouble();
-  double viewport_height = browser_info->FindKey("height")->GetDouble();
-  double viewport_width = browser_info->FindKey("width")->GetDouble();
+  const base::Value::Dict& browser_info_dict = browser_info->GetDict();
+  double scroll_left = browser_info_dict.FindDouble("x").value();
+  double scroll_top = browser_info_dict.FindDouble("y").value();
+  double viewport_height = browser_info_dict.FindDouble("height").value();
+  double viewport_width = browser_info_dict.FindDouble("width").value();
   double device_pixel_ratio =
-         browser_info->FindKey("device_pixel_ratio")->GetDouble();
+      browser_info_dict.FindDouble("device_pixel_ratio").value();
 
   if (!clip->is_dict())
     return Status(kUnknownError, "Element Rect is not a dictionary");
 
   base::Value::Dict screenshot_params;
-  base::Value* clip_dict = screenshot_params.Set(
-      "clip", base::Value::FromUniquePtrValue(std::move(clip)));
+  base::Value::Dict& clip_dict =
+      screenshot_params
+          .Set("clip", base::Value::FromUniquePtrValue(std::move(clip)))
+          ->GetDict();
   // |clip_dict| already contains the right width and height of the target
   // element, but its x and y are relative to containing frame. We replace them
   // with the x and y relative to top-level document origin, as expected by
   // CaptureScreenshot.
-  clip_dict->SetDoubleKey("x", location.x + scroll_left);
-  clip_dict->SetDoubleKey("y", location.y + scroll_top);
-  clip_dict->SetDoubleKey("scale", 1 / device_pixel_ratio);
+  clip_dict.Set("x", location.x + scroll_left);
+  clip_dict.Set("y", location.y + scroll_top);
+  clip_dict.Set("scale", 1 / device_pixel_ratio);
   // Crop screenshot by viewport if element is larger than viewport
-  clip_dict->SetDoubleKey("height",
-                          std::min(viewport_height - location.y,
-                                   clip_dict->FindKey("height")->GetDouble()));
-  clip_dict->SetDoubleKey("width",
-                          std::min(viewport_width - location.x,
-                                   clip_dict->FindKey("width")->GetDouble()));
+  clip_dict.Set("height", std::min(viewport_height - location.y,
+                                   clip_dict.FindDouble("height").value()));
+  clip_dict.Set("width", std::min(viewport_width - location.x,
+                                  clip_dict.FindDouble("width").value()));
 
   std::string screenshot;
   status = web_view->CaptureScreenshot(&screenshot, screenshot_params);
