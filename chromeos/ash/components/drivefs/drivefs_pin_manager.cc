@@ -32,9 +32,7 @@ bool InProgress(const SetupStage stage) {
 
 mojom::QueryParametersPtr CreateMyDriveQuery() {
   mojom::QueryParametersPtr query = mojom::QueryParameters::New();
-  // TODO(b/259454320): 50 is chosen arbitrarily, this needs to be updated as
-  // different batch sizes are experimented with.
-  query->page_size = 50;
+  query->page_size = 1000;
   query->query_kind = mojom::QueryKind::kRegular;
   query->query_source = mojom::QueryParameters::QuerySource::kCloudOnly;
   // TODO(b/259454320): The query.proto for this says the C++ clients don't
