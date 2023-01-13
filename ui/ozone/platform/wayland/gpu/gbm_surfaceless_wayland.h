@@ -57,7 +57,6 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  void SetForceGlFlushOnSwapBuffers() override;
 
   BufferId GetOrCreateSolidColorBuffer(SkColor4f color, const gfx::Size& size);
 
@@ -170,7 +169,6 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
   bool use_egl_fence_sync_ = true;
 
   bool no_gl_flush_for_tests_ = false;
-  bool requires_gl_flush_on_swap_buffers_ = false;
 
   // Scale factor of the current surface.
   float surface_scale_factor_ = 1.f;

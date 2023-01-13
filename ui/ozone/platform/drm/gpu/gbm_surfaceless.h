@@ -54,7 +54,6 @@ class GbmSurfaceless : public gl::Presenter {
   bool SupportsPlaneGpuFences() const override;
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
-  void SetForceGlFlushOnSwapBuffers() override;
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
                gfx::FrameData data) override;
@@ -105,7 +104,6 @@ class GbmSurfaceless : public gl::Presenter {
   // Conservatively assume we begin on a device that requires
   // explicit synchronization.
   bool is_on_external_drm_device_ = true;
-  bool requires_gl_flush_on_swap_buffers_ = false;
 
   base::WeakPtrFactory<GbmSurfaceless> weak_factory_{this};
 };

@@ -99,7 +99,7 @@ void GbmSurfaceless::Present(SwapCompletionCallback completion_callback,
     return;
   }
 
-  if (!supports_plane_gpu_fences_ || requires_gl_flush_on_swap_buffers_) {
+  if (!supports_plane_gpu_fences_) {
     glFlush();
   }
 
@@ -169,10 +169,6 @@ EGLConfig GbmSurfaceless::GetConfig() {
 
 void GbmSurfaceless::SetRelyOnImplicitSync() {
   use_egl_fence_sync_ = false;
-}
-
-void GbmSurfaceless::SetForceGlFlushOnSwapBuffers() {
-  requires_gl_flush_on_swap_buffers_ = true;
 }
 
 GbmSurfaceless::~GbmSurfaceless() {

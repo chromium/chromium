@@ -105,8 +105,13 @@ scoped_refptr<gl::Presenter> SkiaOutputSurfaceDependencyImpl::CreatePresenter(
     gl::GLSurfaceFormat format) {
   DCHECK(!IsOffscreen());
 
-  return gpu::ImageTransportSurface::CreatePresenter(
+  auto presenter = gpu::ImageTransportSurface::CreatePresenter(
       GetSharedContextState()->display(), stub, surface_handle_, format);
+  if (presenter &&
+      GetGpuDriverBugWorkarounds().rely_on_implicit_sync_for_swap_buffers) {
+    presenter->SetRelyOnImplicitSync();
+  }
+  return presenter;
 }
 
 scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(

@@ -313,9 +313,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // Tells the surface to rely on implicit sync when swapping buffers.
   virtual void SetRelyOnImplicitSync();
 
-  // Tells the surface to perform a glFlush() before swapping buffers.
-  virtual void SetForceGlFlushOnSwapBuffers();
-
   // Support for eglGetFrameTimestamps.
   virtual bool SupportsSwapTimestamps() const;
   virtual void SetEnableSwapTimestamps();
@@ -453,7 +450,6 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool SetDrawRectangle(const gfx::Rect& rect) override;
   gfx::Vector2d GetDrawOffset() const override;
   void SetRelyOnImplicitSync() override;
-  void SetForceGlFlushOnSwapBuffers() override;
   bool SupportsSwapTimestamps() const override;
   void SetEnableSwapTimestamps() override;
   bool SupportsPlaneGpuFences() const override;
