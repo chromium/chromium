@@ -106,7 +106,6 @@ public class SyncPromoController {
     private final @Nullable String mSyncPromoDismissedPreferenceTracker;
     private final @StringRes int mTitleStringId;
     private final @StringRes int mDescriptionStringId;
-    private final @StringRes int mDescriptionStringIdNoAccount;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
 
     /**
@@ -287,59 +286,27 @@ public class SyncPromoController {
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED;
                 mTitleStringId = R.string.sync_promo_title_bookmarks;
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-                    // TODO(crbug.com/1323197): mDescriptionStringIdNoAccount should be deleted if
-                    // the SYNC_ANDROID_PROMOS_WITH_TITLE flag is enabled by default.
-                    mDescriptionStringId = R.string.sync_promo_description_bookmarks;
-                    mDescriptionStringIdNoAccount = R.string.sync_promo_description_bookmarks;
-                } else {
-                    mDescriptionStringId = R.string.signin_promo_description_bookmarks;
-                    mDescriptionStringIdNoAccount =
-                            R.string.signin_promo_description_bookmarks_no_account;
-                }
+                mDescriptionStringId = R.string.sync_promo_description_bookmarks;
                 break;
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
                 mImpressionUserActionName = "Signin_Impression_FromNTPContentSuggestions";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
                 mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-                    mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
-                    mDescriptionStringIdNoAccount =
-                            R.string.sync_promo_description_ntp_content_suggestions;
-                } else {
-                    mDescriptionStringId =
-                            R.string.signin_promo_description_ntp_content_suggestions;
-                    mDescriptionStringIdNoAccount =
-                            R.string.signin_promo_description_ntp_content_suggestions_no_account;
-                }
+                mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
                 break;
             case SigninAccessPoint.RECENT_TABS:
                 mImpressionUserActionName = "Signin_Impression_FromRecentTabs";
                 mSyncPromoDismissedPreferenceTracker = null;
                 mTitleStringId = R.string.sync_promo_title_recent_tabs;
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-                    mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
-                    mDescriptionStringIdNoAccount = R.string.sync_promo_description_recent_tabs;
-                } else {
-                    mDescriptionStringId = R.string.signin_promo_description_recent_tabs;
-                    mDescriptionStringIdNoAccount =
-                            R.string.signin_promo_description_recent_tabs_no_account;
-                }
+                mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
                 break;
             case SigninAccessPoint.SETTINGS:
                 mImpressionUserActionName = "Signin_Impression_FromSettings";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED;
                 mTitleStringId = R.string.sync_promo_title_settings;
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-                    mDescriptionStringId = R.string.sync_promo_description_settings;
-                    mDescriptionStringIdNoAccount = R.string.sync_promo_description_settings;
-                } else {
-                    mDescriptionStringId = R.string.signin_promo_description_settings;
-                    mDescriptionStringIdNoAccount =
-                            R.string.signin_promo_description_settings_no_account;
-                }
+                mDescriptionStringId = R.string.sync_promo_description_settings;
                 break;
             default:
                 throw new IllegalArgumentException(
@@ -461,12 +428,8 @@ public class SyncPromoController {
         view.getImage().setImageResource(R.drawable.chrome_sync_logo);
         setImageSize(context, view, R.dimen.signin_promo_cold_state_image_size);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-            // TODO(crbug.com/1323197): set the title visible by default in the XML.
-            view.getTitle().setVisibility(View.VISIBLE);
-            view.getTitle().setText(mTitleStringId);
-        }
-        view.getDescription().setText(mDescriptionStringIdNoAccount);
+        view.getTitle().setText(mTitleStringId);
+        view.getDescription().setText(mDescriptionStringId);
 
         view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         view.getPrimaryButton().setOnClickListener(v -> signinWithNewAccount(context));
@@ -480,10 +443,7 @@ public class SyncPromoController {
         view.getImage().setImageDrawable(accountImage);
         setImageSize(context, view, R.dimen.sync_promo_account_image_size);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-            view.getTitle().setVisibility(View.VISIBLE);
-            view.getTitle().setText(mTitleStringId);
-        }
+        view.getTitle().setText(mTitleStringId);
         view.getDescription().setText(mDescriptionStringId);
 
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));

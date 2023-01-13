@@ -47,7 +47,6 @@ public class SyncPromoPreference extends Preference
     private final ProfileDataCache mProfileDataCache;
     private final AccountManagerFacade mAccountManagerFacade;
     private @State int mState;
-    private Runnable mStateChangedCallback;
     private @Nullable SyncPromoController mSyncPromoController;
 
     /**
@@ -98,11 +97,6 @@ public class SyncPromoPreference extends Preference
         return mState;
     }
 
-    /** Sets callback to be notified of changes to the preference state. See {@link #getState}. */
-    public void setOnStateChangedCallback(Runnable stateChangedCallback) {
-        mStateChangedCallback = stateChangedCallback;
-    }
-
     private void setState(@State int state) {
         if (mState == state) return;
 
@@ -114,8 +108,6 @@ public class SyncPromoPreference extends Preference
         }
 
         mState = state;
-        assert mStateChangedCallback != null;
-        mStateChangedCallback.run();
     }
 
     /** Updates the title, summary, and image based on the current sign-in state. */

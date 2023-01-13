@@ -57,7 +57,6 @@ BASE_DECLARE_FEATURE(kSyncAndroidLimitNTPPromoImpressions);
 inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
     &kSyncAndroidLimitNTPPromoImpressions, "SyncAndroidNTPPromoMaxImpressions",
     5};
-BASE_DECLARE_FEATURE(kSyncAndroidPromosWithTitle);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls whether to enable syncing of Autofill Wallet Usage Data.

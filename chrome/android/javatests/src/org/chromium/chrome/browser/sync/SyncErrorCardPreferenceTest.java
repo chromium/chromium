@@ -109,53 +109,9 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForAuthErrorWithTitleFeatureDisabledUpmEnabled(
-            boolean nightModeEnabled) throws Exception {
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals("AUTH_ERROR SyncError should be set",
-                                SyncSettingsUtils.SyncError.AUTH_ERROR,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(
-                getPersonalizedSyncPromoView(), "sync_error_card_auth_error_with_upm");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void
-    testSyncErrorCardForAuthErrorWithTitleFeatureDisabledUpmDisabled(boolean nightModeEnabled)
-            throws Exception {
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals("AUTH_ERROR SyncError should be set",
-                                SyncSettingsUtils.SyncError.AUTH_ERROR,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(), "sync_error_card_auth_error");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void
-    testSyncErrorCardForAuthErrorWithTitleFeatureEnabledUpmEnabled(boolean nightModeEnabled)
+    public void testSyncErrorCardForAuthErrorWithUpmEnabled(boolean nightModeEnabled)
             throws Exception {
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
@@ -173,11 +129,10 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES})
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForAuthErrorWithTitleFeatureEnabledUpmDisabled(
-            boolean nightModeEnabled) throws Exception {
+    public void testSyncErrorCardForAuthErrorWithUpmDisabled(boolean nightModeEnabled)
+            throws Exception {
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -194,30 +149,8 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForClientOutOfDateWithTitleFeatureDisabled(
-            boolean nightModeEnabled) throws Exception {
-        mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals("CLIENT_OUT_OF_DATE SyncError should be set",
-                                SyncSettingsUtils.SyncError.CLIENT_OUT_OF_DATE,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(
-                getPersonalizedSyncPromoView(), "sync_error_card_client_out_of_date");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForClientOutOfDateWithTitleFeatureEnabled(boolean nightModeEnabled)
-            throws Exception {
+    public void testSyncErrorCardForClientOutOfDate(boolean nightModeEnabled) throws Exception {
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -234,29 +167,8 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForOtherErrorsWithTitleFeatureDisabled(boolean nightModeEnabled)
-            throws Exception {
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.CONNECTION_FAILED);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals("OTHER_ERRORS SyncError should be set",
-                                SyncSettingsUtils.SyncError.OTHER_ERRORS,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(), "sync_error_card_other_errors");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForOtherErrorsWithTitleFeatureEnabled(boolean nightModeEnabled)
-            throws Exception {
+    public void testSyncErrorCardForOtherErrors(boolean nightModeEnabled) throws Exception {
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.CONNECTION_FAILED);
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -273,31 +185,8 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForPassphraseRequiredWithTitleFeatureDisabled(
-            boolean nightModeEnabled) throws Exception {
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals("PASSPHRASE_REQUIRED SyncError should be set",
-                                SyncSettingsUtils.SyncError.PASSPHRASE_REQUIRED,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(
-                getPersonalizedSyncPromoView(), "sync_error_card_passphrase_required");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForPassphraseRequiredWithTitleFeatureEnabled(
-            boolean nightModeEnabled) throws Exception {
+    public void testSyncErrorCardForPassphraseRequired(boolean nightModeEnabled) throws Exception {
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
@@ -315,34 +204,8 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForTrustedVaultKeyWithTitleFeatureDisabled(
-            boolean nightModeEnabled) throws Exception {
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
-        mFakeSyncServiceImpl.setEncryptEverythingEnabled(true);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals(
-                                "TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING SyncError should be set",
-                                SyncSettingsUtils.SyncError
-                                        .TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(
-                getPersonalizedSyncPromoView(), "sync_error_card_trusted_vault_key_required");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForTrustedVaultKeyWithTitleFeatureEnabled(boolean nightModeEnabled)
-            throws Exception {
+    public void testSyncErrorCardForTrustedVaultKey(boolean nightModeEnabled) throws Exception {
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
         mFakeSyncServiceImpl.setEncryptEverythingEnabled(true);
@@ -363,34 +226,9 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForTrustedVaultKeyForPasswordsWithTitleFeatureDisabled(
-            boolean nightModeEnabled) throws Exception {
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
-        mFakeSyncServiceImpl.setEncryptEverythingEnabled(false);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals(
-                                "TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS SyncError should be set",
-                                SyncSettingsUtils.SyncError
-                                        .TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
-                "sync_error_card_trusted_vault_key_required_for_passwords");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForTrustedVaultKeyForPasswordsWithTitleFeatureEnabled(
-            boolean nightModeEnabled) throws Exception {
+    public void testSyncErrorCardForTrustedVaultKeyForPasswords(boolean nightModeEnabled)
+            throws Exception {
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
         mFakeSyncServiceImpl.setEncryptEverythingEnabled(false);
@@ -411,35 +249,8 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void
-    testSyncErrorCardForTrustedVaultRecoverabilityDegradedForEverythingWithTitleFeatureDisabled(
-            boolean nightModeEnabled) throws Exception {
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
-        mFakeSyncServiceImpl.setEncryptEverythingEnabled(true);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals(
-                                "TRUSTED_VAULT_RECOVERABILITY_DEGRADED SyncError should be set",
-                                SyncSettingsUtils.SyncError
-                                        .TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
-                "sync_error_card_trusted_vault_recoverability_degraded_for_everything");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void
-    testSyncErrorCardForTrustedVaultRecoverabilityDegradedForEverythingWithTitleFeatureEnabled(
+    public void testSyncErrorCardForTrustedVaultRecoverabilityDegradedForEverything(
             boolean nightModeEnabled) throws Exception {
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
@@ -461,35 +272,8 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void
-    testSyncErrorCardForTrustedVaultRecoverabilityDegradedForPasswordsWithTitleFeatureDisabled(
-            boolean nightModeEnabled) throws Exception {
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
-        mFakeSyncServiceImpl.setEncryptEverythingEnabled(false);
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals(
-                                "TRUSTED_VAULT_RECOVERABILITY_DEGRADED SyncError should be set",
-                                SyncSettingsUtils.SyncError
-                                        .TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
-                "sync_error_card_trusted_vault_recoverability_degraded_for_passwords");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void
-    testSyncErrorCardForTrustedVaultRecoverabilityDegradedForPasswordsWithTitleFeatureEnabled(
+    public void testSyncErrorCardForTrustedVaultRecoverabilityDegradedForPasswords(
             boolean nightModeEnabled) throws Exception {
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
@@ -511,32 +295,8 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForSyncSetupIncompleteWithTitleFeatureDisabled(
-            boolean nightModeEnabled) throws Exception {
-        // Passing a null SyncService instance here would sign-in the user but
-        // FirstSetupComplete will be unset.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(
-                /* syncService= */ null);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals("SYNC_SETUP_INCOMPLETE SyncError should be set",
-                                SyncSettingsUtils.SyncError.SYNC_SETUP_INCOMPLETE,
-                                SyncSettingsUtils.getSyncError()));
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(
-                getPersonalizedSyncPromoView(), "sync_error_card_sync_setup_incomplete");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForSyncSetupIncompleteWithTitleFeatureEnabled(
-            boolean nightModeEnabled) throws Exception {
+    public void testSyncErrorCardForSyncSetupIncomplete(boolean nightModeEnabled) throws Exception {
         // Passing a null SyncService instance here would sign-in the user but
         // FirstSetupComplete will be unset.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(

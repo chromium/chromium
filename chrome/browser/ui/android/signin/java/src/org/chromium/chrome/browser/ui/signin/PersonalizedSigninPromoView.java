@@ -7,14 +7,12 @@ package org.chromium.chrome.browser.ui.signin;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
@@ -41,19 +39,8 @@ public class PersonalizedSigninPromoView extends FrameLayout {
         mDismissButton = findViewById(R.id.sync_promo_close_button);
         mPrimaryButton = findViewById(R.id.sync_promo_signin_button);
         mSecondaryButton = findViewById(R.id.sync_promo_choose_account_button);
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-            // TODO(crbug.com/1323197): remove new_sync_promo_description or
-            // signin_promo_description and sync_promo_title or sync_promo_status_message, if
-            // the feature enabled or disabled by default.
-            mTitle = findViewById(R.id.sync_promo_title);
-            mDescription = findViewById(R.id.new_sync_promo_description);
-            findViewById(R.id.signin_promo_description).setVisibility(View.GONE);
-        } else {
-            mTitle = findViewById(R.id.sync_promo_status_message);
-            mDescription = findViewById(R.id.signin_promo_description);
-            findViewById(R.id.new_sync_promo_description).setVisibility(View.GONE);
-        }
+        mTitle = findViewById(R.id.sync_promo_title);
+        mDescription = findViewById(R.id.sync_promo_description);
     }
 
     /**
