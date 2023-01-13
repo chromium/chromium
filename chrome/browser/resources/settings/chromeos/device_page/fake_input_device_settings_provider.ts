@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, Mouse, MouseObserver, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, Mouse, MouseObserverInterface, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -101,23 +101,11 @@ export class FakeInputDeviceSettingsProvider implements
     // TODO(yyhyyh): Implement observeKeyboardSettings().
   }
 
-  stopObserveKeyboardSettings(_observer: KeyboardObserverInterface): void {
-    // TODO(yyhyyh): Implement stopObserveKeyboardSettings().
-  }
-
   observeTouchpadSettings(_observer: TouchpadObserverInterface): void {
     // TODO(yyhyyh): Implement observeTouchpadSettings().
   }
 
-  stopObserveTouchpadSettings(_observer: TouchpadObserverInterface): void {
-    // TODO(yyhyyh): Implement stopObserveTouchpadSettings().
-  }
-
-  observeMouseSettings(_observer: MouseObserver): void {
+  observeMouseSettings(_observer: MouseObserverInterface): void {
     // TODO(yyhyyh): Implement observeMouseSettings().
-  }
-
-  stopObserveMouseSettings(_observer: MouseObserver): void {
-    // TODO(yyhyyh): Implement stopObserveMouseSettings().
   }
 }

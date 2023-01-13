@@ -62,20 +62,20 @@ export interface KeyboardSettings {
 }
 
 export interface KeyboardObserverInterface {
-  // Fired when the list of keyboards changes.
+  // Fired when a keyboard is connected.
   onKeyboardConnected(keyboard: Keyboard): void;
   // Fired when a keyboard is removed from the list.
   onKeyboardDisconnected(id: number): void;
 }
 
 export interface TouchpadObserverInterface {
-  // Fired when the list of touchpads changes.
-  onTouchpadsConnected(touchpads: Touchpad[]): void;
+  // Fired when a touchpad is connected.
+  onTouchpadConnected(touchpad: Touchpad): void;
   // Fired when a touchpad is removed from the list.
-  onTouchpadsDisconnected(id: number): void;
+  onTouchpadDisconnected(id: number): void;
 }
 
-export interface MouseObserver {
+export interface MouseObserverInterface {
   // Fired when a mouse is connected.
   onMouseConnected(mouse: Mouse): void;
   // Fired when a mouse is removed from the list.
@@ -84,9 +84,6 @@ export interface MouseObserver {
 
 export interface InputDeviceSettingsProviderInterface {
   observeKeyboardSettings(observer: KeyboardObserverInterface): void;
-  stopObserveKeyboardSettings(observer: KeyboardObserverInterface): void;
   observeTouchpadSettings(observer: TouchpadObserverInterface): void;
-  stopObserveTouchpadSettings(observer: TouchpadObserverInterface): void;
-  observeMouseSettings(observer: MouseObserver): void;
-  stopObserveMouseSettings(observer: MouseObserver): void;
+  observeMouseSettings(observer: MouseObserverInterface): void;
 }
