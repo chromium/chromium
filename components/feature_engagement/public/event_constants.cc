@@ -69,6 +69,16 @@ const char kDesktopVersionRequested[] = "desktop_version_requested";
 const char kDefaultSiteViewUsed[] = "default_site_view_used";
 const char kOverflowMenuNoHorizontalScrollOrAction[] =
     "overflow_menu_no_horizontal_scroll_or_action";
+const char kDefaultBrowserPromoShown[] = "default_browser_promo_shown";
+const char kBlueDotPromoCriterionMet[] = "blue_dot_promo_criterion_met";
+const char kBlueDotPromoEligibilityMet[] = "blue_dot_promo_eligibility_met";
+const char kBlueDotPromoOverflowMenuShown[] =
+    "blue_dot_promo_overflow_menu_shown";
+const char kBlueDotPromoSettingsShown[] = "blue_dot_promo_settings_shown";
+const char kBlueDotPromoOverflowMenuDismissed[] =
+    "blue_dot_promo_overflow_menu_dismissed";
+const char kBlueDotPromoSettingsDismissed[] =
+    "blue_dot_promo_settings_dismissed";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

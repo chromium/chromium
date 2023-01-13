@@ -219,6 +219,12 @@ DEFINE_VARIATION_PARAM(kIPHFollowWhileBrowsingFeature,
 DEFINE_VARIATION_PARAM(kIPHOverflowMenuTipFeature, "IPH_OverflowMenuTip");
 DEFINE_VARIATION_PARAM(kIPHPriceNotificationsWhileBrowsingFeature,
                        "IPHPriceNotificationsWhileBrowsing");
+DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserBadgeEligibilityFeature,
+                       "IPH_iOSDefaultBrowserBadgeEligibility");
+DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
+                       "IPH_iOSDefaultBrowserOverflowMenuBadge");
+DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserSettingsBadgeFeature,
+                       "IPH_iOSDefaultBrowserSettingsBadge");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -380,6 +386,9 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHFollowWhileBrowsingFeature),
         VARIATION_ENTRY(kIPHOverflowMenuTipFeature),
         VARIATION_ENTRY(kIPHPriceNotificationsWhileBrowsingFeature),
+        VARIATION_ENTRY(kIPHiOSDefaultBrowserBadgeEligibilityFeature),
+        VARIATION_ENTRY(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature),
+        VARIATION_ENTRY(kIPHiOSDefaultBrowserSettingsBadgeFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

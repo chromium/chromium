@@ -123,6 +123,33 @@ extern const char kDefaultSiteViewUsed[];
 // without taking an action.
 extern const char kOverflowMenuNoHorizontalScrollOrAction[];
 
+// The user has been shown a default browser promo.
+extern const char kDefaultBrowserPromoShown[];
+
+// The user has taken an action that is a criterion towards becoming eligible to
+// be shown the blue dot default browser promo.
+extern const char kBlueDotPromoCriterionMet[];
+
+// The user has met all criteria and has become eligible to be shown the blue
+// dot default browser promo.
+extern const char kBlueDotPromoEligibilityMet[];
+
+// The user has been shown the blue dot default browser promo on the overflow
+// carousel.
+extern const char kBlueDotPromoOverflowMenuShown[];
+
+// The user has been shown the blue dot default browser promo on the settings
+// row.
+extern const char kBlueDotPromoSettingsShown[];
+
+// The user has dismissed the blue dot default browser promo on the overflow
+// carousel.
+extern const char kBlueDotPromoOverflowMenuDismissed[];
+
+// The user has dismissed the blue dot default browser promo on the settings
+// row.
+extern const char kBlueDotPromoSettingsDismissed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

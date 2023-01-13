@@ -418,6 +418,15 @@ BASE_FEATURE(kIPHOverflowMenuTipFeature,
 BASE_FEATURE(kIPHPriceNotificationsWhileBrowsingFeature,
              "IPH_PriceNotificationsWhileBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSDefaultBrowserBadgeEligibilityFeature,
+             "IPH_iOSDefaultBrowserBadgeEligibility",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
+             "IPH_iOSDefaultBrowserOverflowMenuBadge",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSDefaultBrowserSettingsBadgeFeature,
+             "IPH_iOSDefaultBrowserSettingsBadge",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

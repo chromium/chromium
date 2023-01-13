@@ -1099,6 +1099,71 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("price_notifications_used", Comparator(EQUAL, 0), 7, 7);
     return config;
   }
+
+  if (kIPHiOSDefaultBrowserBadgeEligibilityFeature.name == feature->name) {
+    // A config for a shadow feature that is used to activate two other features
+    // (kIPHiOSDefaultBrowserOverflowMenuBadgeFeature and
+    // kIPHiOSDefaultBrowserSettingsBadgeFeature) which will enable a blue
+    // notification badge to be shown to users at two different locations to
+    // help bring their attention to the default browser settings page.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("blue_dot_promo_eligibility_met",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("blue_dot_promo_criterion_met",
+                               Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360);
+    config->event_configs.insert(EventConfig("default_browser_promo_shown",
+                                             Comparator(EQUAL, 0), 30, 360));
+    return config;
+  }
+
+  if (kIPHiOSDefaultBrowserOverflowMenuBadgeFeature.name == feature->name) {
+    // A config to allow a user to be shown the blue dot promo on the carousel.
+    // It depends on kIPHiOSDefaultBrowserBadgeEligibilityFeature to have deemed
+    // users eligible, and adds more constraints to decide when to stop showing
+    // the promo to the user.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig("blue_dot_promo_overflow_menu_dismissed",
+                               Comparator(EQUAL, 0), 30, 360);
+    config->trigger = EventConfig("blue_dot_promo_overflow_menu_shown",
+                                  Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360);
+    config->event_configs.insert(
+        EventConfig("blue_dot_promo_eligibility_met",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
+    config->event_configs.insert(EventConfig("default_browser_promo_shown",
+                                             Comparator(EQUAL, 0), 30, 360));
+    return config;
+  }
+
+  if (kIPHiOSDefaultBrowserSettingsBadgeFeature.name == feature->name) {
+    // A config to allow a user to be shown the blue dot promo in the default
+    // browser settings row item. It depends on
+    // kIPHiOSDefaultBrowserBadgeEligibilityFeature to have deemed users
+    // eligible, and adds more constraints to decide when to stop showing the
+    // promo.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig("blue_dot_promo_settings_dismissed",
+                               Comparator(EQUAL, 0), 30, 360);
+    config->trigger = EventConfig("blue_dot_promo_settings_shown",
+                                  Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360);
+    config->event_configs.insert(
+        EventConfig("blue_dot_promo_eligibility_met",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
+    config->event_configs.insert(EventConfig("default_browser_promo_shown",
+                                             Comparator(EQUAL, 0), 30, 360));
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
   if (kIPHDummyFeature.name == feature->name) {
