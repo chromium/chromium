@@ -23,6 +23,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/record_replay.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -224,7 +225,8 @@ Page::Page(base::PassKey<Page>,
       next_related_page_(this),
       prev_related_page_(this),
       autoplay_flags_(0),
-      web_text_autosizer_page_info_({0, 0, 1.f}) {
+      web_text_autosizer_page_info_({0, 0, 1.f}),
+      record_replay_id_(recordreplay::NewIdMainThread("Page")) {
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 
