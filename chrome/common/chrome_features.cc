@@ -542,7 +542,7 @@ BASE_FEATURE(kHappinessTrackingSystem,
 // survey.
 BASE_FEATURE(kHappinessTrackingSystemBluetoothRevamp,
              "HappinessTrackingSystemBluetoothRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables the Happiness Tracking System for the Ent survey.
 BASE_FEATURE(kHappinessTrackingSystemEnt,
              "HappinessTrackingSystemEnt",
