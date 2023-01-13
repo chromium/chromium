@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -42,6 +43,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -1780,6 +1782,58 @@ TEST_F(TabletModeWindowManagerTest,
   DestroyTabletModeWindowManager();
   EXPECT_EQ(window->bounds().width(), 1200 * 0.33);
   EXPECT_EQ(window2->bounds().width(), 1200 - window->bounds().width());
+}
+
+// Tests partial split clamshell <-> tablet transition.
+TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
+  // 1. Create a window and snap to primary 2/3.
+  auto window = CreateTestWindow();
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  const WMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
+                                       chromeos::kTwoThirdSnapRatio);
+  WindowState::Get(window.get())->OnWMEvent(&snap_primary_two_third);
+  // Enter tablet mode and verify that overview is open and the window and
+  // divider are at 2/3.
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window.get()));
+  const gfx::Rect work_area_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect divider_bounds =
+      split_view_controller()->split_view_divider()->GetDividerBoundsInScreen(
+          /*is_dragging=*/false);
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window->bounds().width(),
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, divider_bounds.x(),
+              divider_bounds.width());
+  // Exit tablet mode and verify the window stays in the same position.
+  DestroyTabletModeWindowManager();
+  EXPECT_EQ(work_area_bounds.width() * 0.67f, window->bounds().width());
+
+  // 2. Create another window and snap to secondary 1/3.
+  auto window2 = CreateTestWindow();
+  const WMEvent snap_secondary_one_third(WM_EVENT_SNAP_SECONDARY,
+                                         chromeos::kOneThirdSnapRatio);
+  WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_one_third);
+  EXPECT_EQ(work_area_bounds.width() * 0.33f, window2->bounds().width());
+  // Enter tablet mode and verify the windows are in splitview and the window
+  // bounds and divider are at 2/3.
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window.get()));
+  EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
+  divider_bounds =
+      split_view_controller()->split_view_divider()->GetDividerBoundsInScreen(
+          /*is_dragging=*/false);
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, window->bounds().width(),
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.33f, window2->bounds().width(),
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.67f, divider_bounds.x(),
+              divider_bounds.width());
+  // Exit tablet mode and verify the windows are the same.
+  DestroyTabletModeWindowManager();
+  EXPECT_EQ(work_area_bounds.width() * 0.67f, window->bounds().width());
+  EXPECT_EQ(work_area_bounds.width() * 0.33f, window2->bounds().width());
 }
 
 // Test that when switching from clamshell mode to tablet mode, if overview mode
