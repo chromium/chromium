@@ -740,7 +740,7 @@ ExtensionFunction::ResponseAction DebuggerSendCommandFunction::Run() {
 }
 
 void DebuggerSendCommandFunction::SendResponseBody(base::Value response) {
-  if (base::Value* error_body = response.FindKey("error")) {
+  if (base::Value* error_body = response.GetDict().Find("error")) {
     std::string error;
     base::JSONWriter::Write(*error_body, &error);
     Respond(Error(std::move(error)));
