@@ -52,6 +52,7 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   void FillContentView(views::View* content_view) override;
   std::unique_ptr<views::View> CreateExtraFooterView() override;
   bool GetSheetId(DialogViewID* sheet_id) override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
   // These functions create the various sections and rows of the payment sheet.
   // Where applicable, they also populate |accessible_content|, which shouldn't
@@ -69,6 +70,9 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
 
   void AddShippingButtonPressed();
   void AddContactInfoButtonPressed();
+
+  // Must be the last member of a leaf class.
+  base::WeakPtrFactory<PaymentSheetViewController> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

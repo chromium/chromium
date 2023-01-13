@@ -37,9 +37,11 @@ class ShippingOptionViewController : public PaymentRequestSheetController,
   std::unique_ptr<views::View> CreateExtraFooterView() override;
   bool ShouldShowPrimaryButton() override;
   bool ShouldShowSecondaryButton() override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
   PaymentRequestItemList shipping_option_list_;
 
+  // Must be the last member of a leaf class.
   base::WeakPtrFactory<ShippingOptionViewController> weak_ptr_factory_{this};
 };
 

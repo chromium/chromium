@@ -387,4 +387,9 @@ void ProfileListViewController::FillContentView(views::View* content_view) {
   content_view->AddChildView(list_view.release());
 }
 
+base::WeakPtr<PaymentRequestSheetController>
+ProfileListViewController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace payments

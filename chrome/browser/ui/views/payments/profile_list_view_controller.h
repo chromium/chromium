@@ -96,11 +96,13 @@ class ProfileListViewController : public PaymentRequestSheetController {
   bool ShouldShowPrimaryButton() override;
   ButtonCallback GetSecondaryButtonCallback() override;
   void FillContentView(views::View* content_view) override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
  private:
   std::unique_ptr<views::Button> CreateRow(autofill::AutofillProfile* profile);
   PaymentRequestItemList list_;
 
+  // Must be the last member of a leaf class.
   base::WeakPtrFactory<ProfileListViewController> weak_ptr_factory_{this};
 };
 

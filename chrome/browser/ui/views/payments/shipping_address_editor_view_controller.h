@@ -67,6 +67,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
 
   // PaymentRequestSheetController:
   std::u16string GetSheetTitle() override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
  protected:
   int GetPrimaryButtonId() override;
@@ -173,6 +174,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
   // Owned by the state combobox, which is owned by this object's base class.
   raw_ptr<autofill::RegionComboboxModel, DanglingUntriaged> region_model_;
 
+  // Must be the last member of a leaf class.
   base::WeakPtrFactory<ShippingAddressEditorViewController> weak_ptr_factory_{
       this};
 };

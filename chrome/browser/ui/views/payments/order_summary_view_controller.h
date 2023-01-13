@@ -46,6 +46,7 @@ class OrderSummaryViewController : public PaymentRequestSheetController,
   void FillContentView(views::View* content_view) override;
   bool GetSheetId(DialogViewID* sheet_id) override;
   bool ShouldAccelerateEnterKey() override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
   base::WeakPtrFactory<OrderSummaryViewController> weak_ptr_factory_{this};
 };

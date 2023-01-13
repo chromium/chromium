@@ -37,8 +37,12 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
   bool ShouldShowSecondaryButton() override;
   std::u16string GetSecondaryButtonLabel() override;
   int GetSecondaryButtonId() override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
   PaymentRequestItemList payment_method_list_;
+
+  // Must be the last member of a leaf class.
+  base::WeakPtrFactory<PaymentMethodViewController> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

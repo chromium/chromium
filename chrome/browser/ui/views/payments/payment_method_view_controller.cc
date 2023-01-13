@@ -197,4 +197,9 @@ int PaymentMethodViewController::GetSecondaryButtonId() {
   return static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_CARD_BUTTON);
 }
 
+base::WeakPtr<PaymentRequestSheetController>
+PaymentMethodViewController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace payments

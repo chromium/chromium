@@ -71,6 +71,7 @@ class PaymentHandlerWebFlowViewController
       views::View* header_view) override;
   bool GetSheetId(DialogViewID* sheet_id) override;
   bool DisplayDynamicBorderForHiddenContents() override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
   // content::WebContentsDelegate:
   void VisibleSecurityStateChanged(content::WebContents* source) override;
@@ -105,6 +106,10 @@ class PaymentHandlerWebFlowViewController
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
+  // Must be the last member of a leaf class.
+  base::WeakPtrFactory<PaymentHandlerWebFlowViewController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace payments

@@ -199,9 +199,11 @@ class PaymentRequestSheetController {
   // Returns whether the controller should be controlling the UI.
   bool is_active() const { return is_active_; }
 
-  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
+  // Provide a base::WeakPtr to the subclass instance. Subclasses must implement
+  // this method as a base::WeakPtrFactory must be the last member in the
+  // concrete (aka leaf) class in order to avoid subtle use-after-destroy
+  // issues.
+  virtual base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() = 0;
 
  private:
   // Add the primary/secondary buttons to |container|.
@@ -237,8 +239,6 @@ class PaymentRequestSheetController {
 
   // Whether the controller should be controlling the UI.
   bool is_active_ = true;
-
-  base::WeakPtrFactory<PaymentRequestSheetController> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

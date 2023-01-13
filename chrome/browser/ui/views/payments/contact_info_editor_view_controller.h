@@ -50,6 +50,7 @@ class ContactInfoEditorViewController : public EditorViewController {
  protected:
   // PaymentRequestSheetController:
   std::u16string GetSheetTitle() override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
  private:
   // Uses the values in the UI fields to populate the corresponding values in
@@ -95,6 +96,9 @@ class ContactInfoEditorViewController : public EditorViewController {
     raw_ptr<ContactInfoEditorViewController, DanglingUntriaged> controller_;
     const raw_ref<const std::string> locale_;
   };
+
+  // Must be the last member of a leaf class.
+  base::WeakPtrFactory<ContactInfoEditorViewController> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

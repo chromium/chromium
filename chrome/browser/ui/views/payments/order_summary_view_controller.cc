@@ -218,4 +218,9 @@ bool OrderSummaryViewController::ShouldAccelerateEnterKey() {
   return true;
 }
 
+base::WeakPtr<PaymentRequestSheetController>
+OrderSummaryViewController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace payments

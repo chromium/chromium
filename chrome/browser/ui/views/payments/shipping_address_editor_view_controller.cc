@@ -214,6 +214,11 @@ std::u16string ShippingAddressEditorViewController::GetSheetTitle() {
                           : l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_ADDRESS);
 }
 
+base::WeakPtr<PaymentRequestSheetController>
+ShippingAddressEditorViewController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 int ShippingAddressEditorViewController::GetPrimaryButtonId() {
   return static_cast<int>(DialogViewID::SAVE_ADDRESS_BUTTON);
 }

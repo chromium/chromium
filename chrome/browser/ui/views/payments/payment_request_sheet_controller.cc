@@ -262,7 +262,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
               ShouldAccelerateEnterKey()
                   ? base::BindRepeating(&PaymentRequestSheetController::
                                             PerformPrimaryButtonAction,
-                                        weak_ptr_factory_.GetWeakPtr())
+                                        GetWeakPtr())
                   : base::RepeatingCallback<void(bool*)>()))
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .CustomConfigure(base::BindOnce(

@@ -46,6 +46,10 @@ class ErrorMessageViewController : public PaymentRequestSheetController {
   void FillContentView(views::View* content_view) override;
   bool GetSheetId(DialogViewID* sheet_id) override;
   bool ShouldAccelerateEnterKey() override;
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
+
+  // Must be the last member of a leaf class.
+  base::WeakPtrFactory<ErrorMessageViewController> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

@@ -141,4 +141,9 @@ bool ShippingOptionViewController::ShouldShowSecondaryButton() {
   return false;
 }
 
+base::WeakPtr<PaymentRequestSheetController>
+ShippingOptionViewController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace payments

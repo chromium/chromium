@@ -102,4 +102,9 @@ bool ErrorMessageViewController::ShouldAccelerateEnterKey() {
   return true;
 }
 
+base::WeakPtr<PaymentRequestSheetController>
+ErrorMessageViewController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace payments

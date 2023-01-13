@@ -432,6 +432,11 @@ bool PaymentHandlerWebFlowViewController::
   return false;
 }
 
+base::WeakPtr<PaymentRequestSheetController>
+PaymentHandlerWebFlowViewController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
     content::WebContents* source) {
   DCHECK_EQ(source, web_contents());

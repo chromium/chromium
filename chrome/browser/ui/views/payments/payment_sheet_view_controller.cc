@@ -468,6 +468,11 @@ bool PaymentSheetViewController::GetSheetId(DialogViewID* sheet_id) {
   return true;
 }
 
+base::WeakPtr<PaymentRequestSheetController>
+PaymentSheetViewController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // Creates the Order Summary row, which contains an "Order Summary" label,
 // an inline list of display items, a Total Amount label, and a Chevron. Returns
 // nullptr if WeakPtr<PaymentRequestSpec> has become null.
