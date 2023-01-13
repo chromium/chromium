@@ -165,10 +165,9 @@ def run_ffx_command(cmd: Iterable[str],
                               env=env,
                               **kwargs)
     except subprocess.CalledProcessError as cpe:
-        logging.error(
-            '%s failed with returncode %s.',
-            os.path.relpath(_FFX_TOOL) + subprocess.list2cmdline(ffx_cmd[1:]),
-            cpe.returncode)
+        logging.error('%s %s failed with returncode %s.',
+                      os.path.relpath(_FFX_TOOL),
+                      subprocess.list2cmdline(ffx_cmd[1:]), cpe.returncode)
         if cpe.output:
             logging.error('stdout of the command: %s', cpe.output)
         if suppress_repair or (cpe.output
