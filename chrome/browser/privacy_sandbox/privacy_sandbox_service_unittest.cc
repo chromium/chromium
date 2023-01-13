@@ -1114,6 +1114,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionUpdatesRequiredPrompt) {
   EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
             privacy_sandbox_service()->GetRequiredPromptType());
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade));
 
   // Consent declined:
   SetupPromptTestState(feature_list(), prefs(),
@@ -1133,6 +1134,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionUpdatesRequiredPrompt) {
   EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
             privacy_sandbox_service()->GetRequiredPromptType());
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade));
 
   // Notice shown:
   SetupPromptTestState(feature_list(), prefs(),
@@ -1152,154 +1154,81 @@ TEST_F(PrivacySandboxServiceTest, PromptActionUpdatesRequiredPrompt) {
   EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
             privacy_sandbox_service()->GetRequiredPromptType());
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed));
 }
 
 TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   base::UserActionTester user_action_tester;
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/false,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kNoticeShown);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Shown"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/false,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kNoticeOpenSettings);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.OpenedSettings"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/false,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kNoticeAcknowledge);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Acknowledged"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/false,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kNoticeDismiss);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Dismissed"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/false,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/false,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
-  privacy_sandbox_service()->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kNoticeLearnMore);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.LearnMore"));
-
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/false,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
-  privacy_sandbox_service()->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kNoticeMoreInfoOpened);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.LearnMoreExpanded"));
-
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/true,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kConsentShown);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Shown"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/true,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kConsentAccepted);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Accepted"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/true,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kConsentDeclined);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Declined"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/true,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kConsentMoreInfoOpened);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.LearnMoreExpanded"));
 
-  SetupPromptTestState(feature_list(), prefs(),
-                       {/*consent_required=*/true,
-                        /*old_api_pref=*/true,
-                        /*new_api_pref=*/false,
-                        /*notice_displayed=*/false,
-                        /*consent_decision_made=*/false,
-                        /*confirmation_not_shown=*/false});
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kConsentMoreInfoClosed);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.Consent.LearnMoreClosed"));
+
   privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kConsentClosedNoDecision);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kNoticeLearnMore);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.Notice.LearnMore"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kNoticeMoreInfoOpened);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.Notice.LearnMoreExpanded"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kNoticeMoreInfoClosed);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.Notice.LearnMoreClosed"));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

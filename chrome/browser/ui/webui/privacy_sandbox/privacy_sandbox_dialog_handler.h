@@ -44,6 +44,12 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
                            HandleOpenSettings);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
                            HandleNoticeAcknowledge);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxConsentDialogHandlerTest,
+      NotifyServiceAboutPromptAction_Invokes_PromptActionOccured);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxNoticeDialogHandlerTest,
+      NotifyServiceAboutPromptAction_Invokes_PromptActionOccured);
 
   void HandlePromptActionOccurred(const base::Value::List& args);
   void HandleResizeDialog(const base::Value::List& args);

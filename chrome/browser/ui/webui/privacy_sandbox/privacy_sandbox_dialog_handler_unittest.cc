@@ -211,6 +211,22 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentDeclined) {
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
 
+TEST_F(PrivacySandboxConsentDialogHandlerTest,
+       NotifyServiceAboutPromptAction_Invokes_PromptActionOccured) {
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
+  handler()->NotifyServiceAboutPromptAction(
+      PrivacySandboxService::PromptAction::kConsentShown);
+
+  // This is needed because PromptActionOccurred is called again when
+  // PrivacySandboxDialogHandler is destroyed in tearDown.
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
+}
+
 class PrivacySandboxNoticeDialogHandlerTest
     : public PrivacySandboxDialogHandlerTest {
  protected:
@@ -299,4 +315,20 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleNoticeAcknowledge) {
   IdempotentPromptActionOccurred(args);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
+}
+
+TEST_F(PrivacySandboxNoticeDialogHandlerTest,
+       NotifyServiceAboutPromptAction_Invokes_PromptActionOccured) {
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
+  handler()->NotifyServiceAboutPromptAction(
+      PrivacySandboxService::PromptAction::kNoticeShown);
+
+  // This is needed because PromptActionOccurred is called again when
+  // PrivacySandboxDialogHandler is destroyed in tearDown.
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
 }

@@ -250,85 +250,21 @@ PrivacySandboxService::GetRequiredPromptType() {
 void PrivacySandboxService::PromptActionOccurred(
     PrivacySandboxService::PromptAction action) {
   InformSentimentService(action);
-  switch (action) {
-    case (PromptAction::kNoticeShown): {
-      // TODO(crbug.com/1378703): Handle new prompt types.
-      if (PromptType::kNotice == GetRequiredPromptType()) {
-        // The new Privacy Sandbox pref can be enabled when the notice has been
-        // shown. Note that a notice will not have been shown if the user
-        // disabled the old Privacy Sandbox pref.
-        pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
-        pref_service_->SetBoolean(prefs::kPrivacySandboxNoticeDisplayed, true);
-      }
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Notice.Shown"));
-      break;
-    }
-    case (PromptAction::kNoticeOpenSettings): {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.OpenedSettings"));
-      break;
-    }
-    case (PromptAction::kNoticeAcknowledge): {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.Acknowledged"));
-      break;
-    }
-    case (PromptAction::kNoticeDismiss): {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Notice.Dismissed"));
-      break;
-    }
-    case (PromptAction::kNoticeClosedNoInteraction): {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
-      break;
-    }
-    case (PromptAction::kConsentShown): {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Shown"));
-      break;
-    }
-    case (PromptAction::kConsentAccepted): {
-      pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
-      pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade,
-                                true);
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Accepted"));
-      break;
-    }
-    case (PromptAction::kConsentDeclined): {
-      pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
-      pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade,
-                                true);
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Declined"));
-      break;
-    }
-    case (PromptAction::kConsentMoreInfoOpened): {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Consent.LearnMoreExpanded"));
-      break;
-    }
-    case (PromptAction::kConsentClosedNoDecision): {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
-      break;
-    }
-    case (PromptAction::kNoticeLearnMore): {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.PrivacySandbox.Notice.LearnMore"));
-      break;
-    }
-    case (PromptAction::kNoticeMoreInfoOpened): {
-      base::RecordAction(base::UserMetricsAction(
-          "Settings.PrivacySandbox.Notice.LearnMoreExpanded"));
-      break;
-    }
-    // TODO(crbug.com/1378703): Clean up PromptAction and remove
-    // *LearnMoreClosed or add use actions metrics for those prompt actions.
-    default:
-      break;
+  RecordPromptActionMetrics(action);
+
+  if (PromptAction::kNoticeShown == action &&
+      PromptType::kNotice == GetRequiredPromptType()) {
+    // The Privacy Sandbox pref can be enabled when the notice has been
+    // shown. Note that a notice will not have been shown if the user
+    // disabled the old Privacy Sandbox pref.
+    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxNoticeDisplayed, true);
+  } else if (PromptAction::kConsentAccepted == action) {
+    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade, true);
+  } else if (PromptAction::kConsentDeclined == action) {
+    pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
+    pref_service_->SetBoolean(prefs::kPrivacySandboxConsentDecisionMade, true);
   }
 }
 
@@ -1145,6 +1081,82 @@ void PrivacySandboxService::InformSentimentService(
 
   sentiment_service_->InteractedWithPrivacySandbox3(area);
 #endif
+}
+
+void PrivacySandboxService::RecordPromptActionMetrics(
+    PrivacySandboxService::PromptAction action) {
+  switch (action) {
+    case (PromptAction::kNoticeShown): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Notice.Shown"));
+      break;
+    }
+    case (PromptAction::kNoticeOpenSettings): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.OpenedSettings"));
+      break;
+    }
+    case (PromptAction::kNoticeAcknowledge): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.Acknowledged"));
+      break;
+    }
+    case (PromptAction::kNoticeDismiss): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Notice.Dismissed"));
+      break;
+    }
+    case (PromptAction::kNoticeClosedNoInteraction): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
+      break;
+    }
+    case (PromptAction::kConsentShown): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Shown"));
+      break;
+    }
+    case (PromptAction::kConsentAccepted): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Accepted"));
+      break;
+    }
+    case (PromptAction::kConsentDeclined): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Consent.Declined"));
+      break;
+    }
+    case (PromptAction::kConsentMoreInfoOpened): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Consent.LearnMoreExpanded"));
+      break;
+    }
+    case (PromptAction::kConsentMoreInfoClosed): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Consent.LearnMoreClosed"));
+      break;
+    }
+    case (PromptAction::kConsentClosedNoDecision): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
+      break;
+    }
+    case (PromptAction::kNoticeLearnMore): {
+      base::RecordAction(
+          base::UserMetricsAction("Settings.PrivacySandbox.Notice.LearnMore"));
+      break;
+    }
+    case (PromptAction::kNoticeMoreInfoOpened): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.LearnMoreExpanded"));
+      break;
+    }
+    case (PromptAction::kNoticeMoreInfoClosed): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.LearnMoreClosed"));
+      break;
+    }
+  }
 }
 
 void PrivacySandboxService::OnTopicsPrefChanged() {

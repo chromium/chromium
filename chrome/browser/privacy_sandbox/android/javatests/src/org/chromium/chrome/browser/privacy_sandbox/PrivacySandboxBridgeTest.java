@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -38,6 +39,8 @@ import java.util.List;
 public class PrivacySandboxBridgeTest {
     @ClassRule
     public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
+
+    private UserActionTester mUserActionTester;
 
     @Test
     @SmallTest
@@ -146,6 +149,18 @@ public class PrivacySandboxBridgeTest {
             PrivacySandboxBridge.setFledgeJoiningAllowed(site2, true);
             assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
                     contains(site1, site3));
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testPromptActionOccuredRecordsUserAction() {
+        mUserActionTester = new UserActionTester();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
+            assertTrue(mUserActionTester.getActions().contains(
+                    "Settings.PrivacySandbox.Consent.Shown"));
         });
     }
 }

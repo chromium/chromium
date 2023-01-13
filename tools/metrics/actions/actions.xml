@@ -28304,6 +28304,15 @@ should be able to be added at any place in this file.
   <description>User declined the privacy sandbox consent.</description>
 </action>
 
+<action name="Settings.PrivacySandbox.Consent.LearnMoreClosed">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User closed the Learn More in the Privacy Sandbox Consent.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.Consent.LearnMoreExpanded">
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -28427,6 +28436,15 @@ should be able to be added at any place in this file.
     User clicked on the link &quot;estimates your interests&quot; from the
     Privacy Sandbox notice. It opens Privacy Sandbox settings page with
     &quot;About Browser-based ad personalization&quot; dialog.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Notice.LearnMoreClosed">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <owner>tommasin@chromium.org</owner>
+  <description>
+    User closed the Learn More in the Privacy Sandbox Notice.
   </description>
 </action>
 
