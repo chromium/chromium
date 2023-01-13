@@ -965,6 +965,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
             version_->fetch_handler_type());
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
+                       NonFunctionFetchHandler) {
+  StartServerAndNavigateToSetup();
+  ASSERT_EQ(Install("/service_worker/non_function_fetch_event.js"),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(ServiceWorkerVersion::FetchHandlerExistence::EXISTS,
+            version_->fetch_handler_existence());
+  EXPECT_EQ(ServiceWorkerVersion::FetchHandlerType::kNotSkippable,
+            version_->fetch_handler_type());
+}
+
 // Check that fetch event handler added in the install event should result in a
 // service worker that doesn't count as having a fetch event handler.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
