@@ -372,7 +372,6 @@ base::File::Error ObfuscatedFileUtil::EnsureFileExists(
   if (db->GetFileWithPath(url.path(), &file_id)) {
     FileInfo file_info;
     if (!db->GetFileInfo(file_id, &file_info)) {
-      NOTREACHED();
       return base::File::FILE_ERROR_FAILED;
     }
     if (file_info.is_directory())
@@ -419,7 +418,6 @@ base::File::Error ObfuscatedFileUtil::CreateDirectory(
     if (exclusive)
       return base::File::FILE_ERROR_EXISTS;
     if (!db->GetFileInfo(file_id, &file_info)) {
-      NOTREACHED();
       return base::File::FILE_ERROR_FAILED;
     }
     if (!file_info.is_directory())
@@ -497,7 +495,6 @@ base::File::Error ObfuscatedFileUtil::GetLocalFilePath(
     return base::File::FILE_ERROR_NOT_FOUND;
   FileInfo file_info;
   if (!db->GetFileInfo(file_id, &file_info) || file_info.is_directory()) {
-    NOTREACHED();
     // Directories have no local file path.
     return base::File::FILE_ERROR_NOT_FOUND;
   }
@@ -523,7 +520,6 @@ base::File::Error ObfuscatedFileUtil::Touch(
 
   FileInfo file_info;
   if (!db->GetFileInfo(file_id, &file_info)) {
-    NOTREACHED();
     return base::File::FILE_ERROR_FAILED;
   }
   if (file_info.is_directory()) {
@@ -842,7 +838,6 @@ base::File::Error ObfuscatedFileUtil::DeleteDirectory(
   }
   FileInfo file_info;
   if (!db->GetFileInfo(file_id, &file_info)) {
-    NOTREACHED();
     return base::File::FILE_ERROR_FAILED;
   }
   if (!file_info.is_directory())
@@ -900,7 +895,6 @@ bool ObfuscatedFileUtil::IsDirectoryEmpty(FileSystemOperationContext* context,
     return true;  // Ditto.
   FileInfo file_info;
   if (!db->GetFileInfo(file_id, &file_info)) {
-    DCHECK(!file_id);
     // It's the root directory and the database hasn't been initialized yet.
     return true;
   }
@@ -1214,7 +1208,6 @@ base::File::Error ObfuscatedFileUtil::GetFileInfoInternal(
   DCHECK(platform_file_path);
 
   if (!db->GetFileInfo(file_id, local_info)) {
-    NOTREACHED();
     return base::File::FILE_ERROR_FAILED;
   }
 
