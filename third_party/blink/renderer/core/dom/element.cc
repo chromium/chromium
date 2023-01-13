@@ -448,18 +448,6 @@ inline bool NeedsLegacyBlockFragmentation(const Element& element,
   return false;
 }
 
-bool NeedsLegacyLayoutForEntireDocument(Document& document) {
-  // Fall back to legacy layout for frameset documents. The frameset itself (and
-  // the frames) can only create legacy layout objects anyway (no NG counterpart
-  // for them yet). However, the layout object for the HTML root element would
-  // be an NG one. If we'd then print the document, we'd fall back to legacy
-  // layout (because of the above check), which would re-attach all layout
-  // objects, which would cause the frameset to lose state of some sort, leaving
-  // everything blank when printed.
-  return document.IsFrameSet() &&
-         !RuntimeEnabledFeatures::LayoutNGFrameSetEnabled();
-}
-
 bool CalculateStyleShouldForceLegacyLayout(const Element& element,
                                            const ComputedStyle& style) {
   Document& document = element.GetDocument();
@@ -478,10 +466,6 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
 
   if (document.Printing() && element == document.documentElement() &&
       !RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
-    return true;
-  }
-
-  if (NeedsLegacyLayoutForEntireDocument(document)) {
     return true;
   }
 
@@ -4370,8 +4354,7 @@ bool Element::IsSupportedByRegionCapture() const {
 }
 
 void Element::ResetForceLegacyLayoutForPrinting() {
-  SetShouldForceLegacyLayoutForChild(
-      NeedsLegacyLayoutForEntireDocument(GetDocument()));
+  SetShouldForceLegacyLayoutForChild(false);
 }
 
 void Element::SetCustomElementDefinition(CustomElementDefinition* definition) {
