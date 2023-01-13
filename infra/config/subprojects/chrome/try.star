@@ -151,6 +151,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-autofill-captured-sites-rel",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.STANDARD_MILESTONE,
     builder = "linux-chrome",
 )
