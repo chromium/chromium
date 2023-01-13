@@ -102,7 +102,7 @@ class DCompImageBackingFactoryTest : public testing::Test {
     Mailbox mailbox = Mailbox::GenerateForSharedImage();
     std::unique_ptr<SharedImageBacking> backing =
         shared_image_factory_->CreateSharedImage(
-            mailbox, viz::SharedImageFormat::kRGBA_8888, nullptr,
+            mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
             gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, false);
     ASSERT_NE(nullptr, backing);
@@ -155,7 +155,7 @@ class DCompImageBackingFactoryTest : public testing::Test {
     Mailbox mailbox = Mailbox::GenerateForSharedImage();
     std::unique_ptr<SharedImageBacking> backing =
         shared_image_factory_->CreateSharedImage(
-            mailbox, viz::SharedImageFormat::kRGBA_8888, nullptr,
+            mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
             gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
             kTopLeft_GrSurfaceOrigin,
             has_alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType,
@@ -189,38 +189,36 @@ class DCompImageBackingFactoryTest : public testing::Test {
 
 TEST_F(DCompImageBackingFactoryTest, UsageFlags) {
   EXPECT_TRUE(shared_image_factory_->IsSupported(
-      kDCompSurfaceUsage, viz::SharedImageFormat::kRGBA_8888,
+      kDCompSurfaceUsage, viz::SinglePlaneFormat::kRGBA_8888,
       gfx::Size(100, 100), false, gfx::GpuMemoryBufferType::EMPTY_BUFFER,
       kGrContextTypeDontCare, {}));
 
   EXPECT_TRUE(shared_image_factory_->IsSupported(
-      kDXGISwapChainUsage, viz::SharedImageFormat::kRGBA_8888,
+      kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_8888,
       gfx::Size(100, 100), false, gfx::GpuMemoryBufferType::EMPTY_BUFFER,
       kGrContextTypeDontCare, {}));
 
   // DComp surfaces don't support readback.
   EXPECT_FALSE(shared_image_factory_->IsSupported(
       kDCompSurfaceUsage | SHARED_IMAGE_USAGE_DISPLAY_READ,
-      viz::SharedImageFormat::kRGBA_8888, gfx::Size(100, 100), false,
+      viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 100), false,
       gfx::GpuMemoryBufferType::EMPTY_BUFFER, kGrContextTypeDontCare, {}));
 
   // We require callers to explicitly state DXGI swap chains are readable.
   EXPECT_FALSE(shared_image_factory_->IsSupported(
       SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_SCANOUT,
-      viz::SharedImageFormat::kRGBA_8888, gfx::Size(100, 100), false,
+      viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 100), false,
       gfx::GpuMemoryBufferType::EMPTY_BUFFER, kGrContextTypeDontCare, {}));
 }
 
 TEST_F(DCompImageBackingFactoryTest, HDR10Support) {
   EXPECT_TRUE(shared_image_factory_->IsSupported(
-      kDXGISwapChainUsage,
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102),
+      kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_1010102,
       gfx::Size(100, 100), false, gfx::GpuMemoryBufferType::EMPTY_BUFFER,
       kGrContextTypeDontCare, {}));
 
   EXPECT_FALSE(shared_image_factory_->IsSupported(
-      kDCompSurfaceUsage,
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102),
+      kDCompSurfaceUsage, viz::SinglePlaneFormat::kRGBA_1010102,
       gfx::Size(100, 100), false, gfx::GpuMemoryBufferType::EMPTY_BUFFER,
       kGrContextTypeDontCare, {}));
 }
@@ -229,11 +227,9 @@ TEST_F(DCompImageBackingFactoryTest, ValidFormats) {
   uint32_t valid_usages[2] = {kDCompSurfaceUsage, kDXGISwapChainUsage};
 
   viz::SharedImageFormat valid_formats[5] = {
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBX_8888),
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRX_8888),
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_F16),
+      viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
+      viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
+      viz::SinglePlaneFormat::kRGBA_F16,
   };
 
   for (auto valid_usage : valid_usages) {
@@ -254,7 +250,7 @@ TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
-          mailbox, viz::SharedImageFormat::kRGBA_8888, nullptr,
+          mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
           gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
           kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kDXGISwapChainUsage,
           false);
@@ -311,7 +307,7 @@ TEST_F(DCompImageBackingFactoryTest, DCompSurfaceRestoresGLSurfaceAfterDraw) {
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
-          mailbox, viz::SharedImageFormat::kRGBA_8888, nullptr,
+          mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
           gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kDCompSurfaceUsage,
           false);
@@ -350,7 +346,7 @@ TEST_F(DCompImageBackingFactoryTest,
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
-          mailbox, viz::SharedImageFormat::kRGBA_8888, nullptr,
+          mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
           gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kDCompSurfaceUsage,
           false);
@@ -443,7 +439,7 @@ TEST_P(DCompImageBackingFactoryBufferCountTest, RootSwapChainBufferCount) {
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
-          mailbox, viz::SharedImageFormat::kRGBA_8888, nullptr,
+          mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
           gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
           kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kDXGISwapChainUsage,
           false);
@@ -658,8 +654,7 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest, DCompSurfaceCanDisplay) {
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DCompSurfaceCanDisplayLinear) {
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x35, 0x65, 0xc3);
-  RunTest(kDCompSurfaceUsage,
-          viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_F16),
+  RunTest(kDCompSurfaceUsage, viz::SinglePlaneFormat::kRGBA_F16,
           gfx::ColorSpace::CreateSCRGBLinear80Nits(), false, test_color,
           expected_color);
 }
@@ -683,8 +678,7 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DCompSurfaceCanDisplayLinearWithAlpha) {
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
-  RunTest(kDCompSurfaceUsage,
-          viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_F16),
+  RunTest(kDCompSurfaceUsage, viz::SinglePlaneFormat::kRGBA_F16,
           gfx::ColorSpace::CreateSCRGBLinear80Nits(), true, test_color,
           expected_color);
 }
@@ -708,8 +702,7 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplay) {
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplayLinear) {
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x35, 0x65, 0xc3);
-  RunTest(kDXGISwapChainUsage,
-          viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_F16),
+  RunTest(kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_F16,
           gfx::ColorSpace::CreateSCRGBLinear80Nits(), false, test_color,
           expected_color);
 }
@@ -717,10 +710,8 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplayLinear) {
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplayHDR10) {
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x35, 0x65, 0xc3);
-  RunTest(
-      kDXGISwapChainUsage,
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102),
-      gfx::ColorSpace::CreateHDR10(), false, test_color, expected_color);
+  RunTest(kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_1010102,
+          gfx::ColorSpace::CreateHDR10(), false, test_color, expected_color);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
@@ -742,8 +733,7 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DXGISwapChainCanDisplayLinearWithAlpha) {
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
-  RunTest(kDXGISwapChainUsage,
-          viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_F16),
+  RunTest(kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_F16,
           gfx::ColorSpace::CreateSCRGBLinear80Nits(), true, test_color,
           expected_color);
 }
@@ -752,10 +742,8 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DXGISwapChainCanDisplayHDR10WithAlpha) {
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
-  RunTest(
-      kDXGISwapChainUsage,
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102),
-      gfx::ColorSpace::CreateHDR10(), true, test_color, expected_color);
+  RunTest(kDXGISwapChainUsage, viz::SinglePlaneFormat::kRGBA_1010102,
+          gfx::ColorSpace::CreateHDR10(), true, test_color, expected_color);
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
@@ -763,7 +751,7 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
   std::unique_ptr<SharedImageBacking> backing =
       shared_image_factory_->CreateSharedImage(
-          mailbox, viz::SharedImageFormat::kRGBA_8888, nullptr,
+          mailbox, viz::SinglePlaneFormat::kRGBA_8888, nullptr,
           gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
           kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kDXGISwapChainUsage,
           false);

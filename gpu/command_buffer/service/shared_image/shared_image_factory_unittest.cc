@@ -58,8 +58,7 @@ class SharedImageFactoryTest : public testing::Test {
 
 TEST_F(SharedImageFactoryTest, Basic) {
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
@@ -72,8 +71,7 @@ TEST_F(SharedImageFactoryTest, Basic) {
 
 TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;

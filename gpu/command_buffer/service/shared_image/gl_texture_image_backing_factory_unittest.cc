@@ -49,7 +49,7 @@ namespace {
 
 bool IsGLSupported(viz::SharedImageFormat format) {
   return format.is_single_plane() && !format.IsLegacyMultiplanar() &&
-         format != viz::SharedImageFormat::kBGR_565;
+         format != viz::SinglePlaneFormat::kBGR_565;
 }
 
 void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
@@ -214,7 +214,7 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
 // Ensures that GLTextureImageBacking registers it's estimated size
 // with memory tracker.
 TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
-  auto format = viz::SharedImageFormat::kRGBA_8888;
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -641,31 +641,31 @@ std::string TestParamToString(
   return param_info.param.ToString();
 }
 
-const auto kInitialDataFormats = ::testing::Values(
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::ETC1),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_4444),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102));
+const auto kInitialDataFormats =
+    ::testing::Values(viz::SinglePlaneFormat::kETC1,
+                      viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_8888,
+                      viz::SinglePlaneFormat::kRGBA_4444,
+                      viz::SinglePlaneFormat::kRED_8,
+                      viz::SinglePlaneFormat::kRG_88,
+                      viz::SinglePlaneFormat::kBGRA_1010102,
+                      viz::SinglePlaneFormat::kRGBA_1010102);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryInitialDataTest,
                          kInitialDataFormats,
                          TestParamToString);
 
-const auto kSharedImageFormats = ::testing::Values(
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_4444),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBX_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRX_8888));
+const auto kSharedImageFormats =
+    ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_8888,
+                      viz::SinglePlaneFormat::kRGBA_4444,
+                      viz::SinglePlaneFormat::kRED_8,
+                      viz::SinglePlaneFormat::kRG_88,
+                      viz::SinglePlaneFormat::kBGRA_1010102,
+                      viz::SinglePlaneFormat::kRGBA_1010102,
+                      viz::SinglePlaneFormat::kRGBX_8888,
+                      viz::SinglePlaneFormat::kBGRX_8888);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithFormatTest,
@@ -677,13 +677,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          kSharedImageFormats,
                          TestParamToString);
 
-const auto kReadbackFormats = ::testing::Values(
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBX_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRX_8888));
+const auto kReadbackFormats =
+    ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_8888,
+                      viz::SinglePlaneFormat::kRED_8,
+                      viz::SinglePlaneFormat::kRG_88,
+                      viz::SinglePlaneFormat::kRGBX_8888,
+                      viz::SinglePlaneFormat::kBGRX_8888);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithReadbackTest,

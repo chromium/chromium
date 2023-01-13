@@ -161,7 +161,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
 
   ResourceId parent_id = resource_map[list.front().id];
 
-  auto format = SharedImageFormat::kRGBA_8888;
+  auto format = SinglePlaneFormat::kRGBA_8888;
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       gpu::MailboxHolder(mailbox, sync_token1, GL_TEXTURE_2D), size, format,
       /*ycbcr_info=*/absl::nullopt, /*color_space=*/nullptr);
@@ -242,7 +242,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
 
   ResourceId parent_id = resource_map[list.front().id];
 
-  auto format = SharedImageFormat::kRGBA_8888;
+  auto format = SinglePlaneFormat::kRGBA_8888;
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       gpu::MailboxHolder(mailbox, sync_token1, GL_TEXTURE_2D), size, format,
       /*ycbcr_info=*/absl::nullopt, /*color_space=*/nullptr);

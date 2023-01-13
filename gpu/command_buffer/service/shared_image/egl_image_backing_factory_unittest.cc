@@ -381,7 +381,7 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
 
   // Create a backing using mailbox.
   const auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::SharedImageFormat::kRGBA_8888;
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
@@ -581,7 +581,7 @@ CreateAndValidateSharedImageRepresentations::
 
 // High bit depth rendering is not supported on Android.
 const auto kSharedImageFormats =
-    ::testing::Values(viz::SharedImageFormat::kRGBA_8888);
+    ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888);
 
 std::string TestParamToString(
     const testing::TestParamInfo<std::tuple<bool, viz::SharedImageFormat>>&

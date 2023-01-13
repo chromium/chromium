@@ -38,8 +38,7 @@ BASE_FEATURE(kGPUMemoryAblationFeature,
 const char kGPUMemoryAblationFeatureSizeParam[] = "Size";
 
 // Image allocation parameters.
-constexpr viz::SharedImageFormat kFormat =
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+constexpr viz::SharedImageFormat kFormat = viz::SinglePlaneFormat::kRGBA_8888;
 constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_DISPLAY_READ;
 
 bool GpuMemoryAblationExperiment::ExperimentSupported() {

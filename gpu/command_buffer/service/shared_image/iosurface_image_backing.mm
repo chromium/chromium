@@ -776,8 +776,8 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
   // regarding RGBA versus BGRA.
   viz::SharedImageFormat actual_format = format();
-  if (actual_format == viz::SharedImageFormat::kRGBA_8888) {
-    actual_format = viz::SharedImageFormat::kBGRA_8888;
+  if (actual_format == viz::SinglePlaneFormat::kRGBA_8888) {
+    actual_format = viz::SinglePlaneFormat::kBGRA_8888;
   }
 
   // TODO(crbug.com/1293514): Remove this if condition after using single

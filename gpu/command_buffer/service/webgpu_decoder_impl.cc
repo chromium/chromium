@@ -505,12 +505,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       viz::SharedImageFormat format = representation->format();
       // Include list of formats this is tested to work with.
       // See gpu/command_buffer/tests/webgpu_mailbox_unittest.cc
-      if (format != viz::SharedImageFormat::kBGRA_8888 &&
+      if (format != viz::SinglePlaneFormat::kBGRA_8888 &&
 // TODO(crbug.com/1241369): Handle additional formats.
 #if !BUILDFLAG(IS_MAC)
-          format != viz::SharedImageFormat::kRGBA_8888 &&
+          format != viz::SinglePlaneFormat::kRGBA_8888 &&
 #endif
-          format != viz::SharedImageFormat::kRGBA_F16) {
+          format != viz::SinglePlaneFormat::kRGBA_F16) {
         return nullptr;
       }
 

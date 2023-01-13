@@ -393,7 +393,7 @@ bool GLES2ExternalFramebuffer::AttachSharedImage(const Mailbox& mailbox,
       clear_flags |= GL_COLOR_BUFFER_BIT;
   } else {
     const bool has_alpha = shared_image_representation_->format() ==
-                           viz::SharedImageFormat::kRGBA_8888;
+                           viz::SinglePlaneFormat::kRGBA_8888;
     if (UpdateAttachment(GL_COLOR_ATTACHMENT0, size, samples,
                          has_alpha ? GL_RGBA8 : GL_RGB8)) {
       clear_flags |= GL_COLOR_BUFFER_BIT;
