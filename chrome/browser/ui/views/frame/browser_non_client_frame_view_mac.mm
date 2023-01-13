@@ -88,8 +88,8 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
 
   if (browser_view->GetIsWebAppType()) {
     if (browser_view->browser()->app_controller()) {
-      set_web_app_frame_toolbar(AddChildView(
-          std::make_unique<WebAppFrameToolbarView>(frame, browser_view)));
+      set_web_app_frame_toolbar(
+          AddChildView(std::make_unique<WebAppFrameToolbarView>(browser_view)));
 
       if (browser_view->IsWindowControlsOverlayEnabled()) {
         caption_button_placeholder_container_ =

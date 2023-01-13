@@ -27,8 +27,7 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/window/hit_test_utils.h"
 
-WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
-                                               BrowserView* browser_view)
+WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
     : browser_view_(browser_view) {
   DCHECK(browser_view_);
   DCHECK(web_app::AppBrowserController::IsWebApp(browser_view_->browser()));
@@ -67,9 +66,8 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(3));
 
-  right_container_ =
-      AddChildView(std::make_unique<WebAppToolbarButtonContainer>(
-          widget, browser_view, this));
+  right_container_ = AddChildView(
+      std::make_unique<WebAppToolbarButtonContainer>(browser_view, this));
   right_container_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(right_container_->GetFlexRule()).WithOrder(1));

@@ -20,7 +20,6 @@
 namespace views {
 class View;
 class ViewTargeterDelegate;
-class Widget;
 }  // namespace views
 
 class BrowserView;
@@ -35,7 +34,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
                                public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(WebAppFrameToolbarView);
-  WebAppFrameToolbarView(views::Widget* widget, BrowserView* browser_view);
+  explicit WebAppFrameToolbarView(BrowserView* browser_view);
   WebAppFrameToolbarView(const WebAppFrameToolbarView&) = delete;
   WebAppFrameToolbarView& operator=(const WebAppFrameToolbarView&) = delete;
   ~WebAppFrameToolbarView() override;

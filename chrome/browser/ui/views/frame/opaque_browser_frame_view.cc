@@ -216,8 +216,8 @@ void OpaqueBrowserFrameView::InitViews() {
   }
 
   if (controller) {
-    set_web_app_frame_toolbar(AddChildView(
-        std::make_unique<WebAppFrameToolbarView>(frame(), browser_view())));
+    set_web_app_frame_toolbar(
+        AddChildView(std::make_unique<WebAppFrameToolbarView>(browser_view())));
   }
 
   // The window title appears above the web app frame toolbar (if present),

@@ -55,7 +55,6 @@ base::TimeDelta WebAppToolbarButtonContainer::OriginTotalDuration() {
 }
 
 WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
-    views::Widget* widget,
     BrowserView* browser_view,
     ToolbarButtonProvider* toolbar_button_provider)
     : browser_view_(browser_view),
@@ -177,7 +176,6 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   }
 
   browser_view_->immersive_mode_controller()->AddObserver(this);
-  scoped_widget_observation_.Observe(widget);
 }
 
 WebAppToolbarButtonContainer::~WebAppToolbarButtonContainer() {

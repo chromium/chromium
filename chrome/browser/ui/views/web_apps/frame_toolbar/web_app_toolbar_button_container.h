@@ -19,8 +19,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 class WebAppContentSettingsContainer;
 class BrowserView;
@@ -36,8 +34,7 @@ class WebAppToolbarButtonContainer : public views::View,
                                      public ContentSettingImageView::Delegate,
                                      public ImmersiveModeController::Observer,
                                      public PageActionIconView::Delegate,
-                                     public PageActionIconContainer,
-                                     public views::WidgetObserver {
+                                     public PageActionIconContainer {
  public:
   METADATA_HEADER(WebAppToolbarButtonContainer);
 
@@ -54,8 +51,7 @@ class WebAppToolbarButtonContainer : public views::View,
   // The total duration of the origin fade animation.
   static base::TimeDelta OriginTotalDuration();
 
-  WebAppToolbarButtonContainer(views::Widget* widget,
-                               BrowserView* browser_view,
+  WebAppToolbarButtonContainer(BrowserView* browser_view,
                                ToolbarButtonProvider* toolbar_button_provider);
   ~WebAppToolbarButtonContainer() override;
 
@@ -135,9 +131,6 @@ class WebAppToolbarButtonContainer : public views::View,
 
   // views::View:
   void AddedToWidget() override;
-
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      scoped_widget_observation_{this};
 
   // Timers for synchronising their respective parts of the titlebar animation.
   base::OneShotTimer animation_start_delay_;
