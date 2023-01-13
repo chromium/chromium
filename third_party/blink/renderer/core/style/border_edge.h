@@ -44,11 +44,7 @@ class BorderEdge {
   int Width() const { return width_; }
   const Color& GetColor() const { return color_; }
 
-  void ClampWidth(int width) {
-    if (width_ > width) {
-      width_ = width;
-    }
-  }
+  void ClampWidth(int max_width);
 
  private:
   Color color_;

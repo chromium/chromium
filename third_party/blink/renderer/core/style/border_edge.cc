@@ -83,4 +83,11 @@ bool BorderEdge::SharesColorWith(const BorderEdge& other) const {
   return color_ == other.color_;
 }
 
+void BorderEdge::ClampWidth(int max_width) {
+  if (width_ > max_width) {
+    width_ = max_width;
+    style_ = EffectiveStyle(style_, width_);
+  }
+}
+
 }  // namespace blink
