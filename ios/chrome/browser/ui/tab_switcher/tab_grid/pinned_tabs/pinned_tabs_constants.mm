@@ -22,6 +22,7 @@ const CGFloat kPinnedViewTopPadding = 24.0f;
 const NSTimeInterval kPinnedViewFadeInTime = 0.2;
 const NSTimeInterval kPinnedViewDragAnimationTime = 0.2;
 const NSTimeInterval kPinnedViewMoveAnimationTime = 0.1;
+const NSTimeInterval kPinnedViewInsetAnimationTime = 0.2;
 
 // Pinned cell identifier.
 NSString* const kPinnedCellIdentifier = @"PinnedCellIdentifier";

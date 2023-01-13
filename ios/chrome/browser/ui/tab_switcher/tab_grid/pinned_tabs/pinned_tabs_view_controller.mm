@@ -566,6 +566,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _visible = visible;
   if (!visible) {
     self.view.hidden = YES;
+    [self.delegate pinnedTabsViewControllerDidHide];
   }
 }
 

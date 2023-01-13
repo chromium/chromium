@@ -1026,45 +1026,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 // Sets the proper insets for the Grid ViewControllers to accomodate for the
-// safe area and toolbar.
+// safe area and toolbars.
 - (void)setInsetForGridViews {
   // Sync the scroll view offset to the current page value if the scroll view
   // isn't scrolling. Don't animate this.
   if (!self.scrollView.dragging && !self.scrollView.decelerating) {
     [self scrollToPage:self.currentPage animated:NO];
   }
-  // The content inset of the tab grids must be modified so that the toolbars
-  // do not obscure the tabs. This may change depending on orientation.
-  CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
-                            ? self.bottomToolbar.intrinsicContentSize.height
-                            : 0;
-  BOOL showThumbStrip = self.thumbStripEnabled;
-  if (showThumbStrip) {
-    bottomInset += self.topToolbar.intrinsicContentSize.height;
-  }
-  CGFloat topInset =
-      showThumbStrip ? 0 : self.topToolbar.intrinsicContentSize.height;
-  UIEdgeInsets inset = UIEdgeInsetsMake(topInset, 0, bottomInset, 0);
-  inset.left = self.scrollView.safeAreaInsets.left;
-  inset.right = self.scrollView.safeAreaInsets.right;
-  inset.top += self.scrollView.safeAreaInsets.top;
-  inset.bottom += self.scrollView.safeAreaInsets.bottom;
 
-  if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.isHidden) {
-    CGFloat pinnedViewHeight =
-        self.pinnedTabsViewController.view.bounds.size.height;
-    switch (GetPinnedTabsPosition()) {
-      case PinnedTabsPosition::kBottomPosition:
-        inset.bottom += pinnedViewHeight + kPinnedViewBottomPadding;
-        break;
-      case PinnedTabsPosition::kTopPosition:
-        inset.top += pinnedViewHeight + kPinnedViewTopPadding;
-        break;
-    }
-  }
-
-  self.incognitoTabsViewController.gridView.contentInset = inset;
-  self.regularTabsViewController.gridView.contentInset = inset;
+  self.incognitoTabsViewController.gridView.contentInset =
+      [self calculateInsetForIncognitoGridView];
+  self.regularTabsViewController.gridView.contentInset =
+      [self calculateInsetForRegularGridView];
 }
 
 // Returns the corresponding GridViewController for `page`. Returns `nil` if
@@ -2170,6 +2143,52 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+// Calculates the proper insets for the Incognito Grid ViewController to
+// accomodate for the safe area and toolbar.
+- (UIEdgeInsets)calculateInsetForIncognitoGridView {
+  // The content inset of the tab grids must be modified so that the toolbars
+  // do not obscure the tabs. This may change depending on orientation.
+  CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
+                            ? self.bottomToolbar.intrinsicContentSize.height
+                            : 0;
+
+  BOOL showThumbStrip = self.thumbStripEnabled;
+  if (showThumbStrip) {
+    bottomInset += self.topToolbar.intrinsicContentSize.height;
+  }
+
+  CGFloat topInset =
+      showThumbStrip ? 0 : self.topToolbar.intrinsicContentSize.height;
+  UIEdgeInsets inset = UIEdgeInsetsMake(topInset, 0, bottomInset, 0);
+  inset.left = self.scrollView.safeAreaInsets.left;
+  inset.right = self.scrollView.safeAreaInsets.right;
+  inset.top += self.scrollView.safeAreaInsets.top;
+  inset.bottom += self.scrollView.safeAreaInsets.bottom;
+
+  return inset;
+}
+
+// Calculates the proper insets for the Regular Grid ViewController to
+// accomodate for the safe area and toolbars.
+- (UIEdgeInsets)calculateInsetForRegularGridView {
+  UIEdgeInsets inset = [self calculateInsetForIncognitoGridView];
+
+  if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.isHidden) {
+    CGFloat pinnedViewHeight =
+        self.pinnedTabsViewController.view.bounds.size.height;
+    switch (GetPinnedTabsPosition()) {
+      case PinnedTabsPosition::kBottomPosition:
+        inset.bottom += pinnedViewHeight + kPinnedViewBottomPadding;
+        break;
+      case PinnedTabsPosition::kTopPosition:
+        inset.top += pinnedViewHeight + kPinnedViewTopPadding;
+        break;
+    }
+  }
+
+  return inset;
+}
+
 #pragma mark - RecentTabsTableViewControllerUIDelegate
 
 - (void)recentTabsScrollViewDidScroll:
@@ -2259,6 +2278,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
             (PinnedTabsViewController*)pinnedTabsViewController
               didChangeItemCount:(NSUInteger)count {
   self.topToolbar.pageControl.pinnedTabCount = count;
+}
+
+- (void)pinnedTabsViewControllerDidHide {
+  UIEdgeInsets inset = [self calculateInsetForRegularGridView];
+
+  [UIView animateWithDuration:kPinnedViewInsetAnimationTime
+                   animations:^{
+                     self.regularTabsViewController.gridView.contentInset =
+                         inset;
+                   }
+                   completion:nil];
 }
 
 #pragma mark - GridViewControllerDelegate

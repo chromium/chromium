@@ -29,6 +29,9 @@
             (PinnedTabsViewController*)pinnedTabsViewController
               didChangeItemCount:(NSUInteger)count;
 
+// Tells the delegate that the `pinnedTabsViewController` is hidden.
+- (void)pinnedTabsViewControllerDidHide;
+
 @end
 
 // UICollectionViewController used to display pinned tabs.
