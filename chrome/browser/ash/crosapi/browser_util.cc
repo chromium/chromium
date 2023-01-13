@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -869,21 +870,22 @@ base::Version GetRootfsLacrosVersionMayBlock(
     return {};
   }
 
-  const base::Value* content = v->FindKey(kLacrosMetadataContentKey);
-  if (!content || !content->is_dict()) {
+  const base::Value::Dict& dict = v->GetDict();
+  const base::Value::Dict* content = dict.FindDict(kLacrosMetadataContentKey);
+  if (!content) {
     LOG(WARNING)
         << "Failed to parse rootfs lacros-chrome metadata content key.";
     return {};
   }
 
-  const base::Value* version = content->FindKey(kLacrosMetadataVersionKey);
-  if (!version || !version->is_string()) {
+  const std::string* version = content->FindString(kLacrosMetadataVersionKey);
+  if (!version) {
     LOG(WARNING)
         << "Failed to parse rootfs lacros-chrome metadata version key.";
     return {};
   }
 
-  return base::Version{version->GetString()};
+  return base::Version{*version};
 }
 
 void CacheLacrosAvailability(const policy::PolicyMap& map) {
