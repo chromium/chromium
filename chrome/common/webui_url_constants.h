@@ -544,6 +544,7 @@ extern const char kPrivacySandboxLearnMoreSubPage[];
 extern const char kPrivacySandboxSubPage[];
 
 #if !BUILDFLAG(IS_ANDROID)
+extern const char kAdPrivacySubPagePath[];
 extern const char kPrivacySandboxSubPagePath[];
 #endif
 

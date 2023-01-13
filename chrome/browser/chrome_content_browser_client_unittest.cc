@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -37,6 +38,7 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/services/storage/public/cpp/storage_prefs.h"
 #include "components/variations/variations_associated_data.h"
@@ -516,6 +518,36 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
                                                              &profile_));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeContentBrowserClientTest, RedirectPrivacySandboxURL) {
+  base::test::ScopedFeatureList feature_list(
+      privacy_sandbox::kPrivacySandboxSettings4);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  base::HistogramTester histogram_tester;
+  const std::string histogram_name =
+      "Settings.PrivacySandbox.DeprecatedRedirect";
+
+  GURL settings_url = GURL(chrome::kChromeUISettingsURL);
+  settings_url = net::AppendQueryParameter(settings_url, "foo", "bar");
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr(chrome::kPrivacySandboxSubPagePath);
+  GURL old_settings_url = settings_url.ReplaceComponents(replacements);
+
+  replacements.SetPathStr(chrome::kAdPrivacySubPagePath);
+  GURL new_settings_url = settings_url.ReplaceComponents(replacements);
+
+  test_content_browser_client.HandleWebUI(&old_settings_url, &profile_);
+  EXPECT_EQ(new_settings_url, old_settings_url);
+  histogram_tester.ExpectUniqueSample(histogram_name, true, 1);
+
+  test_content_browser_client.HandleWebUI(&new_settings_url, &profile_);
+  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
+  histogram_tester.ExpectTotalCount(histogram_name, 2);
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest

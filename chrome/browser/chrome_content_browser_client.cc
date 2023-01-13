@@ -243,6 +243,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/buildflags.h"
@@ -6413,6 +6414,27 @@ bool ChromeContentBrowserClient::HandleWebUI(
     *url = ReplaceURLHostAndPath(*url, chrome::kChromeUISettingsHost,
                                  chrome::kChromeUIHelpHost);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    // Redirect to the new version of privacy sandbox settings.
+    if (url->SchemeIs(content::kChromeUIScheme) &&
+        url->host() == chrome::kChromeUISettingsHost) {
+      if (url->path() == chrome::kPrivacySandboxSubPagePath) {
+        GURL::Replacements replacements;
+        replacements.SetPathStr(chrome::kAdPrivacySubPagePath);
+        *url = url->ReplaceComponents(replacements);
+        UMA_HISTOGRAM_BOOLEAN("Settings.PrivacySandbox.DeprecatedRedirect",
+                              true);
+      } else if (url->path() == chrome::kAdPrivacySubPagePath) {
+        // Log un-redirected navigations to the page as well to provide context
+        // for the raw number of redirects.
+        UMA_HISTOGRAM_BOOLEAN("Settings.PrivacySandbox.DeprecatedRedirect",
+                              false);
+      }
+    }
+  }
+#endif
 
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1003960): Remove when issue is resolved.

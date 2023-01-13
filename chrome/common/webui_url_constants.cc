@@ -620,6 +620,7 @@ const char kPrivacySandboxLearnMoreSubPage[] =
 const char kPrivacySandboxSubPage[] = "privacySandbox";
 
 #if !BUILDFLAG(IS_ANDROID)
+const char kAdPrivacySubPagePath[] = "/adPrivacy";
 const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
 #endif
 
