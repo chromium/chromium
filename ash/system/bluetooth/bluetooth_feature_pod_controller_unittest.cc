@@ -592,4 +592,19 @@ TEST_P(BluetoothFeaturePodControllerTest, LabelUMATracking) {
                                       /*expected_count=*/1);
 }
 
+TEST_P(BluetoothFeaturePodControllerTest, VisibilityOnConstruction) {
+  BluetoothFeaturePodController controller(tray_controller());
+  if (IsQsRevampEnabled()) {
+    // Create a feature tile but don't spin the message loop.
+    auto tile = controller.CreateTile();
+    // System state defaults to "enabled" so the tile is visible.
+    EXPECT_TRUE(tile->GetVisible());
+  } else {
+    // Create a feature pod button but don't spin the message loop.
+    auto button = base::WrapUnique(controller.CreateButton());
+    // System state defaults to "unavailable" so the button is invisible.
+    EXPECT_FALSE(button->GetVisible());
+  }
+}
+
 }  // namespace ash

@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+namespace {
 
 using bluetooth_config::GetPairedDeviceName;
 using bluetooth_config::mojom::BluetoothModificationState;
@@ -32,9 +33,22 @@ using bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
 using bluetooth_config::mojom::BluetoothSystemState;
 using bluetooth_config::mojom::DeviceConnectionState;
 
+BluetoothSystemState GetInitialSystemState() {
+  if (features::IsQsRevampEnabled()) {
+    // Ensure the feature tile is visible while waiting for the async mojo query
+    // in the constructor. This simplifies the initial QS layout.
+    return BluetoothSystemState::kEnabled;
+  } else {
+    return BluetoothSystemState::kUnavailable;
+  }
+}
+
+}  // namespace
+
 BluetoothFeaturePodController::BluetoothFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
-    : tray_controller_(tray_controller) {
+    : system_state_(GetInitialSystemState()),
+      tray_controller_(tray_controller) {
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
   remote_cros_bluetooth_config_->ObserveSystemProperties(

@@ -90,8 +90,7 @@ class ASH_EXPORT BluetoothFeaturePodController
   bluetooth_config::mojom::BluetoothModificationState modification_state_ =
       bluetooth_config::mojom::BluetoothModificationState::
           kCannotModifyBluetooth;
-  bluetooth_config::mojom::BluetoothSystemState system_state_ =
-      bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
+  bluetooth_config::mojom::BluetoothSystemState system_state_;
   FeaturePodButton* button_ = nullptr;  // Owned by views hierarchy.
   FeatureTile* tile_ = nullptr;         // Owned by views hierarchy.
   UnifiedSystemTrayController* tray_controller_;
