@@ -38,7 +38,9 @@ void RecordResult(CertScope scope,
                   CertProvisioningWorkerState final_state,
                   CertProvisioningWorkerState prev_state);
 
-void RecordEvent(CertScope scope, CertProvisioningEvent event);
+void RecordEvent(ProtocolVersion protocol_version,
+                 CertScope scope,
+                 CertProvisioningEvent event);
 
 // Records time of generation key pair by certificate provisioning worker.
 void RecordKeypairGenerationTime(CertScope scope, base::TimeDelta sample);

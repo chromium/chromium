@@ -336,11 +336,13 @@ bool CertProvisioningSchedulerImpl::UpdateOneWorker(
     const CertProfileId& cert_profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::Contains(workers_, cert_profile_id)) {
+  auto worker_iter = workers_.find(cert_profile_id);
+  if (worker_iter == workers_.end()) {
     return false;
   }
 
-  RecordEvent(cert_scope_, CertProvisioningEvent::kWorkerRetryManual);
+  RecordEvent(worker_iter->second->GetCertProfile().protocol_version,
+              cert_scope_, CertProvisioningEvent::kWorkerRetryManual);
   UpdateOneWorkerImpl(cert_profile_id);
   return true;
 }

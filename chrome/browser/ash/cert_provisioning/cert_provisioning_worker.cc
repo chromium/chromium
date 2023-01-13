@@ -46,7 +46,8 @@ std::unique_ptr<CertProvisioningWorker> CertProvisioningWorkerFactory::Create(
     std::unique_ptr<CertProvisioningInvalidator> invalidator,
     base::RepeatingClosure state_change_callback,
     CertProvisioningWorkerCallback result_callback) {
-  RecordEvent(cert_scope, CertProvisioningEvent::kWorkerCreated);
+  RecordEvent(cert_profile.protocol_version, cert_scope,
+              CertProvisioningEvent::kWorkerCreated);
   return std::make_unique<CertProvisioningWorkerStatic>(
       cert_scope, profile, pref_service, cert_profile, cert_provisioning_client,
       std::move(invalidator), std::move(state_change_callback),
@@ -69,11 +70,14 @@ CertProvisioningWorkerFactory::Deserialize(
       std::move(state_change_callback), std::move(result_callback));
   if (!CertProvisioningSerializer::DeserializeWorker(saved_worker,
                                                      worker.get())) {
-    RecordEvent(cert_scope,
+    // TODO(b:230478084): Replace with ProtocolVersion from deserialized
+    // CertProfile, if known.
+    RecordEvent(ProtocolVersion::kStatic, cert_scope,
                 CertProvisioningEvent::kWorkerDeserializationFailed);
     return {};
   }
-  RecordEvent(cert_scope, CertProvisioningEvent::kWorkerDeserialized);
+  RecordEvent(ProtocolVersion::kStatic, cert_scope,
+              CertProvisioningEvent::kWorkerDeserialized);
   return worker;
 }
 

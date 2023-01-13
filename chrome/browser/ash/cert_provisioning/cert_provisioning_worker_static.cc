@@ -332,7 +332,7 @@ void CertProvisioningWorkerStatic::UpdateState(
 
   if (is_continued_without_invalidation_for_uma_) {
     RecordEvent(
-        cert_scope_,
+        cert_profile_.protocol_version, cert_scope_,
         CertProvisioningEvent::kWorkerRetrySucceededWithoutInvalidation);
     is_continued_without_invalidation_for_uma_ = false;
   }
@@ -803,10 +803,11 @@ void CertProvisioningWorkerStatic::ScheduleNextStep(base::TimeDelta delay) {
 void CertProvisioningWorkerStatic::OnShouldContinue(ContinueReason reason) {
   switch (reason) {
     case ContinueReason::kInvalidation:
-      RecordEvent(cert_scope_, CertProvisioningEvent::kInvalidationReceived);
+      RecordEvent(cert_profile_.protocol_version, cert_scope_,
+                  CertProvisioningEvent::kInvalidationReceived);
       break;
     case ContinueReason::kTimeout:
-      RecordEvent(cert_scope_,
+      RecordEvent(cert_profile_.protocol_version, cert_scope_,
                   CertProvisioningEvent::kWorkerRetryWithoutInvalidation);
       break;
   }
@@ -973,7 +974,7 @@ void CertProvisioningWorkerStatic::RegisterForInvalidationTopic() {
                           base::Unretained(this),
                           ContinueReason::kInvalidation));
 
-  RecordEvent(cert_scope_,
+  RecordEvent(cert_profile_.protocol_version, cert_scope_,
               CertProvisioningEvent::kRegisteredToInvalidationTopic);
 }
 

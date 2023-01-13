@@ -22,6 +22,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="AllCertProvisioningProtocolVersions">
+<!-- The variants are versions of the client certificate provisioning protocol.
+They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
+between provisioning a client certificate using the "Static" and the "Dynamic"
+  protocol versions. -->
+
+  <variant name="" summary="Static"/>
+  <variant name=".Dynamic" summary="Dynamic"/>
+</variants>
+
 <variants name="AllCertProvisioningScopes">
 <!-- The variants are scopes for which a client certificate can be provisioned.
 They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
@@ -564,15 +574,19 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.Event.{CertProvisioningScope}"
+<histogram
+    name="ChromeOS.CertProvisioning.Event{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
     enum="CertProvisioningEvent" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
-    Number of times each event is reached during the certificate provisioning
-    flow with scope {CertProvisioningScope}.
+    Number of times each event is reached during the
+    {CertProvisioningProtocolVersion} certificate provisioning flow with scope
+    {CertProvisioningScope}.
   </summary>
   <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
+  <token key="CertProvisioningProtocolVersion"
+      variants="AllCertProvisioningProtocolVersions"/>
 </histogram>
 
 <histogram
