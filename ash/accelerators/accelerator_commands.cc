@@ -106,7 +106,7 @@ const char kAccessibilityDockedMagnifierShortcut[] =
     "Accessibility.Shortcuts.CrosDockedMagnifier";
 const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 const char kAccelRotation[] = "Ash.Accelerators.Rotation.Usage";
-const char kAccelActivateDesk[] = "Ash.Accelerators.ActivateDesk";
+const char kAccelActivateDeskByIndex[] = "Ash.Accelerators.ActivateDeskByIndex";
 
 namespace accelerators {
 
@@ -153,7 +153,7 @@ void RecordRotationAcceleratorAction(const RotationAcceleratorAction& action) {
 
 void RecordActivateDeskByIndexAcceleratorAction(
     const ActivateDeskAcceleratorAction& action) {
-  UMA_HISTOGRAM_ENUMERATION(kAccelActivateDesk, action);
+  UMA_HISTOGRAM_ENUMERATION(kAccelActivateDeskByIndex, action);
 }
 
 void RecordWindowSnapAcceleratorAction(
