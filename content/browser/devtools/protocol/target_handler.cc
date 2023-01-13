@@ -243,26 +243,34 @@ class BrowserToPageConnector {
     if (agent_host == page_host_.get()) {
       std::unique_ptr<base::Value> value =
           base::JSONReader::ReadDeprecated(message_sp);
-      if (!value || !value->is_dict())
+      if (!value || !value->is_dict()) {
         return;
+      }
+
+      const base::Value::Dict& dict = value->GetDict();
       // Make sure this is a binding call.
-      base::Value* method = value->FindKey("method");
-      if (!method || !method->is_string() ||
-          method->GetString() != "Runtime.bindingCalled")
+      const std::string* method = dict.FindString("method");
+      if (!method || *method != "Runtime.bindingCalled") {
         return;
-      base::Value* params = value->FindKey("params");
-      if (!params || !params->is_dict())
+      }
+
+      const base::Value::Dict* params = dict.FindDict("params");
+      if (!params) {
         return;
-      base::Value* name = params->FindKey("name");
-      if (!name || !name->is_string() || name->GetString() != binding_name_)
+      }
+
+      const std::string* name = params->FindString("name");
+      if (!name || *name != binding_name_) {
         return;
-      base::Value* payload = params->FindKey("payload");
-      if (!payload || !payload->is_string())
+      }
+
+      const std::string* payload = params->FindString("payload");
+      if (!payload) {
         return;
-      const std::string& payload_str = payload->GetString();
+      }
       browser_host_->DispatchProtocolMessage(
           browser_host_client_.get(),
-          base::as_bytes(base::make_span(payload_str)));
+          base::as_bytes(base::make_span(*payload)));
       return;
     }
     DCHECK(agent_host == browser_host_.get());
