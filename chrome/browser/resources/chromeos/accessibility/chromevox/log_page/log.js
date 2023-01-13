@@ -10,6 +10,7 @@ import {BaseLog, LogType, SerializableLog} from '../common/log_types.js';
 
 const FILTER_CLASS = 'log-filter';
 const FILTER_CONTAINER_ID = 'logFilters';
+const LOG_LIST_ID = 'logList';
 
 /** Class to manage the log page. */
 export class LogPage {
@@ -20,6 +21,49 @@ export class LogPage {
   static async init() {
     LogPage.instance = new LogPage();
     await LogPage.instance.update();
+  }
+
+  /**
+   * @param {!SerializableLog} log
+   * @private
+   */
+  addLogToPage_(log) {
+    const div = document.getElementById(LOG_LIST_ID);
+    const p = document.createElement('p');
+
+    const typeName = document.createElement('span');
+    typeName.textContent = log.logType;
+    typeName.className = 'log-type-tag';
+    p.appendChild(typeName);
+
+    const timeStamp = document.createElement('span');
+    timeStamp.textContent = this.formatTimeStamp_(log.date);
+    timeStamp.className = 'log-time-tag';
+    p.appendChild(timeStamp);
+
+    /** Add hide tree button when logType is tree. */
+    if (log.logType === LogType.TREE) {
+      const toggle = document.createElement('label');
+      const toggleCheckbox = document.createElement('input');
+      toggleCheckbox.type = 'checkbox';
+      toggleCheckbox.checked = true;
+      toggleCheckbox.onclick = event => textWrapper.hidden =
+          !event.target.checked;
+
+      const toggleText = document.createElement('span');
+      toggleText.textContent = 'show tree';
+      toggle.appendChild(toggleCheckbox);
+      toggle.appendChild(toggleText);
+      p.appendChild(toggle);
+    }
+
+    /** textWrapper should be in block scope, not function scope. */
+    const textWrapper = document.createElement('pre');
+    textWrapper.textContent = log.value;
+    textWrapper.className = 'log-text';
+    p.appendChild(textWrapper);
+
+    div.appendChild(p);
   }
 
   /**
@@ -130,58 +174,15 @@ export class LogPage {
 
   /** Update the logs. */
   async update() {
-    const log = await BackgroundBridge.LogStore.getLogs();
-    this.updateLog_(log, document.getElementById('logList'));
-  }
-
-  /**
-   * Updates the log section.
-   * @param {Array<!SerializableLog>} logs Array of logs to record.
-   * @param {Element} div
-   * @private
-   */
-  updateLog_(logs, div) {
+    const logs = await BackgroundBridge.LogStore.getLogs();
     if (!logs) {
       return;
     }
+
     for (const log of logs) {
-      if (!this.isEnabled_(log.logType)) {
-        continue;
+      if (this.isEnabled_(log.logType)) {
+        this.addLogToPage_(log);
       }
-
-      const p = document.createElement('p');
-      const typeName = document.createElement('span');
-      typeName.textContent = log.logType;
-      typeName.className = 'log-type-tag';
-      const timeStamp = document.createElement('span');
-      timeStamp.textContent = LogPage.formatTimeStamp(log.date);
-      timeStamp.className = 'log-time-tag';
-      /** textWrapper should be in block scope, not function scope. */
-      const textWrapper = document.createElement('pre');
-      textWrapper.textContent = log.value;
-      textWrapper.className = 'log-text';
-
-      p.appendChild(typeName);
-      p.appendChild(timeStamp);
-
-      /** Add hide tree button when logType is tree. */
-      if (log.logType === LogType.TREE) {
-        const toggle = document.createElement('label');
-        const toggleCheckbox = document.createElement('input');
-        toggleCheckbox.type = 'checkbox';
-        toggleCheckbox.checked = true;
-        toggleCheckbox.onclick = function(event) {
-          textWrapper.hidden = !event.target.checked;
-        };
-        const toggleText = document.createElement('span');
-        toggleText.textContent = 'show tree';
-        toggle.appendChild(toggleCheckbox);
-        toggle.appendChild(toggleText);
-        p.appendChild(toggle);
-      }
-
-      p.appendChild(textWrapper);
-      div.appendChild(p);
     }
   }
 
@@ -203,8 +204,9 @@ export class LogPage {
    * milliseconds order time stamp is required.
    * @param {!Date} date
    * @return {!string}
+   * @private
    */
-  static formatTimeStamp(date) {
+  formatTimeStamp_(date) {
     let time = date.getTime();
     time -= date.getTimezoneOffset() * 1000 * 60;
     let timeStr =
