@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/guid.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -121,28 +122,6 @@ using blink::mojom::StreamSelectionInfoPtr;
 using blink::mojom::StreamSelectionStrategy;
 
 namespace {
-// Creates a random label used to identify requests.
-std::string RandomLabel() {
-  // An earlier PeerConnection spec [1] defined MediaStream::label alphabet as
-  // an uuid with characters from range: U+0021, U+0023 to U+0027, U+002A to
-  // U+002B, U+002D to U+002E, U+0030 to U+0039, U+0041 to U+005A, U+005E to
-  // U+007E. That causes problems with searching for labels in bots, so we use a
-  // safe alphanumeric subset |kAlphabet|.
-  // [1] http://dev.w3.org/2011/webrtc/editor/webrtc.html
-  static const char kAlphabet[] =
-      "0123456789"
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-  static const size_t kRfc4122LengthLabel = 36u;
-  std::string label(kRfc4122LengthLabel, ' ');
-  for (char& c : label) {
-    // Use |std::size(kAlphabet) - 1| to avoid |kAlphabet|s terminating '\0';
-    c = kAlphabet[base::RandGenerator(std::size(kAlphabet) - 1)];
-    DCHECK(std::isalnum(c)) << c;
-  }
-  return label;
-}
-
 // Turns off available audio effects (removes the flag) if the options
 // explicitly turn them off.
 void FilterAudioEffects(const StreamControls& controls, int* effects) {
@@ -2268,7 +2247,7 @@ std::string MediaStreamManager::AddRequest(
   // Create a label for this request and verify it is unique.
   std::string unique_label;
   do {
-    unique_label = RandomLabel();
+    unique_label = base::GenerateGUID();
   } while (FindRequest(unique_label) != nullptr);
 
   SendLogMessage(
