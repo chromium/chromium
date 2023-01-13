@@ -13,18 +13,11 @@ Local Modifications:
 None
 
 What version is this:
-  * bundletool is now autorolled.
-  * To lookup the latest version being used currently:
-    * Look up the cipd instance id from //DEPS, or run
-      `gclient getdep -r src/third_party/android_build_tools/bundletool:chromium/third_party/android_build_tools/bundletool`.
-    * Find the version tag at this url
-      https://chrome-infra-packages.appspot.com/p/chromium/third_party/android_build_tools/bundletool/+/<instance id>
-    * Or, run `cipd describe chromium/third_party/android_build_tools/bundletool -version <instance id>` and look at the version tag.
-    * The version string appears after the @ symbol in the tag.
+  * Run print_version.sh to find out the version.
   * New instances are uploaded by the packager bot:
     https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
-  * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
+  * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
     trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-  * The autoroller runs automatically when a new cipd instance is uploaded, see
-    its status here: https://autoroll.skia.org/r/bundletool-chromium
+  * New versions are rolled automatically by:
+    https://autoroll.skia.org/r/bundletool-chromium

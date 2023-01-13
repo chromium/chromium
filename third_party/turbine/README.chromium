@@ -14,21 +14,14 @@ Since we have no working non-android java proto processor, we cannot yet build
 it in GN, so we are using a prebuilt jar encapsulating all of its dependencies.
 
 What version is this:
-  * turbine is now autorolled.
-  * To lookup the latest version being used currently:
-    * Look up the cipd instance id from //DEPS, or run
-      `gclient getdep -r src/third_party/turbine:chromium/third_party/turbine`.
-    * Find the version tag at this url
-      https://chrome-infra-packages.appspot.com/p/chromium/third_party/turbine/+/<instance id>
-    * Or, run `cipd describe chromium/third_party/turbine -version <instance id>` and look at the version tag.
-    * The version string appears after the @ symbol in the tag.
+  * Run print_version.sh to find out the version.
   * New instances are uploaded by the packager bot:
     https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
-  * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
+  * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
     trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-  * The autoroller runs automatically when a new cipd instance is uploaded, see
-    its status here: https://autoroll.skia.org/r/turbine-chromium
+  * New versions are rolled automatically by:
+    https://autoroll.skia.org/r/turbine-chromium
 
 Local Modifications:
 No modifications.

@@ -17,9 +17,11 @@ cp out/Debug/obj/third_party/android_build_tools/lint/custom_lint_java.javac.jar
    third_party/android_build_tools/lint/custom_lint.jar
 
 What version is this:
+  * Run print_version.sh to find out the version.
   * New instances are uploaded by the packager bot:
     https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
   * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
     trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-  * Switching to a newer verison requires manually updating //DEPS.
+  * New versions are rolled automatically by:
+    https://autoroll.skia.org/r/lint-chromium

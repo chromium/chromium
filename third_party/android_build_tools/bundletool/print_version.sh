@@ -13,5 +13,4 @@ CIPD_PACKAGE=chromium/$SUBDIR
 exec $DIR_SRC_ROOT/build/android/print_cipd_version.py \
     --subdir "$SUBDIR" \
     --cipd-package "$CIPD_PACKAGE" \
-    --git-log-url "https://r8.googlesource.com/r8/+log/{}" \
     "$@"
