@@ -492,7 +492,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
         break;
       case storage::kFileSystemTypeDriveFs:
         file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
-            file_system_url, profile, std::move(callback));
+            file_system_url, profile, names_as_set, std::move(callback));
         break;
       case storage::kFileSystemTypeArcDocumentsProvider:
         SingleEntryPropertiesGetterForDocumentsProvider::Start(
