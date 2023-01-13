@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 import os
 import random
 import string
@@ -20,6 +21,12 @@ flags.DEFINE_string(
     'chromedriver', None,
     'The path to the chromedriver executable. If not specified, '
     'a chocholatey chromedriver packae will be installed and used.')
+
+flags.DEFINE_string('omaha_installer', None,
+                    'The path to the omaha 4 UpdaterSetup.exe')
+
+flags.DEFINE_string('omaha_updater', None,
+                    'The path to the omaha 4 Updater.exe')
 
 
 class ChromeEnterpriseTestCase(EnterpriseTestCase):
@@ -42,6 +49,24 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
   # Current Win Server version for testing
   win_config = win_2016_config
 
+  def InstallGoogleUpdater(self, instance_name):
+    """Install Omaha4 client on VM."""
+    if not FLAGS.omaha_updater or not FLAGS.omaha_installer:
+      # No omaha installer/updater. Do nothing.
+      logging.debug('Either --omaha_updater or --omaha_installer flag is empty.'
+                    'Skip installing google updater.')
+      return
+    cmd = r'New-Item -ItemType Directory -Force -Path c:\temp'
+    self.clients[instance_name].RunPowershell(cmd)
+    installer = self.UploadFile(instance_name, FLAGS.omaha_installer,
+                                r'c:\temp')
+    updater = self.UploadFile(instance_name, FLAGS.omaha_updater, r'c:\temp')
+    cmd = installer + r' --install --system'
+    self.RunCommand(instance_name, cmd)
+
+    cmd = updater + r' --wake'
+    self.RunCommand(instance_name, cmd)
+
   def InstallChrome(self, instance_name):
     """Installs chrome.
 
@@ -49,7 +74,8 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     - mini_installer.exe, and
     - *.msi
     """
-    self.RunCommand(instance_name, r'md -Force c:\temp')
+    cmd = r'New-Item -ItemType Directory -Force -Path c:\temp'
+    self.clients[instance_name].RunPowershell(cmd)
     file_name = self.UploadFile(instance_name, FLAGS.chrome_installer,
                                 r'c:\temp')
 
