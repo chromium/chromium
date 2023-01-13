@@ -232,7 +232,7 @@ class NET_EXPORT VerifyCertificateChainDelegate {
 //  * Extended key usage:    Yes (required if required_key_purpose is STRICT)
 //  * Basic constraints:     Yes
 //  * Name constraints:      Yes
-//  * Certificate policies:  Not currently, TODO(crbug.com/634453)
+//  * Certificate policies:  Yes
 //  * Policy Mappings:       No
 //  * inhibitAnyPolicy:      Not currently, TODO(crbug.com/634453)
 //  * PolicyConstraints:     Not currently, TODO(crbug.com/634452)

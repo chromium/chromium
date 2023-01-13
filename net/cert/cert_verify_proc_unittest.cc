@@ -4649,9 +4649,16 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints0Intermediate) {
     if (leaf_has_policy) {
       chain_[0]->SetCertificatePolicies({kPolicy1});
       EXPECT_THAT(Verify(), IsOk());
+      if (VerifyProcTypeIsBuiltin()) {
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+      }
     } else {
       chain_[0]->SetCertificatePolicies({});
       EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+      if (VerifyProcTypeIsBuiltin()) {
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(),
+                    IsError(ERR_CERT_INVALID));
+      }
     }
   }
 }
@@ -4879,7 +4886,8 @@ TEST_P(CertVerifyProcConstraintsTest, PoliciesRoot) {
     } else {
       if (VerifyProcTypeIsBuiltin()) {
         EXPECT_THAT(Verify(), IsOk());
-        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(),
+                    IsError(ERR_CERT_INVALID));
       } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
                  verify_proc_type() == CERT_VERIFY_PROC_IOS ||
                  verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
@@ -4924,16 +4932,16 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyMappingsRoot) {
     if (root_has_matching_policy) {
       EXPECT_THAT(Verify(), IsOk());
       if (VerifyProcTypeIsBuiltin()) {
-        // TODO(https://crbug.com/1072083): policyMapping and policyConstraints
-        // on root not yet implemented.
-        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+        // TODO(https://crbug.com/1072083): policyMapping on root not yet
+        // implemented.
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(),
+                    IsError(ERR_CERT_INVALID));
       }
     } else {
       if (VerifyProcTypeIsBuiltin()) {
         EXPECT_THAT(Verify(), IsOk());
-        // TODO(https://crbug.com/1072083): policies on root not yet
-        // implemented.
-        EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+        EXPECT_THAT(VerifyWithExpiryAndConstraints(),
+                    IsError(ERR_CERT_INVALID));
       } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
                  verify_proc_type() == CERT_VERIFY_PROC_IOS ||
                  verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {

@@ -1244,6 +1244,17 @@ void PathVerifier::WrapUp(const ParsedCertificate& cert,
 void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
                                                KeyPurpose required_key_purpose,
                                                CertErrors* errors) {
+  // If certificatePolicies is present, process the policies. This matches the
+  // handling for intermediates from RFC 5280 section 6.1.3.d (except that for
+  // intermediates it is non-optional). It intentionally deviates from RFC 5937
+  // section 3.2 which says to intersect with user-initial-policy-set, since
+  // processing as part of user-initial-policy-set has subtly different
+  // semantics from being handled as part of the chain processing (see
+  // https://crbug.com/1403258).
+  if (cert.has_policy_oids()) {
+    VerifyPolicies(cert, /*is_target_cert=*/false, errors);
+  }
+
   // If keyUsage is present, verify that |cert| has correct keyUsage bits for a
   // CA. This matches the handling for intermediates from RFC 5280 section
   // 6.1.4 step n.
@@ -1263,9 +1274,6 @@ void PathVerifier::ApplyTrustAnchorConstraints(const ParsedCertificate& cert,
   // Initialize name constraints initial-permitted/excluded-subtrees.
   if (cert.has_name_constraints())
     name_constraints_list_.push_back(&cert.name_constraints());
-
-  // TODO(eroman): Initialize user-initial-policy-set based on anchor
-  // constraints.
 
   // TODO(eroman): Initialize inhibit any policy based on anchor constraints.
 

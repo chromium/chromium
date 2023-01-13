@@ -237,6 +237,15 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, KeyRollover) {
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, Policies) {
   this->RunTest("unknown-critical-policy-qualifier/main.test");
   this->RunTest("unknown-non-critical-policy-qualifier/main.test");
+
+  this->RunTest("policies-ok/main.test");
+  this->RunTest("policies-ok/ta-with-constraints.test");
+
+  this->RunTest("policies-on-root-ok/main.test");
+  this->RunTest("policies-on-root-ok/ta-with-constraints.test");
+
+  this->RunTest("policies-on-root-wrong/main.test");
+  this->RunTest("policies-on-root-wrong/ta-with-constraints.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, ManyNames) {
