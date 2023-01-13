@@ -58,7 +58,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
@@ -117,12 +116,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 // PasswordController.
 @property(nonatomic, strong)
     NotifyUserAutoSigninViewController* notifyAutoSigninViewController;
-
-// The action sheet coordinator, if one is currently being shown.
-@property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
-
-// Tracks current potential generated password until accepted or rejected.
-@property(nonatomic, copy) NSString* generatedPotentialPassword;
 
 // Displays infobar for `form` with `type`. If `type` is UPDATE, the user
 // is prompted to update the password. If `type` is SAVE, the user is prompted
@@ -358,18 +351,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 #pragma mark - Private methods
 
-// Returns the user email.
-- (NSString*)userEmail {
-  DCHECK(self.browserState);
-
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
-  id<SystemIdentity> authenticatedIdentity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-
-  return authenticatedIdentity.userEmail;
-}
-
 // The dispatcher used for PasswordBreachCommands.
 - (id<PasswordBreachCommands>)passwordBreachDispatcher {
   DCHECK(self.dispatcher);
@@ -500,50 +481,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   self.notifyAutoSigninViewController = nil;
 }
 
-- (void)generatePasswordPopupDismissed {
-  [self.actionSheetCoordinator stop];
-  self.actionSheetCoordinator = nil;
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  self.generatedPotentialPassword = nil;
-}
-
-- (void)updateGeneratePasswordStrings:(id)sender {
-  NSString* title =
-      [NSString stringWithFormat:@"%@\n%@\n ",
-                                 GetNSString(IDS_IOS_SUGGESTED_STRONG_PASSWORD),
-                                 self.generatedPotentialPassword];
-  NSString* message = l10n_util::GetNSStringF(
-      IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL,
-      base::SysNSStringToUTF16([self userEmail]));
-
-  self.actionSheetCoordinator.attributedTitle =
-      [[NSMutableAttributedString alloc]
-          initWithString:title
-              attributes:@{
-                NSFontAttributeName :
-                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-              }];
-
-  self.actionSheetCoordinator.attributedMessage =
-      [[NSMutableAttributedString alloc]
-          initWithString:message
-              attributes:@{
-                NSFontAttributeName :
-                    [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
-              }];
-
-  // TODO(crbug.com/886583): find a way to make action sheet coordinator
-  // responsible for font size changes.
-  [self.actionSheetCoordinator updateAttributedText];
-}
-
 #pragma mark - SharedPasswordControllerDelegate
 
 - (void)sharedPasswordController:(SharedPasswordController*)controller
     showGeneratedPotentialPassword:(NSString*)generatedPotentialPassword
                    decisionHandler:(void (^)(BOOL accept))decisionHandler {
-  self.generatedPotentialPassword = generatedPotentialPassword;
-
   [self.passwordSuggestionDispatcher
       showPasswordSuggestion:generatedPotentialPassword
              decisionHandler:decisionHandler];
