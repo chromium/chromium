@@ -51,7 +51,8 @@
   {
     "prefix": "gpu",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
-    "bases": ["fast/canvas"],
+    "bases": [ "fast/canvas",
+               "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html" ],
     "args": ["--enable-accelerated-2d-canvas"],
     "expires": "Jul 1, 2023"
   },
@@ -1029,7 +1030,8 @@
   {
     "prefix": "oopr-canvas2d",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "fast/canvas" ],
+    "bases": [ "fast/canvas",
+               "external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html" ],
     "args": [ "--enable-features=CanvasOopRasterization",
               "--enable-accelerated-2d-canvas",
               "--enable-gpu-rasterization" ],
