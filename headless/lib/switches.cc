@@ -7,19 +7,11 @@
 namespace headless {
 namespace switches {
 
-// Whether cookies stored as part of user profile are encrypted.
-const char kDisableCookieEncryption[] = "disable-cookie-encryption";
+// Allowlist for Negotiate Auth servers.
+const char kAuthServerAllowlist[] = "auth-server-allowlist";
 
-// Whether or not begin frames should be issued over DevToolsProtocol
-// (experimental).
-const char kEnableBeginFrameControl[] = "enable-begin-frame-control";
-
-// Enable crash reporter for headless.
-const char kEnableCrashReporter[] = "enable-crash-reporter";
-
-// Disable crash reporter for headless. It is enabled by default in official
-// builds.
-const char kDisableCrashReporter[] = "disable-crash-reporter";
+// If true, then all pop-ups and calls to window.open will fail.
+const char kBlockNewWebContents[] = "block-new-web-contents";
 
 // The directory breakpad should store minidumps in.
 const char kCrashDumpsDir[] = "crash-dumps-dir";
@@ -29,9 +21,42 @@ const char kCrashDumpsDir[] = "crash-dumps-dir";
 // (experimental).
 const char kDeterministicMode[] = "deterministic-mode";
 
+// Disable crash reporter for headless. It is enabled by default in official
+// builds.
+const char kDisableCrashReporter[] = "disable-crash-reporter";
+
+// Whether cookies stored as part of user profile are encrypted.
+const char kDisableCookieEncryption[] = "disable-cookie-encryption";
+
+// Do not emit tags when printing PDFs.
+const char kDisablePDFTagging[] = "disable-pdf-tagging";
+
 // Use a specific disk cache location, rather than one derived from the
 // UserDatadir.
 const char kDiskCacheDir[] = "disk-cache-dir";
+
+// Whether or not begin frames should be issued over DevToolsProtocol
+// (experimental).
+const char kEnableBeginFrameControl[] = "enable-begin-frame-control";
+
+// Enable crash reporter for headless.
+const char kEnableCrashReporter[] = "enable-crash-reporter";
+
+// Allows overriding the list of restricted ports by passing a comma-separated
+// list of port numbers.
+const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
+
+// Sets font render hinting when running headless, affects Skia rendering and
+// whether glyph subpixel positioning is enabled.
+// Possible values: none|slight|medium|full|max. Default: full.
+const char kFontRenderHinting[] = "font-render-hinting";
+
+// Forces Incognito mode even if user data directory is specified using the
+// --user-data-dir switch.
+const char kIncognito[] = "incognito";
+
+// Do not use system proxy configuration service.
+const char kNoSystemProxyConfigService[] = "no-system-proxy-config-service";
 
 // Specifies which encryption storage backend to use. Possible values are
 // kwallet, kwallet5, gnome, gnome-keyring, gnome-libsecret, basic. Any other
@@ -43,9 +68,6 @@ const char kDiskCacheDir[] = "disk-cache-dir";
 // or KWallets.
 const char kPasswordStore[] = "password-store";
 
-// Do not emit tags when printing PDFs.
-const char kDisablePDFTagging[] = "disable-pdf-tagging";
-
 // Specifies a list of hosts for whom we bypass proxy settings and use direct
 // connections. Ignored unless --proxy-server is also specified. This is a
 // comma-separated list of bypass rules. See:
@@ -55,9 +77,6 @@ const char kProxyBypassList[] = "proxy-bypass-list";
 // Uses a specified proxy server, overrides system settings. This switch only
 // affects HTTP and HTTPS requests.
 const char kProxyServer[] = "proxy-server";
-
-// Do not use system proxy configuration service.
-const char kNoSystemProxyConfigService[] = "no-system-proxy-config-service";
 
 // Use the given address instead of the default loopback for accepting remote
 // debugging connections. Should be used together with --remote-debugging-port.
@@ -73,27 +92,11 @@ const char kUserAgent[] = "user-agent";
 // forced with --incognito switch.
 const char kUserDataDir[] = "user-data-dir";
 
-// Forces Incognito mode even if user data directory is specified using the
-// --user-data-dir switch.
-const char kIncognito[] = "incognito";
-
 // Sets the initial window size. Provided as string in the format "800,600".
 const char kWindowSize[] = "window-size";
 
-// Allowlist for Negotiate Auth servers.
-const char kAuthServerAllowlist[] = "auth-server-allowlist";
-
-// Sets font render hinting when running headless, affects Skia rendering and
-// whether glyph subpixel positioning is enabled.
-// Possible values: none|slight|medium|full|max. Default: full.
-const char kFontRenderHinting[] = "font-render-hinting";
-
-// If true, then all pop-ups and calls to window.open will fail.
-const char kBlockNewWebContents[] = "block-new-web-contents";
-
-// Allows overriding the list of restricted ports by passing a comma-separated
-// list of port numbers.
-const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
+// No! Please don't just add your switches at the end of the list.
+// Please maintain the switch list sorted.
 
 }  // namespace switches
 }  // namespace headless

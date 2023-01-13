@@ -10,27 +10,30 @@
 namespace headless {
 namespace switches {
 
+// All switches in alphabetical order. The switches should be documented
+// alongside the definition of their values in the .cc file.
+
+HEADLESS_EXPORT extern const char kAuthServerAllowlist[];
+HEADLESS_EXPORT extern const char kBlockNewWebContents[];
 HEADLESS_EXPORT extern const char kCrashDumpsDir[];
 HEADLESS_EXPORT extern const char kDeterministicMode[];
 HEADLESS_EXPORT extern const char kDisableCookieEncryption[];
 HEADLESS_EXPORT extern const char kDisableCrashReporter[];
+HEADLESS_EXPORT extern const char kDisablePDFTagging[];
 HEADLESS_EXPORT extern const char kDiskCacheDir[];
 HEADLESS_EXPORT extern const char kEnableBeginFrameControl[];
 HEADLESS_EXPORT extern const char kEnableCrashReporter[];
+HEADLESS_EXPORT extern const char kExplicitlyAllowedPorts[];
+HEADLESS_EXPORT extern const char kFontRenderHinting[];
+HEADLESS_EXPORT extern const char kIncognito[];
+HEADLESS_EXPORT extern const char kNoSystemProxyConfigService[];
 HEADLESS_EXPORT extern const char kPasswordStore[];
-HEADLESS_EXPORT extern const char kDisablePDFTagging[];
 HEADLESS_EXPORT extern const char kProxyBypassList[];
 HEADLESS_EXPORT extern const char kProxyServer[];
-HEADLESS_EXPORT extern const char kNoSystemProxyConfigService[];
 HEADLESS_EXPORT extern const char kRemoteDebuggingAddress[];
 HEADLESS_EXPORT extern const char kUserAgent[];
 HEADLESS_EXPORT extern const char kUserDataDir[];
-HEADLESS_EXPORT extern const char kIncognito[];
 HEADLESS_EXPORT extern const char kWindowSize[];
-HEADLESS_EXPORT extern const char kAuthServerAllowlist[];
-HEADLESS_EXPORT extern const char kFontRenderHinting[];
-HEADLESS_EXPORT extern const char kBlockNewWebContents[];
-HEADLESS_EXPORT extern const char kExplicitlyAllowedPorts[];
 
 }  // namespace switches
 }  // namespace headless
