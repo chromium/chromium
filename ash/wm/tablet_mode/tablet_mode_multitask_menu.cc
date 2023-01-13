@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/screen_util.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -153,13 +154,20 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   // Set the widget on the top center of the window.
   const gfx::Size menu_size(menu_view_->GetPreferredSize());
   const gfx::Rect window_bounds(window_->GetBoundsInScreen());
-  gfx::Rect widget_bounds(window_bounds);
+
   // The invisible widget needs to be big enough to include both the menu and
-  // shadow otherwise it would mask parts out.
-  widget_bounds.ClampToCenteredSize(
-      gfx::Size(menu_size.width() + kShadowOutset * 2,
-                menu_size.height() + kShadowOutset * 2));
-  widget_bounds.set_y(window_bounds.y());
+  // shadow otherwise it would mask parts out. Explicitly set the widget size
+  // since `window` may be narrower than the menu and clamp to its bounds.
+  const int widget_width = menu_size.width() + kShadowOutset * 2;
+  gfx::Rect widget_bounds = gfx::Rect(
+      window_bounds.CenterPoint().x() - widget_width / 2, window_bounds.y(),
+      widget_width, menu_size.height() + kShadowOutset * 2);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window);
+  if (!work_area.Contains(widget_bounds)) {
+    widget_bounds.AdjustToFit(work_area);
+  }
+
   widget_->SetBounds(widget_bounds);
   widget_->Show();
 
