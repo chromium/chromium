@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac.h"
 
 @class MenuControllerCocoa;
-@class MenuControllerCocoaDelegateImpl;
 
 // Mac Cocoa implementation of the renderer context menu display code. Uses a
 // NSMenu to display the context menu. Internally uses an Obj-C object as the
@@ -45,8 +44,6 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
 
   // The Cocoa menu controller for this menu.
   base::scoped_nsobject<MenuControllerCocoa> menu_controller_;
-  base::scoped_nsobject<MenuControllerCocoaDelegateImpl>
-      menu_controller_delegate_;
 
   // The Cocoa parent view.
   NSView* parent_view_;
