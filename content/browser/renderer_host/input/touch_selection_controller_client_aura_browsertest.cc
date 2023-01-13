@@ -549,8 +549,9 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
             parent_view->selection_controller()->GetVisibleRectBetweenBounds());
 }
 
+// Failing in sanitizer runs: https://crbug.com/1405296
 IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
-                       BasicSelectionIsolatedScrollMainframe) {
+                       DISABLED_BasicSelectionIsolatedScrollMainframe) {
   GURL test_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
