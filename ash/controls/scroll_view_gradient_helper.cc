@@ -111,7 +111,7 @@ void ScrollViewGradientHelper::AnimateMaskLayer(
 }
 
 void ScrollViewGradientHelper::RemoveMaskLayer() {
-  if (scroll_view_->layer()->gradient_mask().IsEmpty())
+  if (!scroll_view_->layer()->HasGradientMask())
     return;
 
   DVLOG(1) << "Removing gradient mask";

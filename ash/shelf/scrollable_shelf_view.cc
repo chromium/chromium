@@ -2120,7 +2120,7 @@ void ScrollableShelfView::UpdateScrollOffset(float target_offset) {
   const bool strategy_needs_update = (layout_strategy_ != new_strategy);
   if (strategy_needs_update) {
     layout_strategy_ = new_strategy;
-    const bool has_gradient_zone = !layer()->gradient_mask().IsEmpty();
+    const bool has_gradient_zone = layer()->HasGradientMask();
     const bool should_have_gradient_zone = ShouldApplyMaskLayerGradientZone();
     if (has_gradient_zone && !should_have_gradient_zone) {
       layer()->SetGradientMask(gfx::LinearGradient::GetEmpty());

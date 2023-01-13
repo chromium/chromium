@@ -644,12 +644,12 @@ void AppsContainerView::MaybeCreateGradientMask() {
   if (!features::IsBackgroundBlurEnabled())
     return;
 
-  if (scrollable_container_->layer()->gradient_mask().IsEmpty())
+  if (!scrollable_container_->layer()->HasGradientMask())
     UpdateGradientMaskBounds();
 }
 
 void AppsContainerView::MaybeRemoveGradientMask() {
-  if (!scrollable_container_->layer()->gradient_mask().IsEmpty() &&
+  if (scrollable_container_->layer()->HasGradientMask() &&
       !keep_gradient_mask_for_cardified_state_) {
     scrollable_container_->layer()->SetGradientMask(
         gfx::LinearGradient::GetEmpty());
@@ -909,7 +909,7 @@ void AppsContainerView::Layout() {
       gfx::Insets::TLBR(-kDefaultFadeoutMaskHeight, 0, 0, 0));
   scrollable_container_->SetBoundsRect(scrollable_bounds);
 
-  if (!scrollable_container_->layer()->gradient_mask().IsEmpty())
+  if (scrollable_container_->layer()->HasGradientMask())
     UpdateGradientMaskBounds();
 
   bool separator_need_centering = false;

@@ -360,6 +360,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   const gfx::LinearGradient& gradient_mask() const {
     return cc_layer_->gradient_mask();
   }
+  bool HasGradientMask() { return !cc_layer_->gradient_mask().IsEmpty(); }
 
   // If set to true, this layer would not trigger a render surface (if possible)
   // due to having a rounded corner resulting in a better performance at the

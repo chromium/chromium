@@ -245,7 +245,7 @@ void MediaStringView::UpdateMaskLayer() {
     return;
   }
 
-  if (media_text_container_->layer()->gradient_mask().IsEmpty()) {
+  if (!media_text_container_->layer()->HasGradientMask()) {
     float fade_position = static_cast<float>(kMediaStringGradientWidthDip) /
                           media_text_container_->layer()->size().width();
     gfx::LinearGradient gradient_mask(/*angle=*/0);
