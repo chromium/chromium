@@ -62,13 +62,9 @@
       sub-label="$i18n{exportPasswordsDescription}" hide-icon>
   </cr-link-row>
   <template is="dom-if" if="[[!isPasswordManagerShortcutInstalled_]]" restamp>
-    <cr-link-row id="addShortcutBanner" class="cr-row" 
-        label="$i18n{addShortcut}" 
+    <cr-link-row id="addShortcutBanner" class="cr-row"
+        on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
         sub-label="$i18n{addShortcutDescription}" hide-icon>
-      <cr-button class="header-aligned-button"
-          on-click="onAddShortcutClick_" aria-label="$i18n{addShortcut}">
-        $i18n{addShortcut}
-      </cr-button>
     </cr-link-row>
   </template>
 </div>

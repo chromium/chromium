@@ -48,6 +48,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'requestCredentialsDetails',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
+      'showAddShortcutDialog',
       'startBulkPasswordCheck',
     ]);
 

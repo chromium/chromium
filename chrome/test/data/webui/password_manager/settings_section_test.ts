@@ -142,14 +142,20 @@ suite('SettingsSectionTest', function() {
         2);
   });
 
-  // Add Shortcut banner is shown if the shortcut is not yet installed.
+  // Add Shortcut banner is shown and clickable if the shortcut is not yet
+  // installed.
   test('showAddShortcutBanner', async function() {
     loadTimeData.overrideValues({isPasswordManagerShortcutInstalled: false});
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     await flushTasks();
 
-    assertTrue(!!settings!.shadowRoot!.querySelector('#addShortcutBanner'));
+    const addShortcutBanner =
+        settings.shadowRoot!.querySelector<HTMLElement>('#addShortcutBanner');
+    assertTrue(!!addShortcutBanner);
+
+    addShortcutBanner.click();
+    await passwordManager.whenCalled('showAddShortcutDialog');
   });
 
   // Add Shortcut banner is not shown if the shortcut is already installed.
@@ -159,7 +165,7 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     await flushTasks();
 
-    assertFalse(!!settings!.shadowRoot!.querySelector('#addShortcutBanner'));
+    assertFalse(!!settings.shadowRoot!.querySelector('#addShortcutBanner'));
   });
 
   test('Export dialog appears after clicking on banner', async function() {
