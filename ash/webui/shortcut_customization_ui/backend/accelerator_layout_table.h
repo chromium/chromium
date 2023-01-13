@@ -71,6 +71,24 @@ enum NonConfigurableActions {
   kBrowserSelectTabByIndex,
   // Ambient action id
   kAmbientDragLinkInSameTab,
+  kAmbientCycleForwardMRU,
+  kAmbientDragLinkInNewTab,
+  kAmbientOpenLinkInTab,
+  kAmbientOpenLinkInTabBackground,
+  kAmbientOpenLinkInWindow,
+  kAmbientOpenPageInNewTab,
+  kAmbientCycleBackwardMRU,
+  kAmbientRightClick,
+  kAmbientSaveLinkAsBookmark,
+  kAmbientLaunchNumberedApp,
+  kAmbientOpenFile,
+  kAmbientOpenHighlightedItemOnShelf,
+  kAmbientHighlightNextItemOnShelf,
+  kAmbientHighlightPreviousItemOnShelf,
+  kAmbientMoveAppsInGrid,
+  kAmbientMoveAppsInOutFolder,
+  kAmbientRemoveHighlightOnShelf,
+  kAmbientActivateIndexedDesk,
 };
 
 // Used to separate text accelerator parts in the UI e.g ctrl + 1.
@@ -213,7 +231,7 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAsh},
     {NonConfigurableActions::kBrowserSelectTabByIndex,
-     IDS_TEXT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE,
+     IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE,
      mojom::AcceleratorCategory::kTabsAndWindows,
      mojom::AcceleratorSubcategory::kGeneral,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,

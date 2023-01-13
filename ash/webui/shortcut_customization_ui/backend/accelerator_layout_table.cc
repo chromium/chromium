@@ -100,7 +100,7 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
       nonConfigurableActionsMap({
           {NonConfigurableActions::kBrowserSelectTabByIndex,
            NonConfigurableAcceleratorDetails(
-               IDS_TEXT_ACCELERATOR_GO_TO_TAB_IN_RANGE,
+               IDS_AMBIENT_ACCELERATOR_GO_TO_TAB_IN_RANGE,
                {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
                 TextAcceleratorPart(TextAcceleratorDelimiter::kPlusSign),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_1),

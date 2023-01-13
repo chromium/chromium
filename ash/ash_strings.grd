@@ -3651,17 +3651,68 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY" translateable="false" desc="Label for accelerator action - Move focus to popups and dialogs.">
         Move focus to popups and dialogs
       </message>
-      <message name="IDS_TEXT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE" translateable="false" desc="Label for accelerator action - Go to tabs 1 through 8.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE" translateable="false" desc="Label for accelerator action - Go to tabs 1 through 8.">
         Go to tabs 1 through 8
       </message>
-      <message name="IDS_TEXT_ACCELERATOR_GO_TO_TAB_IN_RANGE" translateable="false" desc="Action for accelerator action - Go to tabs 1 through 8.">
-        <ph name="MODIFIER">$1<ex>ctrl</ex></ph> <ph name="DELIMITER">$2<ex>+</ex></ph> <ph name="KEY_ONE">$3<ex>1</ex></ph> through <ph name="KEY_TWO">$4<ex>8</ex></ph>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU" translateable="false" desc="Label for accelerator description - Switch quickly between windows.">
+        Switch quickly between windows
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_NEW_TAB" translateable="false" desc="Label for accelerator description - Open the link in a new tab.">
+        Open the link in a new tab
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_TAB" translateable="false" desc="Label for accelerator description - Open the link in a new tab and switch to the new tab.">
+        Open the link in a new tab and switch to the new tab
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_TAB_BACKGROUND" translateable="false" desc="Label for accelerator description - Open the link in a new tab in the background.">
+        Open the link in a new tab in the background
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_LINK_IN_WINDOW" translateable="false" desc="Label for accelerator description - Open the link in a new window.">
+        Open the link in a new window
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_SAME_TAB" translateable="false" desc="Label for accelerator description - Open the link in the tab.">
         Open the link in the tab
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DRAG_LINK_IN_SAME_TAB" translateable="false" desc="Action for accelerator action - Open the link in the tab.">
-        Drag the link to the tab's address bar
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_PAGE_IN_NEW_TAB" translateable="false" desc="Label for accelerator description - Open the webpage in a new tab.">
+        Open the webpage in a new tab
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU" translateable="false" desc="Label for accelerator description - Open the window that has been unused for the longest time.">
+        Open the window that has been unused for the longest time
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" translateable="false" desc="Label for accelerator description - Right-click a link.">
+        Right-click a link
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SAVE_LINK_AS_BOOKMARK" translateable="false" desc="Label for accelerator description - Save the link as a bookmark.">
+        Save the link as a bookmark
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP" translateable="false" desc="Label for accelerator description - Click icons 1-8 on your shelf.">
+        Click icons 1-8 on your shelf
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_FILE" translateable="false" desc="Label for accelerator description - Preview a file in the Files app.">
+        Preview a file in the Files app
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_HIGHLIGHTED_ITEM_ON_SHELF" translateable="false" desc="Label for accelerator description - Open the highlighted item on your shelf.">
+        Open the highlighted item on your shelf
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_HIGHLIGHT_NEXT_ITEM_ON_SHELF" translateable="false" desc="Label for accelerator description - Highlight the next item on your shelf.">
+        Highlight the next item on your shelf
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_HIGHTLIGHT_PREVIOUS_ITEM_ON_SHELF" translateable="false" desc="Label for accelerator description - Highlight the previous item on your shelf.">
+        Highlight the previous item on your shelf
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_APPS_IN_GRID" translateable="false" desc="Label for accelerator description - Move an app icon around the app grid.">
+        Move an app icon around the app grid
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_APPS_IN_OUT_FOLDER" translateable="false" desc="Label for accelerator description - Move an app icon in/out of a folder in the app grid.">
+        Move an app icon in/out of a folder in the app grid
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_REMOVE_HIGHLIGHT_ON_SHELF" translateable="false" desc="Label for accelerator description - Remove the highlight from an item on your shelf.">
+        Remove the highlight from an item on your shelf
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK" translateable="false" desc="Label for accelerator description - Go to desk 1 to 8.">
+        Go to desk 1 to 8
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_GO_TO_TAB_IN_RANGE" translateable="false" desc="Action for accelerator action - Go to tabs 1 through 8.">
+        <ph name="MODIFIER">$1<ex>ctrl</ex></ph> <ph name="DELIMITER">$2<ex>+</ex></ph> <ph name="KEY_ONE">$3<ex>1</ex></ph> through <ph name="KEY_TWO">$4<ex>8</ex></ph>
       </message>
 
       <!-- Tray scale strings -->
