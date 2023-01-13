@@ -210,6 +210,19 @@ PrivacySandboxService::PrivacySandboxService(
       base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxV2PrefChanged,
                           base::Unretained(this)));
 
+  user_prefs_registrar_.Add(
+      prefs::kPrivacySandboxM1TopicsEnabled,
+      base::BindRepeating(&PrivacySandboxService::OnTopicsPrefChanged,
+                          base::Unretained(this)));
+  user_prefs_registrar_.Add(
+      prefs::kPrivacySandboxM1FledgeEnabled,
+      base::BindRepeating(&PrivacySandboxService::OnFledgePrefChanged,
+                          base::Unretained(this)));
+  user_prefs_registrar_.Add(
+      prefs::kPrivacySandboxM1AdMeasurementEnabled,
+      base::BindRepeating(&PrivacySandboxService::OnAdMeasurementPrefChanged,
+                          base::Unretained(this)));
+
   // If the Sandbox is currently restricted, disable the V2 preference. The user
   // must manually enable the sandbox if they stop being restricted.
   if (IsPrivacySandboxRestricted())
@@ -1132,4 +1145,51 @@ void PrivacySandboxService::InformSentimentService(
 
   sentiment_service_->InteractedWithPrivacySandbox3(area);
 #endif
+}
+
+void PrivacySandboxService::OnTopicsPrefChanged() {
+  // If the user has disabled the preference, any related data stored should be
+  // cleared.
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)) {
+    return;
+  }
+
+  if (browsing_topics_service_) {
+    browsing_topics_service_->ClearAllTopicsData();
+  }
+}
+
+void PrivacySandboxService::OnFledgePrefChanged() {
+  // If the user has disabled the preference, any related data stored should be
+  // cleared.
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled)) {
+    return;
+  }
+
+  if (browsing_data_remover_) {
+    browsing_data_remover_->Remove(
+        base::Time::Min(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
+            content::BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE |
+            content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_INTERNAL,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
+  }
+}
+
+void PrivacySandboxService::OnAdMeasurementPrefChanged() {
+  // If the user has disabled the preference, any related data stored should be
+  // cleared.
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled)) {
+    return;
+  }
+
+  if (browsing_data_remover_) {
+    browsing_data_remover_->Remove(
+        base::Time::Min(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING |
+            content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
+            content::BrowsingDataRemover::
+                DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
+  }
 }

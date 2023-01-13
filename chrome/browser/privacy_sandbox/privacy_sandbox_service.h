@@ -495,6 +495,15 @@ class PrivacySandboxService : public KeyedService {
   // determined by |action|. Only a subset of actions has a corresponding area.
   void InformSentimentService(PrivacySandboxService::PromptAction action);
 
+  // Called when the Topics preference is changed.
+  void OnTopicsPrefChanged();
+
+  // Called when the Fledge preference is changed.
+  void OnFledgePrefChanged();
+
+  // Called when the Ad measurement preference is changed.
+  void OnAdMeasurementPrefChanged();
+
   base::WeakPtrFactory<PrivacySandboxService> weak_factory_{this};
 };
 

@@ -1544,6 +1544,69 @@ TEST_F(PrivacySandboxServiceTest, DisablingV2SandboxClearsData) {
             browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
 }
 
+TEST_F(PrivacySandboxServiceTest, DisablingTopicsPrefClearsData) {
+  // Confirm that when the topics preference is disabled, topics data is
+  // deleted. No browsing data remover tasks are started.
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
+  // Enabling should not delete data.
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  constexpr uint64_t kNoRemovalTask = -1ull;
+  EXPECT_EQ(kNoRemovalTask,
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+
+  // Disabling should start delete topics data.
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(1);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
+  EXPECT_EQ(kNoRemovalTask,
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+}
+
+TEST_F(PrivacySandboxServiceTest, DisablingFledgePrefClearsData) {
+  // Confirm that when the fledge preference is disabled, a browsing data
+  // remover task is started. Topics data isn't deleted.
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
+  // Enabling should not cause a removal task.
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+  constexpr uint64_t kNoRemovalTask = -1ull;
+  EXPECT_EQ(kNoRemovalTask,
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+
+  // Disabling should start a task clearing all related information.
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
+  EXPECT_EQ(
+      content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
+          content::BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE |
+          content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_INTERNAL,
+      browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(base::Time::Min(),
+            browsing_data_remover()->GetLastUsedBeginTimeForTesting());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
+}
+
+TEST_F(PrivacySandboxServiceTest, DisablingAdMeasurementePrefClearsData) {
+  // Confirm that when the ad measurement preference is disabled, a browsing
+  // data remover task is started. Topics data isn't deleted.
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
+  // Enabling should not cause a removal task.
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
+  constexpr uint64_t kNoRemovalTask = -1ull;
+  EXPECT_EQ(kNoRemovalTask,
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+
+  // Disabling should start a task clearing all related information.
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, false);
+  EXPECT_EQ(
+      content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING |
+          content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
+          content::BrowsingDataRemover::DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL,
+      browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(base::Time::Min(),
+            browsing_data_remover()->GetLastUsedBeginTimeForTesting());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
+}
+
 TEST_F(PrivacySandboxServiceTest, GetTopTopics) {
   // Check that the service correctly de-dupes and orders top topics. Topics
   // should be alphabetically ordered.

@@ -196,6 +196,11 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     this.metricsBrowserProxy_.recordAction(
         target.checked ? 'Settings.PrivacySandbox.Fledge.Enabled' :
                          'Settings.PrivacySandbox.Fledge.Disabled');
+
+    // Reset the list after the toggle changed. From disabled -> enabled, the
+    // list should already be empty. From enabled -> disabled, the current list
+    // is cleared.
+    this.sitesList_ = [];
   }
 
   private onLearnMoreClick_() {

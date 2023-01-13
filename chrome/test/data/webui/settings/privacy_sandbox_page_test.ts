@@ -195,9 +195,8 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         page.$.topicsToggle.subLabel);
     assertTrue(!!page.getPref('privacy_sandbox.m1.topics_enabled.value'));
     assertTrue(isChildVisible(page, '#currentTopicsDescription'));
-    // TODO(crbug.com/1378703): Add test for `#currentTopicsDescriptionEmpty`
-    // when `getTopicsState()` returns an empty list.
-    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    // The current list is always empty after re-enabling the toggle.
+    assertTrue(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
     assertEquals(
         'Settings.PrivacySandbox.Topics.Enabled',
@@ -214,8 +213,6 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     assertTrue(isChildVisible(page, '#currentTopicsDescription'));
-    // TODO(crbug.com/1378703): Add test for `#currentTopicsDescriptionEmpty`
-    // when `getTopicsState()` returns an empty list.
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
 
@@ -496,9 +493,8 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
         page.$.fledgeToggle.subLabel);
     assertTrue(!!page.getPref('privacy_sandbox.m1.fledge_enabled.value'));
     assertTrue(isChildVisible(page, '#currentSitesDescription'));
-    // TODO(crbug.com/1378703): Add test for `#currentSitesDescriptionEmpty`
-    // when `getFledgeState()` returns an empty list.
-    assertFalse(isChildVisible(page, '#currentSitesDescriptionEmpty'));
+    // The current list is always empty after re-enabling the toggle.
+    assertTrue(isChildVisible(page, '#currentSitesDescriptionEmpty'));
     assertFalse(isChildVisible(page, '#currentSitesDescriptionDisabled'));
     assertEquals(
         'Settings.PrivacySandbox.Fledge.Enabled',
