@@ -18,9 +18,10 @@ TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
   PrefetchType prefetch_type2(/*use_isolated_network_context=*/true,
                               /*use_prefetch_proxy=*/false,
                               blink::mojom::SpeculationEagerness::kEager);
-  PrefetchType prefetch_type3(/*use_isolated_network_context=*/false,
-                              /*use_prefetch_proxy=*/false,
-                              blink::mojom::SpeculationEagerness::kDefault);
+  PrefetchType prefetch_type3(
+      /*use_isolated_network_context=*/false,
+      /*use_prefetch_proxy=*/false,
+      blink::mojom::SpeculationEagerness::kConservative);
 
   EXPECT_TRUE(prefetch_type1.IsIsolatedNetworkContextRequired());
   EXPECT_TRUE(prefetch_type1.IsProxyRequired());
@@ -35,7 +36,7 @@ TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
   EXPECT_FALSE(prefetch_type3.IsIsolatedNetworkContextRequired());
   EXPECT_FALSE(prefetch_type3.IsProxyRequired());
   EXPECT_EQ(prefetch_type3.GetEagerness(),
-            blink::mojom::SpeculationEagerness::kDefault);
+            blink::mojom::SpeculationEagerness::kConservative);
 }
 
 TEST_F(PrefetchTypeTest, ComparePrefetchTypes) {
@@ -51,9 +52,10 @@ TEST_F(PrefetchTypeTest, ComparePrefetchTypes) {
   PrefetchType prefetch_type4(/*use_isolated_network_context=*/false,
                               /*use_prefetch_proxy=*/false,
                               blink::mojom::SpeculationEagerness::kEager);
-  PrefetchType prefetch_type5(/*use_isolated_network_context=*/true,
-                              /*use_prefetch_proxy=*/true,
-                              blink::mojom::SpeculationEagerness::kDefault);
+  PrefetchType prefetch_type5(
+      /*use_isolated_network_context=*/true,
+      /*use_prefetch_proxy=*/true,
+      blink::mojom::SpeculationEagerness::kConservative);
 
   // Explicitly test the == and != operators for |PrefetchType|.
   EXPECT_TRUE(prefetch_type1 == prefetch_type1);

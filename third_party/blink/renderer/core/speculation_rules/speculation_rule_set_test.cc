@@ -1540,6 +1540,13 @@ auto HasURLs(Matchers&&... urls) {
       ::testing::UnorderedElementsAre(urls...));
 }
 
+// Matches a SpeculationCandidatePtr with an Eagerness.
+auto HasEagerness(
+    ::testing::Matcher<blink::mojom::SpeculationEagerness> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "eagerness", &mojom::blink::SpeculationCandidate::eagerness, matcher));
+}
+
 // Matches a SpeculationCandidatePtr with a KURL.
 auto HasURL(::testing::Matcher<KURL> matcher) {
   return ::testing::Pointee(::testing::Field(
@@ -2196,6 +2203,202 @@ TEST_F(DocumentRulesTest, ParseSelectorMatches) {
   EXPECT_THAT(
       selector_matches_with_compound_selector,
       Selector({StyleRuleWithSelectorText(".interesting-section > a")}));
+}
+
+TEST_F(SpeculationRuleSetTest, EagernessRuntimeEnabledFlag) {
+  ScopedSpeculationRulesEagernessForTest enable_eagerness{false};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  String speculation_script = R"({
+        "prefetch": [
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page1.html"],
+            "eagerness": "conservative"
+          }
+        ]
+      })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_TRUE(candidates.empty());
+}
+
+TEST_F(SpeculationRuleSetTest, Eagerness) {
+  ScopedSpeculationRulesEagernessForTest enable_eagerness{true};
+  ScopedSpeculationRulesDocumentRulesForTest enable_document_rules_{true};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  const KURL kUrl1{"https://example.com/prefetch/list/page1.html"};
+  const KURL kUrl2{"https://example.com/prefetch/document/page1.html"};
+  const KURL kUrl3{"https://example.com/prerender/list/page1.html"};
+  const KURL kUrl4{"https://example.com/prerender/document/page1.html"};
+  const KURL kUrl5{"https://example.com/prefetch/list/page2.html"};
+  const KURL kUrl6{"https://example.com/prefetch/document/page2.html"};
+  const KURL kUrl7{"https://example.com/prerender/list/page2.html"};
+  const KURL kUrl8{"https://example.com/prerender/document/page2.html"};
+
+  AddAnchor(*document.body(), kUrl2.GetString());
+  AddAnchor(*document.body(), kUrl4.GetString());
+  AddAnchor(*document.body(), kUrl6.GetString());
+  AddAnchor(*document.body(), kUrl8.GetString());
+
+  String speculation_script = R"({
+        "prefetch": [
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page1.html"],
+            "eagerness": "conservative"
+          },
+          {
+            "source": "document",
+            "eagerness": "eager",
+            "where": {"href_matches": "https://example.com/prefetch/document/page1.html"}
+          },
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page2.html"]
+          },
+          {
+            "source": "document",
+            "where": {"href_matches": "https://example.com/prefetch/document/page2.html"}
+          }
+        ],
+        "prerender": [
+          {
+            "eagerness": "moderate",
+            "source": "list",
+            "urls": ["https://example.com/prerender/list/page1.html"]
+          },
+          {
+            "source": "document",
+            "where": {"href_matches": "https://example.com/prerender/document/page1.html"},
+            "eagerness": "eager"
+          },
+          {
+            "source": "list",
+            "urls": ["https://example.com/prerender/list/page2.html"]
+          },
+          {
+            "source": "document",
+            "where": {"href_matches": "https://example.com/prerender/document/page2.html"}
+          }
+        ]
+      })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(
+      candidates,
+      UnorderedElementsAre(
+          AllOf(
+              HasURL(kUrl1),
+              HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
+          AllOf(HasURL(kUrl2),
+                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
+          AllOf(HasURL(kUrl3),
+                HasEagerness(blink::mojom::SpeculationEagerness::kModerate)),
+          AllOf(HasURL(kUrl4),
+                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
+          AllOf(HasURL(kUrl5),
+                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
+          AllOf(
+              HasURL(kUrl6),
+              HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
+          AllOf(HasURL(kUrl7),
+                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
+          AllOf(HasURL(kUrl8),
+                HasEagerness(
+                    blink::mojom::SpeculationEagerness::kConservative))));
+}
+
+TEST_F(SpeculationRuleSetTest, InvalidUseOfEagerness1) {
+  ScopedSpeculationRulesEagernessForTest enable_eagerness{true};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  const char* kUrl1 = "https://example.com/prefetch/list/page1.html";
+
+  String speculation_script = R"({
+        "eagerness": "conservative",
+        "prefetch": [
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page1.html"]
+          }
+        ]
+      })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  // It should just ignore the "eagerness" key
+  EXPECT_THAT(candidates, HasURLs(KURL(kUrl1)));
+}
+
+TEST_F(SpeculationRuleSetTest, InvalidUseOfEagerness2) {
+  ScopedSpeculationRulesEagernessForTest enable_eagerness{true};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  const char* kUrl1 = "https://example.com/prefetch/list/page1.html";
+
+  String speculation_script = R"({
+        "prefetch": [
+          "eagerness",
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page1.html"]
+          }
+        ]
+      })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  // It should just ignore the "eagerness" key
+  EXPECT_THAT(candidates, HasURLs(KURL(kUrl1)));
+}
+
+TEST_F(SpeculationRuleSetTest, InvalidEagernessValue) {
+  ScopedSpeculationRulesEagernessForTest enable_eagerness{true};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  String speculation_script = R"({
+        "prefetch": [
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page1.html"],
+            "eagerness": 0
+          },
+          {
+            "eagerness": 1.0,
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page2.html"]
+          },
+          {
+            "source": "list",
+            "eagerness": true,
+            "urls": ["https://example.com/prefetch/list/page3.html"]
+          },
+          {
+            "source": "list",
+            "urls": ["https://example.com/prefetch/list/page4.html"],
+            "eagerness": "xyz"
+          }
+        ]
+      })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_TRUE(candidates.empty());
 }
 
 }  // namespace

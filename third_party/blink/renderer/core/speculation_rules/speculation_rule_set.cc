@@ -59,14 +59,24 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   // and "relative_to", then return null.
   const char* const kKnownKeys[] = {"source",      "urls",  "requires",
                                     "target_hint", "where", "relative_to"};
+  const auto kConditionalKnownKeys = [context]() {
+    Vector<const char*, 4> conditional_known_keys;
+    if (RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled(
+            context)) {
+      conditional_known_keys.push_back("referrer_policy");
+    }
+    if (RuntimeEnabledFeatures::SpeculationRulesEagernessEnabled(context)) {
+      conditional_known_keys.push_back("eagerness");
+    }
+    return conditional_known_keys;
+  }();
+
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     const String& input_key = input->at(i).first;
-    const bool conditionally_known_key =
-        RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled(
-            context) &&
-        input_key == "referrer_policy";
-    if (!base::Contains(kKnownKeys, input_key) && !conditionally_known_key)
+    if (!base::Contains(kKnownKeys, input_key) &&
+        !base::Contains(kConditionalKnownKeys, input_key)) {
       return nullptr;
+    }
   }
 
   bool document_rules_enabled =
@@ -232,9 +242,30 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
   }
 
+  absl::optional<mojom::blink::SpeculationEagerness> eagerness;
+  if (JSONValue* eagerness_value = input->Get("eagerness")) {
+    // Feature gated due to known keys check above.
+    DCHECK(RuntimeEnabledFeatures::SpeculationRulesEagernessEnabled(context));
+
+    String eagerness_str;
+    if (!eagerness_value->AsString(&eagerness_str)) {
+      return nullptr;
+    }
+
+    if (eagerness_str == "eager") {
+      eagerness = mojom::blink::SpeculationEagerness::kEager;
+    } else if (eagerness_str == "moderate") {
+      eagerness = mojom::blink::SpeculationEagerness::kModerate;
+    } else if (eagerness_str == "conservative") {
+      eagerness = mojom::blink::SpeculationEagerness::kConservative;
+    } else {
+      return nullptr;
+    }
+  }
+
   return MakeGarbageCollected<SpeculationRule>(
       std::move(urls), document_rule_predicate, requires_anonymous_client_ip,
-      target_hint, referrer_policy);
+      target_hint, referrer_policy, eagerness);
 }
 
 }  // namespace

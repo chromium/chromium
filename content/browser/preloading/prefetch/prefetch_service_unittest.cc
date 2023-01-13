@@ -3214,7 +3214,8 @@ class PrefetchServiceNeverBlockUntilHeadTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"block_until_head_eager_prefetch", "false"},
-           {"block_until_head_default_prefetch", "false"}}}},
+           {"block_until_head_moderate_prefetch", "false"},
+           {"block_until_head_conservative_prefetch", "false"}}}},
         {network::features::kPrefetchNoVarySearch});
   }
 };
@@ -3283,7 +3284,9 @@ TEST_F(PrefetchServiceNeverBlockUntilHeadTest, MAYBE_HeadNotReceived) {
                        PreloadingFailureReason::kUnspecified);
 }
 
-class PrefetchServiceAlwaysBlockUntilHeadTest : public PrefetchServiceTest {
+class PrefetchServiceAlwaysBlockUntilHeadTest
+    : public PrefetchServiceTest,
+      public ::testing::WithParamInterface<blink::mojom::SpeculationEagerness> {
  public:
   void InitScopedFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -3291,7 +3294,8 @@ class PrefetchServiceAlwaysBlockUntilHeadTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"block_until_head_eager_prefetch", "true"},
-           {"block_until_head_default_prefetch", "true"}}}},
+           {"block_until_head_moderate_prefetch", "true"},
+           {"block_until_head_conservative_prefetch", "true"}}}},
         {network::features::kPrefetchNoVarySearch});
   }
 };
@@ -3302,7 +3306,7 @@ class PrefetchServiceAlwaysBlockUntilHeadTest : public PrefetchServiceTest {
 #else
 #define MAYBE_BlockUntilHeadReceived BlockUntilHeadReceived
 #endif
-TEST_F(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3311,8 +3315,7 @@ TEST_F(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
-                   /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kDefault));
+                   /*use_prefetch_proxy=*/true, GetParam()));
   base::RunLoop().RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com"),
@@ -3395,6 +3398,12 @@ TEST_F(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
                        PreloadingTriggeringOutcome::kReady,
                        PreloadingFailureReason::kUnspecified);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ParametrizedTests,
+    PrefetchServiceAlwaysBlockUntilHeadTest,
+    testing::Values(blink::mojom::SpeculationEagerness::kModerate,
+                    blink::mojom::SpeculationEagerness::kConservative));
 
 }  // namespace
 }  // namespace content

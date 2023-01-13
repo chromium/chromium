@@ -33,7 +33,8 @@ class CORE_EXPORT SpeculationRule final
       DocumentRulePredicate*,
       RequiresAnonymousClientIPWhenCrossOrigin,
       absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
-      absl::optional<network::mojom::ReferrerPolicy>);
+      absl::optional<network::mojom::ReferrerPolicy>,
+      absl::optional<mojom::blink::SpeculationEagerness>);
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
@@ -48,6 +49,9 @@ class CORE_EXPORT SpeculationRule final
   absl::optional<network::mojom::ReferrerPolicy> referrer_policy() const {
     return referrer_policy_;
   }
+  absl::optional<mojom::blink::SpeculationEagerness> eagerness() const {
+    return eagerness_;
+  }
 
   void Trace(Visitor*) const;
 
@@ -58,6 +62,7 @@ class CORE_EXPORT SpeculationRule final
   const absl::optional<mojom::blink::SpeculationTargetHint>
       target_browsing_context_name_hint_;
   const absl::optional<network::mojom::ReferrerPolicy> referrer_policy_;
+  absl::optional<mojom::blink::SpeculationEagerness> eagerness_;
 };
 
 }  // namespace blink

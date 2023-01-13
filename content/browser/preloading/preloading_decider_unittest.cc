@@ -191,13 +191,13 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
                          blink::mojom::SpeculationEagerness>>
       test_cases{{true, GetCrossOriginUrl("/candidate1.html"),
                   blink::mojom::SpeculationAction::kPrefetch,
-                  blink::mojom::SpeculationEagerness::kDefault},
+                  blink::mojom::SpeculationEagerness::kConservative},
                  {false, GetCrossOriginUrl("/candidate2.html"),
                   blink::mojom::SpeculationAction::kPrefetch,
                   blink::mojom::SpeculationEagerness::kEager},
                  {true, GetCrossOriginUrl("/candidate1.html"),
                   blink::mojom::SpeculationAction::kPrerender,
-                  blink::mojom::SpeculationEagerness::kDefault},
+                  blink::mojom::SpeculationEagerness::kConservative},
                  {false, GetCrossOriginUrl("/candidate2.html"),
                   blink::mojom::SpeculationAction::kPrerender,
                   blink::mojom::SpeculationEagerness::kEager}};
@@ -242,7 +242,7 @@ TEST_F(PreloadingDeciderTest, PrefetchOnPointerDownHeuristics) {
   candidate1->requires_anonymous_client_ip_when_cross_origin = true;
   candidate1->url = GetCrossOriginUrl("/candidate1.html");
   candidate1->referrer = blink::mojom::Referrer::New();
-  candidate1->eagerness = blink::mojom::SpeculationEagerness::kDefault;
+  candidate1->eagerness = blink::mojom::SpeculationEagerness::kConservative;
   candidates.push_back(std::move(candidate1));
 
   preloading_decider->UpdateSpeculationCandidates(candidates);
@@ -297,10 +297,10 @@ TEST_F(PreloadingDeciderTest, PrerenderOnPointerDownHeuristics) {
 
   candidates.push_back(CreateCandidate(
       blink::mojom::SpeculationAction::kPrerender, "/candidate1.html",
-      blink::mojom::SpeculationEagerness::kDefault));
+      blink::mojom::SpeculationEagerness::kConservative));
   candidates.push_back(CreateCandidate(
       blink::mojom::SpeculationAction::kPrefetch, "/candidate2.html",
-      blink::mojom::SpeculationEagerness::kDefault));
+      blink::mojom::SpeculationEagerness::kConservative));
 
   preloading_decider->UpdateSpeculationCandidates(candidates);
   // It should not pass kDefault candidates directly

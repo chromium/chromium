@@ -42,7 +42,8 @@ enum SpeculationTargetHint {
 
 // Shows how eager the developer is to perform the speculation action.
 enum SpeculationEagerness {
-  kDefault,
+  kConservative,
+  kModerate,
   kEager,
 };
 
@@ -71,5 +72,5 @@ struct SpeculationCandidate {
 
   // The eagerness level to be used by link selection heuristics to select the
   // candidate.
-  SpeculationEagerness eagerness = kDefault;
+  SpeculationEagerness eagerness = kConservative;
 };

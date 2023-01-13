@@ -346,10 +346,11 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
             rule->requires_anonymous_client_ip_when_cross_origin(),
             rule->target_browsing_context_name_hint().value_or(
                 mojom::blink::SpeculationTargetHint::kNoHint),
-            mojom::blink::SpeculationEagerness::
-                kEager));  // The default Eagerness value for |"source": "list"|
-                           // rules is |kEager|. More info can be found here:
-                           // https://docs.google.com/document/d/1nKOUX6R9seR5e7nyR16mj0lp3C1z7Qox-_KUt4C9E2U
+            // The default Eagerness value for |"source": "list"| rules is
+            // |kEager|. More info can be found here:
+            // https://github.com/WICG/nav-speculation/blob/main/triggers.md#eagerness
+            rule->eagerness().value_or(
+                mojom::blink::SpeculationEagerness::kEager)));
       }
     }
   };
@@ -436,11 +437,11 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
                     rule->requires_anonymous_client_ip_when_cross_origin(),
                     rule->target_browsing_context_name_hint().value_or(
                         mojom::blink::SpeculationTargetHint::kNoHint),
-                    mojom::blink::SpeculationEagerness::
-                        kDefault);  // The default Eagerness value for
-                                    // |"source": "document"| rules is
-                                    // |kDefault|. More info can be found here:
-                                    // https://docs.google.com/document/d/1nKOUX6R9seR5e7nyR16mj0lp3C1z7Qox-_KUt4C9E2U
+                    // The default Eagerness value for |"source": "document"|
+                    // rules is |kConservative|. More info can be found here:
+                    // https://github.com/WICG/nav-speculation/blob/main/triggers.md#eagerness
+                    rule->eagerness().value_or(
+                        mojom::blink::SpeculationEagerness::kConservative));
             link_candidates.push_back(std::move(candidate));
           }
         };
