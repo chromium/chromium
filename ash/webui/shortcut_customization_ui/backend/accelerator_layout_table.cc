@@ -98,6 +98,7 @@ NonConfigurableAcceleratorDetails::~NonConfigurableAcceleratorDetails() =
 const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
   static base::NoDestructor<NonConfigurableActionsMap>
       nonConfigurableActionsMap({
+          // Ambient Accelerator with replacement.
           {NonConfigurableActions::kBrowserSelectTabByIndex,
            NonConfigurableAcceleratorDetails(
                IDS_AMBIENT_ACCELERATOR_GO_TO_TAB_IN_RANGE,
@@ -105,6 +106,121 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                 TextAcceleratorPart(TextAcceleratorDelimiter::kPlusSign),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_1),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_8)})},
+          {NonConfigurableActions::kBrowserFindNext,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_FIND_NEXT,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_G),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_RETURN)})},
+          {NonConfigurableActions::kBrowserFindPrevious,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_FIND_PREVIOUS,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_G),
+                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_RETURN)})},
+          {NonConfigurableActions::kAmbientOpenLinkInTab,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_OPEN_LINK_IN_TAB,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientOpenLinkInTabBackground,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_OPEN_LINK_IN_TAB_BACKGROUND,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientOpenLinkInWindow,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_OPEN_LINK_IN_WINDOW,
+               {TextAcceleratorPart(ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientOpenPageInNewTab,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_OPEN_PAGE_IN_NEW_TAB,
+               {TextAcceleratorPart(ui::EF_ALT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_RETURN)})},
+          {NonConfigurableActions::kAmbientCycleBackwardMRU,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_CYCLE_BACKWARD_MRU,
+               {TextAcceleratorPart(ui::EF_ALT_DOWN),
+                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_TAB)})},
+          {NonConfigurableActions::kBrowserFocusSearch,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_FOCUS_SEARCH,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_K),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_E)})},
+          {NonConfigurableActions::kBrowserReload,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_RELOAD,
+               {TextAcceleratorPart(ui::KeyboardCode::VKEY_BROWSER_REFRESH),
+                TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_R)})},
+          {NonConfigurableActions::kBrowserRightClick,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_RIGHT_CLICK,
+               {TextAcceleratorPart(ui::EF_ALT_DOWN)})},
+          {NonConfigurableActions::kBrowserShowAppMenu,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_SHOW_APP_MENU,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_E),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_F)})},
+          {NonConfigurableActions::kAmbientLaunchNumberedApp,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_LAUNCH_NUMBERED_APP,
+               {TextAcceleratorPart(ui::EF_ALT_DOWN),
+                TextAcceleratorPart(TextAcceleratorDelimiter::kPlusSign),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_1),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_8)})},
+          {NonConfigurableActions::kAmbientOpenFile,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_OPEN_FILE,
+               {TextAcceleratorPart(ui::KeyboardCode::VKEY_SPACE)})},
+          {NonConfigurableActions::kAmbientHighlightNextItemOnShelf,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_HIGHLIGHT_NEXT_ITEM_ON_SHELF,
+               {TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::EF_ALT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_I),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_TAB),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_RIGHT)})},
+          {NonConfigurableActions::kAmbientHighlightPreviousItemOnShelf,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_HIGHTLIGHT_PREVIOUS_ITEM_ON_SHELF,
+               {TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::EF_ALT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_I),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_TAB),
+                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_LEFT)})},
+          {NonConfigurableActions::kAmbientOpenHighlightedItemOnShelf,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_OPEN_HIGHLIGHTED_ITEM_ON_SHELF,
+               {TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::EF_ALT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_I),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_SPACE),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_RETURN)})},
+          {NonConfigurableActions::kAmbientRemoveHighlightOnShelf,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_REMOVE_HIGHLIGHT_ON_SHELF,
+               {TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::EF_ALT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_I),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_ESCAPE)})},
+          // Ambient accelerators that only contain plain text (no
+          // replacements).
+          {NonConfigurableActions::kAmbientDragLinkInNewTab,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_DRAG_LINK_IN_NEW_TAB)},
+          {NonConfigurableActions::kAmbientDragLinkInSameTab,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_DRAG_LINK_IN_SAME_TAB)},
+          {NonConfigurableActions::kAmbientSaveLinkAsBookmark,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_SAVE_LINK_AS_BOOKMARK)},
+          // Standard accelerators.
           {NonConfigurableActions::kBrowserNewTab,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_T, ui::EF_CONTROL_DOWN)})},
@@ -207,6 +323,30 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kBrowserFocusInactivePopupForAccessibility,
            NonConfigurableAcceleratorDetails({ui::Accelerator(
                ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserBottomPage,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kBrowserTopPage,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kBrowserNextPane,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_PRIOR, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kBrowserPageDown,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_DOWN, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kBrowserPageUp,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_UP, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kAmbientOpenRightClickMenu,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_VOLUME_UP, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientDisplayHiddenFiles,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientCaretBrowsing,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_7, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)})},
       });
   return *nonConfigurableActionsMap;
 }
