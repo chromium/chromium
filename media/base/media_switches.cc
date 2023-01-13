@@ -1069,7 +1069,7 @@ constexpr base::FeatureParam<MediaFoundationClearRenderingStrategy>::Option
 const base::FeatureParam<MediaFoundationClearRenderingStrategy>
     kMediaFoundationClearRenderingStrategyParam{
         &kMediaFoundationClearRendering, "strategy",
-        MediaFoundationClearRenderingStrategy::kDynamic,
+        MediaFoundationClearRenderingStrategy::kDirectComposition,
         &kMediaFoundationClearRenderingStrategyOptions};
 #endif  // BUILDFLAG(IS_WIN)
 
