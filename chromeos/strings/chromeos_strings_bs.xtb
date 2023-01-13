@@ -36,7 +36,7 @@
 <translation id="1310380015393971138">Nije dostupna nijedna <ph name="NETWORK_NAME" /> mreža</translation>
 <translation id="131421566576084655">Datum posljednjeg poništavanja podataka je nedostupan</translation>
 <translation id="1314565355471455267">Android VPN</translation>
-<translation id="131461803491198646">Matična mreža, bez roaminga</translation>
+<translation id="131461803491198646">Matična mreža, nije u romingu</translation>
 <translation id="1327977588028644528">Pristupnik</translation>
 <translation id="1328223165223065150">Boja pozadinske slike</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -119,7 +119,7 @@
 <translation id="1977994649430373166">Fotografija Google profila</translation>
 <translation id="1979103255016296513">Vrijeme za promjenu lozinke je isteklo</translation>
 <translation id="1999615961760456652">Zaštitni portal</translation>
-<translation id="200669432486043882">Zamijeni datoteku</translation>
+<translation id="200669432486043882">Zamjena fajla</translation>
 <translation id="2006864819935886708">Povezivost</translation>
 <translation id="2008685064673031089">Primarno pretraživanje</translation>
 <translation id="2011174342667534258">Verzija SDK:</translation>
@@ -214,7 +214,7 @@
 <translation id="3083667275341675831">Dijagnostika povezivosti</translation>
 <translation id="3084958266922136097">Onemogućite čuvara ekrana</translation>
 <translation id="3091839911843451378">Nije uspjelo – zaustavljeno</translation>
-<translation id="3102119246920354026">Predmemorija</translation>
+<translation id="3102119246920354026">Keš memorija</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Uređaj je povezan.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Ukloniti stranicu?}=1{Ukloniti {PAGE_NUMBER}. stranicu?}one{Ukloniti {PAGE_NUMBER}. stranicu?}few{Ukloniti {PAGE_NUMBER}. stranicu?}other{Ukloniti {PAGE_NUMBER}. stranicu?}}</translation>
@@ -312,7 +312,7 @@
 <translation id="4117637339509843559">Tamni način rada</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
-<translation id="4147897805161313378">Google fotografije</translation>
+<translation id="4147897805161313378">Google Fotografije</translation>
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem mreže ili direktne veze</translation>
 <translation id="4159784952369912983">Ljubičasta</translation>
 <translation id="4170180284036919717">Snimi fotografiju</translation>
@@ -358,7 +358,7 @@
 <translation id="4561801978359312462">SIM je otključan</translation>
 <translation id="4562494484721939086">Nema usluge</translation>
 <translation id="458794348635939462">Rješavanje svih hostova nije uspjelo</translation>
-<translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
+<translation id="4593212453765072419">Potrebna je autentifikacija proksi servera</translation>
 <translation id="4609350030397390689">Smanjivanje osvjetljenja tastature</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite enter da otkažete zadatak štampanja.</translation>
 <translation id="463791356324567266">Otkazivanje skeniranja...</translation>
@@ -425,7 +425,7 @@
 <translation id="5160857336552977725">Prijavite se na uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Postavke brzih odgovora</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
-<translation id="5170568018924773124">Pokaži u mapi</translation>
+<translation id="5170568018924773124">Prikaži u folderu</translation>
 <translation id="5190187232518914472">Ponovo doživite omiljene uspomene. Da dodate ili uredite albume, idite u <ph name="LINK_BEGIN" />Google Fotografije<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ne mogu pronaći ništa na ekranu u vezi s čim mogu pomoći.
 Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
@@ -434,7 +434,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="522307662484862935">Nemoj uključiti adresu e-pošte</translation>
 <translation id="5227902338748591677">Raspored tamne teme</translation>
 <translation id="5234764350956374838">Odbaci</translation>
-<translation id="5252456968953390977">Roaming</translation>
+<translation id="5252456968953390977">Roming</translation>
 <translation id="5257811368506016604">Omogućavanje načina rada u svijetloj boji</translation>
 <translation id="5264277876637023664">Pokreni test CPU-a</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
@@ -507,7 +507,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaš fajl je uspješno skeniran i sačuvan u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fajl nije pronađen</translation>
-<translation id="5939518447894949180">Ponovno postavi</translation>
+<translation id="5939518447894949180">Vrati na zadano</translation>
 <translation id="594552776027197022">Generiraj nasumično odabrani par ključeva</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Zadana pozadinska slika</translation>
@@ -550,7 +550,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="631063167932043783">Aplikacija Istraži</translation>
 <translation id="6319207335391420837">Ažurirajte firmver na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Uključite čuvara ekrana</translation>
-<translation id="6325525973963619867">Nije uspjelo</translation>
+<translation id="6325525973963619867">Neuspješno</translation>
 <translation id="6331191339300272798">Automatska tamna tema</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
 <translation id="6348738456043757611">Korisničko ime i lozinka</translation>
@@ -594,9 +594,9 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6659594942844771486">Kartica</translation>
 <translation id="6692996468359469499">Primajte informacije u vezi s vašim odabirom</translation>
 <translation id="6704062477274546131">Razrješavanje DNS-a</translation>
-<translation id="6723839937902243910">Napajanje</translation>
+<translation id="6723839937902243910">Uključivanje/isključivanje</translation>
 <translation id="6723847290197874913">Pozadinsko svjetlo tastature</translation>
-<translation id="672609503628871915">Pogledajte što je novo</translation>
+<translation id="672609503628871915">Pogledajte šta je novo</translation>
 <translation id="6747215703636344499">Zaustavljeno – izlaz je pun</translation>
 <translation id="6749473226660745022">Fotografije</translation>
 <translation id="6753452347192452143">Uređaj je računar.</translation>
@@ -654,7 +654,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; pritisnite tipku za pretraživanje i tipku za razmak da vidite rezultat u Google Pretraživanju.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
-<translation id="7359657277149375382">Vrsta datoteke</translation>
+<translation id="7359657277149375382">Vrsta fajla</translation>
 <translation id="73631062356239394">Dijeljenje dijagnostičkih podataka</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7397270852490618635">Isključi svijetlu temu</translation>
@@ -716,7 +716,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogućavanje načina rada automatske boje</translation>
-<translation id="8041089156583427627">Slanje povratnih informacija</translation>
+<translation id="8041089156583427627">Pošaljite povratne informacije</translation>
 <translation id="8045012663542226664">Isključivanje zvuka mikrofona</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>
@@ -729,7 +729,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Odaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8206859287963243715">Mobitel</translation>
+<translation id="8206859287963243715">Mobilna mreža</translation>
 <translation id="8208861521865154048">Privilegije</translation>
 <translation id="8226628635270268143">Odaberite omiljene fotografije i albume</translation>
 <translation id="8227119283605456246">Priloži fajl</translation>
@@ -811,7 +811,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8945750210906526975">Interna dodirna podloga</translation>
 <translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
-<translation id="8970109610781093811">Pokreni ponovo</translation>
+<translation id="8970109610781093811">Ponovo pokreni</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skeniraj}=1{Skeniraj {NUMBER_OF_PAGES}. stranicu}one{Skeniraj {NUMBER_OF_PAGES}. stranicu}few{Skeniraj {NUMBER_OF_PAGES}. stranicu}other{Skeniraj {NUMBER_OF_PAGES}. stranicu}}</translation>
 <translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>

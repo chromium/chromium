@@ -83,13 +83,13 @@
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5272594226096532950">Neoznačeno. <ph name="INDEX" />. opcija od <ph name="COUNT" /> u grupi</translation>
-<translation id="5307600278924710095">Unesite dio adrese ispred znaka "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" nije potpuna e-adresa.</translation>
+<translation id="5307600278924710095">Unesite dio ispred znaka "<ph name="ATSIGN" />". Adresa "<ph name="INVALIDADDRESS" />" je nepotpuna.</translation>
 <translation id="5334352251556557839">Nije moguće reproducirati medijski sadržaj.</translation>
 <translation id="537648784377940524">Najraniji datum (<ph name="MIN_DATE_OR_TIME" />) mora doći prije najkasnijeg datuma (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5378437566635403538">prošireno, dijaloški okvir je otvoren.</translation>
 <translation id="5425179576310518467">trenutni datum</translation>
 <translation id="5466621249238537318">Odaberite jedan ili više fajlova.</translation>
-<translation id="5468998798572797635">izlazak iz cijelog zaslona</translation>
+<translation id="5468998798572797635">napusti prikaz preko cijelog ekrana</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Emitiraj</translation>
 <translation id="5546461542133609677">uključi zvuk</translation>
@@ -102,7 +102,7 @@
 <translation id="588258955323874662">Cijeli ekran</translation>
 <translation id="5888666972993069672">Sada se emitira na uređaj <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5916664084637901428">Uključeno</translation>
-<translation id="5939518447894949180">Ponovno postavi</translation>
+<translation id="5939518447894949180">Vrati na zadano</translation>
 <translation id="5966707198760109579">Sedmica</translation>
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6011459053400940133">klizač za jačinu zvuka</translation>
@@ -131,7 +131,7 @@
 <translation id="6941933287844615239">preuzmi medije</translation>
 <translation id="698788488269350478">prošireno.</translation>
 <translation id="6989848892321993519">Produžite ovaj tekst tako da broj znakova bude najmanje <ph name="MIN_CHARACTERS" /> (trenutno koristite 1 znak).</translation>
-<translation id="709897737746224366">Udovoljite zadanom formatu.</translation>
+<translation id="709897737746224366">Prilagodite da se podudara s traženim formatom.</translation>
 <translation id="7102274145889307184">trenutna lokacija</translation>
 <translation id="7263440858009898357">Odaberite stavku s liste.</translation>
 <translation id="7320576522385648310">učitavanje u međumemoriju</translation>

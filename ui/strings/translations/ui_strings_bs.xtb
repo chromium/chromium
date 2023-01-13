@@ -55,7 +55,7 @@
 <translation id="2498950423397131220">Plutajući</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibracija je završena</translation>
-<translation id="252373100621549798">Nepoznati zaslon</translation>
+<translation id="252373100621549798">Nepoznat ekran</translation>
 <translation id="2545651323591713692">Odgodite</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{za 1h}one{za # h}few{za # h}other{za # h}}</translation>
 <translation id="2583543531130364912">Kalibrirajte dodirni ekran</translation>
@@ -103,7 +103,7 @@
 <translation id="4289300219472526559">Započinjanje govora</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4306392492252714209">Uklanjanje iz međumemorije.</translation>
-<translation id="4311195029067684288">Potpuno</translation>
+<translation id="4311195029067684288">Puno</translation>
 <translation id="4491109536499578614">Slika</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4588090240171750605">Kliznite udesno</translation>
@@ -114,7 +114,7 @@
 <translation id="4937657825850660613">Napola</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}one{# sekunda}few{# sekunde}other{# sekundi}}</translation>
 <translation id="4971687151119236543">Prethodna numera medijskog fajla</translation>
-<translation id="4971925105143343452">Djelomičnо</translation>
+<translation id="4971925105143343452">Djelimično</translation>
 <translation id="5046499563572181734">Dodirnite ovdje</translation>
 <translation id="5076340679995252485">&amp;Zalijepi</translation>
 <translation id="5123162024343028706">Plutanje na vrhu</translation>
@@ -145,7 +145,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">Izabran je red <ph name="ROW_NAME" />.</translation>
 <translation id="6264365405983206840">Odaberi &amp;sve</translation>
-<translation id="6364916375976753737">Pomakni se lijevo</translation>
+<translation id="6364916375976753737">Kliznite ulijevo</translation>
 <translation id="6394627529324717982">Zarez</translation>
 <translation id="6397363302884558537">Zaustavljanje govora</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{prije 1 sekundu}one{prije # sekundu}few{prije # sekunde}other{prije # sekundi}}</translation>
@@ -197,7 +197,7 @@
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">Tab</translation>
 <translation id="8259556432390118667">Hex vrijednost boje</translation>
-<translation id="8328145009876646418">Lijevi rub</translation>
+<translation id="8328145009876646418">Lijeva ivica</translation>
 <translation id="8331626408530291785">Klizni prema gore</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 godina}one{# godina}few{# godine}other{# godina}}</translation>
 <translation id="8393700583063109961">Pošalji poruku</translation>
@@ -210,7 +210,7 @@
 <translation id="8772073294905169192">{HOURS,plural, =1{1 h}one{# h}few{# h}other{# h}}</translation>
 <translation id="8798099450830957504">Zadano</translation>
 <translation id="8841375032071747811">Dugme Nazad</translation>
-<translation id="8867568208303837180">Šaljemo...</translation>
+<translation id="8867568208303837180">Slanje...</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="8996630695507351249">Provjerite je li uređaj <ph name="TARGET_DEVICE_NAME" /> povezan na internet.</translation>
