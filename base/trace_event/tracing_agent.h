@@ -6,7 +6,7 @@
 #define BASE_TRACE_EVENT_TRACING_AGENT_H_
 
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 
 namespace base {

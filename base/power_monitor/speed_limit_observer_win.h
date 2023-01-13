@@ -6,7 +6,7 @@
 #define BASE_POWER_MONITOR_SPEED_LIMIT_OBSERVER_WIN_H_
 
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/power_monitor/moving_average.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"

@@ -7,13 +7,13 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ios/scoped_critical_action.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif

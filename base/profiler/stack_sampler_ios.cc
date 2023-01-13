@@ -9,8 +9,8 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IOS_STACK_PROFILER_ENABLED)
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/profiler/frame_pointer_unwinder.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/suspendable_thread_delegate_mac.h"

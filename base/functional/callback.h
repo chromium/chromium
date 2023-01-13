@@ -4,7 +4,7 @@
 //
 // NOTE: Header files that do not require the full definition of
 // base::{Once,Repeating}Callback or base::{Once,Repeating}Closure should
-// #include "base/callback_forward.h" instead of this file.
+// #include "base/functional/callback_forward.h" instead of this file.
 
 #ifndef BASE_FUNCTIONAL_CALLBACK_H_
 #define BASE_FUNCTIONAL_CALLBACK_H_

@@ -6,7 +6,7 @@
 #define BASE_TASK_THREAD_POOL_POOLED_SEQUENCED_TASK_RUNNER_H_
 
 #include "base/base_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"

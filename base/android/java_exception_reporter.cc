@@ -8,9 +8,9 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/base_jni_headers/JavaExceptionReporter_jni.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 
 using base::android::JavaParamRef;

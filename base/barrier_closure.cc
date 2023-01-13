@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/atomic_ref_count.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 

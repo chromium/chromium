@@ -9,8 +9,8 @@
 #include <tuple>  // for std::ignore
 #include <type_traits>  // for std::remove_pointer_t
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace {

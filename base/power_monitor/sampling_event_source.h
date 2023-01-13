@@ -6,7 +6,7 @@
 #define BASE_POWER_MONITOR_SAMPLING_EVENT_SOURCE_H_
 
 #include "base/base_export.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace base {
 

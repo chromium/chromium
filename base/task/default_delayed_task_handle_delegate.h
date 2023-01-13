@@ -6,7 +6,7 @@
 #define BASE_TASK_DEFAULT_DELAYED_TASK_HANDLE_DELEGATE_H_
 
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/delayed_task_handle.h"
 

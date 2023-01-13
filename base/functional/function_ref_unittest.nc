@@ -5,8 +5,8 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "third_party/abseil-cpp/absl/functional/function_ref.h"
 

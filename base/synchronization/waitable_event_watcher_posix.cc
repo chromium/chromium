@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 

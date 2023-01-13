@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/pending_task.h"
 #include "base/task/sequence_manager/enqueue_order_generator.h"

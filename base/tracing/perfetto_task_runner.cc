@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/common/checked_lock_impl.h"
 #include "base/task/common/scoped_defer_task_posting.h"

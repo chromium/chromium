@@ -9,9 +9,9 @@
 #include <iterator>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
 #include "base/threading/thread_local.h"

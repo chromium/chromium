@@ -6,9 +6,9 @@
 #define BASE_AT_EXIT_H_
 
 #include "base/base_export.h"
-#include "base/callback.h"
 #include "base/containers/stack.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"

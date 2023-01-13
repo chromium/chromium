@@ -4,9 +4,9 @@
 
 #include <tuple>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"

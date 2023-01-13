@@ -26,10 +26,10 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"

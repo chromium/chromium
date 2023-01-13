@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/profiler/module_cache.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"

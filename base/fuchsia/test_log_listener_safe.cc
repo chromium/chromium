@@ -4,8 +4,8 @@
 
 #include "base/fuchsia/test_log_listener_safe.h"
 
-#include "base/callback_helpers.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"

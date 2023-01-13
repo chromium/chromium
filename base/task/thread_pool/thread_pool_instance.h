@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"

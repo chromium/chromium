@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/callback_forward.h"
 #include "base/fuchsia/system_info.h"
+#include "base/functional/callback_forward.h"
 
 #include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/hwinfo/cpp/fidl.h>
 #include <fuchsia/hwinfo/cpp/fidl_test_base.h>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"

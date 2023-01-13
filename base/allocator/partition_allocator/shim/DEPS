@@ -12,7 +12,7 @@ include_rules = [
     "+base/allocator/partition_alloc_features.h",
     "+base/allocator/partition_allocator/partition_alloc_base",
     "+base/base_export.h",
-    "+base/bind.h",
+    "+base/functional/bind.h",
     "+base/logging.h",
     "+base/mac/mach_logging.h",
     "+base/memory/nonscannable_memory.h",

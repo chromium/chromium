@@ -6,7 +6,7 @@
 #define BASE_POWER_MONITOR_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_
 
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/power_monitor/sampling_event_source.h"

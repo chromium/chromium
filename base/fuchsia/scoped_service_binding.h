@@ -13,8 +13,8 @@
 #include <lib/zx/channel.h>
 
 #include "base/base_export.h"
-#include "base/callback.h"
 #include "base/fuchsia/scoped_service_publisher.h"
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sys {

@@ -4,8 +4,8 @@
 
 #include "base/task/thread_pool/pooled_single_thread_task_runner_manager.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/atomic_flag.h"

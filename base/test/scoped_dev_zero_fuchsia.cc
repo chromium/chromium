@@ -17,10 +17,10 @@
 #include <functional>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 

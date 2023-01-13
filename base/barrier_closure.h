@@ -6,7 +6,7 @@
 #define BASE_BARRIER_CLOSURE_H_
 
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace base {
 

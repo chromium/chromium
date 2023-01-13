@@ -6,8 +6,8 @@
 #define BASE_TIMER_WALL_CLOCK_TIMER_H_
 
 #include "base/base_export.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"

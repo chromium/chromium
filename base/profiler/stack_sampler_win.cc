@@ -4,8 +4,8 @@
 
 #include "base/profiler/stack_sampler.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/profiler/native_unwinder_win.h"
 #include "base/profiler/stack_copier_suspend.h"

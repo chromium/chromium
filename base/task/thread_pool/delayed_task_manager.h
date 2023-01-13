@@ -8,8 +8,8 @@
 #include <functional>
 
 #include "base/base_export.h"
-#include "base/callback.h"
 #include "base/containers/intrusive_heap.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/atomic_flag.h"

@@ -4,7 +4,7 @@
 
 #include "base/test/test_pending_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"

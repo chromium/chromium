@@ -36,8 +36,8 @@
 #ifndef BASE_TEST_MOCK_CALLBACK_H_
 #define BASE_TEST_MOCK_CALLBACK_H_
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace base {

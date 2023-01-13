@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_utils.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace base {
 namespace android {

@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/atomicops.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/debug/debugger.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/synchronization/atomic_flag.h"

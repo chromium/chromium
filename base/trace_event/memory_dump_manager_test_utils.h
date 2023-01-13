@@ -5,7 +5,7 @@
 #ifndef BASE_TRACE_EVENT_MEMORY_DUMP_MANAGER_TEST_UTILS_H_
 #define BASE_TRACE_EVENT_MEMORY_DUMP_MANAGER_TEST_UTILS_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 

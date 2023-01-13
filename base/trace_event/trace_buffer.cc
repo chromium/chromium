@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event_impl.h"
 

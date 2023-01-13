@@ -8,8 +8,8 @@
 #include <limits>
 
 #include "base/base_export.h"
-#include "base/callback.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 

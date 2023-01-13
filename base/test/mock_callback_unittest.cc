@@ -4,7 +4,7 @@
 
 #include "base/test/mock_callback.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::InSequence;

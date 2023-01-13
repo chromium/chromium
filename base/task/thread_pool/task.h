@@ -6,8 +6,8 @@
 #define BASE_TASK_THREAD_POOL_TASK_H_
 
 #include "base/base_export.h"
-#include "base/callback.h"
 #include "base/containers/intrusive_heap.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/pending_task.h"
 #include "base/task/sequenced_task_runner.h"

@@ -6,7 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_SEQUENCED_TASK_SOURCE_H_
 
 #include "base/base_export.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/pending_task.h"
 #include "base/task/common/lazy_now.h"

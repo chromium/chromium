@@ -4,8 +4,8 @@
 
 #include "base/task/bind_post_task.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/sequenced_task_runner.h"

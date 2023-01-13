@@ -86,7 +86,6 @@ typedef FILE* FileHandle;
 #include <utility>
 
 #include "base/base_switches.h"
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/stack.h"
 #include "base/debug/activity_tracker.h"
@@ -94,6 +93,7 @@ typedef FILE* FileHandle;
 #include "base/debug/debugger.h"
 #include "base/debug/stack_trace.h"
 #include "base/debug/task_trace.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"

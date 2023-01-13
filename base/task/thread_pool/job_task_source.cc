@@ -7,10 +7,10 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/bits.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/common/checked_lock.h"

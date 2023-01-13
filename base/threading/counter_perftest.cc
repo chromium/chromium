@@ -6,7 +6,7 @@
 #include <string>
 
 #include "base/barrier_closure.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"

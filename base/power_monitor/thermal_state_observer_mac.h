@@ -10,7 +10,7 @@
 
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/power_monitor/power_observer.h"
 

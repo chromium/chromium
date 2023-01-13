@@ -20,8 +20,6 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -29,6 +27,8 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"

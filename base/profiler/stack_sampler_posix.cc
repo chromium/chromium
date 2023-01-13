@@ -13,8 +13,8 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/profiler/frame_pointer_unwinder.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/thread_delegate_posix.h"

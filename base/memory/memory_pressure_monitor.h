@@ -6,7 +6,7 @@
 #define BASE_MEMORY_MEMORY_PRESSURE_MONITOR_H_
 
 #include "base/base_export.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 

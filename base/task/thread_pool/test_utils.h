@@ -8,7 +8,7 @@
 #include <atomic>
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/post_job.h"

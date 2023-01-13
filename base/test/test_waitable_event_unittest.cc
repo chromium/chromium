@@ -4,7 +4,7 @@
 
 #include "base/test/test_waitable_event.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/scoped_blocking_call_internal.h"

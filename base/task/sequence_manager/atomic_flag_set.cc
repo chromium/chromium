@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bits.h"
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 
 namespace base {
 namespace sequence_manager {
