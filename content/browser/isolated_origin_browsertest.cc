@@ -235,7 +235,9 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
  public:
   OriginIsolationOptInHeaderTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitAndEnableFeature(features::kOriginIsolationHeader);
+    feature_list_.InitWithFeatures(
+        {features::kOriginIsolationHeader},
+        {blink::features::kOriginAgentClusterDefaultEnabled});
   }
   ~OriginIsolationOptInHeaderTest() override = default;
 

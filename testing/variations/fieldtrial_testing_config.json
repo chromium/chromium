@@ -7894,7 +7894,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "OriginAgentClusterDefaultEnabled"
+                        "OriginAgentClusterDefaultEnable"
                     ]
                 }
             ]

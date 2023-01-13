@@ -635,11 +635,19 @@
     "bases": [
       "external/wpt/html/browsers/origin/origin-keyed-agent-clusters",
       "external/wpt/html/infrastructure/urls/terminology-0",
-      "external/wpt/navigation-api/navigate-event/cross-window"
+      "external/wpt/navigation-api/navigate-event/cross-window",
+      "http/tests/security/cross-frame-access-callback-explicit-domain-ALLOW.html",
+      "http/tests/security/cross-frame-access-callback-explicit-domain-DENY.html",
+      "http/tests/security/cross-frame-access-child-explicit-domain.html",
+      "http/tests/security/cross-frame-access-parent-explicit-domain.html",
+      "http/tests/security/cross-frame-access-port-explicit-domain.html",
+      "http/tests/security/cross-frame-access-protocol-explicit-domain.html",
+      "http/tests/security/canvas-remote-read-remote-image-document-domain.html"
     ],
     "exclusive_tests": ["external/wpt/html/browsers/origin/origin-keyed-agent-clusters"],
     "args": ["--disable-auto-wpt-origin-isolation",
-             "--reset-browsing-instance-between-tests"],
+             "--reset-browsing-instance-between-tests",
+             "--disable-features=OriginAgentClusterDefaultEnable"],
     "expires": "Jul 1, 2023"
   },
   {
@@ -1438,6 +1446,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-features=OriginAgentClusterDefaultWarning",
+      "--disable-features=OriginAgentClusterDefaultEnable",
       "--disable-auto-wpt-origin-isolation"
     ],
     "expires": "Jul 1, 2023"

@@ -6940,3 +6940,19 @@ crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.htt
 crbug.com/1406683 [ Win11 ] external/wpt/css/css-properties-values-api/at-property-animation.html [ Failure ]
 crbug.com/1406950 [ Win10.20h2 ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 
+# These tests test aspects of document.domain setting, which will (& should)
+# fail once document.domain setting is default-disabled (by enabling
+# Origin-Agent-Cluster by default). The expected test result thus depends on
+# whether Origin-Agent-Cluster is default enabled or not.
+#
+# All of these tests are *also* run as part of the
+# virtual/no-auto-wpt-origin-isolation/ suite, which has document.domain
+# setting enabled. In the virtual suite, all of these tests need to pass.
+http/tests/security/cross-frame-access-callback-explicit-domain-ALLOW.html [ Failure Pass ]
+http/tests/security/cross-frame-access-callback-explicit-domain-DENY.html [ Failure Pass ]
+http/tests/security/cross-frame-access-child-explicit-domain.html [ Failure Pass ]
+http/tests/security/cross-frame-access-parent-explicit-domain.html [ Failure Pass ]
+http/tests/security/cross-frame-access-port-explicit-domain.html [ Failure Pass ]
+http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure Pass ]
+http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure Pass ]
+

@@ -45,7 +45,11 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
             // SharedArrayBuffer is needed for these tests.
             features::kSharedArrayBuffer,
         },
-        {});
+        {
+            // Disabled because some subtests set document.domain and this
+            // feature flag prevents that:
+            blink::features::kOriginAgentClusterDefaultEnabled,
+        });
   }
 
   content::WebContents* web_contents() const {
