@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksApiProxyImpl, HIDE_FOCUS_RING_ATTRIBUTE, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksApiProxyImpl, BookmarksAppElement, BookmarksItemElement, HIDE_FOCUS_RING_ATTRIBUTE, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {down, keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -13,9 +14,9 @@ import {TestStore} from './test_store.js';
 import {createFolder, normalizeIterable, replaceBody} from './test_util.js';
 
 suite('<bookmarks-app>', function() {
-  let app;
-  let store;
-  let testBookmarksApiProxy;
+  let app: BookmarksAppElement;
+  let store: TestStore;
+  let testBookmarksApiProxy: TestBookmarksApiProxy;
 
   function resetStore() {
     store = new TestStore({});
@@ -46,7 +47,7 @@ suite('<bookmarks-app>', function() {
   });
 
   test('write and load closed folder state', async function() {
-    const folderOpenStateList = [['1', true]];
+    const folderOpenStateList = [['1', true] as const];
     const folderOpenState = new Map(folderOpenStateList);
     store.data.folderOpenState = folderOpenState;
     store.notifyObservers();
@@ -67,7 +68,9 @@ suite('<bookmarks-app>', function() {
   });
 
   test('write and load sidebar width', async function() {
-    assertEquals(getComputedStyle(app.$.sidebar).width, app.sidebarWidth_);
+    assertEquals(
+        getComputedStyle(app.$.sidebar).width,
+        app.shadowRoot!.querySelector('bookmarks-toolbar')!.sidebarWidth);
 
     const sidebarWidth = '500px';
     app.$.sidebar.style.width = sidebarWidth;
@@ -83,9 +86,10 @@ suite('<bookmarks-app>', function() {
   });
 
   test('focus ring hides and restores', async function() {
-    const list = app.shadowRoot.querySelector('bookmarks-list');
+    const list = app.shadowRoot!.querySelector('bookmarks-list');
     await flushTasks();
-    const item = list.root.querySelectorAll('bookmarks-item')[0];
+    const item = list!.root!.querySelectorAll('bookmarks-item')[0] as
+        BookmarksItemElement;
     const getFocusAttribute = () => app.getAttribute(HIDE_FOCUS_RING_ATTRIBUTE);
 
     assertEquals(null, getFocusAttribute());
@@ -103,10 +107,11 @@ suite('<bookmarks-app>', function() {
   });
 
   test('when find shortcut is invoked, focus on search input', () => {
-    const searchInput = app.shadowRoot.querySelector('bookmarks-toolbar')
-                            .searchField.getSearchInput();
+    const searchInput =
+        app.shadowRoot!.querySelector(
+                           'bookmarks-toolbar')!.searchField.getSearchInput();
     assertNotEquals(searchInput, getDeepActiveElement());
-    pressAndReleaseKeyOn(document.body, '', isMac ? 'meta' : 'ctrl', 'f');
+    pressAndReleaseKeyOn(document.body, 0, isMac ? 'meta' : 'ctrl', 'f');
     assertEquals(searchInput, getDeepActiveElement());
   });
 });

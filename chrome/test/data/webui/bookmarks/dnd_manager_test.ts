@@ -2,50 +2,56 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl, changeFolderOpen, DragInfo, DropPosition, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkElement, BookmarkManagerApiProxyImpl, BookmarksAppElement, BookmarksFolderNodeElement, BookmarksListElement, BrowserProxyImpl, DndManager, DragInfo, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {middleOfNode, topLeftOfNode} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
 import {TestTimerProxy} from './test_timer_proxy.js';
 import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from './test_util.js';
 
 suite('drag and drop', function() {
-  let app;
-  let list;
-  let rootFolderNode;
-  let store;
-  let dndManager;
+  let app: BookmarksAppElement;
+  let list: BookmarksListElement;
+  let rootFolderNode: BookmarksFolderNodeElement;
+  let store: TestStore;
+  let dndManager: DndManager;
+  let bookmarkManagerApi: TestBookmarkManagerApiProxy;
 
-  const DRAG_STYLE = {
-    NONE: 0,
-    ON: 1,
-    ABOVE: 2,
-    BELOW: 3,
-  };
-
-  function getFolderNode(id) {
-    return findFolderNode(rootFolderNode, id);
+  enum DragStyle {
+    NONE = 0,
+    ON = 1,
+    ABOVE = 2,
+    BELOW = 3,
   }
 
-  function getListItem(id) {
-    const items = list.root.querySelectorAll('bookmarks-item');
+  function getFolderNode(id: string) {
+    return findFolderNode(rootFolderNode, id) as BookmarkElement;
+  }
+
+  function getListItem(id: string) {
+    const items = list.root!.querySelectorAll('bookmarks-item');
     for (let i = 0; i < items.length; i++) {
-      if (items[i].itemId === id) {
-        return items[i];
+      if (items[i]!.itemId === id) {
+        return items[i] as BookmarkElement;
       }
     }
+    assertNotReached();
   }
 
-  function dispatchDragEvent(type, node, xy) {
+  function dispatchDragEvent(
+      type: string, node: HTMLElement, xy?: {x: number, y: number}) {
     xy = xy || middleOfNode(node);
     const props = {
       bubbles: true,
       cancelable: true,
       composed: true,
-      clientX: xy.x,
-      clientY: xy.y,
+      clientX: xy!.x,
+      clientY: xy!.y,
       // Make this a primary input.
       buttons: 1,
     };
@@ -53,41 +59,50 @@ suite('drag and drop', function() {
     node.dispatchEvent(e);
   }
 
-  function assertDragStyle(bookmarkElement, style) {
-    const dragStyles = {};
-    dragStyles[DRAG_STYLE.ON] = 'drag-on';
-    dragStyles[DRAG_STYLE.ABOVE] = 'drag-above';
-    dragStyles[DRAG_STYLE.BELOW] = 'drag-below';
+  function bottomRightOfNode(target: HTMLElement) {
+    const rect = target.getBoundingClientRect();
+    return {y: rect.top + rect.height, x: rect.left + rect.width};
+  }
 
-    const classList = bookmarkElement.getDropTarget().classList;
-    Object.keys(dragStyles).forEach(dragStyle => {
+  function assertDragStyle(bookmarkElement: BookmarkElement, style: DragStyle) {
+    const dragStyles: {[key: string]: string} = {};
+    dragStyles[DragStyle.ON] = 'drag-on';
+    dragStyles[DragStyle.ABOVE] = 'drag-above';
+    dragStyles[DragStyle.BELOW] = 'drag-below';
+
+    const classList = bookmarkElement.getDropTarget()!.classList;
+    Object.entries(dragStyles).forEach(([dragStyle, value]) => {
       assertEquals(
-          dragStyle === style.toString(),
-          classList.contains(dragStyles[dragStyle]),
-          dragStyles[dragStyle] +
-              (dragStyle === style.toString() ? ' missing' : ' found') +
+          dragStyle === style.toString(), classList.contains(value),
+          value + (dragStyle === style.toString() ? ' missing' : ' found') +
               ' in classList ' + classList);
     });
   }
 
-  function createDragData(ids, sameProfile) {
+  function createDragData(ids: string[], sameProfile: boolean = true) {
     return {
-      elements: ids.map(id => store.data.nodes[id]),
-      sameProfile: sameProfile === undefined ? true : sameProfile,
+      elements: ids.map(
+          id => store.data.nodes[id] as chrome.bookmarks.BookmarkTreeNode),
+      sameProfile: sameProfile,
     };
   }
 
-  function simulateDragStart(dragElement) {
+  async function simulateDragStart(dragElement: HTMLElement) {
     dispatchDragEvent('dragstart', dragElement);
+    const idList = await bookmarkManagerApi.whenCalled('startDrag');
+    bookmarkManagerApi.resetResolver('startDrag');
+    dndManager.getDragInfoForTesting()!.setNativeDragData(
+        createDragData(idList));
     move(dragElement, topLeftOfNode(dragElement));
   }
 
-  function move(target, dest) {
+  function move(target: HTMLElement, dest?: {x: number, y: number}) {
     dispatchDragEvent('dragover', target, dest || middleOfNode(target));
   }
 
   function getDragIds() {
-    return dndManager.dragInfo_.dragData.elements.map((x) => x.id);
+    return dndManager.getDragInfoForTesting()!.dragData!.elements.map(
+        (x) => x.id);
   }
 
   setup(function() {
@@ -118,19 +133,19 @@ suite('drag and drop', function() {
     });
     store.replaceSingleton();
 
-    chrome.bookmarkManagerPrivate.startDrag = function(
-        idList, dragNodeIndex, isFromTouch) {
-      dndManager.dragInfo_.setNativeDragData(createDragData(idList));
-    };
+    bookmarkManagerApi = new TestBookmarkManagerApiProxy();
+    BookmarkManagerApiProxyImpl.setInstance(bookmarkManagerApi);
 
     const testBrowserProxy = new TestBookmarksBrowserProxy();
     BrowserProxyImpl.setInstance(testBrowserProxy);
     app = document.createElement('bookmarks-app');
     replaceBody(app);
-    list = app.shadowRoot.querySelector('bookmarks-list');
-    rootFolderNode = app.shadowRoot.querySelector('bookmarks-folder-node');
-    dndManager = app.dndManager_;
-    dndManager.setTimerProxyForTesting(new TestTimerProxy());
+    list =
+        app.shadowRoot!.querySelector('bookmarks-list') as BookmarksListElement;
+    rootFolderNode = app.shadowRoot!.querySelector('bookmarks-folder-node') as
+        BookmarksFolderNodeElement;
+    dndManager = app.getDndManagerForTesting() as DndManager;
+    dndManager!.setTimerProxyForTesting(new TestTimerProxy());
 
     // Wait for the API listener to call the browser proxy, since this
     // indicates initialization is done.
@@ -153,191 +168,203 @@ suite('drag and drop', function() {
     assertFalse(dragInfo.isDraggingFolderToDescendant('2', nodes));
   });
 
-  test('drag in list', function() {
+  test('drag in list', async function() {
     const dragElement = getListItem('13');
     let dragTarget = getListItem('12');
 
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
 
     assertDeepEquals(['13'], getDragIds());
 
     // Bookmark items cannot be dragged onto other items.
     move(dragTarget, topLeftOfNode(dragTarget));
-    assertEquals(
-        DropPosition.ABOVE,
-        dndManager.calculateValidDropPositions_(dragTarget));
-    assertDragStyle(dragTarget, DRAG_STYLE.ABOVE);
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
 
     move(document.body);
-    assertDragStyle(dragTarget, DRAG_STYLE.NONE);
+    assertDragStyle(dragTarget, DragStyle.NONE);
 
     // Bookmark items can be dragged onto folders.
     dragTarget = getListItem('11');
-    move(dragTarget);
-    assertEquals(
-        DropPosition.ON | DropPosition.ABOVE | DropPosition.BELOW,
-        dndManager.calculateValidDropPositions_(dragTarget));
-    assertDragStyle(dragTarget, DRAG_STYLE.ON);
+    move(dragTarget, topLeftOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
+
+    move(dragTarget, middleOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
+
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.BELOW);
 
     // There are no valid drop locations for dragging an item onto itself.
-    assertEquals(
-        DropPosition.NONE,
-        dndManager.calculateValidDropPositions_(dragElement));
     move(dragElement);
 
-    assertDragStyle(dragTarget, DRAG_STYLE.NONE);
-    assertDragStyle(dragElement, DRAG_STYLE.NONE);
+    assertDragStyle(dragTarget, DragStyle.NONE);
+    assertDragStyle(dragElement, DragStyle.NONE);
   });
 
-  test('reorder folder nodes', function() {
+  test('reorder folder nodes', async function() {
     const dragElement = getFolderNode('112');
     const dragTarget = getFolderNode('111');
 
-    simulateDragStart(dragElement);
-
-    assertEquals(
-        DropPosition.ON | DropPosition.ABOVE,
-        dndManager.calculateValidDropPositions_(dragTarget));
+    await simulateDragStart(dragElement);
 
     move(dragTarget, topLeftOfNode(dragTarget));
-    assertDragStyle(dragTarget, DRAG_STYLE.ABOVE);
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
+
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
   });
 
-  test('drag an item into a sidebar folder', function() {
+  test('drag an item into a sidebar folder', async function() {
     const dragElement = getListItem('13');
     let dragTarget = getFolderNode('2');
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
 
     // Items can only be dragged onto sidebar folders, not above or below.
-    assertEquals(
-        DropPosition.ON, dndManager.calculateValidDropPositions_(dragTarget));
+    move(dragTarget, topLeftOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
 
-    move(dragTarget);
-    assertDragStyle(dragTarget, DRAG_STYLE.ON);
+    move(dragTarget, middleOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
+
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
 
     // Items cannot be dragged onto their parent folders.
     dragTarget = getFolderNode('1');
     move(dragTarget);
-    assertDragStyle(dragTarget, DRAG_STYLE.NONE);
+    assertDragStyle(dragTarget, DragStyle.NONE);
   });
 
-  test('drag a folder into a descendant', function() {
+  test('drag a folder into a descendant', async function() {
     const dragElement = getFolderNode('11');
     const dragTarget = getFolderNode('112');
 
     // Folders cannot be dragged into their descendants.
-    simulateDragStart(dragElement);
-    assertEquals(
-        DropPosition.NONE, dndManager.calculateValidDropPositions_(dragTarget));
+    await simulateDragStart(dragElement);
 
     move(dragTarget);
 
-    assertDragStyle(dragTarget, DRAG_STYLE.NONE);
+    assertDragStyle(dragTarget, DragStyle.NONE);
   });
 
-  test('drag item into sidebar folder with descendants', function() {
+  test('drag item into sidebar folder with descendants', async function() {
     const dragElement = getFolderNode('15');
     const dragTarget = getFolderNode('11');
 
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
 
     // Drags below an open folder are not allowed.
-    assertEquals(
-        DropPosition.ON | DropPosition.ABOVE,
-        dndManager.calculateValidDropPositions_(dragTarget));
+    move(dragTarget, middleOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
 
-    move(dragTarget);
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
 
-    assertDragStyle(dragTarget, DRAG_STYLE.ON);
+    move(dragTarget, topLeftOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
 
     dispatchDragEvent('dragend', dragElement);
-    assertDragStyle(dragTarget, DRAG_STYLE.NONE);
+    assertDragStyle(dragTarget, DragStyle.NONE);
 
     store.data.folderOpenState.set('11', false);
     store.notifyObservers();
 
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
 
     // Drags below a closed folder are allowed.
-    assertEquals(
-        DropPosition.ON | DropPosition.ABOVE | DropPosition.BELOW,
-        dndManager.calculateValidDropPositions_(dragTarget));
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.BELOW);
   });
 
-  test('drag multiple list items', function() {
+  test('drag multiple list items', async function() {
     // Dragging multiple items.
     store.data.selection.items = new Set(['13', '15']);
     let dragElement = getListItem('13');
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
     assertDeepEquals(['13', '15'], getDragIds());
 
     // The dragged items should not be allowed to be dragged around any selected
     // item.
-    assertEquals(
-        DropPosition.NONE,
-        dndManager.calculateValidDropPositions_(getListItem('13')));
-    assertEquals(
-        DropPosition.ON,
-        dndManager.calculateValidDropPositions_(getListItem('14')));
-    assertEquals(
-        DropPosition.NONE,
-        dndManager.calculateValidDropPositions_(getListItem('15')));
+    let dragTarget = getListItem('13');
+    move(dragTarget);
+    assertDragStyle(dragTarget, DragStyle.NONE);
+
+    dragTarget = getListItem('14');
+    move(dragTarget);
+    assertDragStyle(dragTarget, DragStyle.ON);
+
+    dragTarget = getListItem('15');
+    move(dragTarget);
+    assertDragStyle(dragTarget, DragStyle.NONE);
+
     dispatchDragEvent('dragend', dragElement);
 
     // Dragging an unselected item should only drag the unselected item.
     dragElement = getListItem('14');
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
     assertDeepEquals(['14'], getDragIds());
     dispatchDragEvent('dragend', dragElement);
 
     // Dragging a folder node should only drag the node.
     dragElement = getListItem('11');
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
     assertDeepEquals(['11'], getDragIds());
   });
 
-  test('drag multiple list items preserve displaying order', function() {
+  test('drag multiple list items preserve displaying order', async function() {
     // Dragging multiple items with different selection order.
     store.data.selection.items = new Set(['15', '13']);
     const dragElement = getListItem('13');
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
     assertDeepEquals(['13', '15'], getDragIds());
   });
 
   test('bookmarks from different profiles', function() {
-    dndManager.handleChromeDragEnter_(createDragData(['11'], false));
+    bookmarkManagerApi.onDragEnter.callListeners(createDragData(['11'], false));
 
     // All positions should be allowed even with the same bookmark id if the
     // drag element is from a different profile.
-    assertEquals(
-        DropPosition.ON | DropPosition.ABOVE | DropPosition.BELOW,
-        dndManager.calculateValidDropPositions_(getListItem('11')));
+    let dragTarget = getListItem('11');
+    move(dragTarget, topLeftOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
+
+    move(dragTarget, middleOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
+
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.BELOW);
 
     // Folders from other profiles should be able to be dragged into
     // descendants in this profile.
-    assertEquals(
-        DropPosition.ON | DropPosition.ABOVE | DropPosition.BELOW,
-        dndManager.calculateValidDropPositions_(getFolderNode('112')));
+    dragTarget = getFolderNode('112');
+    move(dragTarget, topLeftOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
+
+    move(dragTarget, middleOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
+
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.BELOW);
   });
 
-  test('drag from sidebar to list', function() {
-    const dragElement = getFolderNode('112');
-    const dragTarget = getListItem('13');
+  test('drag from sidebar to list', async function() {
+    let dragElement = getFolderNode('112');
+    let dragTarget = getListItem('13');
 
     // Drag a folder onto the list.
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
     assertDeepEquals(['112'], getDragIds());
 
     move(dragTarget, topLeftOfNode(dragTarget));
-    assertDragStyle(dragTarget, DRAG_STYLE.ABOVE);
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
 
     dispatchDragEvent('dragend', dragTarget);
 
     // Folders should not be able to dragged onto themselves in the list.
-    dndManager.handleChromeDragEnter_(createDragData(['11']));
-    assertEquals(
-        DropPosition.NONE,
-        dndManager.calculateValidDropPositions_(getListItem('11')));
+    bookmarkManagerApi.onDragEnter.callListeners(createDragData(['11']));
+    dragElement = getListItem('11');
+    move(dragElement);
+    assertDragStyle(dragElement, DragStyle.NONE);
 
     // Ancestors should not be able to be dragged onto descendant
     // displayed lists.
@@ -345,99 +372,78 @@ suite('drag and drop', function() {
     store.notifyObservers();
     flush();
 
-    dndManager.handleChromeDragEnter_(createDragData(['11']));
-    assertEquals(
-        DropPosition.NONE,
-        dndManager.calculateValidDropPositions_(getListItem('1111')));
+    bookmarkManagerApi.onDragEnter.callListeners(createDragData(['11']));
+    dragTarget = getListItem('1111');
+    move(dragTarget);
+    assertDragStyle(dragTarget, DragStyle.NONE);
   });
 
   test('drags with search', function() {
     store.data.search.term = 'Asgore';
     store.data.search.results = ['11', '13', '2'];
-    store.data.selectedFolder = null;
+    store.data.selectedFolder = '';
     store.notifyObservers();
 
     // Search results should not be able to be dragged onto, but can be dragged
     // from.
-    dndManager.handleChromeDragEnter_(createDragData(['2']));
-    assertEquals(
-        DropPosition.NONE,
-        dndManager.calculateValidDropPositions_(getListItem('13')));
+    bookmarkManagerApi.onDragEnter.callListeners(createDragData(['2']));
+    let dragTarget = getListItem('13');
+    move(dragTarget);
+    assertDragStyle(dragTarget, DragStyle.NONE);
 
     // Drags onto folders should work as per usual.
-    assertEquals(
-        DropPosition.ON | DropPosition.ABOVE | DropPosition.BELOW,
-        dndManager.calculateValidDropPositions_(getFolderNode('112')));
+    dragTarget = getFolderNode('112');
+    move(dragTarget, topLeftOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
 
-    // Drags onto an empty search list do nothing.
-    store.data.search.results = [];
-    store.notifyObservers();
-    assertEquals(
-        DropPosition.NONE, dndManager.calculateValidDropPositions_(list));
+    move(dragTarget, middleOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.ON);
+
+    move(dragTarget, bottomRightOfNode(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.BELOW);
   });
 
   // This is a regression test for https://crbug.com/974525.
   test(
       'drag bookmark that is not in selected folder but in search result',
-      function() {
+      async function() {
         store.data.search.term = 'Asgore';
         store.data.search.results = ['11', '13', '2'];
-        store.data.selectedFolder = null;
+        store.data.selectedFolder = '';
         store.notifyObservers();
 
-        simulateDragStart(getListItem('13'));
+        await simulateDragStart(getListItem('13'));
 
         assertDeepEquals(['13'], getDragIds());
       });
 
-  test('calculateDropInfo_', function() {
-    function assertDropInfo(parentId, index, element, position) {
-      assertDeepEquals(
-          {parentId: parentId, index: index},
-          dndManager.calculateDropInfo_(
-              {element: element, position: position}));
-    }
-
-    // Drops onto the list.
-    assertDropInfo('1', 0, getListItem('11'), DropPosition.ABOVE);
-    assertDropInfo('1', 2, getListItem('12'), DropPosition.BELOW);
-    assertDropInfo('13', -1, getListItem('13'), DropPosition.ON);
-
-    // Drops onto the sidebar.
-    assertDropInfo('1', 4, getFolderNode('15'), DropPosition.ABOVE);
-    assertDropInfo('1', 5, getFolderNode('15'), DropPosition.BELOW);
-    assertDropInfo('111', -1, getFolderNode('111'), DropPosition.ON);
-  });
-
-  test('simple native drop end to end', function() {
-    let dropParentId;
-    let dropIndex;
-    chrome.bookmarkManagerPrivate.drop = function(parentId, index) {
-      dropParentId = parentId;
-      dropIndex = index;
-      return Promise.resolve();
-    };
-
-    setDebouncerForTesting();
-
+  test('simple native drop end to end', async function() {
     const dragElement = getListItem('13');
     const dragTarget = getListItem('12');
 
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
     assertDeepEquals(['13'], getDragIds());
 
     dispatchDragEvent('dragover', dragTarget, topLeftOfNode(dragTarget));
-    assertDragStyle(dragTarget, DRAG_STYLE.ABOVE);
+    assertDragStyle(dragTarget, DragStyle.ABOVE);
 
+    setDebouncerForTesting();
     dispatchDragEvent('drop', dragTarget);
+
+    const [dropParentId, dropIndex] =
+        await bookmarkManagerApi.whenCalled('drop');
+
     assertEquals('1', dropParentId);
     assertEquals(1, dropIndex);
 
     dispatchDragEvent('dragend', dragTarget);
-    assertDragStyle(dragTarget, DRAG_STYLE.NONE);
+    assertDragStyle(dragTarget, DragStyle.NONE);
   });
 
-  test('auto expander', function() {
+  /* Test is disabled because auto-expander functionality
+     is currently broken (https://crbug.com/1406349)
+
+  test('auto expander', async function() {
     const timerProxy = new TestTimerProxy();
     timerProxy.immediatelyResolveTimeouts = false;
 
@@ -495,37 +501,9 @@ suite('drag and drop', function() {
     assertDeepEquals(changeFolderOpen('11', true), store.lastAction);
     assertEquals(null, autoExpander.lastElement_);
   });
+  */
 
-  test('drag onto empty list', function() {
-    store.data.selectedFolder = '14';
-    store.notifyObservers();
-
-    const dragElement = getFolderNode('15');
-    const dragTarget = list;
-
-    // Dragging onto an empty list.
-    simulateDragStart(dragElement);
-
-    move(dragTarget);
-    assertEquals(
-        DropPosition.ON, dndManager.calculateValidDropPositions_(dragTarget));
-    assertDragStyle(dragTarget, DRAG_STYLE.ON);
-
-    dispatchDragEvent('dragend', dragTarget);
-
-    // Dragging onto a non-empty list.
-    store.data.selectedFolder = '11';
-    store.notifyObservers();
-
-    simulateDragStart(dragElement);
-
-    move(dragTarget);
-    assertEquals(
-        DropPosition.NONE, dndManager.calculateValidDropPositions_(dragTarget));
-    assertDragStyle(dragTarget, DRAG_STYLE.NONE);
-  });
-
-  test('drag item selects/deselects items', function() {
+  test('drag item selects/deselects items', async function() {
     store.setReducersEnabled(true);
 
     store.data.selection.items = new Set(['13', '15']);
@@ -534,50 +512,50 @@ suite('drag and drop', function() {
     // Dragging an item not in the selection selects the dragged item and
     // deselects the previous selection.
     let dragElement = getListItem('14');
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
     assertDeepEquals(['14'], normalizeIterable(store.data.selection.items));
     dispatchDragEvent('dragend', dragElement);
 
     // Dragging a folder node deselects any selected items in the bookmark list.
     dragElement = getFolderNode('15');
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
     assertDeepEquals([], normalizeIterable(store.data.selection.items));
     dispatchDragEvent('dragend', dragElement);
   });
 
-  test('cannot drag items when editing is disabled', function() {
+  test('cannot drag items when editing is disabled', async function() {
     store.data.prefs.canEdit = false;
     store.notifyObservers();
 
     const dragElement = getFolderNode('11');
-    simulateDragStart(dragElement);
-    assertFalse(dndManager.dragInfo_.isDragValid());
+
+    dispatchDragEvent('dragstart', dragElement);
+    assertFalse(dndManager.getDragInfoForTesting()!.isDragValid());
   });
 
-  test('cannot start dragging unmodifiable items', function() {
-    store.data.nodes['2'].unmodifiable = 'managed';
+  test('cannot start dragging unmodifiable items', async function() {
+    store.data.nodes['2']!.unmodifiable = 'managed';
     store.notifyObservers();
 
     let dragElement = getFolderNode('1');
-    simulateDragStart(dragElement);
-    assertFalse(dndManager.dragInfo_.isDragValid());
+    dispatchDragEvent('dragstart', dragElement);
+    assertFalse(dndManager.getDragInfoForTesting()!.isDragValid());
 
     dragElement = getFolderNode('2');
-    simulateDragStart(dragElement);
-    assertFalse(dndManager.dragInfo_.isDragValid());
+    dispatchDragEvent('dragstart', dragElement);
+    assertFalse(dndManager.getDragInfoForTesting()!.isDragValid());
   });
 
-  test('cannot drag onto folders with unmodifiable children', function() {
-    store.data.nodes['2'].unmodifiable = 'managed';
+  test('cannot drag onto folders with unmodifiable children', async function() {
+    store.data.nodes['2']!.unmodifiable = 'managed';
     store.notifyObservers();
 
     const dragElement = getListItem('12');
-    simulateDragStart(dragElement);
+    await simulateDragStart(dragElement);
 
     // Can't drag onto the unmodifiable node.
     const dragTarget = getFolderNode('2');
     move(dragTarget);
-    assertEquals(
-        DropPosition.NONE, dndManager.calculateValidDropPositions_(dragTarget));
+    assertDragStyle(dragTarget, DragStyle.NONE);
   });
 });

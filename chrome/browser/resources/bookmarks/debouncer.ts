@@ -5,6 +5,8 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
+import {TimerProxy} from './types.js';
+
 /**
  * @fileoverview A debouncer which fires the given callback after a delay. The
  * delay can be refreshed by calling restartTimeout. Resetting the timeout with
@@ -14,7 +16,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 export class Debouncer {
   private callback_: () => void;
   private timer_: number|null = null;
-  private timerProxy_: Window;
+  private timerProxy_: TimerProxy;
   private boundTimerCallback_: () => void;
   private isDone_: boolean = false;
   private promiseResolver_: PromiseResolver<void>;

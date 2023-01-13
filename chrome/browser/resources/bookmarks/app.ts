@@ -239,6 +239,10 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
   override _scrollHandler() {
     this.toolbarShadow_ = this.scrollTarget!.scrollTop !== 0;
   }
+
+  getDndManagerForTesting(): DndManager|null {
+    return this.dndManager_;
+  }
 }
 
 declare global {

@@ -91,3 +91,5 @@ export class DragData {
   elements: chrome.bookmarks.BookmarkTreeNode[]|null = null;
   sameProfile: boolean = false;
 }
+
+export type TimerProxy = Pick<Window, 'setTimeout'|'clearTimeout'>;
