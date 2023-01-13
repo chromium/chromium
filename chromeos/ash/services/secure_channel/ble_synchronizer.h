@@ -89,10 +89,6 @@ class BleSynchronizer : public BleSynchronizerBase {
   void ScheduleCommandCompletion();
   void CompleteCurrentCommand();
 
-  void RecordBluetoothAdvertisementRegistrationResult(
-      BluetoothAdvertisementResult result);
-  void RecordBluetoothAdvertisementUnregistrationResult(
-      BluetoothAdvertisementResult result);
   BluetoothAdvertisementResult BluetoothAdvertisementErrorCodeToResult(
       device::BluetoothAdvertisement::ErrorCode error_code);
   void RecordDiscoverySessionStarted(bool success);

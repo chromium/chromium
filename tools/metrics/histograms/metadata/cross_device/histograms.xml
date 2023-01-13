@@ -1221,6 +1221,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="InstantTethering.BluetoothAdvertisementRegistrationResult"
     enum="InstantTethering_BluetoothAdvertisementResult"
     expires_after="2023-06-01">
+  <obsolete>
+    Metric is no longer being collected.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1236,6 +1239,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="InstantTethering.BluetoothAdvertisementUnregistrationResult"
     enum="InstantTethering_BluetoothAdvertisementResult"
     expires_after="2023-06-01">
+  <obsolete>
+    Metric is no longer being collected.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

@@ -247,22 +247,14 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
     EXPECT_EQ(CreateUUIDList(expected_id),
               register_args_list_[reg_arg_index]->service_uuids);
 
-    BleSynchronizer::BluetoothAdvertisementResult expected_result;
     if (success) {
       std::move(register_args_list_[reg_arg_index]->callback)
           .Run(base::MakeRefCounted<device::MockBluetoothAdvertisement>());
-      expected_result = BleSynchronizer::BluetoothAdvertisementResult::SUCCESS;
     } else {
       std::move(register_args_list_[reg_arg_index]->error_callback)
           .Run(device::BluetoothAdvertisement::ErrorCode::
                    INVALID_ADVERTISEMENT_ERROR_CODE);
-      expected_result = BleSynchronizer::BluetoothAdvertisementResult::
-          INVALID_ADVERTISEMENT_ERROR_CODE;
     }
-
-    histogram_tester_.ExpectBucketCount(
-        "InstantTethering.BluetoothAdvertisementRegistrationResult",
-        expected_result, expected_registration_result_count);
 
     // Reset to make sure that this callback is never double-invoked.
     register_args_list_[reg_arg_index].reset();
@@ -301,22 +293,12 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
           BluetoothAdvertisement::ErrorCode::INVALID_ADVERTISEMENT_ERROR_CODE) {
     EXPECT_TRUE(unregister_args_list_.size() >= unreg_arg_index);
 
-    BleSynchronizer::BluetoothAdvertisementResult expected_result;
     if (success) {
       std::move(unregister_args_list_[unreg_arg_index]->callback).Run();
-      expected_result = BleSynchronizer::BluetoothAdvertisementResult::SUCCESS;
     } else {
       std::move(unregister_args_list_[unreg_arg_index]->error_callback)
           .Run(error_code);
-      BleSynchronizer* derived_type =
-          static_cast<BleSynchronizer*>(synchronizer_.get());
-      expected_result =
-          derived_type->BluetoothAdvertisementErrorCodeToResult(error_code);
     }
-
-    histogram_tester_.ExpectBucketCount(
-        "InstantTethering.BluetoothAdvertisementUnregistrationResult",
-        expected_result, expected_unregistration_result_count);
 
     // Reset to make sure that this callback is never double-invoked.
     unregister_args_list_[unreg_arg_index].reset();
