@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
+#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
@@ -63,6 +64,18 @@ void Click(views::Button* button) {
                      ui::EF_LEFT_MOUSE_BUTTON));
 }
 
+void SendKeyPress(views::Widget* widget, ui::KeyboardCode key_code) {
+  ui::KeyEvent press(ui::ET_KEY_PRESSED, key_code, 0, base::TimeTicks::Now());
+  widget->OnKeyEvent(&press);
+  ui::KeyEvent release(ui::ET_KEY_RELEASED, key_code, 0,
+                       base::TimeTicks::Now());
+  widget->OnKeyEvent(&release);
+}
+
+views::View* FocusedViewOf(views::Widget* widget) {
+  return widget->GetFocusManager()->GetFocusedView();
+}
+
 const std::vector<sharing_hub::SharingHubAction> kFirstPartyActions = {
     {0, u"Feed to Dino", nullptr, true, gfx::ImageSkia(), "feed-to-dino"},
     {1, u"Reverse Star", nullptr, true, gfx::ImageSkia(), "reverse-star"},
@@ -104,6 +117,7 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
   }
 
   sharing_hub::SharingHubBubbleViewImpl* bubble() { return bubble_; }
+  views::Widget* bubble_widget() { return bubble_widget_.get(); }
 
   sharing_hub::FakeSharingHubBubbleController* controller() {
     return &controller_;
@@ -184,4 +198,30 @@ TEST_F(SharingHubBubbleTest, NoThirdPartyHeaderWhenNoActionsPresent) {
   controller()->SetThirdPartyActions({});
   ShowBubble();
   EXPECT_FALSE(GetThirdPartySectionHeader());
+}
+
+TEST_F(SharingHubBubbleTest, ArrowKeysTraverseItemsForward) {
+  ShowBubble();
+  EXPECT_EQ(nullptr, FocusedViewOf(bubble_widget()));
+
+  auto actions = GetActionButtons();
+  // Don't allow this test (and the below test) to pass vacuously if there
+  // are zero actions to traverse.
+  ASSERT_GT(actions.size(), 0u);
+  for (auto* button : GetActionButtons()) {
+    SendKeyPress(bubble_widget(), ui::VKEY_DOWN);
+    EXPECT_EQ(button, FocusedViewOf(bubble_widget()));
+  }
+}
+
+TEST_F(SharingHubBubbleTest, ArrowKeysTraverseItemsBackward) {
+  ShowBubble();
+  EXPECT_EQ(nullptr, FocusedViewOf(bubble_widget()));
+
+  auto actions = GetActionButtons();
+  ASSERT_GT(actions.size(), 0u);
+  for (auto* button : base::Reversed(actions)) {
+    SendKeyPress(bubble_widget(), ui::VKEY_UP);
+    EXPECT_EQ(button, FocusedViewOf(bubble_widget()));
+  }
 }

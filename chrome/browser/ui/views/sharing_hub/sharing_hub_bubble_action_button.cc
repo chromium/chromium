@@ -55,7 +55,20 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
       .SetDefault(views::kMarginsKey, kDefaultMargin)
       .SetCollapseMargins(true);
 
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  // Even though this is a button, which would normally use ACCESSIBLE_ONLY,
+  // we really do want ALWAYS here. Visually, these buttons are presented as
+  // a menu, which means we need these to be keyboard-traversable with the
+  // arrow keys to match the behavior of other menus, and they're only keyboard
+  // traversable when focusable.
+  //
+  // This creates a different divergence from menu behavior: the individual
+  // items in the sharing hub are also tab-traversable, while items in a menu
+  // are not. That's annoying, but not as bad as the surface being keyboard
+  // inaccessible, so we live with it.
+  //
+  // See https://crbug.com/1404226 and https://crbug.com/1323053.
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+
   SetEnabled(true);
   SetBackground(views::CreateThemedSolidBackground(ui::kColorMenuBackground));
   SetCallback(base::BindRepeating(&SharingHubBubbleViewImpl::OnActionSelected,
