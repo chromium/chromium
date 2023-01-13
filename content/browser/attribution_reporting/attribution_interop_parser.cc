@@ -176,7 +176,7 @@ void AttributionInteropParser::ParseResponse(
 
               static constexpr char kKeyResponse[] = "response";
               auto inner_context = PushContext(kKeyResponse);
-              base::Value* response = value.FindKey(kKeyResponse);
+              base::Value* response = value.GetDict().Find(kKeyResponse);
               if (!EnsureDictionary(response)) {
                 return;
               }
