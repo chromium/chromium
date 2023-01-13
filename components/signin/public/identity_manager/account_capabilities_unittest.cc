@@ -100,6 +100,21 @@ TEST_F(AccountCapabilitiesTest, IsAllowedForMachineLearning) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, IsSubjectToEnterprisePolicies) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.is_subject_to_enterprise_policies(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_is_subject_to_enterprise_policies(true);
+  EXPECT_EQ(capabilities.is_subject_to_enterprise_policies(),
+            signin::Tribool::kTrue);
+
+  mutator.set_is_subject_to_enterprise_policies(false);
+  EXPECT_EQ(capabilities.is_subject_to_enterprise_policies(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControls) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.is_subject_to_parental_controls(),

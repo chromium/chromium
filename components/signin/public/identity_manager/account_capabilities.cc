@@ -85,6 +85,10 @@ signin::Tribool AccountCapabilities::is_allowed_for_machine_learning() const {
   return GetCapabilityByName(kIsAllowedForMachineLearningCapabilityName);
 }
 
+signin::Tribool AccountCapabilities::is_subject_to_enterprise_policies() const {
+  return GetCapabilityByName(kIsSubjectToEnterprisePoliciesCapabilityName);
+}
+
 signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
   return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
 }

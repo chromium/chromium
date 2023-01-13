@@ -115,6 +115,14 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return isSubjectToEnterprisePolicies capability value.
+     */
+    public @Tribool int isSubjectToEnterprisePolicies() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME);
+    }
+
+    /**
      * @return isSubjectToParentalControls capability value.
      */
     public @Tribool int isSubjectToParentalControls() {

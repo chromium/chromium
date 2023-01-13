@@ -68,6 +68,9 @@ class AccountCapabilities {
   // with this capability.
   signin::Tribool is_allowed_for_machine_learning() const;
 
+  // Chrome applies enterprise policies to accounts with this capability.
+  signin::Tribool is_subject_to_enterprise_policies() const;
+
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 

@@ -25,6 +25,7 @@ class AccountCapabilitiesTestMutator {
   void set_can_stop_parental_supervision(bool value);
   void set_can_toggle_auto_updates(bool value);
   void set_is_allowed_for_machine_learning(bool value);
+  void set_is_subject_to_enterprise_policies(bool value);
   void set_is_subject_to_parental_controls(bool value);
 
   // Modifies all supported capabilities at once.

@@ -57,6 +57,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canToggleAutoUpdates();
             case AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME:
                 return capabilities.isAllowedForMachineLearning();
+            case AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME:
+                return capabilities.isSubjectToEnterprisePolicies();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
         }
@@ -103,6 +105,10 @@ public final class AccountCapabilitiesTest {
                         .name("IsAllowedForMachineLearning")
                         .value(AccountCapabilitiesConstants
                                         .IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME),
+                new ParameterSet()
+                        .name("IsSubjectToEnterprisePolicies")
+                        .value(AccountCapabilitiesConstants
+                                        .IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME),
                 new ParameterSet()
                         .name("IsSubjectToParentalControls")
                         .value(AccountCapabilitiesConstants
