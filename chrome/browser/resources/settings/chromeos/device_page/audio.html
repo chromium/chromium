@@ -72,39 +72,6 @@
   <div id="output">
     <h2 id="audioOutputTitle">$i18n{audioOutputTitle}</h2>
     <div id="audioOutputSubsection" class="subsection">
-      <div id="outputVolumeSubsection" class="settings-box">
-        <div class="start settings-box-text" id="audioOutputVolumeLabel">
-          $i18n{audioVolumeTitle}
-        </div>
-        <!-- TODO(crbug.com/1092970): Update to new UI once approved. -->
-        <div class="audio-output-options-container">
-          <div class="audio-mute-button-container">
-            <cr-icon-button class="audio-mute-button"
-                id="audioOutputMuteButton" iron-icon="settings:volume-up-off"
-                on-click="onOutputMuteButtonClicked">
-            </cr-icon-button>
-          </div>
-          <div class="audio-slider-wrapper" id="audioOutputSliderWrapper">
-            <!-- TODO(crbug.com/1092970): Change icons to buttons. -->
-            <iron-icon id="audioOutputSliderVolumeDownIcon"
-                icon="settings:volume-down">
-            </iron-icon>
-            <cr-slider class="audio-output-slider"
-                id ="outputVolumeSlider"
-                min="0"
-                max="100"
-                disabled="[[isOutputVolumeSliderDisabled_(
-                    audioSystemProperties_.outputMuteState
-                  )]]"
-                value="[[audioSystemProperties_.outputVolumePercent]]"
-                on-cr-slider-value-changed="onOutputVolumeSliderChanged_">
-            </cr-slider>
-            <iron-icon id="audioOutputSliderVolumeUpIcon"
-                icon="settings:volume-up">
-            </iron-icon>
-          </div>
-        </div>
-      </div>
       <div id="outputDeviceSubsection" class="settings-box">
         <div class="start settings-box-text" id="audioOutputDeviceLabel">
           $i18n{audioDeviceTitle}
@@ -119,6 +86,32 @@
             </option>
           </template>
         </select>
+      </div>
+      <div id="outputVolumeSubsection" class="settings-box">
+        <div class="start settings-box-text" id="audioOutputVolumeLabel">
+          $i18n{audioVolumeTitle}
+        </div>
+        <!-- TODO(crbug.com/1092970): Update to new UI once approved. -->
+        <div class="audio-output-options-container">
+          <div class="audio-mute-button-container">
+            <cr-icon-button class="audio-mute-button"
+                id="audioOutputMuteButton" iron-icon="settings:volume-up-off"
+                on-click="onOutputMuteButtonClicked">
+            </cr-icon-button>
+          </div>
+          <div class="audio-slider-wrapper" id="audioOutputSliderWrapper">
+            <cr-slider class="audio-output-slider"
+                id ="outputVolumeSlider"
+                min="0"
+                max="100"
+                disabled="[[isOutputVolumeSliderDisabled_(
+                    audioSystemProperties_.outputMuteState
+                  )]]"
+                value="[[audioSystemProperties_.outputVolumePercent]]"
+                on-cr-slider-value-changed="onOutputVolumeSliderChanged_">
+            </cr-slider>
+          </div>
+        </div>
       </div>
     </div>
     <!--TODO(b/260277007): Replace placeholder text when localization strings
