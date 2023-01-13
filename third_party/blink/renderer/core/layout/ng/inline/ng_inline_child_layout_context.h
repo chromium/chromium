@@ -66,8 +66,6 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   NGBoxFragmentBuilder* container_builder_ = nullptr;
   NGFragmentItemsBuilder items_builder_;
 
-  NGLogicalLineItems& logical_line_items_ =
-      *MakeGarbageCollected<NGLogicalLineItems>();
   NGLogicalLineItems* temp_logical_line_items_ = nullptr;
 
   absl::optional<NGInlineLayoutStateStack> box_states_;

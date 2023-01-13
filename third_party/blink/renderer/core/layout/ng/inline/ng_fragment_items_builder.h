@@ -79,10 +79,6 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   void AddLine(const NGPhysicalLineBoxFragment& line,
                const LogicalOffset& offset);
 
-  // Add to |NGLogicalLineItems| instance pool. |AcquireLogicalLineItems|
-  // uses pooled instances first if available to avoid memory allocations.
-  void AddLogicalLineItemsPool(NGLogicalLineItems* line_items);
-
   // Add a list marker to the current line.
   void AddListMarker(const NGPhysicalBoxFragment& marker_fragment,
                      const LogicalOffset& offset);
@@ -168,7 +164,8 @@ class CORE_EXPORT NGFragmentItemsBuilder {
 
   HeapHashMap<Member<const NGPhysicalFragment>, Member<NGLogicalLineItems>>
       line_items_map_;
-  NGLogicalLineItems* line_items_pool_ = nullptr;
+  NGLogicalLineItems* const line_items_pool_ =
+      MakeGarbageCollected<NGLogicalLineItems>();
 
   NGInlineNode node_;
 
