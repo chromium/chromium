@@ -1896,15 +1896,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée, le mode d'alimentation alternée en heures pleines l'est également.
 
       Si cette règle n'est pas configurée, ce mode est désactivé par défaut. Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
-<translation id="2773036462435523078">Déclenche une action lorsque l'ordinateur est inactif.
-
-      Si cette règle est définie, elle spécifie le délai (en minutes) sans entrée utilisateur avant que <ph name="PRODUCT_NAME" /> exécute les actions configurées via la règle <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Si elle n'est pas configurée, aucune action n'est exécutée.
-
-      Le délai minimal est de 5 minutes.
-
-      Une "entrée utilisateur" est définie par les API du système d'exploitation et inclut, par exemple, déplacer la souris ou saisir sur le clavier.</translation>
 <translation id="2773288106548584039">Legacy Browser Support</translation>
 <translation id="2780840673734667062">Ne pas permettre la connexion avec d'autres comptes Google</translation>
 <translation id="2784880732336446591">Effacer les données de navigation en fin de session</translation>

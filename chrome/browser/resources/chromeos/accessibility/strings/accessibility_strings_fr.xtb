@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Aucun bouton suivant</translation>
 <translation id="2911433807131383493">Ouvrir le tutoriel ChromeVox</translation>
 <translation id="2912405967290226587">Balayer l'écran vers la droite avec trois doigts</translation>
+<translation id="2919107550468490321">Mode persistant intelligent activé</translation>
 <translation id="2937799153569150791">Aucun titre de niveau 3 suivant</translation>
 <translation id="2942710183375260152">Bleu ardoise foncé</translation>
 <translation id="2943596527105977722">Jaune paille foncé</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Diminuer le timbre de la voix</translation>
 <translation id="3009352964623081324">Recherche+O, puis S. Utilisez ce raccourci pour installer, gérer et personnaliser des voix.</translation>
 <translation id="3014130421870723208">mod@ 8pt</translation>
+<translation id="3018210433491759145">ChromeVox en cours de chargement</translation>
 <translation id="3030432017085518523">Case d'option d'élément de menu</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrophe}one{# apostrophe}other{# apostrophes}}</translation>
 <translation id="3040901448410802366">Indicateur de progression</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3813387282697781382">Corail clair</translation>
 <translation id="3816633764618089385">Contenu multimédia suivant</translation>
+<translation id="3821689185319271077">Pas d'ancre de pointeur</translation>
 <translation id="3840823741487267909">Abréviation</translation>
 <translation id="3841319830220785495">Voix naturelle par défaut</translation>
 <translation id="385383972552776628">Ouvrir la page d'options</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulaire</translation>
 <translation id="4601367666219428522">Tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">La prochaine touche actionnée sera ignorée.</translation>
+<translation id="4617384941327705512">Mode persistant intelligent désactivé</translation>
 <translation id="4623097797855662355">Achevé d'imprimer</translation>
 <translation id="4624970070706497034">TalkBack n'offre plus de personnalisation pour les Chromebooks. Vous pouvez encore l'utiliser, mais avec les raccourcis clavier par défaut. Pour voir les raccourcis disponibles, appuyez sur Recherche+A, puis sur K. Si vous voulez toujours utiliser TalkBack, appuyez de nouveau sur la touche Commande.</translation>
 <translation id="463135993322337640">Appuyez sur ChromeVox o, n pour découvrir les nouveautés</translation>

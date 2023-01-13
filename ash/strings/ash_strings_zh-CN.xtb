@@ -638,6 +638,7 @@
 <translation id="4455051983450390249">在 <ph name="DEVICE_TYPE" /> 上查看手机中收到的通知</translation>
 <translation id="445864333228800152">晚上好！</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
+<translation id="445923051607553918">加入Wi-Fi网络</translation>
 <translation id="4471354919263203780">正在下载语音识别文件... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{立即更新此设备}=1{请在 1 秒内更新此设备}other{请在 # 秒内更新此设备}}</translation>
 <translation id="4472575034687746823">开始使用</translation>

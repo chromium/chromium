@@ -253,6 +253,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6598877126913850652">Öppna aviseringsinställningarna för Chromium</translation>
 <translation id="6613594504749178791">Ändringarna tillämpas nästa gång du startar om Chromium.</translation>
 <translation id="665732753414869868">Du behöver ge Chromium kamerabehörighet om du vill skapa en 3D-karta över dina omgivningar</translation>
+<translation id="6663852025006259149">Webbplatser fortsätter förmodligen att fungera som förväntat men de kommer inte ihåg dig efter att du stänger alla Chromium-fönster</translation>
 <translation id="6676384891291319759">Gå ut på Internet</translation>
 <translation id="668175097507315160">Det gick inte att synkronisera data med Chromium OS på grund av ett inloggningsfel.</translation>
 <translation id="6709350901466051922">Du behöver ge Chromium mikrofonbehörighet för den här webbplatsen</translation>
@@ -383,5 +384,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="945990405696787151">Du behöver macOS 10.13 eller senare för att få kommande uppdateringar av Chromium. På den här datorn används OS X 10.11.</translation>
 <translation id="965162752251293939">Vem ska använda Chromium?</translation>
 <translation id="967427899662692980">Få det bästa skyddet i Chromium</translation>
+<translation id="9792300276217204">Rensa alltid webbplatsdata från enheten när du stänger Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

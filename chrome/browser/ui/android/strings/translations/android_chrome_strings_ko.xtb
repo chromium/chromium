@@ -41,7 +41,6 @@
 <translation id="1204037785786432551">링크 다운로드</translation>
 <translation id="1204692632633423444">Chrome 작업 버튼: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">링크 텍스트 복사</translation>
-<translation id="1208340532756947324">모든 기기에서 동기화 및 맞춤설정하려면 동기화를 사용 설정하세요.</translation>
 <translation id="1209206284964581585">지금 숨기기</translation>
 <translation id="1227058898775614466">탐색 기록</translation>
 <translation id="1231733316453485619">동기화를 사용하시겠습니까?</translation>
@@ -318,7 +317,6 @@
 <translation id="2781151931089541271">1초 남음</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> 탭이 닫힙니다.</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
-<translation id="2818669890320396765">어느 기기에서나 내 북마크를 사용하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
 <translation id="2830783625999891985">클립보드 콘텐츠 숨김</translation>
 <translation id="2838367486340230368">개인 정보 보호 가이드 설명이 절반 높이로 열림</translation>
@@ -468,7 +466,6 @@
 <translation id="3563767357928833671">클립보드 콘텐츠 표시됨</translation>
 <translation id="3566639033325271639">설정 업데이트</translation>
 <translation id="3566923219790363270">Chrome에서 아직 VR을 준비하고 있습니다. 나중에 Chrome을 다시 시작하세요.</translation>
-<translation id="3568688522516854065">다른 기기에서 탭을 가져오려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="357465026686164600">휴대전화를 보안 키로 사용</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3578024735349927859">알림을 받아 미디어 컨트롤, 시크릿 탭 등을 관리하세요</translation>
@@ -576,7 +573,6 @@
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4196597275619698563">카드 만들기</translation>
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
-<translation id="4209895695669353772">Google에서 추천하는 맞춤 콘텐츠를 보려면 동기화를 사용 설정하세요.</translation>
 <translation id="4214315110991671325">사용자가 쿠키를 허용하면 Chrome에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
 <translation id="4225895483398857530">툴바 바로가기</translation>
 <translation id="4242533952199664413">설정 열기</translation>
@@ -615,7 +611,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> 탭 닫기</translation>
 <translation id="4452548195519783679">북마크를 <ph name="FOLDER_NAME" />에 추가함</translation>
 <translation id="4461614516424362539">다른 기기를 QR 코드로 연결할 때 이 휴대전화를 보안 키로 사용할 수 있습니다. 삭제하면 QR 코드를 스캔해야 다시 연결할 수 있습니다.</translation>
-<translation id="4472118726404937099">모든 기기에서 동기화하고 맞춤설정하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="4479839115899251637">읽기 목록에서 삭제</translation>
 <translation id="4479972344484327217">Chrome에 <ph name="MODULE" />을(를) 설치하고 있습니다…</translation>
 <translation id="4484496141267039529">연결되지 않았습니다. 나중에 다시 시도하세요.</translation>
@@ -877,7 +872,6 @@
 <translation id="5859968346865909126">설정에서 이 기능을 사용 설정하거나 중지할 수 있습니다.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
-<translation id="5862731021271217234">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="5864419784173784555">다른 다운로드 대기 중…</translation>
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
@@ -1309,7 +1303,6 @@
 <translation id="8105613260829665809">계속하면 <ph name="BEGIN_TOS_LINK" />서비스 약관<ph name="END_TOS_LINK" />에 동의하는 것으로 간주됩니다.\n앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">정렬 옵션 닫기</translation>
-<translation id="8109613176066109935">어느 기기에서나 내 북마크를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="8110024788458304985">Chrome의 기능 및 성능 개선에 참여</translation>
 <translation id="8110087112193408731">디지털 웰빙에서 Chrome 활동을 표시할까요?</translation>
 <translation id="8118117428362942925">도움이 필요하면 부모님(<ph name="PARENT_NAME" />)께 요청하세요</translation>
@@ -1476,7 +1469,6 @@
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" />에서</translation>
 <translation id="9069999660519089861">읽지 않은 페이지 없음</translation>
 <translation id="9070377983101773829">음성 검색 시작</translation>
-<translation id="9074336505530349563">Google에서 추천하는 맞춤 콘텐츠를 보려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9081543426177426948">시크릿 모드에서는 방문한 사이트가 저장되지 않음</translation>
 <translation id="9086302186042011942">동기화 중</translation>

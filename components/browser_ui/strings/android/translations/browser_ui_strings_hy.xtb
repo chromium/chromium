@@ -13,7 +13,6 @@
 <translation id="1289742167380433257">Թրաֆիկը խնայելու համար այս էջի պատկերները Google-ի կողմից օպտիմալացվել են։</translation>
 <translation id="129382876167171263">Կայքերի կողմից պահված ֆայլերը կցուցադրվեն այստեղ</translation>
 <translation id="1317194122196776028">Հեռացնել այս կայքը</translation>
-<translation id="1364532808393826295"><ph name="APP_NAME" /> – <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> կայքն ավելացվել է</translation>
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1384959399684842514">Ներբեռնումը դադարեցվել է</translation>
@@ -136,6 +135,7 @@
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
 <translation id="3763247130972274048">10 վ առաջ/հետ անցնելու համար կրկնակի հպեք տեսանյութի աջ/ձախ մասում</translation>
 <translation id="3797520601150691162">Չկիրառել մուգ թեման որոշակի կայքում</translation>
+<translation id="3803367742635802571">Կայքերը, որոնք այցելում եք, հնարավոր է, դադարեն աշխատել նախատեսված ձևով</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />։ <ph name="TYPE_2" />։</translation>
 <translation id="381841723434055211">Հեռախոսահամարներ</translation>
 <translation id="3826050100957962900">Մուտք երրորդ կողմի ծառայությունների միջոցով</translation>
@@ -175,6 +175,7 @@
 <translation id="4534723447064627427">Որպեսզի խոսափողը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="4566417217121906555">Անջատել խոսափողը</translation>
 <translation id="4570913071927164677">Մանրամասներ</translation>
+<translation id="4598549027014564149">Ինկոգնիտո ռեժիմում կայքերը չեն կարող օգտագործել քուքիներ՝ տեսնելու ձեր գործողությունները դիտարկիչում, նույնիսկ առնչվող կայքերում։ Ձեր գործողությունները դիտարկիչում չեն օգտագործվում, օրինակ, գովազդներն անհատականացնելու համար։ Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="4645575059429386691">Կառավարվում է ձեր ծնողի կողմից</translation>
 <translation id="4670064810192446073">Վիրտուալ իրականություն</translation>
 <translation id="4751476147751820511">Շարժման և լուսավորության տվիչներ</translation>
@@ -304,6 +305,7 @@
 <translation id="7141896414559753902">Արգելափակել ելնող պատուհանները և վերահասցեավորումը կայքերում (խորհուրդ է տրվում)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ԿԲ</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
+<translation id="7188508872042490670">Կայքերի տվյալները սարքում</translation>
 <translation id="7203150201908454328">Ընդլայնված</translation>
 <translation id="723171743924126238">Ընտրեք պատկերներ</translation>
 <translation id="7243308994586599757">Ընտրանքները հասանելի են էկրանի ստորին հատվածում</translation>
@@ -378,6 +380,7 @@
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
 <translation id="848952951823693243">Միշտ պահանջել կայքի բջջային տարբերակը</translation>
 <translation id="8499083585497694743">Միացնել խոսափողը</translation>
+<translation id="8514955299594277296">Չթույլատրել կայքերին տվյալներ պահել ձեր սարքում (խորհուրդ չի տրվում)</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}one{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}other{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}}</translation>

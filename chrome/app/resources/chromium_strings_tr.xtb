@@ -249,6 +249,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6598877126913850652">Chromium bildirim ayarlarına git</translation>
 <translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
 <translation id="665732753414869868">Çevrenizin 3D haritasını oluşturmak için Chromium'un kamera iznine ihtiyacı var</translation>
+<translation id="6663852025006259149">Siteler muhtemelen beklediğiniz gibi çalışır ancak tüm Chromium pencereleri kapatıldıktan sonra sizi hatırlamaz</translation>
 <translation id="6676384891291319759">İnternet'e erişin</translation>
 <translation id="668175097507315160">Oturum açma sırasındaki bir hata nedeniyle ChromiumOS, verilerinizi senkronize edemedi.</translation>
 <translation id="6709350901466051922">Bu site için Chromium'un mikrofon iznine ihtiyacı var</translation>
@@ -378,5 +379,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="945990405696787151">Gelecekteki Chromium güncellemelerini almak için macOS 10.13 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar OS X 10.11 kullanıyor.</translation>
 <translation id="965162752251293939">Chromium'u kim kullanıyor?</translation>
 <translation id="967427899662692980">Chromium'un en güçlü güvenlik özelliğinden faydalanın</translation>
+<translation id="9792300276217204">Chromium'u kapattığımda site verileri her zaman cihazımdan temizlensin</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

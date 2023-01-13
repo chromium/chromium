@@ -253,6 +253,7 @@
 <translation id="6598877126913850652">Перайсці ў налады апавяшчэнняў Chromium</translation>
 <translation id="6613594504749178791">Змены ўступяць у сілу пасля перазапуску Chromium.</translation>
 <translation id="665732753414869868">Каб стварыць 3D-карту наваколля, Chromium запытвае дазвол на доступ да камеры</translation>
+<translation id="6663852025006259149">Сайты, хутчэй за ўсё, будуць працаваць для вас як звычайна, але даныя пра вас будуць выдаляцца пасля закрыцця вамі ўсіх вокнаў браўзера Chromium</translation>
 <translation id="6676384891291319759">Доступ у інтэрнэт</translation>
 <translation id="668175097507315160">Сістэме Chromium OS не ўдалося сінхранізаваць даныя з-за памылкі ўваходу.</translation>
 <translation id="6709350901466051922">Chromium запытвае дазвол на доступ да мікрафона для гэтага сайта</translation>
@@ -382,5 +383,6 @@
 <translation id="945990405696787151">Каб атрымліваць наступныя абнаўленні Chromium, вам патрэбная версія macOS 10.13 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца OS X 10.11.</translation>
 <translation id="965162752251293939">Хто выкарыстоўвае Chromium?</translation>
 <translation id="967427899662692980">Засцеражыце браўзер Chromium ад небяспек</translation>
+<translation id="9792300276217204">Заўсёды выдаляць даныя сайтаў з прылады пры закрыцці Chromium</translation>
 <translation id="985602178874221306">Аўтары Chromium</translation>
 </translationbundle>

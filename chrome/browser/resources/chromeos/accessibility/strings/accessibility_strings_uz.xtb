@@ -290,6 +290,7 @@
 <translation id="2909584066358367921">Keyingi tugma mavjud emas</translation>
 <translation id="2911433807131383493">ChromeVox qo‘llanmasini ochish</translation>
 <translation id="2912405967290226587">Uchta barmoq bilan o‘ngga suring</translation>
+<translation id="2919107550468490321">Smart yopishqoq rejim yoniq</translation>
 <translation id="2937799153569150791">Bundan keyin boshqa 2-darajali sarlavha mavjud emas</translation>
 <translation id="2942710183375260152">Koʻkimtir siyohrang</translation>
 <translation id="2943596527105977722">Xira jigarrang</translation>
@@ -304,6 +305,7 @@
 <translation id="2999559350546931576">Yo‘g‘onligini kamaytirish</translation>
 <translation id="3009352964623081324">Search + O, keyin S. Ovozlarni oʻrnatish, boshqarish va moslash uchun ishlatiladi.</translation>
 <translation id="3014130421870723208">@tahrir 8nuqta</translation>
+<translation id="3018210433491759145">ChromeVox yuklanmoqda</translation>
 <translation id="3030432017085518523">Tanlash menyusi bandi</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}other{# ta apostrof}}</translation>
 <translation id="3040901448410802366">Jarayon ko‘rsatkichi</translation>
@@ -438,6 +440,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Och marjonrang</translation>
 <translation id="3816633764618089385">Keyingi media fayl</translation>
+<translation id="3821689185319271077">Kursor langari yoʻq</translation>
 <translation id="3840823741487267909">Qisqartma</translation>
 <translation id="3841319830220785495">Standart tabiiy ovoz</translation>
 <translation id="385383972552776628">Parametrlar sahifasini ochish</translation>
@@ -543,6 +546,7 @@
 <translation id="4597532268155981612">shakl</translation>
 <translation id="4601367666219428522">jdv <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Keyingi tugmalar bosilishini o‘tkazib yuborish</translation>
+<translation id="4617384941327705512">Smart yopishqoq rejim oʻchiq</translation>
 <translation id="4623097797855662355">Nashriyot ramzi</translation>
 <translation id="4624970070706497034">TalkBack endi Chromebook qurilmalarini sozlamaydi. Undan foydalanishingiz mumkin, lekin TalkBack standart klaviatura tugmalaridan foydalaning. Mavjud tugmalarni koʻrish uchun avval Search+A, keyin esa K tugmasini bosing. Hali ham TalkBack ishlatishni istasangiz, buyruq ustiga yana bir marta bosing.</translation>
 <translation id="463135993322337640">Yangi o‘zgarishlarni ko‘rish uchun ChromeVox tugmasini, keyin esa O va N harflarini bosing</translation>

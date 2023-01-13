@@ -800,6 +800,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2986368408720340940">Deze ophaalmethode is niet beschikbaar. Kies een andere methode.</translation>
 <translation id="2987034854559945715">Geen overeenkomende functies</translation>
 <translation id="2989742184762224133">Twee nietjes boven</translation>
+<translation id="2990882401221831923">Lijst met creditcards is gesloten.</translation>
 <translation id="2991174974383378012">Delen met websites</translation>
 <translation id="299122504639061328">Beheer je standaard zoekmachine en Site Search</translation>
 <translation id="2991571918955627853">Je kunt <ph name="SITE" /> momenteel niet bezoeken, omdat de website HSTS gebruikt. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
@@ -1579,6 +1580,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4976702386844183910">Laatst bezocht: <ph name="DATE" /></translation>
 <translation id="498323057460789381">Schemavalidatiefout: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Microfoon gebruiken?</translation>
+<translation id="4988822846878841743">Lijst met creditcards die kunnen worden ingevuld via aanraking, is op halve hoogte geopend.</translation>
 <translation id="4989163558385430922">Alles bekijken</translation>
 <translation id="4989542687859782284">Niet beschikbaar</translation>
 <translation id="4989809363548539747">Deze plug-in wordt niet ondersteund</translation>
@@ -1707,7 +1709,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5284295735376057059">Documenteigenschappen</translation>
 <translation id="528468243742722775">Beëindigen</translation>
 <translation id="5285570108065881030">Alle opgeslagen wachtwoorden bekijken</translation>
-<translation id="5287240709317226393">Cookies bekijken</translation>
 <translation id="5287456746628258573">Deze site gebruikt een verouderde beveiligingsconfiguratie, waardoor je gegevens (zoals wachtwoorden of creditcardnummers) openbaar kunnen worden gemaakt als ze naar deze site worden gestuurd.</translation>
 <translation id="5288108484102287882">Tijdens de validatie van de beleidswaarden zijn er waarschuwingen geconstateerd</translation>
 <translation id="5288393065350884210">Accountancy en auditing</translation>
@@ -1927,6 +1928,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5863847714970149516">De komende pagina probeert misschien kosten in rekening te brengen</translation>
 <translation id="5866257070973731571">Telefoonnummer toevoegen</translation>
 <translation id="5866898949289125849">Je bekijkt een Developer Tools-pagina</translation>
+<translation id="5868548454963263350">Lijst met creditcards die kunnen worden ingevuld via aanraking, is op volledige hoogte geopend.</translation>
 <translation id="5869405914158311789">Deze site is niet bereikbaar</translation>
 <translation id="5869522115854928033">Opgeslagen wachtwoorden</translation>
 <translation id="5873013647450402046">Je bank wil bevestigen dat jij het bent.</translation>
@@ -2638,6 +2640,7 @@ Aanvullende informatie:
 <translation id="7653957176542370971">Blad voor betalingshandler is gesloten</translation>
 <translation id="7654909834015434372">Als je annotaties bewerkt, keert dit document terug naar de oorspronkelijke paginastand</translation>
 <translation id="765676359832457558">Geavanceerde instellingen verbergen...</translation>
+<translation id="7656935528854393684">Lijst met creditcards die moeten worden ingevuld via aanraking.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7659327900411729175">Envelop Kaku 8</translation>
 <translation id="7659878911471462949">Vreugdetranen</translation>
@@ -3185,7 +3188,6 @@ Aanvullende informatie:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om Chrome in te stellen als de standaardbrowser van het systeem in de iOS-instellingen</translation>
 <translation id="9096679202588811390">Tv-programma's</translation>
 <translation id="9101630580131696064">Lade 1</translation>
-<translation id="9102081333385212048">Bestanden die je kopieert of verplaatst, worden naar Google Cloud of derden gestuurd voor analyse. De bestanden kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware.</translation>
 <translation id="9103537084693478942">Videosoftware</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> gebruikt gewoonlijk versleuteling om je gegevens te beschermen. Toen Chromium deze keer probeerde verbinding te maken met <ph name="SITE" />, retourneerde de website ongewone en onjuiste inloggegevens. Dit gebeurt wanneer een aanvaller probeert zich als <ph name="SITE" /> voor te doen of wanneer een wifi-inlogscherm de verbinding heeft verbroken. Je gegevens zijn nog steeds beveiligd omdat Chromium de verbinding heeft beëindigd voordat er gegevens konden worden uitgewisseld.</translation>
 <translation id="9106062320799175032">Factuuradres toevoegen</translation>

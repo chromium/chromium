@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Кийинки баскыч жок</translation>
 <translation id="2911433807131383493">ChromeVox үйрөткүчү ачылсын</translation>
 <translation id="2912405967290226587">Үч манжаңыз менен экранды оңго сүрүңүз</translation>
+<translation id="2919107550468490321">Smart sticky mode күйүк</translation>
 <translation id="2937799153569150791">Кийинки 3-деңгээлдин башкы аталышы жок</translation>
 <translation id="2942710183375260152">Күңүрт бозуш көк</translation>
 <translation id="2943596527105977722">Күңүрт кызыл алтын түстүү сары</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Тонду төмөндөтүү</translation>
 <translation id="3009352964623081324">Search + O, анан S. Орнотуп, башкарып, үндөрдү жекелештирүү үчүн колдонуңуз</translation>
 <translation id="3014130421870723208">@ талаасын өзг 8чек</translation>
+<translation id="3018210433491759145">ChromeVox жүктөлүүдө</translation>
 <translation id="3030432017085518523">Менюдагы радио баскычы</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{апостроф}other{# апостроф}}</translation>
 <translation id="3040901448410802366">Иштин канчасы аткарылды</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3813387282697781382">Мала маржан түстүү</translation>
 <translation id="3816633764618089385">Кийинки медиа</translation>
+<translation id="3821689185319271077">Курсордун анкери жок</translation>
 <translation id="3840823741487267909">Кыскартма</translation>
 <translation id="3841319830220785495">Кадимки адамдын үнү</translation>
 <translation id="385383972552776628">Параметрлер бетин ачуу</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">форма</translation>
 <translation id="4601367666219428522"><ph name="TABLENAME" /> тбл <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Кийинки баскычтын басылышын этибарга албоо</translation>
+<translation id="4617384941327705512">Smart sticky mode өчүк</translation>
 <translation id="4623097797855662355">Чыгуу маалыматы</translation>
 <translation id="4624970070706497034">TalkBack Chromebook түзмөктөрүндө жекелештирүүнү колдоого албай калган. Аны пайдалана бересиз, бирок TalkBack функциясынын демейки ыкчам баскычтарын колдонуңуз. Жеткиликтүү ыкчам баскычтарды көрүү үчүн Search+A, андан кийин K баскычын басыңыз. TalkBack функциясын дагы эле колдонгуңуз келсе, буйрукту кайрадан басыңыз.</translation>
 <translation id="463135993322337640">Жаңы функциялар жөнүндө билүү үчүн ChromeVox o, n баскычтарын басыңыз</translation>

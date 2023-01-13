@@ -1866,15 +1866,6 @@
       如果將這項政策設為停用，電源尖峰轉移功能將保持在關閉狀態。
 
       如果不設定這項政策，電源尖峰轉移功能會預設為關閉。使用者無法變更這項設定。</translation>
-<translation id="2773036462435523078">在電腦閒置時觸發動作。
-
-      如果設定了這項政策，在政策指定的時間 (單位為分鐘) 內沒有任何使用者輸入內容，<ph name="PRODUCT_NAME" /> 就會執行透過 <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" /> 政策設定的動作。
-
-      如果不設定這項政策，系統將不會執行任何動作。
-
-      時間下限為 5 分鐘。
-
-      「使用者輸入內容」是由 Operating System API 定義，包括移動滑鼠或鍵盤輸入等等。</translation>
 <translation id="2773288106548584039">舊版瀏覽器支援</translation>
 <translation id="2780840673734667062">停止使用其他 Google 帳戶登入</translation>
 <translation id="2784880732336446591">在結束時清除瀏覽資料</translation>

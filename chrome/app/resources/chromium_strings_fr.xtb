@@ -252,6 +252,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="6598877126913850652">Accéder aux paramètres de notification Chromium</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
 <translation id="665732753414869868">Pour créer un plan 3D de votre environnement, Chromium a besoin de l'autorisation d'accéder à la caméra</translation>
+<translation id="6663852025006259149">Les sites fonctionneront probablement comme prévu, mais ne se souviendront pas de vous une fois que vous aurez fermé toutes les fenêtres Chromium</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
 <translation id="668175097507315160">Impossible de synchroniser vos données dans Chromium OS, car une erreur s'est produite lors de la connexion.</translation>
 <translation id="6709350901466051922">Chromium a besoin de l'autorisation d'accéder au micro pour ce site</translation>
@@ -382,5 +383,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="945990405696787151">Vous devez disposer de macOS 10.13 ou d'une version ultérieure pour recevoir les futures mises à jour de Chromium. Or, c'est la version macOS X 10.11 qui est installée sur cet ordinateur.</translation>
 <translation id="965162752251293939">Qui utilise Chromium ?</translation>
 <translation id="967427899662692980">Renforcer la sécurité de Chromium</translation>
+<translation id="9792300276217204">Toujours effacer les données des sites de votre appareil lorsque vous fermez Chromium</translation>
 <translation id="985602178874221306">Auteurs de Chromium</translation>
 </translationbundle>

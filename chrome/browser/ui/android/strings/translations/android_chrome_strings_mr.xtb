@@ -41,7 +41,6 @@
 <translation id="1204037785786432551">लिंक डाउनलोड करा</translation>
 <translation id="1204692632633423444">Chrome संबंधित कृतीचे बटण: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">लिंक मजकूर कॉपी करा</translation>
-<translation id="1208340532756947324">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा</translation>
 <translation id="1209206284964581585">आतासाठी लपवा</translation>
 <translation id="1227058898775614466">नेव्हिगेशन इतिहास</translation>
 <translation id="1231733316453485619">सिंक सुरू करायचे का?</translation>
@@ -318,7 +317,6 @@
 <translation id="2781151931089541271">1 सेकंद शिल्लक</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> टॅब बंद केला जाईल</translation>
 <translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा</translation>
-<translation id="2818669890320396765">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="2827278682606527653">फीड कार्ड मेनू अर्ध्या उंचीवर आहे</translation>
 <translation id="2830783625999891985">क्लिपबोर्डचा आशय लपवला</translation>
 <translation id="2838367486340230368">गोपनीयता मार्गदर्शक स्पष्टीकरण अर्ध्या उंचीवर उघडले आहे</translation>
@@ -468,7 +466,6 @@
 <translation id="3563767357928833671">क्लिपबोर्डचा आशय दाखवला</translation>
 <translation id="3566639033325271639">सेटिंग्ज अपडेट करा</translation>
 <translation id="3566923219790363270">Chrome अजूनही VR ची तयारी करत आहे. Chrome नंतर रीस्टार्ट करा.</translation>
-<translation id="3568688522516854065">तुमच्या इतर डिव्हाइसवरून तुमचे टॅब मिळविण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="357465026686164600">सिक्युरिटी की म्हणून फोन</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3578024735349927859">सूचना वापरून मीडिया नियंत्रणे, गुप्त टॅब आणि आणखी बरेच काही व्यवस्थापित करा</translation>
@@ -576,7 +573,6 @@
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4196597275619698563">कार्ड तयार करा</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
-<translation id="4209895695669353772">Google ने सुचवलेला पर्सनलाइझ केलेला आशय मिळवण्यासाठी, सिंक सुरू करा</translation>
 <translation id="4214315110991671325">तुम्ही कुकीना अनुमती दिल्यास, Chrome प्रीलोडिंगसाठी त्यांचा वापर करू शकते.</translation>
 <translation id="4225895483398857530">टूलबार शॉर्टकट</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
@@ -615,7 +611,6 @@
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टॅब बंद करा</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ला बुकमार्क केले</translation>
 <translation id="4461614516424362539">तुम्ही दुसरे डिव्हाइस QR कोडसह लिंक केल्यास, ते हा फोन सिक्युरिटी की म्हणून वापरू शकते. तुम्ही ते काढून टाकल्यास, तुम्हाला ते पुन्हा लिंक करण्यासाठी QR कोड स्कॅन करावा लागेल.</translation>
-<translation id="4472118726404937099">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="4479839115899251637">वाचन सूचीमधून हटवा</translation>
 <translation id="4479972344484327217">Chrome साठी <ph name="MODULE" /> इंस्टॉल करत आहे…</translation>
 <translation id="4484496141267039529">कनेक्शन नाही. नंतर पुन्हा प्रयत्न करा.</translation>
@@ -877,7 +872,6 @@
 <translation id="5859968346865909126">तुम्ही ते सेटिंग्जमध्ये सुरू किंवा बंद करू शकता</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
-<translation id="5862731021271217234">तुमच्या इतर डिव्हाइसवरून तुमचे टॅब मिळवण्यासाठी, सिंक सुरू करा</translation>
 <translation id="5864419784173784555">दुसर्‍या डाउनलोडची वाट पाहत आहे…</translation>
 <translation id="5865733239029070421">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते</translation>
 <translation id="5869522115854928033">सेव्ह केलेले पासवर्ड</translation>
@@ -1309,7 +1303,6 @@
 <translation id="8105613260829665809">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_TOS_LINK" />सेवा अटी<ph name="END_TOS_LINK" /> यांना सहमती दर्शवता.\nअ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_UMA_LINK" />व्यवस्थापित करा<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">क्रमाने लावण्याचे पर्याय बंद करा</translation>
-<translation id="8109613176066109935">तुमच्या सर्व डिव्हाइसवरील तुमचे बुकमार्क मिळवण्यासाठी, सिंक सुरू करा</translation>
 <translation id="8110024788458304985">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="8110087112193408731">Digital wellbeing मध्ये तुमची Chrome ॲक्टिव्हिटी दाखवायची का?</translation>
 <translation id="8118117428362942925">तुम्हाला मदत हवी असल्यास, तुमचे पालक (<ph name="PARENT_NAME" />) यांना विचारा</translation>
@@ -1476,7 +1469,6 @@
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> मध्ये</translation>
 <translation id="9069999660519089861">कोणतीही न वाचलेली पेज नाहीत</translation>
 <translation id="9070377983101773829">व्हॉइस शोध सुरू करा</translation>
-<translation id="9074336505530349563">Google ने सुचवलेला पर्सनलाइझ केलेला आशय मिळवण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9081543426177426948">गुप्त मोडमध्ये तुम्ही भेट देता त्या साइट सेव्ह केल्या जात नाहीत</translation>
 <translation id="9086302186042011942">समक्रमण करीत आहे</translation>

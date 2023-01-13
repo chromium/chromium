@@ -639,6 +639,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4455051983450390249">Vaadake seadmes <ph name="DEVICE_TYPE" /> oma telefoni märguandeid</translation>
 <translation id="445864333228800152">Tere õhtust!</translation>
 <translation id="4458688154122353284">Peata ekraani salvestamine</translation>
+<translation id="445923051607553918">WiFi-võrguga ühinemine</translation>
 <translation id="4471354919263203780">Kõnetuvastuse failide allalaadimine … <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Värskendage seadet kohe}=1{Värskendage seadet 1 sekundi jooksul}other{Värskendage seadet # sekundi jooksul}}</translation>
 <translation id="4472575034687746823">Alustage</translation>

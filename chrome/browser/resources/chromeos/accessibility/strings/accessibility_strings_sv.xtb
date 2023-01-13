@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Det finns inga fler knappar</translation>
 <translation id="2911433807131383493">Öppna självstudierna för ChromeVox</translation>
 <translation id="2912405967290226587">Svep åt höger med tre fingrar</translation>
+<translation id="2919107550468490321">Smart låstangentsläge är på</translation>
 <translation id="2937799153569150791">Det finns inga fler rubriker på nivå 3</translation>
 <translation id="2942710183375260152">Mörkt skifferblå</translation>
 <translation id="2943596527105977722">Mörkt gullrisgul</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Minska tonhöjden</translation>
 <translation id="3009352964623081324">Sök + O, sedan S. Använd till att installera, hantera och anpassa röster.</translation>
 <translation id="3014130421870723208">@red 8punkt</translation>
+<translation id="3018210433491759145">ChromeVox läses in</translation>
 <translation id="3030432017085518523">Alternativknapp för menyalternativ</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}other{# apostrofer}}</translation>
 <translation id="3040901448410802366">Förloppsindikator</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Ljust korallröd</translation>
 <translation id="3816633764618089385">Nästa media</translation>
+<translation id="3821689185319271077">Inget pekarankare</translation>
 <translation id="3840823741487267909">Förkortning</translation>
 <translation id="3841319830220785495">Naturlig standardröst</translation>
 <translation id="385383972552776628">Öppna alternativsidan</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulär</translation>
 <translation id="4601367666219428522">tabell <ph name="TABLENAME" /> <ph name="TABLEROWS" />×<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorera nästa tangenttryckning</translation>
+<translation id="4617384941327705512">Smart låstangentsläge är av</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack har inte längre stöd för anpassning på Chromebook. Du kan fortfarande använda TalkBack med standardkortkommandon. Tryck på Sök + A och sedan K för att se tillgängliga kortkommandon. Om du fortfarande vill använda TalkBack trycker du kommandot igen.</translation>
 <translation id="463135993322337640">Tryck på ChromeVox O + N om du vill veta mer om nyheterna.</translation>

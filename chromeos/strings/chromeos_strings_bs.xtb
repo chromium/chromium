@@ -318,6 +318,7 @@
 <translation id="4060260348856573701">Novi APN</translation>
 <translation id="4093865285251893588">Slika profila</translation>
 <translation id="409427325554347132">Sačuvaj detalje testa</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Odaberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB dodirna podloga</translation>
 <translation id="4117637339509843559">Tamni način rada</translation>
@@ -719,6 +720,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7701040980221191251">Nema</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7747039790905080783">Unaprijed dijeljeni ključ</translation>
 <translation id="7762130827864645708">Uspješno ste promijenili lozinku. Od sada koristite novu lozinku.</translation>
@@ -802,6 +804,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
 <translation id="8508640263392900755">Detalji APN-a</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Mobilni operater može zahtijevati ovu opciju radi povezivanja s njegovom mrežom. Za detalje se obratite mobilnom operateru.</translation>
 <translation id="8576249514688522074">Pokretanje je prekinuto</translation>
 <translation id="8620617069779373398">Status rominga</translation>

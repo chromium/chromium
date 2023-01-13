@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Dim botwm nesaf</translation>
 <translation id="2911433807131383493">Agor tiwtorial ChromeVox</translation>
 <translation id="2912405967290226587">Sweipiwch i'r dde gyda thri bys</translation>
+<translation id="2919107550468490321">Mae'r modd gludiog clyfar wedi'i droi ymlaen</translation>
 <translation id="2937799153569150791">Dim pennawd lefel 3 nesaf</translation>
 <translation id="2942710183375260152">Glas Llechen Tywyll</translation>
 <translation id="2943596527105977722">Ffon Aur Tywyll</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Lleihau traw</translation>
 <translation id="3009352964623081324">Search + O, yna S. Defnyddiwch i osod, rheoli, ac addasu lleisiau.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">Mae ChromeVox wrthi'n llwytho</translation>
 <translation id="3030432017085518523">Botwm radio eitem dewislen</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{collnod}zero{# collnod}two{# gollnod}few{# chollnod}many{# chollnod}other{# collnod}}</translation>
 <translation id="3040901448410802366">Dangosydd cynnydd</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Fideo</translation>
 <translation id="3813387282697781382">Coral Golau</translation>
 <translation id="3816633764618089385">Cyfrwng nesaf</translation>
+<translation id="3821689185319271077">Dim angor pwyntydd</translation>
 <translation id="3840823741487267909">Talfyriad</translation>
 <translation id="3841319830220785495">Llais naturiol diofyn</translation>
 <translation id="385383972552776628">Agor y dudalen dewisiadau</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ffurflen</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Bydd y fysell nesaf i gael ei phwyso'n cael ei hanwybyddu</translation>
+<translation id="4617384941327705512">Mae'r modd gludiog clyfar wedi'i ddiffodd</translation>
 <translation id="4623097797855662355">Coloffon</translation>
 <translation id="4624970070706497034">Nid yw TalkBack bellach yn darparu addasu ar gyfer Chromebooks. Gallwch ei ddefnyddio o hyd, ond defnyddiwch lwybrau byr bysellfwrdd diofyn TalkBack. Pwyswch Search+A, yna K i weld y llwybrau byr sydd ar gael. Os ydych eisiau defnyddio TalkBack o hyd, pwyswch y gorchymyn eto.</translation>
 <translation id="463135993322337640">Pwyswch ChromeVox o, n i ddarganfod beth sy'n newydd</translation>

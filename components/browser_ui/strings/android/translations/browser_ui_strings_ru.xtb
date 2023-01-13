@@ -13,7 +13,6 @@
 <translation id="1289742167380433257">В целях экономии трафика изображения на странице были оптимизированы.</translation>
 <translation id="129382876167171263">Здесь появятся файлы, сохраненные сайтами.</translation>
 <translation id="1317194122196776028">Удалить этот сайт</translation>
-<translation id="1364532808393826295"><ph name="APP_NAME" />: "<ph name="NOTIFICATION_MESSAGE" />".</translation>
 <translation id="1369915414381695676">Добавлен сайт <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
@@ -22,6 +21,7 @@
 <translation id="1426410128494586442">Да</translation>
 <translation id="1446450296470737166">Полный доступ к управлению MIDI-устройствами</translation>
 <translation id="1448064542941920355">Уменьшить масштаб</translation>
+<translation id="1547123415014299762">Сторонние файлы cookie разрешены</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1633720957382884102">Связанные сайты</translation>
 <translation id="1644574205037202324">История</translation>
@@ -351,6 +351,7 @@
 <translation id="8042586301629853791">Упорядочить:</translation>
 <translation id="8067883171444229417">Смотреть видео</translation>
 <translation id="8068648041423924542">Невозможно выбрать сертификат.</translation>
+<translation id="8077120325605624147">Реклама может показываться на любом посещаемом сайте</translation>
 <translation id="8087000398470557479">Контент с сайта <ph name="DOMAIN_NAME" />. Получен с помощью Google.</translation>
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
@@ -388,6 +389,7 @@
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>
 <translation id="8609465669617005112">Переместить вверх</translation>
 <translation id="8676374126336081632">Очистить</translation>
+<translation id="8681886425883659911">Объявления блокируются на сайтах, где есть навязчивая или вводящая в заблуждение реклама</translation>
 <translation id="868929229000858085">Поиск контактов</translation>
 <translation id="8702612070107455751">Все офлайн-данные будут удалены.</translation>
 <translation id="8712637175834984815">Готово</translation>
@@ -400,6 +402,7 @@
 <translation id="8816026460808729765">Закрыть сайтам доступ к датчикам</translation>
 <translation id="8823559166155093873">Блокировать файлы cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">Навязчивая реклама</translation>
 <translation id="8903921497873541725">Увеличить</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Функция NFC на этом устройстве отключена. Включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>

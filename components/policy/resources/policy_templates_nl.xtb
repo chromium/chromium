@@ -1870,15 +1870,6 @@ en 6 optionele leden:
       Als je het beleid niet toepast, blijft stroom voor piekuren uit.
 
 Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. Gebruikers kunnen deze instelling niet wijzigen.</translation>
-<translation id="2773036462435523078">Hiermee wordt een actie gestart als de computer inactief is.
-
-      Als dit beleid is ingesteld, specificeert het de tijdsduur zonder gebruikersinvoer (in minuten) voordat <ph name="PRODUCT_NAME" /> acties uitvoert die zijn ingesteld via het beleid <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Als dit beleid niet is ingesteld, wordt er geen actie uitgevoerd.
-
-      De minimumdrempel is 5 minuten.
-
-      'Gebruikersinvoer' wordt gedefinieerd door API's voor het besturingssysteem en omvat bijvoorbeeld de muis bewegen of typen op het toetsenbord.</translation>
 <translation id="2773288106548584039">Ondersteuning voor oudere browsers</translation>
 <translation id="2780840673734667062">Inloggen met extra Google-accounts uitzetten</translation>
 <translation id="2784880732336446591">Browsegegevens wissen bij afsluiten</translation>

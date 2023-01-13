@@ -318,6 +318,7 @@
 <translation id="4060260348856573701">Нов APN</translation>
 <translation id="4093865285251893588">Профилна слика</translation>
 <translation id="409427325554347132">Зачувај детали од тестот</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Изберете го албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Подлога за допир со USB</translation>
 <translation id="4117637339509843559">Темен режим</translation>
@@ -719,6 +720,7 @@
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Број на циклуси</translation>
 <translation id="7747039790905080783">Претходно споделен клуч</translation>
 <translation id="7762130827864645708">Успешно ја променивте лозинката. Отсега користете ја новата лозинка.</translation>
@@ -802,6 +804,7 @@
 <translation id="8503836310948963452">Само уште неколку минути…</translation>
 <translation id="8508640263392900755">Детали за APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Оваа опција може да е задолжителна за да се поврзете на мрежата на операторот. Контактирајте со операторот за детали.</translation>
 <translation id="8576249514688522074">Неиницијализирана</translation>
 <translation id="8620617069779373398">Статус на роаминг</translation>

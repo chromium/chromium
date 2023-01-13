@@ -318,6 +318,7 @@
 <translation id="4060260348856573701">Yeni APN</translation>
 <translation id="4093865285251893588">Profil şəkli</translation>
 <translation id="409427325554347132">Test məlumatlarını yadda saxlayın</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albomunu seçin</translation>
 <translation id="4111761024568264522">USB taçped</translation>
 <translation id="4117637339509843559">Qaranlıq rejim</translation>
@@ -718,6 +719,7 @@
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>
 <translation id="7701040980221191251">Heç bir</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Dövrə sayı</translation>
 <translation id="7747039790905080783">Öncədən paylaşılan açar</translation>
 <translation id="7762130827864645708">Parolunuz uğurla dəyişdirildi. Bundan sonra yeni paroldan istifadə edin.</translation>
@@ -801,6 +803,7 @@
 <translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
 <translation id="8508640263392900755">APN detalları</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatorunuz şəbəkəsinə qoşulmaq üçün bu seçimi tələb edə bilər. Ətraflı məlumat üçün operatorunuzla əlaqə saxlayın.</translation>
 <translation id="8576249514688522074">Başladılmayıb</translation>
 <translation id="8620617069779373398">Rominq statusu</translation>

@@ -13,7 +13,6 @@
 <translation id="1289742167380433257">আপনার ডেটা সেভ করার জন্য, এই পৃষ্ঠার ছবিগুলি Google অপ্টিমাইজ করেছে।</translation>
 <translation id="129382876167171263">ওয়েবসাইট যেসব ফাইল সেভ করে সেগুলি এখানে দেখা যায়</translation>
 <translation id="1317194122196776028">এই সাইটের ইতিহাস সম্পর্কিত তথ্য মুছে ফেলুন</translation>
-<translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> সাইট যোগ করা হয়েছে</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">ডাউনলোড পজ করা আছে</translation>
@@ -22,6 +21,7 @@
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1446450296470737166">MIDI ডিভাইসগুলির পূর্ণ নিয়ন্ত্রণের অনুমতি দিন</translation>
 <translation id="1448064542941920355">জুম কমান</translation>
+<translation id="1547123415014299762">থার্ড-পার্টি কুকির অনুমতি আছে</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1633720957382884102">সম্পর্কিত সাইটগুলি</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
@@ -351,6 +351,7 @@
 <translation id="8042586301629853791">এটি অনুযায়ী সাজান:</translation>
 <translation id="8067883171444229417">ভিডিও চালানোর বোতাম</translation>
 <translation id="8068648041423924542">সার্টিফিকেট বেছে নিতে পারেনি।</translation>
+<translation id="8077120325605624147">আপনি ভিজিট করেন এমন যেকোনও সাইট আপনাকে যেকোনও বিজ্ঞাপন দেখাতে পারে</translation>
 <translation id="8087000398470557479">এই কন্টেন্ট Google দ্বারা বিতরণ করা <ph name="DOMAIN_NAME" /> থেকে এসেছে।</translation>
 <translation id="8116925261070264013">মিউট করা আছে</translation>
 <translation id="813082847718468539">সাইটের তথ্য দর্শন করুন</translation>
@@ -388,6 +389,7 @@
 <translation id="857943718398505171">অনুমোদিত (প্রস্তাবিত)</translation>
 <translation id="8609465669617005112">উপরে যান</translation>
 <translation id="8676374126336081632">ইনপুট সাফ করুন</translation>
+<translation id="8681886425883659911">কিন্তু ব্যাঘাতকারী অথবা বিভ্রান্তিকর বিজ্ঞাপন দেখায় এমন সাইটে বিজ্ঞাপন ব্লক আছে</translation>
 <translation id="868929229000858085">আপনার পরিচিতি সার্চ করুন</translation>
 <translation id="8702612070107455751">যেকোনও অফলাইন ডেটা মুছে ফেলা হবে।</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
@@ -400,6 +402,7 @@
 <translation id="8816026460808729765">সেন্সর অ্যাক্সেস করা থেকে সাইটকে ব্লক করুন</translation>
 <translation id="8823559166155093873">কুকি ব্লক করুন</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">ব্যাঘাতকারী বিজ্ঞাপন</translation>
 <translation id="8903921497873541725">জুম বাড়ান</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">এই ডিভাইসে NFC বন্ধ আছে। <ph name="BEGIN_LINK" />Android সেটিংস<ph name="END_LINK" /> থেকে এটি চালু করুন।</translation>

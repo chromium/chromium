@@ -637,6 +637,7 @@
 <translation id="4455051983450390249">在 <ph name="DEVICE_TYPE" /> 上查看手機的通知</translation>
 <translation id="445864333228800152">晚安，</translation>
 <translation id="4458688154122353284">停止錄製螢幕畫面</translation>
+<translation id="445923051607553918">加入 Wi-Fi 網路</translation>
 <translation id="4471354919263203780">正在下載語音辨識檔案...<ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{請立即更新裝置}=1{請在 1 秒內更新裝置}other{請在 # 秒內更新裝置}}</translation>
 <translation id="4472575034687746823">開始使用</translation>

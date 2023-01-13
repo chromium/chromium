@@ -13,7 +13,6 @@
 <translation id="1289742167380433257">Интернет трафигин үнөмдөө үчүн Google бул барактагы сүрөттөрдү ыңгайлаштырды.</translation>
 <translation id="129382876167171263">Вебсайттар сактаган файлдар ушул жерде көрүнөт</translation>
 <translation id="1317194122196776028">Бул сайтты унутуу</translation>
-<translation id="1364532808393826295"><ph name="APP_NAME" />, <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> сайты кошулду</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1384959399684842514">Жүктөп алуу тындырылды</translation>
@@ -136,6 +135,7 @@
 <translation id="3744111561329211289">Фонду шайкештирүү</translation>
 <translation id="3763247130972274048">10 сек. өткөрүп жиберүү үчүн видеонун сол же оң жагын эки жолу таптаңыз</translation>
 <translation id="3797520601150691162">Белгилүү бир сайт үчүн караңгы тема колдонулбасын</translation>
+<translation id="3803367742635802571">Сиз баш баккан сайттар ойдогудай иштебей калышы мүмкүн</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Телефон номерлери</translation>
 <translation id="3826050100957962900">Үчүнчү тараптын кирүү аракети</translation>
@@ -175,6 +175,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> колдонмосуна микрофонго кирүүгө уруксат берүү үчүн, <ph name="BEGIN_LINK" />Android Жөндөөлөрүнөн<ph name="END_LINK" /> микрофонду күйгүзүңүз.</translation>
 <translation id="4566417217121906555">Микрофондун үнүн өчүрүү</translation>
 <translation id="4570913071927164677">Чоо-жайы</translation>
+<translation id="4598549027014564149">Жашыруун режиминде сайттар cookie файлдары аркылуу түрдүү сайттардагы, ошондой эле байланышкан сайттардагы аракеттериңизди көрө албайт. Аракеттериңиз жарнамаларды жекелештирүү сыяктуу нерселер үчүн колдонулбайт. Функциялар айрым сайттарда иштебеши мүмкүн.</translation>
 <translation id="4645575059429386691">Ата-энеңиз башкарат</translation>
 <translation id="4670064810192446073">Виртуалдык дүйнө</translation>
 <translation id="4751476147751820511">Кыймыл же жарык сенсорлору</translation>
@@ -304,6 +305,7 @@
 <translation id="7141896414559753902">Сайттарда калкыма терезелерди көрсөтүү менен багыттоолор бөгөттөлсүн (сунушталат)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> Кб</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
+<translation id="7188508872042490670">Түзмөктөгү сайттын маалыматы</translation>
 <translation id="7203150201908454328">Жайылып көрсөтүлгөн</translation>
 <translation id="723171743924126238">Сүрөттөрдү тандаңыз</translation>
 <translation id="7243308994586599757">Параметрлер экрандын түбүндө берилген</translation>
@@ -378,6 +380,7 @@
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
 <translation id="848952951823693243">Мобилдик сайт ар дайым суралсын</translation>
 <translation id="8499083585497694743">Микрофондун үнүн чыгаруу</translation>
+<translation id="8514955299594277296">Сайттарга түзмөккө маалыматтарды сактоого уруксат берилбесин (сунушталбайт)</translation>
 <translation id="851751545965956758">Сайттардын түзмөктөргө туташуусун бөгөттөө</translation>
 <translation id="8525306231823319788">Толук экран</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сайтында cookie файлдарына уруксат берилген}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сайтында cookie файлдарына уруксат берилген}}</translation>

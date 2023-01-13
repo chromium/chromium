@@ -1713,7 +1713,6 @@
 <translation id="5284295735376057059">文件屬性</translation>
 <translation id="528468243742722775">結束</translation>
 <translation id="5285570108065881030">顯示所有已儲存的密碼…</translation>
-<translation id="5287240709317226393">顯示 Cookie</translation>
 <translation id="5287456746628258573">此網站的安全性設定過舊，因此您傳送給此網站的資料 (例如密碼或信用卡號碼) 可能會外洩。</translation>
 <translation id="5288108484102287882">政策值驗證出現警告訊息</translation>
 <translation id="5288393065350884210">會計和核數</translation>
@@ -3194,7 +3193,6 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 iOS 設定度將 Chrome 設定做系統嘅預設瀏覽器</translation>
 <translation id="9096679202588811390">電視表演和節目</translation>
 <translation id="9101630580131696064">紙匣 1</translation>
-<translation id="9102081333385212048">您複製或移動的檔案會傳送至 Google Cloud 或第三方進行分析。例如，檔案可能會被掃瞄，以查看當中是否含有敏感資料或惡意軟件。</translation>
 <translation id="9103537084693478942">影片軟件</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> 通常會透過加密方式保護您的資料。Chromium 這次嘗試連線至 <ph name="SITE" /> 時，該網站傳回異常且錯誤的憑證。這可能是因為有攻擊者試圖偽裝成 <ph name="SITE" />，或 Wi-Fi 登入畫面導致連線中斷。請放心，Chromium 未有交換任何資料並已終止連線，所以您的資料仍然安全。</translation>
 <translation id="9106062320799175032">新增帳單地址</translation>

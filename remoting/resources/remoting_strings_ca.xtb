@@ -36,7 +36,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="2599300881200251572">Aquest servei permet les connexions entrants de clients d'Escriptori remot de Chrome.</translation>
 <translation id="2647232381348739934">Servei de Chromoting</translation>
 <translation id="2676780859508944670">S'hi està treballant...</translation>
-<translation id="2692522824157224199">Copyright 2022. Google LLC. Tots els drets reservats.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">S'ha produït un problema d'autenticació. Torna a iniciar la sessió.</translation>
 <translation id="2803375539583399270">Introdueix el PIN</translation>
@@ -73,7 +72,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">El codi d'accés no és vàlid. Torneu-ho a provar.</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
-<translation id="4372650392690220936">Copyright 2022. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="4405930547258349619">Biblioteca principal</translation>
 <translation id="443560535555262820">Obre el tauler de preferències Accessibilitat</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>

@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">ਕੋਈ ਅਗਲਾ ਬਟਨ ਨਹੀਂ</translation>
 <translation id="2911433807131383493">ChromeVox ਟਿਊਟੋਰੀਅਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="2912405967290226587">ਤਿੰਨ ਉਂਗਲਾਂ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
+<translation id="2919107550468490321">ਸਮਾਰਟ ਸਥਿਰ ਮੋਡ ਚਾਲੂ ਹੈ</translation>
 <translation id="2937799153569150791">ਕੋਈ ਹੋਰ ਪੱਧਰ 3 ਸਿਰਲੇਖ ਨਹੀਂ</translation>
 <translation id="2942710183375260152">ਗੂੜ੍ਹਾ ਸੁਰਮਈ ਨੀਲਾ</translation>
 <translation id="2943596527105977722">ਗੂੜ੍ਹਾ ਸੁਨਿਹਰੀ</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">ਪਿਚ ਘਟਾਓ</translation>
 <translation id="3009352964623081324">Search + O, ਫਿਰ S. ਇਸਨੂੰ ਸਥਾਪਤ ਕਰਨ, ਪ੍ਰਬੰਧਨ ਕਰਨ ਅਤੇ ਅਵਾਜ਼ਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਵਰਤੋ।</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="3030432017085518523">ਮੀਨੂ ਬਟਨ ਰੇਡੀਓ ਬਟਨ</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{ਅੱਖਰ ਲੋਪ ਚਿੰਨ੍ਹ}one{# ਅੱਖਰ ਲੋਪ ਚਿੰਨ੍ਹ}other{# ਅੱਖਰ ਲੋਪ ਚਿੰਨ੍ਹ}}</translation>
 <translation id="3040901448410802366">ਪ੍ਰਗਤੀ ਸੂਚਕ</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">ਵੀਡਿਓ</translation>
 <translation id="3813387282697781382">ਹਲਕਾ ਗਾਜਰ</translation>
 <translation id="3816633764618089385">ਅਗਲਾ ਮੀਡੀਆ</translation>
+<translation id="3821689185319271077">ਕੋਈ ਪੁਆਇੰਟਰ ਐਂਕਰ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="3840823741487267909">ਸੰਖਿਪਤ ਰੂਪ</translation>
 <translation id="3841319830220785495">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਕੁਦਰਤੀ ਅਵਾਜ਼</translation>
 <translation id="385383972552776628">ਚੋਣਾਂ ਵਾਲਾ ਸਫ਼ਾ ਖੋਲ੍ਹੋ</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ਫ਼ਾਰਮ</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">ਅਗਲੀ ਕੁੰਜੀ ਪ੍ਰੈਸ ਨੂੰ ਅਣਡਿੱਠ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="4617384941327705512">ਸਮਾਰਟ ਸਥਿਰ ਮੋਡ ਬੰਦ ਹੈ</translation>
 <translation id="4623097797855662355">ਪੁਸਤਕ 'ਤੇ ਦਿੱਤਾ ਪ੍ਰਕਾਸ਼ਕ ਦਾ ਨਾਮ ਜਾਂ ਚਿੰਨ੍ਹ</translation>
 <translation id="4624970070706497034">TalkBack ਹੁਣ Chromebooks ਲਈ ਵਿਉਂਤਬੱਧਕਰਨ ਮੁਹੱਈਆ ਨਹੀਂ ਕਰਵਾਉਂਦੀ ਹੈ। ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਇਸਨੂੰ ਵਰਤ ਸਕਦੇ ਹੋ, ਪਰ TalkBack ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਵਰਤੋ। ਉਪਲਬਧ ਸ਼ਾਰਟਕੱਟ ਦੇਖਣ ਲਈ Search+A, ਫਿਰ K ਦਬਾਓ। ਜੇ ਤੁਸੀਂ ਹਾਲੇ ਵੀ TalkBack ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਆਦੇਸ਼ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ।</translation>
 <translation id="463135993322337640">ਨਵਾਂ ਕੀ ਹੈ, ਇਹ ਪਤਾ ਕਰਨ ਲਈ, ChromeVox 'ਤੇ o, n ਨੂੰ ਦਬਾਓ</translation>

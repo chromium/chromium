@@ -638,6 +638,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4455051983450390249">Telefonunuzdaki bildirimleri <ph name="DEVICE_TYPE" /> cihazınızda görün</translation>
 <translation id="445864333228800152">İyi akşamlar,</translation>
 <translation id="4458688154122353284">Ekran kaydını durdur</translation>
+<translation id="445923051607553918">Kablosuz ağa bağlan</translation>
 <translation id="4471354919263203780">Konuşma tanıma dosyaları indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4471432286288241507">{0,plural, =0{Cihazı şimdi güncelleyin}=1{Cihazı 1 saniye içinde güncelleyin}other{Cihazı # saniye içinde güncelleyin}}</translation>
 <translation id="4472575034687746823">Başlayın</translation>

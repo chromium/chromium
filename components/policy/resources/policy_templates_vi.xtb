@@ -1898,15 +1898,6 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
       Nếu bạn tắt chính sách này, thiết bị sẽ luôn tắt chế độ chuyển đổi nguồn điện vào giờ cao điểm.
 
       Nếu bạn không đặt chính sách này, thì ban đầu, chế độ chuyển đổi nguồn điện vào giờ cao điểm sẽ tắt. Người dùng không thể thay đổi tùy chọn cài đặt này.</translation>
-<translation id="2773036462435523078">Kích hoạt một thao tác khi máy tính ở trạng thái rảnh.
-
-      Nếu bạn đặt chính sách này, thì chính sách sẽ chỉ định khoảng thời gian không có hoạt động đầu vào của người dùng (tính bằng phút) trước khi <ph name="PRODUCT_NAME" /> thực hiện các thao tác được định cấu hình trong chính sách <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Nếu bạn không đặt chính sách này, thì hệ thống sẽ không thực hiện thao tác nào.
-
-      Ngưỡng tối thiểu là 5 phút.
-
-      "Hoạt động đầu vào của người dùng" do API Hệ điều hành xác định và bao gồm những hoạt động như di chuyển chuột hoặc gõ phím.</translation>
 <translation id="2773288106548584039">Hỗ trợ trình duyệt cũ</translation>
 <translation id="2780840673734667062">Tắt lựa chọn đăng nhập bằng các tài khoản Google bổ sung</translation>
 <translation id="2784880732336446591">Xóa dữ liệu duyệt web khi thoát</translation>

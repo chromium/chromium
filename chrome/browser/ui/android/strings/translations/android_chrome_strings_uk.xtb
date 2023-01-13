@@ -41,7 +41,6 @@
 <translation id="1204037785786432551">Завантажити дані за посиланням</translation>
 <translation id="1204692632633423444">Кнопка дії в Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Копіювати текст посилання</translation>
-<translation id="1208340532756947324">Щоб синхронізувати й персоналізувати дані на пристроях, увімкніть синхронізацію</translation>
 <translation id="1209206284964581585">Приховати</translation>
 <translation id="1227058898775614466">Історія навігації</translation>
 <translation id="1231733316453485619">Увімкнути синхронізацію?</translation>
@@ -318,7 +317,6 @@
 <translation id="2781151931089541271">Залишилась 1 с</translation>
 <translation id="2800066122460699237">Вкладку "<ph name="TAB_TITLE" />" буде закрито</translation>
 <translation id="281504910091592009">Переглядайте збережені паролі й керуйте ними в <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /></translation>
-<translation id="2818669890320396765">Щоб мати доступ до закладок на всіх своїх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="2827278682606527653">Меню картки зі стрічки відкрито на половину висоти</translation>
 <translation id="2830783625999891985">Вміст буфера обміну сховано</translation>
 <translation id="2838367486340230368">Пояснення про посібник щодо конфіденційності відкрито на половину висоти</translation>
@@ -468,7 +466,6 @@
 <translation id="3563767357928833671">Показано вміст буфера обміну</translation>
 <translation id="3566639033325271639">Оновити налаштування</translation>
 <translation id="3566923219790363270">Chrome готується до запуску VR. Перезапустіть Chrome пізніше.</translation>
-<translation id="3568688522516854065">Щоб мати доступ до вкладок з інших пристроїв, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="357465026686164600">Телефон як ключ безпеки</translation>
 <translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
 <translation id="3578024735349927859">Керуйте медіаконтентом, анонімними вкладками й іншими функціями через сповіщення</translation>
@@ -576,7 +573,6 @@
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4196597275619698563">Створити картку</translation>
 <translation id="4198423547019359126">Немає доступних місць для завантаження</translation>
-<translation id="4209895695669353772">Щоб отримувати персоналізовані пропозиції від Google, увімкніть синхронізацію</translation>
 <translation id="4214315110991671325">Якщо ви дозволите файли cookie, Chrome може використовувати їх для попереднього завантаження.</translation>
 <translation id="4225895483398857530">Кнопка на панелі інструментів</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
@@ -615,7 +611,6 @@
 <translation id="4452411734226507615">Закрити вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4461614516424362539">Коли ви зв’язуєте інший пристрій за допомогою QR-коду, він може використовувати цей телефон як ключ безпеки. Якщо видалити його, вам доведеться відсканувати QR-код, щоб знову зв’язати пристрій.</translation>
-<translation id="4472118726404937099">Щоб синхронізувати й персоналізувати дані на пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="4479839115899251637">Видалити зі списку читання</translation>
 <translation id="4479972344484327217">Встановлення модуля <ph name="MODULE" /> для Chrome…</translation>
 <translation id="4484496141267039529">Немає з’єднання. Повторіть спробу пізніше.</translation>
@@ -877,7 +872,6 @@
 <translation id="5859968346865909126">Її можна ввімкнути або вимкнути в налаштуваннях</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
-<translation id="5862731021271217234">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію</translation>
 <translation id="5864419784173784555">Очікується інше завантаження…</translation>
 <translation id="5865733239029070421">Автоматично надсилає статистику використання та звіти про аварійне завершення роботи в Google</translation>
 <translation id="5869522115854928033">Збережені паролі</translation>
@@ -1309,7 +1303,6 @@
 <translation id="8105613260829665809">Продовжуючи, ви приймаєте <ph name="BEGIN_TOS_LINK" />Умови використання<ph name="END_TOS_LINK" />.\nЩоб покращити додаток, Chrome надсилає дані про використання та збої в Google. <ph name="BEGIN_UMA_LINK" />Керувати<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Закрити параметри сортування</translation>
-<translation id="8109613176066109935">Щоб мати доступ до закладок на всіх своїх пристроях, увімкніть синхронізацію</translation>
 <translation id="8110024788458304985">Допомагати покращувати ефективність і функції Chrome</translation>
 <translation id="8110087112193408731">Показувати активність у Chrome у Цифровому добробуті?</translation>
 <translation id="8118117428362942925">Якщо тобі потрібна допомога, звернися до батька або матері (<ph name="PARENT_NAME" />)</translation>
@@ -1476,7 +1469,6 @@
 <translation id="906781307897697745">(<ph name="PRODUCT_NAME" />)</translation>
 <translation id="9069999660519089861">Немає непрочитаних сторінок</translation>
 <translation id="9070377983101773829">Почати голосовий пошук</translation>
-<translation id="9074336505530349563">Щоб отримувати персоналізовані пропозиції від Google, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Відвідані сайти в анонімному режимі не зберігаються</translation>
 <translation id="9086302186042011942">Синхронізація</translation>

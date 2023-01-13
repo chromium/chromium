@@ -1901,15 +1901,6 @@ Web e PWAs. No momento, com suporte apenas no
       Se a política for definida como "Desativada", a economia de energia no período de pico permanecerá inativa.
 
       Se a política não for definida, a economia de energia no período de pico será desativada inicialmente. Não é possível mudar essa configuração.</translation>
-<translation id="2773036462435523078">Aciona uma ação quando o computador está inativo.
-
-      Se esta política for definida, ela vai especificar após quantos minutos sem entradas do usuário o <ph name="PRODUCT_NAME" /> vai executar ações configuradas pela <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Se a política for deixada sem definição, nenhuma ação será executada.
-
-      O limite mínimo é de cinco minutos.
-
-      A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui ações como mover o mouse ou digitar no teclado.</translation>
 <translation id="2773288106548584039">Suporte a navegadores legados</translation>
 <translation id="2780840673734667062">Desativar o login com mais Contas do Google</translation>
 <translation id="2784880732336446591">Remover dados de navegação ao sair</translation>

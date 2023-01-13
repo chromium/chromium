@@ -41,7 +41,6 @@
 <translation id="1204037785786432551">Спампаваць па спасылцы</translation>
 <translation id="1204692632633423444">Кнопка дзеяння ў Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Капіраваць тэкст спасылкі</translation>
-<translation id="1208340532756947324">Каб сінхранізаваць і персаналізаваць даныя на ўсіх прыладах, уключыце сінхранізацыю</translation>
 <translation id="1209206284964581585">Схаваць гэты раз</translation>
 <translation id="1227058898775614466">Гісторыя навігацыі</translation>
 <translation id="1231733316453485619">Уключыць сінхранізацыю?</translation>
@@ -318,7 +317,6 @@
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
 <translation id="2800066122460699237">Укладка "<ph name="TAB_TITLE" />" будзе закрыта</translation>
 <translation id="281504910091592009">Праглядайце захаваныя паролі і кіруйце імі праз <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
-<translation id="2818669890320396765">Каб перанесці закладкі на ўсе прылады, увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю</translation>
 <translation id="2827278682606527653">Меню карткі стужкі адкрыта на палову вышыні</translation>
 <translation id="2830783625999891985">Змесціва буфера абмену схавана</translation>
 <translation id="2838367486340230368">Тлумачэнні адносна дапаможніка па прыватнасці разгорнуты на палову экрана</translation>
@@ -468,7 +466,6 @@
 <translation id="3563767357928833671">Паказваецца змесціва буфера абмену</translation>
 <translation id="3566639033325271639">Змяніць налады</translation>
 <translation id="3566923219790363270">Падтрымка VR у браўзеры Chrome яшчэ рыхтуецца. Перазапусціце яго пазней.</translation>
-<translation id="3568688522516854065">Каб бачыць укладкі з іншых сваіх прылад, увайдзіце і ўключыце сінхранізацыю</translation>
 <translation id="357465026686164600">Тэлефон як ключ бяспекі</translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3578024735349927859">Кіруйце мультымедыйным змесцівам, укладкамі ў рэжыме інкогніта і не толькі, выкарыстоўваючы апавяшчэнні</translation>
@@ -576,7 +573,6 @@
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4196597275619698563">Стварыць картку</translation>
 <translation id="4198423547019359126">Няма месца для спампоўкі</translation>
-<translation id="4209895695669353772">Каб атрымліваць прапановы персаналізаванага змесціва ад Google, уключыце сінхранізацыю</translation>
 <translation id="4214315110991671325">Калі вы дазволіце прымяняць файлы cookie, Chrome зможа выкарыстоўваць іх для перадзагрузкі.</translation>
 <translation id="4225895483398857530">Кнопка-ярлык на панэлі інструментаў</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
@@ -615,7 +611,6 @@
 <translation id="4452411734226507615">Закрыць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="4452548195519783679">Закладка дададзена ў папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4461614516424362539">Прывязаўшы іншую прыладу з дапамогай QR-кода, вы зможаце выкарыстоўваць з ёй гэты тэлефон як ключ бяспекі. Калі вы выдаліце яе са спіса звязаных прылад, вам трэба будзе адсканіраваць QR-код, каб звязаць яе зноў.</translation>
-<translation id="4472118726404937099">Каб сінхранізаваць і персаналізаваць прылады, увайдзіце і ўключыце сінхранізацыю</translation>
 <translation id="4479839115899251637">Выдаліць са спіса</translation>
 <translation id="4479972344484327217">Усталёўваецца <ph name="MODULE" /> для Chrome…</translation>
 <translation id="4484496141267039529">Няма падключэння. Паўтарыце спробу пазней.</translation>
@@ -877,7 +872,6 @@
 <translation id="5859968346865909126">Уключыць або выключыць яе можна ў наладах</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5860491529813859533">Уключыць</translation>
-<translation id="5862731021271217234">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю</translation>
 <translation id="5864419784173784555">Чаканне іншай спампоўкі…</translation>
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
@@ -1309,7 +1303,6 @@
 <translation id="8105613260829665809">Працягваючы, вы прымаеце <ph name="BEGIN_TOS_LINK" />Умовы выкарыстання<ph name="END_TOS_LINK" />.\nChrome адпраўляе даныя пра выкарыстанне і збоі ў Google, якія дапамогуць палепшыць праграму. <ph name="BEGIN_UMA_LINK" />Кіраваць<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Закрыць параметры сартавання</translation>
-<translation id="8109613176066109935">Каб мець свае закладкі на ўсіх прыладах, уключыце сінхранізацыю</translation>
 <translation id="8110024788458304985">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chrome</translation>
 <translation id="8110087112193408731">Паказваць у службе лічбавага камфорту вашы дзеянні ў Chrome?</translation>
 <translation id="8118117428362942925">Калі табе патрабуецца дапамога, звярніся да аднаго з бацькоў (<ph name="PARENT_NAME" />)</translation>
@@ -1476,7 +1469,6 @@
 <translation id="906781307897697745">месцазнаходжанне: <ph name="PRODUCT_NAME" /></translation>
 <translation id="9069999660519089861">Няма непрачытаных старонак</translation>
 <translation id="9070377983101773829">Пачаць галасавы пошук</translation>
-<translation id="9074336505530349563">Каб Google рэкамендаваў вам персаналізаванае змесціва, увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Звесткі аб сайтах, якія вы наведваеце ў рэжыме інкогніта, не захоўваюцца</translation>
 <translation id="9086302186042011942">Сінхранізацыя</translation>

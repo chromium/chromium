@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Non hai ningún botón posterior</translation>
 <translation id="2911433807131383493">Abrir titorial de ChromeVox</translation>
 <translation id="2912405967290226587">Pasa tres dedos cara á dereita</translation>
+<translation id="2919107550468490321">Modo persistente intelixente activado</translation>
 <translation id="2937799153569150791">Non hai ningunha cabeceira posterior de nivel 3</translation>
 <translation id="2942710183375260152">Azul lousa escuro</translation>
 <translation id="2943596527105977722">Amarelo dourado escuro</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Reducir ton</translation>
 <translation id="3009352964623081324">Buscar + O e despois S. Utilízao para instalar, xestionar e personalizar as voces.</translation>
 <translation id="3014130421870723208">@ed 8pun</translation>
+<translation id="3018210433491759145">ChromeVox está cargando</translation>
 <translation id="3030432017085518523">Botón de opción do elemento do menú</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apóstrofo}other{# apóstrofos}}</translation>
 <translation id="3040901448410802366">Indicador de progreso</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3813387282697781382">Coral claro</translation>
 <translation id="3816633764618089385">Seguinte ficheiro multimedia</translation>
+<translation id="3821689185319271077">Non hai ningunha áncora de punteiro</translation>
 <translation id="3840823741487267909">Abreviación</translation>
 <translation id="3841319830220785495">Voz natural predeterminada</translation>
 <translation id="385383972552776628">Abrir páxina de opcións</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulario</translation>
 <translation id="4601367666219428522">táb <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorando seguinte pulsación de tecla</translation>
+<translation id="4617384941327705512">Modo persistente intelixente desactivado</translation>
 <translation id="4623097797855662355">Colofón</translation>
 <translation id="4624970070706497034">Os atallos de teclado de TalkBack xa non están personalizados para Chromebooks. Podes seguir usando esta función, pero cos predeterminados. Preme Buscar + A e despois K para ver os atallos de teclado dispoñibles. Se queres usar TalkBack, volve premer o comando.</translation>
 <translation id="463135993322337640">Para obter máis información sobre as novidades, preme ChromeVox seguido da tecla O e, despois, a N</translation>

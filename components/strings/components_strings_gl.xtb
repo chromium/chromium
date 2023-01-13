@@ -800,6 +800,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2986368408720340940">Este método de recollida non está dispoñible. Proba cun diferente.</translation>
 <translation id="2987034854559945715">Non se atopou ningunha función que coincida coa busca</translation>
 <translation id="2989742184762224133">Dúas grampas na parte superior</translation>
+<translation id="2990882401221831923">A lista de tarxetas de crédito está pechada.</translation>
 <translation id="2991174974383378012">Compartindo con sitios web</translation>
 <translation id="299122504639061328">Xestionar o teu motor de busca predeterminado e a busca de sitios</translation>
 <translation id="2991571918955627853">Non podes visitar <ph name="SITE" /> neste momento porque o sitio web utiliza HSTS. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
@@ -1584,6 +1585,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4976702386844183910">Visitouse o <ph name="DATE" /> por última vez</translation>
 <translation id="498323057460789381">Erro de validación do esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Queres utilizar o micrófono?</translation>
+<translation id="4988822846878841743">Lista de tarxetas de crédito que deben cubrirse de modo táctil a altura media.</translation>
 <translation id="4989163558385430922">Ver todo</translation>
 <translation id="4989542687859782284">Experimentos non dispoñibles</translation>
 <translation id="4989809363548539747">Este plugin non é compatible</translation>
@@ -1712,7 +1714,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5284295735376057059">Propiedades do documento</translation>
 <translation id="528468243742722775">Final</translation>
 <translation id="5285570108065881030">Mostrar todos os contrasinais gardados</translation>
-<translation id="5287240709317226393">Mostrar cookies</translation>
 <translation id="5287456746628258573">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais ou números de tarxetas de crédito) cando se lle envía.</translation>
 <translation id="5288108484102287882">A validación dos valores da política xerou advertencias</translation>
 <translation id="5288393065350884210">Contabilidade e auditoría</translation>
@@ -1932,6 +1933,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5863847714970149516">A páxina á que vas acceder pode tentar aplicar cargos</translation>
 <translation id="5866257070973731571">Engade un número de teléfono</translation>
 <translation id="5866898949289125849">Estás vendo unha páxina de ferramentas de programador</translation>
+<translation id="5868548454963263350">Lista de tarxetas de crédito que deben cubrirse de modo táctil a altura total.</translation>
 <translation id="5869405914158311789">Non se pode acceder a este sitio</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
 <translation id="5873013647450402046">O teu banco quere confirmar a túa identidade.</translation>
@@ -2644,6 +2646,7 @@ Detalles adicionais:
 <translation id="7653957176542370971">A folla do controlador de pagos está pechada</translation>
 <translation id="7654909834015434372">Ao editar as anotacións, este documento volverá á orientación orixinal</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>
+<translation id="7656935528854393684">Lista de tarxetas de crédito que deben cubrirse de modo táctil.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Sobre Kaku-8</translation>
 <translation id="7659878911471462949">Bágoas de ledicia</translation>
@@ -3191,7 +3194,6 @@ Detalles adicionais:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para establecer Chrome como navegador predeterminado do sistema na configuración de iOS, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="9096679202588811390">Programas de televisión</translation>
 <translation id="9101630580131696064">Bandexa 1</translation>
-<translation id="9102081333385212048">Os ficheiros que copies ou movas envíanselle a Google Cloud ou a terceiros para analizalos. Por exemplo, poderíase comprobar se conteñen datos confidenciais ou software malicioso.</translation>
 <translation id="9103537084693478942">Software de vídeo</translation>
 <translation id="9103872766612412690">Normalmente, <ph name="SITE" /> encripta a túa información para protexela. Nesta ocasión, cando Chromium tentou conectar con <ph name="SITE" />, o sitio web devolveu credenciais estrañas e incorrectas. É posible que un atacante tentase facerse pasar por <ph name="SITE" /> ou que a pantalla de inicio de sesión de wifi interrompese a conexión. Non obstante, a túa información segue a salvo porque Chromium detivo a conexión antes de intercambiar datos.</translation>
 <translation id="9106062320799175032">Engade un enderezo de facturación</translation>

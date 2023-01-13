@@ -251,6 +251,7 @@
 <translation id="6598877126913850652">Перейти до налаштувань сповіщень Chromium</translation>
 <translation id="6613594504749178791">Ваші зміни почнуть діяти після наступного перезапуску Chromium.</translation>
 <translation id="665732753414869868">Веб-переглядачу Chromium потрібен доступ до камери, щоб створити 3D-карту вашого оточення</translation>
+<translation id="6663852025006259149">Сайти, імовірно, працюватимуть належним чином, але дані про ваші дії на них буде очищено, коли ви закриєте всі вікна в Chromium</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
 <translation id="668175097507315160">Chromium OS не вдалося синхронізувати ваші дані через помилку входу.</translation>
 <translation id="6709350901466051922">Веб-переглядачу Chromium потрібен доступ до мікрофона для цього сайту</translation>
@@ -381,5 +382,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="945990405696787151">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система macOS 10.13 або новішої версії. На цьому комп’ютері встановлено OS X 10.11.</translation>
 <translation id="965162752251293939">Хто користується веб-переглядачем Chromium?</translation>
 <translation id="967427899662692980">Отримайте найвищий рівень безпеки в Chromium</translation>
+<translation id="9792300276217204">Завжди очищати дані сайтів із пристрою, коли ви закриваєте Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

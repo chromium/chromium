@@ -219,6 +219,7 @@
 <translation id="2888807692577297075">Нема ставки што се совпаѓаат со &lt;b&gt;„<ph name="SEARCH_STRING" />“&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Информации</translation>
 <translation id="2902734494705624966">САД продолжена</translation>
+<translation id="2904378509913846215">Веќе постои папка со име „<ph name="FILENAME" />“. Дали сакате да ја замените со таа што ја преместувате?</translation>
 <translation id="290843123675549676">марати</translation>
 <translation id="2923240520113693977">естонски</translation>
 <translation id="2938685643439809023">монголски</translation>
@@ -638,6 +639,7 @@
 <translation id="6241349547798190358">холандски (Белгија)</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
 <translation id="6269630227984243955">малајски</translation>
+<translation id="6271903698064569429">Датотеките не може да се прикачат бидејќи нема доволно капацитет на „<ph name="SHARED_DRIVE_NAME" />“.</translation>
 <translation id="6287852322318138013">Изберете апликација за да ја отворите оваа датотека</translation>
 <translation id="6295542640242147836">Заклучи SIM</translation>
 <translation id="6296410173147755564">Погрешен PUK</translation>

@@ -219,6 +219,7 @@
 <translation id="2888807692577297075">No items match &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Information</translation>
 <translation id="2902734494705624966">US extended</translation>
+<translation id="2904378509913846215">A folder named '<ph name="FILENAME" />' already exists. Do you want to replace it with the one that you're moving?</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonian</translation>
 <translation id="2938685643439809023">Mongolian</translation>
@@ -639,6 +640,7 @@
 <translation id="6241349547798190358">Dutch (Belgium)</translation>
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, connect</translation>
 <translation id="6269630227984243955">Malay</translation>
+<translation id="6271903698064569429">Files can't be uploaded because '<ph name="SHARED_DRIVE_NAME" />' doesn't have enough storage.</translation>
 <translation id="6287852322318138013">Select an app to open this file</translation>
 <translation id="6295542640242147836">Lock SIM</translation>
 <translation id="6296410173147755564">Invalid PUK</translation>

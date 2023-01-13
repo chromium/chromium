@@ -36,7 +36,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="2599300881200251572">Este servicio permite las conexiones entrantes de los clientes de Escritorio Remoto de Chrome.</translation>
 <translation id="2647232381348739934">Servicio de Chromoting</translation>
 <translation id="2676780859508944670">Trabajando…</translation>
-<translation id="2692522824157224199">Copyright 2022 Google LLC. Todos los derechos reservados.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">No se ha podido completar la autenticación. Vuelve a iniciar sesión.</translation>
 <translation id="2803375539583399270">Introducir PIN</translation>
@@ -73,7 +72,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="4257751272692708833">Redirección de URL de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">El código de acceso no es válido. Vuelve a intentarlo.</translation>
 <translation id="4281844954008187215">Términos del Servicio</translation>
-<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="4405930547258349619">Biblioteca principal</translation>
 <translation id="443560535555262820">Abrir preferencias de accesibilidad</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>

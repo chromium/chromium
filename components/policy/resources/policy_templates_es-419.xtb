@@ -1901,15 +1901,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si inhabilitas la política, la carga fuera del horario de mayor consumo se mantendrá desactivada.
 
       Si no la estableces, la carga fuera del horario de mayor consumo estará desactivada en primera instancia. Los usuarios no podrán cambiar esta configuración.</translation>
-<translation id="2773036462435523078">Activa una respuesta cuando la computadora está inactiva.
-
-      Si se establece esta política, especificará el período sin entrada del usuario (en minutos) antes de que <ph name="PRODUCT_NAME" /> ejecute respuestas configuradas mediante la política <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Si no se establece esta política, no se ejecutará ninguna respuesta.
-
-      El umbral mínimo es de 5 minutos.
-
-      La "Entrada del usuario" se define mediante las APIs del sistema operativo y comprende acciones como mover el mouse o usar el teclado.</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores heredados</translation>
 <translation id="2780840673734667062">Inhabilitar el acceso con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borra los datos de navegación al salir</translation>

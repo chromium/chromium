@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Geen volgende knop</translation>
 <translation id="2911433807131383493">ChromeVox-handleiding openen</translation>
 <translation id="2912405967290226587">Swipe met drie vingers naar rechts</translation>
+<translation id="2919107550468490321">Slimme sticky modus aan</translation>
 <translation id="2937799153569150791">Geen volgende kop van niveau 3</translation>
 <translation id="2942710183375260152">Donker leisteenblauw</translation>
 <translation id="2943596527105977722">Donker guldenroedegeel</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Toonhoogte verlagen</translation>
 <translation id="3009352964623081324">Zoeken + O, dan S. Gebruik dit om stemmen te installeren, te beheren en aan te passen.</translation>
 <translation id="3014130421870723208">8-punts: @-veld bewerken</translation>
+<translation id="3018210433491759145">ChromeVox wordt geladen</translation>
 <translation id="3030432017085518523">Keuzerondje voor menu-item</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}other{# apostrofs}}</translation>
 <translation id="3040901448410802366">Voortgangsindicator</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Lichtkoraal</translation>
 <translation id="3816633764618089385">Volgende media</translation>
+<translation id="3821689185319271077">Geen aanwijzeranker</translation>
 <translation id="3840823741487267909">Afkorting</translation>
 <translation id="3841319830220785495">Standaard natuurlijke stem</translation>
 <translation id="385383972552776628">Pagina met opties openen</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulier</translation>
 <translation id="4601367666219428522">tabel <ph name="TABLENAME" /> <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Volgende toetsaanslag wordt genegeerd</translation>
+<translation id="4617384941327705512">Slimme sticky modus uit</translation>
 <translation id="4623097797855662355">Colofon</translation>
 <translation id="4624970070706497034">TalkBack biedt geen aanpassingen meer voor Chromebooks. Je kunt TalkBack nog steeds gebruiken, maar dan met de standaard TalkBack-sneltoetsen. Druk op Zoeken + A en dan K om beschikbare sneltoetsen te bekijken. Als je TalkBack nog steeds wilt gebruiken, druk je opnieuw op de opdracht.</translation>
 <translation id="463135993322337640">Druk in ChromeVox op o en dan n voor meer informatie over wat er nieuw is</translation>

@@ -638,6 +638,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4455051983450390249">Se aviseringar från telefonen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Hej!</translation>
 <translation id="4458688154122353284">Stoppa skärminspelningen</translation>
+<translation id="445923051607553918">Anslut till wifi-nätverk</translation>
 <translation id="4471354919263203780">Filer för taligenkänning laddas ned … <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Uppdatera enheten nu}=1{Uppdatera enheten inom 1 sekund}other{Uppdatera enheten inom # sekunder}}</translation>
 <translation id="4472575034687746823">Kom igång</translation>

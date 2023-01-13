@@ -13,7 +13,6 @@
 <translation id="1008186147501209563">ブックマークをエクスポート</translation>
 <translation id="1008557486741366299">後で</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{データ保護のため、2 か月間アクセスしていないサイトから権限を削除しました}other{データ保護のため、2 か月間アクセスしていないサイトから権限を削除しました}}</translation>
-<translation id="1009476156254802388"><ph name="WEB_DRIVE" /> 内の場所</translation>
 <translation id="1009663062402466586">ゲーム操作キーをご利用いただけるようになりました</translation>
 <translation id="1010498023906173788">このタブはシリアルポートに接続しています。</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ページが応答しません}other{ページが応答しません}}</translation>
@@ -1609,7 +1608,6 @@
 <translation id="2428978615149723410">これらのカート</translation>
 <translation id="2431027948063157455">Google アシスタントを読み込めませんでした。ネットワーク接続を確認してから、もう一度お試しください。</translation>
 <translation id="243179355394256322">お客様の組織では、デバイスの登録は権限のあるユーザーしか行えません。このユーザーにはデバイスを登録する権限がありません。管理コンソールの [ユーザー] で、ユーザーに「Google Meet ハードウェアの登録」管理者権限があることをご確認ください。</translation>
-<translation id="243275146591958220">ダウンロードをキャンセル</translation>
 <translation id="2433452467737464329">ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2433836460518180625">デバイスのロック解除のみ</translation>
@@ -2585,7 +2583,6 @@
 <translation id="3335947283844343239">閉じたタブを開く</translation>
 <translation id="3336855445806447827">わからない</translation>
 <translation id="3337568642696914359">サイトにプロトコルの処理を許可しない</translation>
-<translation id="3340251637492627067">組織が対象のダウンロードを <ph name="WEB_DRIVE" /> に保存するよう求めています。ログインすると、固有の認証トークンが保存され、以降のすべての対象となるダウンロードで使用されます。</translation>
 <translation id="3340620525920140773"><ph name="FILE_NAME" /> のダウンロードが完了しました。</translation>
 <translation id="3341699307020049241">PIN が正しくありません。あと <ph name="RETRIES" /> 回試行できます。</translation>
 <translation id="3341703758641437857">ファイルの URL へのアクセスを許可する</translation>
@@ -3188,7 +3185,6 @@
 <translation id="3884152383786131369">複数の言語に対応しているウェブ コンテンツでは、次のリストの最初にある対応言語が使用されます。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新は管理者によって管理されています</translation>
 <translation id="3887022758415973389">デバイスリストを表示する</translation>
-<translation id="3888053818972567950"><ph name="WEB_DRIVE" /> に接続</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> でメモをとる</translation>
 <translation id="3888586133700543064">アシスタントで発生した問題を詳しく把握するために、情報の提供をお願いいたします。ご提供いただいた情報は最大 90 日間保存され、エンジニアリングとフィードバックの担当者のみが閲覧します。</translation>
 <translation id="3890064827463908288">Wi-Fi 同期を使用するには Chrome 同期をオンにしてください</translation>
@@ -3544,7 +3540,6 @@
 <translation id="4217558091331485702">開く前にスキャンする</translation>
 <translation id="4217571870635786043">音声入力</translation>
 <translation id="4218081191298393750">スピーカー アイコンをクリックしてこのタブをミュートする</translation>
-<translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">有効化中にエラーが発生しました。</translation>
 <translation id="4223845867739585293">パスキーを作成する</translation>
 <translation id="4225397296022057997">すべてのサイト</translation>
@@ -3645,7 +3640,6 @@
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
 <translation id="4314497418046265427">スマートフォンと <ph name="DEVICE_TYPE" /> をリンクすれば、生産性が向上します</translation>
 <translation id="4314815835985389558">同期を管理</translation>
-<translation id="4315933848520197627">アカウントのリンク解除</translation>
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
 <translation id="4317733381297736564">アプリ内購入</translation>
 <translation id="4317820549299924617">確認が失敗しました</translation>
@@ -3747,6 +3741,7 @@
 <translation id="4411719918614785832">これらのパスキーは、このパソコンの Windows Hello に保存されます。Google アカウントには保存されません。</translation>
 <translation id="4412632005703201014">Chrome アプリはプログレッシブ ウェブアプリに移行しています。この Chrome アプリは組織によりブラウザにインストールされたものです。アプリのリストからプログレッシブ ウェブアプリを開くには、まず Chrome アプリをアンインストールするよう管理者に依頼します。その間は、<ph name="EXTENSION_LAUNCH_URL" /> にアクセスして、ウェブで <ph name="EXTENSION_NAME" /> を開いてください。</translation>
 <translation id="4412698727486357573">ヘルプセンター</translation>
+<translation id="4412992751769744546">サードパーティの Cookie を許可</translation>
 <translation id="44141919652824029">接続された USB デバイスのリストを「<ph name="APP_NAME" />」が取得することを許可しますか？</translation>
 <translation id="4414232939543644979">新しいシークレット ウインドウ(&amp;I)</translation>
 <translation id="4414648713167199100">Chromebook のモバイルデータを使用します。携帯通信会社によっては追加料金が発生する場合があります。バッテリー使用量が増える可能性があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4193,7 +4188,6 @@
 <translation id="4828567746430452681">「<ph name="EXTENSION_NAME" />」は現在サポートされていません</translation>
 <translation id="482952334869563894">ベンダー <ph name="VENDOR_ID" /> の USB デバイス</translation>
 <translation id="4829768588131278040">PIN を設定</translation>
-<translation id="4830026649400230050">対象となるすべてのダウンロードは、組織の <ph name="WEB_DRIVE" /> アカウントに送られます。</translation>
 <translation id="4830502475412647084">OS アップデートのインストール中</translation>
 <translation id="4833683849865011483">プリント サーバーで 1 個のプリンタが見つかりました</translation>
 <translation id="4836504898754963407">フィンガープリントの管理</translation>
@@ -4589,7 +4583,6 @@
 <translation id="520621735928254154">証明書のインポート エラー</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> により、ご使用の Chrome OS デバイスが対象かどうかの確認が行われます。</translation>
-<translation id="5208548918290612795"><ph name="WEB_DRIVE" /> 認証トークンの保存</translation>
 <translation id="5208988882104884956">半角</translation>
 <translation id="520902706163766447">Chrome UI 上部のポップアップ バブルで、現在開いているタブを検索できるようにします。</translation>
 <translation id="5209320130288484488">デバイスが見つかりませんでした</translation>
@@ -5753,7 +5746,6 @@
 <translation id="6294759976468837022">自動スキャンの速度</translation>
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6295855836753816081">保存しています...</translation>
-<translation id="629730747756840877">アカウント</translation>
 <translation id="6298962879096096191">Google Play を使用して Android アプリをインストールします</translation>
 <translation id="6300125580697461004">省エネツールに関するフィードバックを送信する</translation>
 <translation id="6300177430812514606">データの送受信の完了を許可しないサイト</translation>
@@ -6190,7 +6182,6 @@
 <translation id="6709802811835274327">Cookie を許可した場合、Chrome はプリロードの際に Cookie を使用することがあります。</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6710394144992407503">ウェブページにテキストを入力するときにスペルミスがないか確認する</translation>
-<translation id="6711146141291425900">ダウンロードするには <ph name="WEB_DRIVE" /> アカウントをリンクしてください</translation>
 <translation id="6712943853047024245">このユーザー名で <ph name="WEBSITE" /> のパスワードはすでに保存されています</translation>
 <translation id="6713233729292711163">仕事用プロファイルを追加</translation>
 <translation id="6713668088933662563">翻訳するか確認しない言語</translation>
@@ -6494,7 +6485,6 @@
 <translation id="6978121630131642226">検索エンジン</translation>
 <translation id="6979041727349121225">省エネモード</translation>
 <translation id="6979044105893951891">管理対象のゲスト セッションの開始と終了</translation>
-<translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6979440798594660689">ミュート（デフォルト）</translation>
 <translation id="6979737339423435258">全期間</translation>
 <translation id="6981553172137913845">シークレット モードを使うには、その他アイコンのメニューからシークレット ウィンドウを開きます</translation>
@@ -6625,7 +6615,6 @@
 <translation id="7090160970140261931"><ph name="DEVICE_TYPE" /> でウェブサイトや Android アプリの利用に使用するアカウントを追加できます。また、Android アプリでどのアカウントを使用するかも管理できます。</translation>
 <translation id="7090714929377281710">アクセス ポイントを自動的にオフにする</translation>
 <translation id="7093220653036489319">クイック アンサー</translation>
-<translation id="7093416310351037609">お客様の組織では、データの安全性とセキュリティを確保するため、対象となるすべてのダウンロードを組織の <ph name="WEB_DRIVE" /> アカウントに保存することが要件となっています。</translation>
 <translation id="7093866338626856921">デバイス <ph name="HOSTNAMES" /> とのデータ交換</translation>
 <translation id="7094680343477712655"><ph name="DEVICE_NAME" /> でキャスト リクエストを承認してください。</translation>
 <translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
@@ -7417,7 +7406,6 @@
 <translation id="7842062217214609161">ショートカットなし</translation>
 <translation id="7842692330619197998">新しいアカウントを作成するには、g.co/ChromeEnterpriseAccount にアクセスします。</translation>
 <translation id="784273751836026224">Linux のアンインストール</translation>
-<translation id="7843786652787044762"><ph name="WEB_DRIVE" /> にログイン</translation>
 <translation id="7844992432319478437">差分の更新中</translation>
 <translation id="7846634333498149051">キーボード</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> に切り替えるには Ctrl + Alt+ S キーを押します</translation>
@@ -7718,7 +7706,6 @@
 <translation id="8101409298456377967">パスワードを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">カスタム色</translation>
 <translation id="8101987792947961127">次回の再起動時に Powerwash が必要</translation>
-<translation id="81020759409809034">ローカルの場所</translation>
 <translation id="8102139037507939978">system_logs.txt から個人を特定できる情報を削除する。</translation>
 <translation id="810362914482827094">パスキーを検索</translation>
 <translation id="8104088837833760645">eSIM プロファイルのダウンロード</translation>
@@ -8014,7 +8001,6 @@
 <translation id="8376451933628734023">このウェブアプリが別のアプリになりすまそうとしている場合は、アンインストールしてください。</translation>
 <translation id="8377625247046155446">このパスキーはこのデバイスにのみ保存されます。すべてのシークレット ウィンドウを閉じた後も、パスキーはこのデバイスには残ります。</translation>
 <translation id="8378714024927312812">組織によって管理されています</translation>
-<translation id="8379156816349755485">ログインすると、固有の認証トークンが保存され、以降のすべての対象となるダウンロードで使用されます。</translation>
 <translation id="8379878387931047019">このデバイスでは、このウェブサイトからリクエストされているセキュリティ キーのタイプはサポートされていません。</translation>
 <translation id="8379991678458444070">このタブをブックマークに追加すると、すばやくこのタブに戻ることができます</translation>
 <translation id="8380266723152870797">ウィンドウ名</translation>
@@ -8295,6 +8281,7 @@
 <translation id="8648408795949963811">夜間モードの色温度</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" /> など</translation>
 <translation id="864892689521194669">ChromeOS Flex の機能と動作の改善に協力する</translation>
+<translation id="8649026945479135076">多くのサイトでは、アクセスしたユーザーの興味 / 関心を記憶して、エクスペリエンスをカスタマイズするのが一般的です。そうしたサイトでは、ユーザーの興味 / 関心についての情報を Chrome に保存する場合もあります。</translation>
 <translation id="8650543407998814195">古いプロフィールにアクセスすることはできませんが、削除することはできます。</translation>
 <translation id="8651585100578802546">ページを再読み込み</translation>
 <translation id="8652400352452647993">拡張機能のパッケージ化のエラー</translation>
@@ -8846,7 +8833,6 @@
 <translation id="9137157311132182254">優先する検索エンジン</translation>
 <translation id="9137916601698928395"><ph name="USER" /> としてリンクを開く</translation>
 <translation id="9138978632494473300">ショートカットを次の場所に追加:</translation>
-<translation id="9139258866388561662">ダウンロードを完了するには <ph name="WEB_DRIVE" /> にログインしてください</translation>
 <translation id="9139988741193276691">Linux は設定中です</translation>
 <translation id="9140067245205650184">サポートされていない機能フラグ <ph name="BAD_FLAG" /> が使用されています。これにより、安全性とセキュリティが損なわれます。</translation>
 <translation id="9142637293078737510">イメージ エイリアス</translation>

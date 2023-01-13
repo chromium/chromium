@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">ບໍ່ມີປຸ່ມຖັດໄປ</translation>
 <translation id="2911433807131383493">ເປີດການແນະນໍາ ChromeVox</translation>
 <translation id="2912405967290226587">ປັດສາມນິ້ວມືໄປຂວາ</translation>
+<translation id="2919107550468490321">ໂໝດສະຕິກກີ້ອັດສະລິຍະເປີດຢູ່</translation>
 <translation id="2937799153569150791">ບໍ່ມີຫົວຂໍ້ລະດັບ 3 ຖັດໄປ</translation>
 <translation id="2942710183375260152">ສີຟ້າອົມເທົາເຂັ້ມ</translation>
 <translation id="2943596527105977722">ສີໂກນເດິນຣອດເຂັ້ມ</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">ຜ່ອນລະດັບສຽງລົງ</translation>
 <translation id="3009352964623081324">ຊອກຫາ + O, ຈາກນັ້ນ S. ໃຊ້ເພື່ອຕິດຕັ້ງ, ຈັດການ ແລະ ປັບແຕ່ງສຽງ.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ກຳລັງໂຫຼດ ChromeVox</translation>
 <translation id="3030432017085518523">ປຸ່ມ​ວິ​ທະ​ຍຸ​ລາຍ​ການ​ເມ​ນູ</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{ເຄື່ອງໝາຍ (')}other{# ເຄື່ອງໝາຍ (')}}</translation>
 <translation id="3040901448410802366">ຕົວຊີ້ບອກຄວາມຄືບໜ້າ</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>
 <translation id="3813387282697781382">ສີສົ້ມອົມຊົມພູອ່ອນ</translation>
 <translation id="3816633764618089385">ມີເດຍ​ຕໍ່​ໄປ</translation>
+<translation id="3821689185319271077">ບໍ່ມີ Anchor ຕົວຊີ້</translation>
 <translation id="3840823741487267909">ຄຳຫຍໍ້</translation>
 <translation id="3841319830220785495">ສຽງແບບທຳມະຊາດເລີ່ມຕົ້ນ</translation>
 <translation id="385383972552776628">ເປີດ​ຫນ້າ​ທາງ​ເລືອກ</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ແບບຟອມ</translation>
 <translation id="4601367666219428522">ຕາຕະລາງ <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">ບໍ່ສົນໃຈການກົດປຸ່ມຕໍ່​ໄປ</translation>
+<translation id="4617384941327705512">ໂໝດສະຕິກກີ້ອັດສະລິຍະປິດຢູ່</translation>
 <translation id="4623097797855662355">ຂໍ້ມູນບັນນານຸກົມ</translation>
 <translation id="4624970070706497034">TalkBack ບໍ່ສາມາດປັບແຕ່ງສຳລັບ Chromebook ໄດ້ອີກຕໍ່ໄປແລ້ວ. ທ່ານຍັງຄົງສາມາດໃຊ້ມັນໄດ້, ແຕ່ໃຊ້ທາງລັດແປ້ນພິມ TalkBack ເລີ່ມຕົ້ນແທນ. ກົດ Search+A, ຈາກນັ້ນກົດ K ເພື່ອເບິ່ງທາງລັດທີ່ສາມາດໃຊ້ໄດ້. ຫາກທ່ານຍັງຄົງຢາກໃຊ້ TalkBack ຢູ່, ໃຫ້ກົດຄຳສັ່ງອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="463135993322337640">ກົດ ChromeVox o, n ເພື່ອຊອກຮູ້ວ່າມີຫຍັງໃໝ່</translation>

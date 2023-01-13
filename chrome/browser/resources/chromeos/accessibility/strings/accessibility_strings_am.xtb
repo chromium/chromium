@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">ምንም ቀጣይ አዝራር የለም</translation>
 <translation id="2911433807131383493">ChromeVox አጋዥ ስልጠናን ይክፈቱ</translation>
 <translation id="2912405967290226587">ሦስት ጣቶችን ወደ ቀኝ ያንሸራትቱ</translation>
+<translation id="2919107550468490321">ዘመናዊ ተለጣፊ ሁነታ በርቷል</translation>
 <translation id="2937799153569150791">ምንም ቀጣይ የደረጃ 3 ርዕስ የለም</translation>
 <translation id="2942710183375260152">ደማቅ መከለያ ሰማያዊ</translation>
 <translation id="2943596527105977722">ጠቆር ያለ ወርቃማ በትር</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">የድምጽ ቅጥነት ይቀንሱ</translation>
 <translation id="3009352964623081324">+ O፣ ከዚያ Sን ይፈልጉ። ድምፆችን ለመጫን፣ ለማቀናበር እና ብጁ ለማድረግ ይጠቀሙ።</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox በመጫን ላይ ነው</translation>
 <translation id="3030432017085518523">የምናሌ ንጥል ሬዲዮ አዝራር</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{ትእምርተ ጭረት}one{# ትእምርተ ጭረቶች}other{# ትእምርተ ጭረቶች}}</translation>
 <translation id="3040901448410802366">የሂደት አመልካች</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">ቪዲዮ</translation>
 <translation id="3813387282697781382">ፈዛዛ አረንጓዴ</translation>
 <translation id="3816633764618089385">ቀጣይ ሚዲያ</translation>
+<translation id="3821689185319271077">ምንም ጠቋሚ መልህቅ የለም</translation>
 <translation id="3840823741487267909">ምሕጻረ ቃል</translation>
 <translation id="3841319830220785495">ነባሪ የተፈጥሮ ድምፅ</translation>
 <translation id="385383972552776628">የአማራጮች ገጹን ይክፈቱ</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ቅጽ</translation>
 <translation id="4601367666219428522">ሠንጠረዥ <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">ቀጣይ ቁልፍ መጫንን ችላ ብሎ በመተው ላይ</translation>
+<translation id="4617384941327705512">ዘመናዊ ተለጣፊ ሁነታ ጠፍቷል</translation>
 <translation id="4623097797855662355">ኮሎፎን</translation>
 <translation id="4624970070706497034">TalkBack ከአሁን በኋላ ለChromebooks ማበጀትን አያቀርብም። አሁንም እርስዎ ሊጠቀሙበት ይችላሉ፣ ነገር ግን የTalkBack ነባሪ የቁልፍ ሰሌዳ አቋራጭን ይጠቀሙ። ተገኚ አቋራጮችን ለማየት Search+A፣ ከዚያ K ይጫኑ። አሁንም TalkBackን መጠቀም ከፈለጉ ትዕዛዙን በድጋሚ ይጫኑ።</translation>
 <translation id="463135993322337640">ምን አዲስ ነገር እንዳለ ለማወቅ ChromeVox o፣ n ይጫኑ</translation>

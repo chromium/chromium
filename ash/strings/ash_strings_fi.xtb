@@ -638,6 +638,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4455051983450390249">Katso puhelimen ilmoituksia tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Hyvää iltaa</translation>
 <translation id="4458688154122353284">Lopeta näytön tallennus</translation>
+<translation id="445923051607553918">Yhdistä Wi-Fi-verkkoon</translation>
 <translation id="4471354919263203780">Ladataan puheentunnistustiedostoja… <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Päivitä laite nyt}=1{Päivitä laite 1 sekunnin kuluessa}other{Päivitä laite # sekunnin kuluessa}}</translation>
 <translation id="4472575034687746823">Aloita</translation>

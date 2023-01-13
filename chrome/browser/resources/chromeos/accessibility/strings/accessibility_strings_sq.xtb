@@ -291,6 +291,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2909584066358367921">Nuk ka buton "Tjetër"</translation>
 <translation id="2911433807131383493">Hap ndihmën e ChromeVox</translation>
 <translation id="2912405967290226587">Rrëshqit shpejt tre gishta djathtas</translation>
+<translation id="2919107550468490321">"Modaliteti 'i ngjitur' inteligjent" është aktiv</translation>
 <translation id="2937799153569150791">Nuk ka titull tjetër të nivelit 3</translation>
 <translation id="2942710183375260152">Blu rrasë e errët</translation>
 <translation id="2943596527105977722">Purtekë e artë e errët</translation>
@@ -305,6 +306,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2999559350546931576">Ul tonin</translation>
 <translation id="3009352964623081324">Tasti "Search" + O, më pas S. Përdore për të instaluar, menaxhuar dhe personalizuar zërat.</translation>
 <translation id="3014130421870723208">@ed me 8 pika</translation>
+<translation id="3018210433491759145">ChromeVox po ngarkohet</translation>
 <translation id="3030432017085518523">Butoni i radios i artikullit të menysë</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrofë}other{# apostrofa}}</translation>
 <translation id="3040901448410802366">Treguesi i progresit</translation>
@@ -439,6 +441,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Korale e çelur</translation>
 <translation id="3816633764618089385">Media tjetër</translation>
+<translation id="3821689185319271077">Nuk ka spirancë treguesi</translation>
 <translation id="3840823741487267909">Shkurtim</translation>
 <translation id="3841319830220785495">Zëri i parazgjedhur natyral</translation>
 <translation id="385383972552776628">Hap faqen e opsioneve</translation>
@@ -544,6 +547,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4597532268155981612">formulari</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Po shpërfill shtypjen tjetër të çelësit</translation>
+<translation id="4617384941327705512">"Modaliteti 'i ngjitur' inteligjent" është joaktiv</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack nuk e ofron më personalizimin për pajisjet Chromebook. Mund ta përdorësh përsëri, por përdor shkurtoret e parazgjedhura të tastierës të TalkBack. Shtyp Kërko+A dhe më pas K për të parë shkurtoret e disponueshme. Nëse dëshiron të përdorësh përsëri TalkBack, shtyp përsëri komandën.</translation>
 <translation id="463135993322337640">Shtyp ChromeVox o, n për të zbuluar të rejat</translation>

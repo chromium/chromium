@@ -13,7 +13,6 @@
 <translation id="1289742167380433257">तुमचा डेटा वाचवण्यासाठी, या पेजच्या इमेज Google ने ऑप्टिमाइझ केल्या आहेत.</translation>
 <translation id="129382876167171263">वेबसाइटद्वारे सेव्ह केलेल्या फाइल येथे दिसतील</translation>
 <translation id="1317194122196776028">या साइटचा इतिहास साफ करा</translation>
-<translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> साइट जोडली</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1384959399684842514">डाउनलोडला विराम दिला</translation>
@@ -136,6 +135,7 @@
 <translation id="3744111561329211289">पार्श्वभूमी सिंक</translation>
 <translation id="3763247130972274048">१० सेकंद पुढे जाण्यासाठी व्हिडिओवर डावीकडे किंवा उजवीकडे दोनदा टॅप करा</translation>
 <translation id="3797520601150691162">विशिष्ट साइटला गडद थीम लागू करू नका</translation>
+<translation id="3803367742635802571">तुम्ही भेट देता त्या साइट कदाचित डिझाइन केल्यानुसार काम करणे थांबवतील</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">फोन नंबर</translation>
 <translation id="3826050100957962900">तृतीय पक्ष साइन इन</translation>
@@ -175,6 +175,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> ला तुमचा मायक्रोफोन ॲक्सेस करू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील मायक्रोफोन सुरू करा.</translation>
 <translation id="4566417217121906555">मायक्रोफोन म्यूट करा</translation>
 <translation id="4570913071927164677">तपशील</translation>
+<translation id="4598549027014564149">गुप्त मोडमध्ये असताना सर्व साइटवरील, अगदी संबंधित साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी साइट तुमच्या कुकी वापरू शकत नाहीत. जाहिराती पर्सनलाइझ करणे यासारख्या गोष्टींसाठी तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी वापरली जात नाही. काही साइटवरील वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="4645575059429386691">आपल्या पालकांद्वारे व्यवस्थापित करण्यात आले</translation>
 <translation id="4670064810192446073">आभासी वास्तविकता</translation>
 <translation id="4751476147751820511">मोशन किंवा प्रकाश सेन्सर</translation>
@@ -304,6 +305,7 @@
 <translation id="7141896414559753902">साइट पॉप-अप आणि रीडिरेक्ट दाखवण्यापासून ब्लॉक करा (शिफारस केलेले)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
+<translation id="7188508872042490670">डिव्‍हाइसवरील साइट डेटा</translation>
 <translation id="7203150201908454328">विस्‍तृत केलेले</translation>
 <translation id="723171743924126238">इमेज निवडा</translation>
 <translation id="7243308994586599757">स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत</translation>
@@ -378,6 +380,7 @@
 <translation id="8487700953926739672">ऑफलाइन उपलब्ध</translation>
 <translation id="848952951823693243">नेहमी मोबाइल साइटची विनंती करा</translation>
 <translation id="8499083585497694743">मायक्रोफोन अनम्यूट करा</translation>
+<translation id="8514955299594277296">साइटना तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती देऊ नका (शिफारस केली जात नाही)</translation>
 <translation id="851751545965956758">डिव्हाइसेसशी कनेक्ट करण्यापासून साइटना ब्लॉक करा</translation>
 <translation id="8525306231823319788">फुल स्क्रीन</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> साइटसाठी कुकीना अनुमती आहे}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> साइटसाठी कुकीना अनुमती आहे}}</translation>

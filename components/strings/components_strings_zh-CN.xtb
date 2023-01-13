@@ -800,6 +800,7 @@
 <translation id="2986368408720340940">该取货方式不可用。请另选一种方式。</translation>
 <translation id="2987034854559945715">找不到任何相符的功能</translation>
 <translation id="2989742184762224133">双钉（顶部）</translation>
+<translation id="2990882401221831923">信用卡列表已关闭。</translation>
 <translation id="2991174974383378012">与网站分享</translation>
 <translation id="299122504639061328">管理您的默认搜索引擎和网站搜索</translation>
 <translation id="2991571918955627853">您目前无法访问 <ph name="SITE" />，因为此网站使用了 HSTS。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
@@ -1580,6 +1581,7 @@
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
 <translation id="498323057460789381">架构验证错误：<ph name="ERROR" /></translation>
 <translation id="4984088539114770594">使用麦克风？</translation>
+<translation id="4988822846878841743">信用卡列表显示屏幕下半部分，轻触某个条目轻触即可填充相应信息。</translation>
 <translation id="4989163558385430922">查看全部</translation>
 <translation id="4989542687859782284">不受支持的实验</translation>
 <translation id="4989809363548539747">该插件不受支持</translation>
@@ -1708,7 +1710,6 @@
 <translation id="5284295735376057059">文档属性</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5285570108065881030">显示所有已保存的密码</translation>
-<translation id="5287240709317226393">显示 Cookie</translation>
 <translation id="5287456746628258573">此网站使用的安全性配置已过期，这可能会导致您的信息（例如密码或信用卡卡号）在发送至此网站时出现泄露。</translation>
 <translation id="5288108484102287882">政策值验证引发了警告</translation>
 <translation id="5288393065350884210">会计与审计</translation>
@@ -1928,6 +1929,7 @@
 <translation id="5863847714970149516">即将进入的页面可能会向您收取费用</translation>
 <translation id="5866257070973731571">添加电话号码</translation>
 <translation id="5866898949289125849">您当前查看的是一个开发者工具页面</translation>
+<translation id="5868548454963263350">信用卡列表显示在整个屏幕上，轻触某个条目即可填充相应信息。</translation>
 <translation id="5869405914158311789">无法访问此网站</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5873013647450402046">银行需要确认您的身份。</translation>
@@ -2639,6 +2641,7 @@
 <translation id="7653957176542370971">付款处理程序工作表已关闭</translation>
 <translation id="7654909834015434372">当您修改注释时，此文档会恢复为原始方向</translation>
 <translation id="765676359832457558">隐藏高级设置...</translation>
+<translation id="7656935528854393684">信用卡列表，轻触某个条目即可填充相应信息。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659327900411729175">Kaku 8 信封</translation>
 <translation id="7659878911471462949">喜极而泣</translation>
@@ -3187,7 +3190,6 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="9096679202588811390">电视节目</translation>
 <translation id="9101630580131696064">纸匣 1</translation>
-<translation id="9102081333385212048">系统会将您复制或移动的文件发送给 Google Cloud 或第三方以供分析。例如，可能通过扫描来确定文件是否包含敏感数据或恶意软件。</translation>
 <translation id="9103537084693478942">视频软件</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chromium 此次尝试连接到 <ph name="SITE" /> 时，此网站发回了异常的错误凭据。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chromium 尚未进行任何数据交换便停止了连接。</translation>
 <translation id="9106062320799175032">添加帐单邮寄地址</translation>

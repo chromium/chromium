@@ -13,7 +13,6 @@
 <translation id="1289742167380433257">მონაცემთა მოცულობის დაზოგვის მიზნით, სურათები ოპტიმიზებულია Google-ის მიერ.</translation>
 <translation id="129382876167171263">ვებსაიტების მიერ შენახული ფაილები აქ გამოჩნდება</translation>
 <translation id="1317194122196776028">ამ საიტის დავიწყება</translation>
-<translation id="1364532808393826295"><ph name="APP_NAME" /> — <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">საიტი: <ph name="SITE_NAME" /> დამატებულია</translation>
 <translation id="1383876407941801731">ძიება</translation>
 <translation id="1384959399684842514">ჩამოტვირთვა დაპაუზებულია</translation>
@@ -22,6 +21,7 @@
 <translation id="1426410128494586442">დიახ</translation>
 <translation id="1446450296470737166">MIDI მოწყ. სრული კონტ. დაშვება</translation>
 <translation id="1448064542941920355">მასშტაბის შემცირება</translation>
+<translation id="1547123415014299762">მესამე მხარის ქუქი-ჩანაწერები დაშვებულია</translation>
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1633720957382884102">დაკავშირებული საიტები</translation>
 <translation id="1644574205037202324">ისტორია</translation>
@@ -351,6 +351,7 @@
 <translation id="8042586301629853791">დალაგება კრიტერიუმით:</translation>
 <translation id="8067883171444229417">ვიდეოს დაკვრა</translation>
 <translation id="8068648041423924542">სერტიფიკატის არჩევა შეუძლებელია.</translation>
+<translation id="8077120325605624147">თქვენთვის რეკლამის ჩვენება შეუძლია ნებისმიერ საიტს, რომელსაც სტუმრობთ</translation>
 <translation id="8087000398470557479">კონტენტის წყაროა: <ph name="DOMAIN_NAME" />. მიღებულია Google-ის მეშვეობით.</translation>
 <translation id="8116925261070264013">დადუმებული</translation>
 <translation id="813082847718468539">საიტის ინფორმაციის ნახვა</translation>
@@ -388,6 +389,7 @@
 <translation id="857943718398505171">დაშვებული (რეკომენდებულია)</translation>
 <translation id="8609465669617005112">გადაადგილება ზემოთ</translation>
 <translation id="8676374126336081632">შეყვანილი ტექსტის გასუფთავება</translation>
+<translation id="8681886425883659911">რეკლამა დაბლოკილია საიტებზე, რომლებიც ცნობილია თავიანთი მომაბეზრებელი ან შეცდომაში შემყვანი რეკლამით</translation>
 <translation id="868929229000858085">თქვენს კონტაქტებში ძიება</translation>
 <translation id="8702612070107455751">გასუფთავდება ხაზგარეშე მონაცემები.</translation>
 <translation id="8712637175834984815">კარგი</translation>
@@ -400,6 +402,7 @@
 <translation id="8816026460808729765">საიტებისთვის სენსორებზე წვდომის აკრძალვა</translation>
 <translation id="8823559166155093873">ქუქი-ჩანაწერების დაბლოკვა</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">მომაბეზრებელი რეკლამა</translation>
 <translation id="8903921497873541725">მასშტაბის გადიდება</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC გამორთულია ამ მოწყობილობისთვის. მისი ჩართვა შეგიძლიათ <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>

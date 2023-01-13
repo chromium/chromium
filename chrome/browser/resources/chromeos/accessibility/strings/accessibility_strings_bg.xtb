@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Няма следващ бутон</translation>
 <translation id="2911433807131383493">Отваряне на урока за ChromeVox</translation>
 <translation id="2912405967290226587">Прекарайте три пръста надясно</translation>
+<translation id="2919107550468490321">Интелигентният фиксиран режим е включен</translation>
 <translation id="2937799153569150791">Няма следващо заглавие от трето ниво</translation>
 <translation id="2942710183375260152">тъмно шистовосиньо</translation>
 <translation id="2943596527105977722">тъмнозлатисто</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Намаляване на височината на звука</translation>
 <translation id="3009352964623081324">Клавиш „търсене“ + O, след това S. Използвайте за инсталиране, управление и персонализиране на гласове.</translation>
 <translation id="3014130421870723208">@ адрес, 8 т.</translation>
+<translation id="3018210433491759145">ChromeVox се зарежда</translation>
 <translation id="3030432017085518523">Бутон за избор на елемент от меню</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{апостроф}other{# апострофа}}</translation>
 <translation id="3040901448410802366">Индикатор за напредъка</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3813387282697781382">светло кораловочервено</translation>
 <translation id="3816633764618089385">Следващият мултимедиен елемент</translation>
+<translation id="3821689185319271077">Няма елемент, който да бъде описан</translation>
 <translation id="3840823741487267909">Съкращение</translation>
 <translation id="3841319830220785495">Естествен глас по подразбиране</translation>
 <translation id="385383972552776628">Отваряне на страницата с опции</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">формуляр</translation>
 <translation id="4601367666219428522">табл. „<ph name="TABLENAME" />“, <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Следващото натискане на клавиш се пренебрегва</translation>
+<translation id="4617384941327705512">Интелигентният фиксиран режим е изключен</translation>
 <translation id="4623097797855662355">Колофон</translation>
 <translation id="4624970070706497034">TalkBack вече не предлага персонализиране за устройства Chromebook. Можете да продължите да използвате функцията, но със стандартните ѝ клавишни комбинации. За да видите наличните, натиснете клавиша „търсене“ + A и след това K. Ако все пак искате да използвате TalkBack, изпълнете командата отново.</translation>
 <translation id="463135993322337640">Натиснете „o“ и „n“ в ChromeVox, за да научите кои са новите неща</translation>

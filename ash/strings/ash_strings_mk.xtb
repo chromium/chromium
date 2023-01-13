@@ -582,6 +582,7 @@
 <translation id="4177913004758410636">{0,plural, =1{Ажурирајте го уредот во рок од еден ден}one{Ажурирајте го уредот во рок од # ден}other{Ажурирајте го уредот во рок од # дена}}</translation>
 <translation id="4181841719683918333">Јазици</translation>
 <translation id="4192112279662688596">или</translation>
+<translation id="4193857202545160520">Прикажи кликнувања и копчиња</translation>
 <translation id="4195814663415092787">Продолжете каде што сте застанале</translation>
 <translation id="4195877955194704651">Копче за автоматско кликнување</translation>
 <translation id="4197790712631116042">Исклучено</translation>
@@ -639,6 +640,7 @@
 <translation id="4455051983450390249">Прегледувајте ги известувањата од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Добровечер,</translation>
 <translation id="4458688154122353284">Запрете со снимање на екранот</translation>
+<translation id="445923051607553918">Придружи се на мрежа за Wi-Fi</translation>
 <translation id="4471354919263203780">Се преземаат датотеки за препознавање говор… <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Ажурирајте го уредот веднаш}=1{Ажурирајте го уредот во рок од 1 секунда}one{Ажурирајте го уредот во рок од # секунда}other{Ажурирајте го уредот во рок од # секунди}}</translation>
 <translation id="4472575034687746823">Започнете</translation>
@@ -762,6 +764,7 @@
 <translation id="5107522548814527560">Интернет</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Прикажи го следниот месец</translation>
+<translation id="5127986747308934633">Администраторот го контролира вашиот уред</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
 <translation id="5147567197700016471">Отклучено</translation>
 <translation id="5150070631291639005">Поставки за приватност</translation>
@@ -990,6 +993,7 @@
 <translation id="639644700271529076">CAPS LOCK е исклучено</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Помошник на Google</translation>
+<translation id="641867537956679916">Администраторот се најавил за да се обиде да го реши проблемот. Може да продолжите да го користите уредот откако администраторот ќе ја врати контролата во ваши раце.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Избриши ги сите известувања</translation>
 <translation id="643147933154517414">Готово</translation>

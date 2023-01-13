@@ -1866,15 +1866,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene impostato su Disattivato, la variazione dei picchi energetici rimane disattivata.
 
       Se non viene configurato, la variazione dei picchi energetici è inizialmente disattivata. Gli utenti non possono modificare questa impostazione.</translation>
-<translation id="2773036462435523078">Consente di attivare un'azione quando il computer è inattivo.
-
-      Se questo criterio viene configurato, consente di specificare il periodo di tempo senza input utente (in minuti) prima che <ph name="PRODUCT_NAME" /> esegua azioni configurate tramite il criterio <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Se il criterio non viene configurato, non verrà eseguita alcuna azione.
-
-      La soglia minima è di 5 minuti.
-
-      "L'input utente" è definito dalle API del sistema operativo e include, ad esempio, lo spostamento del mouse o la digitazione tramite tastiera.</translation>
 <translation id="2773288106548584039">Supporto dei browser precedenti</translation>
 <translation id="2780840673734667062">Disattiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="2784880732336446591">Cancella dati di navigazione all'uscita</translation>

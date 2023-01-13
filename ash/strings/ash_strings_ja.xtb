@@ -638,6 +638,7 @@
 <translation id="4455051983450390249"><ph name="DEVICE_TYPE" /> でスマートフォンの通知を表示します</translation>
 <translation id="445864333228800152">こんばんは</translation>
 <translation id="4458688154122353284">画面の録画を停止</translation>
+<translation id="445923051607553918">Wi-Fi ネットワークへの接続</translation>
 <translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{今すぐデバイスを更新してください}=1{1 秒以内にデバイスを更新してください}other{# 秒以内にデバイスを更新してください}}</translation>
 <translation id="4472575034687746823">始める</translation>

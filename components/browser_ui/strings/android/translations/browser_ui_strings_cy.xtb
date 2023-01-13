@@ -13,7 +13,6 @@
 <translation id="1289742167380433257">Er mwyn cadw eich data, mae lluniau'r dudalen hon wedi'u hoptimeiddio gan Google.</translation>
 <translation id="129382876167171263">Mae ffeiliau a gedwir gan wefannau yn ymddangos yma</translation>
 <translation id="1317194122196776028">Anghofio'r wefan hon</translation>
-<translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">Mae'r wefan <ph name="SITE_NAME" /> wedi'i hychwanegu</translation>
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1384959399684842514">Wedi seibio lawrlwytho</translation>
@@ -136,6 +135,7 @@
 <translation id="3744111561329211289">Cysoni yn y cefndir</translation>
 <translation id="3763247130972274048">Tapiwch ddwywaith ar ochr chwith neu dde'r i neidio 10 eiliad</translation>
 <translation id="3797520601150691162">Peidio â defnyddio'r thema dywyll ar gyfer gwefan benodol</translation>
+<translation id="3803367742635802571">Mae'n bosib y bydd gwefannau y byddwch yn ymweld â nhw yn peidio â gweithio fel y'u cynlluniwyd</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Rhifau ffôn</translation>
 <translation id="3826050100957962900">Mewngofnodi trydydd parti</translation>
@@ -174,6 +174,7 @@
 <translation id="4534723447064627427">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich meicroffon, trowch y meicroffon ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="4566417217121906555">Distewi'r meicroffon</translation>
 <translation id="4570913071927164677">Manylion</translation>
+<translation id="4598549027014564149">Tra yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwefannau, hyd yn oed gwefannau cysylltiedig. Nid yw eich gweithgarwch pori yn cael ei ddefnyddio ar gyfer pethau megis personoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>
 <translation id="4751476147751820511">Synwyryddion ystumiau/goleuadau</translation>
@@ -303,6 +304,7 @@
 <translation id="7141896414559753902">Rhwystro gwefannau rhag dangos ffenestri naid ac ailgyfeiriadau (argymhellir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
+<translation id="7188508872042490670">Data gwefan ar y ddyfais</translation>
 <translation id="7203150201908454328">Wedi'i ehangu</translation>
 <translation id="723171743924126238">Dewis lluniau</translation>
 <translation id="7243308994586599757">Mae opsiynau ar gael yn agos at waelod y sgrîn</translation>
@@ -377,6 +379,7 @@
 <translation id="8487700953926739672">Ar gael all-lein</translation>
 <translation id="848952951823693243">Gofyn am wefan symudol bob amser</translation>
 <translation id="8499083585497694743">Dad-ddistewi'r meicroffon</translation>
+<translation id="8514955299594277296">Peidio â chaniatáu i wefannau gadw data ar eich dyfais (nid argymhellir)</translation>
 <translation id="851751545965956758">Rhwystro gwefannau rhag cysylltu â dyfeisiau</translation>
 <translation id="8525306231823319788">Sgrîn lawn</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> wefan <ph name="FPS_OWNER" />}zero{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}two{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> wefan <ph name="FPS_OWNER" />}few{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}many{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}other{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}}</translation>

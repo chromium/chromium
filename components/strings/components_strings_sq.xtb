@@ -800,6 +800,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2986368408720340940">Kjo mënyrë marrjeje nuk ofrohet. Provo një mënyrë tjetër.</translation>
 <translation id="2987034854559945715">Nuk ka asnjë veçori që përputhet</translation>
 <translation id="2989742184762224133">Dy kapje me tel lart</translation>
+<translation id="2990882401221831923">Lista e kartave të kreditit është mbyllur.</translation>
 <translation id="2991174974383378012">Ndarja me sajtet e uebit</translation>
 <translation id="299122504639061328">Menaxho motorin e parazgjedhur të kërkimit dhe kërkimin në sajte</translation>
 <translation id="2991571918955627853">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor HSTS. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
@@ -1584,6 +1585,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4976702386844183910">Vizituar së fundi më <ph name="DATE" /></translation>
 <translation id="498323057460789381">Gabim gjatë verifikimit të skemës: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Të përdoret mikrofoni?</translation>
+<translation id="4988822846878841743">Lista e kartave të kreditit për t'u plotësuar me prekje është hapur në gjysmë lartësi.</translation>
 <translation id="4989163558385430922">Shiko të gjitha</translation>
 <translation id="4989542687859782284">Nuk ofrohen</translation>
 <translation id="4989809363548539747">Ky përbërës shtesë nuk mbështetet</translation>
@@ -1712,7 +1714,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5284295735376057059">Karakteristikat e dokumentit</translation>
 <translation id="528468243742722775">Fundi</translation>
 <translation id="5285570108065881030">Shfaq të gjitha fjalëkalimet e ruajtura</translation>
-<translation id="5287240709317226393">Shfaq kukit</translation>
 <translation id="5287456746628258573">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimin ose numrat e kartës së kreditit) kur dërgohen te ky sajt.</translation>
 <translation id="5288108484102287882">Vërtetimi i vlerave të politikës ka ngritur shqetësime</translation>
 <translation id="5288393065350884210">Kontabiliteti dhe auditimi</translation>
@@ -1932,6 +1933,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5863847714970149516">Faqja në vijim mund të përpiqet të të tarifojë në para</translation>
 <translation id="5866257070973731571">Shto numër telefoni</translation>
 <translation id="5866898949289125849">Po shikon një faqe të veglave të zhvilluesit</translation>
+<translation id="5868548454963263350">Lista e kartave të kreditit për t'u plotësuar me prekje është hapur në lartësi të plotë.</translation>
 <translation id="5869405914158311789">Ky sajt është i paarritshëm</translation>
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
 <translation id="5873013647450402046">Banka jote dëshiron të konfirmojë që je ti.</translation>
@@ -2643,6 +2645,7 @@ Detaje shtesë:
 <translation id="7653957176542370971">Fleta e përpunuesit të pagesës është mbyllur</translation>
 <translation id="7654909834015434372">Kur redakton shënimet, ky dokument do të kthehet te rrotullimi i vet fillestar</translation>
 <translation id="765676359832457558">Fshih cilësimet e përparuara...</translation>
+<translation id="7656935528854393684">Lista e kartave të kreditit për t'u plotësuar me prekje.</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7659327900411729175">Zarf Kaku 8</translation>
 <translation id="7659878911471462949">Lot gëzimi</translation>
@@ -3190,7 +3193,6 @@ Detaje shtesë:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; shtyp "Tab" dhe më pas "Enter" për të caktuar Chrome si shfletuesin e parazgjedhur të sistemit te cilësimet e iOS</translation>
 <translation id="9096679202588811390">Shfaqjet dhe programet televizive</translation>
 <translation id="9101630580131696064">Tabakaja 1</translation>
-<translation id="9102081333385212048">Skedarët që kopjon ose zhvendos dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, mund të skanohen për të dhëna delikate ose softuerë keqdashës.</translation>
 <translation id="9103537084693478942">Softuerët e videove</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacioneve të tua. Kur Chromium u përpoq të lidhej me <ph name="SITE" /> këtë herë, sajti i uebit dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues pretendon se është <ph name="SITE" /> ose kur lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacionet e tua janë ende të sigurta sepse Chromium e ndaloi lidhjen përpara se të shkëmbeheshin të dhënat.</translation>
 <translation id="9106062320799175032">Shto adresë faturimi</translation>

@@ -13,7 +13,6 @@
 <translation id="1289742167380433257">Відарысы на гэтай старонцы былі аптымізаваны з дапамогай Google для эканоміі трафіка.</translation>
 <translation id="129382876167171263">Тут паказваюцца файлы, захаваныя вэб-сайтамі</translation>
 <translation id="1317194122196776028">Забыць гэты сайт</translation>
-<translation id="1364532808393826295"><ph name="APP_NAME" />. <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">Сайт <ph name="SITE_NAME" /> дададзены</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384959399684842514">Спампоўка прыпынена</translation>
@@ -136,6 +135,7 @@
 <translation id="3744111561329211289">Фонавая сінхранізацыя</translation>
 <translation id="3763247130972274048">Каб пераматаць відэа на 10 с назад або наперад, двойчы націсніце на яго з правага або левага боку</translation>
 <translation id="3797520601150691162">Не прымяняць цёмную тэму да канкрэтнага сайта</translation>
+<translation id="3803367742635802571">Сайты, якія вы наведваеце, могуць перастаць працаваць належным чынам</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Нумары тэлефонаў</translation>
 <translation id="3826050100957962900">Уваход праз староннія сэрвісы</translation>
@@ -174,6 +174,7 @@
 <translation id="4534723447064627427">Каб даць праграме "<ph name="APP_NAME" />" доступ да мікрафона, уключыце апошні ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Выключыць мікрафон</translation>
 <translation id="4570913071927164677">Падрабязныя звесткі</translation>
+<translation id="4598549027014564149">Калі ўключаны рэжым інкогніта, сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на сайтах, нават звязаных. Вашы дзеянні ў браўзеры не выкарыстоўваюцца для паказу персаналізаванай рэкламы і падобных мэт. На некаторых сайтах можа не працаваць частка функцый.</translation>
 <translation id="4645575059429386691">Пад кіраваннем бацькоў</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
 <translation id="4751476147751820511">Датчыкі руху або святла</translation>
@@ -303,6 +304,7 @@
 <translation id="7141896414559753902">Заблакіраваць сайтам паказ выплыўных вокнаў і перанакіраванні (рэкамендуецца)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
+<translation id="7188508872042490670">Даныя сайтаў, захаваныя на прыладзе</translation>
 <translation id="7203150201908454328">Разгорнута</translation>
 <translation id="723171743924126238">Выберыце відарысы</translation>
 <translation id="7243308994586599757">Параметры знаходзяцца ў ніжняй частцы экрана</translation>
@@ -377,6 +379,7 @@
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
 <translation id="848952951823693243">Заўсёды запытваць версію сайта для мабільных прылад</translation>
 <translation id="8499083585497694743">Уключыць мікрафон</translation>
+<translation id="8514955299594277296">Не дазваляць сайтам захоўваць даныя на прыладзе (не рэкамендуецца)</translation>
 <translation id="851751545965956758">Блакіраваць сайтам падключэнне да прылад</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}one{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}few{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="FPS_OWNER" />}many{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="FPS_OWNER" />}other{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}}</translation>

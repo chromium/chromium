@@ -1900,15 +1900,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se inhabilita esta política, el cambio de alimentación en picos queda desactivado.
 
       Si no se establece, el cambio de alimentación en picos está desactivado en un principio. Los usuarios no pueden cambiar esta opción.</translation>
-<translation id="2773036462435523078">Activa una acción cuando el ordenador está inactivo.
-
-      Si se define esta política, especifica el tiempo (en minutos) que debe transcurrir sin ninguna entrada del usuario antes de que <ph name="PRODUCT_NAME" /> ejecute las acciones configuradas a través de la política <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Si no se define esta política, no se ejecutará ninguna acción.
-
-      El umbral mínimo son 5 minutos.
-
-      Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ejemplo, mover el ratón o escribir con el teclado).</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores antiguos</translation>
 <translation id="2780840673734667062">Inhabilitar el inicio de sesión con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borrar datos de navegación al salir</translation>

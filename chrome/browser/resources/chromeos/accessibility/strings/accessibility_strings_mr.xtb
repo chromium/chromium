@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">पुढील बटण नाही</translation>
 <translation id="2911433807131383493">ChromeVox ट्यूटोरियल उघडा</translation>
 <translation id="2912405967290226587">तीन बोटांनी उजवीकडे स्वाइप करा</translation>
+<translation id="2919107550468490321">स्‍मार्ट स्टिकी मोड सुरू आहे</translation>
 <translation id="2937799153569150791">पुढील पातळी तीन शीर्षक नाही</translation>
 <translation id="2942710183375260152">गडद राखाडी निळा</translation>
 <translation id="2943596527105977722">गडद सोनेरी</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">पीच कमी करा</translation>
 <translation id="3009352964623081324">Search + O, त्यानंतर S. इंस्टॉल करण्यासाठी, व्यवस्थापित करण्यासाठी आणि व्हॉइस कस्टमाइझ करण्यासाठी वापरा.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox लोड होत आहे</translation>
 <translation id="3030432017085518523">मेनू आयटम रेडिओ बटण</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{परोक्षसंबोधन}other{# परोक्षसंबोधने}}</translation>
 <translation id="3040901448410802366">प्रगती निदर्शक</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">व्हिडिओ</translation>
 <translation id="3813387282697781382">फिकट लाल</translation>
 <translation id="3816633764618089385">पुढील माध्यम</translation>
+<translation id="3821689185319271077">पॉइंटर अँकर नाही</translation>
 <translation id="3840823741487267909">संक्षिप्त रूप</translation>
 <translation id="3841319830220785495">डीफॉल्ट नैसर्गिक आवाज</translation>
 <translation id="385383972552776628">पर्याय पृष्‍ठ उघडा</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">फॉर्म</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">पुढील की दाबणे दुर्लक्षित करत आहे</translation>
+<translation id="4617384941327705512">स्‍मार्ट स्टिकी मोड बंद आहे</translation>
 <translation id="4623097797855662355">बोधचिन्ह</translation>
 <translation id="4624970070706497034">TalkBack यापुढे Chromebooks साठी कस्टमायझेशन पुरवणार नाही. तुम्ही तरीही ते TalkBack डीफॉल्ट कीबोर्ड शॉर्टकटसह वापरू शकता. उपलब्ध शॉर्टकट पाहण्यासाठी Search+A, त्यानंतर K दाबा. तुम्हाला तरीही TalkBack वापरायचे असल्यास, कमांड पुन्हा दाबा.</translation>
 <translation id="463135993322337640">नवीन काय आहे ते पाहण्यासाठी ChromeVox o, n दाबा</translation>

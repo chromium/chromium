@@ -251,6 +251,7 @@
 <translation id="6598877126913850652">转到 Chromium 通知设置部分</translation>
 <translation id="6613594504749178791">您所做的更改会在下次重新启动 Chromium 时生效。</translation>
 <translation id="665732753414869868">Chromium 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
+<translation id="6663852025006259149">网站很可能会按预期运行，但不会在您关闭所有 Chromium 窗口后记住您的偏好设置和相关数据</translation>
 <translation id="6676384891291319759">访问互联网</translation>
 <translation id="668175097507315160">由于登录时发生错误，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="6709350901466051922">Chromium 需要为此网站授予麦克风权限</translation>
@@ -380,5 +381,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="945990405696787151">若要接收后续 Chromium 更新，您需使用 macOS 10.13 或更高版本。该计算机目前使用的是 OS X 10.11。</translation>
 <translation id="965162752251293939">谁在使用 Chromium？</translation>
 <translation id="967427899662692980">获享 Chromium 的最强安全保护</translation>
+<translation id="9792300276217204">始终在关闭 Chromium 时清除设备上的网站数据</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

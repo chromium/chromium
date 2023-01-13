@@ -253,6 +253,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6598877126913850652">Ir á configuración de notificacións de Chromium</translation>
 <translation id="6613594504749178791">Os cambios aplicaranse a próxima vez que reinicies Chromium.</translation>
 <translation id="665732753414869868">Chromium necesita permiso de acceso á cámara para crear un mapa 3D do que te rodea</translation>
+<translation id="6663852025006259149">É probable que os sitios funcionen da forma esperada, pero non te lembrarán despois de que peches todas as ventás de Chromium</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="668175097507315160">Chromium OS non puido sincronizar os teus datos porque se produciu un erro ao iniciar sesión.</translation>
 <translation id="6709350901466051922">Chromium necesita permiso de acceso ao micrófono para este sitio</translation>
@@ -382,5 +383,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="945990405696787151">Se queres recibir actualizacións de Chromium no futuro, debes instalar o sistema operativo macOS 10.13 ou unha versión posterior. Este ordenador ten OS X 10.11.</translation>
 <translation id="965162752251293939">Quen está utilizando Chromium?</translation>
 <translation id="967427899662692980">Goza da máxima seguranza de Chromium</translation>
+<translation id="9792300276217204">Borrar sempre do dispositivo os datos dos sitios cando peches Chromium</translation>
 <translation id="985602178874221306">Os autores de Chromium</translation>
 </translationbundle>

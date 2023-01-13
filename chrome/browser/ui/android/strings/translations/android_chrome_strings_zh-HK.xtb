@@ -41,7 +41,6 @@
 <translation id="1204037785786432551">下載連結</translation>
 <translation id="1204692632633423444">Chrome 操作按鈕：<ph name="ACTION" /></translation>
 <translation id="1206892813135768548">複製連結文字</translation>
-<translation id="1208340532756947324">如要在不同裝置上同步和個人化內容，請開啟同步處理功能</translation>
 <translation id="1209206284964581585">暫時隱藏</translation>
 <translation id="1227058898775614466">導覽記錄</translation>
 <translation id="1231733316453485619">要開啟同步處理功能嗎？</translation>
@@ -318,7 +317,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2781151931089541271">尚餘 1 秒</translation>
 <translation id="2800066122460699237">即將關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
-<translation id="2818669890320396765">如要將書籤同步到所有裝置，請登入並開啟同步處理功能</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">隱藏咗剪貼簿嘅內容</translation>
 <translation id="2838367486340230368">私隱權指南說明宜家顯示喺畫面下半部</translation>
@@ -468,7 +466,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3563767357928833671">顯示咗剪貼簿嘅內容</translation>
 <translation id="3566639033325271639">更新設定</translation>
 <translation id="3566923219790363270">Chrome 仍在準備 VR。請稍後再重新啟動 Chrome。</translation>
-<translation id="3568688522516854065">如要取得其他裝置上的分頁，請登入並開啟同步處理功能</translation>
 <translation id="357465026686164600">使用手機作為安全密鑰</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3578024735349927859">透過通知管理媒體控制項、無痕式分頁等項目</translation>
@@ -576,7 +573,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4196597275619698563">建立資訊卡</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
-<translation id="4209895695669353772">如要接收 Google 建議的個人化內容，請開啟同步處理功能</translation>
 <translation id="4214315110991671325">如果您允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
 <translation id="4225895483398857530">工具列捷徑</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -615,7 +611,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="4461614516424362539">將另一部裝置連結 QR 碼後，該裝置就能將手機作為安全密鑰。如果移除裝置，您便需掃瞄 QR 碼才能再次連結裝置。</translation>
-<translation id="4472118726404937099">如要在不同裝置上同步和個人化內容，請登入並開啟同步處理功能</translation>
 <translation id="4479839115899251637">從閱讀清單中刪除</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
 <translation id="4484496141267039529">沒有連線，請稍後再試。</translation>
@@ -877,7 +872,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5859968346865909126">您可以在設定中開啟或關閉此功能</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
-<translation id="5862731021271217234">如要取得其他裝置上的分頁，請開啟同步處理功能</translation>
 <translation id="5864419784173784555">正在等待其他下載程序完成…</translation>
 <translation id="5865733239029070421">自動將使用情況統計和當機報告傳送給 Google</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
@@ -1309,7 +1303,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8105613260829665809">繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》。\nChrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">關閉排序選項</translation>
-<translation id="8109613176066109935">如要將書籤同步到所有裝置，請開啟同步處理功能</translation>
 <translation id="8110024788458304985">協助改善 Chrome\u2019s 的功能和效能</translation>
 <translation id="8110087112193408731">要在「健康數碼生活」中顯示您的 Chrome 活動記錄嗎？</translation>
 <translation id="8118117428362942925">如需協助，請找家長 (<ph name="PARENT_NAME" />) 幫忙</translation>
@@ -1476,7 +1469,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="906781307897697745">在 <ph name="PRODUCT_NAME" /> 中</translation>
 <translation id="9069999660519089861">沒有未讀網頁</translation>
 <translation id="9070377983101773829">開始語音搜尋</translation>
-<translation id="9074336505530349563">如要接收 Google 建議的個人化內容，請登入並開啟同步處理功能</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9081543426177426948">在無痕模式下無法儲存您瀏覽的網站</translation>
 <translation id="9086302186042011942">正在同步處理</translation>

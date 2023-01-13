@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">அடுத்த பட்டன் எதுவும் இல்லை</translation>
 <translation id="2911433807131383493">ChromeVox பயிற்சியைத் திற</translation>
 <translation id="2912405967290226587">மூன்று விரல்களை வலதுபுறமாக ஸ்வைப் செய்யவும்</translation>
+<translation id="2919107550468490321">ஸ்மார்ட் ஒற்றை விசைப் பயன்முறையை இயக்கும்</translation>
 <translation id="2937799153569150791">அடுத்த 3ம் நிலை தலைப்பு இல்லை</translation>
 <translation id="2942710183375260152">டார்க் ஸ்லேட் புளூ</translation>
 <translation id="2943596527105977722">டார்க் கோல்டன் ராட்</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">ஸ்ருதியைக் குறை</translation>
 <translation id="3009352964623081324">Search + O, அதன் பின்னர் S. குரல்களை நிறுவவும் நிர்வகிக்கவும் பிரத்தியேகமாக்கவும் இந்த ஷார்ட்கட்டைப் பயன்படுத்தலாம்.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox ஏற்றப்படுகிறது</translation>
 <translation id="3030432017085518523">மெனு விருப்பம் ரேடியோ பட்டன்</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{தனி மேற்கோள் குறி}other{# தனி மேற்கோள் குறிகள்}}</translation>
 <translation id="3040901448410802366">செயல்நிலைக் காட்டி</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">வீடியோ</translation>
 <translation id="3813387282697781382">லைட் கோரல்</translation>
 <translation id="3816633764618089385">அடுத்த ஊடகம்</translation>
+<translation id="3821689185319271077">பாயிண்டர் ஆங்க்கர் இல்லை</translation>
 <translation id="3840823741487267909">சொற்சுருக்கம்</translation>
 <translation id="3841319830220785495">இயல்பான குரல்</translation>
 <translation id="385383972552776628">விருப்பங்கள் பக்கத்தைத் திற</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">படிவம்</translation>
 <translation id="4601367666219428522">அட்டவணை <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">அடுத்த விசை அழுத்தத்தைத் தவிர்க்கிறது</translation>
+<translation id="4617384941327705512">ஸ்மார்ட் ஒற்றை விசைப் பயன்முறையை முடக்கும்</translation>
 <translation id="4623097797855662355">முத்திரை</translation>
 <translation id="4624970070706497034">Chromebookகளுக்கான பிரத்தியேகமாக்கலுக்கு TalkBack அம்சத்தை இனி பயன்படுத்த முடியாது. இருப்பினும் TalkBack அம்சத்தின் இயல்பு கீபோர்டு ஷார்ட்கட்களைப் பயன்படுத்தலாம். பயன்படுத்தக்கூடிய ஷார்ட்கட்களைப் பார்க்க, Search+A அழுத்திவிட்டு K அழுத்தவும். இன்னமும் TalkBack அம்சத்தைப் பயன்படுத்த விரும்பினால் கட்டளையை மீண்டும் அழுத்தவும்.</translation>
 <translation id="463135993322337640">புதிய அம்சங்களைப் பார்க்க, ChromeVox o, n ஆகியவற்றை அழுத்தவும்</translation>

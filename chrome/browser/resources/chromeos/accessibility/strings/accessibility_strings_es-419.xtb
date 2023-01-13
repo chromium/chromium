@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">No hay botones siguientes</translation>
 <translation id="2911433807131383493">Abrir tutorial de ChromeVox</translation>
 <translation id="2912405967290226587">Deslizar tres dedos hacia la derecha</translation>
+<translation id="2919107550468490321">Modo permanente inteligente activado</translation>
 <translation id="2937799153569150791">No hay encabezados de nivel 3 siguientes</translation>
 <translation id="2942710183375260152">Azul pizarra oscuro</translation>
 <translation id="2943596527105977722">Oro oscuro</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Disminuir el tono</translation>
 <translation id="3009352964623081324">Tecla de búsqueda + O y, luego, S. Se usa para instalar, administrar y personalizar voces.</translation>
 <translation id="3014130421870723208">@8 puntos de ed</translation>
+<translation id="3018210433491759145">Se está cargando ChromeVox</translation>
 <translation id="3030432017085518523">Botón de selección del elemento de menú</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apóstrofo}other{# apóstrofos}}</translation>
 <translation id="3040901448410802366">Indicador de progreso</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Coral claro</translation>
 <translation id="3816633764618089385">Archivo multimedia siguiente</translation>
+<translation id="3821689185319271077">Puntero sin anclaje</translation>
 <translation id="3840823741487267909">Abreviatura</translation>
 <translation id="3841319830220785495">Voz natural predeterminada</translation>
 <translation id="385383972552776628">Abrir página de opciones</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulario</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />×<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Se ignorará la siguiente pulsación de tecla.</translation>
+<translation id="4617384941327705512">Modo permanente inteligente desactivado</translation>
 <translation id="4623097797855662355">Colofón</translation>
 <translation id="4624970070706497034">TalkBack ya no ofrece personalización en Chromebooks. Puedes seguir utilizando TalkBack con las combinaciones de teclas predeterminadas. Presiona la tecla de búsqueda + A y, luego, K para ver las combinaciones de teclas disponibles. Si quieres seguir utilizando TalkBack, vuelve a presionar el comando.</translation>
 <translation id="463135993322337640">Presiona ChromeVox o, n para conocer las novedades</translation>

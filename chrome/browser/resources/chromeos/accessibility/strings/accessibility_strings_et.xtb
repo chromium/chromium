@@ -291,6 +291,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2909584066358367921">Järgmist nuppu ei ole</translation>
 <translation id="2911433807131383493">ChromeVoxi õpetuse avamine</translation>
 <translation id="2912405967290226587">Pühkige kolme sõrmega paremale</translation>
+<translation id="2919107550468490321">Nutikas nakkerežiim on sees</translation>
 <translation id="2937799153569150791">Järgmist 3. taseme pealkirja ei ole</translation>
 <translation id="2942710183375260152">Tume kiltsinine</translation>
 <translation id="2943596527105977722">Tumekuldne</translation>
@@ -305,6 +306,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2999559350546931576">Vähenda helikõrgust</translation>
 <translation id="3009352964623081324">Otsinguklahv + O, seejärel S. Kasutage seda häälte installimiseks, haldamiseks ja kohandamiseks.</translation>
 <translation id="3014130421870723208">@muut. 8-p</translation>
+<translation id="3018210433491759145">ChromeVoxi laaditakse</translation>
 <translation id="3030432017085518523">Menüü-üksuse raadionupp</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{ülakoma}other{# ülakoma}}</translation>
 <translation id="3040901448410802366">Edenemisnäidik</translation>
@@ -439,6 +441,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Hele korallroosa</translation>
 <translation id="3816633764618089385">Järgmine meediaüksus</translation>
+<translation id="3821689185319271077">Osutatud kohas pole ankrut</translation>
 <translation id="3840823741487267909">Lühend</translation>
 <translation id="3841319830220785495">Loomuliku hääle vaikevalik</translation>
 <translation id="385383972552776628">Ava valikute leht</translation>
@@ -544,6 +547,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4597532268155981612">vorm</translation>
 <translation id="4601367666219428522">tab <ph name="TABLENAME" /> <ph name="TABLEROWS" /> korda <ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Järgmist klahvivajutust ignoreeritakse</translation>
+<translation id="4617384941327705512">Nutikas nakkerežiim on väljas</translation>
 <translation id="4623097797855662355">Kolofoon</translation>
 <translation id="4624970070706497034">TalkBack ei paku enam Chromebookide jaoks kohandamist. Võite Talkbacki ikka kasutada, kuid kasutage selle klaviatuuri vaikeotseteid. Saadaval otseteede vaatamiseks vajutage klahve Otsing + A, seejärel klahvi K. Kui soovite ikka Talkbacki kasutada, vajutage klahve uuesti.</translation>
 <translation id="463135993322337640">Vajutage ChromeVoxi nuppe O ja N, et tutvuda uute funktsioonidega</translation>

@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">没有下一个按钮</translation>
 <translation id="2911433807131383493">打开ChromeVox教程</translation>
 <translation id="2912405967290226587">向右滑动三根手指</translation>
+<translation id="2919107550468490321">智能粘滞模式处于开启状态</translation>
 <translation id="2937799153569150791">没有下一个 3 级标题</translation>
 <translation id="2942710183375260152">暗岩蓝色</translation>
 <translation id="2943596527105977722">暗金菊色</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">调低音高</translation>
 <translation id="3009352964623081324">搜索键 + O，然后按 S。用于安装、管理和自定义语音功能。</translation>
 <translation id="3014130421870723208">@编辑 8 点式盲文</translation>
+<translation id="3018210433491759145">正在加载 ChromeVox</translation>
 <translation id="3030432017085518523">菜单项单选按钮</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{1个单引号}other{#个单引号}}</translation>
 <translation id="3040901448410802366">进度指示器</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">视频</translation>
 <translation id="3813387282697781382">浅珊瑚色</translation>
 <translation id="3816633764618089385">下一个媒体内容</translation>
+<translation id="3821689185319271077">无指针锚标记</translation>
 <translation id="3840823741487267909">缩写词</translation>
 <translation id="3841319830220785495">默认自然语音</translation>
 <translation id="385383972552776628">打开选项页面</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">表单</translation>
 <translation id="4601367666219428522">表格“<ph name="TABLENAME" />”<ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">将忽略下一次按键</translation>
+<translation id="4617384941327705512">智能粘滞模式处于关闭状态</translation>
 <translation id="4623097797855662355">版权页</translation>
 <translation id="4624970070706497034">我们不再支持在 Chromebook 上自定义 TalkBack 功能。您仍能使用此功能，但应改用 TalkBack 默认键盘快捷键。先按搜索键+A，然后按 K 键，即可查看可用的键盘快捷键。如果您仍想使用 TalkBack，请再次按相应命令。</translation>
 <translation id="463135993322337640">按 ChromeVox 的 O 键、N 键，即可了解最新功能</translation>
