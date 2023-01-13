@@ -271,15 +271,9 @@ void VerifyTheNotificationUI() {
   VerifyThatPoliciesAreSet();
 }
 
-// Tests that the user policies are fetched when the user decides to "Continue"
-// in the notification dialog.
-- (void)testUserPolicyNotificationWithAcceptChoice {
-  // TODO(crbug.com/1386163): Flaky on iphone 14.5 simulators and 15.7 devices.
-  if (base::ios::IsRunningOnIOS14OrLater() &&
-      !base::ios::IsRunningOnIOS16OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 14 and 15.");
-  }
-
+// TODO(crbug.com/1386163): Tests that the user policies are fetched when the
+// user decides to "Continue" in the notification dialog.
+- (void)DISABLED_testUserPolicyNotificationWithAcceptChoice {
   // Clear the prefs related to user policy to make sure that the notification
   // isn't skipped and that the fetch is started within the minimal schedule
   // interval.
