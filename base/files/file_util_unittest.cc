@@ -862,14 +862,42 @@ TEST(FileUtilDeathTest, DisallowNoExecuteOnUnsafeFile) {
       "Unsafe to deny execute access to path");
 }
 
-TEST_F(FileUtilTest, NoExecuteOnSafeFile) {
+MULTIPROCESS_TEST_MAIN(NoExecuteOnSafeFileMain) {
   base::FilePath temp_file;
-  // A file created in temp dir should always be permitted.
-  ASSERT_TRUE(base::CreateTemporaryFile(&temp_file));
+  CHECK(base::CreateTemporaryFile(&temp_file));
+
+  // A file with FLAG_WIN_NO_EXECUTE created in temp dir should always be
+  // permitted.
   File reopen_file(temp_file, File::FLAG_READ | File::FLAG_WRITE |
                                   File::FLAG_WIN_NO_EXECUTE |
                                   File::FLAG_OPEN_ALWAYS |
                                   File::FLAG_DELETE_ON_CLOSE);
+  return 0;
+}
+
+TEST_F(FileUtilTest, NoExecuteOnSafeFile) {
+  FilePath new_dir;
+  ASSERT_TRUE(CreateTemporaryDirInDir(
+      temp_dir_.GetPath(), FILE_PATH_LITERAL("NoExecuteOnSafeFileLongPath"),
+      &new_dir));
+
+  FilePath short_dir = base::MakeShortFilePath(new_dir);
+
+  // Verify that the path really is 8.3 now.
+  ASSERT_NE(new_dir.value(), short_dir.value());
+
+  LaunchOptions options;
+  options.environment[L"TMP"] = short_dir.value();
+
+  CommandLine child_command_line(GetMultiProcessTestChildBaseCommandLine());
+
+  Process child_process = SpawnMultiProcessTestChild(
+      "NoExecuteOnSafeFileMain", child_command_line, options);
+  ASSERT_TRUE(child_process.IsValid());
+  int rv = -1;
+  ASSERT_TRUE(WaitForMultiprocessTestChildExit(
+      child_process, TestTimeouts::action_timeout(), &rv));
+  ASSERT_EQ(0, rv);
 }
 
 class FileUtilExecuteEnforcementTest
