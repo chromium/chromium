@@ -91,6 +91,9 @@ std::string CertificateTrust::ToDebugString() const {
   if (enforce_anchor_constraints) {
     result += "+enforce_anchor_constraints";
   }
+  if (require_anchor_basic_constraints) {
+    result += "+require_anchor_basic_constraints";
+  }
   if (require_leaf_selfsigned) {
     result += "+require_leaf_selfsigned";
   }

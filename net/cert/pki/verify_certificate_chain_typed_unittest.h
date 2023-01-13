@@ -57,6 +57,11 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, BasicConstraintsCa) {
   this->RunTest("intermediate-basic-constraints-not-critical/main.test");
   this->RunTest("root-lacks-basic-constraints/main.test");
   this->RunTest("root-lacks-basic-constraints/ta-with-constraints.test");
+  this->RunTest(
+      "root-lacks-basic-constraints/ta-with-require-basic-constraints.test");
+  this->RunTest(
+      "root-lacks-basic-constraints/"
+      "ta-with-constraints-require-basic-constraints.test");
   this->RunTest("root-basic-constraints-ca-false/main.test");
   this->RunTest("root-basic-constraints-ca-false/ta-with-constraints.test");
 

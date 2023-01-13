@@ -20,9 +20,14 @@ TEST(CertificateTrustTest, ToDebugStringUniqueness) {
       CertificateTrust::ForTrustAnchor(),
       CertificateTrust::ForTrustAnchor().WithEnforceAnchorConstraints(),
       CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry(),
+      CertificateTrust::ForTrustAnchor().WithRequireAnchorBasicConstraints(),
       CertificateTrust::ForTrustAnchor()
           .WithEnforceAnchorConstraints()
           .WithEnforceAnchorExpiry(),
+      CertificateTrust::ForTrustAnchor()
+          .WithEnforceAnchorConstraints()
+          .WithEnforceAnchorExpiry()
+          .WithRequireAnchorBasicConstraints(),
 
       // Meaningful combinations with trust anchor or leaf
       CertificateTrust::ForTrustAnchorOrLeaf(),
@@ -44,6 +49,12 @@ TEST(CertificateTrustTest, ToDebugStringUniqueness) {
       CertificateTrust::ForTrustAnchorOrLeaf()
           .WithEnforceAnchorConstraints()
           .WithEnforceAnchorExpiry()
+          .WithRequireLeafSelfSigned(),
+
+      CertificateTrust::ForTrustAnchorOrLeaf()
+          .WithEnforceAnchorConstraints()
+          .WithEnforceAnchorExpiry()
+          .WithRequireAnchorBasicConstraints()
           .WithRequireLeafSelfSigned(),
 
       // Meaningful combinations with trusted leaf

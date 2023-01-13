@@ -1333,6 +1333,10 @@ void PathVerifier::ProcessRootCertificate(const ParsedCertificate& cert,
     VerifyTimeValidity(cert, time, errors);
   }
   if (trust.enforce_anchor_constraints) {
+    if (trust.require_anchor_basic_constraints &&
+        !cert.has_basic_constraints()) {
+      errors->AddError(cert_errors::kMissingBasicConstraints);
+    }
     ApplyTrustAnchorConstraints(cert, required_key_purpose, errors);
   }
 

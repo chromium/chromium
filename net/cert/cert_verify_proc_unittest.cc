@@ -4304,6 +4304,13 @@ class CertVerifyProcConstraintsTest : public CertVerifyProcInternalTest {
                                .WithEnforceAnchorConstraints());
   }
 
+  int VerifyWithExpiryAndFullConstraints() {
+    return VerifyWithTrust(CertificateTrust::ForTrustAnchor()
+                               .WithEnforceAnchorExpiry()
+                               .WithEnforceAnchorConstraints()
+                               .WithRequireAnchorBasicConstraints());
+  }
+
   int ExpectedIntermediateConstraintError() {
     if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID)
       return ERR_CERT_AUTHORITY_INVALID;
@@ -4325,6 +4332,7 @@ TEST_P(CertVerifyProcConstraintsTest, BaseCase) {
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(), IsOk());
     EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()),
                 IsOk());
     EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustedLeaf()),
@@ -4338,6 +4346,8 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotCaRoot) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
+                IsError(ERR_CERT_INVALID));
   } else if (VerifyProcTypeIsMacAtMostOS10_14() ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
@@ -4432,6 +4442,8 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRoot) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
+                IsError(ERR_CERT_INVALID));
   } else if (VerifyProcTypeIsMacAtMostOS10_14() ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
              verify_proc_type() == CERT_VERIFY_PROC_WIN) {
@@ -4519,6 +4531,8 @@ TEST_P(CertVerifyProcConstraintsTest, ValidityExpiredRoot) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(),
                 IsError(ERR_CERT_DATE_INVALID));
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
+                IsError(ERR_CERT_DATE_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
@@ -4533,6 +4547,8 @@ TEST_P(CertVerifyProcConstraintsTest, ValidityNotYetValidRoot) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(),
+                IsError(ERR_CERT_DATE_INVALID));
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
                 IsError(ERR_CERT_DATE_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
@@ -4935,6 +4951,8 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoCertSignRoot) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
+                IsError(ERR_CERT_INVALID));
   } else if (VerifyProcTypeIsMacAtMostOS10_14() ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
@@ -4949,6 +4967,7 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentRoot) {
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(), IsOk());
   }
 }
 
@@ -4986,6 +5005,8 @@ TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthRoot) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
+                IsError(ERR_CERT_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
              verify_proc_type() == CERT_VERIFY_PROC_MAC ||
              verify_proc_type() == CERT_VERIFY_PROC_IOS) {
@@ -5072,6 +5093,8 @@ TEST_P(CertVerifyProcConstraintsTest, UnknownExtensionRoot) {
       if (VerifyProcTypeIsBuiltin()) {
         EXPECT_THAT(Verify(), IsOk());
         EXPECT_THAT(VerifyWithExpiryAndConstraints(),
+                    IsError(ERR_CERT_INVALID));
+        EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
                     IsError(ERR_CERT_INVALID));
       } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
                  verify_proc_type() == CERT_VERIFY_PROC_IOS ||

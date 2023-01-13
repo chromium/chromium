@@ -77,6 +77,13 @@ struct NET_EXPORT CertificateTrust {
     return result;
   }
 
+  constexpr CertificateTrust WithRequireAnchorBasicConstraints(
+      bool value = true) const {
+    CertificateTrust result = *this;
+    result.require_anchor_basic_constraints = value;
+    return result;
+  }
+
   constexpr CertificateTrust WithRequireLeafSelfSigned(
       bool value = true) const {
     CertificateTrust result = *this;
@@ -99,6 +106,9 @@ struct NET_EXPORT CertificateTrust {
   // name and SPKI.
   bool enforce_anchor_expiry = false;
   bool enforce_anchor_constraints = false;
+  // Require that trust anchors have a basicConstraints extension. (This only
+  // has effect if `enforce_anchor_constraints` is also true.)
+  bool require_anchor_basic_constraints = false;
 
   // Optionally, require trusted leafs to be self-signed to be trusted.
   bool require_leaf_selfsigned = false;

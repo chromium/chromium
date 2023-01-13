@@ -324,6 +324,14 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
       } else if (value == "TRUSTED_ANCHOR_WITH_CONSTRAINTS") {
         test->last_cert_trust =
             CertificateTrust::ForTrustAnchor().WithEnforceAnchorConstraints();
+      } else if (value == "TRUSTED_ANCHOR_WITH_REQUIRE_BASIC_CONSTRAINTS") {
+        test->last_cert_trust = CertificateTrust::ForTrustAnchor()
+                                    .WithRequireAnchorBasicConstraints();
+      } else if (value ==
+                 "TRUSTED_ANCHOR_WITH_CONSTRAINTS_REQUIRE_BASIC_CONSTRAINTS") {
+        test->last_cert_trust = CertificateTrust::ForTrustAnchor()
+                                    .WithEnforceAnchorConstraints()
+                                    .WithRequireAnchorBasicConstraints();
       } else if (value == "TRUSTED_ANCHOR_WITH_EXPIRATION_AND_CONSTRAINTS") {
         test->last_cert_trust = CertificateTrust::ForTrustAnchor()
                                     .WithEnforceAnchorExpiry()
