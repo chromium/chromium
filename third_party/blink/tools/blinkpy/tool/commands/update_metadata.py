@@ -471,7 +471,13 @@ class UpdateMetadata(Command):
             version_match = version_pattern.match(config.version)
             if version_match:
                 version = version_match['version']
+
+            processor = config.architecture
             cpu_match = cpu_pattern.match(config.architecture)
+            if cpu_match['arch'] == 'arm':
+                # Coerce `arm64` to `arm` to match:
+                #   https://firefox-source-docs.mozilla.org/build/buildsystem/mozinfo.html
+                processor = 'arm'
 
             for step in self._tool.builders.step_names_for_builder(builder):
                 flag_specific = self._tool.builders.flag_specific_option(
@@ -482,7 +488,7 @@ class UpdateMetadata(Command):
                     metadata.RunInfo({
                         'os': port.operating_system(),
                         'version': version,
-                        'processor': cpu_match['arch'],
+                        'processor': processor,
                         'bits': int(cpu_match['bits'] or 32),
                         'debug': config.build_type != 'release',
                         'product': product,

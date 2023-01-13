@@ -505,7 +505,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
 
         self.assertEqual(linux['os'], 'linux')
         self.assertEqual(linux['version'], 'trusty')
-        self.assertEqual(linux['processor'], 'x86')
+        self.assertEqual(linux['processor'], 'x86_64')
         self.assertEqual(linux['bits'], 64)
         self.assertFalse(linux['debug'])
         self.assertEqual(linux['flag_specific'], '')
