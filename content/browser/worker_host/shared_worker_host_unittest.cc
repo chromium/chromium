@@ -382,8 +382,8 @@ TEST_F(SharedWorkerHostTest,
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,
       network::mojom::CredentialsMode::kSameOrigin, "name",
-      blink::StorageKey::CreateWithNonce(url::Origin::Create(kWorkerUrl),
-                                         nonce),
+      blink::StorageKey::CreateWithNonceForTesting(
+          url::Origin::Create(kWorkerUrl), nonce),
       blink::mojom::SharedWorkerCreationContextType::kSecure);
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,

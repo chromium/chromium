@@ -8052,7 +8052,7 @@ TEST_F(WebFrameTest,
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad("data:text/html,<iframe></iframe>");
 
-  StorageKey storage_key = StorageKey::CreateWithNonce(
+  StorageKey storage_key = StorageKey::CreateWithNonceForTesting(
       url::Origin(), base::UnguessableToken::Create());
 
   auto* child_frame =

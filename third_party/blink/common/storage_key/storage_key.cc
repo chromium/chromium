@@ -191,7 +191,10 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       if (key_origin.opaque() || !nonce || nonce->is_empty())
         return absl::nullopt;
 
-      return StorageKey::CreateWithNonce(key_origin, *nonce);
+      // This constructor makes a copy of the nonce, so getting the raw pointer
+      // is safe.
+      return StorageKey(key_origin, net::SchemefulSite(key_origin), nonce.get(),
+                        blink::mojom::AncestorChainBit::kSameSite);
     }
     default: {
       // Malformed input case. We saw a separator that we don't understand
@@ -210,11 +213,7 @@ StorageKey StorageKey::CreateFromStringForTesting(const std::string& origin) {
 // static
 StorageKey StorageKey::CreateForTesting(const url::Origin& origin,
                                         const url::Origin& top_level_origin) {
-  auto top_level_site = net::SchemefulSite(top_level_origin);
-  return StorageKey(origin, std::move(top_level_site), nullptr,
-                    top_level_site == net::SchemefulSite(origin)
-                        ? blink::mojom::AncestorChainBit::kSameSite
-                        : blink::mojom::AncestorChainBit::kCrossSite);
+  return CreateForTesting(origin, net::SchemefulSite(top_level_origin));
 }
 
 // static
@@ -234,8 +233,9 @@ bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
 }
 
 // static
-StorageKey StorageKey::CreateWithNonce(const url::Origin& origin,
-                                       const base::UnguessableToken& nonce) {
+StorageKey StorageKey::CreateWithNonceForTesting(
+    const url::Origin& origin,
+    const base::UnguessableToken& nonce) {
   DCHECK(!nonce.is_empty());
   // The AncestorChainBit is not applicable to StorageKeys with a non-empty
   // nonce, so they are initialized to be kSameSite.

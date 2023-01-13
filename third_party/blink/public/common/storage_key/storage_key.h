@@ -70,8 +70,9 @@ class BLINK_COMMON_EXPORT StorageKey {
   // unique anyway. Implementation wise however, the top-level site is set to
   // the `origin`'s site. The AncestorChainBit is not applicable to StorageKeys
   // with a non-empty nonce so they are initialized to kSameSite.
-  static StorageKey CreateWithNonce(const url::Origin& origin,
-                                    const base::UnguessableToken& nonce);
+  static StorageKey CreateWithNonceForTesting(
+      const url::Origin& origin,
+      const base::UnguessableToken& nonce);
 
   // Callers may specify an optional nonce by passing nullptr.
   static StorageKey CreateWithOptionalNonce(

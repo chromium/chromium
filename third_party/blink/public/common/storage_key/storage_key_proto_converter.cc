@@ -70,8 +70,10 @@ blink::StorageKey Convert(const storage_key_proto::StorageKey& storage_key) {
     return blink::StorageKey(origin);
 
   if (storage_key_type == StorageKeyType::kUnguessableToken) {
-    return blink::StorageKey::CreateWithNonce(origin,
-                                              base::UnguessableToken::Create());
+    auto nonce = base::UnguessableToken::Create();
+    return blink::StorageKey::CreateWithOptionalNonce(
+        origin, net::SchemefulSite(origin), &nonce,
+        blink::mojom::AncestorChainBit::kSameSite);
   }
 
   if (storage_key_type == StorageKey::OneOfCase::kTopLevelSite) {
