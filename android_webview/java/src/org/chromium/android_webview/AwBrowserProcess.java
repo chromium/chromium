@@ -11,7 +11,6 @@ import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
-import android.os.RemoteException;
 import android.os.StrictMode;
 
 import androidx.annotation.IntDef;
@@ -451,9 +450,9 @@ public final class AwBrowserProcess {
                     } catch (InvalidProtocolBufferException e) {
                         Log.d(TAG, "Malformed metrics log proto", e);
                         logTransmissionResult(TransmissionResult.MALFORMED_PROTOBUF);
-                    } catch (RemoteException e) {
-                        Log.d(TAG, "Remote Exception calling MetricsBridgeService#retrieveMetrics",
-                                e);
+                    } catch (Exception e) {
+                        // RemoteException, IllegalArgumentException (https://crbug.com/1403976)
+                        Log.d(TAG, "Remote Exception in MetricsBridgeService#retrieveMetrics", e);
                         logTransmissionResult(TransmissionResult.REMOTE_EXCEPTION);
                     } finally {
                         appContext.unbindService(this);
