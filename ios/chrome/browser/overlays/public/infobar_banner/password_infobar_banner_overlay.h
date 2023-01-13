@@ -22,14 +22,16 @@ class PasswordInfobarBannerOverlayRequestConfig
  public:
   ~PasswordInfobarBannerOverlayRequestConfig() override;
 
-  // The infobar delegate's message text.
-  NSString* message() const { return message_; }
-  // The username for which passwords are being saved/updated.
-  NSString* username() const { return username_; }
+  // The infobar delegate's title text.
+  NSString* title() const { return title_; }
+  // The infobar delegate's subtitle text.
+  NSString* subtitle() const { return subtitle_; }
+  // The infobar delegate's accessibility text.
+  NSString* customAccessibilityLabel() const {
+    return custom_accessibility_label_;
+  }
   // The text to show on the banner's confirm button.
   NSString* button_text() const { return button_text_; }
-  // The length of the password being saved/updated.
-  size_t password_length() const { return password_length_; }
 
  private:
   OVERLAY_USER_DATA_SETUP(PasswordInfobarBannerOverlayRequestConfig);
@@ -42,10 +44,10 @@ class PasswordInfobarBannerOverlayRequestConfig
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
   // Configuration data extracted from `infobar_`'s save passwords delegate.
-  NSString* message_ = nil;
-  NSString* username_ = nil;
+  NSString* title_ = nil;
+  NSString* subtitle_ = nil;
+  NSString* custom_accessibility_label_ = nil;
   NSString* button_text_ = nil;
-  size_t password_length_ = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_PASSWORD_INFOBAR_BANNER_OVERLAY_H_

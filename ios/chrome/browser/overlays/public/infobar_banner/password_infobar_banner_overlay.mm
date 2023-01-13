@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,11 +28,19 @@ PasswordInfobarBannerOverlayRequestConfig::
   IOSChromeSavePasswordInfoBarDelegate* delegate =
       IOSChromeSavePasswordInfoBarDelegate::FromInfobarDelegate(
           infobar_->delegate());
-  message_ = base::SysUTF16ToNSString(delegate->GetMessageText());
-  username_ = delegate->GetUserNameText();
+  title_ = base::SysUTF16ToNSString(delegate->GetMessageText());
+  NSString* username = delegate->GetUserNameText();
+  NSString* password =
+      [@"" stringByPaddingToLength:delegate->GetPasswordText().length
+                        withString:@"•"
+                   startingAtIndex:0];
+  subtitle_ = [NSString stringWithFormat:@"%@ %@", username, password];
+  custom_accessibility_label_ =
+      [NSString stringWithFormat:@"%@,%@, %@", title_, username,
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL)];
   button_text_ = base::SysUTF16ToNSString(
       delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
-  password_length_ = delegate->GetPasswordText().length;
 }
 
 PasswordInfobarBannerOverlayRequestConfig::

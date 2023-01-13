@@ -62,22 +62,15 @@
   if (!self.consumer || !config)
     return;
 
-  NSString* title = config->message();
-  NSString* username = config->username();
-  NSString* password = [@"" stringByPaddingToLength:config->password_length()
-                                         withString:@"•"
-                                    startingAtIndex:0];
-  NSString* bannerAccessibilityLabel =
-      [NSString stringWithFormat:@"%@,%@, %@", title, username,
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL)];
+  NSString* title = config->title();
+  NSString* subtitle = config->subtitle();
+  NSString* bannerAccessibilityLabel = config->customAccessibilityLabel();
   [self.consumer setBannerAccessibilityLabel:bannerAccessibilityLabel];
   [self.consumer setButtonText:config->button_text()];
   [self.consumer setIconImage:[self iconImageWithConfig:config]];
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:title];
-  [self.consumer
-      setSubtitleText:[NSString stringWithFormat:@"%@ %@", username, password]];
+  [self.consumer setSubtitleText:subtitle];
 }
 
 @end
