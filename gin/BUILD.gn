@@ -137,12 +137,7 @@ if (is_android && enable_java_templates &&
         }
         renaming_sources = [ "$root_build_dir/snapshot_blob.bin" ]
         renaming_destinations = [ "snapshot_blob_$_arch_suffix.bin" ]
-
-        # TODO(crbug.com/1402705): Use this more direct target instead in order
-        #     to avoid building all of v8 just to create the snapshot.
-        deps = [ "//v8" ]
-
-        # deps = [ "//v8:run_mksnapshot_default" ]
+        deps = [ "//v8:run_mksnapshot_default" ]
       }
     }
   }
@@ -162,12 +157,8 @@ if (is_android && enable_java_templates &&
                            "root_out_dir")
         renaming_sources = [ "$_secondary_abi_out_dir/snapshot_blob.bin" ]
         renaming_destinations = [ "snapshot_blob_32.bin" ]
-
-        # TODO(crbug.com/1402705): Use this more direct target instead in order
-        #     to avoid building all of v8 just to create the snapshot.
-        deps = [ "//v8($android_secondary_abi_toolchain)" ]
-
-        # deps = [ "//v8:run_mksnapshot_default($android_secondary_abi_toolchain)" ]
+        deps =
+            [ "//v8:run_mksnapshot_default($android_secondary_abi_toolchain)" ]
       }
     }
   }
