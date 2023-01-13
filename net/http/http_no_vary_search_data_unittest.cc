@@ -320,6 +320,38 @@ const TestData response_headers_tests[] = {
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
+    // params set to a list of strings with one non-ASCII character.
+    {
+        "HTTP/1.1 200 OK\r\n"
+        R"(No-Vary-Search: params=("%C2%A2"))"
+        "\r\n\r\n",  // raw_headers
+        {"¢"},       // expected_no_vary_params
+        {},          // expected_vary_params
+        true,        // expected_vary_on_key_order
+        true,        // expected_vary_by_default
+    },
+    // params set to a list of strings with one ASCII and one non-ASCII
+    // character.
+    {
+        "HTTP/1.1 200 OK\r\n"
+        R"(No-Vary-Search: params=("c%C2%A2"))"
+        "\r\n\r\n",  // raw_headers
+        {"c¢"},      // expected_no_vary_params
+        {},          // expected_vary_params
+        true,        // expected_vary_on_key_order
+        true,        // expected_vary_by_default
+    },
+    // params set to a list of strings with one space and one non-ASCII
+    // character.
+    {
+        "HTTP/1.1 200 OK\r\n"
+        R"(No-Vary-Search: params=("+%C2%A2"))"
+        "\r\n\r\n",  // raw_headers
+        {" ¢"},      // expected_no_vary_params
+        {},          // expected_vary_params
+        true,        // expected_vary_on_key_order
+        true,        // expected_vary_by_default
+    },
     // params set to true.
     {
         "HTTP/1.1 200 OK\r\n"
@@ -368,6 +400,29 @@ const TestData response_headers_tests[] = {
         "\r\n\r\n",  // raw_headers
         {},          // expected_no_vary_params
         {"a"},       // expected_vary_params
+        true,        // expected_vary_on_key_order
+        false,       // expected_vary_by_default
+    },
+    // Vary on all with one excepted non-ASCII search param.
+    {
+        "HTTP/1.1 200 OK\r\n"
+        "No-Vary-Search: params\r\n"
+        R"(No-Vary-Search: except=("%C2%A2"))"
+        "\r\n\r\n",  // raw_headers
+        {},          // expected_no_vary_params
+        {"¢"},       // expected_vary_params
+        true,        // expected_vary_on_key_order
+        false,       // expected_vary_by_default
+    },
+    // Vary on all with one excepted search param that includes non-ASCII
+    // character.
+    {
+        "HTTP/1.1 200 OK\r\n"
+        "No-Vary-Search: params\r\n"
+        R"(No-Vary-Search: except=("c+%C2%A2"))"
+        "\r\n\r\n",  // raw_headers
+        {},          // expected_no_vary_params
+        {"c ¢"},     // expected_vary_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -681,8 +736,7 @@ struct NoVarySearchCompareTestData {
   const bool expected_match;
 };
 
-TEST(HttpNoVarySearchCompare,
-     CheckUrlEqualityByNoVarySearchWithSpecialCharacters) {
+TEST(HttpNoVarySearchCompare, CheckUrlEqualityWithSpecialCharacters) {
   // Use special characters in both `keys` and `values`.
   const base::flat_map<std::string, std::string> percent_encoding = {
       {"!", "%21"},    {"#", "%23"},    {"$", "%24"},    {"%", "%25"},
@@ -693,7 +747,6 @@ TEST(HttpNoVarySearchCompare,
       {"@", "%40"},    {"[", "%5B"},    {"]", R"(%5D)"}, {"^", R"(%5E)"},
       {"_", R"(%5F)"}, {"`", "%60"},    {"{", "%7B"},    {"|", R"(%7C)"},
       {"}", R"(%7D)"}, {"~", R"(%7E)"}, {"", ""}};
-
   const base::StringPiece raw_headers =
       "HTTP/1.1 200 OK\r\n"
       R"(No-Vary-Search: params=("c"))"
@@ -733,6 +786,70 @@ TEST(HttpNoVarySearchCompare,
 
     EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
         GURL(request_url_template), GURL(cached_url_template)));
+  }
+}
+
+constexpr std::pair<base::StringPiece, base::StringPiece>
+    kPercentEncodedNonAsciiKeys[] = {
+        {"¢", R"(%C2%A2)"},
+        {"¢ ¢", R"(%C2%A2+%C2%A2)"},
+        {"é 気", R"(%C3%A9+%E6%B0%97)"},
+        {"é", R"(%C3%A9)"},
+        {"気", R"(%E6%B0%97)"},
+        {"ぁ", R"(%E3%81%81)"},
+        {"𐨀", R"(%F0%90%A8%80)"},
+};
+
+TEST(HttpNoVarySearchCompare,
+     CheckUrlEqualityWithPercentEncodedNonASCIICharactersExcept) {
+  for (const auto& [key, value] : kPercentEncodedNonAsciiKeys) {
+    std::string request_url_template = R"(https://a.test/index.html?$key=c)";
+    std::string cached_url_template = R"(https://a.test/index.html?c=3&$key=c)";
+    base::ReplaceSubstringsAfterOffset(&request_url_template, 0, "$key", key);
+    base::ReplaceSubstringsAfterOffset(&cached_url_template, 0, "$key", key);
+    std::string header_template =
+        "HTTP/1.1 200 OK\r\n"
+        R"(No-Vary-Search: params, except=("$key"))"
+        "\r\n\r\n";
+    base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", value);
+
+    const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(header_template));
+    const auto no_vary_search_data_special_char =
+        HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
+
+    EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
+        GURL(request_url_template), GURL(cached_url_template)))
+        << "request_url = " << request_url_template
+        << " cached_url = " << cached_url_template
+        << " headers = " << header_template;
+  }
+}
+
+TEST(HttpNoVarySearchCompare,
+     CheckUrlEqualityWithPercentEncodedNonASCIICharacters) {
+  for (const auto& [key, value] : kPercentEncodedNonAsciiKeys) {
+    std::string request_url_template =
+        R"(https://a.test/index.html?a=2&$key=c)";
+    std::string cached_url_template = R"(https://a.test/index.html?$key=d&a=2)";
+    base::ReplaceSubstringsAfterOffset(&request_url_template, 0, "$key", key);
+    base::ReplaceSubstringsAfterOffset(&cached_url_template, 0, "$key", key);
+    std::string header_template =
+        "HTTP/1.1 200 OK\r\n"
+        R"(No-Vary-Search: params=("$key"))"
+        "\r\n\r\n";
+    base::ReplaceSubstringsAfterOffset(&header_template, 0, "$key", value);
+
+    const auto parsed_header = base::MakeRefCounted<HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(header_template));
+    const auto no_vary_search_data_special_char =
+        HttpNoVarySearchData::ParseFromHeaders(*parsed_header).value();
+
+    EXPECT_TRUE(no_vary_search_data_special_char.AreEquivalent(
+        GURL(request_url_template), GURL(cached_url_template)))
+        << "request_url = " << request_url_template
+        << " cached_url = " << cached_url_template
+        << " headers = " << header_template;
   }
 }
 
@@ -938,6 +1055,46 @@ const NoVarySearchCompareTestData no_vary_search_compare_tests[] = {
      R"(No-Vary-Search: params=("c"))"
      "\r\n\r\n",
      true},
+    // Add test when there is a param with key starting with a percent encoded
+    // space (+).
+    {GURL(R"(https://a.test/index.html?+a=3)"),
+     GURL(R"(https://a.test/index.html?+a=2)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("+a"))"
+     "\r\n\r\n",
+     true},
+    // Add test when there is a param with key starting with a percent encoded
+    // space (+) and gets compared with same key without the leading space.
+    {GURL(R"(https://a.test/index.html?+a=3)"),
+     GURL(R"(https://a.test/index.html?a=2)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("+a"))"
+     "\r\n\r\n",
+     false},
+    // Add test for when there are different representations of the character é
+    // and we are ignoring that key.
+    {GURL(R"(https://a.test/index.html?%C3%A9=g&a=2&c=4&é=b)"),
+     GURL(R"(https://a.test/index.html?a=2&é=f&c=4&d=7&é=b)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("d" "%C3%A9"))"
+     "\r\n\r\n",
+     true},
+    // Add test for when there are different representations of the character é
+    // and we are not ignoring that key.
+    {GURL(R"(https://a.test/index.html?%C3%A9=f&a=2&c=4&é=b)"),
+     GURL(R"(https://a.test/index.html?a=2&é=f&c=4&d=7&é=b)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params, except=("%C3%A9"))"
+     "\r\n\r\n",
+     true},
+    // Add test for when there are different representations of the character é
+    // and we are not ignoring that key.
+    {GURL(R"(https://a.test/index.html?%C3%A9=g&a=2&c=4&é=b)"),
+     GURL(R"(https://a.test/index.html?a=2&é=f&c=4&d=7&é=b)"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params, except=("%C3%A9"))"
+     "\r\n\r\n",
+     false},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchCompare,

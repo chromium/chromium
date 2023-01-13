@@ -245,6 +245,11 @@ NET_EXPORT_PRIVATE bool IsGoogleHostWithAlpnH3(base::StringPiece host);
 // |host| is normalized before being tested.
 NET_EXPORT_PRIVATE bool IsLocalHostname(base::StringPiece host);
 
+// The notion of unescaping used in the application/x-www-form-urlencoded
+// parser. https://url.spec.whatwg.org/#concept-urlencoded-parser
+NET_EXPORT_PRIVATE std::string UnescapePercentEncodedUrl(
+    base::StringPiece input);
+
 }  // namespace net
 
 #endif  // NET_BASE_URL_UTIL_H_

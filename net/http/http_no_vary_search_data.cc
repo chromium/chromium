@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "net/base/url_search_params.h"
+#include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
@@ -23,7 +24,7 @@ absl::optional<std::vector<std::string>> ParseStringList(
   for (const auto& item : items) {
     if (!item.item.is_string())
       return absl::nullopt;
-    keys.push_back(item.item.GetString());
+    keys.push_back(UnescapePercentEncodedUrl(item.item.GetString()));
   }
   return keys;
 }

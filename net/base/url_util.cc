@@ -26,6 +26,7 @@
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
+#include "url/url_canon_internal.h"
 #include "url/url_canon_ip.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
@@ -521,6 +522,22 @@ bool IsLocalHostname(base::StringPiece host) {
 
   return base::EqualsCaseInsensitiveASCII(host, "localhost") ||
          IsNormalizedLocalhostTLD(host);
+}
+
+std::string UnescapePercentEncodedUrl(base::StringPiece input) {
+  std::string result(input);
+  // Replace any 0x2B (+) with 0x20 (SP).
+  for (char& c : result) {
+    if (c == '+') {
+      c = ' ';
+    }
+  }
+  // Run UTF-8 decoding without BOM on the percent-decoding.
+  url::RawCanonOutputT<char16_t> canon_output;
+  url::DecodeURLEscapeSequences(result.data(), result.size(),
+                                url::DecodeURLMode::kUTF8, &canon_output);
+  return base::UTF16ToUTF8(
+      base::StringPiece16(canon_output.data(), canon_output.length()));
 }
 
 }  // namespace net
