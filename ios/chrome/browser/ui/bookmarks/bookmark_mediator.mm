@@ -51,27 +51,6 @@ const int64_t kLastUsedFolderNone = -1;
                               kLastUsedFolderNone);
 }
 
-+ (const BookmarkNode*)folderForNewBookmarksInBrowserState:
-    (ChromeBrowserState*)browserState {
-  bookmarks::BookmarkModel* bookmarks =
-      ios::BookmarkModelFactory::GetForBrowserState(browserState);
-  const BookmarkNode* defaultFolder = bookmarks->mobile_node();
-
-  PrefService* prefs = browserState->GetPrefs();
-  int64_t node_id = prefs->GetInt64(prefs::kIosBookmarkFolderDefault);
-  if (node_id == kLastUsedFolderNone) {
-    node_id = defaultFolder->id();
-  }
-  const BookmarkNode* result =
-      bookmarks::GetBookmarkNodeByID(bookmarks, node_id);
-
-  if (result) {
-    return result;
-  }
-
-  return defaultFolder;
-}
-
 + (void)setFolderForNewBookmarks:(const BookmarkNode*)folder
                   inBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(folder && folder->is_folder());
@@ -93,10 +72,12 @@ const int64_t kLastUsedFolderNone = -1;
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
-  const BookmarkNode* defaultFolder =
-      [[self class] folderForNewBookmarksInBrowserState:self.browserState];
   BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
+
+  const BookmarkNode* defaultFolder = [[self class]
+      folderForNewBookmarksInBookmarkModel:bookmarkModel
+                                     prefs:self.browserState->GetPrefs()];
   bookmarkModel->AddNewURL(defaultFolder, defaultFolder->children().size(),
                            base::SysNSStringToUTF16(title), URL);
 
@@ -144,6 +125,26 @@ const int64_t kLastUsedFolderNone = -1;
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
   return message;
+}
+
+#pragma mark - Private
+
++ (const BookmarkNode*)
+    folderForNewBookmarksInBookmarkModel:(bookmarks::BookmarkModel*)bookmarks
+                                   prefs:(PrefService*)prefs {
+  const BookmarkNode* defaultFolder = bookmarks->mobile_node();
+  int64_t node_id = prefs->GetInt64(prefs::kIosBookmarkFolderDefault);
+  if (node_id == kLastUsedFolderNone) {
+    node_id = defaultFolder->id();
+  }
+  const BookmarkNode* result =
+      bookmarks::GetBookmarkNodeByID(bookmarks, node_id);
+
+  if (result) {
+    return result;
+  }
+
+  return defaultFolder;
 }
 
 @end
