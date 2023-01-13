@@ -594,7 +594,14 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncEverything.setChecked(syncEverything);
         if (syncEverything) {
             for (CheckBoxPreference pref : mSyncTypePreferences) {
-                pref.setChecked(true);
+                // TODO(https://crbug.com/1407184): Remove this special-casing
+                //  SyncPaymentsIntegration is not checked for child users as it is disabled
+                if (pref.equals(mSyncPaymentsIntegration)
+                        && !PersonalDataManager.isPaymentsIntegrationEnabled()) {
+                    pref.setChecked(false);
+                } else {
+                    pref.setChecked(true);
+                }
                 pref.setEnabled(false);
             }
             return;
@@ -620,7 +627,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         boolean syncAutofill = syncTypes.contains(UserSelectableType.AUTOFILL);
         mSyncPaymentsIntegration.setChecked(
                 syncAutofill && PersonalDataManager.isPaymentsIntegrationEnabled());
-        mSyncPaymentsIntegration.setEnabled(syncAutofill);
+        mSyncPaymentsIntegration.setEnabled(
+                syncAutofill && !Profile.getLastUsedRegularProfile().isChild());
     }
 
     /**

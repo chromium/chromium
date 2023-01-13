@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -130,6 +131,10 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     prefs_->SetBoolean(prefs::kHideWebStoreIcon, false);
     prefs_->SetBoolean(prefs::kSigninAllowed, false);
     prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
+
+#if BUILDFLAG(IS_ANDROID)
+    prefs_->SetBoolean(autofill::prefs::kAutofillWalletImportEnabled, false);
+#endif
 
     // Copy supervised user settings to prefs.
     for (const auto& entry : kSupervisedUserSettingsPrefMapping) {

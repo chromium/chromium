@@ -496,6 +496,32 @@ public class ManageSyncSettingsTest {
         Assert.assertFalse(pcdf.isResumed());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    public void testPaymentIntegrationDisabledForChildUser() {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        CheckBoxPreference paymentsIntegration = (CheckBoxPreference) fragment.findPreference(
+                ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
+
+        assertSyncOnState(fragment);
+
+        // Payments integration should be disabled even though Sync Everything is on
+        assertPaymentsIntegrationEnabled(false);
+        Assert.assertFalse(paymentsIntegration.isChecked());
+        Assert.assertFalse(paymentsIntegration.isEnabled());
+
+        // Turn off Sync Everything
+        ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
+        mSyncTestRule.togglePreference(syncEverything);
+
+        // Payments integration should stay off
+        assertPaymentsIntegrationEnabled(false);
+        Assert.assertFalse(paymentsIntegration.isChecked());
+        Assert.assertFalse(paymentsIntegration.isEnabled());
+    }
+
     /**
      * Test the trusted vault key retrieval flow, which involves launching an intent and finally
      * calling TrustedVaultClient.notifyKeysChanged().
