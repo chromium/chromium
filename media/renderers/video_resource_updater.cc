@@ -1004,6 +1004,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       }
       transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
+#if BUILDFLAG(ENABLE_VULKAN)
       // Ensure that `ycbcr_info` is provided when necessary.
       // TODO(crbug.com/1399429): Avoid duplicating this logic.
       if (IsYuvFormat(transfer_resource.format.resource_format()) &&
@@ -1021,6 +1022,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
             VK_CHROMA_LOCATION_COSITED_EVEN,
             /*format_features=*/0);
       }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
       transfer_resource.is_backed_by_surface_texture =
