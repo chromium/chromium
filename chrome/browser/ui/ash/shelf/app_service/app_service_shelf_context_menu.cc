@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -126,9 +127,13 @@ ui::ImageModel AppServiceShelfContextMenu::GetIconForCommandId(
 
 std::u16string AppServiceShelfContextMenu::GetLabelForCommandId(
     int command_id) const {
-  if (command_id == ash::LAUNCH_NEW)
+  if (command_id == ash::LAUNCH_NEW) {
+    CHECK_GT(launch_new_string_id_, 0)
+        << "Unexpected `launch_new_string_id_` value. App id = "
+        << item().id.app_id << "; app type = " << apps::EnumToString(app_type_)
+        << "; submenu items count = " << submenu_->GetItemCount();
     return l10n_util::GetStringUTF16(launch_new_string_id_);
-
+  }
   return ShelfContextMenu::GetLabelForCommandId(command_id);
 }
 
@@ -159,7 +164,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
         ShelfContextMenu::ExecuteCommand(ash::LAUNCH_NEW, event_flags);
       } else if (app_type_ == apps::AppType::kStandaloneBrowser) {
         crosapi::BrowserManager::Get()->NewWindow(
-            /*incongnito=*/false, /*should_trigger_session_restore=*/false);
+            /*incognito=*/false, /*should_trigger_session_restore=*/false);
       } else {
         ash::NewWindowDelegate::GetInstance()->NewWindow(
             /*incognito=*/false,
@@ -452,6 +457,7 @@ void AppServiceShelfContextMenu::BuildArcAppShortcutsMenu(
       DCHECK(app_info->launchable);
       AddContextMenuOption(menu_model.get(), ash::LAUNCH_NEW,
                            IDS_APP_CONTEXT_MENU_ACTIVATE_ARC);
+      launch_new_string_id_ = IDS_APP_CONTEXT_MENU_ACTIVATE_ARC;
     }
 
     if (app_is_open) {
@@ -472,6 +478,7 @@ void AppServiceShelfContextMenu::BuildCrostiniAppMenu(
   } else {
     AddContextMenuOption(menu_model, ash::LAUNCH_NEW,
                          IDS_APP_CONTEXT_MENU_ACTIVATE_ARC);
+    launch_new_string_id_ = IDS_APP_CONTEXT_MENU_ACTIVATE_ARC;
   }
 }
 
