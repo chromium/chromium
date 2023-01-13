@@ -706,8 +706,8 @@ void LocalFrame::PrintNavigationWarning(const String& message) {
 }
 
 bool LocalFrame::ShouldClose() {
-  // TODO(dcheng): This should be fixed to dispatch beforeunload events to
-  // both local and remote frames.
+  // TODO(crbug.com/1407078): This should be fixed to dispatch beforeunload
+  // events to both local and remote frames.
   return loader_.ShouldClose();
 }
 
