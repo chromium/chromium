@@ -28,7 +28,6 @@ inside its <outputs> section that breaks the script. The check will fail, and
 trying to fix it too, but at least the file will not be modified.
 """
 
-from __future__ import print_function
 
 import argparse
 import json

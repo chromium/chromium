@@ -5,7 +5,6 @@
 
 """Copies test data files or directories into a given output directory."""
 
-from __future__ import print_function
 
 import optparse
 import os

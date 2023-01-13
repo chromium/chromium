@@ -15,7 +15,6 @@ It performs the following steps:
 4. Creates a new stamp file.
 """
 
-from __future__ import print_function
 
 import argparse
 import os

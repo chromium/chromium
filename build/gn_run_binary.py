@@ -8,7 +8,6 @@ Run with:
   python gn_run_binary.py <binary_name> [args ...]
 """
 
-from __future__ import print_function
 
 import os
 import subprocess

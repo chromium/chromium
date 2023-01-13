@@ -21,7 +21,6 @@ Sample Output:
 10.14
 """
 
-from __future__ import print_function
 
 import os
 import plistlib

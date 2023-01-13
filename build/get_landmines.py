@@ -8,7 +8,6 @@ This file emits the list of reasons why a particular build needs to be clobbered
 (or a list of 'landmines').
 """
 
-from __future__ import print_function
 
 import sys
 

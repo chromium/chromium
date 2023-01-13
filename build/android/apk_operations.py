@@ -6,7 +6,6 @@
 # Using colorama.Fore/Back/Style members
 # pylint: disable=no-member
 
-from __future__ import print_function
 
 import argparse
 import collections

@@ -5,7 +5,6 @@
 # found in the LICENSE file.
 """Runs Android's lint tool."""
 
-from __future__ import print_function
 
 import argparse
 import logging

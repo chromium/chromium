@@ -5,7 +5,6 @@
 
 """Runs resource_sizes.py on two apks and outputs the diff."""
 
-from __future__ import print_function
 
 import argparse
 import json

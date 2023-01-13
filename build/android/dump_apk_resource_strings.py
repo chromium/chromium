@@ -6,7 +6,6 @@
 
 """A script to parse and dump localized strings in resource.arsc files."""
 
-from __future__ import print_function
 
 import argparse
 import collections

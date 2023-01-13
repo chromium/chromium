@@ -5,7 +5,6 @@
 
 """Outputs host CPU architecture in format recognized by gyp."""
 
-from __future__ import print_function
 
 import platform
 import re

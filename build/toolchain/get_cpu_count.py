@@ -4,7 +4,6 @@
 
 # This script shows cpu count to specify capacity of action pool.
 
-from __future__ import print_function
 
 import multiprocessing
 import sys

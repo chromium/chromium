@@ -10,7 +10,6 @@ Usage:
   lighttpd_server PATH_TO_DOC_ROOT
 """
 
-from __future__ import print_function
 
 import codecs
 import contextlib

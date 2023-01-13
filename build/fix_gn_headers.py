@@ -10,7 +10,6 @@ try to fix them by adding them to the GN files.
 Manual cleaning up is likely required afterwards.
 """
 
-from __future__ import print_function
 
 import argparse
 import os

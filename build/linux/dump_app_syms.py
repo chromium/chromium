@@ -5,7 +5,6 @@
 # Helper script to run dump_syms on Chrome Linux executables and strip
 # them if needed.
 
-from __future__ import print_function
 
 import os
 import subprocess

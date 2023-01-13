@@ -6,7 +6,6 @@
 
 """Copies files to a directory."""
 
-from __future__ import print_function
 
 import filecmp
 import itertools

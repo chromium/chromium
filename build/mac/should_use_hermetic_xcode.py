@@ -15,7 +15,6 @@ Usage:
   python should_use_hermetic_xcode.py <target_os>
 """
 
-from __future__ import print_function
 
 import argparse
 import os

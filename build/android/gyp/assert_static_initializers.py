@@ -5,7 +5,6 @@
 
 """Checks the number of static initializers in an APK's library."""
 
-from __future__ import print_function
 
 import argparse
 import os

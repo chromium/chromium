@@ -5,7 +5,6 @@
 
 """Utility for reading / writing command-line flag files on device(s)."""
 
-from __future__ import print_function
 
 import argparse
 import logging

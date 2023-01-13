@@ -11,7 +11,6 @@ This can also be used as a standalone script to print out the depot_tools
 directory location.
 """
 
-from __future__ import print_function
 
 import os
 import sys

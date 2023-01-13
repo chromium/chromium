@@ -6,7 +6,6 @@
 """This program wraps an arbitrary command and prints "1" if the command ran
 successfully."""
 
-from __future__ import print_function
 
 import os
 import subprocess

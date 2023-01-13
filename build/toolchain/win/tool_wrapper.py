@@ -8,7 +8,6 @@ This file is copied to the build directory as part of toolchain setup and
 is used to set up calls to tools used by the build that need wrappers.
 """
 
-from __future__ import print_function
 
 import os
 import re

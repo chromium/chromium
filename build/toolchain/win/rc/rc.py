@@ -16,7 +16,6 @@ options:
 /nologo        Ignored (rc.py doesn't print a logo by default).
 /showIncludes  Print referenced header and resource files."""
 
-from __future__ import print_function
 from collections import namedtuple
 import codecs
 import os

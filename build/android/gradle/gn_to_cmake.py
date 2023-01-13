@@ -16,7 +16,6 @@ python gn/gn_to_cmake.py out/config/project.json
 The first is recommended, as it will auto-update.
 """
 
-from __future__ import print_function
 
 import functools
 import json

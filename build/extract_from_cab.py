@@ -5,7 +5,6 @@
 
 """Extracts a single file from a CAB archive."""
 
-from __future__ import print_function
 
 import os
 import shutil

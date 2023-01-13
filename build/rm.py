@@ -8,7 +8,6 @@
 This module works much like the rm posix command.
 """
 
-from __future__ import print_function
 
 import argparse
 import os

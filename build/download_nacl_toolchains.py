@@ -5,7 +5,6 @@
 
 """Shim to run nacl toolchain download script only if there is a nacl dir."""
 
-from __future__ import print_function
 
 import os
 import shutil

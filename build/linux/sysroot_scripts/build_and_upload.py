@@ -7,7 +7,6 @@
 UploadSysroot for each supported arch of each sysroot creator.
 """
 
-from __future__ import print_function
 
 import glob
 import hashlib

@@ -6,7 +6,6 @@
 
 """Aggregates Jacoco coverage files to produce output."""
 
-from __future__ import print_function
 
 import argparse
 import fnmatch

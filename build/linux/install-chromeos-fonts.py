@@ -7,7 +7,6 @@
 # This script can be run manually (as root), but is also run as part
 # install-build-deps.sh.
 
-from __future__ import print_function
 
 import os
 import shutil

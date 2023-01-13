@@ -9,7 +9,6 @@ Outputs mock symbol information, with each symbol being a function of the
 original address (so it is easy to double-check consistency in unittests).
 """
 
-from __future__ import print_function
 
 import optparse
 import os

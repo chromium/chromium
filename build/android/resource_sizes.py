@@ -8,7 +8,6 @@
 More information at //docs/speed/binary_size/metrics.md.
 """
 
-from __future__ import print_function
 
 import argparse
 import collections

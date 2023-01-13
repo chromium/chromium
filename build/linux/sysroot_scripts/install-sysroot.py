@@ -22,7 +22,6 @@
 # to download and the location to extract it to. The extracted sysroot could for
 # example be in build/linux/debian_bullseye_amd64-sysroot/.
 
-from __future__ import print_function
 
 import hashlib
 import json

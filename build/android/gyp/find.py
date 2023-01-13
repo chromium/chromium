@@ -7,7 +7,6 @@
 """Finds files in directories.
 """
 
-from __future__ import print_function
 
 import fnmatch
 import optparse

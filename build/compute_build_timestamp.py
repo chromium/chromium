@@ -27,7 +27,6 @@ Either way, it is guaranteed to be in the past and always in UTC.
 # the symbol server, so rarely changing timestamps can cause conflicts there
 # as well. We only upload symbols for official builds to the symbol server.
 
-from __future__ import print_function
 
 import argparse
 import calendar
