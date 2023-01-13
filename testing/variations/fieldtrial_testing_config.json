@@ -8886,9 +8886,13 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledDUI_20221031",
+                    "name": "EnabledDUI_20230113",
+                    "params": {
+                        "embedder_blocked_hosts": ""
+                    },
                     "enable_features": [
-                        "OmniboxTriggerForPrerender2"
+                        "OmniboxTriggerForPrerender2",
+                        "Prerender2"
                     ],
                     "disable_features": [
                         "OmniboxTriggerForNoStatePrefetch",
