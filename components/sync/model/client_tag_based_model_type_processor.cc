@@ -102,21 +102,18 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
   if (model_error_)
     return;
 
-  if (batch->GetModelTypeState().initial_sync_done()) {
-    EntityMetadataMap metadata_map(batch->TakeAllMetadata());
-    if (CheckForInvalidPersistedMetadata(metadata_map)) {
+  if (CheckForInvalidPersistedMetadata(*batch)) {
+    if (batch->GetModelTypeState().initial_sync_done()) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
-          batch->GetModelTypeState(), std::move(metadata_map));
+          batch->GetModelTypeState(), batch->TakeAllMetadata());
+    } else {
+      // If initial sync isn't done, there must be no entity metadata (if there
+      // was, CheckForInvalidPersistedMetadata() would've detected the
+      // inconsistency).
+      DCHECK(batch->GetAllMetadata().empty());
     }
-  } else {
-    // In older versions of the binary, commit-only types did not persist
-    // initial_sync_done(). So this branch can be exercised for commit-only
-    // types exactly once as an upgrade flow.
-    // TODO(crbug.com/872360): This DCHECK can currently trigger if the user's
-    // persisted Sync metadata is in an inconsistent state.
-    DCHECK(CommitOnlyTypes().Has(type_) || batch->TakeAllMetadata().empty())
-        << ModelTypeToDebugString(type_);
   }
+  // Else: The persisted metadata was invalid and was cleared. Start over fresh.
 
   DCHECK(model_ready_to_sync_);
   ConnectIfReady();
@@ -1198,22 +1195,44 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
 }
 
 bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
-    const EntityMetadataMap& metadata_map) {
-  size_t count_of_duplicates = CountDuplicateClientTags(metadata_map);
-  if (count_of_duplicates == 0u)
-    return true;
+    const MetadataBatch& metadata) {
+  const EntityMetadataMap& metadata_map = metadata.GetAllMetadata();
 
-  // Metadata entities with duplicate client tag hashes most likely arise
-  // from metadata orphans; report their count to metrics.
-  for (size_t i = 0; i < count_of_duplicates; i++) {
-    UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
-                              ModelTypeHistogramValue(type_));
+  // Check that there's no entity metadata unless the initial sync is done.
+  if (!metadata.GetModelTypeState().initial_sync_done() &&
+      !metadata_map.empty()) {
+    base::UmaHistogramEnumeration(
+        "Sync.ModelTypeEntityMetadataWithoutInitialSync",
+        ModelTypeHistogramValue(type_));
+    // In older versions of the binary, commit-only types did not persist
+    // initial_sync_done(). So this branch can legitimately be exercised for
+    // commit-only types exactly once as an upgrade flow.
+    if (!CommitOnlyTypes().Has(type_)) {
+      ClearAllProvidedMetadataAndResetState(metadata_map);
+      // Not having `entity_tracker_` results in doing the initial sync again.
+      DCHECK(!entity_tracker_);
+      return false;
+    }
   }
 
-  ClearAllProvidedMetadataAndResetState(metadata_map);
-  // Not having `entity_tracker_` results in doing the initial sync again.
-  DCHECK(!entity_tracker_);
-  return false;
+  // Check that there are no duplicate client tags.
+  size_t count_of_duplicates = CountDuplicateClientTags(metadata_map);
+  if (count_of_duplicates > 0u) {
+    // Metadata entities with duplicate client tag hashes most likely arise
+    // from metadata orphans; report their count to metrics.
+    for (size_t i = 0; i < count_of_duplicates; i++) {
+      base::UmaHistogramEnumeration(
+          "Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
+          ModelTypeHistogramValue(type_));
+    }
+
+    ClearAllProvidedMetadataAndResetState(metadata_map);
+    // Not having `entity_tracker_` results in doing the initial sync again.
+    DCHECK(!entity_tracker_);
+    return false;
+  }
+
+  return true;
 }
 
 void ClientTagBasedModelTypeProcessor::

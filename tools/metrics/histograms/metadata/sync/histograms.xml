@@ -785,6 +785,17 @@ chromium-metrics-reviews@google.com.
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>
 
+<histogram name="Sync.ModelTypeEntityMetadataWithoutInitialSync"
+    enum="SyncModelTypes" expires_after="2023-07-05">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whenever ClientTagBasedModelTypeProcessor finds entity metadata
+    during ModelReadyToSync() but initial_sync_done is false.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ModelTypeErrorSite{SyncModelType}"
     enum="SyncModelTypeErrorSite" expires_after="2023-04-10">
   <owner>treib@chromium.org</owner>
@@ -835,8 +846,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeOrphanMetadata.{Operation}"
-    enum="SyncModelTypes" expires_after="2023-03-05">
+    enum="SyncModelTypes" expires_after="2023-07-05">
   <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Records whenever an orphan metadata is encountered by the

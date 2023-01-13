@@ -237,7 +237,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // Checks for valid persisted state. Resets state (incl. the persisted data)
   // if it is invalid.
   void CheckForInvalidPersistedModelTypeState();
-  bool CheckForInvalidPersistedMetadata(const EntityMetadataMap& metadata_map);
+  bool CheckForInvalidPersistedMetadata(const MetadataBatch& metadata);
 
   // Reports error and records a metric about |site| where the error occurred.
   void ReportErrorImpl(const ModelError& error, ErrorSite site);
