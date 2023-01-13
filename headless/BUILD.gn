@@ -721,10 +721,7 @@ test("headless_browsertests") {
   }
 
   if (headless_use_policy) {
-    sources += [
-      "test/headless_policy_browsertest.cc",
-      "test/headless_policy_browsertest.h",
-    ]
+    sources += [ "test/headless_policy_browsertest.cc" ]
   }
 
   if (headless_enable_commands) {

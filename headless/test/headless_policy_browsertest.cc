@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/test/headless_policy_browsertest.h"
-
 #include <fcntl.h>
 
 #include <memory>
@@ -11,6 +9,8 @@
 #include <tuple>
 #include <vector>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/pattern.h"
@@ -20,7 +20,11 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/browser_policy_connector_base.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
 #include "content/public/test/browser_test.h"
+#include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/policy/headless_mode_policy.h"
 #include "headless/public/headless_browser.h"
 #include "headless/test/capture_std_stream.h"
@@ -46,8 +50,54 @@ enum {
   kHeadlessModePolicyUnset = -1,  // not in the template
 };
 
+class HeadlessBrowserTestWithPolicy : public HeadlessBrowserTest {
+ protected:
+  // Implement to set policies before headless browser is instantiated.
+  virtual void SetPolicy() {}
+
+  void SetUp() override {
+    mock_provider_ = std::make_unique<
+        testing::NiceMock<policy::MockConfigurationPolicyProvider>>();
+    mock_provider_->SetDefaultReturns(
+        /*is_initialization_complete_return=*/false,
+        /*is_first_policy_load_complete_return=*/false);
+    policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(
+        mock_provider_.get());
+    SetPolicy();
+    HeadlessBrowserTest::SetUp();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    HeadlessBrowserTest::SetUpInProcessBrowserTestFixture();
+    CreateTempUserDir();
+  }
+
+  void TearDown() override {
+    HeadlessBrowserTest::TearDown();
+    mock_provider_->Shutdown();
+    policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(nullptr);
+  }
+
+  void CreateTempUserDir() {
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    EXPECT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
+    options()->user_data_dir = user_data_dir();
+  }
+
+  const base::FilePath& user_data_dir() const {
+    return user_data_dir_.GetPath();
+  }
+
+  PrefService* GetPrefs() {
+    return static_cast<HeadlessBrowserImpl*>(browser())->GetPrefs();
+  }
+
+  base::ScopedTempDir user_data_dir_;
+  std::unique_ptr<policy::MockConfigurationPolicyProvider> mock_provider_;
+};
+
 class HeadlessBrowserTestWithHeadlessModePolicy
-    : public HeadlessBrowserTestWithPolicy<HeadlessBrowserTest>,
+    : public HeadlessBrowserTestWithPolicy,
       public testing::WithParamInterface<std::tuple<int, bool>> {
  protected:
   void SetPolicy() override {
@@ -88,7 +138,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithHeadlessModePolicy,
 }
 
 class HeadlessBrowserTestWithUrlBlockPolicy
-    : public HeadlessBrowserTestWithPolicy<HeadlessBrowserTest> {
+    : public HeadlessBrowserTestWithPolicy {
  protected:
   void SetPolicy() override {
     base::Value value(base::Value::Type::LIST);
@@ -118,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithUrlBlockPolicy, BlockUrl) {
 }
 
 class HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy
-    : public HeadlessBrowserTestWithPolicy<HeadlessBrowserTest>,
+    : public HeadlessBrowserTestWithPolicy,
       public testing::WithParamInterface<bool> {
  protected:
   void SetPolicy() override {
@@ -131,8 +181,7 @@ class HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    HeadlessBrowserTestWithPolicy<
-        HeadlessBrowserTest>::SetUpInProcessBrowserTestFixture();
+    HeadlessBrowserTestWithPolicy::SetUpInProcessBrowserTestFixture();
     options()->devtools_endpoint = net::HostPortPair("localhost", 0);
     capture_stderr_.StartCapture();
   }
