@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace ash {
 class FileSuggestKeyedService;
 
-class FileSuggestKeyedServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class FileSuggestKeyedServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static FileSuggestKeyedServiceFactory* GetInstance();
 
@@ -30,8 +29,6 @@ class FileSuggestKeyedServiceFactory
   FileSuggestKeyedServiceFactory();
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

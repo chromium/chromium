@@ -5,10 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
 
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "content/public/browser/browser_context.h"
 
 namespace enterprise_connectors {
 
@@ -27,19 +24,13 @@ LocalBinaryUploadServiceFactory::GetInstance() {
 }
 
 LocalBinaryUploadServiceFactory::LocalBinaryUploadServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "LocalBinaryUploadService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 KeyedService* LocalBinaryUploadServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new LocalBinaryUploadService();
-}
-
-content::BrowserContext*
-LocalBinaryUploadServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace enterprise_connectors

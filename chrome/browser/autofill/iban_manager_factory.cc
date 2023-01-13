@@ -6,10 +6,8 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/iban_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace autofill {
 
@@ -25,9 +23,9 @@ IBANManagerFactory* IBANManagerFactory::GetInstance() {
 }
 
 IBANManagerFactory::IBANManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "IBANManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(PersonalDataManagerFactory::GetInstance());
 }
 
@@ -40,11 +38,6 @@ KeyedService* IBANManagerFactory::BuildServiceInstanceFor(
       new IBANManager(PersonalDataManagerFactory::GetForBrowserContext(context),
                       profile->IsOffTheRecord());
   return service;
-}
-
-content::BrowserContext* IBANManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace autofill

@@ -124,9 +124,7 @@ ServiceWorkerLifetimeManagerFactory::GetInstance() {
 }
 
 ServiceWorkerLifetimeManagerFactory::ServiceWorkerLifetimeManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ServiceWorkerLifetimeManagerFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ServiceWorkerLifetimeManagerFactory") {
   DependsOn(extensions::ProcessManagerFactory::GetInstance());
 }
 

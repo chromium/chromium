@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/permissions/notification_permission_review_service.h"
 
 class Profile;
@@ -20,7 +20,7 @@ class BrowserContext;
 }
 
 class NotificationPermissionsReviewServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static NotificationPermissionsReviewServiceFactory* GetInstance();
 

@@ -5,9 +5,7 @@
 #include "chrome/browser/accessibility/page_colors_factory.h"
 
 #include "chrome/browser/accessibility/page_colors.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 PageColors* PageColorsFactory::GetForProfile(Profile* profile) {
@@ -27,21 +25,17 @@ PageColorsFactory* PageColorsFactory::GetInstance() {
 }
 
 PageColorsFactory::PageColorsFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PageColors",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::Builder()
+              // The incognito profile shares the PageColors with it's original
+              // profile.
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
+              .Build()) {}
 
 PageColorsFactory::~PageColorsFactory() = default;
-
-content::BrowserContext* PageColorsFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsSystemProfile() || profile->IsGuestSession())
-    return nullptr;
-
-  // The incognito profile shares the PageColors with it's original profile.
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
 
 bool PageColorsFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;

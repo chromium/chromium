@@ -7,9 +7,8 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/session_proto_db/session_proto_db.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -52,7 +51,7 @@ GetCommerceSubscriptionSessionProtoDBFactory();
 // proto. Incognito is currently not supported and the factory will return
 // nullptr for an incognito profile.
 template <typename T>
-class SessionProtoDBFactory : public BrowserContextKeyedServiceFactory {
+class SessionProtoDBFactory : public ProfileKeyedServiceFactory {
  public:
   // Acquire instance of SessionProtoDBFactory.
   static SessionProtoDBFactory<T>* GetInstance();
@@ -89,9 +88,8 @@ SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
 
 template <typename T>
 SessionProtoDBFactory<T>::SessionProtoDBFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SessionProtoDBFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+
+    : ProfileKeyedServiceFactory("SessionProtoDBFactory") {}
 
 template <typename T>
 SessionProtoDBFactory<T>::~SessionProtoDBFactory() = default;

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_NEARBY_NEARBY_DEPENDENCIES_PROVIDER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,8 +14,7 @@ namespace ash::nearby {
 
 class NearbyDependenciesProvider;
 
-class NearbyDependenciesProviderFactory
-    : public BrowserContextKeyedServiceFactory {
+class NearbyDependenciesProviderFactory : public ProfileKeyedServiceFactory {
  public:
   static NearbyDependenciesProvider* GetForProfile(Profile* profile);
 
@@ -36,8 +35,6 @@ class NearbyDependenciesProviderFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace ash::nearby

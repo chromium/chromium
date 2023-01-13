@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
 
 namespace ash {
@@ -29,9 +28,7 @@ LoginScreenExtensionsContentScriptManagerFactory::GetInstance() {
 
 LoginScreenExtensionsContentScriptManagerFactory::
     LoginScreenExtensionsContentScriptManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "LoginScreenExtensionsContentScriptManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("LoginScreenExtensionsContentScriptManager") {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
 }

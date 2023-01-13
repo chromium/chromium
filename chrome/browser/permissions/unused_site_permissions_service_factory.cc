@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/unused_site_permissions_service.h"
 
 // static
@@ -24,9 +23,7 @@ UnusedSitePermissionsServiceFactory::GetForProfile(Profile* profile) {
 }
 
 UnusedSitePermissionsServiceFactory::UnusedSitePermissionsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "UnusedSitePermissionsService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("UnusedSitePermissionsService") {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 

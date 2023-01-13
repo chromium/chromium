@@ -20,6 +20,7 @@ source_set("persisted_state_db") {
 
   deps = [
     "//base:base",
+    "//chrome/browser/profiles:profile",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:persisted_state_db_content_proto",
     "//components/keyed_service/content",

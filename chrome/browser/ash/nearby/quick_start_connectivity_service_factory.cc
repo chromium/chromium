@@ -6,7 +6,6 @@
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash::quick_start {
 
@@ -25,9 +24,9 @@ QuickStartConnectivityServiceFactory::GetInstance() {
 }
 
 QuickStartConnectivityServiceFactory::QuickStartConnectivityServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "QuickStartConnectivityService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(nearby::NearbyProcessManagerFactory::GetInstance());
 }
 
@@ -47,12 +46,6 @@ KeyedService* QuickStartConnectivityServiceFactory::BuildServiceInstanceFor(
 bool QuickStartConnectivityServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
-}
-
-content::BrowserContext*
-QuickStartConnectivityServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
 }
 
 }  // namespace ash::quick_start

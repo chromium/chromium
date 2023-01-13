@@ -18,7 +18,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
@@ -50,9 +49,7 @@ EasyUnlockService* EasyUnlockServiceFactory::GetForBrowserContext(
 }
 
 EasyUnlockServiceFactory::EasyUnlockServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "EasyUnlockService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("EasyUnlockService") {
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(EasyUnlockTpmKeyManagerFactory::GetInstance());
@@ -94,11 +91,6 @@ void EasyUnlockServiceFactory::RegisterProfilePrefs(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   EasyUnlockService::RegisterProfilePrefs(registry);
 #endif
-}
-
-content::BrowserContext* EasyUnlockServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context->IsOffTheRecord() ? nullptr : context;
 }
 
 bool EasyUnlockServiceFactory::ServiceIsCreatedWithBrowserContext() const {

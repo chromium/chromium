@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search/start_suggest_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -31,9 +30,7 @@ StartSuggestServiceFactory* StartSuggestServiceFactory::GetInstance() {
 }
 
 StartSuggestServiceFactory::StartSuggestServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "StartSuggestServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("StartSuggestServiceFactory") {
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 

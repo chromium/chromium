@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -56,9 +55,7 @@ VpnServiceFactory* VpnServiceFactory::GetInstance() {
 }
 
 VpnServiceFactory::VpnServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "VpnService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("VpnService") {
   DependsOn(extensions::EventRouterFactory::GetInstance());
 }
 

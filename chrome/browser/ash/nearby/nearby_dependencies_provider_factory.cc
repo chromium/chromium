@@ -8,9 +8,22 @@
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash::nearby {
+
+namespace {
+
+ProfileSelections BuildNearbyDependenciesProviderProfileSelections() {
+  // This needs to be overridden because the default implementation returns
+  // nullptr for OTR profiles, which would prevent using this with Quick Start.
+  if (features::IsOobeQuickStartEnabled()) {
+    return ProfileSelections::BuildForRegularAndIncognito();
+  }
+
+  return ProfileSelections::BuildDefault();
+}
+
+}  // namespace
 
 // static
 NearbyDependenciesProvider* NearbyDependenciesProviderFactory::GetForProfile(
@@ -27,9 +40,9 @@ NearbyDependenciesProviderFactory::GetInstance() {
 }
 
 NearbyDependenciesProviderFactory::NearbyDependenciesProviderFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "NearbyDependenciesProvider",
-          BrowserContextDependencyManager::GetInstance()) {
+          BuildNearbyDependenciesProviderProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -46,18 +59,6 @@ KeyedService* NearbyDependenciesProviderFactory::BuildServiceInstanceFor(
 bool NearbyDependenciesProviderFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
-}
-
-// This needs to be overridden because the default implementation returns
-// nullptr for OTR profiles, which would prevent using this with Quick Start.
-content::BrowserContext*
-NearbyDependenciesProviderFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  if (features::IsOobeQuickStartEnabled()) {
-    return context;
-  } else {
-    return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
-  }
 }
 
 }  // namespace ash::nearby

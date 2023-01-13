@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_EXTENSIONS_LOGIN_SCREEN_EXTENSIONS_CONTENT_SCRIPT_MANAGER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -21,7 +21,7 @@ class LoginScreenExtensionsContentScriptManager;
 
 // Factory for the `LoginScreenExtensionsContentScriptManager` KeyedService.
 class LoginScreenExtensionsContentScriptManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static LoginScreenExtensionsContentScriptManager* GetForProfile(
       Profile* profile);

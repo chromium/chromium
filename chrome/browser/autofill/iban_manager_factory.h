@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_IBAN_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_AUTOFILL_IBAN_MANAGER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {
@@ -20,7 +20,7 @@ namespace autofill {
 class IBANManager;
 
 // Singleton that owns all IBANManagers and associates them with Profiles.
-class IBANManagerFactory : public BrowserContextKeyedServiceFactory {
+class IBANManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the IBANManager for |profile|, creating it if it is not yet
   // created.
@@ -37,8 +37,6 @@ class IBANManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace autofill

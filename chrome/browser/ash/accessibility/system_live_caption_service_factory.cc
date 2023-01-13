@@ -8,7 +8,6 @@
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/ash/accessibility/system_live_caption_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -27,9 +26,7 @@ SystemLiveCaptionServiceFactory::GetInstance() {
 }
 
 SystemLiveCaptionServiceFactory::SystemLiveCaptionServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SystemLiveCaptionService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SystemLiveCaptionService") {
   DependsOn(::captions::LiveCaptionControllerFactory::GetInstance());
 }
 

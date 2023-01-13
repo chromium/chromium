@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ACCESSIBILITY_AX_SCREEN_AI_ANNOTATOR_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -18,7 +18,7 @@ class AXScreenAIAnnotator;
 
 // Factory to get or create an instance of AXScreenAIAnnotator for a
 // BrowserContext.
-class AXScreenAIAnnotatorFactory : public BrowserContextKeyedServiceFactory {
+class AXScreenAIAnnotatorFactory : public ProfileKeyedServiceFactory {
  public:
   static screen_ai::AXScreenAIAnnotator* GetForBrowserContext(
       content::BrowserContext* context);
@@ -34,8 +34,6 @@ class AXScreenAIAnnotatorFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

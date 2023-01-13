@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_EXTENSIONS_LOGIN_SCREEN_EXTENSIONS_LIFETIME_MANAGER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -20,7 +20,7 @@ namespace ash {
 class LoginScreenExtensionsLifetimeManager;
 
 class LoginScreenExtensionsLifetimeManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static LoginScreenExtensionsLifetimeManager* GetForProfile(Profile* profile);
   static LoginScreenExtensionsLifetimeManagerFactory* GetInstance();

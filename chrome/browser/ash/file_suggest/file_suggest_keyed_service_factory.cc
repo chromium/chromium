@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -20,9 +19,9 @@ FileSuggestKeyedServiceFactory* FileSuggestKeyedServiceFactory::GetInstance() {
 }
 
 FileSuggestKeyedServiceFactory::FileSuggestKeyedServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "FileSuggestKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(file_manager::file_tasks::FileTasksNotifierFactory::GetInstance());
 }
@@ -33,11 +32,6 @@ FileSuggestKeyedService* FileSuggestKeyedServiceFactory::GetService(
     content::BrowserContext* context) {
   return static_cast<FileSuggestKeyedService*>(
       GetServiceForBrowserContext(context, /*create=*/true));
-}
-
-content::BrowserContext* FileSuggestKeyedServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
 }
 
 KeyedService* FileSuggestKeyedServiceFactory::BuildServiceInstanceFor(

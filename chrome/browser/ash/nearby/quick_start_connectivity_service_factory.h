@@ -7,12 +7,11 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace ash::quick_start {
 
-class QuickStartConnectivityServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class QuickStartConnectivityServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static QuickStartConnectivityService* GetForProfile(Profile* profile);
 
@@ -34,8 +33,6 @@ class QuickStartConnectivityServiceFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace ash::quick_start

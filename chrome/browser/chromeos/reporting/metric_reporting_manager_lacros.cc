@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -16,9 +17,8 @@
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/policy/policy_constants.h"
 
 namespace reporting::metrics {
@@ -26,8 +26,7 @@ namespace {
 
 // Factory implementation for the `MetricReportingManagerLacros` for a given
 // `BrowserContext`.
-class MetricReportingManagerLacrosFactory
-    : public BrowserContextKeyedServiceFactory {
+class MetricReportingManagerLacrosFactory : public ProfileKeyedServiceFactory {
  public:
   MetricReportingManagerLacrosFactory();
   MetricReportingManagerLacrosFactory(
@@ -46,9 +45,7 @@ class MetricReportingManagerLacrosFactory
 };
 
 MetricReportingManagerLacrosFactory::MetricReportingManagerLacrosFactory()
-    : BrowserContextKeyedServiceFactory(
-          "MetricReportingManagerLacros",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("MetricReportingManagerLacros") {}
 
 MetricReportingManagerLacrosFactory::~MetricReportingManagerLacrosFactory() =
     default;

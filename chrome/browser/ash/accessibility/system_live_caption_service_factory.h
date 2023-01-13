@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SYSTEM_LIVE_CAPTION_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -20,8 +20,7 @@ class SystemLiveCaptionService;
 
 // Factory to get or create an instance of SystemLiveCaptionService for a
 // Profile.
-class SystemLiveCaptionServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class SystemLiveCaptionServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static SystemLiveCaptionService* GetForProfile(Profile* profile);
 

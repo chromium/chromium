@@ -5,7 +5,6 @@
 #include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 
 #include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace screen_ai {
@@ -31,21 +30,16 @@ void AXScreenAIAnnotatorFactory::EnsureExistsForBrowserContext(
 }
 
 AXScreenAIAnnotatorFactory::AXScreenAIAnnotatorFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AXScreenAIAnnotator",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Incognito profiles should use their own instance.
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 AXScreenAIAnnotatorFactory::~AXScreenAIAnnotatorFactory() = default;
 
 KeyedService* AXScreenAIAnnotatorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new screen_ai::AXScreenAIAnnotator(context);
-}
-
-// Incognito profiles should use their own instance.
-content::BrowserContext* AXScreenAIAnnotatorFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
 }
 
 }  // namespace screen_ai

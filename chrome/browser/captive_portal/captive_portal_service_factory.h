@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CAPTIVE_PORTAL_CAPTIVE_PORTAL_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -18,7 +18,7 @@ class CaptivePortalService;
 // them with Profiles.  Listens for the Profile's destruction notification and
 // cleans up the associated captive_portal::CaptivePortalService.  Incognito
 // profiles have their own captive_portal::CaptivePortalService.
-class CaptivePortalServiceFactory : public BrowserContextKeyedServiceFactory {
+class CaptivePortalServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the captive_portal::CaptivePortalService for |profile|.
   static captive_portal::CaptivePortalService* GetForProfile(Profile* profile);
@@ -40,8 +40,6 @@ class CaptivePortalServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_CAPTIVE_PORTAL_CAPTIVE_PORTAL_SERVICE_FACTORY_H_

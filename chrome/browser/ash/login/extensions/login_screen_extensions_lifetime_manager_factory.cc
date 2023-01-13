@@ -10,8 +10,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager_factory.h"
@@ -33,9 +31,7 @@ LoginScreenExtensionsLifetimeManagerFactory::GetInstance() {
 
 LoginScreenExtensionsLifetimeManagerFactory::
     LoginScreenExtensionsLifetimeManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "LoginScreenExtensionsLifetimeManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("LoginScreenExtensionsLifetimeManager") {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
   DependsOn(extensions::ProcessManagerFactory::GetInstance());

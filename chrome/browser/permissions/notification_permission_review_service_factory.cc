@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 NotificationPermissionsReviewServiceFactory*
@@ -24,9 +23,7 @@ NotificationPermissionsReviewServiceFactory::GetForProfile(Profile* profile) {
 
 NotificationPermissionsReviewServiceFactory::
     NotificationPermissionsReviewServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "NotificationPermissionsReviewService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("NotificationPermissionsReviewService") {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 

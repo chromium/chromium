@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CAPABILITIES_FETCHER_FACTORY_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CAPABILITIES_FETCHER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class FastCheckoutCapabilitiesFetcher;
 
@@ -16,7 +16,7 @@ class BrowserContext;
 // Factory for `FastCheckoutCapabilitiesFetcher` instances for a given
 // `BrowserContext`.
 class FastCheckoutCapabilitiesFetcherFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static FastCheckoutCapabilitiesFetcherFactory* GetInstance();
 

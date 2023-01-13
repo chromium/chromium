@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SEARCH_RESUMPTION_START_SUGGEST_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -17,7 +17,7 @@ class StartSuggestService;
 namespace search_resumption_module {
 // Factory to create StarrSuggestService per regular profile. nullptr will be
 // returned for incognito profile.
-class StartSuggestServiceFactory : public BrowserContextKeyedServiceFactory {
+class StartSuggestServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static StartSuggestService* GetForBrowserContext(
       content::BrowserContext* context);

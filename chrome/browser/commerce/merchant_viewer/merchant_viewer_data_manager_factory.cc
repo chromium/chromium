@@ -18,7 +18,7 @@
 // static
 MerchantViewerDataManager* MerchantViewerDataManagerFactory::GetForProfile(
     Profile* profile) {
-  if (!profile || profile->IsOffTheRecord()) {
+  if (!profile) {
     return nullptr;
   }
 
@@ -36,9 +36,7 @@ MerchantViewerDataManagerFactory::GetInstance() {
 }
 
 MerchantViewerDataManagerFactory::MerchantViewerDataManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "MerchantViewerDataManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("MerchantViewerDataManager") {
   DependsOn(SessionProtoDBFactory<
             MerchantViewerDataManager::MerchantSignalProto>::GetInstance());
 }

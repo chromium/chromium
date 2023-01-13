@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 
@@ -47,7 +47,7 @@ class PersistentForcedExtensionKeepAlive final : public KeyedService {
 
 // Factory for the `PersistentForcedExtensionKeepAlive` KeyedService.
 class PersistentForcedExtensionKeepAliveFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static PersistentForcedExtensionKeepAliveFactory* GetInstance();
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_LOCAL_BINARY_UPLOAD_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -21,8 +21,7 @@ namespace enterprise_connectors {
 // Profile. It listens to profile destroy events and destroy its associated
 // service. It returns a separate instance if the profile is in the Incognito
 // mode.
-class LocalBinaryUploadServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class LocalBinaryUploadServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
   // If the service already exists, return its pointer.
@@ -44,8 +43,6 @@ class LocalBinaryUploadServiceFactory
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

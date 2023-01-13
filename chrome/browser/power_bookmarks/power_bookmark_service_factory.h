@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_POWER_BOOKMARKS_POWER_BOOKMARK_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace power_bookmarks {
 class PowerBookmarkService;
 }
 
 // Factory to create one PowerBookmarkService per browser context.
-class PowerBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
+class PowerBookmarkServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static power_bookmarks::PowerBookmarkService* GetForBrowserContext(
       content::BrowserContext* browser_context);

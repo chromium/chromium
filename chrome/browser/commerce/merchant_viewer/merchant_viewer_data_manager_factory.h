@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
@@ -21,8 +21,7 @@ class Profile;
 
 // LazyInstance that owns all MerchantViewerDataManager(s) and associates them
 // with Profiles.
-class MerchantViewerDataManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class MerchantViewerDataManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the MerchantViewerDataManager for the profile.
   static MerchantViewerDataManager* GetForProfile(Profile* profile);

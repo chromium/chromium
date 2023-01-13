@@ -94,9 +94,7 @@ PersistentForcedExtensionKeepAliveFactory::GetInstance() {
 
 PersistentForcedExtensionKeepAliveFactory::
     PersistentForcedExtensionKeepAliveFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PersistentForcedExtensionKeepAlive",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("PersistentForcedExtensionKeepAlive") {}
 
 PersistentForcedExtensionKeepAliveFactory::
     ~PersistentForcedExtensionKeepAliveFactory() = default;

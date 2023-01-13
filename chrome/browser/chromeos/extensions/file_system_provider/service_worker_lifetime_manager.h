@@ -11,7 +11,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/service_worker/worker_id.h"
@@ -99,8 +99,7 @@ class ServiceWorkerLifetimeManager : public KeyedService {
 };
 
 // KeyedService factory for ServiceWorkerLifetimeManager.
-class ServiceWorkerLifetimeManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class ServiceWorkerLifetimeManagerFactory : public ProfileKeyedServiceFactory {
  public:
   ServiceWorkerLifetimeManagerFactory(
       const ServiceWorkerLifetimeManagerFactory&) = delete;
