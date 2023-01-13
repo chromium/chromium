@@ -516,40 +516,12 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"downloadsPageTitle", IDS_SETTINGS_DOWNLOADS},
       {"downloadLocation", IDS_SETTINGS_DOWNLOAD_LOCATION},
-      {"downloadLocalLocation", IDS_SETTINGS_DOWNLOAD_LOCAL_LOCATION},
-      {"downloadConnectionAccountTitle",
-       IDS_SETTINGS_DOWNLOAD_CONNECTION_ACCOUNT_TITLE},
-      {"downloadConnectionLearnMore",
-       IDS_SETTINGS_DOWNLOAD_CONNECTION_LEARN_MORE},
       {"changeDownloadLocation", IDS_SETTINGS_CHANGE_DOWNLOAD_LOCATION},
       {"promptForDownload", IDS_SETTINGS_PROMPT_FOR_DOWNLOAD},
       {"openFileTypesAutomatically",
        IDS_SETTINGS_OPEN_FILE_TYPES_AUTOMATICALLY},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  const std::u16string kBox =
-      l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX);
-  html_source->AddString(
-      "downloadsConnectionTitle",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_DOWNLOAD_CONNECTION_TITLE, kBox));
-  html_source->AddString(
-      "downloadsConnectionUnlinkedMessage",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_DOWNLOAD_CONNECTION_UNLINKED_MESSAGE, kBox));
-  html_source->AddString(
-      "downloadsConnectionLinkButton",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_DOWNLOAD_CONNECTION_SIGN_IN_BUTTON, kBox));
-  html_source->AddString(
-      "downloadsConnectionLinkedMessage",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_DOWNLOAD_CONNECTION_LINKED_MESSAGE, kBox));
-  html_source->AddString("downloadsConnectionUnlinkButton",
-                         l10n_util::GetStringUTF16(
-                             IDS_SETTINGS_DOWNLOAD_CONNECTION_SIGN_OUT_BUTTON));
-  html_source->AddString("downloadConnectionLinkedFolder",
-                         l10n_util::GetStringFUTF16(
-                             IDS_SETTINGS_DOWNLOAD_WEB_DRIVE_LOCATION, kBox));
 }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

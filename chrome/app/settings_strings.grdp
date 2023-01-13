@@ -1376,35 +1376,6 @@
     Open certain file types automatically after downloading
   </message>
 
-  <!-- Downloads Page: Web Drive Connection -->
-  <message name="IDS_SETTINGS_DOWNLOAD_CONNECTION_TITLE" desc="Label for the checkbox which enables a prompt for the user to choose a download location for each download instead of using the default.">
-    <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> Connection
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOAD_CONNECTION_LEARN_MORE" desc="Text to be displayed to take user to relevant CBCM article.">
-    Learn more
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOAD_CONNECTION_UNLINKED_MESSAGE" desc="Meesage to be displayed when downloads are set to be routed to web drive by CBCM policy but the user has not linked a web drive account yet.">
-    For data safety and security, your organization requries all eligible downloads to be saved to your organization's <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> account.
-  </message>
-<message name="IDS_SETTINGS_DOWNLOAD_CONNECTION_SIGN_IN_BUTTON" desc="Label for the checkbox which enables a prompt for the user to choose a download location for each download instead of using the default.">
-    Sign in to <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOAD_CONNECTION_LINKED_MESSAGE" desc="Meesage to be displayed when downloads are set to be routed to web drive by CBCM policy and the user has linked a web drive account already.">
-    All eligible downloads are routed to your organization's <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> account.
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOAD_CONNECTION_SIGN_OUT_BUTTON" desc="Label for the checkbox which enables a prompt for the user to choose a download location for each download instead of using the default.">
-    Unlink Account
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOAD_CONNECTION_ACCOUNT_TITLE" desc="Label for the checkbox which enables a prompt for the user to choose a download location for each download instead of using the default.">
-    Account
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOAD_WEB_DRIVE_LOCATION" desc="Label for the input which allows the user to specify the default download directory, if the file system connector is enabled." meaning="File location">
-    <ph name="WEB_DRIVE">$1<ex>Google Drive</ex></ph> Location
-  </message>
-  <message name="IDS_SETTINGS_DOWNLOAD_LOCAL_LOCATION" desc="Label for the input which allows the user to specify the default download directory, if the file system connector is enabled." meaning="File location">
-    Local Location
-  </message>
-
   <!-- On Startup Page -->
   <message name="IDS_SETTINGS_ON_STARTUP" desc="Name of the on startup page.">
     On startup
