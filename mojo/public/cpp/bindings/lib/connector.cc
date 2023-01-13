@@ -665,6 +665,9 @@ void Connector::CancelWait() {
 }
 
 void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
+  recordreplay::Assert("[RUN-1123] Connector::HandleError %d %d %d",
+                       recordreplay::PointerId(this), force_pipe_reset, force_async_handler);
+
   if (error_ || !message_pipe_.is_valid()) {
     return;
   }

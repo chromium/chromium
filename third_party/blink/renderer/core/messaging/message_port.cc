@@ -177,6 +177,8 @@ void MessagePort::start() {
 }
 
 void MessagePort::close() {
+  recordreplay::Assert("[RUN-1123] MessagePort::close %d", closed_);
+
   if (closed_)
     return;
   // A closed port should not be neutered, so rather than merely disconnecting
