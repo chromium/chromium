@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <sys/mman.h>
+
 #include <memory>
 #include <string>
 #include <tuple>
+#include <vector>
 
+#include "base/bits.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
+#include "base/rand_util.h"
+#include "base/run_loop.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
@@ -19,15 +25,24 @@
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor.h"
+#include "media/gpu/chromeos/image_processor_backend.h"
+#include "media/gpu/chromeos/image_processor_factory.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/image_processor/image_processor_client.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_frame_validator.h"
 #include "media/gpu/test/video_test_environment.h"
+#include "media/gpu/video_frame_mapper.h"
+#include "media/gpu/video_frame_mapper_factory.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/test/gl_surface_test_support.h"
+
+#define MM21_TILE_WIDTH 32
+#define MM21_TILE_HEIGHT 16
 
 namespace media {
 namespace {
@@ -131,6 +146,125 @@ bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
+                                          VideoFrame::StorageType type) {
+  const gfx::Rect visible_rect(size);
+  constexpr base::TimeDelta kNullTimestamp;
+  if (type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    return CreateGpuMemoryBufferVideoFrame(
+        VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
+        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+  } else {
+    DCHECK(type == VideoFrame::STORAGE_DMABUFS);
+    return CreatePlatformVideoFrame(VideoPixelFormat::PIXEL_FORMAT_NV12, size,
+                                    visible_rect, size, kNullTimestamp,
+                                    gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+  }
+}
+
+scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
+                                                VideoFrame::StorageType type) {
+  DCHECK(size.width() == base::bits::AlignUp(size.width(), MM21_TILE_WIDTH));
+  DCHECK(size.height() == base::bits::AlignUp(size.height(), MM21_TILE_HEIGHT));
+
+  scoped_refptr<VideoFrame> ret = CreateNV12Frame(size, type);
+  if (!ret) {
+    LOG(ERROR) << "Failed to create MM21 frame";
+    return nullptr;
+  }
+
+  std::unique_ptr<VideoFrameMapper> frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          VideoPixelFormat::PIXEL_FORMAT_NV12, type,
+          /*force_linear_buffer_mapper=*/true);
+  scoped_refptr<VideoFrame> mapped_ret =
+      frame_mapper->Map(ret, PROT_READ | PROT_WRITE);
+  if (!mapped_ret) {
+    LOG(ERROR) << "Unable to map MM21 frame";
+    return nullptr;
+  }
+
+  uint8_t* y_plane = mapped_ret->GetWritableVisibleData(VideoFrame::kYPlane);
+  uint8_t* uv_plane = mapped_ret->GetWritableVisibleData(VideoFrame::kUVPlane);
+  for (int row = 0; row < size.height(); row++) {
+    for (int col = 0; col < size.width(); col++) {
+      y_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
+      if (row % 2 == 0) {
+        uv_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
+      }
+    }
+    y_plane += mapped_ret->stride(VideoFrame::kYPlane);
+    if (row % 2 == 0) {
+      uv_plane += mapped_ret->stride(VideoFrame::kUVPlane);
+    }
+  }
+
+  return ret;
+}
+
+bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
+                            scoped_refptr<VideoFrame> golden_frame) {
+  if (test_frame->coded_size() != golden_frame->coded_size() ||
+      test_frame->visible_rect() != golden_frame->visible_rect() ||
+      test_frame->format() != VideoPixelFormat::PIXEL_FORMAT_NV12 ||
+      golden_frame->format() != VideoPixelFormat::PIXEL_FORMAT_NV12) {
+    return false;
+  }
+
+  std::unique_ptr<VideoFrameMapper> test_frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          VideoPixelFormat::PIXEL_FORMAT_NV12, test_frame->storage_type(),
+          /*force_linear_buffer_mapper=*/true);
+  std::unique_ptr<VideoFrameMapper> golden_frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          VideoPixelFormat::PIXEL_FORMAT_NV12, golden_frame->storage_type(),
+          /*force_linear_buffer_mapper=*/true);
+  scoped_refptr<VideoFrame> mapped_test_frame =
+      test_frame_mapper->Map(test_frame, PROT_READ | PROT_WRITE);
+  if (!mapped_test_frame) {
+    LOG(ERROR) << "Unable to map test frame";
+    return false;
+  }
+  scoped_refptr<VideoFrame> mapped_golden_frame =
+      golden_frame_mapper->Map(golden_frame, PROT_READ | PROT_WRITE);
+  if (!mapped_golden_frame) {
+    LOG(ERROR) << "Unable to map golden frame";
+    return false;
+  }
+
+  const uint8_t* test_y_plane =
+      mapped_test_frame->visible_data(VideoFrame::kYPlane);
+  const uint8_t* test_uv_plane =
+      mapped_test_frame->visible_data(VideoFrame::kUVPlane);
+  const uint8_t* golden_y_plane =
+      mapped_golden_frame->visible_data(VideoFrame::kYPlane);
+  const uint8_t* golden_uv_plane =
+      mapped_golden_frame->visible_data(VideoFrame::kUVPlane);
+  for (int y = 0; y < test_frame->coded_size().height(); y++) {
+    for (int x = 0; x < test_frame->coded_size().width(); x++) {
+      if (test_y_plane[x] != golden_y_plane[x]) {
+        return false;
+      }
+
+      if (y % 2 == 0) {
+        if (test_uv_plane[x] != golden_uv_plane[x]) {
+          return false;
+        }
+      }
+    }
+    test_y_plane += mapped_test_frame->stride(VideoFrame::kYPlane);
+    golden_y_plane += mapped_golden_frame->stride(VideoFrame::kYPlane);
+    if (y % 2 == 0) {
+      test_uv_plane += mapped_test_frame->stride(VideoFrame::kUVPlane);
+      golden_uv_plane += mapped_golden_frame->stride(VideoFrame::kUVPlane);
+    }
+  }
+
+  return true;
+}
+#endif
 
 class ImageProcessorParamTest
     : public ::testing::Test,
@@ -421,6 +555,102 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(hiroh): Add more tests.
 // MEM->DMABUF (V4L2VideoEncodeAccelerator),
 #endif
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
+  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      /*fallback_to_software_gl=*/false);
+
+  constexpr gfx::Size kTestImageSize(1920, 1088);
+  constexpr gfx::Rect kTestImageVisibleRect(kTestImageSize);
+  const ImageProcessor::PixelLayoutCandidate candidate = {Fourcc(Fourcc::MM21),
+                                                          kTestImageSize};
+  std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {candidate};
+
+  auto client_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  bool image_processor_error = false;
+  ImageProcessor::ErrorCB error_cb = base::BindRepeating(
+      [](scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+         base::RepeatingClosure quit_closure, bool* image_processor_error) {
+        CHECK(client_task_runner->RunsTasksInCurrentSequence());
+        *image_processor_error = true;
+        quit_closure.Run();
+      },
+      client_task_runner, quit_closure, &image_processor_error);
+  ImageProcessorFactory::PickFormatCB pick_format_cb = base::BindRepeating(
+      [](const std::vector<Fourcc>&, absl::optional<Fourcc>) {
+        return absl::make_optional<Fourcc>(Fourcc::NV12);
+      });
+
+  std::unique_ptr<ImageProcessor> libyuv_image_processor =
+      ImageProcessorFactory::
+          CreateLibYUVImageProcessorWithInputCandidatesForTesting(
+              candidates, kTestImageVisibleRect, kTestImageSize,
+              /*num_buffers=*/1, client_task_runner, pick_format_cb, error_cb);
+  ASSERT_TRUE(libyuv_image_processor)
+      << "Error creating LibYUV image processor";
+  std::unique_ptr<ImageProcessor> gl_image_processor = ImageProcessorFactory::
+      CreateGLImageProcessorWithInputCandidatesForTesting(
+          candidates, kTestImageVisibleRect, kTestImageSize, /*num_buffers=*/1,
+          client_task_runner, pick_format_cb, error_cb);
+  ASSERT_TRUE(gl_image_processor) << "Error creating GLImageProcessor";
+
+  scoped_refptr<VideoFrame> input_frame =
+      CreateRandomMM21Frame(kTestImageSize, VideoFrame::STORAGE_DMABUFS);
+  ASSERT_TRUE(input_frame) << "Error creating input frame";
+  scoped_refptr<VideoFrame> gl_output_frame =
+      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  ASSERT_TRUE(gl_output_frame) << "Error creating GL output frame";
+  scoped_refptr<VideoFrame> libyuv_output_frame =
+      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  ASSERT_TRUE(libyuv_output_frame) << "Error creating LibYUV output frame";
+
+  int outstanding_processors = 2;
+  ImageProcessor::FrameReadyCB libyuv_callback = base::BindOnce(
+      [](scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+         base::RepeatingClosure quit_closure, int* outstanding_processors,
+         scoped_refptr<VideoFrame>* libyuv_output_frame,
+         scoped_refptr<VideoFrame> frame) {
+        CHECK(client_task_runner->RunsTasksInCurrentSequence());
+        *libyuv_output_frame = std::move(frame);
+        if (!(--*outstanding_processors)) {
+          quit_closure.Run();
+        }
+      },
+      client_task_runner, quit_closure, &outstanding_processors,
+      &libyuv_output_frame);
+
+  ImageProcessor::FrameReadyCB gl_callback = base::BindOnce(
+      [](scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+         base::RepeatingClosure quit_closure, int* outstanding_processors,
+         scoped_refptr<VideoFrame>* gl_output_frame,
+         scoped_refptr<VideoFrame> frame) {
+        CHECK(client_task_runner->RunsTasksInCurrentSequence());
+        *gl_output_frame = std::move(frame);
+        if (!(--*outstanding_processors)) {
+          quit_closure.Run();
+        }
+      },
+      client_task_runner, quit_closure, &outstanding_processors,
+      &gl_output_frame);
+
+  libyuv_image_processor->Process(input_frame, libyuv_output_frame,
+                                  std::move(libyuv_callback));
+  gl_image_processor->Process(input_frame, gl_output_frame,
+                              std::move(gl_callback));
+
+  run_loop.Run();
+
+  ASSERT_FALSE(image_processor_error);
+  ASSERT_TRUE(libyuv_output_frame);
+  ASSERT_TRUE(gl_output_frame);
+  ASSERT_TRUE(CompareNV12VideoFrames(gl_output_frame, libyuv_output_frame));
+}
+#endif
+
 }  // namespace
 }  // namespace media
 

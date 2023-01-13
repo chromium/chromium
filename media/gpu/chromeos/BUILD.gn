@@ -211,6 +211,7 @@ test("image_processor_test") {
     "//build:chromeos_buildflags",
     "//media:test_support",
     "//media/gpu:buildflags",
+    "//media/gpu:video_frame_mapper_common",
     "//media/gpu/test:frame_file_writer",
     "//media/gpu/test:frame_validator",
     "//media/gpu/test:helpers",
@@ -218,5 +219,8 @@ test("image_processor_test") {
     "//media/gpu/test:video_test_environment",
     "//mojo/core/embedder",
     "//testing/gtest",
+    "//third_party/libyuv",
+    "//ui/gl",
+    "//ui/gl:test_support",
   ]
 }

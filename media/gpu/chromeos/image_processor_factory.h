@@ -61,6 +61,28 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
       PickFormatCB out_format_picker,
       ImageProcessor::ErrorCB error_cb);
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+  static std::unique_ptr<ImageProcessor>
+  CreateLibYUVImageProcessorWithInputCandidatesForTesting(
+      const std::vector<ImageProcessor::PixelLayoutCandidate>& input_candidates,
+      const gfx::Rect& input_visible_rect,
+      const gfx::Size& output_size,
+      size_t num_buffers,
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      PickFormatCB out_format_picker,
+      ImageProcessor::ErrorCB error_cb);
+
+  static std::unique_ptr<ImageProcessor>
+  CreateGLImageProcessorWithInputCandidatesForTesting(
+      const std::vector<ImageProcessor::PixelLayoutCandidate>& input_candidates,
+      const gfx::Rect& input_visible_rect,
+      const gfx::Size& output_size,
+      size_t num_buffers,
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      PickFormatCB out_format_picker,
+      ImageProcessor::ErrorCB error_cb);
+#endif
+
   ImageProcessorFactory() = delete;
   ImageProcessorFactory(const ImageProcessorFactory&) = delete;
   ImageProcessorFactory& operator=(const ImageProcessorFactory&) = delete;

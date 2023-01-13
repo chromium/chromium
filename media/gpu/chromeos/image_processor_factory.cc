@@ -307,4 +307,34 @@ ImageProcessorFactory::CreateWithInputCandidates(
   return nullptr;
 }
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+std::unique_ptr<ImageProcessor>
+ImageProcessorFactory::CreateLibYUVImageProcessorWithInputCandidatesForTesting(
+    const std::vector<ImageProcessor::PixelLayoutCandidate>& input_candidates,
+    const gfx::Rect& input_visible_rect,
+    const gfx::Size& output_size,
+    size_t num_buffers,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    PickFormatCB out_format_picker,
+    ImageProcessor::ErrorCB error_cb) {
+  return CreateLibYUVImageProcessorWithInputCandidates(
+      input_candidates, input_visible_rect, output_size, client_task_runner,
+      out_format_picker, error_cb);
+}
+
+std::unique_ptr<ImageProcessor>
+ImageProcessorFactory::CreateGLImageProcessorWithInputCandidatesForTesting(
+    const std::vector<ImageProcessor::PixelLayoutCandidate>& input_candidates,
+    const gfx::Rect& input_visible_rect,
+    const gfx::Size& output_size,
+    size_t num_buffers,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    PickFormatCB out_format_picker,
+    ImageProcessor::ErrorCB error_cb) {
+  return CreateGLImageProcessorWithInputCandidates(
+      input_candidates, input_visible_rect, output_size, client_task_runner,
+      out_format_picker, error_cb);
+}
+#endif
+
 }  // namespace media
