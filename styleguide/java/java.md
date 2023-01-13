@@ -65,24 +65,17 @@ is encouraged, but there are some gotchas:
 ## Other Language Features & APIs
 
 ### Exceptions
-* As with the Android style guide, we discourage overly broad catches via
-`Exception` / `Throwable` / `RuntimeException`.
-  * If you need to have a broad catch expression, use a comment to explain why.
-* Catching multiple exceptions in one line is fine.
+We discourage overly broad catches via `Throwable`, `Exception`, or
+`RuntimeException`, except when dealing with `RemoteException` or similar
+system APIs.
+ * There have been many cases of crashes caused by `IllegalStateException` /
+   `IllegalArgumentException` / `SecurityException` being thrown where only
+   `RemoteException` was being caught. In these cases, use
+   `catch (RemoteException | RuntimeException e)`.
+ * For all broad catch expressions, add a comment to explain why.
 
-It is OK to do:
-```java
-try {
-  somethingThatThrowsIOException(filePath);
-  somethingThatThrowsParseException(filePath);
-} catch (IOException | ParseException e) {
-  Log.w(TAG, "Failed to read: %s", filePath, e);
-}
-```
+Avoid adding messages to exceptions that do not aid in debugging. For example:
 
-* Avoid adding messages to exceptions that do not aid in debugging.
-
-For example:
 ```java
 try {
   somethingThatThrowsIOException();
