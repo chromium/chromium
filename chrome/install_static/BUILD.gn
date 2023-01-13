@@ -59,7 +59,7 @@ if (is_win) {
         "google_chrome_install_modes.cc",
         "google_chrome_install_modes.h",
       ]
-    } else if (is_chrome_for_testing_branded) {
+    } else if (use_internal_chrome_for_testing_icons) {
       sources += [
         "google_chrome_for_testing_install_modes.cc",
         "google_chrome_for_testing_install_modes.h",

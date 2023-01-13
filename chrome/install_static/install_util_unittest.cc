@@ -309,7 +309,7 @@ class InstallStaticUtilTest
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     static constexpr wchar_t kPolicyKey[] =
         L"Software\\Policies\\Google\\Chrome";
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
     static constexpr wchar_t kPolicyKey[] =
         L"Software\\Policies\\Google\\Chrome for Testing";
 #else
@@ -358,7 +358,7 @@ TEST_P(InstallStaticUtilTest, GetChromeInstallSubDirectory) {
       L"Google\\Chrome Dev",
       L"Google\\Chrome SxS",
   };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
   // The directory strings for the brand's install modes; parallel to
   // kInstallModes.
   static constexpr const wchar_t* kInstallDirs[] = {
@@ -387,7 +387,7 @@ TEST_P(InstallStaticUtilTest, GetRegistryPath) {
       L"Software\\Google\\Chrome Dev",
       L"Software\\Google\\Chrome SxS",
   };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
   static constexpr const wchar_t* kRegistryPaths[] = {
@@ -419,7 +419,7 @@ TEST_P(InstallStaticUtilTest, GetUninstallRegistryPath) {
       L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  // (cont'd)
       L"Google Chrome SxS",
   };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
   // The registry path strings for the brand's install modes; parallel to
   // kInstallModes.
   static constexpr const wchar_t* kUninstallRegistryPaths[] = {
@@ -469,7 +469,7 @@ TEST_P(InstallStaticUtilTest, GetBaseAppId) {
       L"ChromeDev",
       L"ChromeCanary",
   };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
   // The base app ids for the brand's install modes; parallel to kInstallModes.
   static constexpr const wchar_t* kBaseAppIds[] = {
       L"ChromeForTesting",
@@ -517,7 +517,7 @@ TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
       L"{F01C03EB-D431-4C83-8D7A-902771E732FA}",  // Google Chrome Dev.
       L"{FA372A6E-149F-4E95-832D-8F698D40AD7F}",  // Google Chrome SxS (Canary).
   };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
   // The toast activator CLSIDs for the brand's install modes; parallel to
   // kInstallModes.
   static constexpr CLSID kToastActivatorClsids[] = {
@@ -588,7 +588,7 @@ TEST_P(InstallStaticUtilTest, GetElevatorClsid) {
       L"{DA7FDCA5-2CAA-4637-AA17-0740584DE7DA}",  // Google Chrome Dev.
       L"{704C2872-2049-435E-A469-0A534313C42B}",  // Google Chrome SxS (Canary).
   };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
   // The Elevator CLSIDs, one for each of the kInstallModes.
   static constexpr CLSID kElevatorClsids[] = {
       {0x724349BF,
@@ -666,7 +666,7 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
       L"{BB2AA26B-343A-4072-8B6F-80557B8CE571}",  // Google Chrome Dev.
       L"{4F7CE041-28E9-484F-9DD0-61A8CACEFEE4}",  // Google Chrome Canary.
   };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
   // The Elevator IIDs, one for each of the kInstallModes.
   static constexpr IID kElevatorIids[] = {
       {0x3DC48E97,
@@ -784,7 +784,7 @@ TEST_P(InstallStaticUtilTest, GetSandboxSidPrefix) {
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012150-",  // Google Chrome SxS (Canary).
   };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
   static constexpr const wchar_t* kSandBoxSids[] = {
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012153-",  // Google Chrome for Testing
@@ -819,7 +819,7 @@ INSTANTIATE_TEST_SUITE_P(Canary,
                          InstallStaticUtilTest,
                          testing::Combine(testing::Values(CANARY_INDEX),
                                           testing::Values("user")));
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
 // Chrome for Testing is only at user level.
 INSTANTIATE_TEST_SUITE_P(
     ChromeForTesting,

@@ -273,7 +273,7 @@ class InstallWorkerTest : public testing::Test {
 //------------------------------------------------------------------------------
 
 // Chrome for Testing does not support system-level installations.
-#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#if !BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
 TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
   const bool system_level = true;
   NiceMock<MockWorkItemList> work_item_list;

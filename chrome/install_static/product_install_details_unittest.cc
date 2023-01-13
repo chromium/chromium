@@ -186,7 +186,7 @@ constexpr TestData kTestData[] = {
         L"canary",
     },
 };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
 constexpr TestData kTestData[] = {
     {
         L"C:\\Users\\user\\AppData\\Local\\Google\\Chrome for "

@@ -249,7 +249,7 @@ INSTANTIATE_TEST_SUITE_P(
     DefaultBrowserBeaconTest,
     testing::Combine(testing::Values(install_static::CANARY_INDEX),
                      testing::Values("user")));
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
 // Chrome for Testing is only at user level.
 INSTANTIATE_TEST_SUITE_P(
     ChromeForTesting,
