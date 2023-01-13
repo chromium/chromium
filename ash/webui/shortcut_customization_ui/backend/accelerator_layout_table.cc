@@ -108,9 +108,105 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kBrowserNewTab,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_T, ui::EF_CONTROL_DOWN)})},
-          {NonConfigurableActions::kAmbientDragLinkInSameTab,
+          {NonConfigurableActions::kBrowserCloseTab,
            NonConfigurableAcceleratorDetails(
-               IDS_AMBIENT_ACCELERATOR_DRAG_LINK_IN_SAME_TAB)},
+               {ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserCloseWindow,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_W, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserSelectLastTab,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_9, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserOpenFile,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_O, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserNewIncognitoWindow,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserNewWindow,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserRestoreTab,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_T, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserTabSearch,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserClearBrowsingData,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_BACK, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserCloseFindOrStop,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)})},
+          {NonConfigurableActions::kBrowserFocusBookmarks,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)})},
+          {NonConfigurableActions::kBrowserBack,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN)})},
+          {NonConfigurableActions::kBrowserForward,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_ALT_DOWN)})},
+          {NonConfigurableActions::kBrowserFind,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_F, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserShowDownloads,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_J, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserShowHistory,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_H, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserFocusMenuBar,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_F10, ui::EF_NONE)})},
+          {NonConfigurableActions::kBrowserPrint,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_P, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserReloadBypassingCache,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_R, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserZoomNormal,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_0, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserBookmarkAllTabs,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserSavePage,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_S, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserBookmarkThisTab,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_D, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserShowBookmarkManager,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_O, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserDevToolsConsole,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_J, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserDevToolsInspect,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_C, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserDevTools,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserShowBookmarkBar,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserViewSource,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_U, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserZoomMinus,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_OEM_MINUS, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserZoomPlus,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserFocusToolbar,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_T, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserFocusInactivePopupForAccessibility,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN)})},
       });
   return *nonConfigurableActionsMap;
 }

@@ -3160,7 +3160,7 @@ Connect your device to power.
         Move active window to desk on right
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_NEW_DESK" translateable="false" desc="Label for accelerator action - Create new desk.">
-        Create new desk
+        Create a new desk
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_REMOVE_CURRENT_DESK" translateable="false" desc="Label for accelerator action - Remove current desk.">
         Remove current desk
@@ -3436,10 +3436,10 @@ Connect your device to power.
         Turn volume up
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_LEFT" translateable="false" desc="Label for accelerator action - Turn volume down.">
-        Keep window on left
+        Dock a window on the left
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_RIGHT" translateable="false" desc="Label for accelerator action - Keep window on right.">
-        Keep window on right
+        Dock a window on the right
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_MINIMIZE" translateable="false" desc="Label for accelerator action - Minimize window.">
         Minimize window
@@ -3524,6 +3524,9 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEV_TOGGLE_UNIFIED_DESKTOP" translateable="false" desc="Label for accelerator action - Toggle unified desktop.">
         Toggle unified desktop
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS" translateable="false" desc="Label for accelerator action - Assign active window to all desks.">
+        Assign active window to all desks
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_TAB" translateable="false" desc="Label for accelerator action - Close the current tab.">
         Close the current tab
