@@ -55,32 +55,32 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
         validators->texture_format.IsValid(gl_format);
     const bool compressed_format_valid =
         validators->compressed_texture_format.IsValid(image_internal_format);
-    if ((uncompressed_format_valid || compressed_format_valid) &&
-        validators->pixel_type.IsValid(gl_type)) {
-      info.enabled = true;
-      info.is_compressed = compressed_format_valid;
-      info.gl_format = gl_format;
-      info.gl_type = gl_type;
-      info.swizzle = gles2::TextureManager::GetCompatibilitySwizzle(
-          feature_info, gl_format);
-      info.image_internal_format =
-          gles2::TextureManager::AdjustTexInternalFormat(
-              feature_info, image_internal_format, gl_type);
-      info.adjusted_format =
-          gles2::TextureManager::AdjustTexFormat(feature_info, gl_format);
-    }
-    if (!info.enabled)
+
+    if (!(uncompressed_format_valid || compressed_format_valid) ||
+        !validators->pixel_type.IsValid(gl_type)) {
       continue;
-    if (enable_texture_storage && !info.is_compressed) {
-      GLuint storage_internal_format = viz::TextureStorageFormat(
-          format, feature_info->feature_flags().angle_rgbx_internal_format);
-      if (validators->texture_internal_format_storage.IsValid(
-              storage_internal_format)) {
-        info.supports_storage = true;
-        info.storage_internal_format =
-            gles2::TextureManager::AdjustTexStorageFormat(
-                feature_info, storage_internal_format);
-      }
+    }
+
+    info.enabled = true;
+    info.is_compressed = compressed_format_valid;
+    info.gl_format = gl_format;
+    info.gl_type = gl_type;
+    info.swizzle =
+        gles2::TextureManager::GetCompatibilitySwizzle(feature_info, gl_format);
+    info.image_internal_format = gles2::TextureManager::AdjustTexInternalFormat(
+        feature_info, image_internal_format, gl_type);
+    info.storage_internal_format = viz::TextureStorageFormat(
+        format, feature_info->feature_flags().angle_rgbx_internal_format);
+    info.adjusted_format =
+        gles2::TextureManager::AdjustTexFormat(feature_info, gl_format);
+
+    if (enable_texture_storage && !info.is_compressed &&
+        validators->texture_internal_format_storage.IsValid(
+            info.storage_internal_format)) {
+      info.supports_storage = true;
+      info.adjusted_storage_internal_format =
+          gles2::TextureManager::AdjustTexStorageFormat(
+              feature_info, info.storage_internal_format);
     }
   }
 }

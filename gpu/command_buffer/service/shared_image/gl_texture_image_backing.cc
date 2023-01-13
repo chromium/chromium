@@ -169,10 +169,6 @@ GLTextureImageBacking::~GLTextureImageBacking() {
   }
 }
 
-GLenum GLTextureImageBacking::GetGLTarget() const {
-  return texture_ ? texture_->target() : passthrough_texture_->target();
-}
-
 GLuint GLTextureImageBacking::GetGLServiceId() const {
   return texture_ ? texture_->service_id() : passthrough_texture_->service_id();
 }
@@ -435,16 +431,11 @@ std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   if (!cached_promise_texture_) {
-    bool angle_rgbx_internal_format = context_state->feature_info()
-                                          ->feature_flags()
-                                          .angle_rgbx_internal_format;
-    GLenum gl_texture_storage_format = TextureStorageFormat(
-        format(), angle_rgbx_internal_format, /*plane_index=*/0);
     GrBackendTexture backend_texture;
-    GetGrBackendTexture(context_state->feature_info(), GetGLTarget(), size(),
-                        GetGLServiceId(), gl_texture_storage_format,
-                        context_state->gr_context()->threadSafeProxy(),
-                        &backend_texture);
+    GetGrBackendTexture(
+        context_state->feature_info(), format_desc_.target, size(),
+        GetGLServiceId(), format_desc_.storage_internal_format,
+        context_state->gr_context()->threadSafeProxy(), &backend_texture);
     cached_promise_texture_ = SkPromiseImageTexture::Make(backend_texture);
   }
   return std::make_unique<SkiaGLCommonRepresentation>(

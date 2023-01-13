@@ -48,8 +48,6 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
 
     GLenum gl_format = 0;
     GLenum gl_type = 0;
-    raw_ptr<const gles2::Texture::CompatibilitySwizzle> swizzle = nullptr;
-    GLenum adjusted_format = 0;
 
     // The internalformat portion of the format/type/internalformat triplet
     // used when calling TexImage2D
@@ -58,6 +56,13 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
     // The internalformat portion of the format/type/internalformat triplet
     // used when calling TexStorage2D
     GLuint storage_internal_format = 0;
+
+    // The adjusted formats which may be different when using the validating
+    // command decoder.
+    GLenum adjusted_format = 0;
+    GLuint adjusted_storage_internal_format = 0;
+
+    raw_ptr<const gles2::Texture::CompatibilitySwizzle> swizzle = nullptr;
   };
 
  protected:

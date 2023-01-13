@@ -424,7 +424,7 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
       // to create EGLImage.
       if (format_info_.supports_storage) {
         api->glTexStorage2DEXTFn(target, 1,
-                                 format_info_.storage_internal_format,
+                                 format_info_.adjusted_storage_internal_format,
                                  size().width(), size().height());
 
         if (!pixel_data.empty()) {

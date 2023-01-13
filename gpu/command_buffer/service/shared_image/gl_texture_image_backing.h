@@ -40,7 +40,6 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
   void SetCompatibilitySwizzle(
       const gles2::Texture::CompatibilitySwizzle* swizzle);
 
-  GLenum GetGLTarget() const;
   GLuint GetGLServiceId() const;
 
  private:

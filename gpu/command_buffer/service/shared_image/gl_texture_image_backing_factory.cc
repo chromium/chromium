@@ -201,7 +201,8 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   if (format_info.supports_storage) {
     {
       gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
-      api->glTexStorage2DEXTFn(target, 1, format_info.storage_internal_format,
+      api->glTexStorage2DEXTFn(target, 1,
+                               format_info.adjusted_storage_internal_format,
                                size.width(), size.height());
     }
 
