@@ -16,6 +16,8 @@
 #include "mojo/public/c/system/trap.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
 
+#include "base/record_replay.h"
+
 namespace mojo {
 
 // Thread-safe Context object used to schedule trap events from arbitrary
@@ -78,23 +80,34 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
       : weak_watcher_(weak_watcher),
         task_runner_(task_runner),
         watch_id_(watch_id),
-        handler_tag_(handler_tag) {}
+        handler_tag_(handler_tag) {
+    ctor_has_weak_watcher = !!weak_watcher_;
+    ctor_has_default_task_runner_weak_watcher = weak_watcher_ && weak_watcher_->is_default_task_runner_;
+  }
 
   ~Context() = default;
 
   void Notify(MojoResult result,
               MojoHandleSignalsState signals_state,
               MojoTrapEventFlags flags) {
+    recordreplay::Assert("[RUN-1126] SimpleWatcher::Context::Notify %d %d %d %d",
+                         (int)flags, task_runner_->RunsTasksInCurrentSequence(),
+                         ctor_has_weak_watcher, ctor_has_default_task_runner_weak_watcher);
+
     HandleSignalsState state(signals_state.satisfied_signals,
                              signals_state.satisfiable_signals);
     if (!(flags & MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL) &&
         task_runner_->RunsTasksInCurrentSequence() && weak_watcher_ &&
         weak_watcher_->is_default_task_runner_) {
+      recordreplay::Assert("[RUN-1126] SimpleWatcher::Context::Notify #1");
+
       // System notifications will trigger from the task runner passed to
       // mojo::core::ScopedIPCSupport. In Chrome this happens to always be
       // the default task runner for the IO thread.
       weak_watcher_->OnHandleReady(watch_id_, result, state);
     } else {
+      recordreplay::Assert("[RUN-1126] SimpleWatcher::Context::Notify #2");
+
       {
         // Annotate the posted task with |handler_tag_| as the IPC interface.
         base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(handler_tag_);
@@ -109,6 +122,10 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const int watch_id_;
   const char* handler_tag_ = nullptr;
+
+  // https://linear.app/replay/issue/RUN-1126
+  bool ctor_has_weak_watcher;
+  bool ctor_has_default_task_runner_weak_watcher;
 };
 
 SimpleWatcher::SimpleWatcher(const base::Location& from_here,
