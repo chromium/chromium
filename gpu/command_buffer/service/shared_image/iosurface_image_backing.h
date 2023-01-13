@@ -168,6 +168,33 @@ class OverlayIOSurfaceRepresentation : public OverlayImageRepresentation {
   gfx::ScopedIOSurface io_surface_;
 };
 
+// Representation of a IOSurfaceImageBacking as a Dawn Texture.
+class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
+ public:
+  DawnIOSurfaceRepresentation(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              MemoryTypeTracker* tracker,
+                              WGPUDevice device,
+                              base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+                              WGPUTextureFormat wgpu_format,
+                              std::vector<WGPUTextureFormat> view_formats);
+  ~DawnIOSurfaceRepresentation() override;
+
+  WGPUTexture BeginAccess(WGPUTextureUsage usage) final;
+  void EndAccess() final;
+
+ private:
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
+  WGPUDevice device_;
+  WGPUTexture texture_ = nullptr;
+  WGPUTextureFormat wgpu_format_;
+  std::vector<WGPUTextureFormat> view_formats_;
+
+  // TODO(cwallez@chromium.org): Load procs only once when the factory is
+  // created and pass a pointer to them around?
+  DawnProcTable dawn_procs_;
+};
+
 // This class is only put into unique_ptrs and is never copied or assigned.
 class SharedEventAndSignalValue {
  public:
