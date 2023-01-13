@@ -6,9 +6,11 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_SAVE_PASSWORD_INFOBAR_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #import "ios/chrome/browser/passwords/ios_chrome_password_infobar_metrics_recorder.h"
 
@@ -24,10 +26,8 @@ class PasswordFormManagerForUI;
 // and should Update the credentials instead of Saving new ones.
 class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  // If `is_sync_user` is true, `user_email` must be non-empty.
   IOSChromeSavePasswordInfoBarDelegate(
-      NSString* user_email,
-      bool is_sync_user,
+      absl::optional<std::string> account_to_store_password,
       bool password_update,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
 
@@ -43,10 +43,6 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   static IOSChromeSavePasswordInfoBarDelegate* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
 
-  // Getter for the message displayed in addition to the title. If no message
-  // was set, this returns an empty string.
-  NSString* GetDetailsMessageText() const;
-
   // The Username being saved or updated by the Infobar.
   NSString* GetUserNameText() const;
 
@@ -55,6 +51,10 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // The URL host for which the credentials are being saved for.
   NSString* GetURLHostText() const;
+
+  // The account where the password will be saved, or absl::nullopt if it's
+  // saved locally.
+  absl::optional<std::string> GetAccountToStorePassword() const;
 
   // InfoBarDelegate implementation.
   bool ShouldExpire(const NavigationDetails& details) const override;
@@ -104,19 +104,16 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   const std::unique_ptr<password_manager::PasswordFormManagerForUI>
       form_to_save_;
 
-  // Whether to show the additional footer.
-  const bool is_sync_user_;
-
   // The PasswordInfobarType for this delegate.
   const PasswordInfobarType infobar_type_;
+
+  // The account where the password will be stored, or absl::nullopt if the
+  // password will only be stored on this device.
+  const absl::optional<std::string> account_to_store_password_;
 
   // Used to track the results we get from the info bar.
   password_manager::metrics_util::UIDismissalReason infobar_response_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;
-
-  // The signed-in / syncing account. In particular if `is_sync_user_` is true,
-  // this is non-empty.
-  __strong NSString* user_email_;
 
   // True if password is being updated at the moment the InfobarModal is
   // created.

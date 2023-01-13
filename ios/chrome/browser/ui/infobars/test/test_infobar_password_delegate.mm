@@ -83,8 +83,7 @@ CreateFormManager() {
 
 TestInfobarPasswordDelegate::TestInfobarPasswordDelegate(
     NSString* infobar_message)
-    : IOSChromeSavePasswordInfoBarDelegate(@"foobar@gmail.com",
-                                           false,
+    : IOSChromeSavePasswordInfoBarDelegate("foobar@gmail.com",
                                            false,
                                            CreateFormManager()),
       infobar_message_(infobar_message) {}

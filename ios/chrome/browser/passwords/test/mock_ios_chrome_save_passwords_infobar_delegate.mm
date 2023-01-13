@@ -33,24 +33,26 @@ std::unique_ptr<password_manager::PasswordFormManagerForUI> CreateFormManager(
 
 // static
 std::unique_ptr<MockIOSChromeSavePasswordInfoBarDelegate>
-MockIOSChromeSavePasswordInfoBarDelegate::Create(NSString* username,
-                                                 NSString* password,
-                                                 const GURL& url) {
+MockIOSChromeSavePasswordInfoBarDelegate::Create(
+    NSString* username,
+    NSString* password,
+    const GURL& url,
+    absl::optional<std::string> account_to_store_password) {
   std::unique_ptr<password_manager::PasswordForm> form =
       std::make_unique<password_manager::PasswordForm>();
   form->username_value = base::SysNSStringToUTF16(username);
   form->password_value = base::SysNSStringToUTF16(password);
   return base::WrapUnique(new MockIOSChromeSavePasswordInfoBarDelegate(
-      std::move(form), std::make_unique<GURL>(url)));
+      std::move(form), std::make_unique<GURL>(url), account_to_store_password));
 }
 
 MockIOSChromeSavePasswordInfoBarDelegate::
     MockIOSChromeSavePasswordInfoBarDelegate(
         std::unique_ptr<password_manager::PasswordForm> form,
-        std::unique_ptr<GURL> url)
+        std::unique_ptr<GURL> url,
+        absl::optional<std::string> account_to_store_password)
     : IOSChromeSavePasswordInfoBarDelegate(
-          /*user_email=*/@"foobar@gmail.com",
-          /*is_sync_user=*/false,
+          account_to_store_password,
           /*password_update=*/false,
           CreateFormManager(form.get(), url.get())),
       form_(std::move(form)),

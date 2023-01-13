@@ -6,9 +6,14 @@
 
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,7 +34,15 @@ PasswordInfobarModalOverlayRequestConfig::
                                          : PasswordAction::kSave;
   username_ = delegate->GetUserNameText();
   password_ = delegate->GetPasswordText();
-  details_text_ = delegate->GetDetailsMessageText();
+  absl::optional<std::string> account_string =
+      delegate->GetAccountToStorePassword();
+  details_text_ =
+      account_string
+          ? l10n_util::GetNSStringF(
+                IDS_SAVE_PASSWORD_FOOTER_DISPLAYING_USER_EMAIL,
+                base::UTF8ToUTF16(*account_string))
+          : l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
+
   save_button_text_ = base::SysUTF16ToNSString(
       delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
   cancel_button_text_ = base::SysUTF16ToNSString(

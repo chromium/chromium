@@ -34,6 +34,7 @@ source_set("unit_tests") {
     ":passwords",
     "//base/test:test_support",
     "//components/infobars/core",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
