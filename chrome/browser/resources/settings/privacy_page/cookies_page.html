@@ -54,14 +54,13 @@
           src="chrome://settings/images/cookies_banner.svg">
     </picture>
     <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
-      <!-- TODO(crbug.com/1378703): Update strings -->
       <div id="explanationText" class="secondary">
-        $i18n{privacyPageTitle}
+        $i18n{thirdPartyCookiesPageDescription}
       </div>
       <div id="generalControls">
-        <h2>$i18n{privacyPageTitle}</h2>
+        <h2>$i18n{thirdPartyCookiesPageDefaultBehaviorHeading}</h2>
         <div class="secondary radio-group-sub-heading">
-          $i18n{privacyPageTitle}
+          $i18n{thirdPartyCookiesPageDefaultBehaviorDescription}
         </div>
         <settings-radio-group id="primarySettingGroup" no-set-pref
             pref="{{prefs.profile.cookie_controls_mode}}"
@@ -277,15 +276,16 @@
     </cr-link-row>
     <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
       <div id="exceptionHeader">
-        <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
+        <h2>$i18n{thirdPartyCookiesPageCustomizedBehaviorHeading}</h2>
         <div id="exceptionHeaderSubLabel" class="secondary">
-          $i18n{siteSettingsCustomizedBehaviorsDescription}
+          $i18n{thirdPartyCookiesPageCustomizedBehaviorDescription}
         </div>
       </div>
       <site-list id="allowExceptionsList"
           category="[[cookiesContentSettingType_]]"
           category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="$i18n{cookiePageAllowExceptions}"
+          category-header="
+              $i18n{thirdPartyCookiesPageAllowExceptionsSubHeading}"
           read-only-list="[[exceptionListsReadOnly_]]"
           search-filter="[[searchTerm]]"
           cookies-exception-type="third-party">

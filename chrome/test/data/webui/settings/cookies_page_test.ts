@@ -68,6 +68,7 @@ suite('CrSettingsCookiesPageTest', function() {
     // TODO(): Remove assertFalse checks after the feature is launched.
     await flushTasks();
     assertTrue(isChildVisible(page, '#explanationText'));
+    assertTrue(isChildVisible(page, '#generalControls'));
     assertTrue(isChildVisible(page, '#exceptionHeader'));
     assertTrue(isChildVisible(page, '#allowExceptionsList'));
     assertFalse(isChildVisible(page, '#sessionOnlyExceptionsList'));
@@ -452,7 +453,11 @@ suite('CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled', function() {
   test('ElementVisibility', async function() {
     await flushTasks();
     assertFalse(isChildVisible(page, '#explanationText'));
+    assertTrue(isChildVisible(page, '#generalControls'));
     assertTrue(isChildVisible(page, '#exceptionHeader'));
+    assertTrue(isChildVisible(page, '#allowExceptionsList'));
+    assertTrue(isChildVisible(page, '#sessionOnlyExceptionsList'));
+    assertTrue(isChildVisible(page, '#blockExceptionsList'));
     assertTrue(isChildVisible(page, '#clearOnExit'));
     assertTrue(isChildVisible(page, '#doNotTrack'));
     assertTrue(isChildVisible(page, '#preloadingLinkRow'));
