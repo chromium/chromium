@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/search_controller_impl.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 
 #include <memory>
 #include <vector>
@@ -62,19 +62,20 @@ class FakeObserver : public SearchController::Observer {
 
 }  // namespace
 
-class SearchControllerImplTest : public testing::Test {
+class SearchControllerTest : public testing::Test {
  public:
-  SearchControllerImplTest()
+  SearchControllerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  SearchControllerImplTest(const SearchControllerImplTest&) = delete;
-  SearchControllerImplTest& operator=(const SearchControllerImplTest&) = delete;
-  ~SearchControllerImplTest() override = default;
+  SearchControllerTest(const SearchControllerTest&) = delete;
+  SearchControllerTest& operator=(const SearchControllerTest&) = delete;
+  ~SearchControllerTest() override = default;
 
   void SetUp() override {
-    search_controller_ = std::make_unique<SearchControllerImpl>(
+    search_controller_ = std::make_unique<SearchController>(
         /*model_updater=*/&model_updater_,
         /*list_controller=*/&list_controller_,
         /*notifier=*/nullptr, &profile_);
+    search_controller_->Initialize();
 
     auto ranker_manager = std::make_unique<TestRankerManager>(&profile_);
     ranker_manager_ = ranker_manager.get();
@@ -142,7 +143,7 @@ class SearchControllerImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   FakeAppListModelUpdater model_updater_{&profile_, /*order_delegate=*/nullptr};
-  std::unique_ptr<SearchControllerImpl> search_controller_;
+  std::unique_ptr<SearchController> search_controller_;
   ::test::TestAppListControllerDelegate list_controller_{};
   // Owned by |search_controller_|.
   TestRankerManager* ranker_manager_{nullptr};
@@ -150,7 +151,7 @@ class SearchControllerImplTest : public testing::Test {
 
 // Tests that best matches are ordered first, and categories are ignored when
 // ranking within best match.
-TEST_F(SearchControllerImplTest, BestMatchesOrderedAboveOtherResults) {
+TEST_F(SearchControllerTest, BestMatchesOrderedAboveOtherResults) {
   auto results_1 = MakeListResults(
       {"a", "b", "c", "d"},
       {Category::kWeb, Category::kWeb, Category::kApps, Category::kWeb},
@@ -180,7 +181,7 @@ TEST_F(SearchControllerImplTest, BestMatchesOrderedAboveOtherResults) {
   ExpectIdOrder({"a", "c", "e", "d", "b"});
 }
 
-TEST_F(SearchControllerImplTest,
+TEST_F(SearchControllerTest,
        BurnInIterationNumbersTrackedInQuerySearch_Results) {
   // This test focuses on the book-keeping of burn-in iteration numbers for
   // individual results, and ignores the effect that these numbers can have on
@@ -226,7 +227,7 @@ TEST_F(SearchControllerImplTest,
       {{"a", 0}, {"b", 0}, {"c", 1}, {"d", 1}, {"e", 2}});
 }
 
-TEST_F(SearchControllerImplTest,
+TEST_F(SearchControllerTest,
        BurnInIterationNumbersTrackedInQuerySearch_Categories) {
   // This test focuses on the book-keeping of burn-in iteration numbers for
   // categories, and ignores the effect that these numbers can have on final
@@ -286,7 +287,7 @@ TEST_F(SearchControllerImplTest,
 
 // Tests that categories which arrive pre-burn-in are ordered correctly, and
 // their results are grouped together and ordered by score.
-TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectlyPreBurnIn) {
+TEST_F(SearchControllerTest, CategoriesOrderedCorrectlyPreBurnIn) {
   ranker_manager_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
   auto file_results = MakeListResults({"a"}, {Category::kFiles}, {-1}, {0.9});
@@ -311,7 +312,7 @@ TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectlyPreBurnIn) {
 
 // Tests that categories which arrive post-burn-in are ordered correctly, and
 // their results are grouped together and ordered by score.
-TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectlyPostBurnIn) {
+TEST_F(SearchControllerTest, CategoriesOrderedCorrectlyPostBurnIn) {
   ranker_manager_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
   auto web_results = MakeListResults(
@@ -340,7 +341,7 @@ TEST_F(SearchControllerImplTest, CategoriesOrderedCorrectlyPostBurnIn) {
 // pre-burn-in and others arrive post-burn-in. Test that their results are
 // grouped together and ordered by score.
 TEST_F(
-    SearchControllerImplTest,
+    SearchControllerTest,
     CategoriesOrderedCorrectly_PreAndPostBurnIn_OneProviderReturnPerCategory) {
   ranker_manager_->SetCategoryRanks(
       {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
@@ -378,7 +379,7 @@ TEST_F(
 // At the time of its arrival, Search and Assistant should initially be pinned
 // to the bottom of the categories list, but later-arriving categories should
 // appear below Search and Assistant.
-TEST_F(SearchControllerImplTest,
+TEST_F(SearchControllerTest,
        CategoriesOrderedCorrectly_SearchAndAssistantPinnedToBottomOfPreBurnIn) {
   ranker_manager_->SetCategoryRanks({{Category::kFiles, 0.3},
                                      {Category::kSearchAndAssistant, 0.2},
@@ -418,7 +419,7 @@ TEST_F(SearchControllerImplTest,
 // category, and originate from a single provider which returns multiple times
 // both pre- and post-burn-in.
 TEST_F(
-    SearchControllerImplTest,
+    SearchControllerTest,
     ResultsOrderedCorrectly_PreAndPostBurnIn_SingleProviderReturnsMultipleTimes) {
   ranker_manager_->SetCategoryRanks({{Category::kWeb, 0.2}});
   auto web_results_1 = MakeListResults(
@@ -465,7 +466,7 @@ TEST_F(
 // category, and originate from multiple providers. Providers return a single
 // time, pre- or post-burn-in.
 TEST_F(
-    SearchControllerImplTest,
+    SearchControllerTest,
     ResultsOrderedCorrectly_PreAndPostBurnIn_MultipleProvidersReturnToSingleCategory) {
   ranker_manager_->SetCategoryRanks({{Category::kWeb, 0.2}});
 
@@ -503,7 +504,7 @@ TEST_F(
   ExpectIdOrder({"a", "b", "c", "d", "e", "f"});
 }
 
-TEST_F(SearchControllerImplTest, FirstSearchResultsNotShownInSecondSearch) {
+TEST_F(SearchControllerTest, FirstSearchResultsNotShownInSecondSearch) {
   ranker_manager_->SetCategoryRanks({{Category::kApps, 0.1}});
 
   auto provider = std::make_unique<TestSearchProvider>(Result::kInstalledApp,
@@ -537,7 +538,7 @@ TEST_F(SearchControllerImplTest, FirstSearchResultsNotShownInSecondSearch) {
   ExpectIdOrder({"BBB"});
 }
 
-TEST_F(SearchControllerImplTest, ZeroStateResultsNotOverridingBurnIn) {
+TEST_F(SearchControllerTest, ZeroStateResultsNotOverridingBurnIn) {
   ranker_manager_->SetCategoryRanks({{Category::kWeb, 0.2}});
   auto web_results = MakeListResults(
       {"b", "c", "a"}, {Category::kWeb, Category::kWeb, Category::kWeb},
@@ -573,7 +574,7 @@ TEST_F(SearchControllerImplTest, ZeroStateResultsNotOverridingBurnIn) {
   ExpectIdOrder({"zero", "a", "b", "c"});
 }
 
-TEST_F(SearchControllerImplTest, ZeroStateResultsAreBlocked) {
+TEST_F(SearchControllerTest, ZeroStateResultsAreBlocked) {
   ranker_manager_->SetCategoryRanks({{Category::kApps, 0.1}});
 
   // Set up five providers, three provide zero-state results, one of which is
@@ -648,7 +649,7 @@ TEST_F(SearchControllerImplTest, ZeroStateResultsAreBlocked) {
   ExpectIdOrder({"e", "f", "a", "b", "c", "d"});
 }
 
-TEST_F(SearchControllerImplTest, ZeroStateResultsGetTimedOut) {
+TEST_F(SearchControllerTest, ZeroStateResultsGetTimedOut) {
   ranker_manager_->SetCategoryRanks({{Category::kApps, 0.1}});
 
   auto provider_a = std::make_unique<TestSearchProvider>(Result::kZeroStateApp,
@@ -681,7 +682,7 @@ TEST_F(SearchControllerImplTest, ZeroStateResultsGetTimedOut) {
   ExpectIdOrder({"a", "b"});
 }
 
-TEST_F(SearchControllerImplTest, ContinueRanksDriveAboveLocal) {
+TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
       std::make_unique<RankerManager>(&profile_, search_controller_.get()));
@@ -707,7 +708,7 @@ TEST_F(SearchControllerImplTest, ContinueRanksDriveAboveLocal) {
   ExpectIdOrder({"drive_a", "drive_b", "local_a", "local_b"});
 }
 
-TEST_F(SearchControllerImplTest, FindSearchResultByIdAndOpenIt) {
+TEST_F(SearchControllerTest, FindSearchResultByIdAndOpenIt) {
   auto results_1 = MakeListResults(
       {"a", "b", "c", "d"},
       {Category::kWeb, Category::kGames, Category::kApps, Category::kWeb},
@@ -733,7 +734,7 @@ TEST_F(SearchControllerImplTest, FindSearchResultByIdAndOpenIt) {
   EXPECT_TRUE(list_controller_.did_dismiss_view());
 }
 
-TEST_F(SearchControllerImplTest, InvokeResult) {
+TEST_F(SearchControllerTest, InvokeResult) {
   auto results_1 = MakeListResults(
       {"a", "b", "c", "d"},
       {Category::kWeb, Category::kGames, Category::kApps, Category::kWeb},
@@ -757,7 +758,7 @@ TEST_F(SearchControllerImplTest, InvokeResult) {
   ExpectIdOrder({"a", "c", "d"});
 }
 
-TEST_F(SearchControllerImplTest, Train) {
+TEST_F(SearchControllerTest, Train) {
   auto results_1 = MakeListResults(
       {"a", "b", "c", "d"},
       {Category::kWeb, Category::kGames, Category::kApps, Category::kWeb},
@@ -773,7 +774,7 @@ TEST_F(SearchControllerImplTest, Train) {
   EXPECT_TRUE(ranker_manager_->did_train());
 }
 
-TEST_F(SearchControllerImplTest, NotifyObserverWhenPublished) {
+TEST_F(SearchControllerTest, NotifyObserverWhenPublished) {
   // Create two fake observers.
   FakeObserver observer1;
   FakeObserver observer2;

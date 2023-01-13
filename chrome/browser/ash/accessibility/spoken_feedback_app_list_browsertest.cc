@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ash/app_list/search/search_controller_impl.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/profiles/profile.h"
@@ -240,8 +240,9 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     AppListItemList* item_list = model->top_level_item_list();
     for (size_t i = 0; i < item_list->item_count(); ++i) {
       if (item_list->item_at(i)->name() == name) {
-        if (index)
+        if (index) {
           *index = i;
+        }
         return item_list->item_at(i);
       }
     }
@@ -311,9 +312,10 @@ class SpokenFeedbackAppListSearchTest
     // Reset default search controller, so the test has better control over the
     // set of results shown in the search result UI.
     std::unique_ptr<app_list::SearchController> search_controller =
-        std::make_unique<app_list::SearchControllerImpl>(
+        std::make_unique<app_list::SearchController>(
             app_list_client->GetModelUpdaterForTest(), app_list_client, nullptr,
             browser()->profile());
+    search_controller->Initialize();
     // Disable ranking, which may override the explicitly set relevance scores
     // and best match status of results.
     search_controller->disable_ranking_for_test();
@@ -393,8 +395,9 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
 
   // Skip over apps that were installed before the test item.
   sm_.Call([this, &test_item_index]() {
-    for (int i = 0; i < test_item_index + 1; ++i)
+    for (int i = 0; i < test_item_index + 1; ++i) {
       SendKeyPressWithSearch(ui::VKEY_RIGHT);
+    }
   });
 
   // Check that the announcement for items with a notification badge occurs.
@@ -431,8 +434,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
   // Skip over apps that were installed before the test item.
   sm_.Call([this, &test_item_index]() {
-    for (int i = 0; i < test_item_index + 1; ++i)
+    for (int i = 0; i < test_item_index + 1; ++i) {
       SendKeyPressWithSearch(ui::VKEY_RIGHT);
+    }
   });
 
   // Check that the announcement for items with a pause badge occurs.
@@ -470,8 +474,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
   // Skip over apps that were installed before the test item.
   sm_.Call([this, &test_item_index]() {
-    for (int i = 0; i < test_item_index + 1; ++i)
+    for (int i = 0; i < test_item_index + 1; ++i) {
       SendKeyPressWithSearch(ui::VKEY_RIGHT);
+    }
   });
 
   // Check that the announcement for items with a block badge occurs.

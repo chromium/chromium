@@ -26,33 +26,15 @@ class TestSearchController : public SearchController {
   Results& last_results() { return last_results_; }
 
   // SearchController:
-  void ClearSearch() override;
+  void AddProvider(std::unique_ptr<SearchProvider> provider) override;
   void StartSearch(const std::u16string& query) override;
+  void ClearSearch() override;
   void StartZeroState(base::OnceClosure on_done,
                       base::TimeDelta timeout) override;
-  void AppListClosing() override;
-  void OpenResult(ChromeSearchResult* result, int event_flags) override;
-  void InvokeResultAction(ChromeSearchResult* result,
-                          ash::SearchResultActionType action) override;
-  AppSearchDataSource* GetAppSearchDataSource() override;
-  void AddProvider(std::unique_ptr<SearchProvider> provider) override;
-  size_t ReplaceProvidersForResultTypeForTest(
-      ash::AppListSearchResultType result_type,
-      std::unique_ptr<SearchProvider> provider) override;
   void SetResults(const SearchProvider* provider, Results results) override;
-  void Publish() override;
-  ChromeSearchResult* FindSearchResult(const std::string& result_id) override;
-  ChromeSearchResult* GetResultByTitleForTest(
-      const std::string& title) override;
-  void Train(LaunchData&& launch_data) override;
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-  std::u16string get_query() override;
-  base::Time session_start() override;
+  void WaitForZeroStateCompletionForTest(base::OnceClosure callback) override;
   void set_results_changed_callback_for_test(
       ResultsChangedCallback callback) override;
-  void disable_ranking_for_test() override;
-  void WaitForZeroStateCompletionForTest(base::OnceClosure callback) override;
 
  private:
   std::unique_ptr<SearchProvider> provider_;

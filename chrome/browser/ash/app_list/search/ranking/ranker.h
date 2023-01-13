@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_RANKER_H_
 
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
-#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
 #include <string>

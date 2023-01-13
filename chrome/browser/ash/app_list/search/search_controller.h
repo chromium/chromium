@@ -12,32 +12,52 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ash/app_list/search/burn_in_controller.h"
+#include "chrome/browser/ash/app_list/search/federated_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
+#include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
-namespace ash {
-enum class AppListSearchResultType;
-}
+class AppListControllerDelegate;
+class AppListModelUpdater;
+class ChromeSearchResult;
+class Profile;
 
-namespace base {
-class Time;
-class TimeDelta;
-}
+namespace ash {
+class AppListNotifier;
+}  // namespace ash
 
 namespace app_list {
 
 class AppSearchDataSource;
+class SearchMetricsManager;
+class SearchSessionMetricsManager;
 class SearchProvider;
 
-// Controller that collects query from given SearchBoxModel, dispatches it
-// to all search providers, then invokes the mixer to mix and to publish the
-// results to the given SearchResults UI model.
+namespace test {
+class SearchControllerTest;
+}
+
+// A controller that collects queries from the AppListClient, dispatches them to
+// search providers, then ranks and publishes the results to the AppListModel.
+// Many methods are virtual for testing.
 class SearchController {
  public:
-  using ResultsChangedCallback =
-      base::RepeatingCallback<void(ash::AppListSearchResultType)>;
+  using ResultsChangedCallback = base::RepeatingCallback<void(ResultType)>;
+
+  SearchController(AppListModelUpdater* model_updater,
+                   AppListControllerDelegate* list_controller,
+                   ash::AppListNotifier* notifier,
+                   Profile* profile);
+  virtual ~SearchController();
+
+  SearchController(const SearchController&) = delete;
+  SearchController& operator=(const SearchController&) = delete;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -52,66 +72,142 @@ class SearchController {
         const std::vector<const ChromeSearchResult*>& results) {}
   };
 
-  virtual ~SearchController() = default;
-
-  virtual void StartSearch(const std::u16string& query) = 0;
-  virtual void ClearSearch() = 0;
-  virtual void StartZeroState(base::OnceClosure on_done,
-                              base::TimeDelta timeout) = 0;
-
-  virtual void AppListClosing() = 0;
-
-  virtual void OpenResult(ChromeSearchResult* result, int event_flags) = 0;
-  virtual void InvokeResultAction(ChromeSearchResult* result,
-                                  ash::SearchResultActionType action) = 0;
-
-  // Returns AppSearchDataSource instance that should be used with app search
-  // providers.
-  virtual AppSearchDataSource* GetAppSearchDataSource() = 0;
+  // Initializes required members of the SearchController. Must be called at
+  // construction time.
+  // This is separate from the constructor itself so that it can be omitted for
+  // the TestSearchController mock.
+  void Initialize();
 
   // Takes ownership of |provider|.
-  virtual void AddProvider(std::unique_ptr<SearchProvider> provider) = 0;
+  virtual void AddProvider(std::unique_ptr<SearchProvider> provider);
+
+  virtual void StartSearch(const std::u16string& query);
+  virtual void ClearSearch();
+
+  virtual void StartZeroState(base::OnceClosure on_done,
+                              base::TimeDelta timeout);
+  // Stops zero state.
+  void AppListClosing();
+
+  void OpenResult(ChromeSearchResult* result, int event_flags);
+  void InvokeResultAction(ChromeSearchResult* result,
+                          ash::SearchResultActionType action);
+
+  // Update the controller with the given results.
+  virtual void SetResults(const SearchProvider* provider, Results results);
+
+  // Publishes results to ash.
+  void Publish();
+
+  // Sends training signal to each of |providers_|.
+  void Train(LaunchData&& launch_data);
+
+  // Returns the AppSearchDataSource instance that should be used with app
+  // search providers.
+  AppSearchDataSource* GetAppSearchDataSource();
+
+  ChromeSearchResult* FindSearchResult(const std::string& result_id);
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  std::u16string get_query();
+
+  base::Time session_start();
+
+  // Test methods.
 
   // Removes, and deletes registered search providers that provide results for
   // `result_type` and adds a new "test" provider.
   // No-op if no providers for `result_type` were previously registered.
   // Expects that `provider` provides results for `result_type`.
   // Returns number of providers removed from the provider list.
-  virtual size_t ReplaceProvidersForResultTypeForTest(
-      ash::AppListSearchResultType result_type,
-      std::unique_ptr<SearchProvider> provider) = 0;
+  size_t ReplaceProvidersForResultTypeForTest(
+      ResultType result_type,
+      std::unique_ptr<SearchProvider> provider);
 
-  // Update the controller with the given results. Used only if the categorical
-  // search feature flag is enabled.
-  virtual void SetResults(const SearchProvider* provider, Results results) = 0;
-  // Publishes results to ash.
-  virtual void Publish() = 0;
+  ChromeSearchResult* GetResultByTitleForTest(const std::string& title);
 
-  virtual ChromeSearchResult* FindSearchResult(
-      const std::string& result_id) = 0;
-  virtual ChromeSearchResult* GetResultByTitleForTest(
-      const std::string& title) = 0;
-
-  // Sends training signal to each |providers_|
-  virtual void Train(LaunchData&& launch_data) = 0;
-
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
-
-  virtual std::u16string get_query() = 0;
-
-  virtual base::Time session_start() = 0;
+  virtual void WaitForZeroStateCompletionForTest(base::OnceClosure callback);
 
   virtual void set_results_changed_callback_for_test(
-      ResultsChangedCallback callback) = 0;
+      ResultsChangedCallback callback);
 
-  virtual void disable_ranking_for_test() = 0;
+  void disable_ranking_for_test();
 
-  // Registers a callback to be run when zero state search returns (either due
-  // to all zero state providers returning results, or a timeout). The callback
-  // will run immediately if there is no pending zero state search callback.
-  virtual void WaitForZeroStateCompletionForTest(
-      base::OnceClosure callback) = 0;
+  void set_ranker_manager_for_test(
+      std::unique_ptr<RankerManager> ranker_manager) {
+    ranker_manager_ = std::move(ranker_manager);
+  }
+
+ private:
+  // TODO(b/265213378): Remove this and expose only what's necessary.
+  friend class test::SearchControllerTest;
+
+  // Rank the results of |provider_type|.
+  void Rank(ResultType provider_type);
+
+  void SetSearchResults(const SearchProvider* provider);
+
+  void SetZeroStateResults(const SearchProvider* provider);
+
+  void OnZeroStateTimedOut();
+
+  void OnBurnInPeriodElapsed();
+
+  void OnResultsChangedWithType(ResultType result_type);
+
+  // The query associated with the most recent search.
+  std::u16string last_query_;
+
+  // How many search providers should block zero-state until they return
+  // results.
+  int total_zero_state_blockers_ = 0;
+
+  // How many zero-state blocking providers have returned for this search.
+  int returned_zero_state_blockers_ = 0;
+
+  // A timer to trigger a Publish at the end of the timeout period passed to
+  // StartZeroState.
+  base::OneShotTimer zero_state_timeout_;
+
+  // Callbacks to run when initial set of zero state results is published.
+  // Non empty list indicates that results should be published when zero state
+  // times out.
+  base::OnceClosureList on_zero_state_done_;
+
+  // The time when StartSearch was most recently called.
+  base::Time session_start_;
+
+  // Storage for all search results for the current query.
+  ResultsMap results_;
+
+  // Storage for category scores for the current query.
+  CategoriesList categories_;
+
+  bool disable_ranking_for_test_ = false;
+
+  // If set, called when results set by a provider change. Only set by tests.
+  ResultsChangedCallback results_changed_callback_for_test_;
+
+  Profile* const profile_;
+
+  std::unique_ptr<BurnInController> burnin_controller_;
+  std::unique_ptr<RankerManager> ranker_manager_;
+
+  std::unique_ptr<SearchMetricsManager> metrics_manager_;
+  std::unique_ptr<SearchSessionMetricsManager> session_metrics_manager_;
+  std::unique_ptr<FederatedMetricsManager> federated_metrics_manager_;
+
+  std::unique_ptr<AppSearchDataSource> app_search_data_source_;
+
+  std::vector<std::unique_ptr<SearchProvider>> providers_;
+
+  AppListModelUpdater* const model_updater_;
+  AppListControllerDelegate* const list_controller_;
+  ash::AppListNotifier* const notifier_;
+
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace app_list

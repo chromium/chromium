@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/app_list/search/ranking/removed_results_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/score_normalizing_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.pb.h"
@@ -118,31 +119,36 @@ RankerManager::~RankerManager() {}
 void RankerManager::Start(const std::u16string& query,
                           ResultsMap& results,
                           CategoriesList& categories) {
-  for (auto& ranker : rankers_)
+  for (auto& ranker : rankers_) {
     ranker->Start(query, results, categories);
+  }
 }
 
 void RankerManager::UpdateResultRanks(ResultsMap& results,
                                       ProviderType provider) {
-  for (auto& ranker : rankers_)
+  for (auto& ranker : rankers_) {
     ranker->UpdateResultRanks(results, provider);
+  }
 }
 
 void RankerManager::UpdateCategoryRanks(const ResultsMap& results,
                                         CategoriesList& categories,
                                         ProviderType provider) {
-  for (auto& ranker : rankers_)
+  for (auto& ranker : rankers_) {
     ranker->UpdateCategoryRanks(results, categories, provider);
+  }
 }
 
 void RankerManager::Train(const LaunchData& launch) {
-  for (auto& ranker : rankers_)
+  for (auto& ranker : rankers_) {
     ranker->Train(launch);
+  }
 }
 
 void RankerManager::Remove(ChromeSearchResult* result) {
-  for (auto& ranker : rankers_)
+  for (auto& ranker : rankers_) {
     ranker->Remove(result);
+  }
 }
 
 void RankerManager::AddRanker(std::unique_ptr<Ranker> ranker) {
@@ -150,8 +156,9 @@ void RankerManager::AddRanker(std::unique_ptr<Ranker> ranker) {
 }
 
 void RankerManager::OnBurnInPeriodElapsed() {
-  for (auto& ranker : rankers_)
+  for (auto& ranker : rankers_) {
     ranker->OnBurnInPeriodElapsed();
+  }
 }
 
 }  // namespace app_list

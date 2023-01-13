@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/app_list/search/os_settings_provider.h"
 #include "chrome/browser/ash/app_list/search/personalization_provider.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
-#include "chrome/browser/ash/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -50,8 +49,7 @@ namespace app_list {
 
 namespace {
 
-// Maximum number of results to show in each mixer group.
-
+// Maximum number of results to show for the given type.
 constexpr size_t kMaxAppShortcutResults = 4;
 constexpr size_t kMaxPlayStoreResults = 12;
 
@@ -62,9 +60,9 @@ std::unique_ptr<SearchController> CreateSearchController(
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier) {
-  std::unique_ptr<SearchController> controller;
-  controller = std::make_unique<SearchControllerImpl>(
+  auto controller = std::make_unique<SearchController>(
       model_updater, list_controller, notifier, profile);
+  controller->Initialize();
 
   // Add search providers.
   controller->AddProvider(std::make_unique<AppSearchProvider>(

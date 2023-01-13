@@ -7413,7 +7413,7 @@ test("unit_tests") {
       "../browser/ash/app_list/search/ranking/removed_results_proto_unittest.cc",
       "../browser/ash/app_list/search/ranking/removed_results_ranker_unittest.cc",
       "../browser/ash/app_list/search/ranking/score_normalizing_ranker_unittest.cc",
-      "../browser/ash/app_list/search/search_controller_impl_unittest.cc",
+      "../browser/ash/app_list/search/search_controller_unittest.cc",
       "../browser/ash/app_list/search/search_metrics_manager_unittest.cc",
       "../browser/ash/app_list/search/search_session_metrics_manager_unittest.cc",
       "../browser/ash/app_list/search/test/ranking_test_util.cc",

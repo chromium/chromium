@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
 namespace app_list {
