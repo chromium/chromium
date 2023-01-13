@@ -1039,6 +1039,21 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                   FAIL
             """)
 
+    def test_condition_no_change(self):
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              [subtest]
+                expected: FAIL
+            """)
+        self.update()
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              [subtest]
+                expected: FAIL
+            """)
+
 
 class UpdateMetadataArgumentParsingTest(unittest.TestCase):
     def setUp(self):

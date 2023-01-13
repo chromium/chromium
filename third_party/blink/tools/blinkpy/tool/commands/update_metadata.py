@@ -688,8 +688,9 @@ class MetadataUpdater:
             subtest_id: Optional[str] = None,
     ) -> FrozenSet[metadata.RunInfo]:
         """Find configurations a (sub)test has results for so far."""
-        return frozenset(
-            run_info for _, run_info, _ in test_file.data[test_id][subtest_id])
+        subtests = test_file.data.get(test_id, {})
+        subtest_data = subtests.get(subtest_id, [])
+        return frozenset(run_info for _, run_info, _ in subtest_data)
 
     def _enabled_configs(
             self,
