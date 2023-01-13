@@ -1156,6 +1156,16 @@ void PrivacySandboxService::RecordPromptActionMetrics(
           "Settings.PrivacySandbox.Notice.LearnMoreClosed"));
       break;
     }
+    case (PromptAction::kConsentMoreButtonClicked): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Consent.MoreButtonClicked"));
+      break;
+    }
+    case (PromptAction::kNoticeMoreButtonClicked): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
+      break;
+    }
   }
 }
 

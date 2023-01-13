@@ -71,11 +71,16 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
               PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
         }
 
-        onMoreClicked() {
-          // Scroll to reveal next visible portion of the content.
-          const scrollable: HTMLElement =
-              this.shadowRoot!.querySelector('[scrollable]')!;
-          scrollable.scrollBy({top: scrollable.clientHeight});
+        onConsentMoreClicked() {
+          this.onMoreClicked_();
+          this.promptActionOccurred(
+              PrivacySandboxPromptAction.CONSENT_MORE_BUTTON_CLICKED);
+        }
+
+        onNoticeMoreClicked() {
+          this.onMoreClicked_();
+          this.promptActionOccurred(
+              PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
         }
 
         promptActionOccurred(action: PrivacySandboxPromptAction) {
@@ -174,6 +179,13 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
           scrollable.classList.toggle(
               'more-content-available', !this.wasScrolledToBottom);
         }
+
+        private onMoreClicked_() {
+          // Scroll to reveal next visible portion of the content.
+          const scrollable: HTMLElement =
+              this.shadowRoot!.querySelector('[scrollable]')!;
+          scrollable.scrollBy({top: scrollable.clientHeight});
+        }
       }
 
       return PrivacySandboxDialogMixin;
@@ -186,7 +198,6 @@ export interface PrivacySandboxDialogMixinInterface {
   onNoticeLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
   onNoticeOpenSettings(): void;
   onNoticeAcknowledge(): void;
-  onMoreClicked(): void;
   maybeShowMoreButton(): Promise<void>;
   whenWasScrolledToBottomForTest(): Promise<void>;
   promptActionOccurred(action: PrivacySandboxPromptAction): void;

@@ -25,6 +25,8 @@ export enum PrivacySandboxPromptAction {
   NOTICE_LEARN_MORE = 11,
   NOTICE_MORE_INFO_OPENED = 12,
   NOTICE_MORE_INFO_CLOSED = 13,
+  CONSENT_MORE_BUTTON_CLICKED = 14,
+  NOTICE_MORE_BUTTON_CLICKED = 15,
 }
 
 export class PrivacySandboxDialogBrowserProxy {

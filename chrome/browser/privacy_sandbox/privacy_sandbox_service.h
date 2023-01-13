@@ -92,7 +92,11 @@ class PrivacySandboxService : public KeyedService {
     kNoticeMoreInfoOpened = 12,
     kNoticeMoreInfoClosed = 13,
 
-    kMaxValue = kNoticeMoreInfoClosed,
+    // The button is shown only when the prompt content isn't fully visible.
+    kConsentMoreButtonClicked = 14,
+    kNoticeMoreButtonClicked = 15,
+
+    kMaxValue = kNoticeMoreButtonClicked,
   };
 
   // TODO(crbug.com/1378703): Integrate this when handling Notice and Consent

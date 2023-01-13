@@ -323,6 +323,8 @@ suite('PrivacySandboxDialogCombined', function() {
     const moreButton: HTMLElement =
         consentStep.shadowRoot!.querySelector('#moreButton')!;
     moreButton.click();
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.CONSENT_MORE_BUTTON_CLICKED);
     await consentStep.whenWasScrolledToBottomForTest();
 
     // After scrolling down, the "More" button is hidden and dialog button are
@@ -538,6 +540,8 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
     const moreButton: HTMLElement =
         noticeStep.shadowRoot!.querySelector('#moreButton')!;
     moreButton.click();
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
     await noticeStep.whenWasScrolledToBottomForTest();
 
     // After scrolling down, the "More" button is hidden and dialog button are
@@ -676,6 +680,8 @@ suite('PrivacySandboxDialogNoticeROW', function() {
     const moreButton: HTMLElement =
         page.shadowRoot!.querySelector('#moreButton')!;
     moreButton.click();
+    await verifyActionOccured(
+        PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
     await page.whenWasScrolledToBottomForTest();
 
     // After scrolling down, the "More" button is hidden and dialog button are
@@ -798,7 +804,7 @@ suite('PrivacySandboxDialogMixin', function() {
             </div>
           </div>
           <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
-            <button id="moreButton" on-click="onMoreClicked">More</button>
+            <button id="moreButton" on-click="onMoreClicked_">More</button>
           </div>
         </div>
       `;

@@ -1219,6 +1219,16 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
       PrivacySandboxService::PromptAction::kNoticeMoreInfoClosed);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.LearnMoreClosed"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kConsentMoreButtonClicked);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.Consent.MoreButtonClicked"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kNoticeMoreButtonClicked);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

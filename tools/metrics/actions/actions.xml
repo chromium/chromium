@@ -28322,6 +28322,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.Consent.MoreButtonClicked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <description>
+    User clicked on the More button in the Privacy Sandbox Consent.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.Consent.Shown">
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -28454,6 +28463,15 @@ should be able to be added at any place in this file.
   <owner>tommasin@chromium.org</owner>
   <description>
     User expanded the Learn More in the Privacy Sandbox Notice.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Notice.MoreButtonClicked">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <description>
+    User clicked on the More button in the Privacy Sandbox Notice.
   </description>
 </action>
 
