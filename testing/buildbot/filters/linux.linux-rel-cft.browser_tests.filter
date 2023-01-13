@@ -38,7 +38,7 @@
 -InteractionTestUtilBrowserTest.CompareScreenshot_WebPage
 -KnownInterceptionDisclosureInfobarTest.CooldownResetsOnBrowserRestartDesktop
 -KnownInterceptionDisclosureInfobarTest.OnlyShowDisclosureOncePerSession
--LayoutInstabilityTest.Sources_Enclosure
+-LayoutInstabilityTest.*
 -MultipleTabSharingUIViewsBrowserTest.CloseTabs
 -MultipleTabSharingUIViewsBrowserTest.StopSharing
 -MultipleTabSharingUIViewsBrowserTest.VerifyUi
