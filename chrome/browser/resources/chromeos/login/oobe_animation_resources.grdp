@@ -6,10 +6,6 @@
     <include type="BINDATA" name="IDR_OOBE_ARC_APPS_DOWNLOADING_VIDEO" resource_path="res/arc_app_dowsnloading.mp4" file="../../../internal/resources/arc_support/videos/app_downloading.mp4" />
   </if>
 
-  <!-- Multi-device Setup animation. -->
-  <include type="BINDATA" compress="gzip" name="IDR_MULTIDEVICE_SETUP_ANIMATION_DARK" resource_path="multidevice_setup_dark.json" file="images/multidevice_setup_dark.json" />
-  <include type="BINDATA" compress="gzip" name="IDR_MULTIDEVICE_SETUP_ANIMATION_LIGHT" resource_path="multidevice_setup_light.json" file="images/multidevice_setup_light.json" />
-
   <!-- Loading step animation. -->
   <include type="BINDATA" compress="gzip" name="IDR_LOGIN_SPINNER_ANIMATION" resource_path="spinner.json" file="images/spinner.json" />
   <include type="BINDATA" compress="gzip" name="IDR_LOGIN_SPINNER_DARK_ANIMATION" resource_path="spinner_dark.json" file="images/spinner_dark.json" />

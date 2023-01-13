@@ -18,7 +18,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
-#include "chrome/grit/oobe_conditional_resources.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/url_provider.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
@@ -137,13 +136,10 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("wifiSyncEnabled", base::FeatureList::IsEnabled(
                                                  features::kWifiSyncAndroid));
 
-  for (const auto& entry : GetLocalizedStringsWithPlaceholders())
+  for (const auto& entry : GetLocalizedStringsWithPlaceholders()) {
     html_source->AddString(entry.name, entry.localized_string);
+  }
 
-  html_source->AddResourcePath("multidevice_setup_dark.json",
-                               IDR_MULTIDEVICE_SETUP_ANIMATION_DARK);
-  html_source->AddResourcePath("multidevice_setup_light.json",
-                               IDR_MULTIDEVICE_SETUP_ANIMATION_LIGHT);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");

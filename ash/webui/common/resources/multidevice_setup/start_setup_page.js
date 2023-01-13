@@ -25,13 +25,15 @@ import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
  * The multidevice setup animation for light mode.
  * @type {string}
  */
-const MULTIDEVICE_ANIMATION_DARK_URL = 'multidevice_setup_dark.json';
+const MULTIDEVICE_ANIMATION_DARK_URL =
+    'chrome://resources/ash/common/multidevice_setup/multidevice_setup_dark.json';
 
 /**
  * The multidevice setup animation for dark mode.
  * @type {string}
  */
-const MULTIDEVICE_ANIMATION_LIGHT_URL = 'multidevice_setup_light.json';
+const MULTIDEVICE_ANIMATION_LIGHT_URL =
+    'chrome://resources/ash/common/multidevice_setup/multidevice_setup_light.json';
 
 Polymer({
   _template: getTemplate(),

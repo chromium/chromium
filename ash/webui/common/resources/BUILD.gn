@@ -288,6 +288,8 @@ generate_grd("build_grdp") {
     "multidevice_setup/all_set_1x_light.svg",
     "multidevice_setup/all_set_2x_dark.svg",
     "multidevice_setup/all_set_2x_light.svg",
+    "multidevice_setup/multidevice_setup_dark.json",
+    "multidevice_setup/multidevice_setup_light.json",
     "network/cellular_0.svg",
     "network/cellular_0_with_x.svg",
     "network/cellular_1.svg",
