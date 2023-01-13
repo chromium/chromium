@@ -2077,6 +2077,12 @@
       'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
     ],
     'modifications': {
+      'android-code-coverage-native': {
+        'args': [
+          # https://crbug.com/1404782
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests_coverage.filter',
+        ],
+      },
       'fuchsia-fyi-x64-asan': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.gin_unittests.filter',
@@ -2193,6 +2199,11 @@
       'android-arm64-proguard-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.arm64_proguard_rel.gl_tests.filter', # https://crbug.com/1034007
+        ],
+      },
+      'android-code-coverage-native': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter', # https://crbug.com/1034007
         ],
       },
       'android-nougat-x86-rel': {
