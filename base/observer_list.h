@@ -22,6 +22,7 @@
 #include "base/observer_list_internal.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -341,6 +342,9 @@ class ObserverList {
   std::string GetObserversCreationStackString() const {
 #if DCHECK_IS_ON()
     std::string result;
+#if BUILDFLAG(IS_IOS)
+    result += "Use go/observer-list-empty to interpret.\n";
+#endif
     for (const auto& observer : observers_) {
       result += observer.GetCreationStackString();
       result += "\n";
