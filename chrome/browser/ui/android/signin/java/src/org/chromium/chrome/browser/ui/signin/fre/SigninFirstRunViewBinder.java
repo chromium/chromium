@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.ExistingAccountRowViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -85,8 +86,8 @@ class SigninFirstRunViewBinder {
         } else {
             ExistingAccountRowViewBinder.bindAccountView(
                     profileData, view.getSelectedAccountView());
-            view.getContinueButtonView().setText(view.getContext().getString(
-                    R.string.sync_promo_continue_as, profileData.getGivenNameOrFullNameOrEmail()));
+            view.getContinueButtonView().setText(
+                    SigninUtils.getContinueAsButtonText(view.getContext(), profileData));
         }
         updateVisibility(view, model);
     }

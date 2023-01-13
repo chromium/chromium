@@ -100,6 +100,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sFeedLoadingPlaceholder);
                 add(ChromeFeatureList.sFoldableJankFix);
                 add(ChromeFeatureList.sGridTabSwitcherForTablets);
+                add(ChromeFeatureList.sHideNonDisplayableAccountEmail);
                 add(ChromeFeatureList.sIncognitoReauthenticationForAndroid);
                 add(ChromeFeatureList.sInstanceSwitcher);
                 add(ChromeFeatureList.sInstantStart);

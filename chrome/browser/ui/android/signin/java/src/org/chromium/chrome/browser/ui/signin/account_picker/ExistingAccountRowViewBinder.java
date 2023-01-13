@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
@@ -40,6 +41,41 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
         }
     }
 
+    private static void setAccountTextPrimary(
+            DisplayableProfileData profileData, View accountView) {
+        TextView accountTextPrimary = accountView.findViewById(R.id.account_text_primary);
+        if (!TextUtils.isEmpty(profileData.getFullName())) {
+            accountTextPrimary.setText(profileData.getFullName());
+        } else if (!profileData.hasDisplayableEmailAddress()
+                && ChromeFeatureList.sHideNonDisplayableAccountEmail.isEnabled()) {
+            // Cannot display the email address and empty full name; use default account string.
+            accountTextPrimary.setText(R.string.default_google_account_username);
+        } else {
+            // Full name is not available, show the email address.
+            accountTextPrimary.setText(profileData.getAccountEmail());
+        }
+    }
+
+    private static void setAccountTextSecondary(
+            DisplayableProfileData profileData, View accountView) {
+        TextView accountTextSecondary = accountView.findViewById(R.id.account_text_secondary);
+        if (!profileData.hasDisplayableEmailAddress()
+                && ChromeFeatureList.sHideNonDisplayableAccountEmail.isEnabled()) {
+            // If the email address cannot be displayed, the primary TextView either displays the
+            // full name or the default account string. The secondary TextView is hidden.
+            accountTextSecondary.setVisibility(View.GONE);
+        } else {
+            // If the full name is available, the email will be in the secondary TextView.
+            // Otherwise, the email is in the primary TextView; the secondary TextView hidden.
+            final int secondaryTextVisibility =
+                    TextUtils.isEmpty(profileData.getFullName()) ? View.GONE : View.VISIBLE;
+            if (secondaryTextVisibility == View.VISIBLE) {
+                accountTextSecondary.setText(profileData.getAccountEmail());
+            }
+            accountTextSecondary.setVisibility(secondaryTextVisibility);
+        }
+    }
+
     /**
      * Binds the view with the given profile data.
      *
@@ -49,19 +85,7 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
     public static void bindAccountView(DisplayableProfileData profileData, View view) {
         ImageView accountImage = view.findViewById(R.id.account_image);
         accountImage.setImageDrawable(profileData.getImage());
-
-        TextView accountTextPrimary = view.findViewById(R.id.account_text_primary);
-        TextView accountTextSecondary = view.findViewById(R.id.account_text_secondary);
-
-        String fullName = profileData.getFullName();
-        if (!TextUtils.isEmpty(fullName)) {
-            accountTextPrimary.setText(fullName);
-            accountTextSecondary.setText(profileData.getAccountEmail());
-            accountTextSecondary.setVisibility(View.VISIBLE);
-        } else {
-            // Full name is not available, show the email in the primary TextView.
-            accountTextPrimary.setText(profileData.getAccountEmail());
-            accountTextSecondary.setVisibility(View.GONE);
-        }
+        setAccountTextPrimary(profileData, view);
+        setAccountTextSecondary(profileData, view);
     }
 }

@@ -6,11 +6,15 @@ package org.chromium.chrome.browser.ui.signin;
 
 import android.accounts.Account;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
+import android.text.TextUtils;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 
 /**
  * Helper functions for sign-in and accounts.
@@ -44,5 +48,30 @@ public final class SigninUtils {
      */
     public static boolean openSettingsForAllAccounts(Activity activity) {
         return IntentUtils.safeStartActivity(activity, new Intent(Settings.ACTION_SYNC_SETTINGS));
+    }
+
+    /**
+     * Return the appropriate string for 'Continue as John Doe' button, given that
+     * 'Continue as john.doe@example.com' is used as a fallback and certain accounts cannot have
+     * their email address displayed. In such case, use 'Continue' instead.
+     *
+     * @param context The Android Context used to inflate the View.
+     * @param profileData Cached DisplayableProfileData containing the full name and the email
+     *         address.
+     * @return Appropriate string for continueButton.
+     */
+    public static String getContinueAsButtonText(
+            final Context context, DisplayableProfileData profileData) {
+        if (!TextUtils.isEmpty(profileData.getGivenName())) {
+            return context.getString(R.string.sync_promo_continue_as, profileData.getGivenName());
+        }
+        if (!TextUtils.isEmpty(profileData.getFullName())) {
+            return context.getString(R.string.sync_promo_continue_as, profileData.getFullName());
+        }
+        if (!profileData.hasDisplayableEmailAddress()
+                && ChromeFeatureList.sHideNonDisplayableAccountEmail.isEnabled()) {
+            return context.getString(R.string.sync_promo_continue);
+        }
+        return context.getString(R.string.sync_promo_continue_as, profileData.getAccountEmail());
     }
 }
