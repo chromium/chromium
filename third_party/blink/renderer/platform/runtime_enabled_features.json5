@@ -1479,6 +1479,7 @@
       status: {
         "ChromeOS_Ash": "test",
         "ChromeOS_Lacros": "test",
+        "Linux": "test",
         "default": "",
       }
     },
