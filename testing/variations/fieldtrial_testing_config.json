@@ -473,6 +473,21 @@
             ]
         }
     ],
+    "AppKMDecouplingCoverage": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "AppKMDecoupling",
+                    "enable_features": [
+                        "AppMetricsOnlyRelyOnAppSync"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppListLaunchRecorder": [
         {
             "platforms": [
