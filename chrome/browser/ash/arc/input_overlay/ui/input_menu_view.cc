@@ -51,7 +51,7 @@ constexpr int kMenuWidth = 328;
 constexpr int kMenuWidthSmall = 280;
 constexpr int kMenuHeight = 244;
 constexpr int kMenuMarginRight = 32;
-constexpr int kMenuMarginRightSmall = 24;
+constexpr int kMenuMarginSmall = 24;
 
 // Individual entries and header.
 constexpr int kHeaderMinHeight = 64;
@@ -106,7 +106,7 @@ int GetMenuWidth(int parent_width) {
 }
 
 int GetMenuMarginRight(int parent_width) {
-  return parent_width < kParentWidthThreshold ? kMenuMarginRightSmall
+  return parent_width < kParentWidthThreshold ? kMenuMarginSmall
                                               : kMenuMarginRight;
 }
 
@@ -354,18 +354,16 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
   SetSize(gfx::Size(menu_width, kMenuHeight));
   int x = std::max(0, parent_size.width() - width() -
                           GetMenuMarginRight(parent_size.width()));
-  if (x < GetMenuMarginRight(parent_size.width())) {
-    // Set the menu in the middle if there is not enough margin on the left
-    // side.
+  // Set the menu in the middle if there is not enough margin on the left
+  // side.
+  if (x < GetMenuMarginRight(parent_size.width()))
     x = std::max(0, (parent_size.width() - width()) / 2);
-  }
+
   int y = entry_view_->y();
-  if (display_overlay_controller_->touch_injector()->allow_reposition() &&
-      (y + height() > parent_size.height())) {
-    // Set the menu at the bottom if there is not enough margin on the bottom
-    // side.
-    y = parent_size.height() - height();
-  }
+  // Set the menu at the bottom if there is not enough margin on the bottom
+  // side.
+  if (y + height() > parent_size.height())
+    y = std::max(0, parent_size.height() - height() - kMenuMarginSmall);
   SetPosition(gfx::Point(x, y));
 }
 

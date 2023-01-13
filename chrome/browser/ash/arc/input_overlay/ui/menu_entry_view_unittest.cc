@@ -70,7 +70,7 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
   void ReleaseLeftMouseAtMenuEntryView() {
     menu_entry_view_ = display_overlay_controller_->GetMenuEntryView();
     menu_entry_view_->OnMouseReleased(
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, local_location_, local_location_,
+        ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON));
   }
@@ -126,7 +126,7 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
     exo::test::ExoTestBase::SetUp();
     arc_test_window_ = std::make_unique<test::ArcTestWindow>(
         exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
-        "org.chromium.arc.testapp.inputoverlay");
+        "org.chromium.arc.testapp.inputoverlay", gfx::Rect(10, 10, 250, 250));
     touch_injector_ = std::make_unique<TouchInjector>(
         arc_test_window_->GetWindow(),
         *arc_test_window_->GetWindow()->GetProperty(ash::kArcPackageNameKey),

@@ -17,7 +17,8 @@ class ArcTestWindow {
  public:
   ArcTestWindow(exo::test::ExoTestHelper* helper,
                 aura::Window* root,
-                const std::string& package_name);
+                const std::string& package_name,
+                const gfx::Rect bounds=gfx::Rect(10, 10, 100, 100));
   ArcTestWindow(const ArcTestWindow&) = delete;
   ArcTestWindow& operator=(const ArcTestWindow&) = delete;
   ~ArcTestWindow();

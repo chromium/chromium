@@ -14,13 +14,14 @@ namespace test {
 
 ArcTestWindow::ArcTestWindow(exo::test::ExoTestHelper* helper,
                              aura::Window* root,
-                             const std::string& package_name) {
+                             const std::string& package_name,
+                             const gfx::Rect bounds) {
   shell_surface_ = exo::test::ShellSurfaceBuilder({100, 100})
                        .SetApplicationId(package_name.c_str())
                        .BuildClientControlledShellSurface();
   auto display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root).id();
-  shell_surface_->SetBounds(display_id, gfx::Rect(10, 10, 100, 100));
+  shell_surface_->SetBounds(display_id, bounds);
   surface_ = shell_surface_->root_surface();
   surface_->Commit();
   shell_surface_->GetWidget()->GetNativeWindow()->SetProperty(
