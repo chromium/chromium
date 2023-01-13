@@ -13,6 +13,7 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -20,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,6 +34,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 
@@ -486,6 +489,69 @@ TEST_F(ClipboardHistoryControllerTest, LockedScreenImage) {
   ExpectHistoryValueMatchesBitmap(result[0].GetIfDict(), test_bitmap);
 
   TestEnteringLockScreen();
+}
+
+// Base class for tests of Clipboard History parameterized by whether the
+// `kClipboardHistoryRefresh` feature flag is enabled.
+class ClipboardHistoryControllerRefreshTest
+    : public ClipboardHistoryControllerTest,
+      public testing::WithParamInterface</*refresh_enabled=*/bool> {
+ public:
+  ClipboardHistoryControllerRefreshTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kClipboardHistoryRefresh, IsClipboardHistoryRefreshEnabled());
+  }
+
+  bool IsClipboardHistoryRefreshEnabled() const { return GetParam(); }
+
+  // Some toasts can display on multiple root windows, so the caller can use
+  // `root_window` to target a toast on a specific root window.
+  ToastOverlay* GetCurrentOverlay(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    return Shell::Get()->toast_manager()->GetCurrentOverlayForTesting(
+        root_window);
+  }
+
+  views::LabelButton* GetDismissButton(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    ToastOverlay* overlay = GetCurrentOverlay(root_window);
+    DCHECK(overlay);
+    return overlay->dismiss_button_for_testing();
+  }
+
+  void ClickDismissButton(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    views::LabelButton* dismiss_button = GetDismissButton(root_window);
+    const gfx::Point button_center =
+        dismiss_button->GetBoundsInScreen().CenterPoint();
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(button_center);
+    event_generator->ClickLeftButton();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardHistoryControllerRefreshTest,
+                         /*refresh_enabled=*/testing::Bool());
+
+// Tests a toast is shown if something was copied to clipboard history.
+TEST_P(ClipboardHistoryControllerRefreshTest, ShowToast) {
+  // Copy something to enable the clipboard history menu.
+  WriteTextToClipboardAndConfirm(u"test");
+
+  ToastManagerImpl* manager_ = Shell::Get()->toast_manager();
+  if (IsClipboardHistoryRefreshEnabled()) {
+    EXPECT_TRUE(manager_->IsRunning(kClipboardCopyToastId));
+
+    ClickDismissButton();
+    EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  } else {
+    EXPECT_FALSE(manager_->IsRunning(kClipboardCopyToastId));
+  }
 }
 
 }  // namespace ash

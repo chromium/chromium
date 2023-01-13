@@ -63,6 +63,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   friend class BluetoothNotificationControllerTest;
   friend class DesksTestApi;
   friend class ToastManagerImplTest;
+  friend class ClipboardHistoryControllerRefreshTest;
   friend class eche_app::LaunchAppHelperTest;
 
   void ShowLatest();

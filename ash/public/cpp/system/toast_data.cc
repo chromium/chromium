@@ -32,13 +32,15 @@ ToastData::ToastData(std::string id,
                      base::TimeDelta duration,
                      bool visible_on_lock_screen,
                      bool has_dismiss_button,
-                     const std::u16string& custom_dismiss_text)
+                     const std::u16string& custom_dismiss_text,
+                     base::RepeatingClosure dismiss_callback)
     : id(std::move(id)),
       catalog_name(catalog_name),
       text(text),
       duration(std::max(duration, kMinimumDuration)),
       visible_on_lock_screen(visible_on_lock_screen),
       dismiss_text(GetDismissText(custom_dismiss_text, has_dismiss_button)),
+      dismiss_callback(std::move(dismiss_callback)),
       time_created(base::TimeTicks::Now()) {}
 
 ToastData::ToastData(ToastData&& other) = default;

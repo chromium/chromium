@@ -41,7 +41,8 @@ struct ASH_PUBLIC_EXPORT ToastData {
             base::TimeDelta duration = kDefaultToastDuration,
             bool visible_on_lock_screen = false,
             bool has_dismiss_button = false,
-            const std::u16string& custom_dismiss_text = std::u16string());
+            const std::u16string& custom_dismiss_text = std::u16string(),
+            base::RepeatingClosure dismiss_callback = base::RepeatingClosure());
   ToastData(ToastData&& other);
   ToastData& operator=(ToastData&& other);
   ~ToastData();

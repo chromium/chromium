@@ -88,6 +88,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
  private:
   friend class ToastManagerImplTest;
+  friend class ClipboardHistoryControllerRefreshTest;
   friend class DesksTestApi;
 
   class ToastDisplayObserver;

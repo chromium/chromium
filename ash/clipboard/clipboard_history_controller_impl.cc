@@ -21,7 +21,9 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_util.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
@@ -32,6 +34,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
@@ -49,9 +52,11 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -677,6 +682,28 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
       // recorded only once. See `ClipboardHistory::OnDataChanged()` for further
       // explanation.
       base::RecordAction(base::UserMetricsAction("Ash_Clipboard_CopiedItem"));
+
+      // TODO(b/264913203): Add proper string resources for toast.
+      bool use_launcher_key = ui::DeviceUsesKeyboardLayout2();
+      std::u16string shortcut_key = l10n_util::GetStringUTF16(
+          use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+                           : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
+      // TODO(b/265059395): Replace shortcut_key with icon.
+      std::u16string label_text =
+          base::StrCat({u"[li8n] ", shortcut_key, u"+V"});
+
+      if (features::IsClipboardHistoryRefreshEnabled()) {
+        Shell::Get()->toast_manager()->Show(ToastData(
+            kClipboardCopyToastId, ToastCatalogName::kCopyToClipboardAction,
+            u"[li8n] Copied to Clipboard", ToastData::kDefaultToastDuration,
+            /*visible_on_lock_screen=*/false,
+            /*has_dismiss_button=*/true, /*custom_dismiss_text=*/
+            label_text,
+            /*dismiss_callback=*/
+            base::BindRepeating(
+                &ClipboardHistoryControllerImpl::ShowMenuFromToast,
+                weak_ptr_factory_.GetWeakPtr())));
+      }
     } else {
       // Pastes from clipboard history are already recorded in
       // `PasteMenuItemData()`. Here, we record just pastes from the standard
@@ -1033,6 +1060,11 @@ void ClipboardHistoryControllerImpl::OnMenuClosed() {
               controller_weak_ptr->context_menu_.reset();
           },
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ClipboardHistoryControllerImpl::ShowMenuFromToast() {
+  ShowMenu(CalculateAnchorRect(), ui::MENU_SOURCE_NONE,
+           crosapi::mojom::ClipboardHistoryControllerShowSource::kToast);
 }
 
 }  // namespace ash

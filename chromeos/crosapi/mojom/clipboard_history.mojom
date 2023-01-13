@@ -22,7 +22,9 @@ enum ClipboardHistoryControllerShowSource {
   // Shown by the virtual keyboard.
   kVirtualKeyboard,
   // Used as a default value in case of version skew.
-  [Default] kUnknown
+  [Default] kUnknown,
+  // Shown by a toast.
+  [MinVersion=1] kToast,
 };
 
 // This interface is implemented by Ash-Chrome.
