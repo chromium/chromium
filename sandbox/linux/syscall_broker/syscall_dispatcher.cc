@@ -114,6 +114,8 @@ int SyscallDispatcher::DispatchSyscall(const arch_seccomp_data& args) {
 #endif
 #if defined(__NR_readlink)
     case __NR_readlink:
+      // http://crbug.com/372840
+      BROKER_UNPOISON_STRING(reinterpret_cast<const char*>(args.args[0]));
       return Readlink(reinterpret_cast<const char*>(args.args[0]),
                       reinterpret_cast<char*>(args.args[1]),
                       static_cast<size_t>(args.args[2]));
@@ -122,6 +124,8 @@ int SyscallDispatcher::DispatchSyscall(const arch_seccomp_data& args) {
     case __NR_readlinkat:
       if (static_cast<int>(args.args[0]) != AT_FDCWD)
         return -EPERM;
+      // http://crbug.com/372840
+      BROKER_UNPOISON_STRING(reinterpret_cast<const char*>(args.args[1]));
       return Readlink(reinterpret_cast<const char*>(args.args[1]),
                       reinterpret_cast<char*>(args.args[2]),
                       static_cast<size_t>(args.args[3]));
