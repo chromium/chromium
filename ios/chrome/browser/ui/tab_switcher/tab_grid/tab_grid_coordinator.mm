@@ -1157,20 +1157,25 @@
   }
 }
 
-- (void)pinTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito {
-  if (incognito) {
-    [self.incognitoTabsMediator pinItemWithID:identifier];
-  } else {
-    [self.regularTabsMediator pinItemWithID:identifier];
-  }
+- (void)pinTabWithIdentifier:(NSString*)identifier {
+  [self.regularTabsMediator pinItemWithID:identifier];
 }
 
-- (void)closeTabWithIdentifier:(NSString*)identifier incognito:(BOOL)incognito {
+- (void)closeTabWithIdentifier:(NSString*)identifier
+                     incognito:(BOOL)incognito
+                        pinned:(BOOL)pinned {
   if (incognito) {
     [self.incognitoTabsMediator closeItemWithID:identifier];
-  } else {
-    [self.regularTabsMediator closeItemWithID:identifier];
+    return;
   }
+
+  if (pinned) {
+    DCHECK(IsPinnedTabsEnabled());
+    [self.pinnedTabsMediator closeItemWithID:identifier];
+    return;
+  }
+
+  [self.regularTabsMediator closeItemWithID:identifier];
 }
 
 - (void)selectTabs {

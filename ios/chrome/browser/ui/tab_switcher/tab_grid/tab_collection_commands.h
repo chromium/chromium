@@ -14,6 +14,10 @@
 // no item with that identifier, no change in selection should be made.
 - (void)selectItemWithID:(NSString*)itemID;
 
+// Tells the receiver to close the item with identifier `itemID`. If there is
+// no pinned item with that identifier, no item is closed.
+- (void)closeItemWithID:(NSString*)itemID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_COLLECTION_COMMANDS_H_

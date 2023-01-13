@@ -119,13 +119,16 @@
     }
 
     if (IsPinnedTabsEnabled()) {
-      if ([self.contextMenuDelegate
-              respondsToSelector:@selector(pinTabWithIdentifier:incognito:)]) {
-        [menuElements addObject:[actionFactory actionToPinTabWithBlock:^{
-                        [self.contextMenuDelegate
-                            pinTabWithIdentifier:cell.itemIdentifier
-                                       incognito:self.incognito];
-                      }]];
+      if (pinned) {
+        // TODO(crbug.com/1382015): Implement this.
+      } else {
+        if ([self.contextMenuDelegate
+                respondsToSelector:@selector(pinTabWithIdentifier:)]) {
+          [menuElements addObject:[actionFactory actionToPinTabWithBlock:^{
+                          [self.contextMenuDelegate
+                              pinTabWithIdentifier:cell.itemIdentifier];
+                        }]];
+        }
       }
     }
 
@@ -171,9 +174,11 @@
     }
   }
 
-  // Thumb strip and search results menus don't support tab selection.
+  // Thumb strip, pinned tabs and search results menus don't support tab
+  // selection.
   BOOL scenarioDisablesSelection =
       scenario == MenuScenarioHistogram::kTabGridSearchResult ||
+      scenario == MenuScenarioHistogram::kPinnedTabsEntry ||
       scenario == MenuScenarioHistogram::kThumbStrip;
   if (!scenarioDisablesSelection &&
       [self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
@@ -182,12 +187,13 @@
                   }]];
   }
 
-  if ([self.contextMenuDelegate
-          respondsToSelector:@selector(closeTabWithIdentifier:incognito:)]) {
+  if ([self.contextMenuDelegate respondsToSelector:@selector
+                                (closeTabWithIdentifier:incognito:pinned:)]) {
     [menuElements addObject:[actionFactory actionToCloseTabWithBlock:^{
                     [self.contextMenuDelegate
                         closeTabWithIdentifier:cell.itemIdentifier
-                                     incognito:self.incognito];
+                                     incognito:self.incognito
+                                        pinned:pinned];
                   }]];
   }
   return menuElements;

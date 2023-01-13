@@ -311,6 +311,15 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   itemWebStateList->ActivateWebStateAt(index);
 }
 
+- (void)closeItemWithID:(NSString*)itemID {
+  int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/YES);
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+}
+
 #pragma mark - Private
 
 - (void)addWebStateObservations {
