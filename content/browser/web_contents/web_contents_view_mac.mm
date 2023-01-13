@@ -416,7 +416,7 @@ bool WebContentsViewMac::CloseTabAfterEventTrackingIfNeeded() {
 }
 
 void WebContentsViewMac::CloseTab() {
-  web_contents_->Close(web_contents_->GetRenderViewHost());
+  web_contents_->Close();
 }
 
 std::list<RenderWidgetHostViewMac*> WebContentsViewMac::GetChildViews() {

@@ -14,14 +14,6 @@ bool RenderViewHostDelegate::IsNeverComposited() {
   return false;
 }
 
-bool RenderViewHostDelegate::IsJavaScriptDialogShowing() const {
-  return false;
-}
-
-bool RenderViewHostDelegate::ShouldIgnoreUnresponsiveRenderer() {
-  return false;
-}
-
 bool RenderViewHostDelegate::IsGuest() {
   return false;
 }

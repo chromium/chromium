@@ -434,9 +434,14 @@ base::StringPiece ReportingDestinationAsString(
   }
 }
 
+// Maximum amount of time to wait for beforeunload/unload handlers to be
+// processed by the renderer process.
+constexpr int kUnloadTimeoutInMSec = 500;
+constexpr base::TimeDelta kUnloadTimeout =
+    base::Milliseconds(kUnloadTimeoutInMSec);
+
 constexpr int kSubframeProcessShutdownDelayInMSec = 2 * 1000;
-static_assert(kSubframeProcessShutdownDelayInMSec +
-                      RenderViewHostImpl::kUnloadTimeoutInMSec <
+static_assert(kSubframeProcessShutdownDelayInMSec + kUnloadTimeoutInMSec <
                   RenderProcessHostImpl::kKeepAliveHandleFactoryTimeoutInMSec,
               "The maximum process shutdown delay should not exceed the "
               "keepalive timeout. This has security implications, see "
@@ -1514,14 +1519,14 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       depth_(parent_ ? parent_->GetFrameDepth() + 1 : 0),
       last_committed_site_info_(site_instance_->GetBrowserContext()),
       routing_id_(routing_id),
-      beforeunload_timeout_delay_(RenderViewHostImpl::kUnloadTimeout),
+      beforeunload_timeout_delay_(kUnloadTimeout),
       frame_(std::move(frame_remote)),
       waiting_for_init_(renderer_initiated_creation_of_main_frame),
       frame_token_(frame_token),
       keep_alive_handle_factory_(
           agent_scheduling_group_->GetProcess(),
           RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout),
-      subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
+      subframe_unload_timeout_(kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
       document_associated_data_(absl::in_place, *this, document_token),
@@ -1592,6 +1597,14 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   beforeunload_timeout_ = std::make_unique<TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::BeforeUnloadTimeout,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  // Only main frames have the ability to close the whole page, so we don't
+  // need this timer for subframes.
+  if (is_main_frame()) {
+    close_timeout_ = std::make_unique<TimeoutMonitor>(
+        base::BindRepeating(&RenderFrameHostImpl::ClosePageTimeout,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 
   // Local roots are:
   // - main frames; or
@@ -4727,7 +4740,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   }
 
   if (unload_event_monitor_timeout_ && !do_not_delete_for_testing_) {
-    unload_event_monitor_timeout_->Start(RenderViewHostImpl::kUnloadTimeout);
+    unload_event_monitor_timeout_->Start(kUnloadTimeout);
   }
 
   // TODO(nasko): If the frame is not live, the RFH should just be deleted by
@@ -5020,7 +5033,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
 }
 
 bool RenderFrameHostImpl::IsWaitingForUnloadACK() const {
-  return render_view_host_->is_waiting_for_page_close_completion_ ||
+  return page_close_state_ == PageCloseState::kRunningUnloadHandlers ||
          is_waiting_for_unload_ack_;
 }
 
@@ -5400,9 +5413,82 @@ void RenderFrameHostImpl::UpdateTargetURL(
 }
 
 void RenderFrameHostImpl::RequestClose() {
+  // The renderer already ensures that this can only be called on an outermost
+  // main frame - see DOMWindow::Close().  Terminate the renderer if this is
+  // not the case.
+  if (!IsOutermostMainFrame()) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME);
+    return;
+  }
+
   // If the renderer is telling us to close, it has already run the unload
   // events, and we can take the fast path.
-  render_view_host_->ClosePageIgnoringUnloadEvents();
+  ClosePageIgnoringUnloadEvents();
+}
+
+void RenderFrameHostImpl::ClosePage() {
+  // This path is taken when tab/window close is initiated by either the
+  // browser process or via a window.close() call through a proxy. In both
+  // cases, we need to tell the main frame's renderer process to run unload
+  // handlers and prepare for page close.
+  //
+  // This should only be called on outermost main frames. If this
+  // RenderFrameHost is no longer a primary main frame (e.g., if it was placed
+  // into back-forward cache just before getting here), we should
+  // not close the active tab, so return early in that case.
+  DCHECK(IsOutermostMainFrame());
+  if (!IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  page_close_state_ = PageCloseState::kRunningUnloadHandlers;
+
+  if (IsRenderFrameLive() && !IsPageReadyToBeClosed()) {
+    close_timeout_->Start(kUnloadTimeout);
+
+    GetAssociatedLocalMainFrame()->ClosePage(
+        base::BindOnce(&RenderFrameHostImpl::ClosePageIgnoringUnloadEvents,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // This RenderFrameHost doesn't have a live renderer (or has already run
+    // unload handlers), so just skip the close event and close the page.
+    ClosePageIgnoringUnloadEvents();
+  }
+}
+
+void RenderFrameHostImpl::ClosePageIgnoringUnloadEvents() {
+  close_timeout_->Stop();
+
+  // If this RenderFrameHost is no longer the primary main frame (e.g., if it
+  // was replaced by another frame while waiting for the ClosePage ACK or
+  // timeout), there's no need to close the active tab.
+  //
+  // TODO(crbug.com/1406023): This behavior may need to change.
+  if (!IsInPrimaryMainFrame()) {
+    page_close_state_ = PageCloseState::kNotClosing;
+    return;
+  }
+
+  page_close_state_ = PageCloseState::kReadyToBeClosed;
+  delegate_->Close();
+}
+
+bool RenderFrameHostImpl::IsPageReadyToBeClosed() {
+  DCHECK(IsInPrimaryMainFrame());
+  // If there is a JavaScript dialog up, don't bother sending the renderer the
+  // close event because it is known unresponsive, waiting for the reply from
+  // the dialog.
+  return page_close_state_ == PageCloseState::kReadyToBeClosed ||
+         delegate_->IsJavaScriptDialogShowing() || BeforeUnloadTimedOut();
+}
+
+void RenderFrameHostImpl::ClosePageTimeout() {
+  if (delegate_->ShouldIgnoreUnresponsiveRenderer()) {
+    return;
+  }
+
+  ClosePageIgnoringUnloadEvents();
 }
 
 void RenderFrameHostImpl::ShowCreatedWindow(
@@ -8324,7 +8410,7 @@ void RenderFrameHostImpl::ResetWaitingState() {
     beforeunload_pending_replies_.clear();
   }
   send_before_unload_start_time_ = base::TimeTicks();
-  render_view_host_->is_waiting_for_page_close_completion_ = false;
+  page_close_state_ = PageCloseState::kNotClosing;
 }
 
 CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
@@ -8590,7 +8676,7 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
     beforeunload_dialog_request_cancels_unload_ = false;
     unload_ack_is_for_navigation_ = for_navigation;
     send_before_unload_start_time_ = base::TimeTicks::Now();
-    if (render_view_host_->GetDelegate()->IsJavaScriptDialogShowing()) {
+    if (delegate_->IsJavaScriptDialogShowing()) {
       // If there is a JavaScript dialog up, don't bother sending the renderer
       // the unload event because it is known unresponsive, waiting for the
       // reply from the dialog. If this incoming request is for a DISCARD be
@@ -11168,8 +11254,9 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
 }
 
 void RenderFrameHostImpl::BeforeUnloadTimeout() {
-  if (render_view_host_->GetDelegate()->ShouldIgnoreUnresponsiveRenderer())
+  if (delegate_->ShouldIgnoreUnresponsiveRenderer()) {
     return;
+  }
 
   SimulateBeforeUnloadCompleted(/*proceed=*/true);
 }

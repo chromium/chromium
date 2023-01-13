@@ -657,6 +657,16 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                     const GURL& url,
                                     int error_code) {}
 
+  // Called by the primary main frame to close the current tab/window.
+  virtual void Close() {}
+
+  // True if the delegate is currently showing a JavaScript dialog.
+  virtual bool IsJavaScriptDialogShowing() const;
+
+  // If a timer for an unresponsive renderer fires, whether it should be
+  // ignored.
+  virtual bool ShouldIgnoreUnresponsiveRenderer();
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

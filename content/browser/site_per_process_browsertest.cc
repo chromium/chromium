@@ -10956,10 +10956,10 @@ class ClosePageBeforeCommitHelper : public DidCommitNavigationInterceptor {
       mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
-    RenderViewHostImpl* rvh = static_cast<RenderViewHostImpl*>(
-        render_frame_host->GetRenderViewHost());
-    EXPECT_TRUE(rvh->is_active());
-    rvh->ClosePage();
+    RenderFrameHostImpl* rfh =
+        static_cast<RenderFrameHostImpl*>(render_frame_host);
+    EXPECT_TRUE(rfh->render_view_host()->is_active());
+    rfh->GetMainFrame()->ClosePage();
     if (run_loop_)
       run_loop_->Quit();
     return true;

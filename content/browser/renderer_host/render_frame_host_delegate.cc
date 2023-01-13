@@ -197,4 +197,12 @@ bool RenderFrameHostDelegate::IsAllowedToGoToEntryAtOffset(int32_t offset) {
   return true;
 }
 
+bool RenderFrameHostDelegate::IsJavaScriptDialogShowing() const {
+  return false;
+}
+
+bool RenderFrameHostDelegate::ShouldIgnoreUnresponsiveRenderer() {
+  return false;
+}
+
 }  // namespace content

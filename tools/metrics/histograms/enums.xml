@@ -10633,6 +10633,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="290" label="MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED"/>
   <int value="291" label="MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED"/>
   <int value="292" label="MSDH_ON_STREAM_STARTED_DISALLOWED"/>
+  <int value="293" label="RFH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME"/>
+  <int value="294" label="RFPH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

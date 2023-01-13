@@ -571,7 +571,8 @@ void RenderFrameHostManager::BeforeUnloadCompleted(
     if (speculative_render_frame_host_) {
       DiscardSpeculativeRFH(NavigationDiscardReason::kWillRemoveFrame);
     }
-    render_frame_host_->render_view_host()->ClosePage();
+
+    render_frame_host_->ClosePage();
   }
 }
 

@@ -1622,7 +1622,7 @@ void WebContentsImpl::CancelActiveAndPendingDialogs() {
 
 void WebContentsImpl::ClosePage() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ClosePage");
-  GetRenderViewHost()->ClosePage();
+  GetPrimaryMainFrame()->ClosePage();
 }
 
 RenderWidgetHostView* WebContentsImpl::GetRenderWidgetHostView() {
@@ -2454,11 +2454,12 @@ bool WebContentsImpl::NeedToFireBeforeUnloadOrUnloadEvents() {
   if (!notify_disconnection_)
     return false;
 
-  // Don't fire if the main frame's RenderViewHost indicates that beforeunload
-  // and unload have already executed (e.g., after receiving a ClosePage ACK)
-  // or should be ignored.
-  if (GetRenderViewHost()->SuddenTerminationAllowed())
+  // Don't fire if the main frame indicates that beforeunload and unload have
+  // already executed (e.g., after receiving a ClosePage ACK) or should be
+  // ignored.
+  if (GetPrimaryMainFrame()->IsPageReadyToBeClosed()) {
     return false;
+  }
 
   // Check whether any frame in the frame tree needs to run beforeunload or
   // unload-time event handlers.
@@ -5290,11 +5291,6 @@ blink::RendererPreferences* WebContentsImpl::GetMutableRendererPrefs() {
   return &renderer_preferences_;
 }
 
-void WebContentsImpl::Close() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Close");
-  Close(GetRenderViewHost());
-}
-
 void WebContentsImpl::DragSourceEndedAt(float client_x,
                                         float client_y,
                                         float screen_x,
@@ -7499,9 +7495,9 @@ void WebContentsImpl::ClearTargetURL() {
     delegate_->UpdateTargetURL(this, GURL());
 }
 
-void WebContentsImpl::Close(RenderViewHost* rvh) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::Close", "render_view_host",
-                        rvh);
+void WebContentsImpl::Close() {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::Close",
+                        "render_frame_host", GetPrimaryMainFrame());
 #if BUILDFLAG(IS_MAC)
   // The UI may be in an event-tracking loop, such as between the
   // mouse-down and mouse-up in text selection or a button click.
@@ -7514,9 +7510,9 @@ void WebContentsImpl::Close(RenderViewHost* rvh) {
     return;
 #endif
 
-  // Ignore this if it comes from a RenderViewHost that we aren't showing.
-  if (delegate_ && rvh == GetRenderViewHost())
+  if (delegate_) {
     delegate_->CloseContents(this);
+  }
 }
 
 void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {

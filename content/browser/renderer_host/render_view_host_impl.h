@@ -58,7 +58,6 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class RenderProcessHost;
-class TimeoutMonitor;
 
 // A callback which will be called immediately before EnterBackForwardCache
 // starts.
@@ -99,8 +98,6 @@ class CONTENT_EXPORT RenderViewHostImpl
       public IPC::Listener,
       public base::RefCounted<RenderViewHostImpl> {
  public:
-  static constexpr int kUnloadTimeoutInMSec = 500;
-
   // Convenience function, just like RenderViewHost::FromID.
   static RenderViewHostImpl* FromID(int process_id, int routing_id);
 
@@ -171,11 +168,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   // RenderFrameHost.
   bool is_active() const { return main_frame_routing_id_ != MSG_ROUTING_NONE; }
 
-  // TODO(creis): Remove as part of http://crbug.com/418265.
-  bool is_waiting_for_page_close_completion() const {
-    return is_waiting_for_page_close_completion_;
-  }
-
   // Returns true if the `blink::WebView` is active and has not crashed.
   bool IsRenderViewLive() const;
 
@@ -212,26 +204,11 @@ class CONTENT_EXPORT RenderViewHostImpl
   // specified point/rect.
   void AnimateDoubleTapZoom(const gfx::Point& point, const gfx::Rect& rect);
 
-  // Tells the renderer process to run the page's unload handler.
-  // A completion callback is invoked by the renderer when the handler
-  // execution completes.
-  void ClosePage();
-
-  // Close the page ignoring whether it has unload events registers.
-  // This is called after the beforeunload and unload events have fired
-  // and the user has agreed to continue with closing the page.
-  void ClosePageIgnoringUnloadEvents();
-
   // Requests a page-scale animation based on the specified rect.
   void ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom);
 
   // Tells the renderer view to focus the first (last if reverse is true) node.
   void SetInitialFocus(bool reverse);
-
-  bool SuddenTerminationAllowed();
-  void set_sudden_termination_allowed(bool enabled) {
-    sudden_termination_allowed_ = enabled;
-  }
 
   // Send RenderViewReady to observers once the process is launched, but not
   // re-entrantly.
@@ -373,25 +350,12 @@ class CONTENT_EXPORT RenderViewHostImpl
   friend class PageLifecycleStateManagerBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(RenderViewHostTest, BasicRenderFrameHost);
   FRIEND_TEST_ALL_PREFIXES(RenderViewHostTest, RoutingIdSane);
-  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
-                           CloseWithPendingWhileUnresponsive);
 
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& msg) override;
   std::string ToDebugString() override;
 
   void RenderViewReady();
-
-  // Called by |close_timeout_| when the page closing timeout fires.
-  void ClosePageTimeout();
-
-  void OnPageClosed();
-
-  // TODO(creis): Move to a private namespace on RenderFrameHostImpl.
-  // Delay to wait on closing the WebContents for a beforeunload/unload handler
-  // to fire.
-  static constexpr base::TimeDelta kUnloadTimeout =
-      base::Milliseconds(kUnloadTimeoutInMSec);
 
   // The RenderWidgetHost.
   const std::unique_ptr<RenderWidgetHostImpl> render_widget_host_;
@@ -422,22 +386,6 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Routing ID for the main frame's RenderFrameHost.
   int main_frame_routing_id_;
-
-  // Set to true when waiting for a blink.mojom.LocalMainFrame.ClosePage()
-  // to complete.
-  //
-  // TODO(creis): Move to RenderFrameHost and RenderWidgetHost.
-  // See http://crbug.com/418265.
-  bool is_waiting_for_page_close_completion_ = false;
-
-  // True if the render view can be shut down suddenly.
-  bool sudden_termination_allowed_ = false;
-
-  // The timeout monitor that runs from when the page close is started in
-  // ClosePage() until either the render process ACKs the close with an IPC to
-  // OnClosePageACK(), or until the timeout triggers and the page is forcibly
-  // closed.
-  std::unique_ptr<TimeoutMonitor> close_timeout_;
 
   // This monitors input changes so they can be reflected to the interaction MQ.
   std::unique_ptr<InputDeviceChangeObserver> input_device_change_observer_;

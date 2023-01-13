@@ -63,9 +63,6 @@ class RenderViewHostDelegate {
   // `blink::WebView` is going to be destroyed
   virtual void RenderViewDeleted(RenderViewHost* render_view_host) {}
 
-  // The page is trying to close the RenderView's representation in the client.
-  virtual void Close(RenderViewHost* render_view_host) {}
-
   // Return a dummy RendererPreferences object that will be used by the renderer
   // associated with the owning RenderViewHost.
   virtual const blink::RendererPreferences& GetRendererPrefs() const = 0;
@@ -108,12 +105,6 @@ class RenderViewHostDelegate {
   // the first time we set it and "fast" attributes (which always gets
   // recomputed).
   virtual void RecomputeWebPreferencesSlow() {}
-
-  virtual bool IsJavaScriptDialogShowing() const;
-
-  // If a timer for an unresponsive renderer fires, whether it should be
-  // ignored.
-  virtual bool ShouldIgnoreUnresponsiveRenderer();
 
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();

@@ -186,9 +186,6 @@ const int PerProcessRenderViewHostSet::kUserDataKey;
 
 }  // namespace
 
-// static
-const base::TimeDelta RenderViewHostImpl::kUnloadTimeout;
-
 ///////////////////////////////////////////////////////////////////////////////
 // RenderViewHost, public:
 
@@ -328,9 +325,6 @@ RenderViewHostImpl::RenderViewHostImpl(
 
   if (!is_active())
     GetWidget()->UpdatePriority();
-
-  close_timeout_ = std::make_unique<TimeoutMonitor>(base::BindRepeating(
-      &RenderViewHostImpl::ClosePageTimeout, weak_factory_.GetWeakPtr()));
 
   input_device_change_observer_ =
       std::make_unique<InputDeviceChangeObserver>(this);
@@ -735,31 +729,6 @@ RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
   return frame_tree_->root()->render_manager()->speculative_frame_host();
 }
 
-void RenderViewHostImpl::ClosePage() {
-  is_waiting_for_page_close_completion_ = true;
-  DCHECK(GetMainRenderFrameHost()->IsOutermostMainFrame());
-
-  if (IsRenderViewLive() && !SuddenTerminationAllowed()) {
-    close_timeout_->Start(kUnloadTimeout);
-
-    GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->ClosePage(
-        base::BindOnce(&RenderViewHostImpl::OnPageClosed,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    // This RenderViewHost doesn't have a live renderer, so just skip the close
-    // event and close the page.
-    ClosePageIgnoringUnloadEvents();
-  }
-}
-
-void RenderViewHostImpl::ClosePageIgnoringUnloadEvents() {
-  close_timeout_->Stop();
-  is_waiting_for_page_close_completion_ = false;
-
-  sudden_termination_allowed_ = true;
-  delegate_->Close(this);
-}
-
 void RenderViewHostImpl::ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) {
   GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->ZoomToFindInPageRect(
       rect_to_zoom);
@@ -813,15 +782,6 @@ void RenderViewHostImpl::AnimateDoubleTapZoom(const gfx::Point& point,
       point, rect);
 }
 
-bool RenderViewHostImpl::SuddenTerminationAllowed() {
-  // If there is a JavaScript dialog up, don't bother sending the renderer the
-  // close event because it is known unresponsive, waiting for the reply from
-  // the dialog.
-  return sudden_termination_allowed_ ||
-         delegate_->IsJavaScriptDialogShowing() ||
-         GetMainRenderFrameHost()->BeforeUnloadTimedOut();
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // RenderViewHostImpl, IPC message handlers:
 
@@ -837,10 +797,6 @@ void RenderViewHostImpl::OnTakeFocus(bool reverse) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (view)
     view->TakeFocus(reverse);
-}
-
-void RenderViewHostImpl::OnPageClosed() {
-  ClosePageIgnoringUnloadEvents();
 }
 
 void RenderViewHostImpl::OnFocus() {
@@ -920,13 +876,6 @@ void RenderViewHostImpl::OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {
 void RenderViewHostImpl::RenderViewReady() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   delegate_->RenderViewReady(this);
-}
-
-void RenderViewHostImpl::ClosePageTimeout() {
-  if (delegate_->ShouldIgnoreUnresponsiveRenderer())
-    return;
-
-  ClosePageIgnoringUnloadEvents();
 }
 
 std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
