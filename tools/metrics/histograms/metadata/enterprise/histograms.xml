@@ -2018,53 +2018,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.FileSystem.DownloadsRouting"
-    enum="EnterpriseFileSystemDownloadsRoutingDestination"
-    expires_after="2023-01-30">
-  <owner>alicego@google.com</owner>
-  <owner>rogerta@google.com</owner>
-  <owner>xanth@google.com</owner>
-  <summary>
-    The intended routing destination of each downloaded item when the Enterprise
-    Filesystem connector is enabled. Each file is either not routed to any cloud
-    provider, or routed to Box. Gets recorded every time a file is downloaded
-    with the filesystem connector enabled, whether or not the file is eventually
-    uploaded to the cloud.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FileSystem.DownloadsRouting.Box"
-    enum="EnterpriseFileSystemDownloadsRoutingStatus"
-    expires_after="2023-01-30">
-  <owner>alicego@google.com</owner>
-  <owner>rogerta@google.com</owner>
-  <owner>xanth@google.com</owner>
-  <summary>
-    The final result of a file routed to Box by the filesystem connector. The
-    file routing may a) succeed b) be canceled by the user c) fail due to a Box
-    error d) fail due to a browser error, e) fail due to a file error OR f) fail
-    due to a network error. Gets recorded every time a file is downloaded with
-    the filesystem connector enabled, whether or not the file is eventually
-    uploaded to the cloud.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FileSystem.Uniquifier"
-    enum="EnterpriseFilesystemUploadAttemptCount" expires_after="2023-01-30">
-  <owner>alicego@google.com</owner>
-  <owner>mad@google.com</owner>
-  <owner>rogerta@google.com</owner>
-  <owner>xanth@google.com</owner>
-  <summary>
-    The number of alternate filenames tried to avoid a filename collision when
-    uploading to the cloud storage provider. If there is a collision filenames
-    of the form &quot;filename (%d).ext&quot; are used for
-    &quot;filename.ext&quot;, and after 10 retries we fallback to a timestamp
-    based name &quot;filename - YYYY-MM-ddTHHMMss.SSS UTC+HHmm.ext&quot;, and
-    abandon if that fails.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.FirstRun.AppRestrictionLoadTime" units="ms"
     expires_after="2022-01-09">
   <owner>wenyufu@chromium.org</owner>
