@@ -208,9 +208,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 return null;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
-                // TODO(https://crbug.com/1365100): Pass the clobbering URL to native and do a
-                // redirect rather than clobbering the tab.
-                return null;
+                if (ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS.isEnabled()) {
+                    assert result.getTargetUrl() != null;
+                    return result.getTargetUrl();
+                } else {
+                    return null;
+                }
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
                 return null;
             case OverrideUrlLoadingResultType.NO_OVERRIDE:

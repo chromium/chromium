@@ -35,7 +35,6 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -244,36 +243,5 @@ public class InterceptNavigationDelegateTest {
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
         Assert.assertEquals(2, mNavParamHistory.size());
         Assert.assertEquals(2, mExternalNavParamHistory.size());
-    }
-
-    @Test
-    @MediumTest
-    public void testIframeUrlRedirection() throws TimeoutException {
-        // Will cause handleSubframeExternalProtocol to return this GURL.
-        mSubframeRedirectTarget = new GURL(mTestServer.getURL(HELLO_PAGE));
-        String mainFrameUrl = mTestServer.getURL(IFRAME_CONTAINER_PAGE);
-
-        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
-
-        final CallbackHelper subframeRedirect = new CallbackHelper();
-        WebContentsObserver observer = new WebContentsObserver() {
-            @Override
-            public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                Assert.assertEquals(mainFrameUrl, navigation.getUrl().getSpec());
-            }
-
-            @Override
-            public void didRedirectNavigation(NavigationHandle navigation) {
-                if (navigation.isInPrimaryMainFrame()) return;
-                Assert.assertEquals(mSubframeRedirectTarget, navigation.getUrl());
-                subframeRedirect.notifyCalled();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { tab.getWebContents().addObserver(observer); });
-
-        sActivityTestRule.loadUrl(mainFrameUrl);
-        mSubframeExternalProtocolCalled.waitForFirst();
-        subframeRedirect.waitForFirst();
     }
 }

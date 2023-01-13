@@ -20,12 +20,17 @@ public class ExternalIntentsFeatures extends Features {
     public static final String BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME =
             "BlockExternalFormSubmitWithoutGesture";
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
+    public static final String EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME =
+            "ExternalNavigationSubframeRedirects";
 
     public static final ExternalIntentsFeatures BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE =
             new ExternalIntentsFeatures(0, BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME);
 
     public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeatures(1, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
+
+    public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS =
+            new ExternalIntentsFeatures(2, EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME);
 
     private final int mOrdinal;
 

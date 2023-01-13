@@ -28,6 +28,10 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     private final TabObserver mTabObserver;
     private InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
 
+    public static InterceptNavigationDelegateClientImpl createForTesting(Tab tab) {
+        return new InterceptNavigationDelegateClientImpl(tab);
+    }
+
     InterceptNavigationDelegateClientImpl(Tab tab) {
         mTab = (TabImpl) tab;
         mTabObserver = new EmptyTabObserver() {

@@ -12,6 +12,7 @@ namespace external_intents {
 // Alphabetical:
 BASE_DECLARE_FEATURE(kBlockExternalFormSubmitWithoutGesture);
 BASE_DECLARE_FEATURE(kExternalNavigationDebugLogs);
+BASE_DECLARE_FEATURE(kExternalNavigationSubframeRedirects);
 
 }  // namespace external_intents
 
