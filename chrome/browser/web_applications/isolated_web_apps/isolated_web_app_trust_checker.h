@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 
 namespace web_package {
-class Ed25519PublicKey;
 class SignedWebBundleId;
+class SignedWebBundleIntegrityBlock;
 }  // namespace web_package
 
 class PrefService;
@@ -65,14 +65,14 @@ class IsolatedWebAppTrustChecker {
   // to trusted parties.
   virtual Result IsTrusted(
       const web_package::SignedWebBundleId& expected_web_bundle_id,
-      const std::vector<web_package::Ed25519PublicKey>& public_key_stack) const;
+      const web_package::SignedWebBundleIntegrityBlock& integrity_block) const;
 
   struct Result {
     enum class Status {
       kTrusted,
       kErrorFeatureDisabled,
       kErrorUnsupportedWebBundleIdType,
-      kErrorInvalidPublicKeyStackLength,
+      kErrorInvalidSignatureStackLength,
       kErrorWebBundleIdNotDerivedFromFirstPublicKey,
       kErrorPublicKeysNotTrusted,
     };

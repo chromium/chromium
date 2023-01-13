@@ -38,16 +38,6 @@ SignedWebBundleIntegrityBlock::Create(
                                        std::move(*signature_stack));
 }
 
-const std::vector<Ed25519PublicKey>
-SignedWebBundleIntegrityBlock::GetPublicKeyStack() const {
-  std::vector<Ed25519PublicKey> public_key_stack;
-  public_key_stack.reserve(signature_stack_.size());
-  base::ranges::transform(signature_stack_.entries(),
-                          std::back_inserter(public_key_stack),
-                          [](const auto& entry) { return entry.public_key(); });
-  return public_key_stack;
-}
-
 SignedWebBundleIntegrityBlock::SignedWebBundleIntegrityBlock(
     const uint64_t size_in_bytes,
     SignedWebBundleSignatureStack&& signature_stack)

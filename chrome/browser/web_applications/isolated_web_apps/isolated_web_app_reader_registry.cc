@@ -20,6 +20,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -125,11 +126,11 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
 void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
-    const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+    const web_package::SignedWebBundleIntegrityBlock integrity_block,
     base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
         integrity_callback) {
   validator_->ValidateIntegrityBlock(
-      web_bundle_id, public_key_stack,
+      web_bundle_id, integrity_block,
       base::BindOnce(&IsolatedWebAppReaderRegistry::OnIntegrityBlockValidated,
                      weak_ptr_factory_.GetWeakPtr(), web_bundle_path,
                      web_bundle_id, std::move(integrity_callback)));

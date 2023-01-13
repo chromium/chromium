@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -26,7 +27,7 @@ IsolatedWebAppValidator::~IsolatedWebAppValidator() = default;
 
 void IsolatedWebAppValidator::ValidateIntegrityBlock(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
     base::OnceCallback<void(absl::optional<std::string>)> callback) {
   // In here, we would also validate other properties of the Integrity Block,
   // such as whether its version is supported (once we support multiple
@@ -34,7 +35,7 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
 
   IsolatedWebAppTrustChecker::Result result =
       isolated_web_app_trust_checker_->IsTrusted(expected_web_bundle_id,
-                                                 public_key_stack);
+                                                 integrity_block);
   if (result.status != IsolatedWebAppTrustChecker::Result::Status::kTrusted) {
     std::move(callback).Run(result.message);
     return;

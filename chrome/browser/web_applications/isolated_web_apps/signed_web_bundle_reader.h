@@ -14,7 +14,6 @@
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/shared_file.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
@@ -26,7 +25,7 @@ struct ResourceRequest;
 }
 
 namespace web_package {
-class Ed25519PublicKey;
+class SignedWebBundleIntegrityBlock;
 }
 
 namespace web_app {
@@ -94,7 +93,7 @@ class SignedWebBundleReader {
   };
 
   using IntegrityBlockReadResultCallback = base::OnceCallback<void(
-      const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+      web_package::SignedWebBundleIntegrityBlock integrity_block,
       base::OnceCallback<void(SignatureVerificationAction)> callback)>;
 
   // This error will be passed to `read_error_callback` if parsing is aborted by

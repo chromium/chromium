@@ -30,6 +30,7 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
 #include "content/public/common/content_features.h"
@@ -65,7 +66,7 @@ class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
 
   void ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& web_bundle_id,
-      const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       base::OnceCallback<void(absl::optional<std::string>)> callback) override {
     std::move(callback).Run(integrity_block_error_);
   }

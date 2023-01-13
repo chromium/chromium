@@ -18,11 +18,14 @@
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -30,11 +33,13 @@ namespace web_app {
 
 namespace {
 
-constexpr uint8_t kEd25519PublicKey[32] = {0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 2, 2, 2, 0, 0, 0};
+using testing::Eq;
 
-constexpr uint8_t kEd25519Signature[64] = {
+constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
+    0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2,
+    0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0};
+
+constexpr std::array<uint8_t, 64> kEd25519Signature = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
@@ -137,12 +142,14 @@ class SignedWebBundleReaderTest : public testing::Test {
     reader->StartReading(
         base::BindLambdaForTesting(
             [verification_action](
-                const std::vector<web_package::Ed25519PublicKey>&
-                    public_key_stack,
+                web_package::SignedWebBundleIntegrityBlock integrity_block,
                 base::OnceCallback<void(VerificationAction)> callback) {
-              EXPECT_EQ(public_key_stack.size(), 1ul);
-              EXPECT_TRUE(base::ranges::equal(public_key_stack[0].bytes(),
-                                              kEd25519PublicKey));
+              EXPECT_THAT(integrity_block.signature_stack().size(), Eq(1ul));
+              EXPECT_THAT(integrity_block.signature_stack()
+                              .entries()[0]
+                              .public_key()
+                              .bytes(),
+                          Eq(kEd25519PublicKey));
 
               std::move(callback).Run(verification_action);
             }),

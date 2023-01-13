@@ -13,8 +13,8 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -44,7 +44,7 @@ IsolatedWebAppTrustChecker::~IsolatedWebAppTrustChecker() = default;
 
 IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    const std::vector<web_package::Ed25519PublicKey>& public_key_stack) const {
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block) const {
   if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
     return {.status = Result::Status::kErrorFeatureDisabled,
             .message = "Support for Isolated Web Apps is not enabled."};
@@ -57,26 +57,23 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
                 "Only Web Bundle IDs of type Ed25519PublicKey are supported."};
   }
 
-  if (public_key_stack.size() != 1) {
+  if (integrity_block.signature_stack().size() != 1) {
     // TODO(crbug.com/1366303): Support more than one signature.
-    return {.status = Result::Status::kErrorInvalidPublicKeyStackLength,
-            .message = base::StringPrintf(
-                "Expected exactly 1 public key, but got %zu.",
-                public_key_stack.size())};
+    return {.status = Result::Status::kErrorInvalidSignatureStackLength,
+            .message =
+                base::StringPrintf("Expected exactly 1 signature, but got %zu.",
+                                   integrity_block.signature_stack().size())};
   }
 
-  // The Web Bundle ID of the Isolated Web App must always be derived from the
-  // first public key in the stack.
-  auto actual_web_bundle_id =
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-          public_key_stack[0]);
-  if (actual_web_bundle_id != expected_web_bundle_id) {
+  auto derived_web_bundle_id =
+      integrity_block.signature_stack().derived_web_bundle_id();
+  if (derived_web_bundle_id != expected_web_bundle_id) {
     return {
         .status = Result::Status::kErrorWebBundleIdNotDerivedFromFirstPublicKey,
         .message = base::StringPrintf(
             "The Web Bundle ID (%s) derived from the public key does not "
             "match the expected Web Bundle ID (%s).",
-            actual_web_bundle_id.id().c_str(),
+            derived_web_bundle_id.id().c_str(),
             expected_web_bundle_id.id().c_str())};
   }
 

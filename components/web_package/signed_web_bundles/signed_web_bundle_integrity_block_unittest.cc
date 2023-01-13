@@ -99,11 +99,7 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
   ASSERT_TRUE(integrity_block.has_value());
   EXPECT_EQ(integrity_block->size_in_bytes(), 42ul);
 
-  auto public_key_stack = integrity_block->GetPublicKeyStack();
-  EXPECT_EQ(public_key_stack.size(), 1ul);
-  EXPECT_EQ(public_key_stack[0].bytes(), kEd25519PublicKey1);
-
-  auto signature_stack = integrity_block->signature_stack();
+  const auto& signature_stack = integrity_block->signature_stack();
   EXPECT_EQ(signature_stack.size(), 1ul);
   EXPECT_EQ(signature_stack.entries()[0].public_key().bytes(),
             kEd25519PublicKey1);
@@ -133,12 +129,8 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
       SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
   ASSERT_TRUE(integrity_block.has_value());
   EXPECT_EQ(integrity_block->size_in_bytes(), 42ul);
-  auto public_key_stack = integrity_block->GetPublicKeyStack();
-  EXPECT_EQ(public_key_stack.size(), 2ul);
-  EXPECT_EQ(public_key_stack[0].bytes(), kEd25519PublicKey1);
-  EXPECT_EQ(public_key_stack[1].bytes(), kEd25519PublicKey2);
 
-  auto signature_stack = integrity_block->signature_stack();
+  const auto& signature_stack = integrity_block->signature_stack();
   EXPECT_EQ(signature_stack.size(), 2ul);
   EXPECT_EQ(signature_stack.entries()[0].public_key().bytes(),
             kEd25519PublicKey1);

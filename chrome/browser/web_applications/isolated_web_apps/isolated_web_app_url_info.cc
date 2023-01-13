@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -40,17 +41,15 @@ void GetSignedWebBundleIdByPath(
       integrity_block_result_callback = base::BindOnce(
           [](base::OnceCallback<void(
                  base::expected<IsolatedWebAppUrlInfo, std::string>)> callback,
-             const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+             web_package::SignedWebBundleIntegrityBlock integrity_block,
              base::OnceCallback<void(
                  SignedWebBundleReader::SignatureVerificationAction)>
                  verify_callback) {
             std::move(verify_callback)
                 .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(
                     "Stopped after reading the integrity block."));
-            DCHECK(!public_key_stack.empty());
             web_package::SignedWebBundleId bundle_id =
-                web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-                    public_key_stack[0]);
+                integrity_block.signature_stack().derived_web_bundle_id();
             std::move(callback).Run(
                 IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id));
           },

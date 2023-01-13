@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -34,7 +34,7 @@ class IsolatedWebAppValidator {
   // or an error message if the public keys are not trusted.
   virtual void ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& expected_web_bundle_id,
-      const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       base::OnceCallback<void(absl::optional<std::string>)> callback);
 
   // Validates that the metadata of the Isolated Web App is valid given the
