@@ -352,7 +352,7 @@ ci.builder(
             apply_configs = ["mb", "mb_no_luci_auth"],
             target_bits = 64,
             target_platform = "chromeos",
-            target_cros_boards = "kevin",
+            target_cros_boards = "kevin:jacuzzi",
             cros_boards_with_qemu_images = "arm64-generic",
         ),
         build_gs_bucket = "chromium-fyi-archive",

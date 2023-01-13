@@ -24,7 +24,7 @@
                 ],
                 "target_bits": 64,
                 "target_cros_boards": [
-                  "kevin"
+                  "kevin:jacuzzi"
                 ],
                 "target_platform": "chromeos"
               },
