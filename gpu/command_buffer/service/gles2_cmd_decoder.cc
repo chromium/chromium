@@ -2493,10 +2493,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                        GLuint* source_texture_service_id,
                                        GLenum* source_texture_target);
 
-  // Whether a texture backed by a Chromium Image needs to emulate GL_RGB format
-  // using GL_RGBA and glColorMask.
-  bool ChromiumImageNeedsRGBEmulation();
-
   // Note: Creation of anonymous images is possible only on Ozone.
 #if BUILDFLAG(IS_OZONE)
   bool SupportsCreateAnonymousImage();
@@ -2935,26 +2931,6 @@ ScopedResolvedFramebufferBinder::ScopedResolvedFramebufferBinder(
   ScopedGLErrorSuppressor suppressor("ScopedResolvedFramebufferBinder::ctor",
                                      decoder_->error_state_.get());
 
-  // On old AMD GPUs on macOS, glColorMask doesn't work correctly for
-  // multisampled renderbuffers and the alpha channel can be overwritten. This
-  // workaround clears the alpha channel before resolving.
-  bool alpha_channel_needs_clear =
-      decoder_->should_use_native_gmb_for_backbuffer_ &&
-      !decoder_->offscreen_buffer_should_have_alpha_ &&
-      decoder_->ChromiumImageNeedsRGBEmulation() &&
-      decoder_->workarounds()
-          .disable_multisampling_color_mask_usage;
-  if (alpha_channel_needs_clear) {
-    api->glBindFramebufferEXTFn(GL_DRAW_FRAMEBUFFER_EXT,
-                                decoder_->offscreen_target_frame_buffer_->id());
-    decoder_->state_.SetDeviceColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
-    decoder->state_.SetDeviceCapabilityState(GL_SCISSOR_TEST, false);
-    decoder->ClearDeviceWindowRectangles();
-    api->glClearColorFn(0, 0, 0, 1);
-    api->glClearFn(GL_COLOR_BUFFER_BIT);
-    decoder_->RestoreClearState();
-  }
-
   api->glBindFramebufferEXTFn(GL_READ_FRAMEBUFFER_EXT,
                               decoder_->offscreen_target_frame_buffer_->id());
   GLuint targetid;
@@ -3254,12 +3230,7 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
   decoder_->texture_manager()->SetLevelImage(texture_ref_.get(), Target(), 0,
                                              image_.get(), Texture::BOUND);
 
-  // Ignore the zero flag if the alpha channel needs to be cleared for RGB
-  // emulation.
-  bool needs_clear_for_rgb_emulation =
-      !decoder_->offscreen_buffer_should_have_alpha_ &&
-      decoder_->ChromiumImageNeedsRGBEmulation();
-  if (!is_cleared || zero || needs_clear_for_rgb_emulation) {
+  if (!is_cleared || zero) {
     GLuint fbo;
     api()->glGenFramebuffersEXTFn(1, &fbo);
     {
@@ -3761,13 +3732,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   if (offscreen) {
     offscreen_buffer_should_have_alpha_ = attrib_helper.alpha_size > 0;
 
-    // Whether the offscreen buffer texture should have an alpha channel. Does
-    // not include logic from workarounds.
-    bool offscreen_buffer_texture_needs_alpha =
-        offscreen_buffer_should_have_alpha_ ||
-        (ChromiumImageNeedsRGBEmulation() &&
-         attrib_helper.should_use_native_gmb_for_backbuffer);
-
     if (attrib_helper.samples > 0 && attrib_helper.sample_buffers > 0 &&
         features().chromium_framebuffer_multisample) {
       // Per ext_framebuffer_multisample spec, need max bound on sample count.
@@ -3790,11 +3754,11 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
       // buffer formats are available--instead fall back to 8-bit textures.
       if (rgb8_supported && offscreen_target_samples_ > 0) {
         offscreen_target_color_format_ =
-            offscreen_buffer_texture_needs_alpha ? GL_RGBA8 : GL_RGB8;
+            offscreen_buffer_should_have_alpha_ ? GL_RGBA8 : GL_RGB8;
       } else {
         offscreen_target_samples_ = 0;
         offscreen_target_color_format_ =
-            offscreen_buffer_texture_needs_alpha ||
+            offscreen_buffer_should_have_alpha_ ||
                     workarounds().disable_gl_rgb_format
                 ? GL_RGBA
                 : GL_RGB;
@@ -3820,7 +3784,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
       }
     } else {
       offscreen_target_color_format_ =
-          offscreen_buffer_texture_needs_alpha ||
+          offscreen_buffer_should_have_alpha_ ||
                   workarounds().disable_gl_rgb_format
               ? GL_RGBA
               : GL_RGB;
@@ -3845,7 +3809,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
       }
     }
 
-    offscreen_saved_color_format_ = offscreen_buffer_texture_needs_alpha ||
+    offscreen_saved_color_format_ = offscreen_buffer_should_have_alpha_ ||
                                             workarounds().disable_gl_rgb_format
                                         ? GL_RGBA
                                         : GL_RGB;
@@ -19259,12 +19223,6 @@ bool GLES2DecoderImpl::NeedsCopyTextureImageWorkaround(
   *source_texture_target = texture->texture()->target();
   *source_texture_service_id = texture->service_id();
   return true;
-}
-
-bool GLES2DecoderImpl::ChromiumImageNeedsRGBEmulation() {
-  // TODO(blundell): Eliminate this method and streamline all code that calls
-  // it.
-  return false;
 }
 
 void GLES2DecoderImpl::ClearFramebufferForWorkaround(GLbitfield mask) {
