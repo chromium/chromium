@@ -637,8 +637,7 @@ void TransportSecurityState::UpdatePinList(
     base::Time update_time) {
   pinsets_ = pinsets;
   key_pins_list_last_update_time_ = update_time;
-  host_pins_ = absl::make_optional(
-      std::map<std::string, std::pair<PinSet const*, bool>>());
+  host_pins_.emplace();
   std::map<std::string, PinSet const*> pinset_names_map;
   for (const auto& pinset : pinsets_) {
     pinset_names_map[pinset.name()] = &pinset;
@@ -1182,32 +1181,61 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
 
   PreloadResult result;
   if (host_pins_.has_value()) {
-    auto iter = host_pins_->find(host);
-    if (iter != host_pins_->end()) {
-      pkp_result->domain = host;
-      pkp_result->last_observed = key_pins_list_last_update_time_;
-      pkp_result->include_subdomains = iter->second.second;
-      const PinSet* pinset = iter->second.first;
-      if (!pinset->report_uri().empty()) {
-        pkp_result->report_uri = GURL(pinset->report_uri());
-      }
-      for (auto hash : pinset->static_spki_hashes()) {
-        // If the update is malformed, it's preferable to skip the hash than
-        // crash.
-        if (hash.size() == 32) {
-          AddHash(reinterpret_cast<const char*>(hash.data()),
-                  &pkp_result->spki_hashes);
+    // Ensure that |host| is a valid hostname before processing.
+    if (CanonicalizeHost(host).empty()) {
+      return false;
+    }
+    // Normalize any trailing '.' used for DNS suffix searches.
+    std::string normalized_host = host;
+    size_t trailing_dot_found = normalized_host.find_last_not_of('.');
+    if (trailing_dot_found == std::string::npos) {
+      // Hostname is either empty or all dots
+      return false;
+    }
+    normalized_host.erase(trailing_dot_found + 1);
+    normalized_host = base::ToLowerASCII(normalized_host);
+
+    base::StringPiece search_hostname = normalized_host;
+    while (true) {
+      auto iter = host_pins_->find(search_hostname);
+      // Only consider this a match if either include_subdomains is set, or
+      // this is an exact match of the full hostname.
+      if (iter != host_pins_->end() &&
+          (iter->second.second || search_hostname == normalized_host)) {
+        pkp_result->domain = std::string(search_hostname);
+        pkp_result->last_observed = key_pins_list_last_update_time_;
+        pkp_result->include_subdomains = iter->second.second;
+        const PinSet* pinset = iter->second.first;
+        if (!pinset->report_uri().empty()) {
+          pkp_result->report_uri = GURL(pinset->report_uri());
         }
-      }
-      for (auto hash : pinset->bad_static_spki_hashes()) {
-        // If the update is malformed, it's preferable to skip the hash than
-        // crash.
-        if (hash.size() == 32) {
-          AddHash(reinterpret_cast<const char*>(hash.data()),
-                  &pkp_result->bad_spki_hashes);
+        for (auto hash : pinset->static_spki_hashes()) {
+          // If the update is malformed, it's preferable to skip the hash than
+          // crash.
+          if (hash.size() == 32) {
+            AddHash(reinterpret_cast<const char*>(hash.data()),
+                    &pkp_result->spki_hashes);
+          }
         }
+        for (auto hash : pinset->bad_static_spki_hashes()) {
+          // If the update is malformed, it's preferable to skip the hash than
+          // crash.
+          if (hash.size() == 32) {
+            AddHash(reinterpret_cast<const char*>(hash.data()),
+                    &pkp_result->bad_spki_hashes);
+          }
+        }
+        return true;
       }
-      return true;
+      auto dot_pos = search_hostname.find(".");
+      if (dot_pos == std::string::npos) {
+        // If this was not a match, and there are no more dots in the string,
+        // there are no more domains to try.
+        return false;
+      }
+      // Try again in case this is a subdomain of a pinned domain that includes
+      // subdomains.
+      search_hostname = search_hostname.substr(dot_pos + 1);
     }
   } else if (DecodeHSTSPreload(host, &result) && result.has_pins) {
     if (result.pinset_id >= g_hsts_source->pinsets_count)
