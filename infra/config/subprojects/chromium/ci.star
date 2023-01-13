@@ -134,7 +134,7 @@ consoles.console_view(
     ("fuchsia-perf-ast", "gardener|hardware|perf", "ast"),
     ("fuchsia-perf-atlas-fyi", "fyi|hardware|perf", "atl"),
     ("fuchsia-perf-fyi", "fyi|hardware|perf", "ast"),
-    ("fuchsia-perf-nsn", "fyi|hardware|perf", "nsn"),
+    ("fuchsia-perf-nsn", "gardener|hardware|perf", "nsn"),
     ("fuchsia-perf-nuc-fyi", "fyi|hardware|perf", "nuc"),
     ("fuchsia-perf-shk", "gardener|hardware|perf", "sher"),
     ("fuchsia-x64", "gardener|p/chrome|x64", "rel"),
