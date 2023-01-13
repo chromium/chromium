@@ -265,6 +265,8 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
 }
 
 void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
+  recordreplay::Assert("[RUN-966] FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool");
+
   base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
 
   // The WakeUpBudgetPool is selected based on origin state, frame visibility

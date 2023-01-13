@@ -42,7 +42,12 @@ void PostStyleUpdateScope::Apply() {
   HeapHashSet<Member<Element>> pending;
   std::swap(pending, animation_data_.elements_with_pending_updates_);
 
-  for (auto& element : pending) {
+  HeapVector<Member<Element>> pending_vector;
+  for (auto& element : pending)
+    pending_vector.push_back(element);
+  std::sort(pending_vector.begin(), pending_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<Element>>());
+  for (auto& element : pending_vector) {
     ElementAnimations* element_animations = element->GetElementAnimations();
     if (!element_animations)
       continue;

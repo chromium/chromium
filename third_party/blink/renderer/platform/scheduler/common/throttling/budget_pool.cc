@@ -17,6 +17,7 @@ namespace scheduler {
 using base::sequence_manager::TaskQueue;
 
 BudgetPool::BudgetPool(const char* name) : name_(name), is_enabled_(true) {
+  // https://linear.app/replay/issue/RUN-966
   // https://linear.app/replay/issue/RUN-1045
   recordreplay::RegisterPointer("BudgetPool", this);
 }
@@ -50,6 +51,10 @@ void BudgetPool::UnregisterThrottler(TaskQueueThrottler* throttler) {
 
 void BudgetPool::RemoveThrottler(base::TimeTicks now,
                                  TaskQueueThrottler* throttler) {
+  recordreplay::Assert("[RUN-966] BudgetPool::RemoveThrottler %d %d",
+                       recordreplay::PointerId(this),
+                       recordreplay::PointerId(throttler));
+
   throttler->RemoveBudgetPool(this);
   associated_throttlers_.erase(throttler);
 
