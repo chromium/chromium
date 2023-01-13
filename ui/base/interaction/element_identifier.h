@@ -101,8 +101,7 @@ struct ElementIdentifierImpl {
 class ElementTracker;
 
 // Holds a globally-unqiue, value-typed identifier from a set of identifiers
-// which can be declared in any static scope using
-// DECLARE_UNIQUE_ELEMENT_VALUE().
+// which can be declared in any static scope.
 //
 // This type is comparable and supports operator bool and negation, where
 // default-constructed instances have false value and all other values evaluate
