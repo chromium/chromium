@@ -4,8 +4,6 @@
 
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 
-#include <vulkan/vulkan.h>
-
 #include <utility>
 
 #include "base/functional/bind.h"
