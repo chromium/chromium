@@ -703,6 +703,12 @@ namespace autotestPrivate {
   // Collected ui::ThroughputTracker data for one animation. It is based on
   // cc::FrameSequenceMetrics::ThroughputData.
   dictionary ThroughputTrackerAnimationData {
+    // Animation start time in milliseconds, relative to when
+    // `startThroughputTrackerDataCollection` is called.
+    long startOffsetMs;
+    // Animation stop time in milliseconds, relative to when
+    // `startThroughputTrackerDataCollection` is called.
+    long stopOffsetMs;
     // Number of frames expected to be shown for this animation.
     long framesExpected;
     // Number of frames actually shown for this animation.

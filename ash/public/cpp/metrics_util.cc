@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
@@ -16,20 +17,25 @@ namespace {
 
 bool g_data_collection_enabled = false;
 
-std::vector<cc::FrameSequenceMetrics::CustomReportData>& GetDataCollector() {
-  static base::NoDestructor<
-      std::vector<cc::FrameSequenceMetrics::CustomReportData>>
-      data;
+std::vector<AnimationData>& GetDataCollector() {
+  static base::NoDestructor<std::vector<AnimationData>> data;
   return *data;
 }
 
 void CollectDataAndForwardReport(
+    base::TimeTicks start_tick,
     ReportCallback callback,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   // An arbitrary cap on the maximum number of animations being collected.
   DCHECK_LT(GetDataCollector().size(), 1000u);
 
-  GetDataCollector().push_back(data);
+  AnimationData animation_data = {
+      .start_tick = start_tick,
+      .stop_tick = base::TimeTicks::Now(),
+      .smoothness_data = data,
+  };
+
+  GetDataCollector().emplace_back(std::move(animation_data));
   std::move(callback).Run(data);
 }
 
@@ -64,6 +70,7 @@ ReportCallback ForSmoothness(SmoothnessCallback callback,
     return forward_smoothness;
 
   return base::BindRepeating(&CollectDataAndForwardReport,
+                             base::TimeTicks::Now(),
                              std::move(forward_smoothness));
 }
 
@@ -72,15 +79,15 @@ void StartDataCollection() {
   g_data_collection_enabled = true;
 }
 
-std::vector<cc::FrameSequenceMetrics::CustomReportData> StopDataCollection() {
+std::vector<AnimationData> StopDataCollection() {
   DCHECK(g_data_collection_enabled);
   g_data_collection_enabled = false;
 
   return GetCollectedData();
 }
 
-std::vector<cc::FrameSequenceMetrics::CustomReportData> GetCollectedData() {
-  std::vector<cc::FrameSequenceMetrics::CustomReportData> data;
+std::vector<AnimationData> GetCollectedData() {
+  std::vector<AnimationData> data;
   data.swap(GetDataCollector());
   return data;
 }

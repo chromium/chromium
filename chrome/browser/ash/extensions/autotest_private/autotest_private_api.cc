@@ -1030,6 +1030,9 @@ std::string CompositorFrameSinkTypeToString(
   }
 }
 
+// Update when `startThroughputTrackerDataCollection` is called.
+base::TimeTicks g_last_start_throughput_data_collection_tick;
+
 }  // namespace
 
 class WindowStateChangeObserver : public aura::WindowObserver {
@@ -5921,6 +5924,7 @@ AutotestPrivateStartThroughputTrackerDataCollectionFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateStartThroughputTrackerDataCollectionFunction::Run() {
+  g_last_start_throughput_data_collection_tick = base::TimeTicks::Now();
   ash::metrics_util::StartDataCollection();
   return RespondNow(NoArguments());
 }
@@ -5943,9 +5947,15 @@ AutotestPrivateStopThroughputTrackerDataCollectionFunction::Run() {
   result_data.reserve(collected_data.size());
   for (const auto& data : collected_data) {
     api::autotest_private::ThroughputTrackerAnimationData animation_data;
-    animation_data.frames_expected = data.frames_expected;
-    animation_data.frames_produced = data.frames_produced;
-    animation_data.jank_count = data.jank_count;
+    animation_data.start_offset_ms =
+        (data.start_tick - g_last_start_throughput_data_collection_tick)
+            .InMilliseconds();
+    animation_data.stop_offset_ms =
+        (data.stop_tick - g_last_start_throughput_data_collection_tick)
+            .InMilliseconds();
+    animation_data.frames_expected = data.smoothness_data.frames_expected;
+    animation_data.frames_produced = data.smoothness_data.frames_produced;
+    animation_data.jank_count = data.smoothness_data.jank_count;
     result_data.emplace_back(std::move(animation_data));
   }
   return RespondNow(
@@ -5970,9 +5980,15 @@ AutotestPrivateGetThroughputTrackerDataFunction::Run() {
   result_data.reserve(collected_data.size());
   for (const auto& data : collected_data) {
     api::autotest_private::ThroughputTrackerAnimationData animation_data;
-    animation_data.frames_expected = data.frames_expected;
-    animation_data.frames_produced = data.frames_produced;
-    animation_data.jank_count = data.jank_count;
+    animation_data.start_offset_ms =
+        (data.start_tick - g_last_start_throughput_data_collection_tick)
+            .InMilliseconds();
+    animation_data.stop_offset_ms =
+        (data.stop_tick - g_last_start_throughput_data_collection_tick)
+            .InMilliseconds();
+    animation_data.frames_expected = data.smoothness_data.frames_expected;
+    animation_data.frames_produced = data.smoothness_data.frames_produced;
+    animation_data.jank_count = data.smoothness_data.jank_count;
     result_data.emplace_back(std::move(animation_data));
   }
   return RespondNow(ArgumentList(
