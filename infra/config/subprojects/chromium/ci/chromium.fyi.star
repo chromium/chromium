@@ -1919,7 +1919,7 @@ fyi_mac_builder(
     ),
     triggered_by = [],
     builderless = False,
-    os = os.MAC_12,
+    os = os.MAC_ANY,
     cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
