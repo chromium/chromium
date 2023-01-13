@@ -49,9 +49,6 @@ struct OverflowMenuDestinationButton: ButtonStyle {
 
     /// The width of the new label badge.
     static let newLabelBadgeWidth: CGFloat = 20
-
-    /// The width of the badge border.
-    static let badgeBorderWidth: CGFloat = 2
   }
 
   /// The destination for this view.
@@ -159,14 +156,11 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       .overlay {
         if destination.badge == .blueDot {
           Circle()
-            .strokeBorder(
-              backgroundColor(configuration: configuration), lineWidth: Dimensions.badgeBorderWidth
-            )
-            // Pad the color circle by 0.5, otherwise the color shows up faintly
-            // around the border.
-            .background(Circle().foregroundColor(.blue600).padding(0.5))
+            .background(Circle().foregroundColor(.blue600).padding(0))
             .frame(width: Dimensions.badgeWidth, height: Dimensions.badgeWidth)
-            .offset(x: Dimensions.iconWidth / 2, y: -Dimensions.iconWidth / 2)
+            .offset(
+              x: Dimensions.iconWidth - (Dimensions.badgeWidth / 2),
+              y: -Dimensions.iconWidth + (Dimensions.badgeWidth / 2))
         } else if destination.badge == .newLabel {
           Image(systemName: "seal.fill")
             .resizable()
@@ -287,7 +281,9 @@ struct OverflowMenuDestinationView: View {
   var accessibilityLabel: String {
     return [
       destination.name,
-      destination.badge != .none
+      destination.badge == .blueDot
+        ? L10NUtils.stringWithFixup(forMessageId: IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT) : nil,
+      destination.badge == .newLabel
         ? L10NUtils.stringWithFixup(forMessageId: IDS_IOS_TOOLS_MENU_CELL_NEW_FEATURE_BADGE) : nil,
     ].compactMap { $0 }.joined(separator: ", ")
   }
