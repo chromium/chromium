@@ -44,9 +44,6 @@ export class PumpkinParseStrategy extends ParseStrategy {
     /** @private {boolean} */
     this.requestedPumpkinInstall_ = false;
 
-    /** @private {?function(): void} */
-    this.onPumpkinTaggerReadyChangedForTesting_ = null;
-
     this.init_();
   }
 
@@ -87,7 +84,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
     }
 
     // Create SandboxedPumpkinTagger.
-    this.setPumpkinTaggerReady_(false);
+    this.pumpkinTaggerReady_ = false;
     this.pumpkinData_ = data;
 
     this.worker_ = new Worker(
@@ -121,14 +118,14 @@ export class PumpkinParseStrategy extends ParseStrategy {
         this.pumpkinData_ = null;
         return;
       case PumpkinConstants.FromPumpkinTaggerCommand.FULLY_INITIALIZED:
-        this.setPumpkinTaggerReady_(true);
+        this.pumpkinTaggerReady_ = true;
         this.maybeRefresh_();
         return;
       case PumpkinConstants.FromPumpkinTaggerCommand.TAG_RESULTS:
         this.tagResolver_(command.results);
         return;
       case PumpkinConstants.FromPumpkinTaggerCommand.REFRESHED:
-        this.setPumpkinTaggerReady_(true);
+        this.pumpkinTaggerReady_ = true;
         this.maybeRefresh_();
         return;
     }
@@ -304,7 +301,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
       return;
     }
 
-    this.setPumpkinTaggerReady_(false);
+    this.pumpkinTaggerReady_ = false;
     this.sendToSandboxedPumpkinTagger_({
       type: PumpkinConstants.ToPumpkinTaggerCommand.REFRESH,
       locale: this.locale_,
@@ -340,16 +337,5 @@ export class PumpkinParseStrategy extends ParseStrategy {
   /** @override */
   isEnabled() {
     return this.enabled;
-  }
-
-  /**
-   * @param {boolean} ready
-   * @private
-   */
-  setPumpkinTaggerReady_(ready) {
-    this.pumpkinTaggerReady_ = ready;
-    if (this.onPumpkinTaggerReadyChangedForTesting_) {
-      this.onPumpkinTaggerReadyChangedForTesting_();
-    }
   }
 }
