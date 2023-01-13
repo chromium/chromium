@@ -13,6 +13,7 @@ include_rules = [
   "+components/user_prefs",
   "+content/public/android/java/src/org/chromium/content_public",
   "+content/public/browser",
+  "+content/public/test",
   "+net/cookies",
   "+services/device/public",
   "+services/network/public",

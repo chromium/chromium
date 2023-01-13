@@ -19,10 +19,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "components/browser_ui/site_settings/android/site_settings_jni_headers/WebsitePreferenceBridge_jni.h"
 #include "components/browser_ui/site_settings/android/storage_info_fetcher.h"
+#include "components/browser_ui/site_settings/android/website_preference_bridge_util.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
@@ -661,14 +663,11 @@ static void JNI_WebsitePreferenceBridge_ClearLocalStorageData(
     const JavaParamRef<jobject>& jbrowser_context_handle,
     const JavaParamRef<jstring>& jorigin,
     const JavaParamRef<jobject>& java_callback) {
-  BrowserContext* browser_context = unwrap(jbrowser_context_handle);
-  auto local_storage_helper =
-      base::MakeRefCounted<browsing_data::LocalStorageHelper>(browser_context);
-  auto storage_key = blink::StorageKey(
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
-  local_storage_helper->DeleteStorageKey(
-      storage_key, base::BindOnce(&OnLocalStorageCleared,
-                                  ScopedJavaGlobalRef<jobject>(java_callback)));
+  ClearLocalStorageHelper::ClearLocalStorage(
+      unwrap(jbrowser_context_handle),
+      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))),
+      base::BindOnce(&OnLocalStorageCleared,
+                     ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
 static void JNI_WebsitePreferenceBridge_ClearStorageData(

@@ -19,6 +19,8 @@ source_set("android") {
     "storage_info_fetcher.cc",
     "storage_info_fetcher.h",
     "website_preference_bridge.cc",
+    "website_preference_bridge_util.cc",
+    "website_preference_bridge_util.h",
   ]
   deps = [
     ":site_settings_jni_headers",
@@ -35,6 +37,17 @@ source_set("android") {
     "//storage/browser",
     "//url",
     "//url:gurl_android",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "website_preference_bridge_util_unittest.cc" ]
+  deps = [
+    ":android",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }
 
