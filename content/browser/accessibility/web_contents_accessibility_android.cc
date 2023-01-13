@@ -1064,10 +1064,6 @@ jboolean WebContentsAccessibilityAndroid::AdjustSlider(JNIEnv* env,
   if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kStepValueForRange)) {
     delta =
         node->GetFloatAttribute(ax::mojom::FloatAttribute::kStepValueForRange);
-
-    // If delta from step value is too small, increase to our minimum amount.
-    float minimum_move = (max - min) * kMinimumPercentageMoveForSliders;
-    delta = std::max(delta, minimum_move);
   } else {
     delta = (max - min) / kDefaultNumberOfTicksForSliders;
   }

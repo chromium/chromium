@@ -1192,24 +1192,23 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Ensure we are honoring min/max/step values for <input type="range"> nodes.
+     * Test <input type="range"> nodes and events for incrementing/decrementing value with actions.
      */
     @Test
     @SmallTest
-    public void testNodeInfo_inputTypeRange_withStepValue() throws Throwable {
+    public void testNodeInfo_inputTypeRangeSmall() throws Throwable {
         // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
-        setupTestWithHTML("<input type='range' min='0' max='144' step='12'>");
+        setupTestWithHTML("<input type='range' min='0' max='10' value='0'>");
 
         // Find the input range and assert we have the correct node.
         int inputNodeVirtualViewId = waitForNodeMatching(sRangeInfoMatcher, "");
         mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
         Assert.assertEquals(NODE_TIMEOUT_ERROR, 0, mNodeInfo.getRangeInfo().getMin(), 0.001);
-        Assert.assertEquals(NODE_TIMEOUT_ERROR, 144, mNodeInfo.getRangeInfo().getMax(), 0.001);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, 10, mNodeInfo.getRangeInfo().getMax(), 0.001);
 
         // Perform a series of slider increments and check results.
-        int[] expectedVals = new int[] {84, 96, 108, 120, 132, 144};
-        for (int expectedVal : expectedVals) {
+        for (int i = 1; i <= 10; i++) {
             // Increment our slider using action, and poll until we receive the scroll event.
             performActionOnUiThread(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD, new Bundle());
             CriteriaHelper.pollUiThread(
@@ -1219,16 +1218,15 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, expectedVal,
-                    mNodeInfo.getRangeInfo().getCurrent(), 0.001);
+            Assert.assertEquals(
+                    INPUT_RANGE_VALUE_MISMATCH, i, mNodeInfo.getRangeInfo().getCurrent(), 0.001);
 
             // Reset polling value for next test
             mTestData.setReceivedEvent(false);
         }
 
         // Perform a series of slider decrements and check results.
-        expectedVals = new int[] {132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12, 0};
-        for (int expectedVal : expectedVals) {
+        for (int i = 1; i <= 10; i++) {
             // Decrement our slider using action, and poll until we receive the scroll event.
             performActionOnUiThread(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD, new Bundle());
             CriteriaHelper.pollUiThread(
@@ -1238,7 +1236,7 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, expectedVal,
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 10 - i,
                     mNodeInfo.getRangeInfo().getCurrent(), 0.001);
 
             // Reset polling value for next test
@@ -1273,7 +1271,7 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 500 + (10 * i),
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 500 + (50 * i),
                     mNodeInfo.getRangeInfo().getCurrent(), 0.001);
 
             // Reset polling value for next test
@@ -1291,7 +1289,7 @@ public class WebContentsAccessibilityTest {
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
 
             // Confirm slider values.
-            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 600 - (10 * i),
+            Assert.assertEquals(INPUT_RANGE_VALUE_MISMATCH, 1000 - (50 * i),
                     mNodeInfo.getRangeInfo().getCurrent(), 0.001);
 
             // Reset polling value for next test

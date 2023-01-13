@@ -2870,17 +2870,30 @@ bool AXNodeObject::MinValueForRange(float* out_value) const {
 
 bool AXNodeObject::StepValueForRange(float* out_value) const {
   if (IsNativeSlider() || IsNativeSpinButton()) {
-    // AT may want to know whether a step value was explicitly provided or not,
-    // so return false if there was not one set.
-    if (!To<HTMLInputElement>(*GetNode())
-             .FastGetAttribute(html_names::kStepAttr)) {
+    auto step_range =
+        To<HTMLInputElement>(*GetNode()).CreateStepRange(kRejectAny);
+    auto step = step_range.Step().ToString().ToFloat();
+
+    // Provide a step if ATs incrementing slider should move by step, otherwise
+    // AT will move by 5%.
+    // If there are too few allowed stops (< 20), incrementing/decrementing
+    // the slider by 5% could get stuck, and therefore the step is exposed.
+    // The step is also exposed if moving by 5% would cause intermittent
+    // behavior where sometimes the slider would alternate by 1 or 2 steps.
+    // Therefore the final decision is to use the step if there are
+    // less than stops in the slider, otherwise, move by 5%.
+    float max = step_range.Maximum().ToString().ToFloat();
+    float min = step_range.Minimum().ToString().ToFloat();
+    int num_stops = (max - min) / step;
+    constexpr int kNumStopsForFivePercentRule = 40;
+    if (num_stops >= kNumStopsForFivePercentRule) {
+      // No explicit step, and the step is very small -- don't expose a step
+      // so that Talkback will move by 5% increments.
       *out_value = 0.0f;
       return false;
     }
 
-    auto step =
-        To<HTMLInputElement>(*GetNode()).CreateStepRange(kRejectAny).Step();
-    *out_value = step.ToString().ToFloat();
+    *out_value = step;
     return std::isfinite(*out_value);
   }
 

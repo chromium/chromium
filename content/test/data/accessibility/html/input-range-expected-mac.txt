@@ -5,3 +5,4 @@ AXWebArea
 ++++AXSlider AXValue=5
 ++++AXSlider AXValue=6
 ++++AXSlider AXValue=0
+++++AXSlider AXValue=50

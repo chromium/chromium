@@ -5,3 +5,4 @@
 ++++[slider] horizontal valuetext:Medium current=5.000000 minimum=1.000000 maximum=10.000000
 ++++[slider] horizontal valuetext:Friday current=6.000000 minimum=0.000000 maximum=5.000000
 ++++[slider] horizontal valuetext:0.2 current=0.200000 minimum=-1.000000 maximum=1.000000
+++++[slider] horizontal valuetext:50 current=50.000000 minimum=0.000000 maximum=100.000000

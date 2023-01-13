@@ -33,10 +33,6 @@ constexpr int kMaxContentChangedEventsToFire = 5;
 // of 20 implies 20 steps, or a 5% move with each increment/decrement action.
 constexpr int kDefaultNumberOfTicksForSliders = 20;
 
-// The minimum amount a slider can move per increment/decement action as a
-// percentage of the total range, regardless of step value set on the element.
-constexpr float kMinimumPercentageMoveForSliders = 0.01f;
-
 // Max dimensions for the image data of a node.
 constexpr gfx::Size kMaxImageSize = gfx::Size(2000, 2000);
 }  // namespace
