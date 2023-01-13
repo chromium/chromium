@@ -20,9 +20,6 @@ message EntityInfo {
   // right of the emdash.
   optional string annotation = 2;
 
-  // The query to submit when clicking the suggestion.
-  optional string query_to_submit = 3;
-
   // Image Url.
   // Will replace the suggestion icon
   optional string image_url = 6;
@@ -38,4 +35,40 @@ message EntityInfo {
   // Encoding of how search behavior should be modified when clicking the entity
   // suggestion (gs_ssp).
   optional string suggest_search_parameters = 10;
+
+  // List of possible actions for this entity.
+  repeated ActionInfo action_suggestions = 12;
+
+  // Distance to the point of interest.
+  optional uint32 distance_km = 13;
+}
+
+// Entity Suggestion Action descriptor.
+message ActionInfo {
+  // The text to display on the Action button.
+  optional string displayed_text = 1;
+
+  // The icon used to decorate the Action button.
+  optional string icon_thumbnail_url = 2;
+
+  // The URI to open when the action is invoked.
+  optional string action_uri = 3;
+
+  // The type of an action.
+  optional ActionType action_type = 4;
+
+  // When present, specifies the package to be used to execute the Action.
+  optional string package_id = 5;
+
+  // When present, specifies the intent to send to the package to execute the
+  // Action.
+  optional string intent_name = 7;
+}
+
+// Entity Suggestion Action type.
+enum ActionType {
+  UNKNOWN_ACTION_TYPE = 0;
+  ACTION_PHONE_CALL = 1;
+  ACTION_NAVIGATE = 7;
+  ACTION_WEBPAGE = 9;
 }
