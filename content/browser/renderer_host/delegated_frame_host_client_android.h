@@ -5,9 +5,12 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 #define CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details_map.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
 #include "ui/android/delegated_frame_host_android.h"
 
@@ -34,6 +37,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
                            base::TimeTicks activation_time) override;
   void WasEvicted() override;
   void OnSurfaceIdChanged() override;
+  std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() const override;
 
   raw_ptr<RenderWidgetHostViewAndroid> render_widget_host_view_;
 };

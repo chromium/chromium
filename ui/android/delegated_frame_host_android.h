@@ -5,6 +5,8 @@
 #ifndef UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 #define UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -15,6 +17,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
@@ -45,6 +48,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
                                      base::TimeTicks activation_time) = 0;
     virtual void WasEvicted() = 0;
     virtual void OnSurfaceIdChanged() = 0;
+    virtual std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction()
+        const = 0;
   };
 
   DelegatedFrameHostAndroid(ViewAndroid* view,
