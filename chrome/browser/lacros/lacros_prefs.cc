@@ -11,13 +11,7 @@
 
 namespace lacros_prefs {
 
-const char kShowedExperimentalBannerPref[] =
-    "lacros.showed_experimental_banner";
-
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kShowedExperimentalBannerPref,
-                                /*default_value=*/false);
-}
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {}
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // The preferences on external storages are used in imageWriterPrivate

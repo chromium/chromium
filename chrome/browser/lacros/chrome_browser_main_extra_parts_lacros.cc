@@ -22,7 +22,6 @@
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
-#include "chrome/browser/lacros/lacros_butter_bar.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
@@ -102,7 +101,6 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
   browser_service_ = std::make_unique<BrowserServiceLacros>();
-  butter_bar_ = std::make_unique<LacrosButterBar>();
   desk_template_client_ = std::make_unique<DeskTemplateClientLacros>();
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();

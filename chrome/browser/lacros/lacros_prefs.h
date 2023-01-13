@@ -13,10 +13,6 @@ class PrefRegistrySyncable;
 
 namespace lacros_prefs {
 
-// A preference for whether the "this is an experimental feature" banner has
-// been shown to the user.
-extern const char kShowedExperimentalBannerPref[];
-
 // Local state prefs are also known as browser-wide prefs. This function
 // registers Lacros-related local state prefs.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

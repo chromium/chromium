@@ -21,7 +21,6 @@ class DriveFsCache;
 class DownloadControllerClientLacros;
 class ForceInstalledTrackerLacros;
 class FullscreenControllerClientLacros;
-class LacrosButterBar;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
 class LacrosFileSystemProvider;
@@ -148,9 +147,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Receiver of field trial updates.
   std::unique_ptr<FieldTrialObserver> field_trial_observer_;
-
-  // Shows a butter bar on the first window.
-  std::unique_ptr<LacrosButterBar> butter_bar_;
 
   // Receives orientation lock data.
   std::unique_ptr<content::ScreenOrientationDelegate>
