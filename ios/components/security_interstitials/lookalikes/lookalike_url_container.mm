@@ -34,7 +34,7 @@ LookalikeUrlContainer::InterstitialParams::InterstitialParams(
 LookalikeUrlContainer::LookalikeUrlInfo::LookalikeUrlInfo(
     const GURL& safe_url,
     const GURL& request_url,
-    LookalikeUrlMatchType match_type)
+    lookalikes::LookalikeUrlMatchType match_type)
     : safe_url(safe_url), request_url(request_url), match_type(match_type) {}
 
 LookalikeUrlContainer::LookalikeUrlInfo::~LookalikeUrlInfo() {}
@@ -54,7 +54,7 @@ void LookalikeUrlContainer::RecordLookalikeBlockingPageParams(
 void LookalikeUrlContainer::SetLookalikeUrlInfo(
     const GURL& safe_url,
     const GURL& request_url,
-    LookalikeUrlMatchType match_type) {
+    lookalikes::LookalikeUrlMatchType match_type) {
   lookalike_info_ =
       std::make_unique<LookalikeUrlInfo>(safe_url, request_url, match_type);
 }

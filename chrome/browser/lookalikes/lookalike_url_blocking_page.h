@@ -11,8 +11,7 @@
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-
-class GURL;
+#include "url/gurl.h"
 
 // This class is responsible for showing/hiding the interstitial page that
 // occurs when a new domain is visited and it looks suspiciously like another
@@ -29,7 +28,7 @@ class LookalikeUrlBlockingPage
       const GURL& safe_url,
       const GURL& request_url,
       ukm::SourceId source_id,
-      LookalikeUrlMatchType match_type,
+      lookalikes::LookalikeUrlMatchType match_type,
       bool is_signed_exchange,
       bool triggered_by_initial_url,
       std::unique_ptr<
@@ -62,7 +61,7 @@ class LookalikeUrlBlockingPage
   // the default action on the interstitial takes the user to the new tab page.
   const GURL safe_url_;
   ukm::SourceId source_id_;
-  LookalikeUrlMatchType match_type_;
+  lookalikes::LookalikeUrlMatchType match_type_;
   // True if the throttle encountered a response with
   // is_signed_exchange_inner_response flag. Only checked in tests.
   const bool is_signed_exchange_;

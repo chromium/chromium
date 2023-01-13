@@ -12,7 +12,6 @@ static_library("core") {
     "lookalike_url_util.h",
   ]
   deps = [
-    ":features",
     ":proto",
     ":safety_tips",
     "//base",
@@ -58,25 +57,12 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
-    ":features",
     ":proto",
     ":safety_tips",
     "//components/version_info:channel",
     "//net:test_support",
     "//testing/gtest",
   ]
-}
-
-component("features") {
-  output_name = "lookalikes_features"
-  defines = [ "IS_LOOKALIKES_FEATURES_IMPL" ]
-
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-
-  deps = [ "//base" ]
 }
 
 proto_library("proto") {

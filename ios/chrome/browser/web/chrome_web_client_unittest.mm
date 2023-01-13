@@ -358,8 +358,9 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlError) {
   web_state.SetNavigationManager(std::move(navigation_manager));
 
   LookalikeUrlContainer::FromWebState(&web_state)
-      ->SetLookalikeUrlInfo(GURL("https://www.safe.test"), GURL(kTestUrl),
-                            LookalikeUrlMatchType::kSkeletonMatchTop5k);
+      ->SetLookalikeUrlInfo(
+          GURL("https://www.safe.test"), GURL(kTestUrl),
+          lookalikes::LookalikeUrlMatchType::kSkeletonMatchTop5k);
 
   NSError* error = [NSError errorWithDomain:kLookalikeUrlErrorDomain
                                        code:kLookalikeUrlErrorCode
@@ -399,8 +400,9 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
   web_state.SetNavigationManager(std::move(navigation_manager));
 
   LookalikeUrlContainer::FromWebState(&web_state)
-      ->SetLookalikeUrlInfo(GURL(""), GURL(kTestUrl),
-                            LookalikeUrlMatchType::kSkeletonMatchTop5k);
+      ->SetLookalikeUrlInfo(
+          GURL(""), GURL(kTestUrl),
+          lookalikes::LookalikeUrlMatchType::kSkeletonMatchTop5k);
 
   NSError* error = [NSError errorWithDomain:kLookalikeUrlErrorDomain
                                        code:kLookalikeUrlErrorCode

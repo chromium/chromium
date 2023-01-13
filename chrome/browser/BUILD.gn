@@ -2159,7 +2159,6 @@ static_library("browser") {
     "//components/live_caption:constants",
     "//components/live_caption:utils",
     "//components/lookalikes/core",
-    "//components/lookalikes/core:features",
     "//components/lookalikes/core:proto",
     "//components/lookalikes/core:safety_tips",
     "//components/memory_pressure",

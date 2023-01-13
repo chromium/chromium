@@ -15,7 +15,6 @@
 #include "chrome/browser/lookalikes/safety_tip_service.h"
 #include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/navigation_entry.h"
@@ -115,8 +114,9 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
     // This is assumed to mean that the user has clicked on a same-origin link
     // on a lookalike page, resulting in another lookalike navigation.
     suffix = "SameOrigin";
-  } else if (GetETLDPlusOne(committed_initiator_origin.value().host()) ==
-             GetETLDPlusOne(current_url.host())) {
+  } else if (lookalikes::GetETLDPlusOne(
+                 committed_initiator_origin.value().host()) ==
+             lookalikes::GetETLDPlusOne(current_url.host())) {
     // The user has clicked on a link on a page, and it's bumped to another
     // page on the same eTLD+1. If that happens and this is a non-none and
     // non-ignored status, that implies that the first eTLD+1 load didn't

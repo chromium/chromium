@@ -29,10 +29,10 @@ void LookalikeTestHelper::SetUpLookalikeTestParams() {
   url_formatter::IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
 
   // Use test top 500 domain skeletons instead of the actual list.
-  Top500DomainsParams top500_params{
+  lookalikes::Top500DomainsParams top500_params{
       test_top500_domains::kTop500EditDistanceSkeletons,
       test_top500_domains::kNumTop500EditDistanceSkeletons};
-  SetTop500DomainsParamsForTesting(top500_params);
+  lookalikes::SetTop500DomainsParamsForTesting(top500_params);
 
   lookalikes::InitializeSafetyTipConfig();
 }
@@ -40,7 +40,7 @@ void LookalikeTestHelper::SetUpLookalikeTestParams() {
 // static
 void LookalikeTestHelper::TearDownLookalikeTestParams() {
   url_formatter::IDNSpoofChecker::RestoreTrieParamsForTesting();
-  ResetTop500DomainsParamsForTesting();
+  lookalikes::ResetTop500DomainsParamsForTesting();
 }
 
 void LookalikeTestHelper::CheckSafetyTipUkmCount(

@@ -19,7 +19,10 @@
 #include "url/origin.h"
 
 class Profile;
+
+namespace lookalikes {
 struct DomainInfo;
+}
 
 // Wrapper used to store the results of a safety tip check. Specifically, this
 // is passed to the callback given to GetSafetyTipStatus.  |url| is the URL
@@ -88,7 +91,7 @@ class SafetyTipService : public KeyedService {
   void GetSafetyTipStatusWithEngagedSites(
       const GURL& url,
       SafetyTipCheckCallback callback,
-      const std::vector<DomainInfo>& engaged_sites);
+      const std::vector<lookalikes::DomainInfo>& engaged_sites);
 
   // Set of eTLD+1s that we've warned about, and the user has explicitly
   // ignored.  Used to avoid re-warning the user.

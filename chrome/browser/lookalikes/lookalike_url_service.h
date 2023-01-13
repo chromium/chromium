@@ -38,7 +38,7 @@ class LookalikeUrlService : public KeyedService {
   ~LookalikeUrlService() override;
 
   using EngagedSitesCallback =
-      base::OnceCallback<void(const std::vector<DomainInfo>&)>;
+      base::OnceCallback<void(const std::vector<lookalikes::DomainInfo>&)>;
 
   static LookalikeUrlService* Get(Profile* profile);
 
@@ -52,18 +52,20 @@ class LookalikeUrlService : public KeyedService {
 
   // Returns the _current_ list of engaged sites, without updating them if
   // they're out of date.
-  const std::vector<DomainInfo> GetLatestEngagedSites() const;
+  const std::vector<lookalikes::DomainInfo> GetLatestEngagedSites() const;
 
   void SetClockForTesting(base::Clock* clock);
   base::Clock* clock() const { return clock_; }
 
  private:
-  void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);
+  void OnUpdateEngagedSitesCompleted(
+      std::vector<lookalikes::DomainInfo> new_engaged_sites);
 
   raw_ptr<Profile> profile_;
   raw_ptr<base::Clock> clock_;
   base::Time last_engagement_fetch_time_;
-  std::vector<DomainInfo> engaged_sites_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<lookalikes::DomainInfo> engaged_sites_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Indicates that an update to the engaged sites list has been queued. Serves
   // to prevent enqueuing excessive updates.

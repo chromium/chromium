@@ -1,8 +1,4 @@
 include_rules = [
-  # This code is shared with ios, so content/ dependencies
-  # should not be introduced.
-  "-content",
-  "-ios/web",
   "+components/safe_browsing/core",
   "+third_party/re2",
   "+url",

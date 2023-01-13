@@ -16,10 +16,10 @@
 #include "components/version_info/channel.h"
 #include "url/gurl.h"
 
-class GURL;
-
 namespace lookalikes {
-extern const char kHistogramName[];
+
+// Name of the histogram recorded by the interstitial for lookalike match types.
+extern const char kInterstitialHistogramName[];
 
 // Register applicable preferences with the provided registry.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -29,10 +29,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // heuristic that's not fully launched and it has an extra line about future
 // behavior of Chrome.
 std::string GetConsoleMessage(const GURL& lookalike_url, bool is_new_heuristic);
-}
-
-using LookalikeTargetAllowlistChecker =
-    base::RepeatingCallback<bool(const std::string&)>;
 
 // Used for |GetTargetEmbeddingType| return value. It shows if the target
 // embedding triggers on the input domain, and if it does, what type of warning
@@ -216,6 +212,12 @@ bool IsTopDomain(const DomainInfo& domain_info);
 // which doesn't have a notion of private registries.
 std::string GetETLDPlusOne(const std::string& hostname);
 
+// Records an interstitial histogram entry for the given match type.
+void RecordUMAFromMatchType(LookalikeUrlMatchType match_type);
+
+using LookalikeTargetAllowlistChecker =
+    base::RepeatingCallback<bool(const std::string&)>;
+
 // Returns true if a domain is visually similar to the hostname of |url|. The
 // matching domain can be a top domain or an engaged site. Similarity
 // check is made using both visual skeleton and edit distance comparison.  If
@@ -228,8 +230,6 @@ bool GetMatchingDomain(
     const reputation::SafetyTipsConfig* config_proto,
     std::string* matched_domain,
     LookalikeUrlMatchType* match_type);
-
-void RecordUMAFromMatchType(LookalikeUrlMatchType match_type);
 
 // Checks to see if a URL is a target embedding lookalike. This function sets
 // |safe_hostname| to the url of the embedded target domain. See the unit tests
@@ -329,5 +329,7 @@ LookalikeActionType GetActionForMatchType(
 GURL GetSuggestedURL(LookalikeUrlMatchType match_type,
                      const GURL& navigated_url,
                      const std::string& matched_hostname);
+
+}  // namespace lookalikes
 
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_

@@ -30,6 +30,4 @@ class LookalikeTestHelper {
   ukm::TestUkmRecorder* ukm_recorder_;
 };
 
-bool IsShowingSafetyTip();
-
 #endif

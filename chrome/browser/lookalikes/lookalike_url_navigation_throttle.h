@@ -25,7 +25,9 @@ class NavigationHandle;
 
 class Profile;
 
+namespace lookalikes {
 struct DomainInfo;
+}
 
 // A feature to enable Prewarming the Lookalike check during navigation. URLs in
 // the redirect chain are queried while the request is on the wire instead of
@@ -69,13 +71,14 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   // Performs synchronous top domain and engaged site checks on the navigated
   // and redirected urls. Uses |engaged_sites| for the engaged site checks.
   ThrottleCheckResult PerformChecks(
-      const std::vector<DomainInfo>& engaged_sites);
+      const std::vector<lookalikes::DomainInfo>& engaged_sites);
 
   // A void-returning variant, only used with deferred throttle results (e.g.
   // when we need to fetch engaged sites list or digital asset link manifests).
   // |start| is the time at which the navigation was deferred, for metrics.
-  void PerformChecksDeferred(base::TimeTicks start,
-                             const std::vector<DomainInfo>& engaged_sites);
+  void PerformChecksDeferred(
+      base::TimeTicks start,
+      const std::vector<lookalikes::DomainInfo>& engaged_sites);
 
   // Returns whether |url| is a lookalike, setting |match_type| and
   // |suggested_url| appropriately. Used in PerformChecks() on a per-URL basis.
@@ -83,8 +86,8 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   // invoked. After invocation, it will hold the duration spent in
   // GetDomainInfo() if GetDomainInfo() was invoked.
   bool IsLookalikeUrl(const GURL& url,
-                      const std::vector<DomainInfo>& engaged_sites,
-                      LookalikeUrlMatchType* match_type,
+                      const std::vector<lookalikes::DomainInfo>& engaged_sites,
+                      lookalikes::LookalikeUrlMatchType* match_type,
                       GURL* suggested_url,
                       base::TimeDelta* get_domain_info_duration);
 
@@ -97,11 +100,12 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   // that suggests the user to go to |safe_domain| instead.
   // - Otherwise, it displays the punycode interstitial which doesn't suggest a
   // safe URL.
-  ThrottleCheckResult ShowInterstitial(const GURL& safe_domain,
-                                       const GURL& lookalike_domain,
-                                       ukm::SourceId source_id,
-                                       LookalikeUrlMatchType match_type,
-                                       bool triggered_by_initial_url);
+  ThrottleCheckResult ShowInterstitial(
+      const GURL& safe_domain,
+      const GURL& lookalike_domain,
+      ukm::SourceId source_id,
+      lookalikes::LookalikeUrlMatchType match_type,
+      bool triggered_by_initial_url);
 
   // Checks if a full page intersitial can be shown. This function checks if
   // the navigation isn't a prerender navigation.
@@ -109,7 +113,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
       const GURL& safe_domain,
       const GURL& lookalike_domain,
       ukm::SourceId source_id,
-      LookalikeUrlMatchType match_type,
+      lookalikes::LookalikeUrlMatchType match_type,
       bool triggered_by_initial_url);
 
   // Kicks off a task to prewarm the lookalike checks for URLs in this
@@ -123,13 +127,13 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
 
   // Used as a callback, calls |PrewarmLookalikeCheckSync()|.
   void PrewarmLookalikeCheckSyncWithSites(
-      const std::vector<DomainInfo>& engaged_sites);
+      const std::vector<lookalikes::DomainInfo>& engaged_sites);
 
   // Caches the lookalike check for |url| in |lookalike_cache_| if it has not
   // already been cached during the navigation.
   void PrewarmLookalikeCheckForURL(
       const GURL& url,
-      const std::vector<DomainInfo>& engaged_sites);
+      const std::vector<lookalikes::DomainInfo>& engaged_sites);
 
   raw_ptr<Profile> profile_;
   bool use_test_profile_ = false;
@@ -137,7 +141,8 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   // Cached results from checking if a URL host is a lookalike. Also stores the
   // match type and suggested url. The lifetime of |this| is scoped to a single
   // navigation, which leaves the results of this check relatively fresh.
-  std::map<std::string, std::tuple<bool, LookalikeUrlMatchType, GURL>>
+  std::map<std::string,
+           std::tuple<bool, lookalikes::LookalikeUrlMatchType, GURL>>
       lookalike_cache_;
 
   // The number of lookalike async checks started from |WillRedirect()|. Used

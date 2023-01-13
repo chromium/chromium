@@ -43,7 +43,7 @@ class CWVLookalikeURLHandlerTest : public PlatformTest {
       base::OnceCallback<void(NSString*)> callback) {
     auto url_info = std::make_unique<LookalikeUrlContainer::LookalikeUrlInfo>(
         safe_url, request_url,
-        LookalikeUrlMatchType::kSkeletonMatchSiteEngagement);
+        lookalikes::LookalikeUrlMatchType::kSkeletonMatchSiteEngagement);
     return
         [[CWVLookalikeURLHandler alloc] initWithWebState:&web_state_
                                         lookalikeURLInfo:std::move(url_info)

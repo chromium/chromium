@@ -5,8 +5,6 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_helper.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
-#import "components/lookalikes/core/features.h"
 #import "components/lookalikes/core/safety_tip_test_utils.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
@@ -75,9 +73,9 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
   EXPECT_FALSE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
                    .ShouldAllowNavigation());
   histogram_tester_.ExpectUniqueSample(
-      lookalikes::kHistogramName,
+      lookalikes::kInterstitialHistogramName,
       static_cast<base::HistogramBase::Sample>(
-          NavigationSuggestionEvent::kMatchSkeletonTop500),
+          lookalikes::NavigationSuggestionEvent::kMatchSkeletonTop500),
       1);
 
   // Non-main frame navigations should be allowed.
@@ -94,7 +92,7 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
   EXPECT_TRUE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
                   .ShouldAllowNavigation());
 
-  histogram_tester_.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(lookalikes::kInterstitialHistogramName, 1);
 }
 
 // Tests that ShouldAllowResponse properly allows lookalike navigations

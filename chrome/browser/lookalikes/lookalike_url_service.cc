@@ -27,6 +27,8 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 
+using lookalikes::DomainInfo;
+
 namespace {
 
 constexpr base::TimeDelta kEngagedSiteUpdateInterval = base::Seconds(60);
@@ -88,7 +90,7 @@ std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
             detail.total_score, blink::mojom::EngagementLevel::MEDIUM)) {
       continue;
     }
-    const DomainInfo domain_info = GetDomainInfo(detail.origin);
+    const DomainInfo domain_info = lookalikes::GetDomainInfo(detail.origin);
     if (domain_info.domain_and_registry.empty()) {
       continue;
     }

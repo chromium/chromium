@@ -114,13 +114,11 @@ bool IsUrlAllowedByCohort(const reputation::SafetyTipsConfig* proto,
 
 }  // namespace
 
-// static
 void SetSafetyTipsRemoteConfigProto(
     std::unique_ptr<reputation::SafetyTipsConfig> proto) {
   SafetyTipsConfigSingleton::GetInstance().SetProto(std::move(proto));
 }
 
-// static
 const reputation::SafetyTipsConfig* GetSafetyTipsRemoteConfigProto() {
   return SafetyTipsConfigSingleton::GetInstance().GetProto();
 }

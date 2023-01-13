@@ -4,8 +4,6 @@
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_helper.h"
 
-#import "base/feature_list.h"
-#import "components/lookalikes/core/features.h"
 #import "components/lookalikes/core/lookalike_url_ui_util.h"
 #import "components/lookalikes/core/lookalike_url_util.h"
 #import "components/lookalikes/core/safety_tips_config.h"
@@ -87,7 +85,8 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   // was probably reloaded. Stop the reload and navigate back to the
   // original lookalike URL so that the full checks are exercised again.
 
-  const DomainInfo navigated_domain = GetDomainInfo(response_url);
+  const lookalikes::DomainInfo navigated_domain =
+      lookalikes::GetDomainInfo(response_url);
   // Empty domain_and_registry happens on private domains.
   if (navigated_domain.domain_and_registry.empty() ||
       IsTopDomain(navigated_domain)) {
@@ -99,11 +98,12 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   // fetch and set `engaged_sites` here so that an interstitial won't be
   // shown on engaged sites, and so that the interstitial will be shown on
   // lookalikes of engaged sites.
-  std::vector<DomainInfo> engaged_sites;
+  std::vector<lookalikes::DomainInfo> engaged_sites;
   std::string matched_domain;
-  LookalikeUrlMatchType match_type;
+  lookalikes::LookalikeUrlMatchType match_type =
+      lookalikes::LookalikeUrlMatchType::kNone;
   // Target allowlist is not currently used in ios.
-  const LookalikeTargetAllowlistChecker in_target_allowlist =
+  const lookalikes::LookalikeTargetAllowlistChecker in_target_allowlist =
       base::BindRepeating(^(const std::string& hostname) {
         return false;
       });
@@ -115,7 +115,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
         !lookalikes::IsUrlAllowlistedBySafetyTipsComponent(
             proto, response_url.GetWithEmptyPath(),
             response_url.GetWithEmptyPath())) {
-      match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
+      match_type = lookalikes::LookalikeUrlMatchType::kFailedSpoofChecks;
       RecordUMAFromMatchType(match_type);
       LookalikeUrlContainer* lookalike_container =
           LookalikeUrlContainer::FromWebState(web_state());
@@ -132,7 +132,8 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
 
   RecordUMAFromMatchType(match_type);
 
-  const std::string suggested_domain = GetETLDPlusOne(matched_domain);
+  const std::string suggested_domain =
+      lookalikes::GetETLDPlusOne(matched_domain);
   DCHECK(!suggested_domain.empty());
   GURL::Replacements replace_host;
   replace_host.SetHostStr(suggested_domain);
@@ -152,11 +153,11 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   // rollout checks by passing null proto and unknown channel.
   if (GetActionForMatchType(nullptr, version_info::Channel::UNKNOWN,
                             navigated_domain.domain_and_registry, match_type) ==
-      LookalikeActionType::kRecordMetrics) {
+      lookalikes::LookalikeActionType::kRecordMetrics) {
     // Interstitial normally records UKM, but still record when it's not shown.
     RecordUkmForLookalikeUrlBlockingPage(
         ukm::GetSourceIdForWebStateDocument(web_state()), match_type,
-        LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
+        lookalikes::LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
         /*triggered_by_initial_url=*/false);
 
     std::move(callback).Run(CreateAllowDecision());

@@ -30,28 +30,15 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 
-namespace lookalikes {
-
-const char kHistogramName[] = "NavigationSuggestion.Event2";
-
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kLookalikeWarningAllowlistDomains);
-}
-
-std::string GetConsoleMessage(const GURL& lookalike_url,
-                              bool is_new_heuristic) {
-  const char* const kNewHeuristicMessage =
-      "Future Chrome versions will show a warning on this domain name.\n";
-  return base::StringPrintf(
-      "Chrome has determined that %s could be fake or fraudulent.\n\n"
-      "%s"
-      "If you believe this is shown in error please visit "
-      "https://g.co/chrome/lookalike-warnings",
-      lookalike_url.host().c_str(),
-      is_new_heuristic ? kNewHeuristicMessage : "");
-}
-
-}  // namespace lookalikes
+using lookalikes::ComboSquattingParams;
+using lookalikes::DomainInfo;
+using lookalikes::GetDomainInfo;
+using lookalikes::HasOneCharacterSwap;
+using lookalikes::IsEditDistanceAtMostOne;
+using lookalikes::LookalikeTargetAllowlistChecker;
+using lookalikes::LookalikeUrlMatchType;
+using lookalikes::NavigationSuggestionEvent;
+using lookalikes::Top500DomainsParams;
 
 namespace {
 
@@ -352,7 +339,7 @@ bool GetSimilarDomainFromEngagedSites(
 }
 
 void RecordEvent(NavigationSuggestionEvent event) {
-  UMA_HISTOGRAM_ENUMERATION(lookalikes::kHistogramName, event);
+  UMA_HISTOGRAM_ENUMERATION(lookalikes::kInterstitialHistogramName, event);
 }
 
 // Returns the parts of the domain that are separated by "." or "-", not
@@ -726,6 +713,27 @@ bool IsComboSquatting(
 }
 
 }  // namespace
+
+namespace lookalikes {
+
+const char kInterstitialHistogramName[] = "NavigationSuggestion.Event2";
+
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterListPref(prefs::kLookalikeWarningAllowlistDomains);
+}
+
+std::string GetConsoleMessage(const GURL& lookalike_url,
+                              bool is_new_heuristic) {
+  const char* const kNewHeuristicMessage =
+      "Future Chrome versions will show a warning on this domain name.\n";
+  return base::StringPrintf(
+      "Chrome has determined that %s could be fake or fraudulent.\n\n"
+      "%s"
+      "If you believe this is shown in error please visit "
+      "https://g.co/chrome/lookalike-warnings",
+      lookalike_url.host().c_str(),
+      is_new_heuristic ? kNewHeuristicMessage : "");
+}
 
 DomainInfo::DomainInfo(
     const std::string& arg_hostname,
@@ -1551,3 +1559,5 @@ GURL GetSuggestedURL(LookalikeUrlMatchType match_type,
   }
   return suggested_url;
 }
+
+}  // namespace lookalikes

@@ -28,6 +28,9 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/url_constants.h"
 
+using lookalikes::DomainInfo;
+using lookalikes::LookalikeUrlMatchType;
+
 namespace {
 
 using security_state::SafetyTipStatus;
@@ -73,7 +76,7 @@ bool ShouldSuppressWarning(Profile* profile,
                            const GURL& url,
                            const GURL& victim_url) {
   // Check any policy-set allowlist.
-  if (IsAllowedByEnterprisePolicy(profile->GetPrefs(), url)) {
+  if (lookalikes::IsAllowedByEnterprisePolicy(profile->GetPrefs(), url)) {
     return true;
   }
 
@@ -109,7 +112,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
 
   std::string matched_domain;
   auto* config = lookalikes::GetSafetyTipsRemoteConfigProto();
-  const LookalikeTargetAllowlistChecker in_target_allowlist =
+  const lookalikes::LookalikeTargetAllowlistChecker in_target_allowlist =
       base::BindRepeating(
           &lookalikes::IsTargetHostAllowlistedBySafetyTipsComponent, config);
   if (!GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
@@ -119,7 +122,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
 
   if (GetActionForMatchType(
           config, chrome::GetChannel(), navigated_domain.domain_and_registry,
-          *match_type) == LookalikeActionType::kShowSafetyTip) {
+          *match_type) == lookalikes::LookalikeActionType::kShowSafetyTip) {
     *safe_url = GetSuggestedURL(*match_type, url, matched_domain);
     return true;
   }
@@ -179,7 +182,7 @@ void SafetyTipService::GetSafetyTipStatusWithEngagedSites(
     const std::vector<DomainInfo>& engaged_sites) {
   base::TimeTicks start = base::TimeTicks::Now();
 
-  const DomainInfo navigated_domain = GetDomainInfo(url);
+  const DomainInfo navigated_domain = lookalikes::GetDomainInfo(url);
 
   UMA_HISTOGRAM_TIMES("Security.SafetyTips.GetDomainInfoTime",
                       base::TimeTicks::Now() - start);
@@ -206,8 +209,8 @@ void SafetyTipService::GetSafetyTipStatusWithEngagedSites(
   // 2. Protect against bad false positives by allowing top domains and safe
   // TLDs. Empty domain_and_registry happens on private domains.
   if (navigated_domain.domain_and_registry.empty() ||
-      IsTopDomain(navigated_domain) ||
-      IsSafeTLD(navigated_domain.domain_and_registry)) {
+      lookalikes::IsTopDomain(navigated_domain) ||
+      lookalikes::IsSafeTLD(navigated_domain.domain_and_registry)) {
     done_checking_safety_tip_status = true;
   }
 

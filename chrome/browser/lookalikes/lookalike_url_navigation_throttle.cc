@@ -31,7 +31,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/channel_info.h"
-#include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_ui_util.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/lookalikes/core/safety_tips_config.h"
@@ -42,6 +41,11 @@
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+
+using lookalikes::DomainInfo;
+using lookalikes::GetETLDPlusOne;
+using lookalikes::LookalikeActionType;
+using lookalikes::LookalikeUrlMatchType;
 
 namespace {
 
@@ -314,10 +318,11 @@ LookalikeUrlNavigationThrottle::CheckAndMaybeShowInterstitial(
     LookalikeUrlMatchType match_type,
     bool triggered_by_initial_url) {
   // Cancel the prerender to show an interstitial after activation.
-  if (navigation_handle()->IsInPrerenderedMainFrame())
+  if (navigation_handle()->IsInPrerenderedMainFrame()) {
     return content::NavigationThrottle::CANCEL;
+  }
 
-  RecordUMAFromMatchType(match_type);
+  lookalikes::RecordUMAFromMatchType(match_type);
 
   // Punycode interstitial doesn't have a target site, so safe_domain isn't
   // valid.
@@ -487,7 +492,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   DCHECK_NE(LookalikeUrlMatchType::kNone, match_type);
   DCHECK(action_type == LookalikeActionType::kRecordMetrics ||
          action_type == LookalikeActionType::kShowSafetyTip);
-  RecordUMAFromMatchType(match_type);
+  lookalikes::RecordUMAFromMatchType(match_type);
   RecordPerformCheckLatenciesForAllowedNavigation(
       perform_checks_start, is_lookalike_url_duration,
       total_get_domain_info_duration);
@@ -495,9 +500,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   // ...but only record interstitial UKM if we aren't going to show a safety
   // tip. Otherwise, we'll double record UKM, both here and in safety tips.
   if (action_type == LookalikeActionType::kRecordMetrics) {
-    RecordUkmForLookalikeUrlBlockingPage(
+    lookalikes::RecordUkmForLookalikeUrlBlockingPage(
         source_id, match_type,
-        LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
+        lookalikes::LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
         first_is_lookalike);
   }
   return NavigationThrottle::PROCEED;
@@ -518,7 +523,7 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
   // Don't warn on non-public domains.
   if (net::HostStringIsLocalhost(url.host()) ||
       net::IsHostnameNonUnique(url.host()) ||
-      GetETLDPlusOne(url.host()).empty() || IsSafeTLD(url.host())) {
+      GetETLDPlusOne(url.host()).empty() || lookalikes::IsSafeTLD(url.host())) {
     return false;
   }
 
@@ -536,13 +541,13 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
   }
 
   // If the host is allowlisted by policy, don't show any warning.
-  if (IsAllowedByEnterprisePolicy(profile_->GetPrefs(), url)) {
+  if (lookalikes::IsAllowedByEnterprisePolicy(profile_->GetPrefs(), url)) {
     return false;
   }
 
   // GetDomainInfo() is expensive, so do possible early-abort checks first.
   base::TimeTicks get_domain_info_start = base::TimeTicks::Now();
-  const DomainInfo navigated_domain = GetDomainInfo(url);
+  const DomainInfo navigated_domain = lookalikes::GetDomainInfo(url);
   *get_domain_info_duration = base::TimeTicks::Now() - get_domain_info_start;
 
   if (IsTopDomain(navigated_domain)) {
@@ -560,7 +565,7 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
     return false;
   }
 
-  const LookalikeTargetAllowlistChecker in_target_allowlist =
+  const lookalikes::LookalikeTargetAllowlistChecker in_target_allowlist =
       base::BindRepeating(
           &lookalikes::IsTargetHostAllowlistedBySafetyTipsComponent, proto);
   std::string matched_domain;

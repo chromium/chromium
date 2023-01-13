@@ -24,7 +24,7 @@ LookalikeUrlBlockingPage::LookalikeUrlBlockingPage(
     const GURL& safe_url,
     const GURL& request_url,
     ukm::SourceId source_id,
-    LookalikeUrlMatchType match_type,
+    lookalikes::LookalikeUrlMatchType match_type,
     std::unique_ptr<LookalikeUrlControllerClient> client)
     : security_interstitials::IOSSecurityInterstitialPage(web_state,
                                                           request_url,
@@ -47,7 +47,8 @@ LookalikeUrlBlockingPage::LookalikeUrlBlockingPage(
 LookalikeUrlBlockingPage::~LookalikeUrlBlockingPage() {
   // Update metrics when the interstitial is closed or user navigates away.
   ReportUkmForLookalikeUrlBlockingPageIfNeeded(
-      source_id_, match_type_, LookalikeUrlBlockingPageUserAction::kCloseOrBack,
+      source_id_, match_type_,
+      lookalikes::LookalikeUrlBlockingPageUserAction::kCloseOrBack,
       /*triggered_by_initial_url=*/false);
 }
 
@@ -64,8 +65,8 @@ void LookalikeUrlBlockingPage::PopulateInterstitialStrings(
     load_time_data.Set("cant_go_back", true);
   }
 
-  PopulateLookalikeUrlBlockingPageStrings(load_time_data, safe_url_,
-                                          request_url());
+  lookalikes::PopulateLookalikeUrlBlockingPageStrings(load_time_data, safe_url_,
+                                                      request_url());
 }
 
 bool LookalikeUrlBlockingPage::ShouldDisplayURL() const {
@@ -82,7 +83,7 @@ void LookalikeUrlBlockingPage::HandleCommand(
         security_interstitials::MetricsHelper::DONT_PROCEED);
     ReportUkmForLookalikeUrlBlockingPageIfNeeded(
         source_id_, match_type_,
-        LookalikeUrlBlockingPageUserAction::kAcceptSuggestion,
+        lookalikes::LookalikeUrlBlockingPageUserAction::kAcceptSuggestion,
         /*triggered_by_initial_url=*/false);
     controller_->GoBack();
   } else if (command == security_interstitials::CMD_PROCEED) {
@@ -90,7 +91,7 @@ void LookalikeUrlBlockingPage::HandleCommand(
         security_interstitials::MetricsHelper::PROCEED);
     ReportUkmForLookalikeUrlBlockingPageIfNeeded(
         source_id_, match_type_,
-        LookalikeUrlBlockingPageUserAction::kClickThrough,
+        lookalikes::LookalikeUrlBlockingPageUserAction::kClickThrough,
         /*triggered_by_initial_url=*/false);
     controller_->Proceed();
   }

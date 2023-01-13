@@ -12,6 +12,8 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace lookalikes {
+
 void RecordUkmForLookalikeUrlBlockingPage(
     ukm::SourceId source_id,
     LookalikeUrlMatchType match_type,
@@ -113,3 +115,5 @@ void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data) {
 
   load_time_data.Set("type", "LOOKALIKE");
 }
+
+}  // namespace lookalikes

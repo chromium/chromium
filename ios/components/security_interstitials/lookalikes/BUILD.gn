@@ -21,7 +21,6 @@ source_set("lookalikes") {
   deps = [
     "//base",
     "//components/lookalikes/core",
-    "//components/lookalikes/core:features",
     "//components/lookalikes/core:safety_tips",
     "//components/security_interstitials/core",
     "//components/ukm/ios",
@@ -45,7 +44,6 @@ source_set("unit_tests") {
     ":lookalikes",
     "//base/test:test_support",
     "//components/lookalikes/core",
-    "//components/lookalikes/core:features",
     "//components/lookalikes/core:safety_tips",
     "//components/security_interstitials/core",
     "//components/ukm:test_support",

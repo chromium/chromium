@@ -61,14 +61,14 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
       }
       lookalike_container->SetLookalikeUrlInfo(
           response_url.ReplaceComponents(safeReplacements), response_url,
-          LookalikeUrlMatchType::kSkeletonMatchTop5k);
+          lookalikes::LookalikeUrlMatchType::kSkeletonMatchTop5k);
       std::move(callback).Run(CreateLookalikeErrorDecision());
       return;
     }
     if (response_url.path() == kLookalikePageEmptyUrlPathForTesting) {
       lookalike_container->SetLookalikeUrlInfo(
           GURL::EmptyGURL(), response_url,
-          LookalikeUrlMatchType::kSkeletonMatchTop5k);
+          lookalikes::LookalikeUrlMatchType::kSkeletonMatchTop5k);
       std::move(callback).Run(CreateLookalikeErrorDecision());
       return;
     }

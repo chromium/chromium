@@ -4,10 +4,6 @@
 
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 
-#include <algorithm>
-#include <memory>
-#include <utility>
-
 #include "components/lookalikes/core/safety_tips_config.h"
 
 namespace lookalikes {
@@ -26,25 +22,6 @@ std::unique_ptr<reputation::SafetyTipsConfig> GetOrCreateSafetyTipsConfig() {
 
 void InitializeSafetyTipConfig() {
   SetSafetyTipsRemoteConfigProto(GetOrCreateSafetyTipsConfig());
-}
-
-void SetSafetyTipPatternsWithFlagType(std::vector<std::string> patterns,
-                                      reputation::FlaggedPage::FlagType type) {
-  auto config_proto = GetOrCreateSafetyTipsConfig();
-  config_proto->clear_flagged_page();
-
-  std::sort(patterns.begin(), patterns.end());
-  for (const auto& pattern : patterns) {
-    reputation::FlaggedPage* page = config_proto->add_flagged_page();
-    page->set_pattern(pattern);
-    page->set_type(type);
-  }
-
-  SetSafetyTipsRemoteConfigProto(std::move(config_proto));
-}
-
-void SetSafetyTipBadRepPatterns(std::vector<std::string> patterns) {
-  SetSafetyTipPatternsWithFlagType(patterns, reputation::FlaggedPage::BAD_REP);
 }
 
 void SetSafetyTipAllowlistPatterns(std::vector<std::string> patterns,
