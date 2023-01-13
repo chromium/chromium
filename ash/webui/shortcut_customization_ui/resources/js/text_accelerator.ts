@@ -7,7 +7,7 @@ import './input_key.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyInputState} from './input_key.js';
+import {InputKeyElement, KeyInputState} from './input_key.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {TextAcceleratorPart, TextAcceleratorPartType} from './shortcut_types.js';
 import {getTemplate} from './text_accelerator.html.js';
@@ -35,26 +35,37 @@ export class TextAcceleratorElement extends PolymerElement {
   parts: TextAcceleratorPart[];
 
   private parseAndDisplayTextParts(): void {
-    let finalHtml = '';
+    const wrapper =
+        this.shadowRoot!.querySelector('#text-wrapper') as HTMLDivElement;
+    wrapper.innerHTML = '';
+    const textParts: Node[] = [];
     for (const part of this.parts) {
       const text = mojoString16ToString(part.text);
       if (part.type === TextAcceleratorPartType.kPlainText) {
-        finalHtml += text;
+        textParts.push(this.createPlainTextPart(text));
       } else {
-        finalHtml += this.createInputKeyHtmlString(text, part.type);
+        textParts.push(this.createInputKeyPart(text, part.type));
       }
     }
-    // TODO(michaelcheco): Use strictQuery here.
-    (this.shadowRoot!.querySelector('#text-wrapper') as HTMLDivElement)
-        .innerHTML = finalHtml;
+
+    wrapper.append(...textParts);
   }
 
-  private createInputKeyHtmlString(text: string, type: TextAcceleratorPartType):
-      string {
+  private createInputKeyPart(keyText: string, type: TextAcceleratorPartType):
+      InputKeyElement {
     const keyState = type === TextAcceleratorPartType.kModifier ?
         KeyInputState.MODIFIER_SELECTED :
         KeyInputState.ALPHANUMERIC_SELECTED;
-    return `<input-key key="${text}" key-state=${keyState}></input-key>`;
+    const key = document.createElement('input-key');
+    key.key = keyText;
+    key.keyState = keyState;
+    return key;
+  }
+
+  private createPlainTextPart(text: string): HTMLSpanElement {
+    const span = document.createElement('span');
+    span.innerText = text;
+    return span;
   }
 
   static get template(): HTMLTemplateElement {
