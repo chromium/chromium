@@ -39,6 +39,7 @@ class FamilyInfoFeedbackSource : public FamilyInfoFetcher::Consumer {
 
  private:
   friend class FamilyInfoFeedbackSourceTest;
+  friend class FamilyInfoFeedbackSourceForChildFilterBehaviorTest;
 
   // FamilyInfoFetcher::Consumer implementation.
   void OnGetFamilyMembersSuccess(
