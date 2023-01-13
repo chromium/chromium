@@ -286,9 +286,9 @@ void ModulesInitializer::InitInspectorAgentSession(
   session->CreateAndAppend<InspectorAccessibilityAgent>(inspected_frames,
                                                         dom_agent);
   session->CreateAndAppend<InspectorWebAudioAgent>(page);
+  session->CreateAndAppend<InspectorCacheStorageAgent>(inspected_frames);
   if (allow_view_agents) {
     session->CreateAndAppend<InspectorDatabaseAgent>(page);
-    session->CreateAndAppend<InspectorCacheStorageAgent>(inspected_frames);
   }
 }
 
