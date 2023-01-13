@@ -471,9 +471,7 @@ void PhoneStatusProcessor::GenerateAppListWithIcons(
     // let's move it outside of the Notification class.s2
     apps_list.emplace_back(Notification::AppMetadata(
         base::UTF8ToUTF16(app.visible_name()), app.package_name(), image,
-        absl::nullopt,
-        app.icon_styling() ==
-            proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON,
+        /* icon_color = */ absl::nullopt, /* icon_is_monochrome = */ false,
         app.user_id(), app.app_streamability_status()));
     std::string key = app.package_name() + base::NumberToString(app.user_id());
     decoding_data_list->emplace_back(

@@ -28,9 +28,10 @@ const SkColor kMessagesOverrideColor = gfx::kGoogleBlue600;
 
 absl::optional<SkColor> getMonochromeIconColor(const proto::Notification& proto,
                                                const gfx::Image& icon) {
-  if (icon.IsEmpty() || !proto.origin_app().has_icon_color()) {
+  if (icon.IsEmpty() || !proto.origin_app().has_monochrome_icon_color()) {
     return absl::nullopt;
   }
+
   if (proto.origin_app().package_name() == kMessagesPackageName) {
     // The notification color supplied by the Messages app (Bugle) is based
     // on light/dark mode of the phone, not the Chromebook, with no way to
@@ -38,9 +39,10 @@ absl::optional<SkColor> getMonochromeIconColor(const proto::Notification& proto,
     // a fixed color. See conversation at b/207089786 for more details.
     return kMessagesOverrideColor;
   }
-  return SkColorSetRGB(proto.origin_app().icon_color().red(),
-                       proto.origin_app().icon_color().green(),
-                       proto.origin_app().icon_color().blue());
+
+  return SkColorSetRGB(proto.origin_app().monochrome_icon_color().red(),
+                       proto.origin_app().monochrome_icon_color().green(),
+                       proto.origin_app().monochrome_icon_color().blue());
 }
 
 Notification::Importance GetNotificationImportanceFromProto(
@@ -75,6 +77,11 @@ bool HasSupportedActionIdInProto(const proto::Notification& proto) {
       return true;
   }
   return false;
+}
+
+bool IsMonochromeIconEnabled(const proto::Notification& notification_proto) {
+  return features::IsPhoneHubMonochromeNotificationIconsEnabled() &&
+         notification_proto.origin_app().has_monochrome_icon_mask();
 }
 
 Notification CreateInternalNotification(const proto::Notification& proto,
@@ -143,9 +150,7 @@ Notification CreateInternalNotification(const proto::Notification& proto,
   if (!contact_image.IsEmpty())
     opt_contact_image = contact_image;
 
-  bool icon_is_monochrome =
-      proto.origin_app().icon_styling() ==
-      proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON;
+  bool icon_is_monochrome = IsMonochromeIconEnabled(proto);
   absl::optional<SkColor> icon_color =
       icon_is_monochrome ? getMonochromeIconColor(proto, icon) : absl::nullopt;
 
@@ -207,8 +212,14 @@ void NotificationProcessor::AddNotifications(
 
     processed_notification_protos.emplace_back(proto);
 
-    decode_image_requests.emplace_back(
-        proto.id(), NotificationImageField::kIcon, proto.origin_app().icon());
+    if (IsMonochromeIconEnabled(proto)) {
+      decode_image_requests.emplace_back(
+          proto.id(), NotificationImageField::kIcon,
+          proto.origin_app().monochrome_icon_mask());
+    } else {
+      decode_image_requests.emplace_back(
+          proto.id(), NotificationImageField::kIcon, proto.origin_app().icon());
+    }
 
     if (!proto.shared_image().empty()) {
       decode_image_requests.emplace_back(proto.id(),

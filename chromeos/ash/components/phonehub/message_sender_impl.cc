@@ -54,13 +54,6 @@ void MessageSenderImpl::SendCrosState(
   proto::CrosState request;
   request.set_notification_setting(is_notification_enabled);
   request.set_camera_roll_setting(is_camera_roll_enabled);
-  if (features::IsPhoneHubMonochromeNotificationIconsEnabled()) {
-    // Updated Chromebooks should always use the new flag, but a flag is still
-    // necessary to identify end-of-support Chromebooks so the phone can know
-    // to send backwards-compatible messages.
-    request.set_notification_icon_styling(
-        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
-  }
 
   if (attestation_certs != nullptr) {
     proto::AttestationData* attestation_data =

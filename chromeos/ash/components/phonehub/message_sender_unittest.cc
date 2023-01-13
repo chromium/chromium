@@ -67,11 +67,6 @@ TEST_F(MessageSenderImplTest, SendCrosStateWithoutAttestation) {
       proto::NotificationSetting::NOTIFICATIONS_ON);
   request.set_camera_roll_setting(proto::CameraRollSetting::CAMERA_ROLL_OFF);
   request.set_allocated_attestation_data(nullptr);
-  if (features::IsPhoneHubMonochromeNotificationIconsEnabled()) {
-    request.set_notification_icon_styling(
-        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
-  }
-
   message_sender_->SendCrosState(/*notification_enabled=*/true,
                                  /*camera_roll_enabled=*/false,
                                  /*certs=*/nullptr);
@@ -87,10 +82,6 @@ TEST_F(MessageSenderImplTest, SendCrosStateWithAttestation) {
   request.mutable_attestation_data()->set_type(
       proto::AttestationData::CROS_SOFT_BIND_CERT_CHAIN);
   request.mutable_attestation_data()->add_certificates("certificate");
-  if (features::IsPhoneHubMonochromeNotificationIconsEnabled()) {
-    request.set_notification_icon_styling(
-        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
-  }
 
   std::vector<std::string> certificates = {"certificate"};
 

@@ -55,14 +55,6 @@ enum CameraRollSetting {
   CAMERA_ROLL_ON = 1;
 }
 
-enum NotificationIconStyling {
-  // Use multicolor Android app icon logic. Keep as the zero default for
-  // backwards compatibility.
-  ICON_STYLE_DEFAULT_LEGACY_APP_ICON = 0;
-  // Use monochrome icon styling logic.
-  ICON_STYLE_MONOCHROME_SMALL_ICON = 1;
-}
-
 enum AppStreamabilityStatus {
   STREAMABLE = 0;
   BLOCK_LISTED = 1;
@@ -247,12 +239,12 @@ message App {
   bytes icon = 3;
   int64 user_id = 4;
 
-  NotificationIconStyling icon_styling = 5;
-  // Optionally used only when icon_styling is ICON_STYLE_MONOCHROME_SMALL_ICON.
   // When unset, the ChromeOS side uses the system theme's default color.
-  ColorRgb icon_color = 6;
-
+  ColorRgb monochrome_icon_color = 6;
   AppStreamabilityStatus app_streamability_status = 7;
+  optional bytes monochrome_icon_mask = 8;
+
+  reserved 5;  // deprecated icon_stying field.
 }
 
 // Data required to verify the remote device.
@@ -276,10 +268,10 @@ message AttestationData {
 message CrosState {
   NotificationSetting notification_setting = 1;
   CameraRollSetting camera_roll_setting = 2;
-  // Optional in the case of un-updated phones.
-  NotificationIconStyling notification_icon_styling = 3;
   // Optional for older Chromebooks pre-attestation.
   AttestationData attestation_data = 4;
+
+  reserved 3;  // deprecated notification_icon_styling field.
 }
 
 message Action {

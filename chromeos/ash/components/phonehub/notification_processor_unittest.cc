@@ -190,14 +190,13 @@ class NotificationProcessorTest : public testing::Test {
     proto::Notification notification = CreateNewInlineReplyableNotification(
         notification_id, inline_reply_id, icon);
     proto::App* origin_app = notification.mutable_origin_app();
-    origin_app->set_icon_styling(
-        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
+    origin_app->set_monochrome_icon_mask(icon);
     if (icon_color != absl::nullopt) {
       auto color_rgb = std::make_unique<proto::ColorRgb>();
       color_rgb->set_red(SkColorGetR(*icon_color));
       color_rgb->set_green(SkColorGetG(*icon_color));
       color_rgb->set_blue(SkColorGetB(*icon_color));
-      origin_app->set_allocated_icon_color(color_rgb.release());
+      origin_app->set_allocated_monochrome_icon_color(color_rgb.release());
     }
     return notification;
   }
@@ -323,7 +322,6 @@ TEST_F(NotificationProcessorTest, MonochromeIconFieldsPopulatedCorrectly) {
 
   const Notification* notification =
       fake_notification_manager()->GetNotification(kNotificationIdA);
-  EXPECT_FALSE(notification->app_metadata().icon_is_monochrome);
   EXPECT_TRUE(gfx::test::AreImagesEqual(notification->app_metadata().icon,
                                         TestImage()));
   EXPECT_FALSE(notification->app_metadata().icon_color.has_value());
