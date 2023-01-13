@@ -96,10 +96,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
 
   static bool IsClassOf(const FrameOwner& owner);
 
-  // TODO(crbug.com/1286950) Remove this once a decision is made on deprecation
-  // of the <param> URL functionality.
-  void UseCountParamUrlUsageIfNeeded(bool is_pdf) const;
-
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
@@ -143,10 +139,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
 
   String class_id_;
   bool use_fallback_content_ : 1;
-
-  // TODO(crbug.com/1286950) Remove this once a decision is made on deprecation
-  // of the <param> URL functionality.
-  bool should_use_count_param_url_ : 1;
 };
 
 // Like To<HTMLObjectElement>() but accepts a ListedElement as input

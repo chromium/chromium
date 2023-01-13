@@ -41338,7 +41338,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4007" label="CSSCascadeLayers"/>
   <int value="4008" label="CanvasRenderingContext2DConicGradient"/>
   <int value="4009" label="CanvasRenderingContext2DCanvasFilter"/>
-  <int value="4010" label="HTMLParamElementURLParameter"/>
+  <int value="4010" label="OBSOLETE_HTMLParamElementURLParameter"/>
   <int value="4011" label="V8HTMLScriptElement_Supports_Method"/>
   <int value="4012" label="HandwritingRecognitionQueryRecognizer"/>
   <int value="4013"
@@ -41441,8 +41441,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4107" label="WebNfcNdefMakeReadOnly"/>
   <int value="4108" label="V8Navigator_DeprecatedURNToURL_Method"/>
   <int value="4109" label="OBSOLETE_WebAppManifestHandleLinks"/>
-  <int value="4110" label="HTMLParamElementURLParameterInUsePdf"/>
-  <int value="4111" label="HTMLParamElementURLParameterInUseNonPdf"/>
+  <int value="4110" label="OBSOLETE_HTMLParamElementURLParameterInUsePdf"/>
+  <int value="4111" label="OBSOLETE_HTMLParamElementURLParameterInUseNonPdf"/>
   <int value="4112" label="WebTransportServerCertificateHashes"/>
   <int value="4113" label="HiddenAttribute"/>
   <int value="4114" label="HiddenUntilFoundAttribute"/>

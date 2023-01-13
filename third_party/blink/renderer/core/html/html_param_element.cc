@@ -42,25 +42,4 @@ const AtomicString& HTMLParamElement::Value() const {
   return FastGetAttribute(html_names::kValueAttr);
 }
 
-// HTML5 says that an object resource's URL is specified by the object's
-// data attribute, not by a param element. However, for compatibility, also
-// allow the resource's URL to be given by a param of the named "code",
-// "data", "movie", "src" or "url".
-bool HTMLParamElement::IsURLParameter(const String& name) {
-  DCHECK(RuntimeEnabledFeatures::HTMLParamElementUrlSupportEnabled());
-  return EqualIgnoringASCIICase(name, "code") ||
-         EqualIgnoringASCIICase(name, "data") ||
-         EqualIgnoringASCIICase(name, "movie") ||
-         EqualIgnoringASCIICase(name, "src") ||
-         EqualIgnoringASCIICase(name, "url");
-}
-
-bool HTMLParamElement::IsURLAttribute(const Attribute& attribute) const {
-  if (RuntimeEnabledFeatures::HTMLParamElementUrlSupportEnabled() &&
-      attribute.GetName() == html_names::kValueAttr &&
-      IsURLParameter(GetName()))
-    return true;
-  return HTMLElement::IsURLAttribute(attribute);
-}
-
 }  // namespace blink

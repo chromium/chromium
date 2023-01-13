@@ -237,12 +237,6 @@ WebString WebElement::GetComputedValue(const WebString& property_name) {
   return computed_style->GetPropertyCSSValue(property_id)->CssText();
 }
 
-void WebElement::UseCountParamUrlUsageIfNeeded(bool is_pdf) const {
-  if (auto* object =
-          ::blink::DynamicTo<HTMLObjectElement>(ConstUnwrap<Element>()))
-    object->UseCountParamUrlUsageIfNeeded(is_pdf);
-}
-
 WebElement::WebElement(Element* elem) : WebNode(elem) {}
 
 DEFINE_WEB_NODE_TYPE_CASTS(WebElement, IsElementNode())

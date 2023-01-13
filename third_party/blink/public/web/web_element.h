@@ -136,10 +136,6 @@ class BLINK_EXPORT WebElement : public WebNode {
   // /public/web interfaces.
   WebString GetComputedValue(const WebString& property_name);
 
-  // TODO(crbug.com/1286950) Remove this once a decision is made on deprecation
-  // of the <param> URL functionality.
-  void UseCountParamUrlUsageIfNeeded(bool is_pdf) const;
-
 #if INSIDE_BLINK
   WebElement(Element*);
   WebElement& operator=(Element*);
