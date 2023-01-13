@@ -12,6 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/common/translate_constants.h"
+#import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/browser/translate/translate_app_interface.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
@@ -246,6 +247,19 @@ void TestResponseProvider::GetLanguageResponse(
 
 @implementation TranslateInfobarTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector
+            (testLanguageDetectionDisabledWithForceTranslate)]) {
+    config.features_enabled.push_back(translate::kIOSForceTranslateEnabled);
+  }
+  if ([self isRunningTest:@selector
+            (testLanguageDetectionDisabledWithoutForceTranslate)]) {
+    config.features_disabled.push_back(translate::kIOSForceTranslateEnabled);
+  }
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
 
@@ -478,9 +492,43 @@ void TestResponseProvider::GetLanguageResponse(
   [self assertContentLanguage:@"" htmlRootLanguage:@"fr" adoptedLanguage:@"fr"];
 }
 
-// Tests that language detection is not performed when translate is disabled.
-// TODO(crbug.com/1406208): A language is detected.
-- (void)DISABLED_testLanguageDetectionDisabled {
+// Tests that language detection is performed but no infobar is triggered when
+// translate is disabled but force translate is on.
+- (void)testLanguageDetectionDisabledWithForceTranslate {
+  std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
+  web::test::SetUpHttpServer(std::move(provider));
+
+  // Load a page with French text.
+  GURL URL = web::test::HttpServer::MakeUrl(
+      base::StringPrintf("http://%s", kFrenchPagePath));
+
+  // Disable translate.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:NO
+       forUserPref:base::SysUTF8ToNSString(
+                       translate::prefs::kOfferTranslateEnabled)];
+
+  // Open some webpage.
+  [ChromeEarlGrey loadURL:URL];
+  // Wait to be sure language detection has time to happen and benner to appear.
+  base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(2));
+
+  // Check that language has been detected.
+  GREYAssert([self waitForLanguageDetection], @"Language not detected");
+  // Check Banner was not presented.
+  GREYAssertFalse([self isBeforeTranslateBannerVisible],
+                  @"Before Translate banner was found");
+
+  // Enable translate.
+  [ChromeEarlGreyAppInterface
+      setBoolValue:YES
+       forUserPref:base::SysUTF8ToNSString(
+                       translate::prefs::kOfferTranslateEnabled)];
+}
+
+// Tests that language detection is not performed when translate is disabled
+// with force translate disabled.
+- (void)testLanguageDetectionDisabledWithoutForceTranslate {
   const GURL URL = web::test::HttpServer::MakeUrl(
       "http://scenarioLanguageDetectionDisabled");
   std::map<GURL, std::string> responses;
