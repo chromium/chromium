@@ -16,7 +16,6 @@
 namespace content {
 
 struct AttributionConfig;
-class AttributionRandomGenerator;
 class CommonSourceInfo;
 
 // Implementation of the storage delegate. This class handles assigning
@@ -30,8 +29,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   static std::unique_ptr<AttributionStorageDelegate> CreateForTesting(
       AttributionNoiseMode noise_mode,
       AttributionDelayMode delay_mode,
-      const AttributionConfig& config,
-      std::unique_ptr<AttributionRandomGenerator> rng);
+      const AttributionConfig& config);
 
   explicit AttributionStorageDelegateImpl(
       AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault,
@@ -79,16 +77,12 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       int random_stars_and_bars_sequence_index) const;
 
  protected:
-  AttributionStorageDelegateImpl(
-      AttributionNoiseMode noise_mode,
-      AttributionDelayMode delay_mode,
-      const AttributionConfig& config,
-      std::unique_ptr<AttributionRandomGenerator> rng);
+  AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,
+                                 AttributionDelayMode delay_mode,
+                                 const AttributionConfig& config);
 
   const AttributionNoiseMode noise_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
   const AttributionDelayMode delay_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
-  const std::unique_ptr<AttributionRandomGenerator> rng_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

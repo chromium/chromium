@@ -39,11 +39,8 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
-#include "content/browser/attribution_reporting/attribution_default_random_generator.h"
-#include "content/browser/attribution_reporting/attribution_insecure_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
-#include "content/browser/attribution_reporting/attribution_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -426,14 +423,6 @@ base::Value RunAttributionSimulation(
   base::ranges::stable_sort(*events, /*comp=*/{}, &GetEventTime);
   task_environment.FastForwardBy(GetEventTime(events->at(0)) - time_origin);
 
-  std::unique_ptr<AttributionRandomGenerator> rng;
-  if (options.noise_seed.has_value()) {
-    rng = std::make_unique<AttributionInsecureRandomGenerator>(
-        *options.noise_seed);
-  } else {
-    rng = std::make_unique<AttributionDefaultRandomGenerator>();
-  }
-
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
 
@@ -443,8 +432,7 @@ base::Value RunAttributionSimulation(
       /*max_pending_events=*/std::numeric_limits<size_t>::max(),
       /*special_storage_policy=*/nullptr,
       AttributionStorageDelegateImpl::CreateForTesting(
-          options.noise_mode, options.delay_mode, options.config,
-          std::move(rng)),
+          options.noise_mode, options.delay_mode, options.config),
       std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
       std::make_unique<FakeReportSender>(), storage_partition,
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
