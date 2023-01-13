@@ -685,13 +685,8 @@ bool DIPSDatabase::RemoveEventsByTime(const base::Time& delete_begin,
 
   GarbageCollect();
 
-  if (!ClearTimestamps(delete_begin, delete_end, type) ||
-      !AdjustFirstTimestamps(delete_begin, delete_end, type) ||
-      !AdjustLastTimestamps(delete_begin, delete_end, type)) {
-    return false;
-  }
-
-  return transaction.Commit();
+  return (ClearTimestamps(delete_begin, delete_end, type) &&
+          transaction.Commit());
 }
 
 bool DIPSDatabase::RemoveEventsBySite(bool preserve,
@@ -799,7 +794,9 @@ bool DIPSDatabase::ClearTimestamps(const base::Time& delete_begin,
     }
   }
 
-  return RemoveEmptyRows();
+  return (RemoveEmptyRows() &&
+          AdjustFirstTimestamps(delete_begin, delete_end, type) &&
+          AdjustLastTimestamps(delete_begin, delete_end, type));
 }
 
 bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
@@ -809,6 +806,13 @@ bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
   if (!CheckDBInit())
     return false;
   ClearRowsWithExpiredInteractions();
+
+  if (delete_end == base::Time::Max()) {
+    // When `delete_end` is `base::Time::Max()`, any timestamp range that would
+    // be altered by the below queries should have already been removed by
+    // ClearTimestamps(), which MUST always be called before this method.
+    return true;
+  }
 
   if ((type & DIPSEventRemovalType::kHistory) ==
       DIPSEventRemovalType::kHistory) {
@@ -890,6 +894,13 @@ bool DIPSDatabase::AdjustLastTimestamps(const base::Time& delete_begin,
   if (!CheckDBInit())
     return false;
   ClearRowsWithExpiredInteractions();
+
+  if (delete_begin == base::Time::Min()) {
+    // When `delete_begin` is `base::Time::Min()`, any timestamp range that
+    // would be altered by the below queries should have already been removed by
+    // ClearTimestamps(), which MUST always be called before this method.
+    return true;
+  }
 
   if ((type & DIPSEventRemovalType::kHistory) ==
       DIPSEventRemovalType::kHistory) {
