@@ -54501,6 +54501,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="AuthError"/>
   <int value="2" label="HttpError"/>
   <int value="3" label="ParseError"/>
+  <int value="4" label="DataError"/>
 </enum>
 
 <enum name="KidsManagementURLCheckerResponseStatus">

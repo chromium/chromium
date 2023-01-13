@@ -11,10 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -47,12 +50,57 @@ const char kIdProfileUrl[] = "profileUrl";
 const char kIdProfileImageUrl[] = "profileImageUrl";
 const char kIdDefaultProfileImageUrl[] = "defaultProfileImageUrl";
 
+const char kListFamilyMembersRequestHistogramPrefix[] =
+    "Signin.ListFamilyMembersRequest";
+const char kListFamilyMembersRequestStatusHistogramName[] =
+    "Signin.ListFamilyMembersRequest.Status";
+const char kListFamilyMembersRequestLatencyHistogramName[] =
+    "Signin.ListFamilyMembersRequest.Latency";
+
+namespace {
+std::string ToStatusKey(KidsExternalFetcherStatus::State status) {
+  switch (status) {
+    case KidsExternalFetcherStatus::NO_ERROR:
+      return "NoError";
+    case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+      return "AuthError";
+    case KidsExternalFetcherStatus::HTTP_ERROR:
+      return "HttpError";
+    case KidsExternalFetcherStatus::INVALID_RESPONSE:
+      return "ParseError";
+    case KidsExternalFetcherStatus::DATA_ERROR:
+      return "DataError";
+  }
+}
+
+std::string LatencyPerStatusKey(KidsExternalFetcherStatus::State status) {
+  return base::JoinString({kListFamilyMembersRequestHistogramPrefix,
+                           ToStatusKey(status), "Latency"},
+                          /*separator=*/".");
+}
+
+void RecordMetrics(KidsExternalFetcherStatus::State status,
+                   base::TimeTicks start_time,
+                   base::StringPiece request_path) {
+  if (request_path != kGetFamilyMembersApiPath) {
+    // Ignore tracing all api calls except for family members.
+    return;
+  }
+
+  base::TimeDelta latency = base::TimeTicks::Now() - start_time;
+  base::UmaHistogramEnumeration(kListFamilyMembersRequestStatusHistogramName,
+                                status);
+  base::UmaHistogramTimes(kListFamilyMembersRequestLatencyHistogramName,
+                          latency);
+  base::UmaHistogramTimes(LatencyPerStatusKey(status), latency);
+}
+}  // namespace
+
 // These correspond to enum FamilyInfoFetcher::FamilyMemberRole, in order.
 const char* const kFamilyMemberRoleStrings[] = {"headOfHousehold", "parent",
                                                 "member", "child"};
 
-FamilyInfoFetcher::FamilyProfile::FamilyProfile() {
-}
+FamilyInfoFetcher::FamilyProfile::FamilyProfile() = default;
 
 FamilyInfoFetcher::FamilyProfile::FamilyProfile(const std::string& id,
                                                 const std::string& name)
@@ -143,6 +191,8 @@ void FamilyInfoFetcher::OnAccessTokenFetchComplete(
   access_token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
     DLOG(WARNING) << "Failed to get an access token: " << error.ToString();
+    RecordMetrics(KidsExternalFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
+                  simple_url_loader_start_time_, request_path_);
     consumer_->OnFailure(ErrorCode::kTokenError);
     return;
   }
@@ -227,6 +277,8 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
         identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
     if (primary_account_id.empty()) {
       DLOG(WARNING) << "Primary account removed";
+      RecordMetrics(KidsExternalFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
+                    simple_url_loader_start_time_, request_path_);
       consumer_->OnFailure(ErrorCode::kTokenError);
       return;
     }
@@ -239,12 +291,16 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
 
   if (response_code != net::HTTP_OK) {
     DLOG(WARNING) << "HTTP error " << response_code;
+    RecordMetrics(KidsExternalFetcherStatus::State::HTTP_ERROR,
+                  simple_url_loader_start_time_, request_path_);
     consumer_->OnFailure(ErrorCode::kNetworkError);
     return;
   }
 
   if (net_error != net::OK) {
     DLOG(WARNING) << "NetError " << net_error;
+    RecordMetrics(KidsExternalFetcherStatus::State::HTTP_ERROR,
+                  simple_url_loader_start_time_, request_path_);
     consumer_->OnFailure(ErrorCode::kNetworkError);
     return;
   }
@@ -353,22 +409,27 @@ void FamilyInfoFetcher::FamilyProfileFetched(const std::string& response) {
 void FamilyInfoFetcher::FamilyMembersFetched(const std::string& response) {
   absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (!value || !value->is_dict()) {
+    RecordMetrics(KidsExternalFetcherStatus::State::INVALID_RESPONSE,
+                  simple_url_loader_start_time_, request_path_);
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   const base::Value::Dict& dict = value->GetDict();
   const base::Value::List* members_list = dict.FindList(kIdMembers);
   if (!members_list) {
+    RecordMetrics(KidsExternalFetcherStatus::State::DATA_ERROR,
+                  simple_url_loader_start_time_, request_path_);
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   std::vector<FamilyMember> members;
   if (!ParseMembers(*members_list, &members)) {
+    RecordMetrics(KidsExternalFetcherStatus::State::DATA_ERROR,
+                  simple_url_loader_start_time_, request_path_);
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
-
-  UmaHistogramTimes("Signin.ListFamilyMembersRequest.LegacyNoError.Latency",
-                    base::TimeTicks::Now() - simple_url_loader_start_time_);
+  RecordMetrics(KidsExternalFetcherStatus::State::NO_ERROR,
+                simple_url_loader_start_time_, request_path_);
   consumer_->OnGetFamilyMembersSuccess(members);
 }

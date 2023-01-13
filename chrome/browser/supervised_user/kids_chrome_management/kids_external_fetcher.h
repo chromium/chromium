@@ -51,7 +51,10 @@ class KidsExternalFetcherStatus {
     HTTP_ERROR = 2,  // The request was performed, but http returned errors.
     INVALID_RESPONSE = 3,  // The request was performed without error, but http
                            // response could not be processed or was unexpected.
-    kMaxValue = INVALID_RESPONSE,  // keep last, required for metrics.
+    DATA_ERROR = 4,  // The request was parsed, but did not contain all required
+                     // data. Not signalled by this fetcher itself, but might be
+                     // used by consumers to indicate data problem.
+    kMaxValue = DATA_ERROR,  // keep last, required for metrics.
   };
   // Status might be used in base::expected context as possible error, since it
   // contains two error-enabled attributes which are copyable / assignable.
@@ -70,6 +73,7 @@ class KidsExternalFetcherStatus {
                    // https://source.chromium.org/chromium/chromium/src/+/main:components/signin/public/identity_manager/primary_account_access_token_fetcher.h;l=241;drc=8ba1bad80dc22235693a0dd41fe55c0fd2dbdabd
   static KidsExternalFetcherStatus HttpError();
   static KidsExternalFetcherStatus InvalidResponse();
+  static KidsExternalFetcherStatus DataError();
 
   // KidsExternalFetcherStatus::IsOk iff google_service_auth_error_.state() ==
   // NONE and state_ == NONE
