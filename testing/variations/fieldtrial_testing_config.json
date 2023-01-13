@@ -7834,21 +7834,6 @@
             ]
         }
     ],
-    "OptimizeAccessibilityUiThreadWork": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OptimizeAccessibilityUiThreadWork"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizeNetworkBuffers": [
         {
             "platforms": [
