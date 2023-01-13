@@ -431,18 +431,6 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
   }
 }
 
-const PaintOp* PaintOpBuffer::GetOpAtForTesting(size_t index,
-                                                PaintOpType type) const {
-  size_t i = 0;
-  for (const auto& op : *this) {
-    if (i == index) {
-      return op.GetType() == type ? &op : nullptr;
-    }
-    i++;
-  }
-  return nullptr;
-}
-
 PaintOpBuffer::Iterator PaintOpBuffer::begin() const {
   return Iterator(*this);
 }

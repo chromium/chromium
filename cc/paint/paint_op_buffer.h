@@ -292,12 +292,6 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
         op->HasEffectsPreventingLCDTextForSaveLayerAlpha();
   }
 
-  template <typename T>
-  const T* GetOpAtForTesting(size_t index) const {
-    return static_cast<const T*>(GetOpAtForTesting(index, T::kType));
-  }
-  const PaintOp* GetOpAtForTesting(size_t index, PaintOpType type) const;
-
   size_t GetOpOffsetForTracing(const PaintOp& op) const {
     DCHECK_GE(reinterpret_cast<const char*>(&op), data_.get());
     size_t result =

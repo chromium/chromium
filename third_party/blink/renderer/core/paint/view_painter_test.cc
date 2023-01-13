@@ -5,15 +5,21 @@
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 
 #include <gtest/gtest.h>
+#include "cc/test/paint_op_matchers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-using testing::ElementsAre;
-
 namespace blink {
+namespace {
+
+using ::cc::PaintOpIs;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::ResultOf;
 
 class ViewPainterFixedBackgroundTest : public PaintControllerPaintTest {
  protected:
@@ -60,18 +66,20 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
 
   PaintRecord record =
       To<DrawingDisplayItem>(background_display_item)->GetPaintRecord();
-  ASSERT_EQ(record.size(), 2u);
-  const cc::DrawRectOp* op = record.GetOpAtForTesting<cc::DrawRectOp>(1);
-  ASSERT_TRUE(op);
 
-  // This is the dest_rect_ calculated by BackgroundImageGeometry. For a fixed
-  // background in scrolling contents layer, its location is the scroll offset.
-  auto rect = gfx::SkRectToRectF(op->rect);
-  if (prefer_compositing_to_lcd_text) {
-    EXPECT_EQ(gfx::RectF(0, 0, 800, 600), rect);
-  } else {
-    EXPECT_EQ(gfx::RectF(scroll_offset.x(), scroll_offset.y(), 800, 600), rect);
-  }
+  SkRect expected_rect =
+      prefer_compositing_to_lcd_text
+          ? SkRect::MakeXYWH(0, 0, 800, 600)
+          : SkRect::MakeXYWH(scroll_offset.x(), scroll_offset.y(), 800, 600);
+  EXPECT_THAT(
+      record,
+      ElementsAre(
+          _, AllOf(PaintOpIs<cc::DrawRectOp>(),
+                   ResultOf(
+                       [](const cc::PaintOp& op) {
+                         return static_cast<const cc::DrawRectOp&>(op).rect;
+                       },
+                       expected_rect))));
 }
 
 TEST_P(ViewPainterFixedBackgroundTest,
@@ -287,4 +295,5 @@ TEST_P(ViewPainterTouchActionRectTest, TouchActionRectNonScrollingContents) {
           gfx::Rect(0, 0, 800, 3000))));
 }
 
+}  // namespace
 }  // namespace blink

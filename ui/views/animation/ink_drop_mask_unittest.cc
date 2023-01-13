@@ -6,10 +6,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "cc/paint/display_item_list.h"
-#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/paint_record.h"
+#include "cc/test/paint_op_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
@@ -17,15 +19,40 @@
 
 namespace views {
 
+using ::cc::PaintOpIs;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::ExplainMatchResult;
+using ::testing::ResultOf;
+using ::testing::UnorderedElementsAreArray;
+
+MATCHER_P(PointsAre, expected, "") {
+  int expected_size = expected.size();
+  if (arg.countPoints() != expected_size) {
+    *result_listener << "Expected path to have " << expected_size
+                     << " points, but had " << arg.countPoints() << ".";
+    return false;
+  }
+
+  std::vector<SkPoint> actual(expected_size);
+  if (arg.getPoints(&actual.front(), expected_size) != expected_size) {
+    *result_listener << "Failed extracting " << expected.size()
+                     << " points from path.";
+    return false;
+  }
+
+  return ExplainMatchResult(UnorderedElementsAreArray(expected), actual,
+                            result_listener);
+}
+
 TEST(InkDropMaskTest, PathInkDropMaskPaintsTriangle) {
   gfx::Size layer_size(10, 10);
   SkPath path;
-  SkPoint p1 = SkPoint::Make(3, 3);
-  SkPoint p2 = SkPoint::Make(5, 6);
-  SkPoint p3 = SkPoint::Make(8, 1);
-  path.moveTo(p1.x(), p1.y());
-  path.lineTo(p2.x(), p2.y());
-  path.lineTo(p3.x(), p3.y());
+  std::vector<SkPoint> points = {SkPoint::Make(3, 3), SkPoint::Make(5, 6),
+                                 SkPoint::Make(8, 1)};
+  path.moveTo(points[0].x(), points[0].y());
+  path.lineTo(points[1].x(), points[1].y());
+  path.lineTo(points[2].x(), points[2].y());
   path.close();
   PathInkDropMask mask(layer_size, path);
 
@@ -35,20 +62,21 @@ TEST(InkDropMaskTest, PathInkDropMaskPaintsTriangle) {
   EXPECT_EQ(1u, list->num_paint_ops()) << list->ToString();
 
   cc::PaintRecord record = list->FinalizeAndReleaseAsRecord();
-  const auto* draw_record_op = record.GetOpAtForTesting<cc::DrawRecordOp>(0);
-  ASSERT_NE(nullptr, draw_record_op);
-  const auto* draw_op =
-      draw_record_op->record.GetOpAtForTesting<cc::DrawPathOp>(0);
-  ASSERT_NE(nullptr, draw_op);
-  ASSERT_EQ(3, draw_op->path.countPoints());
-
-  SkPoint points[3];
-  ASSERT_EQ(3, draw_op->path.getPoints(points, 3));
-  std::sort(points, points + 3,
-            [](const SkPoint& a, const SkPoint& b) { return a.x() < b.x(); });
-  EXPECT_EQ(p1, points[0]);
-  EXPECT_EQ(p2, points[1]);
-  EXPECT_EQ(p3, points[2]);
+  EXPECT_THAT(
+      record,
+      ElementsAre(AllOf(
+          PaintOpIs<cc::DrawRecordOp>(),
+          ResultOf(
+              [](const cc::PaintOp& op) {
+                return static_cast<const cc::DrawRecordOp&>(op).record;
+              },
+              ElementsAre(AllOf(
+                  PaintOpIs<cc::DrawPathOp>(),
+                  ResultOf(
+                      [](const cc::PaintOp& op) {
+                        return static_cast<const cc::DrawPathOp&>(op).path;
+                      },
+                      PointsAre(points))))))));
 }
 
 }  // namespace views

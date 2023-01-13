@@ -58,11 +58,6 @@ class CC_PAINT_EXPORT PaintRecord {
   }
   const PaintOp& GetFirstOp() const { return buffer_->GetFirstOp(); }
 
-  template <typename T>
-  const T* GetOpAtForTesting(size_t index) const {
-    return buffer_->GetOpAtForTesting<T>(index);
-  }
-
   // Given the |bounds| of a PaintOpBuffer that would be transformed by |ctm|
   // when rendered, compute the bounds needed to raster the buffer at a fixed
   // scale into an auxiliary image instead of rasterizing at scale dynamically.
