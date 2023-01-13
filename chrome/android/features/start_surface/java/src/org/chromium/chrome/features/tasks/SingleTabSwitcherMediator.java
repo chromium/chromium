@@ -44,8 +44,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.List;
-
 /** Mediator of the single tab tab switcher. */
 public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     @VisibleForTesting
@@ -66,7 +64,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     private Long mTabTitleAvailableTime;
     private boolean mFaviconInitialized;
     private Context mContext;
-    private boolean mIsOnHomepage;
 
     SingleTabSwitcherMediator(Context context, PropertyModel propertyModel,
             TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider) {
@@ -83,16 +80,10 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 selectTheCurrentTab();
             }
         });
-        mPropertyModel.addObserver((source, key) -> {
-            if (key == IS_VISIBLE) {
-                mBackPressChangedSupplier.set(shouldInterceptBackPress());
-            }
-        });
 
         mNormalTabModelObserver = new TabModelObserver() {
             @Override
             public void didSelectTab(Tab tab, int type, int lastId) {
-                mBackPressChangedSupplier.set(shouldInterceptBackPress());
                 if (!ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)
                         && mTabModelSelector.isIncognitoSelected()) {
                     return;
@@ -109,27 +100,11 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 }
                 mTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tab.getId());
             }
-
-            @Override
-            public void tabPendingClosure(Tab tab) {
-                mBackPressChangedSupplier.set(shouldInterceptBackPress());
-            }
-
-            @Override
-            public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
-                mBackPressChangedSupplier.set(shouldInterceptBackPress());
-            }
-
-            @Override
-            public void tabClosureUndone(Tab tab) {
-                mBackPressChangedSupplier.set(shouldInterceptBackPress());
-            }
         };
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 if (!newModel.isIncognito()) mShouldIgnoreNextSelect = true;
-                mBackPressChangedSupplier.set(shouldInterceptBackPress());
             }
 
             @Override
@@ -267,16 +242,9 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public boolean onBackPressed(boolean isOnHomepage) {
-        // If currently on the Start surface, we will stop here. The back button will be handled by
-        // the ChromeTabbedActivity. See https://crbug.com/1187714.
-        if (isOnHomepage) return false;
-
-        if (overviewVisible() && !mTabModelSelector.isIncognitoSelected()
-                && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX) {
-            selectTheCurrentTab();
-            return true;
-        }
+    public boolean onBackPressed() {
+        // The singe tab switcher shouldn't handle any back button. The back button will be handled
+        // by the ChromeTabbedActivity. See https://crbug.com/1187714.
         return false;
     }
 
@@ -316,15 +284,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public void onHomepageChanged(boolean isOnHomepage) {
-        mIsOnHomepage = isOnHomepage;
-        mBackPressChangedSupplier.set(shouldInterceptBackPress());
-    }
-
-    private boolean shouldInterceptBackPress() {
-        return !mIsOnHomepage && overviewVisible() && !mTabModelSelector.isIncognitoSelected()
-                && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX;
-    }
+    public void onHomepageChanged() {}
 
     private void updateSelectedTab(Tab tab) {
         if (tab.isLoading() && TextUtils.isEmpty(tab.getTitle())) {

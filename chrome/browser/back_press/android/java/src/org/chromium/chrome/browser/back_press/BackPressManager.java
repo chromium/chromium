@@ -37,13 +37,13 @@ public class BackPressManager implements Destroyable {
             put(Type.VR_DELEGATE, 1);
             put(Type.AR_DELEGATE, 2);
             put(Type.SCENE_OVERLAY, 3);
-            put(Type.START_SURFACE_MEDIATOR, 4);
+            put(Type.START_SURFACE, 4);
             put(Type.SELECTION_POPUP, 5);
             put(Type.MANUAL_FILLING, 6);
             put(Type.FULLSCREEN, 7);
             put(Type.BOTTOM_SHEET, 8);
             put(Type.TAB_MODAL_HANDLER, 9);
-            put(Type.TAB_SWITCHER_TO_BROWSING, 10);
+            put(Type.TAB_SWITCHER, 10);
             put(Type.CLOSE_WATCHER, 11);
             put(Type.TAB_HISTORY, 12);
             put(Type.TAB_RETURN_TO_CHROME_START_SURFACE, 13);

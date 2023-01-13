@@ -119,11 +119,8 @@ public interface TabSwitcher {
         /**
          * Called by the StartSurfaceLayout when the system back button is pressed.
          * @return Whether or not the TabSwitcher consumed the event.
-         * @param isOnHomepage Whether the Start surface is showing.
          */
-        // TODO(crbug.com/1315676): Remove the parameter when tab switcher and start surface are
-        // decoupled.
-        boolean onBackPressed(boolean isOnHomepage);
+        boolean onBackPressed();
 
         /**
          * Called after the Chrome activity is launched.
@@ -151,11 +148,10 @@ public interface TabSwitcher {
 
         /**
          * Called when start surface is showing or hiding.
-         * @param isOnHomepage Whether the Start surface is showing.
          */
         // TODO(crbug.com/1315676): Remove this API when tab switcher and start surface are
         // decoupled.
-        void onHomepageChanged(boolean isOnHomepage);
+        void onHomepageChanged();
 
         /**
          * Sets the parent view for snackbars. If <code>null</code> is given, the original parent
@@ -278,4 +274,6 @@ public interface TabSwitcher {
      */
     @Nullable
     TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
+
+    boolean onBackPressed();
 }

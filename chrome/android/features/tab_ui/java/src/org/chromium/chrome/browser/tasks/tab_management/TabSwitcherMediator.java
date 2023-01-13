@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherV
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -77,7 +78,7 @@ import java.util.List;
 class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
                                      TabListMediator.GridCardOnClickListenerProvider,
                                      PriceMessageService.PriceWelcomeMessageReviewActionProvider,
-                                     TabSwitcherCustomViewManager.Delegate {
+                                     TabSwitcherCustomViewManager.Delegate, BackPressHandler {
     private static final String TAG = "TabSwitcherMediator";
 
     // This should be the same as TabListCoordinator.GRID_LAYOUT_SPAN_COUNT for the selected tab
@@ -152,7 +153,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             .TabSelectionEditorController mTabSelectionEditorController;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     private PriceMessageService mPriceMessageService;
-    private boolean mIsOnHomepage;
 
     /**
      * This allows to check if re-auth is pending when tab switcher is shown in Incognito mode.
@@ -278,6 +278,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * @param mode One of the {@link TabListMode}.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
+     * @param backPressManager {@link BackPressManager} to handle back press gesture.
      */
     TabSwitcherMediator(Context context, ResetHandler resetHandler,
             PropertyModel containerViewModel, TabModelSelector tabModelSelector,
@@ -285,8 +286,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             TabContentManager tabContentManager, MessageItemsController messageItemsController,
             PriceWelcomeMessageController priceWelcomeMessageController,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher, @TabListMode int mode,
-            @Nullable OneshotSupplier<IncognitoReauthController>
-                    incognitoReauthControllerSupplier) {
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @Nullable BackPressManager backPressManager) {
         mResetHandler = resetHandler;
         mContainerViewModel = containerViewModel;
         mTabModelSelector = tabModelSelector;
@@ -495,6 +496,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (mMode == TabListMode.GRID) {
             mContainerViewModel.set(BOTTOM_PADDING,
                     (int) context.getResources().getDimension(R.dimen.tab_grid_bottom_padding));
+            if (backPressManager != null && BackPressManager.isEnabled()) {
+                backPressManager.addHandler(this, BackPressHandler.Type.TAB_SWITCHER);
+                notifyBackPressStateChangedInternal();
+            }
         }
 
         mContainerView = containerView;
@@ -829,7 +834,15 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public boolean onBackPressed(boolean isOnHomepage) {
+    public boolean onBackPressed() {
+        boolean ret = onBackPressedInternal();
+        if (ret) {
+            BackPressManager.record(BackPressHandler.Type.TAB_SWITCHER);
+        }
+        return ret;
+    }
+
+    private boolean onBackPressedInternal() {
         // The TabSelectionEditor dialog can be shown on the Start surface without showing the Grid
         // Tab switcher, so skip the check of visibility of mContainerViewModel here.
         if (mTabSelectionEditorController != null
@@ -852,7 +865,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
 
         // When the Start surface is showing, we no longer need to call onTabSelecting().
-        if (isOnHomepage && mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
+        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
 
         if (mTabModelSelector.getCurrentTab() == null) {
             assert !BackPressManager.isEnabled() : "No tab: Backpress must be handled";
@@ -866,7 +879,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     @Override
     public void handleBackPress() {
-        boolean ret = onBackPressed(mIsOnHomepage);
+        boolean ret = onBackPressedInternal();
         assert ret;
     }
 
@@ -914,8 +927,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public void onHomepageChanged(boolean isOnHomepage) {
-        mIsOnHomepage = isOnHomepage;
+    public void onHomepageChanged() {
         notifyBackPressStateChangedInternal();
     }
 
@@ -1117,7 +1129,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
 
         // When the Start surface is showing, we no longer need to call onTabSelecting().
-        if (mIsOnHomepage && mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
+        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
 
         if (mTabModelSelector.getCurrentTab() == null) return false;
 

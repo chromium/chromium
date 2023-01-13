@@ -779,8 +779,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mRootUiCoordinator.getScrimCoordinator(),
                 /* rootView= */ tabSwitcherContainer,
                 compositorViewHolder::getDynamicResourceLoader, getSnackbarManager(),
-                getModalDialogManager(),
-                mRootUiCoordinator.getIncognitoReauthControllerSupplier()));
+                getModalDialogManager(), mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
+                mBackPressManager));
     }
 
     private void setupCompositorContentPostNative() {

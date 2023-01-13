@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -93,6 +95,7 @@ public interface TabManagementDelegate {
      * @param modalDialogManager Manages modal dialogs.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
+     * @param backPressManager {@link BackPressManager} to handle back press gesture.
      * @return The {@link TabSwitcher}.
      */
     TabSwitcher createGridTabSwitcher(@NonNull Activity activity,
@@ -109,7 +112,8 @@ public interface TabManagementDelegate {
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier);
+            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @Nullable BackPressManager backPressManager);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in carousel.

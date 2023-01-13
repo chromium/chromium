@@ -6,7 +6,6 @@ package org.chromium.chrome.features.tasks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -37,7 +36,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -251,33 +249,5 @@ public class SingleTabSwitcherMediatorUnitTest {
         verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
 
         mMediator.hideTabSwitcherView(true);
-    }
-
-    @Test
-    public void onBackPressed() {
-        assertFalse(mMediator.overviewVisible());
-        mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
-        mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
-
-        mMediator.onHomepageChanged(false);
-        assertNotEquals(Boolean.TRUE, mMediator.getHandleBackPressChangedSupplier().get());
-        assertFalse(mMediator.onBackPressed(false));
-
-        mMediator.showTabSwitcherView(true);
-        assertEquals(Boolean.TRUE, mMediator.getHandleBackPressChangedSupplier().get());
-        assertTrue(mMediator.onBackPressed(false));
-        verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
-
-        mMediator.hideTabSwitcherView(true);
-        assertEquals(Boolean.FALSE, mMediator.getHandleBackPressChangedSupplier().get());
-        doReturn(TabList.INVALID_TAB_INDEX).when(mTabModelSelector).getCurrentTabId();
-        mMediator.showTabSwitcherView(true);
-        assertEquals(Boolean.FALSE, mMediator.getHandleBackPressChangedSupplier().get());
-        assertFalse(mMediator.onBackPressed(false));
-
-        doReturn(mTabId).when(mTabModelSelector).getCurrentTabId();
-        doReturn(true).when(mTabModelSelector).isIncognitoSelected();
-        assertEquals(Boolean.FALSE, mMediator.getHandleBackPressChangedSupplier().get());
-        assertFalse(mMediator.onBackPressed(false));
     }
 }

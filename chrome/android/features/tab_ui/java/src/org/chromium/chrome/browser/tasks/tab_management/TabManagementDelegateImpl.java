@@ -11,12 +11,14 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -70,7 +72,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier) {
+            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @Nullable BackPressManager backPressManager) {
         if (UmaSessionStats.isMetricsServiceAvailable()) {
             UmaSessionStats.registerSyntheticFieldTrial(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + SYNTHETIC_TRIAL_POSTFIX,
@@ -86,7 +89,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID,
                 rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
-                incognitoReauthControllerSupplier);
+                incognitoReauthControllerSupplier, backPressManager);
     }
 
     @Override
@@ -109,7 +112,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 menuOrKeyboardActionController, containerView, shareDelegateSupplier,
                 multiWindowModeStateDispatcher, scrimCoordinator,
                 TabListCoordinator.TabListMode.CAROUSEL, rootView, dynamicResourceLoaderSupplier,
-                snackbarManager, modalDialogManager, null);
+                snackbarManager, modalDialogManager, null, null);
     }
 
     @Override

@@ -336,7 +336,7 @@ public class TabSwitcherLayout extends Layout {
 
     @Override
     public boolean onBackPressed() {
-        return mController.onBackPressed(false);
+        return mController.onBackPressed();
     }
 
     @Override

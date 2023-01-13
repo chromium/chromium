@@ -139,7 +139,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     mView.getBodyViewContainer(), shareDelegateSupplier,
                     multiWindowModeStateDispatcher, scrimCoordinator, rootView,
                     dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
-                    incognitoReauthControllerSupplier);
+                    incognitoReauthControllerSupplier, null /*BackPressManager*/);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             mTabSwitcher = new SingleTabSwitcherCoordinator(
                     activity, mView.getCarouselTabSwitcherContainer(), tabModelSelector);

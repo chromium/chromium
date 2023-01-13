@@ -24,6 +24,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -170,8 +171,8 @@ public class TabSwitcherCoordinator
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @Nullable OneshotSupplier<IncognitoReauthController>
-                    incognitoReauthControllerSupplier) {
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
+            @Nullable BackPressManager backPressManager) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherCoordinator.constructor")) {
             mActivity = activity;
             mMode = mode;
@@ -197,7 +198,8 @@ public class TabSwitcherCoordinator
 
             mMediator = new TabSwitcherMediator(activity, this, containerViewModel,
                     tabModelSelector, browserControls, container, tabContentManager, this, this,
-                    multiWindowModeStateDispatcher, mode, incognitoReauthControllerSupplier);
+                    multiWindowModeStateDispatcher, mode, incognitoReauthControllerSupplier,
+                    backPressManager);
 
             mTabSwitcherCustomViewManager = new TabSwitcherCustomViewManager(mMediator);
 
@@ -575,6 +577,11 @@ public class TabSwitcherCoordinator
     @Override
     public TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
         return mTabSwitcherCustomViewManager;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return mMediator.onBackPressed();
     }
 
     @Override

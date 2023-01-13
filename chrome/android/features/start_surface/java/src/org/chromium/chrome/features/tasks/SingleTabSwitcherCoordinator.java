@@ -150,4 +150,9 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
     public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
         return null;
     }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
 }

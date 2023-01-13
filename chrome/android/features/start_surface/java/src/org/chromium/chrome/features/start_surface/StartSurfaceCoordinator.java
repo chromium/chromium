@@ -289,7 +289,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                     browserControlsManager, tabCreatorManager, menuOrKeyboardActionController,
                     containerView, shareDelegateSupplier, multiWindowModeStateDispatcher,
                     scrimCoordinator, /* rootView= */ containerView, dynamicResourceLoaderSupplier,
-                    snackbarManager, modalDialogManager, incognitoReauthControllerSupplier);
+                    snackbarManager, modalDialogManager, incognitoReauthControllerSupplier,
+                    backPressManager);
             mTabSwitcherCustomViewManagerSupplier.set(
                     mTabSwitcher.getTabSwitcherCustomViewManager());
         } else {
@@ -313,7 +314,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
-                mParentTabSupplier, logoContainerView, backPressManager, feedPlaceholderParentView,
+                mParentTabSupplier, logoContainerView,
+                mTabSwitcher == null ? backPressManager : null, feedPlaceholderParentView,
                 mActivityLifecycleDispatcher, tabSwitcherClickHandler);
 
         startSurfaceOneshotSupplier.set(this);
@@ -509,6 +511,9 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public boolean onBackPressed() {
+        if (mTabSwitcher != null) {
+            return mTabSwitcher.onBackPressed();
+        }
         return mStartSurfaceMediator.onBackPressed();
     }
 

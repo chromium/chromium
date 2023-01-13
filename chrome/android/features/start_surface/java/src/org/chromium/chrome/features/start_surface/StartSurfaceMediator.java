@@ -216,7 +216,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart,
             JankTracker jankTracker, Runnable initializeMVTilesRunnable,
             Supplier<Tab> parentTabSupplier, View logoContainerView,
-            BackPressManager backPressManager, ViewGroup feedPlaceholderParentView,
+            @Nullable BackPressManager backPressManager, ViewGroup feedPlaceholderParentView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OnClickListener tabSwitcherClickHandler) {
         mController = controller;
@@ -423,8 +423,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mPreviousStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
 
-        if (BackPressManager.isEnabled()) {
-            backPressManager.addHandler(this, Type.START_SURFACE_MEDIATOR);
+        if (backPressManager != null && BackPressManager.isEnabled()) {
+            backPressManager.addHandler(this, Type.START_SURFACE);
             if (mPropertyModel != null) {
                 mPropertyModel.addObserver((source, key) -> {
                     if (key == IS_INCOGNITO) notifyBackPressStateChanged();
@@ -815,14 +815,28 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mController.showTabSwitcherView(animate);
     }
 
+    /**
+     * This function no longer handles the case when Start is disabled. Instead, the back operations
+     * of the grid tab switcher is handled by TabSwitcherMediator.
+     */
     boolean onBackPressed() {
         boolean ret = onBackPressedInternal();
         if (ret) {
-            BackPressManager.record(BackPressHandler.Type.START_SURFACE_MEDIATOR);
+            BackPressManager.record(BackPressHandler.Type.START_SURFACE);
         }
         return ret;
     }
 
+    /**
+     * This function handles the following cases:
+     * 1) Start surface is showing, including with/without refactoring enabled;
+     * 2) Grid tab switcher is showing, but only when Start surface is enabled and refactoring is
+     *    disabled. This is because the transitions between Start surface and tab switcher
+     *    (secondary tasks view) is handled by the same Layout via state changes. So we have to
+     *    handle the two surfaces together.
+     *    In the ideal scenarios: when a) Start is disabled and b) Start surface refactoring is
+     *    enabled, the back operations of the grid tab switcher is handled by TabSwitcherMediator.
+     */
     private boolean onBackPressedInternal() {
         boolean isOnHomepage = isHomepageShown();
 
@@ -834,14 +848,14 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // the TabSelectionEditor dialog. Therefore, we need to check both controllers as well.
         if (mSecondaryTasksSurfaceController != null
                 && mSecondaryTasksSurfaceController.isDialogVisible()) {
-            boolean ret = mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
+            boolean ret = mSecondaryTasksSurfaceController.onBackPressed();
             assert !BackPressManager.isEnabled()
                     || ret : String.format("Wrong back press state: %s, start surface: %s",
                                      mSecondaryTasksSurfaceController.getClass().getName(),
                                      mStartSurfaceState);
             return ret;
         } else if (mController.isDialogVisible()) {
-            boolean ret = mController.onBackPressed(isOnHomepage);
+            boolean ret = mController.onBackPressed();
             assert !BackPressManager.isEnabled()
                     || ret : String.format("Wrong back press state: %s, start surface: %s",
                                      mController.getClass().getName(), mStartSurfaceState);
@@ -857,7 +871,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 ReturnToChromeUtil.recordBackNavigationToStart("FromTabSwitcher");
                 return true;
             } else {
-                boolean ret = mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
+                boolean ret = mSecondaryTasksSurfaceController.onBackPressed();
                 assert !BackPressManager.isEnabled()
                         || ret : String.format("Wrong back press state: %s, start surface: %s",
                                          mSecondaryTasksSurfaceController.getClass().getName(),
@@ -873,7 +887,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             }
         }
 
-        boolean ret = mController.onBackPressed(isOnHomepage);
+        boolean ret = mController.onBackPressed();
         assert !BackPressManager.isEnabled()
                 || ret : String.format("Wrong back press state: %s, start surface: %s",
                                  mController.getClass().getName(), mStartSurfaceState);
@@ -1129,15 +1143,14 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // StartSurface is being supplied with OneShotSupplier, notification sends after
         // StartSurface is available to avoid missing events. More detail see:
         // https://crrev.com/c/2427428.
-        mController.onHomepageChanged(isHomepageShown());
+        mController.onHomepageChanged();
         notifyBackPressStateChanged();
     }
 
     // TODO(1347089): Remove this when the Start surface refactoring is enabled by default.
     private void notifyStartSurfaceStateChange() {
         if (mSecondaryTasksSurfaceController != null) {
-            mSecondaryTasksSurfaceController.onHomepageChanged(
-                    mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE);
+            mSecondaryTasksSurfaceController.onHomepageChanged();
         }
         mStartSurfaceSupplier.onAvailable((unused) -> {
             for (StartSurface.StateObserver observer : mStateObservers) {

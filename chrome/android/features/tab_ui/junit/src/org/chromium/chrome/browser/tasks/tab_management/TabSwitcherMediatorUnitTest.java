@@ -235,7 +235,7 @@ public class TabSwitcherMediatorUnitTest {
         mMediator = new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier);
+                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null);
 
         mMediator.initWithNative(controller, null);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
@@ -909,14 +909,14 @@ public class TabSwitcherMediatorUnitTest {
         new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier);
+                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null);
         assertEquals(16, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
 
         mModel.set(TabListContainerProperties.BOTTOM_PADDING, 0);
         new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.STRIP, mIncognitoReauthControllerSupplier);
+                TabListCoordinator.TabListMode.STRIP, mIncognitoReauthControllerSupplier, null);
         assertEquals(0, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
     }
 
