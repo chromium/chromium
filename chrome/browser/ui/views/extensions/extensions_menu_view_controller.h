@@ -15,8 +15,8 @@ class View;
 }  // namespace views
 
 class Browser;
-class PageSwitcherView;
 class ExtensionsContainer;
+class ExtensionsMenuPageView;
 class ExtensionsMenuMainPageView;
 class ToolbarActionsModel;
 
@@ -25,7 +25,7 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
  public:
   ExtensionsMenuViewController(Browser* browser,
                                ExtensionsContainer* extensions_container,
-                               PageSwitcherView* contents_view,
+                               views::View* bubble_contents,
                                views::BubbleDialogDelegate* dialog_delegate);
   ExtensionsMenuViewController(const ExtensionsMenuViewController&) = delete;
   const ExtensionsMenuViewController& operator=(
@@ -54,14 +54,17 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
 
  private:
   // Switches the current page to `page`.
-  void SwitchToPage(std::unique_ptr<views::View> page);
+  void SwitchToPage(std::unique_ptr<ExtensionsMenuPageView> page);
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsContainer> extensions_container_;
-  const raw_ptr<PageSwitcherView> contents_view_;
-  const raw_ptr<views::BubbleDialogDelegate> dialog_delegate_;
+  const raw_ptr<views::View> bubble_contents_;
+  const raw_ptr<views::BubbleDialogDelegate> bubble_delegate_;
 
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
+
+  // The current page visible in `bubble_contents_`.
+  raw_ptr<ExtensionsMenuPageView> current_page_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_
