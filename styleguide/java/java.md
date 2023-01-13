@@ -15,7 +15,7 @@ get to decide.
 
 [TOC]
 
-## Java 10 language Features
+## Java 10 Language Features
 
 ### Type deduction using `var`
 
@@ -38,29 +38,27 @@ try (var ignored = StrictModeContext.allowDiskWrites()) {
 ```
 
 ## Java 8 Language Features
-[Desugar](https://github.com/bazelbuild/bazel/blob/master/src/tools/android/java/com/google/devtools/build/android/desugar/Desugar.java)
-is used to rewrite some Java 7 & 8 language constructs in a way that is
-compatible with Java 6 (and thus all Android versions). Use of
-[these features](https://developer.android.com/studio/write/java8-support)
-is encouraged, but there are some gotchas:
+[D8] is used to rewrite some Java 7 & 8 language constructs in a way that is
+compatible with Java 6 (and thus all Android versions). Use of [these features]
+is encouraged.
 
-### Default Interface Methods
- * Desugar makes default interface methods work by copy & pasting the default
-   implementations into all implementing classes.
- * This technique is fine for infrequently-used interfaces, but should be
-   avoided (e.g. via a base class) if it noticeably increases method count.
+[D8]: https://developer.android.com/studio/command-line/d8
+[these features]: https://developer.android.com/studio/write/java8-support
 
-### Lambdas and Method References
- * These are syntactic sugar for creating anonymous inner classes.
- * Use them only where the cost of an extra class & method definition is
-   justified.
+## Java Library APIs
 
-### try-with-resources
- * Some library classes do not implement Closeable on older platform APIs.
-   Runtime exceptions are thrown if you use them with a try-with-resources.
-   Do not use the following classes in a try-with-resources:
-   * java.util.zip.ZipFile (implemented in API 19)
-   * java.net.Socket (implemented in API 19)
+Android provides the ability to bundle copies of `java.` APIs alongside
+application code, known as [Java Library Desugaring]. However, since this
+bundling comes with a performance cost, Chrome does not use it. Treat `java.`
+APIs the same as you would `android.` ones and guard them with
+`Build.VERSION.SDK_INT` checks [when necessary]. The one exception is if the
+method is [directly backported by D8] (these are okay to use, since they are
+lightweight). Android Lint will fail if you try to use an API without a
+corresponding `Build.VERSION.SDK_INT` guard or `@RequiresApi` annotation.
+
+[Java Library Desugaring]: https://developer.android.com/studio/write/java8-support-table
+[when necessary]: https://developer.android.com/reference/packages
+[directly backported by D8]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/r8/backported_methods.txt
 
 ## Other Language Features & APIs
 
