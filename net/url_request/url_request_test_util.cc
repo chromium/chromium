@@ -674,6 +674,7 @@ TestScopedURLInterceptor::TestScopedURLInterceptor(
 TestScopedURLInterceptor::~TestScopedURLInterceptor() {
   DCHECK(interceptor_->job_used());
   interceptor_->set_safe_to_delete();
+  interceptor_ = nullptr;
   URLRequestFilter::GetInstance()->RemoveUrlHandler(url_);
 }
 
