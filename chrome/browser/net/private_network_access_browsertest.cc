@@ -173,6 +173,8 @@ std::vector<WebFeature> AllAddressSpaceFeatures() {
       WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToPrivate,
       WebFeature::kPrivateNetworkAccessIgnoredPreflightError,
       WebFeature::kPrivateNetworkAccessFetchedWorkerScript,
+      WebFeature::kPrivateNetworkAccessFetchedSubFrame,
+      WebFeature::kPrivateNetworkAccessFetchedTopFrame,
       WebFeature::kPrivateNetworkAccessWithinWorker,
   };
 }
@@ -508,6 +510,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kPrivateNetworkAccessFetchedTopFrame, 1},
       }));
 }
 
@@ -539,6 +542,7 @@ IN_PROC_BROWSER_TEST_F(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kPrivateNetworkAccessFetchedTopFrame, 1},
       }));
 }
 
@@ -598,6 +602,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
 }
 
@@ -639,6 +644,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
 }
 
@@ -670,6 +676,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
 }
 

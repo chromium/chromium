@@ -3780,6 +3780,8 @@ enum WebFeature {
   kDisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning = 4439,
   kCSSPseudoHasContainsMixOfValidAndInvalid = 4440,
   kCSSPseudoIsWhereContainsMixOfValidAndInvalid = 4441,
+  kPrivateNetworkAccessFetchedSubFrame = 4442,
+  kPrivateNetworkAccessFetchedTopFrame = 4443,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

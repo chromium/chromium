@@ -41791,6 +41791,8 @@ Called by update_use_counter_feature_enum.py.-->
       label="DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning"/>
   <int value="4440" label="CSSPseudoHasContainsMixOfValidAndInvalid"/>
   <int value="4441" label="CSSPseudoIsWhereContainsMixOfValidAndInvalid"/>
+  <int value="4442" label="PrivateNetworkAccessFetchedSubFrame"/>
+  <int value="4443" label="PrivateNetworkAccessFetchedTopFrame"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

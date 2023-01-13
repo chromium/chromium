@@ -8051,6 +8051,11 @@ void NavigationRequest::RecordAddressSpaceFeature() {
   ContentBrowserClient* client = GetContentClient()->browser();
   client->LogWebFeatureForCurrentPage(initiator_render_frame_host,
                                       *optional_feature);
+  client->LogWebFeatureForCurrentPage(
+      initiator_render_frame_host,
+      IsInOutermostMainFrame()
+          ? blink::mojom::WebFeature::kPrivateNetworkAccessFetchedTopFrame
+          : blink::mojom::WebFeature::kPrivateNetworkAccessFetchedSubFrame);
 }
 
 void NavigationRequest::ComputePoliciesToCommit() {
