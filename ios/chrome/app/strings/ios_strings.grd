@@ -1522,6 +1522,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_NEW_INCOGNITO_TAB_PAGE" desc="Label for text saying the user is on the new Incognito tab page">
         New Incognito Tab Page
       </message>
+      <message name="IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT" desc="Accessibility hint spoken by VoiceOver to let the user know there is a new item. This string will be appended to an existing accesibility label when the UI is showing a little blue dot to attract the user's attention. For example, the label 'Default Browser' would become 'Default Browser, new item', which is why the string is not capitalized at its start. [iOS/iPadOS only]">
+        new item
+      </message>
       <message name="IDS_IOS_NEW_TAB_IPH_PROMOTION_TEXT" desc="Text for the New Tab Tip in-product help promotion, explaining that new tabs can be added and switched between. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the tab switcher to inform users how to create tabs and switch between them.">
         Add tabs and switch between pages
       </message>

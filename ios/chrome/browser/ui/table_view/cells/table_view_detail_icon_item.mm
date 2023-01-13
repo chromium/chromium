@@ -11,6 +11,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,6 +26,16 @@ constexpr CGFloat kCellLabelsWidthProportion = 3.f;
 
 // Minimum cell height when the cell has 2 lines.
 constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
+
+// kDotSize represents the size of the dot (i.e. its height and width).
+constexpr CGFloat kDotSize = 10.f;
+
+// kMarginAroundDot represents the amount of space before and after the dot,
+// between itself and the surrounding UILabels `text` and `detailText`.
+constexpr CGFloat kMarginAroundDot = 5.f;
+
+// kBlueDotColor is the specific blue used for the blue dot notification badge.
+constexpr NSString* kBlueDotColor = @"blue_600_color";
 
 }  // namespace
 
@@ -50,6 +62,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
       backgroundColor:self.iconBackgroundColor
          cornerRadius:self.iconCornerRadius];
   [cell setTextLayoutConstraintAxis:self.textLayoutConstraintAxis];
+  [cell setShowNotificationDot:self.showNotificationDot];
 }
 
 @end
@@ -69,6 +82,8 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 @property(nonatomic, strong) NSLayoutConstraint* textWidthConstraint;
 // Detail text. Can be nil if no text is set.
 @property(nonatomic, strong) UILabel* detailTextLabel;
+// View representing the colored notification dot wrapper.
+@property(nonatomic, strong) UIView* notificationDotUIView;
 
 @end
 
@@ -238,6 +253,16 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   }
 }
 
+- (void)setShowNotificationDot:(BOOL)showNotificationDot {
+  if (showNotificationDot) {
+    if (!self.notificationDotUIView) {
+      [self createNotificationDot];
+    }
+  } else {
+    [self removeNotificationDot];
+  }
+}
+
 #pragma mark - UIView
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -261,6 +286,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   [self setTextLayoutConstraintAxis:UILayoutConstraintAxisHorizontal];
   [self setIconImage:nil tintColor:nil backgroundColor:nil cornerRadius:0];
   [self setDetailText:nil];
+  [self setShowNotificationDot:NO];
 }
 
 #pragma mark - Private
@@ -300,6 +326,63 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   self.textLayoutConstraintAxis = UILayoutConstraintAxisHorizontal;
 }
 
+// Creates the UIView for the dot and adds it to the UI with the needed
+// constraints.
+- (void)createNotificationDot {
+  if (self.notificationDotUIView) {
+    return;
+  }
+
+  // Since we're inserting the dot at index 1, this DCHECK checks to make sure
+  // the main text's UILabel subview is there.
+  DCHECK(self.textStackView.subviews.count > 0);
+
+  // Since only the horizontal axis is supported for the notification dot, make
+  // sure we currently have the right axis.
+  DCHECK([self textLayoutConstraintAxis] == UILayoutConstraintAxisHorizontal);
+
+  // Make sure the notification dot is always snug next to the main text.
+  [self.textLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                    forAxis:UILayoutConstraintAxisHorizontal];
+
+  self.notificationDotUIView = [[UIView alloc] init];
+  UIView* dotUIView = [[UIView alloc] init];
+
+  self.notificationDotUIView.translatesAutoresizingMaskIntoConstraints = NO;
+  dotUIView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [self.notificationDotUIView addSubview:dotUIView];
+  [self.textStackView insertArrangedSubview:self.notificationDotUIView
+                                    atIndex:1];
+  [self.textStackView setCustomSpacing:kMarginAroundDot
+                             afterView:self.textLabel];
+  [self.textStackView setCustomSpacing:kMarginAroundDot
+                             afterView:self.notificationDotUIView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.notificationDotUIView.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kDotSize],
+    [dotUIView.widthAnchor constraintEqualToConstant:kDotSize],
+    [dotUIView.heightAnchor constraintEqualToConstant:kDotSize],
+    [dotUIView.centerYAnchor
+        constraintEqualToAnchor:self.textLabel.centerYAnchor],
+  ]];
+
+  dotUIView.layer.cornerRadius = kDotSize / 2;
+  dotUIView.backgroundColor = [UIColor colorNamed:kBlueDotColor];
+}
+
+// Removes the notification dot's UIView from the UI.
+- (void)removeNotificationDot {
+  if (!self.notificationDotUIView) {
+    return;
+  }
+
+  [self.textStackView setCustomSpacing:0 afterView:self.textLabel];
+  [self.notificationDotUIView removeFromSuperview];
+  self.notificationDotUIView = nil;
+}
+
 // Updates the cell such as it is layouted correctly with regard to the
 // preferred content size category, if it is an
 // `accessibilityContentSizeCategory` or not.
@@ -337,6 +420,11 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 }
 
 - (NSString*)accessibilityLabel {
+  if (self.notificationDotUIView) {
+    return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
+                                      l10n_util::GetNSString(
+                                          IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)];
+  }
   return self.textLabel.text;
 }
 
@@ -345,6 +433,12 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
+  if (self.notificationDotUIView) {
+    return @[ [NSString
+        stringWithFormat:@"%@, %@", self.textLabel.text,
+                         l10n_util::GetNSString(
+                             IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)] ];
+  }
   return @[ self.textLabel.text ];
 }
 

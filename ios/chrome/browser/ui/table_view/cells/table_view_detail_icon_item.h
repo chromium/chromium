@@ -12,7 +12,7 @@
 // TableViewDetailIconItem is a model class that uses TableViewDetailIconCell.
 @interface TableViewDetailIconItem : TableViewItem
 
-// The leading icon.  If empty, no icon will be shown.
+// The leading icon. If empty, no icon will be shown.
 @property(nonatomic, copy) UIImage* iconImage;
 
 // The background color of the icon.
@@ -36,6 +36,11 @@
 // Defaults to UILayoutConstraintAxisHorizontal.
 @property(nonatomic, assign) UILayoutConstraintAxis textLayoutConstraintAxis;
 
+// If set to YES, a kBlue600Color dot will be shown in the Cell. The
+// notification dot is only supported when `textLayoutConstraintAxis` is set to
+// `UILayoutConstraintAxisHorizontal`.
+@property(nonatomic, assign) BOOL showNotificationDot;
+
 @end
 
 // TableViewDetailIconCell implements an TableViewCell subclass containing an
@@ -46,7 +51,7 @@
 // the cell. Labels are truncated as needed to fit in the cell.
 @interface TableViewDetailIconCell : TableViewCell
 
-// UILabels corresponding to `text` and `detailText` from the item.
+// UILabel corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 
 // The layout constraint axis of the text labels within the cell. Defaults
@@ -66,6 +71,12 @@
 // Sets the detail text. `detailText` can be nil (or empty) to hide the detail
 // text.
 - (void)setDetailText:(NSString*)detailText;
+
+// Sets whether or not to show the notification dot. The notification dot is
+// only supported when `textLayoutConstraintAxis` is set to
+// `UILayoutConstraintAxisHorizontal`. If the notification dot is activated
+// while the axis is vertical, the app will crash through DCHECK.
+- (void)setShowNotificationDot:(BOOL)showNotificationDot;
 
 @end
 

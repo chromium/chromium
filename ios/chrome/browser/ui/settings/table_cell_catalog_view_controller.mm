@@ -76,6 +76,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeURLWithThirdRowText,
   ItemTypeURLWithBadgeImage,
   ItemTypeTextSettingsDetail,
+  ItemTypeTableViewWithBlueDot,
   ItemTypeLinkFooter,
   ItemTypeDetailText,
   ItemTypeMultiDetailText,
@@ -140,6 +141,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   symbolItem.iconTintColor = UIColor.whiteColor;
   symbolItem.iconCornerRadius = 7;
   [model addItem:symbolItem toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewDetailIconItem* tableViewBlueDotItem =
+      [[TableViewDetailIconItem alloc]
+          initWithType:ItemTypeTableViewWithBlueDot];
+  tableViewBlueDotItem.showNotificationDot = YES;
+  tableViewBlueDotItem.text = @"I have a blue dot badge!";
+  tableViewBlueDotItem.iconImage =
+      [UIImage imageNamed:@"default_browser_world"];
+  [model addItem:tableViewBlueDotItem
+      toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewTextItem* textItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeText];
