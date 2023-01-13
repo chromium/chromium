@@ -22,7 +22,7 @@
 
   [SameObject] readonly attribute IDBFactory indexedDB;
 
-  [SameObject] readonly attribute LockManager locks;
+  [SameObject, RuntimeEnabled=StorageBucketsLocks] readonly attribute LockManager locks;
 
   [SameObject, RaisesException] readonly attribute CacheStorage caches;
 

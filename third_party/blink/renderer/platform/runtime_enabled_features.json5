@@ -2724,6 +2724,12 @@
       base_feature: "StorageBuckets",
     },
     {
+      // Gates the `locks()` method on a storage bucket.
+      name: "StorageBucketsLocks",
+      status: "experimental",
+      base_feature: "StorageBucketsLocks",
+    },
+    {
       name: "StreamingDeclarativeShadowDOM",
       status: "experimental",
       base_feature: "StreamingDeclarativeShadowDOM",
