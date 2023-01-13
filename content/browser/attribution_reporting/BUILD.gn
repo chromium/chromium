@@ -69,7 +69,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
 
     deps = [
       "//base",
-      "//testing/gtest",
+      "//testing/gmock",
     ]
 
     data_deps = [ "//third_party/sqlite:sqlite_dev_shell" ]

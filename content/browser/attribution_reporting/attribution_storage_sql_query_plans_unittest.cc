@@ -13,11 +13,14 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_query_plan_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace {
+
+using ::testing::AllOf;
 
 class AttributionSqlQueryPlanTest : public testing::Test {
  public:
@@ -53,85 +56,60 @@ class AttributionSqlQueryPlanTest : public testing::Test {
 };
 
 TEST_F(AttributionSqlQueryPlanTest, kMinPrioritySql) {
-  SqlQueryPlan plan = GetPlan(attribution_queries::kMinPrioritySql);
-  auto matcher = SqlIndexMatcher("event_level_reports_by_source_id");
-  EXPECT_TRUE(plan.UsesIndex(matcher)) << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kMinPrioritySql),
+              UsesIndex("event_level_reports_by_source_id"));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetMatchingSourcesSql) {
-  SqlQueryPlan plan = GetPlan(attribution_queries::kGetMatchingSourcesSql);
-  auto matcher = SqlIndexMatcher("sources_by_expiry_time");
-  EXPECT_TRUE(plan.UsesIndex(matcher)) << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kGetMatchingSourcesSql),
+              UsesIndex("sources_by_expiry_time"));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSelectExpiredSourcesSql) {
-  SqlQueryPlan plan = GetPlan(attribution_queries::kSelectExpiredSourcesSql);
-  EXPECT_TRUE(plan.UsesIndex(SqlIndexMatcher("sources_by_expiry_time")
-                                 .set_type(SqlIndexMatcher::Type::kCovering)))
-      << plan;
-  EXPECT_TRUE(
-      plan.UsesIndex(SqlIndexMatcher("event_level_reports_by_source_id")))
-      << plan;
-  EXPECT_TRUE(plan.UsesIndex(SqlIndexMatcher("aggregate_source_id_idx")))
-      << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kSelectExpiredSourcesSql),
+              AllOf(UsesCoveringIndex("sources_by_expiry_time"),
+                    UsesIndex("event_level_reports_by_source_id"),
+                    UsesIndex("aggregate_source_id_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSelectInactiveSourcesSql) {
-  SqlQueryPlan plan = GetPlan(attribution_queries::kSelectInactiveSourcesSql);
-  EXPECT_TRUE(plan.UsesIndex(
-      SqlIndexMatcher("sources_by_active_destination_site_reporting_origin")
-          .set_type(SqlIndexMatcher::Type::kCovering)
-          .set_columns({"event_level_active", "aggregatable_active"})))
-      << plan;
-  EXPECT_TRUE(
-      plan.UsesIndex(SqlIndexMatcher("event_level_reports_by_source_id")))
-      << plan;
-  EXPECT_TRUE(plan.UsesIndex(SqlIndexMatcher("aggregate_source_id_idx")))
-      << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kSelectInactiveSourcesSql),
+              AllOf(UsesCoveringIndex(
+                        "sources_by_active_destination_site_reporting_origin",
+                        {"event_level_active", "aggregatable_active"}),
+                    UsesIndex("event_level_reports_by_source_id"),
+                    UsesIndex("aggregate_source_id_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kScanCandidateData) {
-  SqlQueryPlan plan = GetPlan(attribution_queries::kScanCandidateData,
-                              SqlFullScanReason::kNotOptimized);
-  EXPECT_TRUE(
-      plan.UsesIndex(SqlIndexMatcher("event_level_reports_by_source_id")))
-      << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kScanCandidateData,
+                      SqlFullScanReason::kNotOptimized),
+              UsesIndex("event_level_reports_by_source_id"));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteVestigialConversionSql) {
-  SqlQueryPlan plan =
-      GetPlan(attribution_queries::kDeleteVestigialConversionSql);
-  EXPECT_TRUE(
-      plan.UsesIndex(SqlIndexMatcher("event_level_reports_by_source_id")))
-      << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteVestigialConversionSql),
+              UsesIndex("event_level_reports_by_source_id"));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountSourcesSql) {
-  SqlQueryPlan plan = GetPlan(attribution_queries::kCountSourcesSql);
-  EXPECT_TRUE(
-      plan.UsesIndex(SqlIndexMatcher("active_sources_by_source_origin")))
-      << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kCountSourcesSql),
+              UsesIndex("active_sources_by_source_origin"));
 }
+
 TEST_F(AttributionSqlQueryPlanTest, kDedupKeySql) {
-  SqlQueryPlan plan = GetPlan(attribution_queries::kDedupKeySql);
-  EXPECT_TRUE(plan.UsesIndex(
-      SqlIndexMatcher().set_type(SqlIndexMatcher::Type::kPrimaryKey)))
-      << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kDedupKeySql), UsesPrimaryKey());
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kScanCandidateDataAggregatable) {
-  SqlQueryPlan plan =
-      GetPlan(attribution_queries::kScanCandidateDataAggregatable,
-              SqlFullScanReason::kNotOptimized);
-  EXPECT_TRUE(plan.UsesIndex(SqlIndexMatcher("aggregate_source_id_idx")))
-      << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kScanCandidateDataAggregatable,
+                      SqlFullScanReason::kNotOptimized),
+              UsesIndex("aggregate_source_id_idx"));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteAggregationsSql) {
-  SqlQueryPlan plan = GetPlan(attribution_queries::kDeleteAggregationsSql);
-  EXPECT_TRUE(plan.UsesIndex(SqlIndexMatcher("aggregate_source_id_idx")
-                                 .set_type(SqlIndexMatcher::Type::kCovering)))
-      << plan;
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteAggregationsSql),
+              UsesCoveringIndex("aggregate_source_id_idx"));
 }
 
 }  // namespace

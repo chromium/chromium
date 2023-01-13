@@ -4,7 +4,10 @@
 
 #include "content/browser/attribution_reporting/sql_query_plan_test_util.h"
 
+#include <ostream>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -17,7 +20,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "base/types/expected.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -29,24 +34,60 @@ base::FilePath GetExecPath(base::StringPiece name) {
   return path.AppendASCII(name);
 }
 
-}  // namespace
+class SqlIndexMatcher {
+ public:
+  using is_gtest_matcher = void;
 
-SqlIndexMatcher::SqlIndexMatcher() = default;
-SqlIndexMatcher::SqlIndexMatcher(std::string name) : name_(std::move(name)) {}
-SqlIndexMatcher::~SqlIndexMatcher() = default;
+  // Specifies the type of index that we should match with. Note this also
+  // covers primary keys which are implemented as indexes in sqlite.
+  enum class Type {
+    kAny,         // USING INDEX, or any of the other options with match
+    kCovering,    // USING COVERING INDEX
+    kPrimaryKey,  // USING PRIMARY KEY
+  };
 
-SqlIndexMatcher::SqlIndexMatcher(const SqlIndexMatcher&) = default;
-SqlIndexMatcher& SqlIndexMatcher::operator=(const SqlIndexMatcher&) = default;
+  // Every sqlite index includes a list of indexed columns. However, some query
+  // plans will only use a subset of the columns in the index. This matcher is
+  // designed to enforce that a given subset of columns are actually used by the
+  // query planner. Note that this list doesn't have to be exhaustive, and
+  // plans that use a superset of columns listed in `columns` will still match.
+  SqlIndexMatcher(std::string name, std::vector<std::string> columns, Type type)
+      : name_(std::move(name)), columns_(std::move(columns)), type_(type) {
+    switch (type_) {
+      case Type::kAny:
+      case Type::kCovering:
+        CHECK_NE(name_, "");
+        break;
+      case Type::kPrimaryKey:
+        CHECK_EQ(name_, "");
+        break;
+    }
+  }
 
-SqlQueryPlan::SqlQueryPlan(std::string query, std::string plan)
-    : query_(std::move(query)), plan_(std::move(plan)) {}
+  bool MatchAndExplain(const SqlQueryPlan&, std::ostream*) const;
 
-SqlQueryPlan::~SqlQueryPlan() = default;
+  void DescribeTo(std::ostream* out) const {
+    return DescribeTo(out, /*negated=*/false);
+  }
 
-bool SqlQueryPlan::UsesIndex(const SqlIndexMatcher& matcher) const {
-  base::StringPiece plan_piece(plan_);
+  void DescribeNegationTo(std::ostream* out) const {
+    return DescribeTo(out, /*negated=*/true);
+  }
 
-  size_t start_pos = matcher.FindIndexStart(plan_piece);
+ private:
+  void DescribeTo(std::ostream*, bool negated) const;
+  size_t FindIndexStart(base::StringPiece plan) const;
+
+  std::string name_;
+  std::vector<std::string> columns_;
+  Type type_;
+};
+
+bool SqlIndexMatcher::MatchAndExplain(const SqlQueryPlan& plan,
+                                      std::ostream*) const {
+  base::StringPiece plan_piece(plan.plan);
+
+  size_t start_pos = FindIndexStart(plan_piece);
   if (start_pos == std::string::npos) {
     return false;
   }
@@ -56,25 +97,19 @@ bool SqlQueryPlan::UsesIndex(const SqlIndexMatcher& matcher) const {
   base::StringPiece index_text =
       plan_piece.substr(start_pos, end_pos - start_pos);
 
-  return base::ranges::all_of(matcher.columns(),
-                              [index_text](const std::string& col) {
-                                return base::Contains(index_text, col);
-                              });
-}
-
-bool SqlQueryPlan::HasFullTableScan() const {
-  return base::Contains(plan_, "SCAN");
+  return base::ranges::all_of(columns_, [index_text](const std::string& col) {
+    return base::Contains(index_text, col);
+  });
 }
 
 size_t SqlIndexMatcher::FindIndexStart(base::StringPiece plan) const {
-  std::string covering_prefix = base::StrCat({"USING COVERING INDEX ", name()});
-  std::string noncovering_prefix = base::StrCat({"USING INDEX ", name()});
+  std::string covering_prefix = base::StrCat({"USING COVERING INDEX ", name_});
+  std::string noncovering_prefix = base::StrCat({"USING INDEX ", name_});
   std::string primary_prefix = "USING PRIMARY KEY ";
-  switch (type()) {
+  switch (type_) {
     case SqlIndexMatcher::Type::kCovering:
       return plan.find(covering_prefix);
     case SqlIndexMatcher::Type::kPrimaryKey:
-      DCHECK(name().empty());
       return plan.find(primary_prefix);
     case SqlIndexMatcher::Type::kAny:
       for (const base::StringPiece prefix :
@@ -88,8 +123,63 @@ size_t SqlIndexMatcher::FindIndexStart(base::StringPiece plan) const {
   }
 }
 
+void SqlIndexMatcher::DescribeTo(std::ostream* out, bool negated) const {
+  if (negated) {
+    *out << "does not use ";
+  } else {
+    *out << "uses ";
+  }
+
+  switch (type_) {
+    case Type::kAny:
+      *out << "index " << name_;
+      break;
+    case Type::kCovering:
+      *out << "covering index " << name_;
+      break;
+    case Type::kPrimaryKey:
+      *out << "primary key";
+      break;
+  }
+
+  if (columns_.empty()) {
+    return;
+  }
+
+  *out << " with columns";
+  const char* separator = " ";
+
+  for (const auto& column : columns_) {
+    *out << separator << column;
+    separator = ", ";
+  }
+}
+
+bool HasFullTableScan(const SqlQueryPlan& plan) {
+  return base::Contains(plan.plan, "SCAN");
+}
+
+}  // namespace
+
+testing::Matcher<SqlQueryPlan> UsesIndex(std::string name,
+                                         std::vector<std::string> columns) {
+  return SqlIndexMatcher(std::move(name), std::move(columns),
+                         SqlIndexMatcher::Type::kAny);
+}
+
+testing::Matcher<SqlQueryPlan> UsesCoveringIndex(
+    std::string name,
+    std::vector<std::string> columns) {
+  return SqlIndexMatcher(std::move(name), std::move(columns),
+                         SqlIndexMatcher::Type::kCovering);
+}
+
+testing::Matcher<SqlQueryPlan> UsesPrimaryKey() {
+  return SqlIndexMatcher("", {}, SqlIndexMatcher::Type::kPrimaryKey);
+}
+
 std::ostream& operator<<(std::ostream& out, const SqlQueryPlan& plan) {
-  return out << plan.query_ << "\n" << plan.plan_;
+  return out << plan.query << "\n" << plan.plan;
 }
 
 SqlQueryPlanExplainer::SqlQueryPlanExplainer(base::FilePath db_path)
@@ -98,7 +188,8 @@ SqlQueryPlanExplainer::SqlQueryPlanExplainer(base::FilePath db_path)
 
 SqlQueryPlanExplainer::~SqlQueryPlanExplainer() = default;
 
-absl::optional<SqlQueryPlan> SqlQueryPlanExplainer::GetPlan(
+base::expected<SqlQueryPlan, SqlQueryPlanExplainer::Error>
+SqlQueryPlanExplainer::GetPlan(
     std::string query,
     absl::optional<SqlFullScanReason> full_scan_reason) {
   base::CommandLine command_line(shell_path_);
@@ -108,26 +199,26 @@ absl::optional<SqlQueryPlan> SqlQueryPlanExplainer::GetPlan(
   command_line.AppendArg(explain_query);
 
   std::string output;
-  if (!base::GetAppOutputAndError(command_line, &output)) {
-    return absl::nullopt;
+  if (!base::GetAppOutputAndError(command_line, &output) ||
+      !base::StartsWith(output, "QUERY PLAN")) {
+    return base::unexpected(Error::kInvalidOutput);
   }
 
-  if (!base::StartsWith(output, "QUERY PLAN")) {
-    return absl::nullopt;
+  SqlQueryPlan plan{
+      .query = std::move(query),
+      .plan = std::move(output),
+  };
+
+  bool plan_has_full_scan = HasFullTableScan(plan);
+
+  if (plan_has_full_scan && !full_scan_reason.has_value()) {
+    return base::unexpected(Error::kMissingFullScanAnnotation);
   }
 
-  SqlQueryPlan plan(std::move(query), std::move(output));
-
-  if (full_scan_reason.has_value()) {
-    EXPECT_TRUE(plan.HasFullTableScan())
-        << "Plan has out of date SqlFullScanReason. No full scan was found:\n"
-        << plan;
-  } else {
-    EXPECT_FALSE(plan.HasFullTableScan())
-        << "Plan has a full table scan, which must be "
-           "annotated with a SqlFullScanReason:\n"
-        << plan;
+  if (!plan_has_full_scan && full_scan_reason.has_value()) {
+    return base::unexpected(Error::kExtraneousFullScanAnnotation);
   }
+
   return plan;
 }
 
