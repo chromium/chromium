@@ -5288,6 +5288,10 @@ TEST_F(LegacySWPictureLayerImplTest, ScrollPropagatesToPending) {
 TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextInvalidatesPendingTree) {
   gfx::Size layer_bounds(100, 100);
   SetupPendingTree(FakeRasterSource::CreateFilledWithText(layer_bounds));
+  // LCD text is disallowed before SetContentsOpaque(true).
+  EXPECT_FALSE(pending_layer()->can_use_lcd_text());
+  pending_layer()->SetContentsOpaque(true);
+  pending_layer()->UpdateTiles();
 
   EXPECT_TRUE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->has_tiles());
@@ -5329,6 +5333,10 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTree) {
   float page_scale = 4.f;
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), page_scale, 1.0f,
                                     page_scale);
+  // LCD text is disallowed before SetContentsOpaque(true).
+  EXPECT_FALSE(pending_layer()->can_use_lcd_text());
+  pending_layer()->SetContentsOpaque(true);
+  pending_layer()->UpdateTiles();
   EXPECT_TRUE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->can_use_lcd_text());
   ActivateTree();
@@ -5367,6 +5375,10 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTreeWith2dScale) {
   float page_scale = 4.f;
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), ideal_scale, 1.0f,
                                     page_scale);
+  // LCD text is disallowed before SetContentsOpaque(true).
+  EXPECT_FALSE(pending_layer()->can_use_lcd_text());
+  pending_layer()->SetContentsOpaque(true);
+  pending_layer()->UpdateTiles();
   EXPECT_TRUE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->can_use_lcd_text());
   ActivateTree();
@@ -6248,6 +6260,7 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
   ActivateTree();
 
   active_layer()->SetContentsOpaque(true);
+  active_layer()->SetSafeOpaqueBackgroundColor(SkColors::kWhite);
   active_layer()->draw_properties().visible_layer_rect =
       gfx::Rect(0, 0, 1000, 1000);
   active_layer()->UpdateTiles();

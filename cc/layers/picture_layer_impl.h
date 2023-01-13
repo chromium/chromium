@@ -295,7 +295,7 @@ class CC_EXPORT PictureLayerImpl
   bool directly_composited_image_default_raster_scale_changed_ : 1;
 
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
-      LCDTextDisallowedReason::kNone;
+      LCDTextDisallowedReason::kNoText;
 
   // If this scale is not zero, it indicates that this layer is a directly
   // composited image layer (i.e. the only thing drawn into this layer is an
