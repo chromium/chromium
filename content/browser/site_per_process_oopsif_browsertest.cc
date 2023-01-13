@@ -355,6 +355,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
             parent_site_instance->GetSiteInfo().site_url());
 }
 
+namespace {
+
+GURL GetFrameBaseUrl(RenderFrameHostImpl* rfhi) {
+  return GURL(EvalJs(rfhi, "document.baseURI").ExtractString());
+}
+
+GURL GetFrameBaseUrl(Shell* shell) {
+  return GURL(EvalJs(shell, "document.baseURI").ExtractString());
+}
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
                        SrcdocSandboxedFrameInsideAboutBlank) {
   // Open main page on a.foo.com. It will be put in a site instance with site
@@ -379,7 +391,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
   {
     std::string js_str =
         "const frame = document.createElement('iframe'); "
-        "frame.sandbox = ''; "
+        "frame.sandbox = 'allow-scripts'; "
         "frame.srcdoc = 'foo'; "
         "document.body.appendChild(frame);";
     EXPECT_TRUE(ExecJs(child, js_str));
@@ -395,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
   // TODO(https://crbug.com/1356658): The srcdoc iframe should really report
   // a base url that matches `main_url`.
   EXPECT_EQ(GURL("about:blank"),
-            grand_child->current_frame_host()->GetBaseUrl());
+            GetFrameBaseUrl(grand_child->current_frame_host()));
 }
 
 // Similar to SrcdocSandboxedFrameWithNonSiteParent, but this time the srcdoc
@@ -1419,15 +1431,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   ASSERT_EQ(1U, root->child_count());
   FrameTreeNode* child = root->child_at(0);
   // Make sure the parent's base url propagates properly to the child.
-  GURL parent_base_url = root->current_frame_host()->GetBaseUrl();
-  GURL child_base_url = child->current_frame_host()->GetBaseUrl();
+  GURL parent_base_url = GetFrameBaseUrl(root->current_frame_host());
+  GURL child_base_url = GetFrameBaseUrl(child->current_frame_host());
+  // Verify child inherited base url from parent as expected.
   EXPECT_EQ(parent_base_url, child_base_url);
-
-  // Verify child got base url from parent as expected.
-  EXPECT_EQ(parent_base_url, child->current_frame_host()->GetBaseUrl());
-  EXPECT_EQ(parent_base_url,
-            GURL(EvalJs(child->current_frame_host(), "document.baseURI")
-                     .ExtractString()));
 
   // Switch the base url of the root.
   GURL new_root_base_url("http://b.com/");
@@ -1438,8 +1445,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
         "document.head.appendChild(base_element);",
         new_root_base_url.spec().c_str());
     EXPECT_TRUE(ExecJs(shell(), js_str));
-    EXPECT_EQ(new_root_base_url,
-              GURL(EvalJs(shell(), "document.baseURI").ExtractString()));
+    EXPECT_EQ(new_root_base_url, GetFrameBaseUrl(shell()));
   }
 
   // Create sandboxed srcdoc grandchild frame.
@@ -1458,14 +1464,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   // Make sure the child's snapshotted base url propagates properly to the
   // grandchild. And make sure child's snapshotted base url hasn't changed with
   // the creation of the child.
-  EXPECT_EQ(parent_base_url, child->current_frame_host()->GetBaseUrl());
-  EXPECT_EQ(parent_base_url, grandchild->current_frame_host()->GetBaseUrl());
-  EXPECT_EQ(parent_base_url,
-            GURL(EvalJs(child->current_frame_host(), "document.baseURI")
-                     .ExtractString()));
-  EXPECT_EQ(parent_base_url,
-            GURL(EvalJs(grandchild->current_frame_host(), "document.baseURI")
-                     .ExtractString()));
+  EXPECT_EQ(parent_base_url, GetFrameBaseUrl(child->current_frame_host()));
+  EXPECT_EQ(parent_base_url, GetFrameBaseUrl(grandchild->current_frame_host()));
 }
 
 // Test to verify that nested sandboxed iframes aren't put in the same
@@ -1742,13 +1742,10 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest, SrcdocIframe) {
   EXPECT_EQ(GURL(url::kAboutSrcdocURL), child->current_url());
   EXPECT_EQ("srcdoc test content", child->srcdoc_value());
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_EQ(main_url, child->parent()->GetBaseUrl());
     EXPECT_EQ(main_url, child->current_frame_host()
                             ->snapshotted_base_url_from_parent_for_testing());
   }
-  EXPECT_EQ(main_url,
-            GURL(EvalJs(child->current_frame_host(), "document.baseURI")
-                     .ExtractString()));
+  EXPECT_EQ(main_url, GetFrameBaseUrl(child->current_frame_host()));
 
   // Reset the srcdoc attribute, and verify the FrameTreeNode is updated
   // accordingly.
@@ -1773,11 +1770,7 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest, SrcdocIframe) {
   EXPECT_EQ("", child->srcdoc_value());
   // The base url is set on the parent, and not cleared with the child's srcdoc
   // information.
-  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled())
-    EXPECT_EQ(main_url, child->parent()->GetBaseUrl());
-  EXPECT_EQ(main_url,
-            GURL(EvalJs(child->current_frame_host(), "document.baseURI")
-                     .ExtractString()));
+  EXPECT_EQ(main_url, GetFrameBaseUrl(child->current_frame_host()));
 
   // Repeat the srcdoc attribute tests from above, but this time using
   // src='about:srcdoc' to make the frame srcdoc.
@@ -1796,13 +1789,10 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest, SrcdocIframe) {
   EXPECT_EQ(GURL(url::kAboutSrcdocURL), child2->current_url());
   EXPECT_EQ("", child2->srcdoc_value());
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_EQ(main_url, child2->parent()->GetBaseUrl());
     EXPECT_EQ(main_url, child2->current_frame_host()
                             ->snapshotted_base_url_from_parent_for_testing());
   }
-  EXPECT_EQ(main_url,
-            GURL(EvalJs(child->current_frame_host(), "document.baseURI")
-                     .ExtractString()));
+  EXPECT_EQ(main_url, GetFrameBaseUrl(child->current_frame_host()));
 
   // Reset the src attribute, and verify the FrameTreeNode is updated
   // accordingly.
@@ -1853,8 +1843,7 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest, FrameChangesBaseUrl) {
       root_ftn->current_frame_host()->base_url_from_renderer_for_testing());
   EXPECT_EQ(GURL(), root_ftn->current_frame_host()
                         ->snapshotted_base_url_from_parent_for_testing());
-  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled())
-    EXPECT_EQ(main_url, root_ftn->current_frame_host()->GetBaseUrl());
+  EXPECT_EQ(main_url, GetFrameBaseUrl(root_ftn->current_frame_host()));
 
   // The page modifies its base element to set a non-standard value the browser
   // knows nothing about, so the renderer sends it to the browser.
@@ -1877,8 +1866,8 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest, FrameChangesBaseUrl) {
     EXPECT_EQ(
         foo_url,
         root_ftn->current_frame_host()->base_url_from_renderer_for_testing());
-    EXPECT_EQ(foo_url, root_ftn->current_frame_host()->GetBaseUrl());
   }
+  EXPECT_EQ(foo_url, GetFrameBaseUrl(root_ftn->current_frame_host()));
   EXPECT_EQ(GURL(), root_ftn->current_frame_host()
                         ->snapshotted_base_url_from_parent_for_testing());
 
@@ -1897,8 +1886,7 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest, FrameChangesBaseUrl) {
       root_ftn->current_frame_host()->base_url_from_renderer_for_testing());
   EXPECT_EQ(GURL(), root_ftn->current_frame_host()
                         ->snapshotted_base_url_from_parent_for_testing());
-  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled())
-    EXPECT_EQ(main_url, root_ftn->current_frame_host()->GetBaseUrl());
+  EXPECT_EQ(main_url, GetFrameBaseUrl(root_ftn->current_frame_host()));
 }
 
 // A test to make sure that a sandboxed srcdoc iframe correctly updates its
@@ -1925,11 +1913,8 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest,
                             ->GetPrimaryFrameTree()
                             .root();
   auto* child = root->child_at(0);
-  EXPECT_EQ(main_url, GURL(EvalJs(child, "document.baseURI").ExtractString()));
-  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_EQ(main_url, root->current_frame_host()->GetBaseUrl());
-    EXPECT_EQ(main_url, child->current_frame_host()->GetBaseUrl());
-  }
+  EXPECT_EQ(main_url, GetFrameBaseUrl(child->current_frame_host()));
+  EXPECT_EQ(main_url, GetFrameBaseUrl(root->current_frame_host()));
 
   // Srcdoc frame changes its base url.
   GURL b_url("http://b.com/");
@@ -1940,11 +1925,11 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest,
         "document.head.appendChild(base_element);",
         b_url.spec().c_str());
     EXPECT_TRUE(ExecJs(child, js_str));
-    EXPECT_EQ(b_url, GURL(EvalJs(child, "document.baseURI").ExtractString()));
+    EXPECT_EQ(b_url, GetFrameBaseUrl(child->current_frame_host()));
   }
+  EXPECT_EQ(main_url, GetFrameBaseUrl(root->current_frame_host()));
+  EXPECT_EQ(b_url, GetFrameBaseUrl(child->current_frame_host()));
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_EQ(main_url, root->current_frame_host()->GetBaseUrl());
-    EXPECT_EQ(b_url, child->current_frame_host()->GetBaseUrl());
     EXPECT_EQ(
         b_url,
         child->current_frame_host()->base_url_from_renderer_for_testing());
@@ -1961,14 +1946,13 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest,
         "document.head.appendChild(base_element);",
         c_url.spec().c_str());
     EXPECT_TRUE(ExecJs(root, js_str));
-    EXPECT_EQ(c_url, GURL(EvalJs(root, "document.baseURI").ExtractString()));
+    EXPECT_EQ(c_url, GetFrameBaseUrl(root->current_frame_host()));
   }
-  EXPECT_EQ(b_url, GURL(EvalJs(child, "document.baseURI").ExtractString()));
+  EXPECT_EQ(b_url, GetFrameBaseUrl(child->current_frame_host()));
+  EXPECT_EQ(c_url, GetFrameBaseUrl(root->current_frame_host()));
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_EQ(c_url, root->current_frame_host()->GetBaseUrl());
     EXPECT_EQ(c_url,
               root->current_frame_host()->base_url_from_renderer_for_testing());
-    EXPECT_EQ(b_url, child->current_frame_host()->GetBaseUrl());
     // The snapshotted base url from the root doesn't change.
     EXPECT_EQ(main_url, child->current_frame_host()
                             ->snapshotted_base_url_from_parent_for_testing());
@@ -1981,19 +1965,17 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest,
   {
     EXPECT_TRUE(ExecJs(child, "document.querySelector('base').remove();"));
     if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-      EXPECT_EQ(main_url,
-                GURL(EvalJs(child, "document.baseURI").ExtractString()));
+      EXPECT_EQ(main_url, GetFrameBaseUrl(child->current_frame_host()));
     } else {
       // TODO(wjmaclean): we know this expectation is wrong, and needs to be
       // fixed. https://crbug.com/1356658
-      EXPECT_EQ(c_url, GURL(EvalJs(child, "document.baseURI").ExtractString()));
+      EXPECT_EQ(c_url, GetFrameBaseUrl(child->current_frame_host()));
     }
   }
+  EXPECT_EQ(c_url, GetFrameBaseUrl(root->current_frame_host()));
   if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_EQ(c_url, root->current_frame_host()->GetBaseUrl());
     EXPECT_EQ(c_url,
               root->current_frame_host()->base_url_from_renderer_for_testing());
-    EXPECT_EQ(main_url, child->current_frame_host()->GetBaseUrl());
     // The snapshotted base url from the root still doesn't change.
     EXPECT_EQ(main_url, child->current_frame_host()
                             ->snapshotted_base_url_from_parent_for_testing());
@@ -2023,7 +2005,7 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest,
         "document.head.appendChild(base_element);",
         b_url.spec().c_str());
     EXPECT_TRUE(ExecJs(root, js_str));
-    EXPECT_EQ(b_url, GURL(EvalJs(root, "document.baseURI").ExtractString()));
+    EXPECT_EQ(b_url, GetFrameBaseUrl(root->current_frame_host()));
   }
 
   // Create srcdoc iframe inheriting a base url of b.com.
@@ -2037,31 +2019,23 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest,
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
   auto* child = root->child_at(0);
-  EXPECT_EQ(b_url, GURL(EvalJs(child, "document.baseURI").ExtractString()));
-  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_EQ(b_url, root->current_frame_host()->GetBaseUrl());
-    EXPECT_EQ(b_url, child->current_frame_host()->GetBaseUrl());
-  }
+  EXPECT_EQ(b_url, GetFrameBaseUrl(child->current_frame_host()));
+  EXPECT_EQ(b_url, GetFrameBaseUrl(root->current_frame_host()));
 
   // Remove base element from root.
   {
     EXPECT_TRUE(ExecJs(root, "document.querySelector('base').remove();"));
-    EXPECT_EQ(main_url, GURL(EvalJs(root, "document.baseURI").ExtractString()));
+    EXPECT_EQ(main_url, GetFrameBaseUrl(root->current_frame_host()));
   }
-  EXPECT_EQ(b_url, GURL(EvalJs(child, "document.baseURI").ExtractString()));
-  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_EQ(main_url, root->current_frame_host()->GetBaseUrl());
-    EXPECT_EQ(b_url, child->current_frame_host()->GetBaseUrl());
-  }
+  EXPECT_EQ(b_url, GetFrameBaseUrl(child->current_frame_host()));
+  EXPECT_EQ(main_url, GetFrameBaseUrl(root->current_frame_host()));
 
   // Reload child.
   {
     EXPECT_TRUE(ExecJs(child, "location.reload();"));
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
-  EXPECT_EQ(main_url, GURL(EvalJs(child, "document.baseURI").ExtractString()));
-  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled())
-    EXPECT_EQ(main_url, child->current_frame_host()->GetBaseUrl());
+  EXPECT_EQ(main_url, GetFrameBaseUrl(child->current_frame_host()));
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
@@ -2081,7 +2055,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
       root_ftn->current_frame_host()->base_url_from_renderer_for_testing());
   EXPECT_EQ(GURL(), root_ftn->current_frame_host()
                         ->snapshotted_base_url_from_parent_for_testing());
-  EXPECT_EQ(main_url, root_ftn->current_frame_host()->GetBaseUrl());
+  EXPECT_EQ(main_url, GetFrameBaseUrl(root_ftn->current_frame_host()));
 
   // The page modifies its base element to set a non-standard value the browser
   // knows nothing about, so the renderer sends it to the browser.
@@ -2105,7 +2079,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
       root_ftn->current_frame_host()->base_url_from_renderer_for_testing());
   EXPECT_EQ(GURL(), root_ftn->current_frame_host()
                         ->snapshotted_base_url_from_parent_for_testing());
-  EXPECT_EQ(foo_url, root_ftn->current_frame_host()->GetBaseUrl());
+  EXPECT_EQ(foo_url, GetFrameBaseUrl(root_ftn->current_frame_host()));
 
   // When the frame navigates to a new document, we don't expect the old base
   // url to persist.
@@ -2116,7 +2090,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
       root_ftn->current_frame_host()->base_url_from_renderer_for_testing());
   EXPECT_EQ(GURL(), root_ftn->current_frame_host()
                         ->snapshotted_base_url_from_parent_for_testing());
-  EXPECT_EQ(main_url2, root_ftn->current_frame_host()->GetBaseUrl());
+  EXPECT_EQ(main_url2, GetFrameBaseUrl(root_ftn->current_frame_host()));
 }
 
 // This test verifies that using enterprise policy to disable
@@ -2136,7 +2110,7 @@ IN_PROC_BROWSER_TEST_P(BaseUrlInheritanceBehaviorEnterprisePolicyTest,
   StartEmbeddedServer();
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  EXPECT_NE("about:blank", EvalJs(shell(), "document.baseURI").ExtractString());
+  EXPECT_NE(GURL("about:blank"), GetFrameBaseUrl(shell()));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
@@ -2144,7 +2118,7 @@ IN_PROC_BROWSER_TEST_P(BaseUrlInheritanceBehaviorEnterprisePolicyTest,
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(ExecJs(root, "popup = window.open('about:blank');"));
   Shell* popup = new_shell_observer.GetShell();
-  EXPECT_EQ("about:blank", EvalJs(popup, "document.baseURI").ExtractString());
+  EXPECT_EQ(GURL("about:blank"), GetFrameBaseUrl(popup));
 }
 
 // A test to verify the initial stages of the initiator base url plumbing work.
