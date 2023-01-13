@@ -248,6 +248,12 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
   tasks_.pop_front();
   // NB immediate tasks have a different pipeline to delayed ones.
   if (tasks_.empty()) {
+    recordreplay::Assert("[RUN-1127] WorkQueue::TakeTaskFromWorkQueue #1 %d %d %zu %zu",
+                         recordreplay::PointerId(this),
+                         (int)queue_type_,
+                         tasks_.size(),
+                         tasks_.max_size());
+
     // NB delayed tasks are inserted via Push, no don't need to reload those.
     if (queue_type_ == QueueType::kImmediate) {
       // Short-circuit the queue reload so that OnPopMinQueueInSet does the
