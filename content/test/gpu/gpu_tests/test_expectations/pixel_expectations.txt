@@ -412,6 +412,7 @@ crbug.com/1382332 [ android-chromium android-pixel-4 android-r angle-opengles pa
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ fuchsia ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ linux nvidia-0x2184 passthrough debug angle-vulkan ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 # WebGL tests are seeing occasional hangs on Linux FYI Release (AMD RX 5500 XT).
 crbug.com/1396451 [ linux desktop amd-0x7340 ] Pixel_WebGLSadCanvas [ RetryOnFailure ]
