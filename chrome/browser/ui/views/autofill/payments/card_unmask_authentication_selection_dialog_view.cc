@@ -27,9 +27,14 @@ CardUnmaskAuthenticationSelectionDialogView::
         CardUnmaskAuthenticationSelectionDialogController* controller)
     : controller_(controller) {
   SetShowTitle(true);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
+
+  // Set the cancel button label now because it is constant throughout the
+  // view's lifecycle. The ok button label will be set later once we have more
+  // details on the challenge options that will be displayed in the dialog,
+  // since the label can change based on the challenge options.
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -158,7 +163,6 @@ void CardUnmaskAuthenticationSelectionDialogView::AddChallengeOptionsViews() {
       // checked.
       if (it == challenge_options.begin()) {
         challenge_option_radio_button->SetChecked(true);
-        controller_->SetSelectedChallengeOptionId((*it).id);
       }
 
       // Only add padding and another row if it isn't the last challenge option
@@ -182,7 +186,7 @@ void CardUnmaskAuthenticationSelectionDialogView::AddChallengeOptionsViews() {
 
     // Since there's only one challenge option, the selected challenge
     // option id will always be the first one.
-    controller_->SetSelectedChallengeOptionId(challenge_options[0].id);
+    OnChallengeOptionSelected(challenge_options[0].id);
 
     AddChallengeOptionDetails(challenge_options[0], challenge_options_section);
   }
@@ -226,15 +230,22 @@ void CardUnmaskAuthenticationSelectionDialogView::
       controller_->GetProgressLabel()));
 }
 
+void CardUnmaskAuthenticationSelectionDialogView::OnChallengeOptionSelected(
+    const CardUnmaskChallengeOption::ChallengeOptionId&
+        selected_challenge_option_id) {
+  controller_->SetSelectedChallengeOptionId(selected_challenge_option_id);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
+}
+
 std::unique_ptr<views::RadioButton>
 CardUnmaskAuthenticationSelectionDialogView::CreateChallengeOptionRadioButton(
     CardUnmaskChallengeOption challenge_option) {
   auto radio_button = std::make_unique<views::RadioButton>();
   radio_button_checked_changed_subscriptions_.push_back(
       radio_button->AddCheckedChangedCallback(base::BindRepeating(
-          &CardUnmaskAuthenticationSelectionDialogController::
-              SetSelectedChallengeOptionId,
-          base::Unretained(controller_), challenge_option.id)));
+          &CardUnmaskAuthenticationSelectionDialogView::
+              OnChallengeOptionSelected,
+          weak_ptr_factory_.GetWeakPtr(), challenge_option.id)));
   radio_button->SetAccessibleName(
       controller_->GetAuthenticationModeLabel(challenge_option) + u". " +
       challenge_option.challenge_info);

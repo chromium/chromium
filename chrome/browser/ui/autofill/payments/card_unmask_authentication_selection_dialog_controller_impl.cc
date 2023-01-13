@@ -140,11 +140,11 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
     OnOkButtonClicked() {
   DCHECK(!selected_challenge_option_id_.value().empty());
 
-  auto selected_challenge_option = std::find_if(
-      challenge_options_.begin(), challenge_options_.end(),
-      [this](const CardUnmaskChallengeOption challenge_option) {
-        return challenge_option.id == selected_challenge_option_id_;
-      });
+  // TODO(crbug.com/1392939): Remove this lambda once we refactor
+  // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
+  auto selected_challenge_option =
+      base::ranges::find(challenge_options_, selected_challenge_option_id_,
+                         &CardUnmaskChallengeOption::id);
 
   DCHECK(selected_challenge_option != challenge_options_.end());
   selected_challenge_option_type_ = (*selected_challenge_option).type;
@@ -241,10 +241,23 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetContentFooterText()
 std::u16string
 CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOkButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(
-      GetChallengeOptions().size() > 1
-          ? IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE
-          : IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND);
+  // TODO(crbug.com/1392939): Remove this lambda once we refactor
+  // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
+  auto selected_challenge_option =
+      base::ranges::find(challenge_options_, selected_challenge_option_id_,
+                         &CardUnmaskChallengeOption::id);
+
+  switch (selected_challenge_option->type) {
+    case CardUnmaskChallengeOptionType::kSmsOtp:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND);
+    case CardUnmaskChallengeOptionType::kCvc:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE);
+    case CardUnmaskChallengeOptionType::kUnknownType:
+      NOTREACHED();
+      return std::u16string();
+  }
 }
 
 std::u16string

@@ -72,6 +72,10 @@ class CardUnmaskAuthenticationSelectionDialogController {
   // Sets the currently selected challenge option id based on which
   // challenge option radio button is selected in the Card Authentication
   // Selection Dialog View.
+  // TODO(crbug.com/1392939): Refactor this function to
+  // `SetSelectedChallengeOptionForId()`, which should take in a
+  // `selected_challenge_option_id`, and set the currently selected challenge
+  // option in the class based on this id.
   virtual void SetSelectedChallengeOptionId(
       const CardUnmaskChallengeOption::ChallengeOptionId&
           selected_challenge_option_id) = 0;
