@@ -67,6 +67,9 @@ _TEST_PATH_DEFAULTS = {
     'assets/icudtl.dat': '../../third_party/icu/android/icudtl.dat',
 }
 
+_TEST_DEX_AFTER_PATH = os.path.join(_TEST_DATA_DIR,
+                                    'mock_dex/after/classes.dex')
+
 
 def _CompareWithGolden(name=None):
   def real_decorator(func):
@@ -147,9 +150,7 @@ class IntegrationTest(unittest.TestCase):
       apk_file.write(_TEST_APK_LOCALE_PAK_PATH, locale_pak_rel_path)
       pak_rel_path = os.path.relpath(_TEST_APK_PAK_PATH, _TEST_APK_ROOT_DIR)
       apk_file.write(_TEST_APK_PAK_PATH, pak_rel_path)
-      # Exactly 8MB of data (2^23).
-      apk_file.writestr(
-          _TEST_APK_DEX_PATH, IntegrationTest._CreateBlankData(23))
+      apk_file.write(_TEST_DEX_AFTER_PATH, _TEST_APK_DEX_PATH)
 
     with zipfile.ZipFile(_TEST_NOT_ON_DEMAND_SPLIT_APK_PATH, 'w') as z:
       z.write(_TEST_ALWAYS_INSTALLED_MANIFEST_PATH, 'AndroidManifest.xml')
@@ -365,6 +366,21 @@ class IntegrationTest(unittest.TestCase):
 
     _RunApp('archive', args, debug_measures=debug_measures)
 
+  def _FixupExpectedSizeInfoForMinimalApks(self, expected_size_info):
+    # DEX string symbols "actual" size_info have object_path assigned to
+    # '$SYSTEM/base-master.apk', which is from the value written to minimal
+    # apks file. Meanwhile, the correpsonding symbols in "expected" are
+    # '$SYSTEM/test.apk' because that's the file passed.
+    # * Changing both to "test.apk" is bad because SuperSize has code to
+    #   handle '-master.apk' filename.
+    # * Changing both to "base-master.apk" is bad because the name "test.apk"
+    #   is engrained in the test.
+    # As a kludge, here we mutate "expected" values for the affected symbols.
+    for sym in expected_size_info.raw_symbols:
+      if (sym.section_name == models.SECTION_DEX
+          and sym.object_path == '$SYSTEM/test.apk'):
+        sym.object_path = '$SYSTEM/base-master.apk'
+
   def _DoArchiveTest(self,
                      *,
                      use_output_directory=True,
@@ -399,6 +415,8 @@ class IntegrationTest(unittest.TestCase):
         use_pak=use_pak,
         use_aux_elf=use_aux_elf,
         ignore_linker_map=ignore_linker_map)
+    if use_minimal_apks:
+      self._FixupExpectedSizeInfoForMinimalApks(expected_size_info)
     self.assertEqual(_AllMetadata(expected_size_info), _AllMetadata(size_info))
     # Don't cluster.
     expected_size_info.symbols = expected_size_info.raw_symbols

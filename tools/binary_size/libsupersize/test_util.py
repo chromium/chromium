@@ -19,6 +19,11 @@ TEST_SOURCE_DIR = os.path.join(TEST_DATA_DIR, 'mock_source_directory')
 TEST_OUTPUT_DIR = os.path.join(TEST_SOURCE_DIR, 'out', 'Release')
 
 
+# Helper to make presubmit happy with .golden files.
+def _Neutralize(line):
+  return line + ' # nocheck' if '-master.' in line else line
+
+
 class Golden:
   """Utility to use or manage "Golden" test files."""
 
@@ -33,12 +38,12 @@ class Golden:
   def CheckOrUpdate(golden_path, actual_lines):
     if Golden.do_update:
       with open(golden_path, 'w') as file_obj:
-        describe.WriteLines(actual_lines, file_obj.write)
+        describe.WriteLines(map(_Neutralize, actual_lines), file_obj.write)
       logging.info('Wrote %s', golden_path)
     else:
       with open(golden_path) as file_obj:
         expected = list(file_obj)
-        actual = list(l + '\n' for l in actual_lines)
+        actual = list(_Neutralize(l) + '\n' for l in actual_lines)
         assert actual == expected, (
             ('Did not match %s.\n' % golden_path) + ''.join(
                 difflib.unified_diff(expected, actual, 'expected', 'actual')))

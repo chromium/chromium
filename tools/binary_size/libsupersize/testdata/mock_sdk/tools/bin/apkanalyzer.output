@@ -1,204 +1,25 @@
-P d 42356	53800	5949070	<TOTAL>
-P d 28637	31775	3771805	org
-P d 28637	31703	3770013	org.chromium
-P d 20581	23192	2794666	org.chromium.chrome
-P d 20580	23191	2749952	org.chromium.chrome.browser
-P d 1660	1861	227552	org.chromium.chrome.browser.compositor
-P d 755	818	115566	org.chromium.chrome.browser.compositor.layouts
-P d 281	308	57117	org.chromium.chrome.browser.compositor.layouts.phone
-P d 140	146	33221	org.chromium.chrome.browser.compositor.layouts.phone.stack
-C d 55	55	16417	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack
-M d 1	1	113	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack <clinit>()
-M d 1	1	225	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack <init>(android.content.Context,org.chromium.chrome.browser.compositor.layouts.phone.StackLayout)
-M d 1	1	61	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.StackLayout access$000(org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack)
-M d 1	1	100	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.allowOverscroll()
-M d 1	1	112	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float computeDiscardAlpha(float,float)
-M d 1	1	136	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float computeDiscardScale(float,float,boolean)
-M d 1	1	88	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float computeOverscrollPercent()
-M d 1	1	969	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void computeTabClippingVisibilityHelper()
-M d 1	1	1512	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void computeTabOffsetHelper(android.graphics.RectF)
-M d 1	1	217	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void computeTabScrollOffsetHelper()
-M d 1	1	1008	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void computeTabTiltHelper(long,android.graphics.RectF)
-M d 1	1	560	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void computeTabVisibilitySortingHelper(android.graphics.RectF)
-M d 1	1	446	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean evenOutTabs(float,boolean)
-M d 1	1	223	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void finishAnimationsIfDone(long,boolean)
-M d 1	1	128	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float getStackScale(android.graphics.RectF)
-M d 1	1	87	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab getTabAtPositon(float,float)
-M d 1	1	79	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void resetInputActionIndices()
-M d 1	1	219	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void springBack(long)
-M d 1	1	217	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void updateOverscrollOffset()
-M d 1	1	90	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float approxScreen(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab,float)
-M d 1	1	64	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void cleanupTabs()
-M d 1	1	261	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void commitDiscard(long,boolean)
-M d 1	1	253	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int computeSpacing(int)
-M d 1	1	318	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void computeTabPosition(long,android.graphics.RectF)
-M d 1	1	322	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void contextChanged(android.content.Context)
-M d 1	1	563	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void createStackTabs(boolean)
-M d 1	1	1521	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void drag(long,float,float,float,float)
-M d 1	1	813	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void finishAnimation(long)
-M d 1	1	503	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void fling(long,float,float,float,float)
-M d 1	1	68	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int getCount()
-M d 1	1	84	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float getDefaultDiscardDirection()
-M d 1	1	79	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float getMaxScroll(boolean)
-M d 1	1	113	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float getMaxTabHeight()
-M d 1	1	196	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float getMinScroll(boolean)
-M d 1	1	105	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float getRange(float)
-M d 1	1	94	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float getScrollDimensionSize()
-M d 1	1	360	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int getTabIndexAtPositon(float,float,float)
-M d 1	1	121	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int getVisibleCount()
-M d 1	1	96	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean isDisplayable()
-M d 1	1	400	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void notifySizeChanged$483d2f6e(int)
-M d 1	1	107	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void onUpOrCancel(long)
-M d 1	1	341	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean onUpdateCompositorAnimations(long,boolean)
-M d 1	1	101	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean onUpdateViewAnimation(long,boolean)
-M d 1	1	68	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void requestUpdate()
-M d 1	1	69	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float screenToScroll(float)
-M d 1	1	69	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float scrollToScreen(float)
-M d 1	1	134	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void setScrollTarget(float,boolean)
-M d 1	1	121	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void setStackFocusInfo(float,int)
-M d 1	1	244	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void setWarpState(boolean,boolean)
-M d 1	1	919	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void startAnimation$62adfb33(long,int,int,int,boolean)
-M d 1	1	77	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void startAnimation$6848a047(long,int)
-M d 1	1	95	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void startAnimation$78b04ab8(long,int,int,boolean)
-M d 1	1	137	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void stopScrollingMovement(long)
-M d 1	1	142	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void swipeCancelled(long)
-M d 1	1	266	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void tabClosingEffect(long,int)
-F d 0	0	12	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean $assertionsDisabled
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.DRAG_ANGLE_THRESHOLD
-F d 0	0	11	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation mAnimationFactory
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mBorderLeftPadding
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mBorderTopPadding
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mBorderTransparentSide
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mBorderTransparentTop
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mCurrentMode
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mCurrentScrollDirection
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mDiscardDirection
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab mDiscardingTab
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mDragLock$7be2905e
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mEvenOutProgress
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mEvenOutRate
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean mInSwipe
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean mIsDying
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean mIsStackForCurrentTabList
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mLastPinch0Offset
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mLastPinch1Offset
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack long mLastScrollUpdate
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.StackLayout mLayout
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mLongPressSelected
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mMaxOverScroll
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mMaxOverScrollAngle
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mMaxOverScrollSlide
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mMaxUnderScroll
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mMinScrollMotion
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mMinSpacing
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack android.view.animation.Interpolator mOverScrollAngleInterpolator
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mOverScrollCounter
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mOverScrollDerivative
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mOverScrollOffset
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack android.view.animation.Interpolator mOverscrollSlideInterpolator
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mOverviewAnimationType$5d025a5c
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mPinch0TabIndex
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mPinch1TabIndex
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean mRecomputePosition
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mReferenceOrderIndex
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mScrollOffset
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mScrollOffsetForDyingTabs
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mScrollTarget
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller mScroller
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab mScrollingTab
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack int mSpacing
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[] mStackTabs
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mSwipeBoundedScrollOffset
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean mSwipeCanScroll
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean mSwipeIsCancelable
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mSwipeUnboundScrollOffset
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.ChromeAnimation mTabAnimations
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.tabmodel.TabList mTabList
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack android.view.animation.Interpolator mUnderScrollAngleInterpolator
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.stack.StackViewAnimation mViewAnimationFactory
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack android.animation.Animator mViewAnimations
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack android.animation.AnimatorListenerAdapter mViewAnimatorListener
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mWarpSize
-C d 22	22	3843	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller
-M d 1	1	471	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller <clinit>()
-M d 1	1	146	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller <init>(android.content.Context)
-M d 1	1	62	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller boolean access$000(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller)
-M d 1	1	65	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller boolean access$002(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller,boolean)
-M d 1	1	62	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int access$100(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller)
-M d 1	1	62	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int access$200(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller)
-M d 1	1	62	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller long access$300(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller)
-M d 1	1	62	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int access$400(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller)
-M d 1	1	62	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float access$500(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller)
-M d 1	1	176	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller void adjustDuration(int,int,int)
-M d 1	1	71	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float getDeceleration(int)
-M d 1	1	97	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller double getSplineDeceleration(int)
-M d 1	1	115	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller double getSplineFlingDistance(int)
-M d 1	1	220	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller void onEdgeReached()
-M d 1	1	167	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller void startSpringback$4868d30e(int,int)
-M d 1	1	218	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller boolean continueWhenFinished(long)
-M d 1	1	66	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller void finish()
-M d 1	1	660	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller void fling(int,int,int,int,int,long)
-M d 1	1	138	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller boolean springback(int,int,int,long)
-M d 1	1	109	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller void startScroll(int,int,long,int)
-M d 1	1	440	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller boolean update(long)
-M d 1	1	90	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller void updateScroll(float)
-F d 0	0	11	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float DECELERATION_RATE
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float[] SPLINE_POSITION
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float[] SPLINE_TIME
-F d 0	0	11	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float mCurrVelocity
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mCurrentPosition
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float mDeceleration
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mDuration
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mFinal
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller boolean mFinished
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float mFlingFriction
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mOver
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller float mPhysicalCoeff
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mSplineDistance
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mSplineDuration
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mStart
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller long mStartTime
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mState
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller$SplineStackScroller int mVelocity
-C d 13	13	1820	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation
-M d 1	1	112	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation <init>(org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack,float,float,float,float,float)
-M d 1	1	40	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation void addTiltScrollAnimation(org.chromium.chrome.browser.compositor.layouts.ChromeAnimation,org.chromium.chrome.browser.compositor.layouts.components.LayoutTab,float,int,int)
-M d 1	1	1055	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createAnimatorSetForType$2fab410e$104f6ddb(int,org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],int,int,int,float,float)
-M d 1	1	36	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createEnterStackAnimatorSet(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],int,int,float)
-M d 1	1	139	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createNewTabOpenedAnimatorSet$4078c09e(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[])
-M d 1	1	32	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createReachTopAnimatorSet(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],float)
-M d 1	1	36	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createTabFocusedAnimatorSet(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],int,int,float)
-M d 1	1	32	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createViewMoreAnimatorSet(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],int)
-M d 1	1	30	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float getScreenPositionInScrollDirection(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab)
-M d 1	1	24	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float getScreenSizeInScrollDirection()
-M d 1	1	92	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float getStaticTabPosition()
-M d 1	1	67	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float getToolbarOffsetToLineUpWithBorder()
-M d 1	1	24	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation boolean isDefaultDiscardDirectionPositive()
-F d 0	0	11	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float mBorderTopHeight
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float mBorderTopOpaqueHeight
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float mHeight
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float mHeightMinusBrowserControls
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack mStack
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation float mWidth
-C d 10	12	2555	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape
-M d 1	1	82	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape <init>(org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack,float,float,float,float,float)
-M d 1	1	106	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape void addTiltScrollAnimation(org.chromium.chrome.browser.compositor.layouts.ChromeAnimation,org.chromium.chrome.browser.compositor.layouts.components.LayoutTab,float,int,int)
-M d 1	1	592	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createEnterStackAnimatorSet(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],int,int,float)
-M d 1	1	59	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createNewTabOpenedAnimatorSet$4078c09e(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[])
-M d 1	1	210	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createReachTopAnimatorSet(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],float)
-M d 1	1	961	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createTabFocusedAnimatorSet(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],int,int,float)
-M d 1	1	256	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape org.chromium.chrome.browser.compositor.layouts.ChromeAnimation createViewMoreAnimatorSet(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab[],int)
-M d 1	1	79	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape float getScreenPositionInScrollDirection(org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab)
-M d 1	1	54	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape float getScreenSizeInScrollDirection()
-M d 1	1	52	org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimationLandscape boolean isDefaultDiscardDirectionPositive()
-C d 10	12	255	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex
-M d 1	1	35	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex <init>()
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex Object $instance
-C d 10	12	255	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzkB.dex
-M d 1	1	35	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzkB.dex <init>()
-C d 10	12	255	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$Nested2$kjevdDQ8V2zqCrdieLqWLHzk.dex
-M d 1	1	35	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$Nested2$kjevdDQ8V2zqCrdieLqWLHzk.dex <init>()
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$Nested2$kjevdDQ8V2zqCrdieLqWLHzk.dex Object $instance
-C d 10	12	255	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$kjevdDQ8V2zqCrdieLqWLHzk.dex
-M d 1	1	35	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$kjevdDQ8V2zqCrdieLqWLHzk.dex <init>()
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.-$$Lambda$StackAnimation$kjevdDQ8V2zqCrdieLqWLHzk.dex Object $instance
+P d 8	14	689	<TOTAL>
+P r 0	6	48	java
+P r 0	6	48	java.lang
+C r 0	3	24	java.lang.StringBuilder
+M r 0	1	8	java.lang.StringBuilder <init>()
+M r 0	1	8	java.lang.StringBuilder java.lang.StringBuilder append(java.lang.String)
+M r 0	1	8	java.lang.StringBuilder java.lang.String toString()
+C r 0	1	8	java.lang.Object
+M r 0	1	8	java.lang.Object <init>()
+C r 0	1	8	java.lang.IllegalArgumentException
+M r 0	1	8	java.lang.IllegalArgumentException <init>(java.lang.String)
+C r 0	1	8	java.lang.Math
+M r 0	1	8	java.lang.Math double sqrt(double)
+C d 5	5	397	TestClass
+M d 1	1	38	TestClass <init>()
+M d 1	1	62	TestClass long gcd(long,long)
+M d 1	1	58	TestClass long lcm(long,long)
+M d 1	1	120	TestClass double quadHi(double,double,double)
+M d 1	1	50	TestClass java.lang.String repeat(java.lang.String)
+F d 0	0	12	TestClass int REPEAT
+C d 3	3	244	AuxClass
+M d 1	1	42	AuxClass <init>(int)
+M d 1	1	62	AuxClass int[] reverse(int[])
+M d 1	1	90	AuxClass java.lang.String repeatString(java.lang.String)
+F d 0	0	10	AuxClass int mRepeat
