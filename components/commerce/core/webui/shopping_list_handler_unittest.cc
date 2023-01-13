@@ -49,13 +49,24 @@ void GetEvaluationProductInfos(
     std::vector<shopping_list::mojom::BookmarkProductInfoPtr> expected,
     std::vector<shopping_list::mojom::BookmarkProductInfoPtr> found) {
   ASSERT_EQ(expected.size(), found.size());
-  for (size_t i = 0; i < expected.size(); i++) {
-    ASSERT_EQ(expected[i]->bookmark_id, found[i]->bookmark_id);
-    ASSERT_EQ(expected[i]->info->current_price, found[i]->info->current_price);
-    ASSERT_EQ(expected[i]->info->domain, found[i]->info->domain);
-    ASSERT_EQ(expected[i]->info->title, found[i]->info->title);
-    ASSERT_EQ(expected[i]->info->image_url.spec(),
-              found[i]->info->image_url.spec());
+  std::unordered_map<uint64_t, shopping_list::mojom::BookmarkProductInfoPtr*>
+      found_map;
+  for (auto& item : found) {
+    found_map[item->bookmark_id] = &item;
+  }
+  // for (size_t i = 0; i < expected.size(); i++) {
+  for (auto& item : expected) {
+    auto find_it = found_map.find(item->bookmark_id);
+    ASSERT_FALSE(find_it == found_map.end());
+
+    shopping_list::mojom::BookmarkProductInfoPtr* found_item = find_it->second;
+
+    ASSERT_EQ(item->bookmark_id, (*found_item)->bookmark_id);
+    ASSERT_EQ(item->info->current_price, (*found_item)->info->current_price);
+    ASSERT_EQ(item->info->domain, (*found_item)->info->domain);
+    ASSERT_EQ(item->info->title, (*found_item)->info->title);
+    ASSERT_EQ(item->info->image_url.spec(),
+              (*found_item)->info->image_url.spec());
   }
   std::move(closure).Run();
 }
@@ -254,6 +265,8 @@ TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
       true, 1230000, "usd");
+  AddProductBookmark(bookmark_model_.get(), u"product 2",
+                     GURL("http://example.com/2"), 456L, false, 4560000, "usd");
 
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
@@ -262,6 +275,28 @@ TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
                                                   bookmark_list, "en-us");
 
   handler_->GetAllPriceTrackedBookmarkProductInfo(
+      base::BindOnce(&GetEvaluationProductInfos, run_loop.QuitClosure(),
+                     std::move(mojo_list)));
+}
+
+TEST_F(ShoppingListHandlerTest, TestGetAllShoppingInfo_FeatureEnabled) {
+  base::RunLoop run_loop;
+
+  const bookmarks::BookmarkNode* product = AddProductBookmark(
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
+      true, 1230000, "usd");
+  const bookmarks::BookmarkNode* product2 = AddProductBookmark(
+      bookmark_model_.get(), u"product 2", GURL("http://example.com/2"), 456L,
+      false, 4560000, "usd");
+
+  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
+  bookmark_list.push_back(product);
+  bookmark_list.push_back(product2);
+  std::vector<shopping_list::mojom::BookmarkProductInfoPtr> mojo_list =
+      ShoppingListHandler::BookmarkListToMojoList(*bookmark_model_,
+                                                  bookmark_list, "en-us");
+
+  handler_->GetAllShoppingBookmarkProductInfo(
       base::BindOnce(&GetEvaluationProductInfos, run_loop.QuitClosure(),
                      std::move(mojo_list)));
 }

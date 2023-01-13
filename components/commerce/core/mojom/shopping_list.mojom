@@ -57,6 +57,10 @@ interface ShoppingListHandler {
   GetAllPriceTrackedBookmarkProductInfo()
       => (array<BookmarkProductInfo> productInfos);
 
+  // Returns all the product info for shopping/product bookmarks.
+  GetAllShoppingBookmarkProductInfo()
+      => (array<BookmarkProductInfo> productInfos);
+
   // Track price for bookmark with 'bookmark_id'.
   TrackPriceForBookmark(int64 bookmark_id);
 

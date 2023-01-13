@@ -120,6 +120,21 @@ void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
   std::move(callback).Run(std::move(info_list));
 }
 
+void ShoppingListHandler::GetAllShoppingBookmarkProductInfo(
+    GetAllShoppingBookmarkProductInfoCallback callback) {
+  if (!shopping_service_->IsShoppingListEligible()) {
+    std::move(callback).Run({});
+    return;
+  }
+  std::vector<const bookmarks::BookmarkNode*> bookmarks =
+      GetAllShoppingBookmarks(bookmark_model_);
+
+  std::vector<BookmarkProductInfoPtr> info_list =
+      BookmarkListToMojoList(*bookmark_model_, bookmarks, locale_);
+
+  std::move(callback).Run(std::move(info_list));
+}
+
 void ShoppingListHandler::TrackPriceForBookmark(int64_t bookmark_id) {
   commerce::SetPriceTrackingStateForBookmark(
       shopping_service_, bookmark_model_,

@@ -49,6 +49,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   // shopping_list::mojom::ShoppingListHandler:
   void GetAllPriceTrackedBookmarkProductInfo(
       GetAllPriceTrackedBookmarkProductInfoCallback callback) override;
+  void GetAllShoppingBookmarkProductInfo(
+      GetAllShoppingBookmarkProductInfoCallback callback) override;
   void TrackPriceForBookmark(int64_t bookmark_id) override;
   void UntrackPriceForBookmark(int64_t bookmark_id) override;
 

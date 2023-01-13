@@ -9,6 +9,8 @@ let instance: ShoppingListApiProxy|null = null;
 export interface ShoppingListApiProxy {
   getAllPriceTrackedBookmarkProductInfo():
       Promise<{productInfos: BookmarkProductInfo[]}>;
+  getAllShoppingBookmarkProductInfo():
+      Promise<{productInfos: BookmarkProductInfo[]}>;
   trackPriceForBookmark(bookmarkId: bigint): void;
   untrackPriceForBookmark(bookmarkId: bigint): void;
   getCallbackRouter(): PageCallbackRouter;
@@ -31,6 +33,10 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   getAllPriceTrackedBookmarkProductInfo() {
     return this.handler.getAllPriceTrackedBookmarkProductInfo();
+  }
+
+  getAllShoppingBookmarkProductInfo() {
+    return this.handler.getAllShoppingBookmarkProductInfo();
   }
 
   trackPriceForBookmark(bookmarkId: bigint) {

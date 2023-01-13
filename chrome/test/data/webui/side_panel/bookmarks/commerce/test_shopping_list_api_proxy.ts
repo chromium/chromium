@@ -15,6 +15,7 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getAllPriceTrackedBookmarkProductInfo',
+      'getAllShoppingBookmarkProductInfo',
       'trackPriceForBookmark',
       'untrackPriceForBookmark',
     ]);
@@ -31,6 +32,11 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
 
   getAllPriceTrackedBookmarkProductInfo() {
     this.methodCalled('getAllPriceTrackedBookmarkProductInfo');
+    return Promise.resolve({productInfos: this.products_});
+  }
+
+  getAllShoppingBookmarkProductInfo() {
+    this.methodCalled('getAllShoppingBookmarkProductInfo');
     return Promise.resolve({productInfos: this.products_});
   }
 
