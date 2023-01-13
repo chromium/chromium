@@ -7,6 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/receiver_config_conversions.h"
+#include "components/cast_streaming/public/features.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 
@@ -48,6 +49,26 @@ ReceiverSessionImpl::~ReceiverSessionImpl() = default;
 
 void ReceiverSessionImpl::StartStreamingAsync(
     mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector) {
+  DCHECK(!IsCastRemotingEnabled());
+  StartStreamingAsyncInternal(std::move(demuxer_connector));
+}
+
+void ReceiverSessionImpl::StartStreamingAsync(
+    mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector,
+    mojo::AssociatedRemote<mojom::RendererController> renderer_controller) {
+  DCHECK(IsCastRemotingEnabled());
+  DCHECK(!renderer_control_config_);
+  external_renderer_controls_ =
+      std::make_unique<RendererControllerImpl>(base::BindOnce(
+          &ReceiverSessionImpl::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
+  renderer_control_config_.emplace(std::move(renderer_controller),
+                                   external_renderer_controls_->Bind());
+
+  StartStreamingAsyncInternal(std::move(demuxer_connector));
+}
+
+void ReceiverSessionImpl::StartStreamingAsyncInternal(
+    mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector) {
   DCHECK(HasNetworkContextGetter());
 
   DVLOG(1) << __func__;
@@ -57,19 +78,6 @@ void ReceiverSessionImpl::StartStreamingAsync(
       &ReceiverSessionImpl::OnReceiverEnabled, weak_factory_.GetWeakPtr()));
   demuxer_connector_.set_disconnect_handler(base::BindOnce(
       &ReceiverSessionImpl::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
-}
-
-void ReceiverSessionImpl::StartStreamingAsync(
-    mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector,
-    mojo::AssociatedRemote<mojom::RendererController> renderer_controller) {
-  DCHECK(!renderer_control_config_);
-  external_renderer_controls_ =
-      std::make_unique<RendererControllerImpl>(base::BindOnce(
-          &ReceiverSessionImpl::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
-  renderer_control_config_.emplace(std::move(renderer_controller),
-                                   external_renderer_controls_->Bind());
-
-  StartStreamingAsync(std::move(demuxer_connector));
 }
 
 ReceiverSession::RendererController*

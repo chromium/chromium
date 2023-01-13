@@ -101,6 +101,7 @@ source_set("browser") {
       ":core",
       ":network_context",
       "//components/cast/message_port",
+      "//components/cast_streaming/public",
       "//components/cast_streaming/public:config_conversions",
       "//components/openscreen_platform",
       "//mojo/public/cpp/bindings",

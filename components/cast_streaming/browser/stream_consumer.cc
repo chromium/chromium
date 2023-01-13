@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/cast_streaming/public/features.h"
 #include "media/base/media_util.h"
 
 namespace cast_streaming {
@@ -176,11 +177,15 @@ void StreamConsumer::MaybeSendNextFrame() {
                              .count());
 
   // Some senders do not send an initial playout time of 0. To work around this,
-  // a playout offset is added here.
-  if (playout_offset_ == base::TimeDelta::Max()) {
-    playout_offset_ = playout_time;
+  // a playout offset is added here. This is only required on mirroring sessions
+  // - and will in fact break remoting where timestamps by design do NOT begin
+  // at zero.
+  if (!IsCastRemotingEnabled()) {
+    if (playout_offset_ == base::TimeDelta::Max()) {
+      playout_offset_ = playout_time;
+    }
+    playout_time -= playout_offset_;
   }
-  playout_time -= playout_offset_;
 
   DVLOG(3) << "[ssrc:" << receiver_->ssrc() << "] "
            << "Received new frame. Timestamp: " << playout_time

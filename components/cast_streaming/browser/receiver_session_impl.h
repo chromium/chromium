@@ -65,6 +65,11 @@ class ReceiverSessionImpl final
     mojo::Remote<media::mojom::Renderer> renderer_controls_;
   };
 
+  // Helper function to execute code shared between the two implementations of
+  // StartStreamingAsync().
+  void StartStreamingAsyncInternal(
+      mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector);
+
   void PreloadBuffersAndStartPlayback();
 
   // Handler for |demuxer_connector_| disconnect.
