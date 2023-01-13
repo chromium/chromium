@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 
