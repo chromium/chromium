@@ -15,7 +15,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"

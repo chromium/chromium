@@ -14,7 +14,7 @@
 #include "components/os_crypt/os_crypt.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "headless/app/headless_shell_switches.h"
+#include "headless/public/switches.h"
 #endif
 
 namespace headless {

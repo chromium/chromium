@@ -4,7 +4,7 @@
 
 #include "headless/lib/renderer/headless_print_render_frame_helper_delegate.h"
 #include "base/command_line.h"
-#include "headless/app/headless_shell_switches.h"
+#include "headless/public/switches.h"
 #include "third_party/blink/public/web/web_element.h"
 
 namespace headless {

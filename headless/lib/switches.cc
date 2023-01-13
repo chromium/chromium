@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/app/headless_shell_switches.h"
+#include "headless/public/switches.h"
 
 namespace headless {
 namespace switches {

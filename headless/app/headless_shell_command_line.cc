@@ -11,7 +11,7 @@
 #include "cc/base/switches.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
-#include "headless/app/headless_shell_switches.h"
+#include "headless/public/switches.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/http/http_util.h"

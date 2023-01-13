@@ -303,8 +303,6 @@ static_library("backend_cdp_bindings") {
 # Code that is not needed in a renderer process.
 component("headless_non_renderer") {
   sources = [
-    "app/headless_shell_switches.cc",
-    "app/headless_shell_switches.h",
     "lib/browser/directory_enumerator.cc",
     "lib/browser/directory_enumerator.h",
     "lib/browser/headless_browser_context_impl.cc",
@@ -351,6 +349,7 @@ component("headless_non_renderer") {
     "lib/headless_content_main_delegate.h",
     "lib/renderer/headless_content_renderer_client.cc",
     "lib/renderer/headless_content_renderer_client.h",
+    "lib/switches.cc",
     "lib/utility/headless_content_utility_client.cc",
     "lib/utility/headless_content_utility_client.h",
     "public/headless_browser.cc",
@@ -363,6 +362,7 @@ component("headless_non_renderer") {
     "public/headless_web_contents.h",
     "public/internal/message_dispatcher.h",
     "public/internal/value_conversions.h",
+    "public/switches.h",
     "public/util/error_reporter.cc",
     "public/util/error_reporter.h",
     "public/util/user_agent.cc",
@@ -834,7 +834,6 @@ if (is_win) {
       "app/headless_shell.cc",
       "app/headless_shell_command_line.cc",
       "app/headless_shell_command_line.h",
-      "app/headless_shell_switches.h",
       "public/headless_shell.h",
     ]
     deps = [
@@ -873,7 +872,6 @@ static_library("headless_shell_lib") {
     "app/headless_shell.cc",
     "app/headless_shell_command_line.cc",
     "app/headless_shell_command_line.h",
-    "app/headless_shell_switches.h",
     "public/headless_shell.h",
   ]
   defines = []

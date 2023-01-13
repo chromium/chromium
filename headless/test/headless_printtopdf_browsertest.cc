@@ -16,7 +16,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "content/public/test/browser_test.h"
-#include "headless/app/headless_shell_switches.h"
+#include "headless/public/switches.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "headless/test/headless_devtooled_browsertest.h"

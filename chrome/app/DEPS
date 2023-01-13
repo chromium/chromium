@@ -45,7 +45,6 @@ include_rules = [
   "+content/public/common",
   "+extensions/buildflags/buildflags.h",
   "+extensions/common/constants.h",
-  "+headless/app/headless_shell_switches.h",
   "+headless/public",
   "+media/base/media_switches.h",
   "+native_client/src/trusted/service_runtime/osx",

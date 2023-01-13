@@ -19,8 +19,8 @@
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
-#include "headless/app/headless_shell_switches.h"
 #include "headless/public/headless_shell.h"
+#include "headless/public/switches.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"

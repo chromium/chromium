@@ -8,24 +8,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "content/public/app/content_main.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/common/content_switches.h"
-#include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_devtools_agent_host_client.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "net/http/http_util.h"
-#include "services/network/public/cpp/network_switches.h"
-#include "ui/events/devices/device_data_manager.h"
 
 namespace headless {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_APP_HEADLESS_SHELL_SWITCHES_H_
-#define HEADLESS_APP_HEADLESS_SHELL_SWITCHES_H_
+#ifndef HEADLESS_PUBLIC_SWITCHES_H_
+#define HEADLESS_PUBLIC_SWITCHES_H_
 
 #include "headless/public/headless_export.h"
 
@@ -35,4 +35,4 @@ HEADLESS_EXPORT extern const char kExplicitlyAllowedPorts[];
 }  // namespace switches
 }  // namespace headless
 
-#endif  // HEADLESS_APP_HEADLESS_SHELL_SWITCHES_H_
+#endif  // HEADLESS_PUBLIC_SWITCHES_H_
