@@ -15,12 +15,15 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/cells/table_view_stacked_details_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
@@ -32,6 +35,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -94,8 +99,8 @@ constexpr char kPassword[] = "test";
 
 @end
 
-// Test class that conforms to PasswordDetailsViewControllerDelegate in order to
-// test the delegate methods are called correctly.
+// Test class that conforms to PasswordDetailsViewControllerDelegate in order
+// to test the delegate methods are called correctly.
 @interface FakePasswordDetailsDelegate
     : NSObject <PasswordDetailsTableViewControllerDelegate>
 
@@ -347,6 +352,18 @@ class PasswordDetailsTableViewControllerTest
   NSString* syncing_user_email_ = nil;
 };
 
+class PasswordGroupingTest : public ::testing::WithParamInterface<bool>,
+                             public PasswordDetailsTableViewControllerTest {
+ protected:
+  PasswordGroupingTest() {
+    feature_list_.InitWithFeatureState(
+        password_manager::features::kPasswordsGrouping, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that password is displayed properly.
 TEST_F(PasswordDetailsTableViewControllerTest, TestPassword) {
   SetPassword();
@@ -386,6 +403,34 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestCompromisedPassword) {
   CheckDetailItemTextWithId(
       IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 2, 0);
   CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 2, 1);
+}
+
+// Tests the “Change Password on Website” button
+TEST_P(PasswordGroupingTest, TestChangePasswordOnWebsite) {
+  SetPassword(kExampleCom, kUsername, kPassword, true);
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+
+  id applicationCommandsMock = OCMProtocolMock(@protocol(ApplicationCommands));
+  passwordDetails.applicationCommandsHandler = applicationCommandsMock;
+
+  TableViewModel* model = passwordDetails.tableViewModel;
+  NSIndexPath* indexPath =
+      [model indexPathForItemType:PasswordDetailsItemTypeChangePasswordButton];
+
+  OCMExpect([applicationCommandsMock
+      closeSettingsUIAndOpenURL:[OCMArg checkWithBlock:^BOOL(id value) {
+        // This block verifies that the closeSettingsUIAndOpenURL function is
+        // called with a URL argument which matches the initial URL passed to
+        // the password form above. Information may have been appended to the
+        // URL argument, so we only make sure it includes the initial URL.
+        return (((OpenNewTabCommand*)value).URL.spec().find(kExampleCom) !=
+                std::string::npos);
+      }]]);
+  [passwordDetails tableView:passwordDetails.tableView
+      didSelectRowAtIndexPath:indexPath];
+  EXPECT_OCMOCK_VERIFY(applicationCommandsMock);
 }
 
 // Tests that password is shown/hidden.
@@ -755,3 +800,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInEdit) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(2, NumberOfItemsInSection(1));
 }
+
+INSTANTIATE_TEST_SUITE_P(PasswordDetailsTableViewControllerTest,
+                         PasswordGroupingTest,
+                         ::testing::Bool());
