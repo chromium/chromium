@@ -76,7 +76,7 @@ the main thread task scheduling infra, and then spin up a new `base::Thread`
 which represents a new physical thread. Then we explicitly post tasks back and
 forth between the main and secondary thread, via a cross-thread `TaskRunner`.
 
-[1]: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/codelabs/cpp101/codelab.md#part-3_threads-and-task-runners
+[1]: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/codelabs/cpp101/README.md#part-3_threads-and-task-runners
 [2]: https://source.chromium.org/chromium/chromium/src/+/main:base/task/sequence_manager/sequence_manager.h;l=122-125;drc=c70927109b0861ba4642416cb4689b4bf9d25ad0
 [3]: https://source.chromium.org/chromium/chromium/src/+/main:base/task/sequence_manager/task_queue.cc;l=246;drc=566a5d280c3f78e073c435a5218021ce15d1f004
 [4]: https://source.chromium.org/chromium/chromium/src/+/main:base/task/sequence_manager/task_queue_impl.cc;l=1132;drc=74e2db96056dd0265b7e527a58b50036c07d7031
