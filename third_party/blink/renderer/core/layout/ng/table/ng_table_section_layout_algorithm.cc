@@ -126,9 +126,6 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         actual_start_row_index = row_index;
       row_offsets.emplace_back(offset.block_offset);
     }
-
-    if (container_builder_.HasInflowChildBreakInside())
-      break;
   }
 
   if (!child_iterator.NextChild().node)
