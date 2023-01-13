@@ -215,32 +215,6 @@ class DriveFsPinManagerTest : public testing::Test {
   MockDriveFs mock_drivefs_;
 };
 
-TEST_F(DriveFsPinManagerTest, DisabledPinManagerShouldNotStartSearching) {
-  base::MockOnceCallback<void(SetupStage)> mock_callback;
-
-  base::RunLoop run_loop;
-
-  EXPECT_CALL(mock_drivefs_, OnStartSearchQuery(_)).Times(0);
-  EXPECT_CALL(mock_drivefs_, OnGetNextPage(_)).Times(0);
-  EXPECT_CALL(mock_callback, Run(SetupStage::kDisabled))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(mock_free_space_, GetFreeSpace(_, _)).Times(0);
-
-  DriveFsPinManager manager(
-      /*enabled=*/false, temp_dir_.GetPath(), &mock_drivefs_,
-      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
-                          base::Unretained(&mock_free_space_)));
-  manager.Start(mock_callback.Get());
-  run_loop.Run();
-
-  const SetupProgress progress = manager.GetProgress();
-  EXPECT_EQ(progress.stage, SetupStage::kDisabled);
-  EXPECT_EQ(progress.free_space, 0);
-  EXPECT_EQ(progress.required_space, 0);
-  EXPECT_EQ(progress.transferred_bytes, 0);
-  EXPECT_EQ(progress.pinned_files, 0);
-}
-
 TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
 
@@ -254,7 +228,7 @@ TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
       .WillOnce(RunOnceCallback<1>(-1));
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
   manager.Start(mock_callback.Get());
@@ -283,7 +257,7 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
   manager.Start(mock_callback.Get());
@@ -311,7 +285,7 @@ TEST_F(DriveFsPinManagerTest, InvalidFileList) {
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
   manager.Start(mock_callback.Get());
@@ -347,7 +321,7 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
   manager.Start(mock_callback.Get());
@@ -383,7 +357,7 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
 
@@ -431,7 +405,7 @@ TEST_F(DriveFsPinManagerTest,
       .WillOnce(RunOnceCallback<2>(drive::FILE_ERROR_FAILED));
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
   manager.Start(mock_callback.Get());
@@ -495,7 +469,7 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
   manager.Start(mock_callback.Get());
@@ -561,7 +535,7 @@ TEST_F(DriveFsPinManagerTest,
           });
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
   manager.Start(mock_callback.Get());
@@ -646,7 +620,7 @@ TEST_F(DriveFsPinManagerTest,
   EXPECT_CALL(mock_pin_observer, OnSetupProgress(_)).Times(AnyNumber());
 
   DriveFsPinManager manager(
-      /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
+      temp_dir_.GetPath(), &mock_drivefs_,
       base::BindRepeating(&MockFreeSpace::GetFreeSpace,
                           base::Unretained(&mock_free_space_)));
   manager.AddObserver(&mock_pin_observer);

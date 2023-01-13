@@ -449,23 +449,25 @@ bool DriveFsPinManager::MarkInProgress(const StableId id,
   return true;
 }
 
-DriveFsPinManager::DriveFsPinManager(bool enabled,
-                                     const base::FilePath& profile_path,
+DriveFsPinManager::DriveFsPinManager(const base::FilePath& profile_path,
                                      mojom::DriveFs* drivefs_interface,
                                      SpaceGetter get_free_space)
-    : enabled_(enabled),
-      get_free_space_(get_free_space ? std::move(get_free_space)
+    : get_free_space_(get_free_space ? std::move(get_free_space)
                                      : base::BindRepeating(&GetFreeSpace)),
       profile_path_(profile_path),
       drivefs_interface_(drivefs_interface) {}
 
-DriveFsPinManager::~DriveFsPinManager() = default;
+DriveFsPinManager::~DriveFsPinManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
+}
 
 // TODO(b/259454320): Pass through a `base::RepeatingCallback` here to enable
 // the callsite to receive progress updates.
 void DriveFsPinManager::Start(CompletionCallback complete_callback,
                               const bool should_pin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
   DCHECK(complete_callback);
 
   should_pin_ = should_pin;
@@ -473,11 +475,6 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
   progress_ = {};
   files_to_pin_.clear();
   files_to_track_.clear();
-
-  if (!enabled_) {
-    LOG(ERROR) << "The pin manager is not enabled";
-    return Complete(SetupStage::kDisabled);
-  }
 
   VLOG(1) << "Calculating free space...";
   timer_ = base::ElapsedTimer();
@@ -490,8 +487,12 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
 }
 
 void DriveFsPinManager::Stop() {
-  VLOG(1) << "Stopping";
-  Complete(SetupStage::kStopped);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (InProgress(progress_.stage)) {
+    VLOG(1) << "Stopping";
+    Complete(SetupStage::kStopped);
+  }
 }
 
 void DriveFsPinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
@@ -599,6 +600,9 @@ void DriveFsPinManager::Complete(const SetupStage stage) {
   NotifyProgress();
   weak_ptr_factory_.InvalidateWeakPtrs();
   search_query_.reset();
+  files_to_pin_.clear();
+  files_to_track_.clear();
+
   if (complete_callback_) {
     std::move(complete_callback_).Run(stage);
   }
@@ -704,7 +708,7 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
     const mojom::SyncingStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!enabled_ || !InProgress(progress_.stage)) {
+  if (!InProgress(progress_.stage)) {
     VLOG(2) << "Ignored syncing status update";
     return;
   }

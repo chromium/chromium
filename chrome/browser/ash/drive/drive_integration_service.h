@@ -178,7 +178,7 @@ class DriveIntegrationService : public KeyedService,
   drivefs::DriveFsHost* GetDriveFsHost() const;
 
   // Returns the `DriveFsPinManager` iff DriveFS is mounted.
-  drivefs::pinning::DriveFsPinManager* GetDriveFsPinManager();
+  drivefs::pinning::DriveFsPinManager* GetDriveFsPinManager() const;
 
   // Returns the mojo interface to the DriveFs daemon if it is enabled and
   // connected.

@@ -126,8 +126,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   using SpaceGetter =
       base::RepeatingCallback<void(const base::FilePath&, SpaceResult)>;
 
-  DriveFsPinManager(bool enabled,
-                    const base::FilePath& profile_path,
+  DriveFsPinManager(const base::FilePath& profile_path,
                     mojom::DriveFs* drivefs_interface,
                     SpaceGetter get_free_space = {});
 
@@ -135,9 +134,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   DriveFsPinManager& operator=(const DriveFsPinManager&) = delete;
 
   ~DriveFsPinManager() override;
-
-  // Enable or disable the bulk pinning.
-  void SetBulkPinningEnabled(bool enabled) { enabled_ = enabled; }
 
   // Start up the manager, which will first search for any unpinned items and
   // pin them (within the users My drive) then turn to a "monitoring" phase
@@ -266,10 +262,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   void NotifyProgress();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Denotes whether the feature is enabled. If the feature is disabled no setup
-  // nor monitoring occurs.
-  bool enabled_ = false;
 
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?
