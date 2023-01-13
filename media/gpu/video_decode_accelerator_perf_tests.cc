@@ -474,10 +474,6 @@ int main(int argc, char** argv) {
   std::vector<base::test::FeatureRef> disabled_features;
   std::vector<base::test::FeatureRef> enabled_features;
 
-#if defined(ARCH_CPU_ARM_FAMILY)
-  enabled_features.push_back(media::kPreferLibYuvImageProcessor);
-#endif  // defined(ARCH_CPU_ARM_FAMILY)
-
   media::test::DecoderImplementation implementation =
       media::test::DecoderImplementation::kVD;
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();

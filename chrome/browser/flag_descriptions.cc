@@ -6248,10 +6248,6 @@ const char kChromeOSHWVBREncodingDescription[] =
     "video is recorded in VBR encoding in MediaRecoder API automatically and "
     "WebCodecs API if configured so.";
 #if defined(ARCH_CPU_ARM_FAMILY)
-const char kPreferLibYuvImageProcessorName[] = "Prefer libYUV image processor";
-const char kPreferLibYuvImageProcessorDescription[] =
-    "Prefers the libYUV image processor for format conversion of video frames "
-    "over the hardware implementation";
 const char kPreferGLImageProcessorName[] = "Prefer GL image processor";
 const char kPreferGLImageProcessorDescription[] =
     "Prefers the GL image processor for format conversion of video frames over"

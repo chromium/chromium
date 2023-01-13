@@ -3599,8 +3599,6 @@ extern const char kChromeOSDirectVideoDecoderDescription[];
 extern const char kChromeOSHWVBREncodingName[];
 extern const char kChromeOSHWVBREncodingDescription[];
 #if defined(ARCH_CPU_ARM_FAMILY)
-extern const char kPreferLibYuvImageProcessorName[];
-extern const char kPreferLibYuvImageProcessorDescription[];
 extern const char kPreferGLImageProcessorName[];
 extern const char kPreferGLImageProcessorDescription[];
 #endif  // defined(ARCH_CPU_ARM_FAMILY

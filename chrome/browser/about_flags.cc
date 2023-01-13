@@ -6520,11 +6520,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeOSHWVBREncodingDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kChromeOSHWVBREncoding)},
 #if defined(ARCH_CPU_ARM_FAMILY)
-    {"prefer-libyuv-image-processor",
-     flag_descriptions::kPreferLibYuvImageProcessorName,
-     flag_descriptions::kPreferLibYuvImageProcessorDescription,
-     kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(media::kPreferLibYuvImageProcessor)},
     {"prefer-gl-image-processor",
      flag_descriptions::kPreferGLImageProcessorName,
      flag_descriptions::kPreferGLImageProcessorDescription, kOsCrOS | kOsLacros,

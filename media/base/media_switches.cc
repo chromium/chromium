@@ -954,14 +954,10 @@ BASE_FEATURE(kLimitConcurrentDecoderInstances,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if defined(ARCH_CPU_ARM_FAMILY)
-// Some architectures have separate image processor hardware that
-// can be used by Chromium's ImageProcessor to color convert/crop/etc.
-// video buffers.  Sometimes it is more efficient/performant/correct
-// to use a libYUV or GL based implementation instead of the hardware to
-// do this processing.
-BASE_FEATURE(kPreferLibYuvImageProcessor,
-             "PreferLibYUVImageProcessor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Experimental support for GL based image processing. On some architectures,
+// the hardware accelerated video decoder outputs frames in a format not
+// understood by the display controller. We usually use LibYUV to convert these
+// frames. This flag enables an experimental GL-based conversion method.
 BASE_FEATURE(kPreferGLImageProcessor,
              "PreferGLImageProcessor",
              base::FEATURE_DISABLED_BY_DEFAULT);
