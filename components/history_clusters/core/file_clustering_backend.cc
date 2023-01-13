@@ -65,14 +65,15 @@ std::vector<history::Cluster> GetClustersFromFile() {
   }
 
   // Parse the JSON.
-  const base::Value* json_clusters = json_value->FindKey("clusters");
-  if (!json_clusters || !json_clusters->is_list()) {
+  const base::Value::List* json_clusters =
+      json_value->GetDict().FindList("clusters");
+  if (!json_clusters) {
     return {};
   }
   std::vector<history::Cluster> clusters;
-  clusters.reserve(json_clusters->GetList().size());
+  clusters.reserve(json_clusters->size());
 
-  for (const auto& json_cluster : json_clusters->GetList()) {
+  for (const auto& json_cluster : *json_clusters) {
     const auto& json_cluster_dict = json_cluster.GetDict();
 
     history::Cluster cluster;
