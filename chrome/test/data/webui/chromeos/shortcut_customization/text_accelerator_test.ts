@@ -5,6 +5,7 @@
 import 'chrome://shortcut-customization/js/text_accelerator.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
@@ -31,6 +32,10 @@ suite('textAcceleratorTest', function() {
 
   function getAllPlainTextParts(): NodeListOf<HTMLSpanElement> {
     return getTextWrapperEl().querySelectorAll('span');
+  }
+
+  function getAllDelimiterParts(): NodeListOf<IronIconElement> {
+    return getTextWrapperEl().querySelectorAll('#delimiter-icon');
   }
 
   setup(() => {
@@ -84,15 +89,27 @@ suite('textAcceleratorTest', function() {
     assertEquals(part!.innerText, mojoString16ToString(plainText.text));
   });
 
+  test('TextAcceleratorPartsDelimiter', async () => {
+    const delimiter =
+        createTextAcceleratorPart('+', TextAcceleratorPartType.kDelimiter);
+    await initTextAcceleratorElement([delimiter]);
+    assertEquals(1, getTextWrapperEl().children.length);
+    const delimiterPart = getAllDelimiterParts()[0];
+    assertEquals(1, textAccelElement!.parts.length);
+    assertEquals(delimiterPart!.icon, 'shortcut-customization-keys:plus');
+  });
+
   test('TextAcceleratorPartsAll', async () => {
     const ctrlKey =
         createTextAcceleratorPart('ctrl', TextAcceleratorPartType.kModifier);
     const bKey = createTextAcceleratorPart('b', TextAcceleratorPartType.kKey);
     const plainText = createTextAcceleratorPart(
         'Some text', TextAcceleratorPartType.kPlainText);
-    await initTextAcceleratorElement([ctrlKey, bKey, plainText]);
-    assertEquals(3, getTextWrapperEl().children.length);
-    assertEquals(3, textAccelElement!.parts.length);
+    const delimiter =
+        createTextAcceleratorPart('+', TextAcceleratorPartType.kDelimiter);
+    await initTextAcceleratorElement([ctrlKey, bKey, plainText, delimiter]);
+    assertEquals(4, getTextWrapperEl().children.length);
+    assertEquals(4, textAccelElement!.parts.length);
 
     const [ctrlInputKey, bInputKey] = getAllInputKeys();
     assertEquals(ctrlInputKey!.key, mojoString16ToString(ctrlKey.text));
@@ -102,5 +119,8 @@ suite('textAcceleratorTest', function() {
     assertEquals(bInputKey!.keyState, KeyInputState.ALPHANUMERIC_SELECTED);
     const part = getAllPlainTextParts()[0];
     assertEquals(part!.innerText, mojoString16ToString(plainText.text));
+
+    const delimiterPart = getAllDelimiterParts()[0];
+    assertEquals(delimiterPart!.icon, 'shortcut-customization-keys:plus');
   });
 });

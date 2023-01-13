@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import './input_key.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -43,12 +45,22 @@ export class TextAcceleratorElement extends PolymerElement {
       const text = mojoString16ToString(part.text);
       if (part.type === TextAcceleratorPartType.kPlainText) {
         textParts.push(this.createPlainTextPart(text));
+      } else if (part.type === TextAcceleratorPartType.kDelimiter) {
+        textParts.push(this.createDelimiterIconPart());
       } else {
         textParts.push(this.createInputKeyPart(text, part.type));
       }
     }
 
     wrapper.append(...textParts);
+  }
+
+  private createDelimiterIconPart(): IronIconElement {
+    const icon = document.createElement('iron-icon');
+    icon.classList.add('spacing');
+    icon.icon = this.getIconForDelimiter();
+    icon.id = 'delimiter-icon';
+    return icon;
   }
 
   private createInputKeyPart(keyText: string, type: TextAcceleratorPartType):
@@ -62,8 +74,14 @@ export class TextAcceleratorElement extends PolymerElement {
     return key;
   }
 
+  private getIconForDelimiter(): string {
+    // Update if/when more delimiters are added.
+    return 'shortcut-customization-keys:plus';
+  }
+
   private createPlainTextPart(text: string): HTMLSpanElement {
     const span = document.createElement('span');
+    span.classList.add('spacing');
     span.innerText = text;
     return span;
   }

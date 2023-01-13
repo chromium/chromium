@@ -44,7 +44,7 @@ const cycleTabsAccelerator: MojoAcceleratorInfo = {
         },
         {
           text: stringToMojoString16(' + '),
-          type: TextAcceleratorPartType.kPlainText,
+          type: TextAcceleratorPartType.kDelimiter,
         },
         {
           text: stringToMojoString16('1 '),
