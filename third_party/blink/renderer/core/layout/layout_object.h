@@ -3175,8 +3175,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool ShouldDoFullPaintInvalidation() const {
     NOT_DESTROYED();
-    if (!ShouldDelayFullPaintInvalidation() &&
-        FullPaintInvalidationReason() != PaintInvalidationReason::kNone) {
+    if (ShouldDelayFullPaintInvalidation()) {
+      DCHECK(!bitfields_.SubtreeShouldDoFullPaintInvalidation());
+      return false;
+    }
+    if (FullPaintInvalidationReason() != PaintInvalidationReason::kNone) {
       DCHECK(IsFullPaintInvalidationReason(FullPaintInvalidationReason()));
       DCHECK(ShouldCheckForPaintInvalidation());
       return true;

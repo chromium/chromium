@@ -603,6 +603,49 @@ TEST_F(LayoutObjectTest, MutableForPaintingClearPaintFlags) {
   EXPECT_FALSE(object->DescendantNeedsPaintPropertyUpdate());
 }
 
+TEST_F(LayoutObjectTest, DelayFullPaintInvalidation) {
+  LayoutObject* object = GetDocument().body()->GetLayoutObject();
+  object->SetShouldDoFullPaintInvalidation();
+  object->SetShouldDelayFullPaintInvalidation();
+  EXPECT_FALSE(object->ShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(object->ShouldDelayFullPaintInvalidation());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(object->ShouldDoFullPaintInvalidation());
+  // ShouldDelayFullPaintInvalidation is not preserved.
+  EXPECT_TRUE(object->ShouldDelayFullPaintInvalidation());
+
+  object->SetShouldDoFullPaintInvalidation();
+  EXPECT_TRUE(object->ShouldDoFullPaintInvalidation());
+  // ShouldDelayFullPaintInvalidation is reset by
+  // SetShouldDoFullPaintInvalidation().
+  EXPECT_FALSE(object->ShouldDelayFullPaintInvalidation());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(object->ShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(object->ShouldDelayFullPaintInvalidation());
+}
+
+TEST_F(LayoutObjectTest, SubtreeAndDelayFullPaintInvalidation) {
+  LayoutObject* object = GetDocument().body()->GetLayoutObject();
+  object->SetShouldDoFullPaintInvalidation();
+  object->SetShouldDelayFullPaintInvalidation();
+  object->SetSubtreeShouldDoFullPaintInvalidation();
+  EXPECT_TRUE(object->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(object->ShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(object->ShouldDelayFullPaintInvalidation());
+
+  object->SetShouldDelayFullPaintInvalidation();
+  EXPECT_TRUE(object->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_TRUE(object->ShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(object->ShouldDelayFullPaintInvalidation());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(object->SubtreeShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(object->ShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(object->ShouldDelayFullPaintInvalidation());
+}
+
 TEST_F(LayoutObjectTest, SubtreePaintPropertyUpdateReasons) {
   LayoutObject* object = GetDocument().body()->GetLayoutObject();
   object->AddSubtreePaintPropertyUpdateReason(

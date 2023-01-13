@@ -4657,6 +4657,10 @@ void LayoutObject::SetShouldDelayFullPaintInvalidation() {
   NOT_DESTROYED();
   // Should have already set a full paint invalidation reason.
   DCHECK(IsFullPaintInvalidationReason(FullPaintInvalidationReason()));
+  // Subtree full paint invalidation can't be delayed.
+  if (bitfields_.SubtreeShouldDoFullPaintInvalidation()) {
+    return;
+  }
 
   bitfields_.SetShouldDelayFullPaintInvalidation(true);
   if (!ShouldCheckForPaintInvalidation()) {
