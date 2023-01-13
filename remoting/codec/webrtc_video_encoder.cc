@@ -18,7 +18,9 @@ WebrtcVideoEncoder::EncodedFrame& WebrtcVideoEncoder::EncodedFrame::operator=(
 // static
 int WebrtcVideoEncoder::GetEncoderThreadCount(int frame_width) {
   int thread_num;
-  if (frame_width >= 3840) {
+  if (frame_width >= 5120) {
+    thread_num = 32;
+  } else if (frame_width >= 3840) {
     thread_num = 16;
   } else if (frame_width >= 2560) {
     thread_num = 8;
