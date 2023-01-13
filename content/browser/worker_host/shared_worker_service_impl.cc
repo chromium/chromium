@@ -319,9 +319,6 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     return nullptr;
   }
 
-  network::mojom::ClientSecurityStatePtr client_security_state =
-      creator.BuildClientSecurityStateForWorkers();
-
   // Create the host. We need to do this even before starting the worker,
   // because we are about to bounce to the IO thread. If another ConnectToWorker
   // request arrives in the meantime, it finds and reuses the host instead of
@@ -330,8 +327,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       worker_hosts_.insert(std::make_unique<SharedWorkerHost>(
           this, instance, std::move(site_instance),
           std::move(content_security_policies),
-          creator.policy_container_host()->Clone(),
-          client_security_state->Clone()));
+          creator.policy_container_host()->Clone()));
   DCHECK(insertion_result.second);
   SharedWorkerHost* host = insertion_result.first->get();
   shared_worker_hosts_[host->token()] = host;
@@ -381,7 +377,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           host->instance().storage_key().nonce().has_value()
               ? &host->instance().storage_key().nonce().value()
               : nullptr),
-      std::move(client_security_state), credentials_mode,
+      creator.BuildClientSecurityStateForWorkers(), credentials_mode,
       std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,
       service_worker_context_, service_worker_handle_raw,

@@ -91,8 +91,7 @@ class SharedWorkerHostTest : public testing::Test {
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
         std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-        base::MakeRefCounted<PolicyContainerHost>(),
-        network::mojom::ClientSecurityState::New());
+        base::MakeRefCounted<PolicyContainerHost>());
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
     return weak_host;
@@ -389,8 +388,7 @@ TEST_F(SharedWorkerHostTest,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>(),
-      network::mojom::ClientSecurityState::New());
+      base::MakeRefCounted<PolicyContainerHost>());
 
   // Start the worker.
   mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
@@ -430,17 +428,11 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
       network::mojom::CredentialsMode::kSameOrigin, "name",
       blink::StorageKey(url::Origin::Create(kWorkerUrl)),
       blink::mojom::SharedWorkerCreationContextType::kSecure);
-  network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy;
-  creator_cross_origin_embedder_policy.value =
+  PolicyContainerPolicies policies;
+  policies.cross_origin_embedder_policy.value =
       network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-  network::mojom::ClientSecurityStatePtr client_security_state =
-      network::ClientSecurityStateBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
-          .WithIPAddressSpace(network::mojom::IPAddressSpace::kPublic)
-          .WithIsSecureContext(true)
-          .WithCrossOriginEmbedderPolicy(creator_cross_origin_embedder_policy)
-          .Build();
+  policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
+  policies.is_web_secure_context = true;
   network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy;
   worker_cross_origin_embedder_policy.value =
       network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
@@ -452,8 +444,7 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
   auto host = std::make_unique<SharedWorkerHost>(
       &service_, instance, site_instance_,
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      base::MakeRefCounted<PolicyContainerHost>(),
-      std::move(client_security_state));
+      base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
 
   // Start the worker.
   mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;

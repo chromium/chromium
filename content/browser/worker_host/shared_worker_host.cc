@@ -44,6 +44,8 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/client_security_state.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
@@ -123,8 +125,7 @@ SharedWorkerHost::SharedWorkerHost(
     scoped_refptr<SiteInstanceImpl> site_instance,
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies,
-    scoped_refptr<PolicyContainerHost> creator_policy_container_host,
-    network::mojom::ClientSecurityStatePtr creator_client_security_state)
+    scoped_refptr<PolicyContainerHost> creator_policy_container_host)
     : service_(service),
       token_(blink::SharedWorkerToken()),
       instance_(instance),
@@ -140,8 +141,7 @@ SharedWorkerHost::SharedWorkerHost(
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
                                             ukm::SourceIdType::WORKER_ID)),
       reporting_source_(base::UnguessableToken::Create()),
-      creator_policy_container_host_(std::move(creator_policy_container_host)),
-      creator_client_security_state_(std::move(creator_client_security_state)) {
+      creator_policy_container_host_(std::move(creator_policy_container_host)) {
   DCHECK(GetProcessHost());
   DCHECK(GetProcessHost()->IsInitializedAndNotDead());
 
@@ -228,11 +228,27 @@ void SharedWorkerHost::Start(
     // once creator policies are persisted through the filesystem store.
     if (base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessForWorkers)) {
+      // Create a maximally restricted one if the policy container is missing.
       worker_client_security_state_ =
-          mojo::Clone(creator_client_security_state_);
+          creator_policy_container_host_
+              ? DeriveClientSecurityState(
+                    creator_policy_container_host_->policies(),
+                    PrivateNetworkRequestContext::kWorker)
+              : network::mojom::ClientSecurityState::New(
+                    network::CrossOriginEmbedderPolicy(
+                        network::mojom::CrossOriginEmbedderPolicyValue::
+                            kRequireCorp),
+                    /*is_web_secure_context=*/false,
+                    network::mojom::IPAddressSpace::kUnknown,
+                    network::mojom::PrivateNetworkRequestPolicy::kBlock);
     } else {
+      // Create a maximally restricted one if the policy container is missing.
       worker_client_security_state_->cross_origin_embedder_policy =
-          creator_client_security_state_->cross_origin_embedder_policy;
+          creator_policy_container_host_
+              ? creator_policy_container_host_->cross_origin_embedder_policy()
+              : network::CrossOriginEmbedderPolicy(
+                    network::mojom::CrossOriginEmbedderPolicyValue::
+                        kRequireCorp);
     }
     policy_container_host = std::move(creator_policy_container_host_);
   } else {
@@ -255,7 +271,8 @@ void SharedWorkerHost::Start(
           policy_container_host->ip_address_space();
       worker_client_security_state_->is_web_secure_context =
           policy_container_host->policies().is_web_secure_context &&
-          creator_client_security_state_->is_web_secure_context;
+          creator_policy_container_host_ &&
+          creator_policy_container_host_->policies().is_web_secure_context;
       worker_client_security_state_->private_network_request_policy =
           DerivePrivateNetworkRequestPolicy(
               worker_client_security_state_->ip_address_space,
@@ -342,7 +359,8 @@ void SharedWorkerHost::Start(
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
       std::move(info), token_, instance_.storage_key().origin(),
-      creator_client_security_state_->is_web_secure_context,
+      creator_policy_container_host_ &&
+          creator_policy_container_host_->policies().is_web_secure_context,
       GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
           GetProcessHost()->GetBrowserContext()),
       GetContentClient()->browser()->GetFullUserAgent(),

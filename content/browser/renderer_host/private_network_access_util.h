@@ -42,6 +42,10 @@ DerivePrivateNetworkRequestPolicy(
     const PolicyContainerPolicies& policies,
     PrivateNetworkRequestContext private_network_request_context);
 
+network::mojom::ClientSecurityStatePtr CONTENT_EXPORT DeriveClientSecurityState(
+    const PolicyContainerPolicies& policies,
+    PrivateNetworkRequestContext private_network_request_context);
+
 // Determines the IP address space that should be associated to execution
 // contexts instantiated from a resource loaded from this `url` and the given
 // response.

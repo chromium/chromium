@@ -81,8 +81,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       scoped_refptr<SiteInstanceImpl> site_instance,
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
-      scoped_refptr<PolicyContainerHost> creator_policy_container_host,
-      network::mojom::ClientSecurityStatePtr creator_client_security_state);
+      scoped_refptr<PolicyContainerHost> creator_policy_container_host);
 
   SharedWorkerHost(const SharedWorkerHost&) = delete;
   SharedWorkerHost& operator=(const SharedWorkerHost&) = delete;
@@ -345,14 +344,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   const base::UnguessableToken reporting_source_;
 
-  scoped_refptr<PolicyContainerHost> creator_policy_container_host_;
-
-  // The client security state of the creator execution context.
-  // Never nullptr. Copied at construction time.
-  // This is copied into `worker_client_security_state_` for workers loaded
-  // from URLs with local schemes, in which case the worker should inherit from
-  // its creator.
-  const network::mojom::ClientSecurityStatePtr creator_client_security_state_;
+  // Set at construction time and should not change afterwards.
+  const scoped_refptr<PolicyContainerHost> creator_policy_container_host_;
 
   // The worker's own client security state, applied to subresource fetches.
   // This is nullptr until it is computed in `DidStartScriptLoad()`.

@@ -118,6 +118,16 @@ Policy DerivePrivateNetworkRequestPolicy(
                                                private_network_request_context);
 }
 
+network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
+    const PolicyContainerPolicies& policies,
+    PrivateNetworkRequestContext private_network_request_context) {
+  return network::mojom::ClientSecurityState::New(
+      policies.cross_origin_embedder_policy, policies.is_web_secure_context,
+      policies.ip_address_space,
+      DerivePrivateNetworkRequestPolicy(policies,
+                                        private_network_request_context));
+}
+
 // Special chrome schemes cannot directly be categorized in public/private/local
 // address spaces using information from the network or the PolicyContainer. We
 // have to classify them manually. In its default state an unhandled scheme will
