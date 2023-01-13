@@ -66,7 +66,7 @@ class AttributionSimulatorInputParser {
       return absl::nullopt;
 
     static constexpr char kKeyCookies[] = "cookies";
-    if (base::Value* cookies = input.FindKey(kKeyCookies)) {
+    if (base::Value* cookies = input.GetDict().Find(kKeyCookies)) {
       auto context = PushContext(kKeyCookies);
       ParseList(
           std::move(*cookies),
@@ -75,7 +75,7 @@ class AttributionSimulatorInputParser {
     }
 
     static constexpr char kKeyDataClears[] = "data_clears";
-    if (base::Value* data_clears = input.FindKey(kKeyDataClears)) {
+    if (base::Value* data_clears = input.GetDict().Find(kKeyDataClears)) {
       auto context = PushContext(kKeyDataClears);
       ParseList(
           std::move(*data_clears),
@@ -84,7 +84,7 @@ class AttributionSimulatorInputParser {
     }
 
     static constexpr char kKeySources[] = "sources";
-    if (base::Value* sources = input.FindKey(kKeySources)) {
+    if (base::Value* sources = input.GetDict().Find(kKeySources)) {
       auto context = PushContext(kKeySources);
       ParseList(
           std::move(*sources),
@@ -93,7 +93,7 @@ class AttributionSimulatorInputParser {
     }
 
     static constexpr char kKeyTriggers[] = "triggers";
-    if (base::Value* triggers = input.FindKey(kKeyTriggers)) {
+    if (base::Value* triggers = input.GetDict().Find(kKeyTriggers)) {
       auto context = PushContext(kKeyTriggers);
       ParseList(
           std::move(*triggers),
