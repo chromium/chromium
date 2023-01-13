@@ -99,6 +99,9 @@ class VIEWS_EXPORT TooltipController
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
+  // Sets show tooltip delay for `target` window.
+  void SetShowTooltipDelay(aura::Window* target, base::TimeDelta delay);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Called when tooltip is shown/hidden on server.
   // This is only used for Lacros whose tooltip is handled on server-side.
@@ -140,8 +143,9 @@ class VIEWS_EXPORT TooltipController
   // stored on the window are different.
   bool IsTooltipTextUpdateNeeded() const;
 
-  // The opposite of SetHideTooltipTimeout.
-  void RemoveHideTooltipTimeoutFromMap(aura::Window* window);
+  // Remove show/hide tooltip delay from `show_tooltip_delay_map_` and
+  // `hide_tooltip_timeout_map_`.
+  void RemoveTooltipDelayFromMap(aura::Window* window);
 
   // Stop tracking the window on which the cursor was when the mouse was pressed
   // if we're on another window or if a new tooltip is triggered by keyboard.
@@ -187,6 +191,10 @@ class VIEWS_EXPORT TooltipController
   // This may be set to true only for testing.
   // Do NOT override this value except from TooltipControllerTestHelper.
   bool skip_show_delay_for_testing_ = false;
+
+  // The show delay before showing tooltip may differ for external app's tooltip
+  // such as Lacros. This map specifies the show delay for each target window.
+  std::map<aura::Window*, base::TimeDelta> show_tooltip_delay_map_;
 
   // Web content tooltips should be shown indefinitely and those added on Views
   // should be hidden automatically after a timeout. This map stores the timeout

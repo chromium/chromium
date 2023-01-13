@@ -327,7 +327,7 @@ void TooltipController::OnWindowVisibilityChanged(aura::Window* window,
 
 void TooltipController::OnWindowDestroyed(aura::Window* window) {
   if (observed_window_ == window) {
-    RemoveHideTooltipTimeoutFromMap(observed_window_);
+    RemoveTooltipDelayFromMap(observed_window_);
     observed_window_ = nullptr;
   }
 
@@ -353,6 +353,11 @@ void TooltipController::OnWindowActivated(ActivationReason reason,
     HideAndReset();
 }
 
+void TooltipController::SetShowTooltipDelay(aura::Window* target,
+                                            base::TimeDelta delay) {
+  show_tooltip_delay_map_[target] = delay;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void TooltipController::OnTooltipShownOnServer(const std::u16string& text,
                                                const gfx::Rect& bounds) {
@@ -362,7 +367,7 @@ void TooltipController::OnTooltipShownOnServer(const std::u16string& text,
 void TooltipController::OnTooltipHiddenOnServer() {
   state_manager_->OnTooltipHiddenOnServer();
 }
-#endif  // BUILDFLA(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 ////////////////////////////////////////////////////////////////////////////////
 // TooltipController private:
@@ -423,8 +428,13 @@ bool TooltipController::IsCursorVisible() const {
 }
 
 base::TimeDelta TooltipController::GetShowTooltipDelay() {
-  return skip_show_delay_for_testing_ ? base::TimeDelta()
-                                      : kDefaultShowTooltipDelay;
+  std::map<aura::Window*, base::TimeDelta>::const_iterator it =
+      show_tooltip_delay_map_.find(observed_window_);
+  if (it == show_tooltip_delay_map_.end()) {
+    return skip_show_delay_for_testing_ ? base::TimeDelta()
+                                        : kDefaultShowTooltipDelay;
+  }
+  return it->second;
 }
 
 base::TimeDelta TooltipController::GetHideTooltipDelay() {
@@ -465,7 +475,8 @@ bool TooltipController::IsTooltipTextUpdateNeeded() const {
   return state_manager_->tooltip_text() != wm::GetTooltipText(observed_window_);
 }
 
-void TooltipController::RemoveHideTooltipTimeoutFromMap(aura::Window* window) {
+void TooltipController::RemoveTooltipDelayFromMap(aura::Window* window) {
+  show_tooltip_delay_map_.erase(window);
   hide_tooltip_timeout_map_.erase(window);
 }
 
