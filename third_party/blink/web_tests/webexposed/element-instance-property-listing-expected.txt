@@ -176,6 +176,7 @@ namespace http://www.w3.org/1999/xhtml
     property offsetTop
     property offsetWidth
     property onabort
+    property onaftertoggle
     property onanimationend
     property onanimationiteration
     property onanimationstart
@@ -1409,6 +1410,7 @@ namespace http://www.w3.org/2000/svg
     property nonce
     property normalize
     property onabort
+    property onaftertoggle
     property onanimationend
     property onanimationiteration
     property onanimationstart
