@@ -1743,6 +1743,11 @@
         'swarming': {
           'shards': 41,
         },
+        'args': [
+          # TODO(crbug.com/1406693): Remove this when the kernal panic in
+          # fuchsia has been resolved.
+          '--test-arg=--test-launcher-jobs=1',
+        ],
       },
       'fuchsia-x64-rel': {
         'swarming': {
