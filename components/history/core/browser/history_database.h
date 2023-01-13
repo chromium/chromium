@@ -180,6 +180,13 @@ class HistoryDatabase : public DownloadDatabase,
   VisitID GetDeleteForeignVisitsUntilId();
   void SetDeleteForeignVisitsUntilId(VisitID visit_id);
 
+  // Retrieves/updates the bit that indicates whether the DB may contain any
+  // visits known to sync.
+  // TODO(crbug.com/1365291): After syncer::HISTORY has launched, consider
+  // whether this bit is still required.
+  bool KnownToSyncVisitsExist();
+  void SetKnownToSyncVisitsExist(bool exist);
+
   // Sync metadata storage ----------------------------------------------------
 
   // Returns the sub-database used for storing Sync metadata for Typed URLs.

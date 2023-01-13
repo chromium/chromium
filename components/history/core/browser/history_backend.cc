@@ -407,7 +407,7 @@ void HistoryBackend::Init(
         db_->MayContainForeignVisits()) {
       // If the History Sync data type is disabled, but there are foreign visits
       // left (because it was previously enabled), then clean them up now.
-      DeleteAllForeignVisits();
+      DeleteAllForeignVisitsAndResetIsKnownToSync();
     } else if (db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID) {
       // A deletion of foreign visits was still ongoing during the previous
       // browser shutdown. Continue it.
@@ -774,6 +774,24 @@ void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
                                    : base::Microseconds(0);
     db_->UpdateVisitRow(visit_row);
     NotifyVisitUpdated(visit_row);
+  }
+}
+
+void HistoryBackend::MarkVisitAsKnownToSync(VisitID visit_id) {
+  if (!db_) {
+    return;
+  }
+
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    visit_row.is_known_to_sync = true;
+
+    if (db_->UpdateVisitRow(visit_row)) {
+      db_->SetKnownToSyncVisitsExist(true);
+    }
+
+    // Purposely don't call `NotifyVisitUpdated()` here, because this change
+    // itself is de minimis and triggered by the sync history backend observer.
   }
 }
 
@@ -1668,39 +1686,44 @@ bool HistoryBackend::UpdateVisitReferrerOpenerIDs(VisitID visit_id,
   return db_->UpdateVisitRow(row);
 }
 
-bool HistoryBackend::DeleteAllForeignVisits() {
+void HistoryBackend::DeleteAllForeignVisitsAndResetIsKnownToSync() {
   if (!db_)
-    return false;
+    return;
 
-  if (!db_->MayContainForeignVisits()) {
-    // The DB doesn't contain any foreign visits, or all the foreign visits are
-    // already scheduled for deletion - nothing to do.
-    return true;
+  if (db_->KnownToSyncVisitsExist()) {
+    db_->SetKnownToSyncVisitsExist(false);
+    // It might be bad performance that we do a full table scan setting a bit
+    // right before we delete all the foreign visits. In practice, I bet it
+    // doesn't matter, since sync turnoffs are rare, and sequencing this after
+    // completing the foreign visit deletion adds code complexity.
+    db_->SetAllVisitsAsNotKnownToSync();
   }
 
-  bool already_running =
-      db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID;
+  // Skip this if the DB doesn't contain any foreign visits, or all the foreign
+  // visits are already scheduled for deletion - nothing to do.
+  if (db_->MayContainForeignVisits()) {
+    bool already_running =
+        db_->GetDeleteForeignVisitsUntilId() != kInvalidVisitID;
 
-  // Set the max-foreign-visit-to-delete to the current max visit ID in the DB.
-  // This ensures that any visits added in the future (after the
-  // DeleteAllForeignVisits() call) will not be affected. (This matters if Sync
-  // gets enabled again, and starts adding foreign visits again, before the
-  // deletion process has completed.)
-  VisitID max_visit_to_delete = db_->GetMaxVisitIDInUse();
-  db_->SetDeleteForeignVisitsUntilId(max_visit_to_delete);
-  // Already set the "may contain foreign visits" bit to false, since all the
-  // existing foreign visits are about to be deleted. This ensures that the bit
-  // can be safely set to true again if new foreign visits are added, even
-  // before the deletion completes.
-  db_->SetMayContainForeignVisits(false);
+    // Set the max-foreign-visit-to-delete to the current max visit ID in the
+    // DB. This ensures that any visits added in the future (after the
+    // DeleteAllForeignVisits() call) will not be affected. (This matters if
+    // Sync gets enabled again, and starts adding foreign visits again, before
+    // the deletion process has completed.)
+    VisitID max_visit_to_delete = db_->GetMaxVisitIDInUse();
+    db_->SetDeleteForeignVisitsUntilId(max_visit_to_delete);
+    // Already set the "may contain foreign visits" bit to false, since all the
+    // existing foreign visits are about to be deleted. This ensures that the
+    // bit can be safely set to true again if new foreign visits are added, even
+    // before the deletion completes.
+    db_->SetMayContainForeignVisits(false);
 
-  // Only schedule a deletion task if there isn't one already running. If there
-  // is one already running, it'll pick up the new limit automatically.
-  if (!already_running) {
-    StartDeletingForeignVisits();
+    // Only schedule a deletion task if there isn't one already running. If
+    // there is one already running, it'll pick up the new limit automatically.
+    if (!already_running) {
+      StartDeletingForeignVisits();
+    }
   }
-
-  return true;
 }
 
 bool HistoryBackend::RemoveVisits(const VisitVector& visits) {

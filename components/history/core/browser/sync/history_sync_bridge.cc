@@ -607,7 +607,7 @@ void HistorySyncBridge::ApplyStopSyncChanges(
   if (delete_metadata_change_list) {
     // A non-null `delete_metadata_change_list` indicates that Sync is being
     // turned off only permanently. Delete all foreign visits from the DB.
-    history_backend_->DeleteAllForeignVisits();
+    history_backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
   }
 
   ModelTypeSyncBridge::ApplyStopSyncChanges(
@@ -810,9 +810,9 @@ void HistorySyncBridge::SetSyncTransportState(
   // is a workaround to still clear foreign history in that case. Remove once
   // that bug is fixed.
   if (sync_transport_state_ == syncer::SyncService::TransportState::DISABLED) {
-    // DeleteAllForeignVisits() is cheap if there is no foreign history in the
-    // DB, so it's okay to call this somewhat too often.
-    history_backend_->DeleteAllForeignVisits();
+    // This is cheap if there is no foreign history in the DB, so it's okay to
+    // call this somewhat too often.
+    history_backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
   }
 }
 

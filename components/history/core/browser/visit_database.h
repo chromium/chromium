@@ -72,6 +72,12 @@ class VisitDatabase {
   // VisitID as the key. The visit must exist. Returns true on success.
   bool UpdateVisitRow(const VisitRow& visit);
 
+  // Marks ALL visits as NOT known to sync. This is called when Sync is turned
+  // off by the user or disabled via feature flag. Visits can be marked as known
+  // to sync again when Sync is re-enabled. This is used to flag which visits
+  // have permission to fetch URL-keyed metadata.
+  bool SetAllVisitsAsNotKnownToSync();
+
   // Fills in the given vector with all of the visits for the given page ID,
   // sorted in ascending order of date. Returns true on success (although there
   // may still be no matches).

@@ -289,11 +289,22 @@ std::vector<GURL> TestHistoryBackendForSync::GetFaviconURLsForURL(
   return {};
 }
 
-bool TestHistoryBackendForSync::DeleteAllForeignVisits() {
+void TestHistoryBackendForSync::MarkVisitAsKnownToSync(VisitID visit_id) {
+  for (auto& visit : visits_) {
+    if (visit.visit_id == visit_id) {
+      // This persists into the vector because we're operating on a reference.
+      visit.is_known_to_sync = true;
+    }
+  }
+}
+
+void TestHistoryBackendForSync::DeleteAllForeignVisitsAndResetIsKnownToSync() {
   ++delete_all_foreign_visits_call_count_;
 
   for (auto it = visits_.begin(); it != visits_.end();) {
-    const VisitRow& visit = *it;
+    VisitRow& visit = *it;
+    visit.is_known_to_sync = false;
+
     if (visit.originator_cache_guid.empty()) {
       // Local visit, leave it.
       ++it;
@@ -308,7 +319,6 @@ bool TestHistoryBackendForSync::DeleteAllForeignVisits() {
       // but currently isn't necessary for the unit tests that use this class.
     }
   }
-  return true;
 }
 
 void TestHistoryBackendForSync::AddObserver(HistoryBackendObserver* observer) {

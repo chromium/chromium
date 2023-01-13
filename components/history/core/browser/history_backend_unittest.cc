@@ -170,6 +170,7 @@ class TestHistoryBackend : public HistoryBackend {
   using HistoryBackend::DeleteAllHistory;
   using HistoryBackend::DeleteFTSIndexDatabases;
   using HistoryBackend::HistoryBackend;
+  using HistoryBackend::MarkVisitAsKnownToSync;
   using HistoryBackend::UpdateVisitDuration;
 
   using HistoryBackend::db_;
@@ -2842,6 +2843,31 @@ TEST_F(HistoryBackendTest, UpdateVisitDuration) {
   ASSERT_TRUE(backend_->RemoveVisits(visits1));
 }
 
+TEST_F(HistoryBackendTest, MarkVisitAsKnownToSync) {
+  // This unit test will test adding and deleting visit details information.
+  ASSERT_TRUE(backend_.get());
+
+  GURL url1("http://www.cnn.com");
+  std::vector<VisitInfo> visit_info1;
+  base::Time start_ts = base::Time::Now() - base::Days(5);
+  visit_info1.emplace_back(start_ts, ui::PAGE_TRANSITION_LINK);
+
+  // Add the visit and verify it doesn't start as being known to sync.
+  backend_->AddVisits(url1, visit_info1, SOURCE_BROWSED);
+  VisitVector visits1;
+  URLRow row;
+  URLID url_id1 = backend_->db()->GetRowForURL(url1, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(url_id1, &visits1));
+  ASSERT_EQ(1U, visits1.size());
+  EXPECT_FALSE(visits1[0].is_known_to_sync);
+
+  // Mark that visit as being known to sync, and read it back.
+  backend_->MarkVisitAsKnownToSync(visits1[0].visit_id);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(url_id1, &visits1));
+  ASSERT_EQ(1U, visits1.size());
+  EXPECT_TRUE(visits1[0].is_known_to_sync);
+}
+
 // Test for migration of adding visit_duration column.
 TEST_F(HistoryBackendTest, MigrationVisitDuration) {
   ASSERT_TRUE(backend_.get());
@@ -4380,7 +4406,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
   }
 
   // Main test body: Instruct backend to delete foreign visits.
-  backend_->DeleteAllForeignVisits();
+  backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
   // The deletions happens asynchronously, so wait for it to complete.
   task_environment_.RunUntilIdle();
 
@@ -4429,7 +4455,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsWorksInBatches) {
   }
 
   // Instruct the backend to delete foreign visits.
-  backend_->DeleteAllForeignVisits();
+  backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
 
   // Wait for the deletions to happen.
   task_environment_.RunUntilIdle();
@@ -4473,7 +4499,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
   }
 
   // Instruct the backend to delete foreign visits.
-  backend_->DeleteAllForeignVisits();
+  backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
 
   // Before the actual (async) deletion happens, add some more foreign visits.
   // These should *not* be affected by the previous DeleteAllForeignVisits()
@@ -4506,6 +4532,66 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
     }
     EXPECT_THAT(remaining_visit_ids,
                 UnorderedElementsAreArray(new_foreign_visit_ids));
+  }
+}
+
+TEST_F(HistoryBackendTest, DeleteAllForeignVisitsResetsIsKnownToSyncFlag) {
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  const base::Time initial_time = base::Time::Now();
+
+  // Setup: Add two local visits.
+  VisitID local_visit_id1 =
+      backend_
+          ->AddPageVisit(GURL("https://local1.url"), base::Time::Now(),
+                         /*referring_visit=*/kInvalidVisitID, kLink,
+                         /*hidden=*/false, SOURCE_BROWSED,
+                         /*should_increment_typed_count=*/false,
+                         /*opener_visit=*/kInvalidVisitID)
+          .second;
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Modify local visit 2 to have `is_known_to_sync` as true.
+  VisitID local_visit_id2 =
+      backend_
+          ->AddPageVisit(GURL("https://local2.url"), base::Time::Now(),
+                         /*referring_visit=*/kInvalidVisitID, kLink,
+                         /*hidden=*/false, SOURCE_BROWSED,
+                         /*should_increment_typed_count=*/false,
+                         /*opener_visit=*/kInvalidVisitID)
+          .second;
+  backend_->MarkVisitAsKnownToSync(local_visit_id2);
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Setup finished - verify that the visits exist, and one is known to sync.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
+                                        /*max_results=*/5, &visits);
+    ASSERT_THAT(visits, ElementsAre(HasVisitID(local_visit_id1),
+                                    HasVisitID(local_visit_id2)));
+    ASSERT_FALSE(visits[0].is_known_to_sync);
+    ASSERT_TRUE(visits[1].is_known_to_sync);
+  }
+
+  // Main test body: Instruct backend to reset all `is_known_to_sync` flags.
+  backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
+  // The deletions happens asynchronously, so wait for it to complete.
+  task_environment_.RunUntilIdle();
+
+  // Make sure the local visits are now no longer known to sync.
+  {
+    VisitVector visits;
+    backend_->db()->GetAllVisitsInRange(initial_time, base::Time::Now(),
+                                        /*max_results=*/5, &visits);
+    ASSERT_THAT(visits, ElementsAre(HasVisitID(local_visit_id1),
+                                    HasVisitID(local_visit_id2)));
+    EXPECT_FALSE(visits[0].is_known_to_sync);
+    EXPECT_FALSE(visits[1].is_known_to_sync);
   }
 }
 

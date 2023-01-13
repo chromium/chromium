@@ -465,6 +465,12 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   return statement.Run();
 }
 
+bool VisitDatabase::SetAllVisitsAsNotKnownToSync() {
+  sql::Statement statement(
+      GetDB().GetUniqueStatement("UPDATE visits SET is_known_to_sync=0"));
+  return statement.Run();
+}
+
 bool VisitDatabase::GetVisitsForURL(URLID url_id, VisitVector* visits) {
   visits->clear();
 

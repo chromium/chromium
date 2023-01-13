@@ -631,7 +631,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Even though the process is async, only visits that already exist at the
   // time this is called will be deleted. Visits added afterwards will *not* be
   // deleted.
-  bool DeleteAllForeignVisits() override;
+  // This method also resets the `is_known_to_sync` bit for all visits, local
+  // and foreign.
+  void DeleteAllForeignVisitsAndResetIsKnownToSync() override;
 
   bool RemoveVisits(const VisitVector& visits);
 
@@ -812,6 +814,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Updates the visit_duration information in visits table.
   void UpdateVisitDuration(VisitID visit_id, const base::Time end_ts);
+
+  // Flags this visit's `is_known_to_sync` true.
+  void MarkVisitAsKnownToSync(VisitID visit_id) override;
 
   // Returns whether `url` is on an untyped intranet host.
   bool IsUntypedIntranetHost(const GURL& url);

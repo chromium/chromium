@@ -70,7 +70,8 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
                                     VisitID referrer_id,
                                     VisitID opener_id) override;
   std::vector<GURL> GetFaviconURLsForURL(const GURL& page_url) override;
-  bool DeleteAllForeignVisits() override;
+  void MarkVisitAsKnownToSync(VisitID visit_id) override;
+  void DeleteAllForeignVisitsAndResetIsKnownToSync() override;
   void AddObserver(HistoryBackendObserver* observer) override;
   void RemoveObserver(HistoryBackendObserver* observer) override;
 
