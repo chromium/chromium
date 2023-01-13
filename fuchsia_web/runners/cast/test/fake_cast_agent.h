@@ -9,7 +9,6 @@
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/sys/component/cpp/testing/realm_builder.h>
 
-#include <memory>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -19,9 +18,9 @@
 
 namespace test {
 
-// LocalComponent implementation that offers some fake services that the
+// LocalComponentImpl implementation that offers some fake services that the
 // runner normally expects to have provided by the Cast "agent".
-class FakeCastAgent final : public ::component_testing::LocalComponent,
+class FakeCastAgent final : public ::component_testing::LocalComponentImpl,
                             public chromium::cast::CorsExemptHeaderProvider {
  public:
   FakeCastAgent();
@@ -36,21 +35,20 @@ class FakeCastAgent final : public ::component_testing::LocalComponent,
   void RegisterOnConnectClosure(base::StringPiece service,
                                 base::RepeatingClosure callback);
 
-  // ::component_testing::LocalComponent implementation.
-  void Start(std::unique_ptr<::component_testing::LocalComponentHandles>
-                 handles) override;
+  // ::component_testing::LocalComponentImpl implementation.
+  void OnStart() override;
 
  private:
   // chromium::cast::CorsExemptHeaderProvider implementation.
   void GetCorsExemptHeaderNames(
       GetCorsExemptHeaderNamesCallback callback) override;
 
+  bool is_started_ = false;
+
   fidl::BindingSet<chromium::cast::CorsExemptHeaderProvider>
       cors_exempt_header_provider_bindings_;
 
   base::flat_map<std::string, base::RepeatingClosure> on_connect_;
-
-  std::unique_ptr<::component_testing::LocalComponentHandles> handles_;
 };
 
 }  // namespace test

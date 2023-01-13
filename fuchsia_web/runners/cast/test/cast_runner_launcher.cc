@@ -21,9 +21,13 @@
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/command_line.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
+#include "media/fuchsia/audio/fake_audio_device_enumerator_local_component.h"
 
 using ::component_testing::ChildRef;
 using ::component_testing::Directory;
@@ -53,9 +57,9 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
                                 kSwitchesToCopy, std::size(kSwitchesToCopy));
   AppendCommandLineArguments(realm_builder, kCastRunnerService, command_line);
 
-  // Run the fake fuchsia.feedback service; plumbing its protocols to
-  // cast_runner.
-  fake_feedback_service_.emplace(realm_builder, kCastRunnerService);
+  // Register the fake fuchsia.feedback service component; plumbing its
+  // protocols to cast_runner.
+  FakeFeedbackService::RouteToChild(realm_builder, kCastRunnerService);
 
   AddSyslogRoutesFromParent(realm_builder, kCastRunnerService);
   AddVulkanRoutesFromParent(realm_builder, kCastRunnerService);
@@ -88,8 +92,13 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
 
   // Provide a fake Cast "agent", providing some necessary services.
   static constexpr char kFakeCastAgentName[] = "fake-cast-agent";
-  fake_cast_agent_.emplace();
-  realm_builder.AddLocalChild(kFakeCastAgentName, &fake_cast_agent_.value());
+  auto fake_cast_agent = std::make_unique<FakeCastAgent>();
+  fake_cast_agent_ = fake_cast_agent.get();
+  realm_builder.AddLocalChild(
+      kFakeCastAgentName,
+      [fake_cast_agent = std::move(fake_cast_agent)]() mutable {
+        return std::move(fake_cast_agent);
+      });
   realm_builder.AddRoute(
       Route{.capabilities =
                 {
@@ -105,9 +114,9 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
   if (runner_features_ & kCastRunnerFeaturesFakeAudioDeviceEnumerator) {
     static constexpr char kAudioDeviceEnumerator[] =
         "fake_audio_device_enumerator";
-    fake_audio_device_enumerator_.emplace();
-    realm_builder.AddLocalChild(kAudioDeviceEnumerator,
-                                &fake_audio_device_enumerator_.value());
+    realm_builder.AddLocalChild(kAudioDeviceEnumerator, []() {
+      return std::make_unique<media::FakeAudioDeviceEnumeratorLocalComponent>();
+    });
     realm_builder.AddRoute(
         Route{.capabilities = {Protocol{
                   fuchsia::media::AudioDeviceEnumerator::Name_}},

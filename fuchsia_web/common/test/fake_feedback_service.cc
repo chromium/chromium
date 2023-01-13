@@ -8,6 +8,7 @@
 #include <lib/sys/component/cpp/testing/realm_builder.h>
 #include <lib/sys/cpp/outgoing_directory.h>
 
+#include <memory>
 #include <utility>
 
 #include "fuchsia_web/common/test/test_realm_support.h"
@@ -19,11 +20,17 @@ using ::component_testing::Route;
 
 namespace test {
 
-FakeFeedbackService::FakeFeedbackService(
+FakeFeedbackService::FakeFeedbackService() = default;
+
+FakeFeedbackService::~FakeFeedbackService() = default;
+
+void FakeFeedbackService::RouteToChild(
     ::component_testing::RealmBuilder& realm_builder,
     std::string_view child_name) {
   static constexpr char kFeedbackService[] = "fake_feedback";
-  realm_builder.AddLocalChild(kFeedbackService, this);
+  realm_builder.AddLocalChild(kFeedbackService, []() {
+    return std::make_unique<FakeFeedbackService>();
+  });
   realm_builder.AddRoute(Route{
       .capabilities =
           {Protocol{fuchsia::feedback::ComponentDataRegister::Name_},
@@ -32,15 +39,11 @@ FakeFeedbackService::FakeFeedbackService(
       .targets = {ChildRef{child_name}}});
 }
 
-FakeFeedbackService::~FakeFeedbackService() = default;
-
-void FakeFeedbackService::Start(
-    std::unique_ptr<::component_testing::LocalComponentHandles> mock_handles) {
-  handles_ = std::move(mock_handles);
-  ASSERT_EQ(handles_->outgoing()->AddPublicService(
+void FakeFeedbackService::OnStart() {
+  ASSERT_EQ(outgoing()->AddPublicService(
                 component_data_register_bindings_.GetHandler(this)),
             ZX_OK);
-  ASSERT_EQ(handles_->outgoing()->AddPublicService(
+  ASSERT_EQ(outgoing()->AddPublicService(
                 crash_reporting_product_register_bindings_.GetHandler(this)),
             ZX_OK);
 }

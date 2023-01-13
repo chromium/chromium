@@ -9,13 +9,7 @@
 #include <lib/fidl/cpp/interface_request.h>
 #include <lib/sys/component/cpp/testing/realm_builder.h>
 
-#include <memory>
-
 #include "base/command_line.h"
-
-namespace test {
-class FakeFeedbackService;
-}
 
 // Starts a WebEngine and connects a ContextProvider instance for tests.
 // WebEngine logs will be included in the test output but not in the Fuchsia
@@ -34,11 +28,9 @@ class ContextProviderForTest {
 
  private:
   ContextProviderForTest(
-      std::unique_ptr<test::FakeFeedbackService> fake_feedback_service,
       ::component_testing::RealmRoot realm_root,
       ::fuchsia::web::ContextProviderPtr context_provider);
 
-  std::unique_ptr<test::FakeFeedbackService> fake_feedback_service_;
   ::component_testing::RealmRoot realm_root_;
   ::fuchsia::web::ContextProviderPtr context_provider_;
 };

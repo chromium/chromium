@@ -15,9 +15,7 @@
 
 namespace {
 
-std::pair<std::unique_ptr<test::FakeFeedbackService>,
-          ::component_testing::RealmRoot>
-BuildRealm(base::CommandLine command_line) {
+::component_testing::RealmRoot BuildRealm(base::CommandLine command_line) {
   DCHECK(command_line.argv()[0].empty()) << "Must use NO_PROGRAM.";
 
   auto realm_builder = ::component_testing::RealmBuilder::Create();
@@ -32,8 +30,8 @@ BuildRealm(base::CommandLine command_line) {
   test::AppendCommandLineArguments(realm_builder, kContextProviderService,
                                    command_line);
 
-  auto fake_feedback_service = std::make_unique<test::FakeFeedbackService>(
-      realm_builder, kContextProviderService);
+  test::FakeFeedbackService::RouteToChild(realm_builder,
+                                          kContextProviderService);
 
   test::AddSyslogRoutesFromParent(realm_builder, kContextProviderService);
 
@@ -51,7 +49,7 @@ BuildRealm(base::CommandLine command_line) {
           .source = ::component_testing::ChildRef{kContextProviderService},
           .targets = {::component_testing::ParentRef{}}});
 
-  return {std::move(fake_feedback_service), realm_builder.Build()};
+  return realm_builder.Build();
 }
 
 }  // namespace
@@ -59,12 +57,11 @@ BuildRealm(base::CommandLine command_line) {
 // static
 ContextProviderForTest ContextProviderForTest::Create(
     const base::CommandLine& command_line) {
-  auto [fake_feedback_service, realm_root] = BuildRealm(command_line);
+  auto realm_root = BuildRealm(command_line);
   ::fuchsia::web::ContextProviderPtr context_provider;
   zx_status_t status = realm_root.Connect(context_provider.NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "Connect to ContextProvider";
-  return ContextProviderForTest(std::move(fake_feedback_service),
-                                std::move(realm_root),
+  return ContextProviderForTest(std::move(realm_root),
                                 std::move(context_provider));
 }
 
@@ -75,11 +72,9 @@ ContextProviderForTest& ContextProviderForTest::operator=(
 ContextProviderForTest::~ContextProviderForTest() = default;
 
 ContextProviderForTest::ContextProviderForTest(
-    std::unique_ptr<test::FakeFeedbackService> fake_feedback_service,
     ::component_testing::RealmRoot realm_root,
     ::fuchsia::web::ContextProviderPtr context_provider)
-    : fake_feedback_service_(std::move(fake_feedback_service)),
-      realm_root_(std::move(realm_root)),
+    : realm_root_(std::move(realm_root)),
       context_provider_(std::move(context_provider)) {}
 
 // static

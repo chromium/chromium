@@ -4,6 +4,9 @@
 
 #include "fuchsia_web/runners/cast/test/fake_cast_agent.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
@@ -18,7 +21,7 @@ FakeCastAgent::~FakeCastAgent() = default;
 
 void FakeCastAgent::RegisterOnConnectClosure(base::StringPiece service,
                                              base::RepeatingClosure callback) {
-  DCHECK(!handles_);
+  DCHECK(!is_started_);
 
   std::string name{service};
   DCHECK(!base::Contains(on_connect_, name));
@@ -26,16 +29,13 @@ void FakeCastAgent::RegisterOnConnectClosure(base::StringPiece service,
   on_connect_[std::move(name)] = std::move(callback);
 }
 
-void FakeCastAgent::Start(
-    std::unique_ptr<::component_testing::LocalComponentHandles> handles) {
-  handles_ = std::move(handles);
-
-  ASSERT_EQ(handles_->outgoing()->AddPublicService(
+void FakeCastAgent::OnStart() {
+  ASSERT_EQ(outgoing()->AddPublicService(
                 cors_exempt_header_provider_bindings_.GetHandler(this)),
             ZX_OK);
 
   for (const auto& [name, on_connect_closure] : on_connect_) {
-    ASSERT_EQ(handles_->outgoing()->AddPublicService(
+    ASSERT_EQ(outgoing()->AddPublicService(
                   std::make_unique<vfs::Service>(
                       [on_connect_closure = on_connect_closure](
                           zx::channel, async_dispatcher_t*) {
@@ -44,6 +44,8 @@ void FakeCastAgent::Start(
                   name),
               ZX_OK);
   }
+
+  is_started_ = true;
 }
 
 void FakeCastAgent::GetCorsExemptHeaderNames(

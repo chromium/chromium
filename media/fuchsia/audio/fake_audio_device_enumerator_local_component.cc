@@ -41,11 +41,8 @@ void FakeAudioDeviceEnumeratorLocalComponent::NotImplemented_(
   FAIL() << "Unexpected call to unimplemented method \"" << name << "\"";
 }
 
-void FakeAudioDeviceEnumeratorLocalComponent::Start(
-    std::unique_ptr<::component_testing::LocalComponentHandles> mock_handles) {
-  handles_ = std::move(mock_handles);
-  ASSERT_EQ(handles_->outgoing()->AddPublicService(bindings_.GetHandler(this)),
-            ZX_OK);
+void FakeAudioDeviceEnumeratorLocalComponent::OnStart() {
+  ASSERT_EQ(outgoing()->AddPublicService(bindings_.GetHandler(this)), ZX_OK);
 }
 
 }  // namespace media

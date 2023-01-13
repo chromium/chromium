@@ -18,7 +18,6 @@ source_set("integration") {
   ]
   public_deps = [
     "//fuchsia_web/common/test:test_support",
-    "//media/fuchsia/audio:test_support_components",
     "//third_party/abseil-cpp:absl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics",
@@ -31,6 +30,7 @@ source_set("integration") {
     "//fuchsia_web/runners:cast_runner_core",
     "//fuchsia_web/runners/cast/fidl",
     "//media/fuchsia/audio:test_support",
+    "//media/fuchsia/audio:test_support_components",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
