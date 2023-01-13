@@ -132,6 +132,7 @@ ThreadWrapper::ThreadWrapper(
     : Thread(std::make_unique<rtc::PhysicalSocketServer>()),
       task_runner_(task_runner),
       send_allowed_(false),
+      lock_("ThreadWrapper.lock_"),
       pending_send_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {
   DCHECK(task_runner->BelongsToCurrentThread());
