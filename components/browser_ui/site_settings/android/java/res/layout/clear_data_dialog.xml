@@ -31,6 +31,7 @@ found in the LICENSE file.
             android:id="@+id/signed_out_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_person_24dp"
             android:importantForAccessibility="no" />
         <TextView
@@ -39,7 +40,6 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_below="@android:id/message"
             android:layout_toEndOf="@id/signed_out_icon"
-            android:layout_centerInParent="true"
             android:layout_marginStart="12dp" />
     </RelativeLayout>
 
@@ -53,6 +53,7 @@ found in the LICENSE file.
             android:id="@+id/offline_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_offline_pin_24dp"
             android:importantForAccessibility="no" />
         <TextView
@@ -60,7 +61,6 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/offline_icon"
-            android:layout_centerInParent="true"
             android:layout_marginStart="12dp" />
     </RelativeLayout>
 
@@ -75,6 +75,7 @@ found in the LICENSE file.
             android:id="@+id/ad_personalization_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_data_personalization_20dp"
             android:importantForAccessibility="no" />
         <TextView
@@ -83,7 +84,6 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/ad_personalization_icon"
-            android:layout_centerInParent="true"
             android:layout_marginStart="16dp" />
     </RelativeLayout>
 </RelativeLayout>
