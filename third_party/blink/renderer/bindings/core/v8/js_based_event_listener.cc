@@ -83,6 +83,10 @@ void JSBasedEventListener::Invoke(
     void** raw = *reinterpret_cast<void***>(&listener);
     recordreplay::Diagnostic("[RUN-1084] JSBasedEventListener::Invoke %p %p",
                              raw, raw ? *raw : nullptr);
+    bool zapped = raw && *raw == (void*)0x1baffed00baffedf;
+    recordreplay::Assert("[RUN-1084] JSBasedEventListener::Invoke %d", zapped);
+    if (zapped)
+      return;
 
     if (listener.IsEmpty() || !listener->IsObject())
       return;
