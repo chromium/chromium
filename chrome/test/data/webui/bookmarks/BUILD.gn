@@ -26,6 +26,7 @@ build_webui_tests("build") {
     "reducers_test.ts",
     "router_test.ts",
     "store_test.js",
+    "test_bookmark_manager_api_proxy.ts",
     "test_bookmarks_api_proxy.ts",
     "test_browser_proxy.ts",
     "test_command_manager.ts",

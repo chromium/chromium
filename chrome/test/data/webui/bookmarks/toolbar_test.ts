@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksToolbarElement, Command} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkManagerApiProxyImpl, BookmarksToolbarElement, Command} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {TestBookmarkManagerApiProxy} from './test_bookmark_manager_api_proxy.js';
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
@@ -18,9 +19,8 @@ suite('<bookmarks-toolbar>', function() {
   let testCommandManager: TestCommandManager;
 
   suiteSetup(function() {
-    chrome.bookmarkManagerPrivate.removeTrees = function() {
-      return Promise.resolve();
-    };
+    const bookmarkManagerApi = new TestBookmarkManagerApiProxy();
+    BookmarkManagerApiProxyImpl.setInstance(bookmarkManagerApi);
   });
 
   setup(function() {
