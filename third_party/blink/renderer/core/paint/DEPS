@@ -8,7 +8,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "(theme_painter|theme_painter_default|outline_painter)\.cc": [
+  "(theme_painter|theme_painter_default|outline_painter|box_border_painter)\.cc": [
     "+ui/native_theme/native_theme.h",
     "+ui/native_theme/native_theme_base.h",
     "+ui/gfx/color_utils.h"

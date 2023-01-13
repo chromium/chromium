@@ -307,6 +307,7 @@ class PLATFORM_EXPORT Color {
   // toSkColor4f.
   SkColor ToSkColorDeprecated() const;
 
+  Color Light() const;
   Color Dark() const;
 
   Color CombineWithAlpha(float other_alpha) const;

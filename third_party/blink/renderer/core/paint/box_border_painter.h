@@ -50,6 +50,10 @@ class BoxBorderPainter {
                           const AutoDarkMode& auto_dark_mode);
 
  private:
+  static Color CalculateBorderStyleColor(const EBorderStyle& style,
+                                         const BoxSide& side,
+                                         const Color& color);
+
   // For PaintBorder().
   BoxBorderPainter(GraphicsContext&,
                    const PhysicalRect& border_rect,

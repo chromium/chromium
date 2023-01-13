@@ -21,7 +21,9 @@ BorderEdge::BorderEdge() : is_present_(false), style_(EBorderStyle::kHidden) {}
 
 // static
 EBorderStyle BorderEdge::EffectiveStyle(EBorderStyle style, int width) {
-  if (style == EBorderStyle::kDouble && width < 3) {
+  if ((style == EBorderStyle::kDouble && width < 3) ||
+      ((style == EBorderStyle::kRidge || style == EBorderStyle::kGroove) &&
+       width <= 1)) {
     return EBorderStyle::kSolid;
   }
   return style;

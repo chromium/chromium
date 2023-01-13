@@ -47,6 +47,7 @@ const Color Color::kTransparent = Color(0x00000000);
 
 namespace {
 
+const RGBA32 kLightenedBlack = 0xFF545454;
 const RGBA32 kDarkenedWhite = 0xFFABABAB;
 
 const int kCStartAlpha = 153;     // 60%
@@ -1054,6 +1055,32 @@ bool Color::SetNamedColor(const String& name) {
 
 SkColor Color::ToSkColorDeprecated() const {
   return SkColorSetARGB(Alpha(), Red(), Green(), Blue());
+}
+
+Color Color::Light() const {
+  // Hardcode this common case for speed.
+  if (*this == kBlack) {
+    return Color(kLightenedBlack);
+  }
+
+  const float scale_factor = nextafterf(256.0f, 0.0f);
+
+  float r, g, b, a;
+  GetRGBA(r, g, b, a);
+
+  float v = std::max(r, std::max(g, b));
+
+  if (v == 0.0f) {
+    // Lightened black with alpha.
+    return Color(RedChannel(kLightenedBlack), GreenChannel(kLightenedBlack),
+                 BlueChannel(kLightenedBlack), Alpha());
+  }
+
+  float multiplier = std::min(1.0f, v + 0.33f) / v;
+
+  return Color(static_cast<int>(multiplier * r * scale_factor),
+               static_cast<int>(multiplier * g * scale_factor),
+               static_cast<int>(multiplier * b * scale_factor), Alpha());
 }
 
 Color Color::Dark() const {
