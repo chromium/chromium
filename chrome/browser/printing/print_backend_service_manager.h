@@ -22,7 +22,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 #include "ui/gfx/native_widget_types.h"
 #endif
 
@@ -99,7 +99,7 @@ class PrintBackendServiceManager {
   void UseDefaultSettings(
       const std::string& printer_name,
       mojom::PrintBackendService::UseDefaultSettingsCallback callback);
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void AskUserForSettings(
       const std::string& printer_name,
       gfx::NativeView parent_view,
@@ -222,7 +222,7 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
   using RemoteSavedUseDefaultSettingsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   using RemoteSavedAskUserForSettingsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
 #endif
@@ -367,7 +367,7 @@ class PrintBackendServiceManager {
   GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(bool sandboxed);
   RemoteSavedUseDefaultSettingsCallbacks&
   GetRemoteSavedUseDefaultSettingsCallbacks(bool sandboxed);
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   RemoteSavedAskUserForSettingsCallbacks&
   GetRemoteSavedAskUserForSettingsCallbacks(bool sandboxed);
 #endif
@@ -420,7 +420,7 @@ class PrintBackendServiceManager {
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
   void OnDidUseDefaultSettings(const CallbackContext& context,
                                mojom::PrintSettingsResultPtr settings);
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void OnDidAskUserForSettings(const CallbackContext& context,
                                mojom::PrintSettingsResultPtr settings);
 #endif
@@ -507,7 +507,7 @@ class PrintBackendServiceManager {
       sandboxed_saved_use_default_settings_callbacks_;
   RemoteSavedUseDefaultSettingsCallbacks
       unsandboxed_saved_use_default_settings_callbacks_;
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   RemoteSavedAskUserForSettingsCallbacks
       sandboxed_saved_ask_user_for_settings_callbacks_;
   RemoteSavedAskUserForSettingsCallbacks

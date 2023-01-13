@@ -122,13 +122,13 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
     gfx::NativeView GetParentView() override;
     std::string GetAppLocale() override;
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
     void SetParentWindow(uint32_t parent_window_id);
 #endif
     void SetAppLocale(const std::string& locale);
 
    private:
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
     gfx::NativeView parent_native_view_ = nullptr;
 #endif
     std::string locale_;
@@ -158,7 +158,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
   void UseDefaultSettings(
       mojom::PrintBackendService::UseDefaultSettingsCallback callback) override;
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void AskUserForSettings(
       uint32_t parent_window_id,
       int max_pages,

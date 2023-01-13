@@ -145,7 +145,7 @@ interface PrintBackendService {
   //     browser process.
   //   - Platforms other than those identified above do not support a system
   //     print dialog.
-  [EnableIf=is_win]
+  [EnableIf=enable_oop_basic_print_dialog]
   AskUserForSettings(uint32 parent_window_id,
                      int32 max_pages,
                      bool has_selection,

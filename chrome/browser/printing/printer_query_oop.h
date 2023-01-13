@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
@@ -32,7 +33,7 @@ class PrinterQueryOop : public PrinterQuery {
   virtual void OnDidUseDefaultSettings(
       SettingsCallback callback,
       mojom::PrintSettingsResultPtr print_settings);
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   virtual void OnDidAskUserForSettings(
       SettingsCallback callback,
       mojom::PrintSettingsResultPtr print_settings);
@@ -51,7 +52,7 @@ class PrinterQueryOop : public PrinterQuery {
 
   // Mojo support to send messages from UI thread.
   void SendUseDefaultSettings(SettingsCallback callback);
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void SendAskUserForSettings(uint32_t document_page_count,
                               bool has_selection,
                               bool is_scripted,

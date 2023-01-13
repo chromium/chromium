@@ -69,7 +69,7 @@ void PrinterQueryOop::OnDidUseDefaultSettings(
   InvokeSettingsCallback(std::move(callback), result);
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void PrinterQueryOop::OnDidAskUserForSettings(
     SettingsCallback callback,
     mojom::PrintSettingsResultPtr print_settings) {
@@ -93,7 +93,7 @@ void PrinterQueryOop::OnDidAskUserForSettings(
 
   InvokeSettingsCallback(std::move(callback), result);
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 void PrinterQueryOop::UseDefaultSettings(SettingsCallback callback) {
   SendUseDefaultSettings(std::move(callback));
@@ -103,7 +103,7 @@ void PrinterQueryOop::GetSettingsWithUI(uint32_t document_page_count,
                                         bool has_selection,
                                         bool is_scripted,
                                         SettingsCallback callback) {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   SendAskUserForSettings(document_page_count, has_selection, is_scripted,
                          std::move(callback));
 #else
@@ -178,7 +178,7 @@ void PrinterQueryOop::SendUseDefaultSettings(SettingsCallback callback) {
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void PrinterQueryOop::SendAskUserForSettings(uint32_t document_page_count,
                                              bool has_selection,
                                              bool is_scripted,
@@ -214,6 +214,6 @@ void PrinterQueryOop::SendAskUserForSettings(uint32_t document_page_count,
       base::BindOnce(&PrinterQueryOop::OnDidAskUserForSettings,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 }  // namespace printing

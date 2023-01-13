@@ -103,7 +103,7 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   return task_runner;
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void OnDidAskUserForSettings(
     std::unique_ptr<PrintingContext> context,
     mojom::PrintBackendService::AskUserForSettingsCallback callback,
@@ -116,7 +116,7 @@ void OnDidAskUserForSettings(
   std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
       *context->TakeAndResetSettings()));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
   switch (data_type) {
@@ -425,7 +425,7 @@ PrintBackendServiceImpl::PrintingContextDelegate::~PrintingContextDelegate() =
 
 gfx::NativeView
 PrintBackendServiceImpl::PrintingContextDelegate::GetParentView() {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   return parent_native_view_;
 #else
   NOTREACHED();
@@ -437,11 +437,15 @@ std::string PrintBackendServiceImpl::PrintingContextDelegate::GetAppLocale() {
   return locale_;
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void PrintBackendServiceImpl::PrintingContextDelegate::SetParentWindow(
     uint32_t parent_window_id) {
+#if BUILDFLAG(IS_WIN)
   parent_native_view_ = reinterpret_cast<gfx::NativeView>(
       base::win::Uint32ToHandle(parent_window_id));
+#else
+  NOTREACHED();
+#endif
 }
 #endif
 
@@ -633,7 +637,7 @@ void PrintBackendServiceImpl::UseDefaultSettings(
       *context->TakeAndResetSettings()));
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void PrintBackendServiceImpl::AskUserForSettings(
     uint32_t parent_window_id,
     int max_pages,
@@ -660,7 +664,7 @@ void PrintBackendServiceImpl::AskUserForSettings(
       base::BindOnce(&OnDidAskUserForSettings, std::move(context),
                      std::move(callback)));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 void PrintBackendServiceImpl::UpdatePrintSettings(
     base::Value::Dict job_settings,
