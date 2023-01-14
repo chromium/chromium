@@ -1881,22 +1881,6 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R109-15236.35.0",
-        "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "DEDEDE_RELEASE_BETA"
-      },
-      {
-        "args": [],
-        "cros_board": "dedede",
         "cros_img": "dedede-release/R108-15183.69.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_STABLE",
         "resultdb": {
@@ -2021,22 +2005,6 @@
       "strip_lacros_files"
     ],
     "skylab_tests": [
-      {
-        "args": [],
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R109-15236.35.0",
-        "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI_RELEASE_BETA"
-      },
       {
         "args": [],
         "cros_board": "jacuzzi",
