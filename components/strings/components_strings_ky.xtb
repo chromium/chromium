@@ -258,7 +258,7 @@
 <translation id="1559528461873125649">Мындай файл же каталог жок</translation>
 <translation id="1559572115229829303">&lt;p&gt;Түзмөгүңүздүн күнү жана убакыты (<ph name="DATE_AND_TIME" />) туура эмес болгондуктан, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> менен купуя туташуу мүмкүн болбой жатат.&lt;/p&gt;
 
-      &lt;p&gt;Күн менен убакытты &lt;strong&gt;Жөндөөлөр&lt;/strong&gt; колдонмосунун &lt;strong&gt;Жалпы&lt;/strong&gt; бөлүмүнөн тууралаңыз.&lt;/p&gt;</translation>
+      &lt;p&gt;Күн менен убакытты &lt;strong&gt;Параметрлер&lt;/strong&gt; колдонмосунун &lt;strong&gt;Жалпы&lt;/strong&gt; бөлүмүнөн тууралаңыз.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администраторуңуз түзмөктү <ph name="DATE" /> күнү саат <ph name="TIME" /> өчүрүп күйгүзөт</translation>
 <translation id="156703335097561114">Даректер, интерфейс конфигурациясы жана байланыштын сапаты сыяктуу тармак маалыматы</translation>
 <translation id="1567040042588613346">Бул саясат талаптагыдай иштеп жатат, бирок ал башка жерде коюлган окшош мааниге алмаштырып койду.</translation>
@@ -768,7 +768,7 @@
 <translation id="2941952326391522266">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы бул жерден <ph name="DOMAIN2" /> алынган. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="2943895734390379394">Жүктөп берүү убакыты:</translation>
 <translation id="2945026002409061480">Интернет коомдоштуктары</translation>
-<translation id="2948083400971632585">Жөндөөлөр бетинен туташат деп конфигурацияланган бардык проксилерди өчүрүп койсоңуз болот.</translation>
+<translation id="2948083400971632585">Параметрлер бетинен туташат деп конфигурацияланган бардык проксилерди өчүрүп койсоңуз болот.</translation>
 <translation id="2949183777371959169">Машина Chrome серепчисинин Булуттан башкаруу тутумунда катталган эмес болгондуктан этибарга алынган жок.</translation>
 <translation id="2951588413176968965">Электрондук каттар кутум</translation>
 <translation id="2952820037279740115">Бардык жашыруун терезелерди жабуу</translation>
@@ -1197,7 +1197,7 @@
 <translation id="4073797364926776829">Картаны көрүү</translation>
 <translation id="4075732493274867456">Кардар менен серверде ар кандай SSL протоколунун версиялары же шифрлер топтому колдоого алынат.</translation>
 <translation id="4079302484614802869">Прокси конфигурациясы боюнча бекитилген прокси серверлери эмес, .pac скрипт URL'и колдонулат.</translation>
-<translation id="4082393374666368382">Жөндөөлөр – Башкаруу</translation>
+<translation id="4082393374666368382">Параметрлер – Башкаруу</translation>
 <translation id="4084219288110917128">Конверт C1</translation>
 <translation id="4087296516249690906">Иш-чара түзүү баскычы. Google Жылнаамада жаңы иш-чараны тез түзүү Enter баскычын басыңыз</translation>
 <translation id="4088981014127559358">1-тараптын Y сүрөтүн жылдыруу</translation>
@@ -2912,7 +2912,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 мм.</translation>
-<translation id="8428213095426709021">Жөндөөлөр</translation>
+<translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8428634594422941299">Түшүнүктүү</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome жөндөөлөрүнөн cookie файлдарынын параметрлерин башкаруу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="8433057134996913067">Ушуну менен көпчүлүк вебсайттардын каттоо эсебинен чыгарыласыз.</translation>
