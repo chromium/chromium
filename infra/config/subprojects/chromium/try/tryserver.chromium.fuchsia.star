@@ -195,4 +195,5 @@ try_.builder(
 try_.builder(
     name = "fuchsia-code-coverage",
     mirrors = ["ci/fuchsia-code-coverage"],
+    execution_timeout = 20 * time.hour,
 )

@@ -267,6 +267,7 @@ try_.builder(
 try_.builder(
     name = "win10-code-coverage",
     mirrors = ["ci/win10-code-coverage"],
+    execution_timeout = 20 * time.hour,
 )
 
 try_.gpu.optional_tests_builder(

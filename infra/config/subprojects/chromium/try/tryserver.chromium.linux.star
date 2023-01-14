@@ -733,21 +733,25 @@ try_.gpu.optional_tests_builder(
 try_.builder(
     name = "linux-code-coverage",
     mirrors = ["ci/linux-code-coverage"],
+    execution_timeout = 20 * time.hour,
 )
 
 try_.builder(
     name = "linux-chromeos-code-coverage",
     mirrors = ["ci/linux-chromeos-code-coverage"],
+    execution_timeout = 20 * time.hour,
 )
 
 try_.builder(
     name = "linux-lacros-code-coverage",
     mirrors = ["ci/linux-lacros-code-coverage"],
+    execution_timeout = 20 * time.hour,
 )
 
 try_.builder(
     name = "linux-js-code-coverage",
     mirrors = ["ci/linux-js-code-coverage"],
+    execution_timeout = 20 * time.hour,
 )
 
 # RTS builders
