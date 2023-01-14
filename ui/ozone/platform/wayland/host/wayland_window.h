@@ -136,7 +136,6 @@ class WaylandWindow : public PlatformWindow,
   // is located at. Returns true if the scale has changed. This determines how
   // events can be translated and how pixel size of the surface is treated.
   bool SetWindowScale(float new_scale);
-  float window_scale() const { return window_scale_; }
   float ui_scale() const { return ui_scale_; }
 
   // Returns the preferred entered output id, if any. The preferred output is
@@ -148,12 +147,6 @@ class WaylandWindow : public PlatformWindow,
 
   // Returns current type of the window.
   PlatformWindowType type() const { return type_; }
-
-  // The pixel size of the surface.
-  gfx::Size size_px() const { return size_px_; }
-
-  // The pixel size of the buffer for the surface.
-  gfx::Size visual_size_px() const { return visual_size_px_; }
 
   bool received_configure_event() const { return received_configure_event_; }
 
@@ -285,6 +278,30 @@ class WaylandWindow : public PlatformWindow,
   // window will request new window_geometry, if there're no existing state
   // changes in flight to server.
   virtual void UpdateDecorations();
+
+  // State describes important data about this window, for example data that
+  // needs to be synchronized and acked. We apply this state to the client
+  // (us) and wait for a frame to be produced matching this state.
+  struct State {
+    bool operator==(const State& rhs) const {
+      return std::tie(bounds_dip, size_px, window_scale) ==
+             std::tie(rhs.bounds_dip, rhs.size_px, rhs.window_scale);
+    }
+
+    // Bounds in DIP.
+    gfx::Rect bounds_dip;
+    // Size in pixels. Note that it's required to keep information in both DIP
+    // and pixels since it is not always possible to convert between them.
+    gfx::Size size_px;
+    // Current scale factor of the output where the window is located at.
+    float window_scale = 1.0;
+  };
+
+  // See comments on the member variable for an explanation of this.
+  const State& applied_state() const { return applied_state_; }
+
+  // See comments on the member variable for an explanation of this.
+  const State& latched_state() const { return latched_state_; }
 
   // Handles close requests.
   virtual void OnCloseRequest();
@@ -445,7 +462,8 @@ class WaylandWindow : public PlatformWindow,
   uint32_t DispatchEventToDelegate(const PlatformEvent& native_event);
 
   // Additional initialization of derived classes.
-  virtual bool OnInitialize(PlatformWindowInitProperties properties) = 0;
+  virtual bool OnInitialize(PlatformWindowInitProperties properties,
+                            State* state) = 0;
 
   // WaylandWindowDragController might need to take ownership of the wayland
   // surface whether the window that originated the DND session gets destroyed
@@ -491,24 +509,6 @@ class WaylandWindow : public PlatformWindow,
   // The current cursor bitmap (immutable).
   scoped_refptr<BitmapCursor> cursor_;
 
-  // Current bounds of the platform window. This is either initialized, or the
-  // requested size by the Wayland compositor. When this is set in SetBounds(),
-  // delegate_->OnBoundsChanged() is called and updates current_surface_size in
-  // Viz. However, it is not guaranteed that the next arriving frame will match
-  // |bounds_dip_|.
-  gfx::Rect bounds_dip_;
-  gfx::Size size_px_;
-
-  // The size presented by the gpu process. This is the visible size of the
-  // window, which can be different from |bounds_dip_| * scale due to renderers
-  // taking time to produce a compositor frame.
-  // The rough flow of size changes:
-  //   Wayland compositor -> xdg_surface.configure()
-  //   -> WaylandWindow::SetBounds() -> IPC -> DisplayPrivate::Resize()
-  //   -> OutputSurface::SwapBuffers() -> WaylandWindow::UpdateVisualSize()
-  //   -> xdg_surface.ack_configure() -> Wayland compositor.
-  gfx::Size visual_size_px_;
-
   // Margins between edges of the surface and the window geometry (i.e., the
   // area of the window that is visible to the user as the actual window).  The
   // areas outside the geometry are used to draw client-side window decorations.
@@ -520,8 +520,6 @@ class WaylandWindow : public PlatformWindow,
   // replaces the default value that is equal to the natural device scale.
   // We need it to place and size the menus properly.
   float ui_scale_ = 1.0f;
-  // Current scale factor of the output where the window is located at.
-  float window_scale_ = 1.f;
 
   // Stores current opacity of the window. Set on ::Initialize call.
   ui::PlatformWindowOpacity opacity_;
@@ -558,6 +556,66 @@ class WaylandWindow : public PlatformWindow,
     bool set = false;
   };
   base::circular_deque<PendingConfigure> pending_configures_;
+
+  // This holds the currently applied state. When in doubt, use this as the
+  // source of truth for this window's state. Whenever applied_state_ is
+  // changed, that change should be applied and a new in-flight request and
+  // sequence point should be created. Note that changes can be applied via
+  // other means than configures from the Wayland server. For example,
+  // PlatformWindow::SetBoundsInDIP can change the bounds without the server
+  // doing anything. This is separated from pending_configure_state_ to support
+  // these two different sources (server and PlatformWindow/etc) of control of
+  // the state.
+  //
+  // Here is an explanation of the State system:
+  //
+  // After applying some state changes (e.g. setting Chrome's bounds), we ask
+  // PlatformWindowDelegate for a sequence ID, which will be used to identify
+  // the correct buffer that has content corresponding to these changes. It is
+  // not sufficient to use the buffer size to identify this frame, because not
+  // all state changes change the buffer size. Usually these state changes are
+  // caused by configures from the wayland server, but not always. The client
+  // (us) can also set state (e.g. client side bounds change), and this needs to
+  // be managed along with changes via configure.
+  //
+  // Once the sequence ID reaches ozone/wayland GPU from viz, it will pass it
+  // over mojo back to WaylandBufferManagerHost where the whole round trip
+  // started. WaylandWindow will match it up with pending configures, which are
+  // now identified by the sequence ID at the original time of that configure.
+  //
+  // Once we have the sequence ID from viz back, we need to make sure the right
+  // configure is acked. Let's explicitly classify all configure related state
+  // into stages:
+  //
+  // Pending (pending_configure_state_): Accumulates configure data passed by
+  // the server.
+  //
+  // Requested (in_flight_requests_): On configure, we request the configure
+  // state to be applied. Not all configure state will be applied, due to
+  // throttling. Also, any client side changes (e.g.
+  // PlatformWindow::SetBoundsInDIP) should go through requested state to make
+  // sure it takes the same code path.
+  //
+  // Applied (applied_state_): A configure state which we have asked the browser
+  // to apply, e.g. by calling delegate()->OnBoundsChanged.
+  //
+  // Latched (latched_state_): When we receive the frame back from ozone/wayland
+  // GPU, we use the viz sequence ID to match it up with a configure. That state
+  // is now "latched".
+  //
+  // State changes go through this flow:
+  // 1. Pending - if via configure
+  // 2. Requested - in a queue to be applied (unless throttled)
+  // 3. Applied - we asked the browser to apply these state changes, waiting for
+  //    the frame to come back
+  // 4. Latched - the frame corresponding to this state came back, we can ack
+  //    the configure if there was one
+  State applied_state_;
+
+  // The current configuration state of the window. This is initially set to
+  // values provided by the client, until we get an actual configure from the
+  // server. See the comments on applied_state_ for further explanation.
+  State latched_state_;
 
   // AcceleratedWidget for this window. This will be unique even over time.
   gfx::AcceleratedWidget accelerated_widget_;

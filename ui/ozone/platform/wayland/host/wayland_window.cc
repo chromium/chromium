@@ -148,9 +148,10 @@ gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
 
 bool WaylandWindow::SetWindowScale(float new_scale) {
   DCHECK_GE(new_scale, 0.f);
-  bool changed = window_scale_ != new_scale;
-  window_scale_ = new_scale;
-  size_px_ = gfx::ScaleToEnclosingRect(bounds_dip_, new_scale).size();
+  bool changed = applied_state_.window_scale != new_scale;
+  applied_state_.window_scale = new_scale;
+  applied_state_.size_px =
+      gfx::ScaleToEnclosingRect(applied_state_.bounds_dip, new_scale).size();
   return changed;
 }
 
@@ -329,7 +330,7 @@ void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
 gfx::Rect WaylandWindow::GetBoundsInPixels() const {
   // TODO(crbug.com/1306688): This is currently used only by unit tests.
   // Figure out how to migrate to test only methods.
-  return delegate_->ConvertRectToPixels(bounds_dip_);
+  return delegate_->ConvertRectToPixels(applied_state_.bounds_dip);
 }
 
 void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
@@ -337,7 +338,7 @@ void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
 }
 
 gfx::Rect WaylandWindow::GetBoundsInDIP() const {
-  return bounds_dip_;
+  return applied_state_.bounds_dip;
 }
 
 void WaylandWindow::OnSurfaceConfigureEvent() {
@@ -497,8 +498,9 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
 
     // Wayland sends locations in DIP but dispatch code expects pixels, so they
     // need to be translated to physical pixels.
-    event->AsLocatedEvent()->set_location_f(gfx::ScalePoint(
-        event->AsLocatedEvent()->location_f(), window_scale(), window_scale()));
+    auto scale = applied_state().window_scale;
+    event->AsLocatedEvent()->set_location_f(
+        gfx::ScalePoint(event->AsLocatedEvent()->location_f(), scale, scale));
 
     if (send_to_grabber) {
       event_grabber->DispatchEventToDelegate(event);
@@ -564,9 +566,10 @@ void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
 }
 
 void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px) {
-  if (visual_size_px_ == size_px)
+  if (latched_state_.size_px == size_px) {
     return;
-  visual_size_px_ = size_px;
+  }
+  latched_state_ = applied_state_;
   UpdateWindowMask();
 
   if (apply_pending_state_on_update_visual_size_for_testing_) {
@@ -625,14 +628,17 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
 
 void WaylandWindow::UpdateBoundsInDIP(const gfx::Rect& bounds_dip) {
   gfx::Rect adjusted_bounds_dip = AdjustBoundsToConstraintsDIP(bounds_dip);
-  if (bounds_dip_ == adjusted_bounds_dip)
+  if (applied_state_.bounds_dip == adjusted_bounds_dip) {
     return;
-  bool origin_changed = bounds_dip_.origin() != bounds_dip.origin();
-  bounds_dip_ = adjusted_bounds_dip;
-  size_px_ = delegate_->ConvertRectToPixels(bounds_dip).size();
+  }
+  bool origin_changed =
+      applied_state_.bounds_dip.origin() != bounds_dip.origin();
+  applied_state_.bounds_dip = adjusted_bounds_dip;
+  applied_state_.size_px =
+      delegate_->ConvertRectToPixels(adjusted_bounds_dip).size();
 
   if (update_visual_size_immediately_for_testing_)
-    UpdateVisualSize(size_px());
+    UpdateVisualSize(applied_state_.size_px);
   delegate_->OnBoundsChanged({origin_changed});
 }
 
@@ -653,18 +659,24 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
         UseTestConfigForPlatformWindows());
   }
 
-  bounds_dip_ = properties.bounds;
+  State state;
+  state.bounds_dip = properties.bounds;
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's
   // OK to assign.  The bounds will be recalculated when the buffer scale
   // changes.
-  size_px_ = bounds_dip_.size();
+  state.size_px = state.bounds_dip.size();
+
   opacity_ = properties.opacity;
   type_ = properties.type;
 
   connection_->window_manager()->AddWindow(GetWidget(), this);
 
-  if (!OnInitialize(std::move(properties)))
+  if (!OnInitialize(std::move(properties), &state)) {
     return false;
+  }
+
+  applied_state_ = state;
+  latched_state_ = state;
 
   if (wayland_overlay_delegation_enabled_) {
     primary_subsurface_ =
@@ -678,7 +690,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
   delegate_->OnAcceleratedWidgetAvailable(GetWidget());
 
-  std::vector<gfx::Rect> region{gfx::Rect{size_px_}};
+  std::vector<gfx::Rect> region{gfx::Rect{latched_state().size_px}};
   root_surface_->set_opaque_region(&region);
   root_surface_->ApplyPendingState();
   connection_->Flush();
@@ -692,15 +704,17 @@ gfx::Vector2d WaylandWindow::GetWindowGeometryOffsetInDIP() const {
   if (!frame_insets_px_.has_value())
     return {};
 
-  return {static_cast<int>(frame_insets_px_->left() / window_scale_),
-          static_cast<int>(frame_insets_px_->top() / window_scale_)};
+  auto scale = applied_state().window_scale;
+  return {static_cast<int>(frame_insets_px_->left() / scale),
+          static_cast<int>(frame_insets_px_->top() / scale)};
 }
 
 void WaylandWindow::UpdateDecorations() {}
 
 gfx::Insets WaylandWindow::GetDecorationInsetsInDIP() const {
+  auto scale = latched_state().window_scale;
   return frame_insets_px_.has_value()
-             ? gfx::ScaleToRoundedInsets(*frame_insets_px_, 1.f / window_scale_)
+             ? gfx::ScaleToRoundedInsets(*frame_insets_px_, 1.f / scale)
              : gfx::Insets{};
 }
 

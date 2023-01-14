@@ -39,7 +39,8 @@ WaylandPopup::~WaylandPopup() = default;
 bool WaylandPopup::CreateShellPopup() {
   DCHECK(parent_window() && !shell_popup_);
 
-  if (window_scale() != parent_window()->window_scale()) {
+  if (applied_state().window_scale !=
+      parent_window()->applied_state().window_scale) {
     // If scale changed while this was hidden (when WaylandPopup hides, parent
     // window's child is reset), update buffer scale accordingly.
     UpdateWindowScale(true);
@@ -195,7 +196,7 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
 
 void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
   if (schedule_redraw_) {
-    delegate()->OnDamageRect(gfx::Rect{size_px()});
+    delegate()->OnDamageRect(gfx::Rect{applied_state().size_px});
     schedule_redraw_ = false;
   }
   ProcessPendingBoundsDip(serial);
@@ -220,7 +221,7 @@ void WaylandPopup::ApplyPendingBounds() {
 
 void WaylandPopup::UpdateWindowMask() {
   // Popup doesn't have a shape. Update the opaqueness.
-  std::vector<gfx::Rect> region{gfx::Rect{visual_size_px()}};
+  std::vector<gfx::Rect> region{gfx::Rect{latched_state().size_px}};
   root_surface()->set_opaque_region(IsOpaqueWindow() ? &region : nullptr);
 }
 
@@ -291,9 +292,12 @@ void WaylandPopup::OnCloseRequest() {
   WaylandWindow::OnCloseRequest();
 }
 
-bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
+bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
+                                State* state) {
   DCHECK(parent_window());
-  SetWindowScale(parent_window()->window_scale());
+  state->window_scale = parent_window()->applied_state().window_scale;
+  state->size_px =
+      gfx::ScaleToEnclosingRect(state->bounds_dip, state->window_scale).size();
   set_ui_scale(parent_window()->ui_scale());
   shadow_type_ = properties.shadow_type;
   return true;

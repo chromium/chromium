@@ -2234,7 +2234,7 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
   VerifyAndClearExpectations();
 
   // Surface scale must be 1 when no output has been entered by the window.
-  EXPECT_EQ(1, window_->window_scale());
+  EXPECT_EQ(1, window_->applied_state().window_scale);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Configure first output with scale 1.
@@ -2265,8 +2265,8 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
       });
 
   // The window's scale and bounds must remain unchanged.
-  EXPECT_EQ(1, window_->window_scale());
-  EXPECT_EQ(gfx::Size(800, 600), window_->size_px());
+  EXPECT_EQ(1, window_->applied_state().window_scale);
+  EXPECT_EQ(gfx::Size(800, 600), window_->applied_state().size_px);
   EXPECT_EQ(gfx::Rect(800, 600), window_->GetBoundsInDIP());
 
   // Get another output's id.
@@ -2287,8 +2287,8 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
   });
 
   // The window must change its scale and bounds to keep DIP bounds the same.
-  EXPECT_EQ(2, window_->window_scale());
-  EXPECT_EQ(gfx::Size(1600, 1200), window_->size_px());
+  EXPECT_EQ(2, window_->applied_state().window_scale);
+  EXPECT_EQ(gfx::Size(1600, 1200), window_->applied_state().size_px);
   EXPECT_EQ(gfx::Rect(800, 600), window_->GetBoundsInDIP());
 }
 
@@ -2337,9 +2337,11 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
 
     // the wayland_popup window should inherit its buffer scale from the focused
     // window.
-    EXPECT_EQ(1, window_->window_scale());
-    EXPECT_EQ(window_->window_scale(), wayland_popup->window_scale());
-    EXPECT_EQ(wayland_popup_bounds.size(), wayland_popup->size_px());
+    EXPECT_EQ(1, window_->applied_state().window_scale);
+    EXPECT_EQ(window_->applied_state().window_scale,
+              wayland_popup->applied_state().window_scale);
+    EXPECT_EQ(wayland_popup_bounds.size(),
+              wayland_popup->applied_state().size_px);
     EXPECT_EQ(wayland_popup_bounds, wayland_popup->GetBoundsInDIP());
     wayland_popup->Hide();
 
@@ -2354,17 +2356,19 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
       wl_surface_send_leave(surface->resource(), output1->resource());
     });
 
-    EXPECT_EQ(2, window_->window_scale());
+    EXPECT_EQ(2, window_->applied_state().window_scale);
     wayland_popup->Show(false);
 
     wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
     // |wayland_popup|'s scale and bounds must change whenever its parents
     // scale is changed.
-    EXPECT_EQ(window_->window_scale(), wayland_popup->window_scale());
-    EXPECT_EQ(gfx::ScaleToCeiledSize(wayland_popup_bounds.size(),
-                                     wayland_popup->window_scale()),
-              wayland_popup->size_px());
+    EXPECT_EQ(window_->applied_state().window_scale,
+              wayland_popup->applied_state().window_scale);
+    EXPECT_EQ(
+        gfx::ScaleToCeiledSize(wayland_popup_bounds.size(),
+                               wayland_popup->applied_state().window_scale),
+        wayland_popup->applied_state().size_px);
 
     wayland_popup->Hide();
     SetPointerFocusedWindow(nullptr);
@@ -2467,7 +2471,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
               gfx::ScaleToCeiledSize(bounds_dip.size(), secondary_output_scale);
         }
 
-        EXPECT_EQ(expected_px_size, wayland_popup->size_px())
+        EXPECT_EQ(expected_px_size, wayland_popup->applied_state().size_px)
             << " when the window is on " << entered_output.label
             << " that has scale " << entered_output.output->scale_factor();
       }
@@ -2527,7 +2531,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferUsesParentScale) {
 
   wayland_popup->Show(false);
 
-  EXPECT_EQ(expected_size_px, wayland_popup->size_px());
+  EXPECT_EQ(expected_size_px, wayland_popup->applied_state().size_px);
 
   PostToServerAndWait([id = surface_id_, secondary_output_id](
                           wl::TestWaylandServerThread* server) {
@@ -2546,7 +2550,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   VerifyAndClearExpectations();
 
   // Buffer scale must be 1 when no output has been entered by the window.
-  EXPECT_EQ(1, window_->window_scale());
+  EXPECT_EQ(1, window_->applied_state().window_scale);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Update first output.
@@ -2680,7 +2684,7 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   VerifyAndClearExpectations();
 
   // Buffer scale must be 1 when no output has been entered by the window.
-  EXPECT_EQ(1, window_->window_scale());
+  EXPECT_EQ(1, window_->applied_state().window_scale);
 
   MockWaylandPlatformWindowDelegate menu_window_delegate;
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
@@ -4368,7 +4372,7 @@ TEST_P(WaylandWindowTest, NoRoundingErrorInDIP) {
       const gfx::Rect kBoundsDip{20, 0, i, 3000 - i};
       const gfx::Rect bounds_in_px = delegate_.ConvertRectToPixels(kBoundsDip);
       wayland_window->SetBoundsInDIP(kBoundsDip);
-      EXPECT_EQ(bounds_in_px.size(), wayland_window->size_px());
+      EXPECT_EQ(bounds_in_px.size(), wayland_window->applied_state().size_px);
       EXPECT_EQ(kBoundsDip, wayland_window->GetBoundsInDIP());
     }
   }

@@ -391,10 +391,11 @@ bool WaylandToplevelWindow::IsScreenCoordinatesEnabled() const {
 }
 
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
-  auto old_scale = window_scale();
+  auto old_scale = applied_state().window_scale;
   WaylandWindow::UpdateWindowScale(update_bounds);
-  if (old_scale == window_scale())
+  if (old_scale == applied_state().window_scale) {
     return;
+  }
 
   // Update min/max size in DIP if buffer scale is updated.
   SizeConstraintsChanged();
@@ -547,7 +548,8 @@ void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
       return;
 
     if (set_geometry_on_next_frame_) {
-      auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / window_scale());
+      auto size_dip =
+          gfx::ScaleToRoundedSize(size_px, 1.f / latched_state().window_scale);
       SetWindowGeometry(size_dip);
       set_geometry_on_next_frame_ = false;
     }
@@ -559,7 +561,8 @@ void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
 }
 
 bool WaylandToplevelWindow::OnInitialize(
-    PlatformWindowInitProperties properties) {
+    PlatformWindowInitProperties properties,
+    State* state) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto token = base::UnguessableToken::Create();
   window_unique_id_ =
@@ -1123,7 +1126,7 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {
-  std::vector<gfx::Rect> region{gfx::Rect({}, visual_size_px())};
+  std::vector<gfx::Rect> region{gfx::Rect({}, latched_state().size_px)};
   root_surface()->set_opaque_region(
       opaque_region_px_.has_value() ? &*opaque_region_px_
                                     : (IsOpaqueWindow() ? &region : nullptr));

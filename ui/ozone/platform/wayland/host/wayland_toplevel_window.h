@@ -84,7 +84,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // be called after processing all pending events in the wayland connection.
   void ApplyPendingBounds() override;
 
-  bool OnInitialize(PlatformWindowInitProperties properties) override;
+  bool OnInitialize(PlatformWindowInitProperties properties,
+                    State* state) override;
   bool IsActive() const override;
   void SetWindowGeometry(gfx::Size size_dip) override;
   bool IsScreenCoordinatesEnabled() const override;

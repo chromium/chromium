@@ -1338,7 +1338,8 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
       // window.
       gfx::Point expected_point =
           in_pixel_coordinates
-              ? gfx::ScaleToRoundedPoint(p0, 1.0f / window->window_scale())
+              ? gfx::ScaleToRoundedPoint(
+                    p0, 1.0f / window->applied_state().window_scale)
               : p0;
       expected_point += window->GetBoundsInDIP().origin().OffsetFromOrigin();
       EXPECT_EQ(expected_point, screen->GetCursorScreenPoint());
@@ -1359,12 +1360,14 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
         ASSERT_TRUE(output);
         wl_surface_send_enter(surface->resource(), output->resource());
       });
-      EXPECT_EQ(output.second->scale_factor(), window->window_scale());
+      EXPECT_EQ(output.second->scale_factor(),
+                window->applied_state().window_scale);
 
       gfx::Point p1{20, 20};
       expected_point =
           (in_pixel_coordinates
-               ? gfx::ScaleToRoundedPoint(p1, 1.0f / window->window_scale())
+               ? gfx::ScaleToRoundedPoint(
+                     p1, 1.0f / window->applied_state().window_scale)
                : p1);
       expected_point += window->GetBoundsInDIP().origin().OffsetFromOrigin();
 

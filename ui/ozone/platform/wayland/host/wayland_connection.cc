@@ -589,7 +589,7 @@ const gfx::PointF WaylandConnection::MaybeConvertLocation(
   if (!surface_submission_in_pixel_coordinates_ || !window)
     return location;
   gfx::PointF converted(location);
-  converted.InvScale(window->window_scale());
+  converted.InvScale(window->applied_state().window_scale);
   return converted;
 }
 

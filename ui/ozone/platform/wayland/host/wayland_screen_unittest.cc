@@ -952,7 +952,7 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
     output->Flush();
   });
 
-  EXPECT_EQ(window_->window_scale(), kTripleScale);
+  EXPECT_EQ(window_->applied_state().window_scale, kTripleScale);
   EXPECT_EQ(window_->ui_scale_, kTripleScale);
 
   // Now simulate the --force-device-scale-factor=1.5
@@ -973,7 +973,7 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
     server->output()->Flush();
   });
 
-  EXPECT_EQ(window_->window_scale(), kDoubleScale);
+  EXPECT_EQ(window_->applied_state().window_scale, kDoubleScale);
   EXPECT_EQ(window_->ui_scale_, kForcedUIScale);
 
   display::Display::ResetForceDeviceScaleFactorForTesting();
@@ -1012,7 +1012,7 @@ TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
     server->output()->Flush();
   });
 
-  EXPECT_EQ(window_->window_scale(), 2);
+  EXPECT_EQ(window_->applied_state().window_scale, 2);
   EXPECT_EQ(window_->ui_scale(), 2);
 }
 

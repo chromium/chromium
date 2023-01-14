@@ -220,12 +220,12 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
                             int z_order) {
     gl_surface->ScheduleOverlayPlane(
         image, nullptr,
-        gfx::OverlayPlaneData(z_order,
-                              gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
-                              gfx::RectF(window_->GetBoundsInPixels()), {},
-                              false, gfx::Rect(window_->size_px()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-                              gfx::ColorSpace::CreateSRGB(), absl::nullopt));
+        gfx::OverlayPlaneData(
+            z_order, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
+            gfx::RectF(window_->GetBoundsInPixels()), {}, false,
+            gfx::Rect(window_->applied_state().size_px), 1.0f,
+            gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
+            gfx::ColorSpace::CreateSRGB(), absl::nullopt));
   }
 
   uint32_t surface_id_ = 0;
@@ -260,11 +260,12 @@ TEST_P(WaylandSurfaceFactoryTest,
   // Create buffers and FakeGlImageNativePixmap.
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   for (int i = 0; i < 4; ++i) {
+    auto size_px = window_->applied_state().size_px;
     auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, window_->size_px(), gfx::BufferFormat::BGRA_8888,
+        widget_, nullptr, size_px, gfx::BufferFormat::BGRA_8888,
         gfx::BufferUsage::SCANOUT);
-    fake_overlay_image.push_back(base::MakeRefCounted<OverlayImageHolder>(
-        native_pixmap, window_->size_px()));
+    fake_overlay_image.push_back(
+        base::MakeRefCounted<OverlayImageHolder>(native_pixmap, size_px));
   }
 
   CallbacksHelper cbs_helper;
@@ -608,11 +609,12 @@ TEST_P(WaylandSurfaceFactoryTest,
   // Create buffers and FakeGlImageNativePixmap.
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   for (int i = 0; i < 5; ++i) {
+    auto size_px = window_->applied_state().size_px;
     auto native_pixmap = surface_factory_->CreateNativePixmap(
-        widget_, nullptr, window_->size_px(), gfx::BufferFormat::BGRA_8888,
+        widget_, nullptr, size_px, gfx::BufferFormat::BGRA_8888,
         gfx::BufferUsage::SCANOUT);
-    fake_overlay_image.push_back(base::MakeRefCounted<OverlayImageHolder>(
-        native_pixmap, window_->size_px()));
+    fake_overlay_image.push_back(
+        base::MakeRefCounted<OverlayImageHolder>(native_pixmap, size_px));
   }
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -1057,9 +1059,10 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
       gfx::ScaleRect({0.2f, 0.4f, 0.5f, 0.5f}, test_buffer_size.height(),
                      test_buffer_size.width()));
   gfx::RectF expected_combined_uv = {0.2, 0.f, 0.64, 0.8};
+
+  auto size_px = window_->applied_state().size_px;
   gfx::Rect expected_surface_dmg = gfx::ToEnclosingRect(
-      gfx::ScaleRect(expected_combined_uv, window_->size_px().width(),
-                     window_->size_px().height()));
+      gfx::ScaleRect(expected_combined_uv, size_px.width(), size_px.height()));
 
   // Create buffer and FakeGlImageNativePixmap.
   std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;

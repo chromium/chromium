@@ -479,7 +479,7 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
     });
   }
 
-  EXPECT_EQ(window_->window_scale(), kTripleScale);
+  EXPECT_EQ(window_->applied_state().window_scale, kTripleScale);
 
   gfx::Point center_point{400, 300};
   {
