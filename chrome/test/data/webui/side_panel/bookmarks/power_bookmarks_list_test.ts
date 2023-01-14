@@ -93,6 +93,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
   });
 
   test('DefaultsToSortByNewest', () => {
+    flush();
+
     const bookmarkElements = getBookmarkElements(powerBookmarksList);
     // All folders should come first
     assertEquals(bookmarkElements[0]!.id, 'bookmark-5');
@@ -108,6 +110,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
       title: 'New title',
       url: 'http://new/url',
     });
+    flush();
 
     const bookmarkElement = getBookmarkElements(powerBookmarksList)[2]!;
     assertEquals(

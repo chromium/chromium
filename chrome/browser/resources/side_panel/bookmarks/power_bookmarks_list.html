@@ -218,38 +218,41 @@
           on-click="onBulkEditClicked_"></cr-icon-button>
     </div>
   </div>
-  <div class="bookmarks" hidden="[[!shownBookmarks_.length]]"
+  <div id="bookmarks" class="bookmarks" hidden="[[!shownBookmarks_.length]]"
       role="[[getBookmarksListRole_(editing_)]]"
       aria-multiselectable="[[editing_]]">
-    <template is="dom-repeat" items="[[shownBookmarks_]]">
-      <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-          description= "[[getBookmarkDescription_(item, compactDescriptions_.*,
-                          expandedDescriptions_.*, compact_)]]"
-          compact="[[compact_]]" trailing-icon="cr:more-vert"
-          trailing-icon-aria-label="TODO"
-          has-checkbox="[[editing_]]"
-          checkbox-disabled="[[!canEdit_(item)]]"
-          has-input="[[renamingItem_(item.id, renamingId_)]]"
-          on-row-clicked="onRowClicked_"
-          on-context-menu="onShowContextMenuClicked_"
-          on-trailing-icon-clicked="onShowContextMenuClicked_"
-          on-checkbox-change="onRowSelectedChange_"
-          on-input-change="onRename_">
-        <div slot="chips">
-          <template is="dom-if"
-              if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
-            <sp-label updated="[[showDiscountedPrice_(item)]]">
-              <iron-icon icon="bookmarks:price-tracking"></iron-icon>
-              <div>[[getCurrentPrice_(item)]]</div>
-              <div slot="previous-label"
-                  hidden$="[[!showDiscountedPrice_(item)]]">
-                [[getPreviousPrice_(item)]]
-              </div>
-            </sp-label>
-          </template>
-        </div>
-      </power-bookmark-row>
-    </template>
+    <iron-list items="[[shownBookmarks_]]" scroll-target="bookmarks">
+      <template>
+        <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
+            description= "[[getBookmarkDescription_(item,
+                            compactDescriptions_.*, expandedDescriptions_.*,
+                            compact_)]]"
+            compact="[[compact_]]" trailing-icon="cr:more-vert"
+            trailing-icon-aria-label="TODO"
+            has-checkbox="[[editing_]]"
+            checkbox-disabled="[[!canEdit_(item)]]"
+            has-input="[[renamingItem_(item.id, renamingId_)]]"
+            on-row-clicked="onRowClicked_"
+            on-context-menu="onShowContextMenuClicked_"
+            on-trailing-icon-clicked="onShowContextMenuClicked_"
+            on-checkbox-change="onRowSelectedChange_"
+            on-input-change="onRename_">
+          <div slot="chips">
+            <template is="dom-if"
+                if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
+              <sp-label updated="[[showDiscountedPrice_(item)]]">
+                <iron-icon icon="bookmarks:price-tracking"></iron-icon>
+                <div>[[getCurrentPrice_(item)]]</div>
+                <div slot="previous-label"
+                    hidden$="[[!showDiscountedPrice_(item)]]">
+                  [[getPreviousPrice_(item)]]
+                </div>
+              </sp-label>
+            </template>
+          </div>
+        </power-bookmark-row>
+      </template>
+    </iron-list>
   </div>
 
   <sp-empty-state
