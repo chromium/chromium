@@ -64,6 +64,7 @@ source_set("quick_answers") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/spellcheck/common",
+    "//components/translate/core/browser",
     "//content/public/browser",
     "//google_apis",
     "//net:net",

@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/common",
   "+components/language/core/browser",
   "+components/spellcheck/common",
+  "+components/translate/core/browser",
   "+content/public/browser",
   "+google_apis",
   "+services/data_decoder/public",

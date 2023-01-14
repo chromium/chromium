@@ -20,6 +20,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "components/translate/core/browser/translate_download_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace quick_answers {
@@ -136,6 +137,16 @@ bool ShouldSkipDefinition(const std::string& text) {
     return true;
 
   return false;
+}
+
+// Check that both the source and target languages are supported by the
+// translation API.
+bool AreTranslationLanguagesSupported(const std::string& source_language,
+                                      const std::string& target_language) {
+  return translate::TranslateDownloadManager::IsSupportedLanguage(
+             source_language) &&
+         translate::TranslateDownloadManager::IsSupportedLanguage(
+             target_language);
 }
 
 bool HasDigits(const std::string& word) {
@@ -352,8 +363,10 @@ void IntentGenerator::LanguageDetectorCallback(
 
   // Generate translation intent if the detected language is different to the
   // system language and is not one of the preferred languages.
+  // Skip translation if the source or target languages are not supported.
   if (!detected_language.empty() && detected_language != device_language &&
-      !IsPreferredLanguage(detected_language)) {
+      !IsPreferredLanguage(detected_language) &&
+      AreTranslationLanguagesSupported(detected_language, device_language)) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kTranslation,
                         device_language, detected_language));
