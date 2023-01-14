@@ -15,6 +15,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -22,11 +23,14 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForQ;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 /**
  * Class used to forward view, input events down to native.
  */
 @JNINamespace("ui")
 public class EventForwarder {
+    private static final String TAG = "EventForwarder";
     private final boolean mIsDragDropEnabled;
 
     private long mNativeEventForwarder;
@@ -382,15 +386,24 @@ public class EventForwarder {
             return mimeTypes != null && mimeTypes.length > 0 && mIsDragDropEnabled;
         }
 
-        StringBuilder content = new StringBuilder("");
+        String content = "";
         if (event.getAction() == DragEvent.ACTION_DROP) {
-            // TODO(hush): obtain dragdrop permissions, when dragging files into Chrome/WebView is
-            // supported. Not necessary to do so for now, because only text dragging is supported.
-            ClipData clipData = event.getClipData();
-            final int itemCount = clipData.getItemCount();
-            for (int i = 0; i < itemCount; i++) {
-                ClipData.Item item = clipData.getItemAt(i);
-                content.append(item.coerceToStyledText(containerView.getContext()));
+            try {
+                StringBuilder contentBuilder = new StringBuilder("");
+                ClipData clipData = event.getClipData();
+                final int itemCount = clipData.getItemCount();
+                for (int i = 0; i < itemCount; i++) {
+                    ClipData.Item item = clipData.getItemAt(i);
+                    contentBuilder.append(item.coerceToStyledText(containerView.getContext()));
+                }
+                content = contentBuilder.toString();
+            } catch (UndeclaredThrowableException e) {
+                // When dropped item is not successful for whatever reason, catch before we crash.
+                // While ClipData.Item does capture most common failures, there could be exceptions
+                // that's wrapped by Chrome classes (e.g. ServiceTracingProxyProvider) which changed
+                // the exception signiture. See crbug.com/1406777.
+                Log.e(TAG, "Parsing clip data content failed.", e.getMessage());
+                content = "";
             }
         }
 
@@ -407,7 +420,7 @@ public class EventForwarder {
 
         EventForwarderJni.get().onDragEvent(mNativeEventForwarder, EventForwarder.this,
                 event.getAction(), x / scale, y / scale, screenX / scale, screenY / scale,
-                mimeTypes, content.toString());
+                mimeTypes, content);
         return true;
     }
 
