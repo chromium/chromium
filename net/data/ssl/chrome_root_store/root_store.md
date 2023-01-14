@@ -1,6 +1,6 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 8
+Version: 9
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
@@ -69,7 +69,6 @@ b085d70b964f191a73e4af0d54ae7a0e07aafdaf9b71dd0862138ab7325a24a2 | CN=GlobalSign
 f9e67d336c51002ac054c632022d66dda2e7e3fff10ad061ed31d8bbb410cfb2 | CN=Hongkong Post Root CA 1,O=Hongkong Post,C=HK | 2003-05-15 | 2023-05-15
 9a6ec012e1a7da9dbe34194d478ad7c0db1822fb071df12981496ed104384113 | CN=ACCVRAIZ1,OU=PKIACCV,O=ACCV,C=ES | 2011-05-05 | 2030-12-31
 ebc5570c29018c4d67b1aa127baf12f703b4611ebc17b7dab5573894179b93fa | OU=AC RAIZ FNMT-RCM,O=FNMT-RCM,C=ES | 2008-10-29 | 2030-01-01
-4d2491414cfe956746ec4cefa6cf6f72e28a1329432f9d8a907ac4cb5dadc15a | CN=Staat der Nederlanden EV Root CA,O=Staat der Nederlanden,C=NL | 2010-12-08 | 2022-12-08
 46edc3689046d53a453fb3104ab80dcaec658b2660ea1629dd7e867990648716 | CN=TUBITAK Kamu SM SSL Kok Sertifikasi - Surum 1,OU=Kamu Sertifikasyon Merkezi - Kamu SM,O=Turkiye Bilimsel ve Teknolojik Arastirma Kurumu - TUBITAK,L=Gebze - Kocaeli,C=TR | 2013-11-25 | 2043-10-25
 44b545aa8a25e65a73ca15dc27fc36d24c1cb9953a066539b11582dc487b4833 | CN=Hellenic Academic and Research Institutions ECC RootCA 2015,O=Hellenic Academic and Research Institutions Cert. Authority,L=Athens,C=GR | 2015-07-07 | 2040-06-30
 a040929a02ce53b4acf4f2ffc6981ce4496f755e6d45fe0b2a692bcd52523f36 | CN=Hellenic Academic and Research Institutions RootCA 2015,O=Hellenic Academic and Research Institutions Cert. Authority,L=Athens,C=GR | 2015-07-07 | 2040-06-30
@@ -118,7 +117,6 @@ dd6936fe21f8f077c123a1a521c12224f72255b73e03a7260693e8a24b0fa389 | CN=TeliaSoner
 0753e940378c1bd5e3836e395daea5cb839e5046f1bd0eae1951cf10fec7c965 | CN=TrustCor RootCert CA-2,OU=TrustCor Certificate Authority,O=TrustCor Systems S. de R.L.,L=Panama City,ST=Panama,C=PA | 2016-02-04 | 2034-12-31
 5a885db19c01d912c5759388938cafbbdf031ab2d48e91ee15589b42971d039c | CN=TrustCor ECA-1,OU=TrustCor Certificate Authority,O=TrustCor Systems S. de R.L.,L=Panama City,ST=Panama,C=PA | 2016-02-04 | 2029-12-31
 d40e9c86cd8fe468c1776959f49ea774fa548684b6c406f3909261f4dce2575c | CN=TrustCor RootCert CA-1,OU=TrustCor Certificate Authority,O=TrustCor Systems S. de R.L.,L=Panama City,ST=Panama,C=PA | 2016-02-04 | 2029-12-31
-001686cd181f83a1b1217d305b365c41e3470a78a1d37b134a98cd547b92dab3 | CN=Network Solutions Certificate Authority,O=Network Solutions L.L.C.,C=US | 2011-01-01 | 2030-12-31
 6b328085625318aa50d173c98d8bda09d57e27413d114cf787a0f5d06c030cf6 | CN=Certum EC-384 CA,OU=Certum Certification Authority,O=Asseco Data Systems S.A.,C=PL | 2018-03-26 | 2043-03-26
 fe7696573855773e37a95e7ad4d9cc96c30157c15d31765ba9b15704e1ae78fd | CN=Certum Trusted Root CA,OU=Certum Certification Authority,O=Asseco Data Systems S.A.,C=PL | 2018-03-16 | 2043-03-16
 e59aaa816009c22bff5b25bad37df306f049797c1f81d85ab089e657bd8f0044 | CN=D-TRUST BR Root CA 1 2020,O=D-Trust GmbH,C=DE | 2020-02-11 | 2035-02-11
