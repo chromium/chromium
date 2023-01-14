@@ -336,6 +336,75 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.Effects.SelectedEffect"
+    enum="CameraEffectType" expires_after="2024-01-01">
+  <owner>jmpollock@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records a user enabling a camera effect. Emitted at most once per camera
+    effect chosen when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.Camera.Effects.{EffectType}.{StreamType}.AvgProcessedFrameInterval"
+    units="microseconds" expires_after="2024-01-01">
+  <owner>jmpollock@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records average wall time interval between successfully processed frames
+    within the EffectsStreamManipulator for the different effect + stream type
+    combinations.
+
+    This metric is reported on ChromeOS devices with an effect applied that does
+    not encounter an error during processing. It is emitted at the close of each
+    camera session.
+  </summary>
+  <token key="EffectType">
+    <variant name="Blur"
+        summary="Average processed frame rate of the Blur effect"/>
+    <variant name="BlurAndRelight"
+        summary="Average processed frame rate of the Blur + Relight effect"/>
+    <variant name="Relight"
+        summary="Average processed frame rate of the Relight effect"/>
+  </token>
+  <token key="StreamType">
+    <variant name="BLOB" summary="Processing time for BLOB (JPEG) streams"/>
+    <variant name="YUV" summary="Processing time for YUV streams"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Camera.Effects.{EffectType}.{StreamType}.AvgProcessingLatency"
+    units="microseconds" expires_after="2024-01-01">
+  <owner>jmpollock@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the wall time taken to execute the EffectsStreamManipulator
+    ProcessCaptureResult method for the different effect + stream type
+    combinations. Calculated as the average processing time / latency over the
+    camera session.
+
+    This metric is reported on ChromeOS devices with an effect applied that does
+    not encounter an error during processing. It is emitted at the close of each
+    camera session.
+  </summary>
+  <token key="EffectType">
+    <variant name="Blur"
+        summary="EffectsStreamManipulator processing time of the Blur effect"/>
+    <variant name="BlurAndRelight"
+        summary="EffectsStreamManipulator processing time of the Blur +
+                 Relight effect"/>
+    <variant name="Relight"
+        summary="EffectsStreamManipulator processing time of the Relight
+                 effect"/>
+  </token>
+  <token key="StreamType">
+    <variant name="BLOB" summary="Processing time for BLOB (JPEG) streams"/>
+    <variant name="YUV" summary="Processing time for YUV streams"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Camera.ErrorType" enum="ChromeOSCameraErrorType"
     expires_after="2023-10-01">
   <owner>wtlee@chromium.org</owner>

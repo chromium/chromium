@@ -13805,6 +13805,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Destructed Before Timeout"/>
 </enum>
 
+<enum name="CameraEffectType">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kBlur"/>
+  <int value="2" label="kRelight"/>
+  <int value="3" label="kBlurAndRelight"/>
+</enum>
+
 <enum name="CameraPreviewSnapPosition">
   <int value="0" label="kTopLeft"/>
   <int value="1" label="kBottomLeft"/>
