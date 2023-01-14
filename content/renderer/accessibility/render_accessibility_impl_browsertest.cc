@@ -827,6 +827,48 @@ class BlinkAXActionTargetTest : public RenderAccessibilityImplTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+TEST_F(BlinkAXActionTargetTest, TestSetRangeValue) {
+  constexpr char html[] = R"HTML(
+      <body>
+        <input type=range min=1 value=2 max=3 step=1>
+      </body>
+      )HTML";
+  LoadHTMLAndRefreshAccessibilityTree(html);
+
+  WebDocument document = GetMainFrame()->GetDocument();
+  WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  WebAXObject html_elem = root_obj.ChildAt(0);
+  WebAXObject body = html_elem.ChildAt(0);
+  WebAXObject input_range = body.ChildAt(0);
+
+  float value = 0.0f;
+  EXPECT_TRUE(input_range.ValueForRange(&value));
+  EXPECT_EQ(2.0f, value);
+  std::unique_ptr<ui::AXActionTarget> input_range_action_target =
+      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
+                                              input_range.AxID());
+  EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
+            input_range_action_target->GetType());
+
+  std::string value_to_set("1.0");
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kSetValue;
+    action_data.value = value_to_set;
+    EXPECT_TRUE(input_range.PerformAction(action_data));
+  }
+  EXPECT_TRUE(input_range.ValueForRange(&value));
+  EXPECT_EQ(1.0f, value);
+
+  SendPendingAccessibilityEvents();
+  EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());
+  {
+    // Make sure it's the input range object that was updated.
+    ui::AXTreeUpdate update = GetLastAccUpdate();
+    EXPECT_EQ(input_range.AxID(), update.nodes[0].id);
+  }
+}
+
 TEST_F(BlinkAXActionTargetTest, TestMethods) {
   // Exercise the methods on BlinkAXActionTarget to ensure they have the
   // expected effects.
