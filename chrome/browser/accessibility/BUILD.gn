@@ -26,4 +26,11 @@ source_set("test_support") {
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]
   }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/lacros",
+      "//chromeos/startup",
+    ]
+  }
 }

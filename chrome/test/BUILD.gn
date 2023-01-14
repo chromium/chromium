@@ -2396,18 +2396,14 @@ if (!is_android) {
         "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
 
         # Lacros does not seem to have any actual WebView-based UI to test.
-        "../browser/ui/webui/webui_webview_browsertest.cc",
-
-        # TODO(b/223493879): Migration of Live Caption feature to LaCrOS is not
-        # finished yet. These should probably be moved to
-        # lacros_chrome_browsertests as well.
-        "../browser/accessibility/live_caption_controller_browsertest.cc",
-        "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
         "../browser/accessibility/live_caption_unavailability_notifier_browsertest.cc",
         "../browser/accessibility/live_translate_controller_browsertest.cc",
+        "../browser/ui/webui/webui_webview_browsertest.cc",
 
         # These tests also run on Lacros, as part of
         # lacros_chrome_browsertests_run_in_series below.
+        "../browser/accessibility/live_caption_controller_browsertest.cc",
+        "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
         "../browser/media/webrtc/capture_handle_browsertest.cc",
         "../browser/media/webrtc/conditional_focus_browsertest.cc",
         "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
@@ -4845,6 +4841,8 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
+      "../browser/accessibility/live_caption_controller_browsertest.cc",
+      "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
       "../browser/apps/intent_helper/supported_links_infobar_delegate_browsertest.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
@@ -4911,6 +4909,7 @@ if (is_chromeos_lacros) {
       ":test_support_ui",
       ":webrtc_browser_tests_base",
       "//chrome/app:command_ids",
+      "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:test_support",
@@ -4935,6 +4934,8 @@ if (is_chromeos_lacros) {
       "//components/feature_engagement/public:public",
       "//components/feature_engagement/test:test_support",
       "//components/infobars/content:content",
+      "//components/live_caption:constants",
+      "//components/live_caption:live_caption",
       "//components/metrics/structured",
       "//components/metrics/structured:structured_events",
       "//components/onc:onc",
@@ -4942,6 +4943,7 @@ if (is_chromeos_lacros) {
       "//components/services/app_service/public/cpp:intents",
       "//components/services/app_service/public/cpp:preferred_apps",
       "//components/services/app_service/public/cpp:test_support",
+      "//components/soda:constants",
       "//components/user_manager:user_manager",
       "//ui/gfx/codec",
       "//ui/ozone",
@@ -4954,6 +4956,7 @@ if (is_chromeos_lacros) {
     }
 
     data = [
+      "//content/test/data/",
       "data/banners/",
       "data/extensions/",
       "data/media/",

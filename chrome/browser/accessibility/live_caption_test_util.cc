@@ -21,9 +21,16 @@
 #include "ash/constants/ash_features.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 namespace captions {
 
 namespace {
+
 // Chrome feature flags that gate Live Caption.
 std::vector<base::test::FeatureRef> RequiredFeatureFlags() {
   std::vector<base::test::FeatureRef> features = {media::kLiveCaption};
@@ -32,11 +39,30 @@ std::vector<base::test::FeatureRef> RequiredFeatureFlags() {
 #endif
   return features;
 }
+
+// LaCrOS learns about ondevice-speech support via BrowserInitParams.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SetRequiredLacrosInitParams() {
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->is_ondevice_speech_supported = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+}
+#endif
+
 }  // namespace
 
 void LiveCaptionBrowserTest::SetUp() {
   scoped_feature_list_.InitWithFeatures(RequiredFeatureFlags(), {});
   InProcessBrowserTest::SetUp();
+}
+
+void LiveCaptionBrowserTest::CreatedBrowserMainParts(
+    content::BrowserMainParts* browser_main_parts) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  SetRequiredLacrosInitParams();
+#endif
+  InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
 }
 
 void LiveCaptionBrowserTest::SetLiveCaptionEnabled(bool enabled) {

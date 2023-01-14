@@ -73,7 +73,7 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    LiveCaptionBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

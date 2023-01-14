@@ -23,6 +23,7 @@ class LiveCaptionBrowserTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUp() override;
+  void CreatedBrowserMainParts(content::BrowserMainParts*) override;
 
  protected:
   // Enables/disables the live caption pref on the specified profile (or default
