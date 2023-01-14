@@ -46,9 +46,10 @@ namespace {
 const int64_t kMaxImageSizeInBytes =
     static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
 
-constexpr char kUrlKey[] = "url";
-constexpr char kStaticEncodeKey[] = "staticEncode";
+constexpr char kEncodeTypeKey[] = "encodeType";
 constexpr char kIsGooglePhotosKey[] = "isGooglePhotos";
+constexpr char kStaticEncodeKey[] = "staticEncode";
+constexpr char kUrlKey[] = "url";
 
 std::map<std::string, std::string> ParseParams(
     const std::string& param_string) {
@@ -158,6 +159,14 @@ void SanitizedImageSource::StartDataRequest(
     auto static_encode_it = params.find(kStaticEncodeKey);
     if (static_encode_it != params.end()) {
       request_attributes.static_encode = static_encode_it->second == "true";
+    }
+
+    auto encode_type_ir = params.find(kEncodeTypeKey);
+    if (encode_type_ir != params.end()) {
+      request_attributes.encode_type =
+          encode_type_ir->second == "webp"
+              ? RequestAttributes::EncodeType::kWebP
+              : RequestAttributes::EncodeType::kPng;
     }
 
     auto google_photos_it = params.find(kIsGooglePhotosKey);
@@ -283,17 +292,20 @@ void SanitizedImageSource::OnImageLoaded(
     data_decoder_delegate_->DecodeImage(
         *body,
         base::BindOnce(&SanitizedImageSource::EncodeAndReplyStaticImage,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(request_attributes), std::move(callback)));
     return;
   }
 
   data_decoder_delegate_->DecodeAnimation(
       *body,
       base::BindOnce(&SanitizedImageSource::OnAnimationDecoded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(request_attributes), std::move(callback)));
 }
 
 void SanitizedImageSource::OnAnimationDecoded(
+    RequestAttributes request_attributes,
     content::URLDataSource::GotDataCallback callback,
     std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -304,35 +316,40 @@ void SanitizedImageSource::OnAnimationDecoded(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Re-encode static image as PNG and send to requester.
-  if (mojo_frames.size() == 1) {
-    EncodeAndReplyStaticImage(std::move(callback), mojo_frames[0]->bitmap);
+  if (mojo_frames.size() > 1) {
+    // The image is animated, re-encode as WebP animated image and send to
+    // requester.
+    EncodeAndReplyAnimatedImage(std::move(callback), std::move(mojo_frames));
     return;
   }
-
-  // The image is animated, re-encode as WebP animated image and send to
-  // requester.
-  EncodeAndReplyAnimatedImage(std::move(callback), std::move(mojo_frames));
-#else
-  // Re-encode as static image for non ChromeOS builds.
-  EncodeAndReplyStaticImage(std::move(callback), mojo_frames[0]->bitmap);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Re-encode as static image and send to requester.
+  EncodeAndReplyStaticImage(std::move(request_attributes), std::move(callback),
+                            mojo_frames[0]->bitmap);
 }
 
 void SanitizedImageSource::EncodeAndReplyStaticImage(
+    RequestAttributes request_attributes,
     content::URLDataSource::GotDataCallback callback,
     const SkBitmap& bitmap) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](const SkBitmap& bitmap) {
+          [](const SkBitmap& bitmap,
+             RequestAttributes::EncodeType encode_type) {
             auto encoded = base::MakeRefCounted<base::RefCountedBytes>();
-            return gfx::PNGCodec::EncodeBGRASkBitmap(
-                       bitmap, /*discard_transparency=*/false, &encoded->data())
-                       ? encoded
-                       : base::MakeRefCounted<base::RefCountedBytes>();
+            const bool success =
+                encode_type == RequestAttributes::EncodeType::kWebP
+                    ? gfx::WebpCodec::Encode(bitmap, /*quality=*/90,
+                                             &encoded->data())
+                    : gfx::PNGCodec::EncodeBGRASkBitmap(
+                          bitmap, /*discard_transparency=*/false,
+                          &encoded->data());
+            return success ? encoded
+                           : base::MakeRefCounted<base::RefCountedBytes>();
           },
-          bitmap),
+          bitmap, request_attributes.encode_type),
       std::move(callback));
   return;
 }

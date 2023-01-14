@@ -35,20 +35,27 @@ class IdentityManager;
 // external images in WebUIs by downloading the image in the browser process,
 // decoding the image in an isolated utility process, re-encoding the image and
 // sending the now sanitized image back to the requesting WebUI. You can reach
-// the image source via:
+// the image source in the following ways:
 //
 //   chrome://image?<external image URL>
+//   chrome://image?url=<external image URL>
 //
-// If the source is an animated image, it will be re-encoded as an animated
-// WebP image; otherwise it will be re-encoded as a static PNG image.
-// If static-encode attribute is set to true, it will always be re-encoded as
-// a static PNG image. See the example as follows:
+// If `static-encode` attribute is set, the image will be re-encoded as a static
+// PNG, or a static WebP image depending on if `encode-type` attribute is set to
+// `webp`. You can use these attributes in the following ways:
+//
 //   chrome://image?url=<external image URL>&staticEncode=true
+//   chrome://image?url=<external image URL>&encodeType=webp
+//   chrome://image?url=<external image URL>&staticEncode=true&encodeType=webp
 //
 // If the image source points to Google Photos storage, meaning it needs an auth
-// token to be downloaded, you can use the is-google-photos attribute as
-// follows:
+// token, you can use the `is-google-photos` attribute in the following way:
+//
 //   chrome://image?url=<external image URL>&isGooglePhotos=true
+//
+// [CrOS only]: If the source is an animated image, it will be re-encoded as an
+// animated WebP image; otherwise it will be re-encoded as a static image as
+// though `static-encode` attribute had been set.
 class SanitizedImageSource : public content::URLDataSource {
  public:
   using DecodeImageCallback = data_decoder::DecodeImageCallback;
@@ -100,12 +107,18 @@ class SanitizedImageSource : public content::URLDataSource {
 
  private:
   struct RequestAttributes {
+    enum EncodeType {
+      kPng = 0,
+      kWebP = 1,
+    };
+
     RequestAttributes();
     RequestAttributes(const RequestAttributes&);
     ~RequestAttributes();
 
     GURL image_url = GURL();
     bool static_encode = false;
+    EncodeType encode_type = EncodeType::kPng;
     absl::optional<signin::AccessTokenInfo> access_token_info;
   };
 
@@ -116,10 +129,12 @@ class SanitizedImageSource : public content::URLDataSource {
                      content::URLDataSource::GotDataCallback callback,
                      std::unique_ptr<std::string> body);
   void OnAnimationDecoded(
+      RequestAttributes request_attributes,
       content::URLDataSource::GotDataCallback callback,
       std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames);
 
   void EncodeAndReplyStaticImage(
+      RequestAttributes request_attributes,
       content::URLDataSource::GotDataCallback callback,
       const SkBitmap& bitmap);
   void EncodeAndReplyAnimatedImage(

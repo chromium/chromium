@@ -16,8 +16,7 @@
  *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png">
  *
  *      If your image URL points to Google Photos storage, meaning it needs an
- *      auth token to be downloaded, you can use the is-google-photos attribute
- *      as follows:
+ *      auth token, you can use the is-google-photos attribute as follows:
  *
  *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png"
  *          is-google-photos>
@@ -27,11 +26,17 @@
  *
  *      <img is="cr-auto-img" auto-src="[[calculateSrc()]]" clear-src>
  *
- *      If you want your image to be always encoded as static PNG image (even if
+ *      If you want your image to be always encoded as a static image (even if
  *      the source image is animated), set the static-encode attribute:
  *
  *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png"
  *          static-encode>
+ *
+ *      Static images are encoded as PNG by default. If you want your image to
+ *      be encoded as a Webp image, set the encode-type attribute to "webp".
+ *
+ *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png"
+ *          static-encode encode-type="webp">
  *
  * NOTE: Since <cr-auto-img> may use the chrome://image data source some images
  * may be transcoded to PNG.
@@ -45,15 +50,17 @@ const IS_GOOGLE_PHOTOS: string = 'is-google-photos';
 
 const STATIC_ENCODE: string = 'static-encode';
 
+const ENCODE_TYPE: string = 'encode-type';
+
 export class CrAutoImgElement extends HTMLImageElement {
   static get observedAttributes() {
-    return [AUTO_SRC, IS_GOOGLE_PHOTOS, STATIC_ENCODE];
+    return [AUTO_SRC, IS_GOOGLE_PHOTOS, STATIC_ENCODE, ENCODE_TYPE];
   }
 
   attributeChangedCallback(
       name: string, oldValue: string|null, newValue: string|null) {
     if (name !== AUTO_SRC && name !== IS_GOOGLE_PHOTOS &&
-        name !== STATIC_ENCODE) {
+        name !== STATIC_ENCODE && name !== ENCODE_TYPE) {
       return;
     }
 
@@ -88,7 +95,7 @@ export class CrAutoImgElement extends HTMLImageElement {
       return;
     }
     if (!this.hasAttribute(IS_GOOGLE_PHOTOS) &&
-        !this.hasAttribute(STATIC_ENCODE)) {
+        !this.hasAttribute(STATIC_ENCODE) && !this.hasAttribute(ENCODE_TYPE)) {
       this.src = 'chrome://image?' + url.href;
       return;
     }
@@ -100,6 +107,9 @@ export class CrAutoImgElement extends HTMLImageElement {
     if (this.hasAttribute(STATIC_ENCODE)) {
       this.src += `&staticEncode=true`;
     }
+    if (this.hasAttribute(ENCODE_TYPE)) {
+      this.src += `&encodeType=${this.getAttribute(ENCODE_TYPE)}`;
+    }
   }
 
   set autoSrc(src: string) {
@@ -107,7 +117,7 @@ export class CrAutoImgElement extends HTMLImageElement {
   }
 
   get autoSrc(): string {
-    return this.getAttribute(AUTO_SRC)!;
+    return this.getAttribute(AUTO_SRC) || '';
   }
 
   set clearSrc(_: string) {
@@ -115,7 +125,7 @@ export class CrAutoImgElement extends HTMLImageElement {
   }
 
   get clearSrc(): string {
-    return this.getAttribute(CLEAR_SRC)!;
+    return this.getAttribute(CLEAR_SRC) || '';
   }
 
   set isGooglePhotos(enabled: boolean) {
@@ -140,6 +150,18 @@ export class CrAutoImgElement extends HTMLImageElement {
 
   get staticEncode(): boolean {
     return this.hasAttribute(STATIC_ENCODE);
+  }
+
+  set encodeType(type: string) {
+    if (type) {
+      this.setAttribute(ENCODE_TYPE, type);
+    } else {
+      this.removeAttribute(ENCODE_TYPE);
+    }
+  }
+
+  get encodeType(): string {
+    return this.getAttribute(ENCODE_TYPE) || '';
   }
 }
 

@@ -94,7 +94,7 @@ suite('CrAutoImgElementTest', () => {
         const autoSrc = 'https://foo.com/img.png';
 
         // Act.
-        img.setAttribute('is-google-photos', '');
+        img.toggleAttribute('is-google-photos', true);
         img.autoSrc = autoSrc;
 
         // Assert.
@@ -164,7 +164,7 @@ suite('CrAutoImgElementTest', () => {
         const autoSrc = 'https://foo.com/img.png';
 
         // Act.
-        img.setAttribute('static-encode', '');
+        img.toggleAttribute('static-encode', true);
         img.autoSrc = autoSrc;
 
         // Assert.
@@ -181,12 +181,57 @@ suite('CrAutoImgElementTest', () => {
       });
 
   test(
+      'setting encodeType creates a URL with autoSrc and encodeType as params',
+      () => {
+        const autoSrc = 'https://foo.com/img.png';
+
+        // Act.
+        img.encodeType = 'jpeg';
+        img.autoSrc = autoSrc;
+
+        // Assert.
+        assertEquals(
+            `chrome://image/?url=${
+                encodeURIComponent(autoSrc)}&encodeType=jpeg`,
+            img.src);
+
+        // Act.
+        img.encodeType = '';
+
+        // Assert.
+        assertEquals(`chrome://image/?${autoSrc}`, img.src);
+      });
+
+  test(
+      'setting encode-type creates a URL with autoSrc and encodeType as params',
+      () => {
+        const autoSrc = 'https://foo.com/img.png';
+
+        // Act.
+        img.setAttribute('encode-type', 'webp');
+        img.autoSrc = autoSrc;
+
+        // Assert.
+        assertEquals(
+            `chrome://image/?url=${
+                encodeURIComponent(autoSrc)}&encodeType=webp`,
+            img.src);
+
+        // Act.
+        img.removeAttribute('encode-type');
+
+        // Assert.
+        assertEquals(`chrome://image/?${autoSrc}`, img.src);
+      });
+
+  test(
       'setting multiple attributes creates a URL with all of the params',
       () => {
         const autoSrc = 'https://foo.com/img.png';
 
         // Act.
-        img.setAttribute('static-encode', '');
+        img.toggleAttribute('static-encode', true);
+        img.toggleAttribute('encode-type', true);
         img.isGooglePhotos = true;
         img.autoSrc = autoSrc;
 
@@ -194,7 +239,7 @@ suite('CrAutoImgElementTest', () => {
         assertEquals(
             `chrome://image/?url=${
                 encodeURIComponent(
-                    autoSrc)}&isGooglePhotos=true&staticEncode=true`,
+                    autoSrc)}&isGooglePhotos=true&staticEncode=true&encodeType=`,
             img.src);
       });
 });

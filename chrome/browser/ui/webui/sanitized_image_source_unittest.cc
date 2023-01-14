@@ -311,6 +311,48 @@ TEST_F(SanitizedImageSourceTest, StaticImage) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(SanitizedImageSourceTest, StaticImageWithWebPEncode) {
+  const std::string test_body = "abc";
+  const std::string test_url = "https://foo.com/img.png";
+
+  // Set up expectations and mock data.
+  base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+  EXPECT_CALL(*mock_data_decoder_delegate_,
+              DecodeAnimation(test_body, testing::_))
+      .Times(1)
+      .WillOnce([](const std::string&,
+                   SanitizedImageSource::DecodeAnimationCallback callback) {
+        std::vector<AnimationFramePtr> frames;
+        frames.push_back(MakeImageFrame(SK_ColorRED));
+        std::move(callback).Run(std::move(frames));
+      });
+  auto image =
+      gfx::Image::CreateFrom1xBitmap(MakeImageFrame(SK_ColorRED)->bitmap);
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce([](scoped_refptr<base::RefCountedMemory> bytes) {
+        std::string data_string(reinterpret_cast<char const*>(bytes->data()));
+        // Make sure the image is encoded into WebP format.
+        EXPECT_TRUE(base::StartsWith(data_string, "RIFF"));
+      });
+
+  // Issue requests.
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat(
+          {chrome::kChromeUIImageURL, "?url=", test_url, "&encodeType=webp"})),
+      content::WebContents::Getter(), callback.Get());
+
+  // Answer requests and check correctness.
+  auto* request = test_url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+            request->request.credentials_mode);
+  EXPECT_EQ(test_url, request->request.url);
+  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
+      request, test_body);
+
+  task_environment_.RunUntilIdle();
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SanitizedImageSourceTest, AnimatedImage) {
   const std::string test_body = "abc";
