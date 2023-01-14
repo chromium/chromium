@@ -88,64 +88,6 @@ bool VerifyDataSize(const VAImage* image) {
 
 }  // namespace
 
-void VaapiMjpegDecodeAccelerator::NotifyError(int32_t task_id, Error error) {
-  if (!io_task_runner_->BelongsToCurrentThread()) {
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VaapiMjpegDecodeAccelerator::NotifyError,
-                       weak_this_factory_.GetWeakPtr(), task_id, error));
-    return;
-  }
-  VLOGF(1) << "Notifying of error " << error;
-  // |error| shouldn't be NO_ERRORS because successful decodes should be handled
-  // by VideoFrameReady().
-  DCHECK_NE(chromeos_camera::MjpegDecodeAccelerator::Error::NO_ERRORS, error);
-  ReportToVAJDAResponseToClientUMA(error);
-  DCHECK(client_);
-  client_->NotifyError(task_id, error);
-}
-
-void VaapiMjpegDecodeAccelerator::VideoFrameReady(int32_t task_id) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  ReportToVAJDAResponseToClientUMA(
-      chromeos_camera::MjpegDecodeAccelerator::Error::NO_ERRORS);
-  client_->VideoFrameReady(task_id);
-}
-
-VaapiMjpegDecodeAccelerator::VaapiMjpegDecodeAccelerator(
-    const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
-    : io_task_runner_(io_task_runner),
-      client_(nullptr),
-      decoder_thread_("VaapiMjpegDecoderThread"),
-      weak_this_factory_(this) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-}
-
-// Some members expect to be destroyed on the |decoder_thread_|.
-void VaapiMjpegDecodeAccelerator::CleanUpOnDecoderThread() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
-  DCHECK(vpp_vaapi_wrapper_->HasOneRef());
-  vpp_vaapi_wrapper_.reset();
-  decoder_.reset();
-  image_processor_.reset();
-}
-
-VaapiMjpegDecodeAccelerator::~VaapiMjpegDecodeAccelerator() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  VLOGF(2) << "Destroying VaapiMjpegDecodeAccelerator";
-  weak_this_factory_.InvalidateWeakPtrs();
-
-  if (decoder_task_runner_) {
-    // base::Unretained() is fine here because we control |decoder_task_runner_|
-    // lifetime.
-    decoder_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VaapiMjpegDecodeAccelerator::CleanUpOnDecoderThread,
-                       base::Unretained(this)));
-  }
-  decoder_thread_.Stop();
-}
-
 void VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
     chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
   DCHECK(decoder_task_runner_->BelongsToCurrentThread());
@@ -178,229 +120,6 @@ void VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
   }
 
   std::move(init_cb).Run(true);
-}
-
-void VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner(
-    chromeos_camera::MjpegDecodeAccelerator::Client* client,
-    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  client_ = client;
-
-  if (!decoder_thread_.Start()) {
-    VLOGF(1) << "Failed to start decoding thread.";
-    std::move(init_cb).Run(false);
-    return;
-  }
-  decoder_task_runner_ = decoder_thread_.task_runner();
-
-  // base::Unretained() is fine here because we control |decoder_task_runner_|
-  // lifetime.
-  decoder_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner,
-          base::Unretained(this), std::move(init_cb)));
-}
-
-void VaapiMjpegDecodeAccelerator::InitializeAsync(
-    chromeos_camera::MjpegDecodeAccelerator::Client* client,
-    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
-  VLOGF(2);
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-
-  // To guarantee that the caller receives an asynchronous call after the
-  // return path, we are making use of InitializeOnTaskRunner.
-  io_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner,
-                     weak_this_factory_.GetWeakPtr(), client,
-                     BindToCurrentLoop(std::move(init_cb))));
-}
-
-void VaapiMjpegDecodeAccelerator::CreateImageProcessor(
-    const VideoFrame* src_frame,
-    const VideoFrame* dst_frame) {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
-
-  // The fourcc of |src_frame| will be either Fourcc(YUYV) or Fourcc(YU12) based
-  // on the implementation of OutputPictureLibYuvOnTaskRunner(). The fourcc of
-  // |dst_frame| should have been validated in DecodeImpl().
-  const auto src_fourcc = Fourcc::FromVideoPixelFormat(src_frame->format());
-  DCHECK(src_fourcc.has_value());
-  const auto dst_fourcc = Fourcc::FromVideoPixelFormat(dst_frame->format());
-  DCHECK(dst_fourcc.has_value());
-  const ImageProcessorBackend::PortConfig input_config(
-      *src_fourcc, src_frame->coded_size(), src_frame->layout().planes(),
-      src_frame->visible_rect(), {src_frame->storage_type()});
-  const ImageProcessorBackend::PortConfig output_config(
-      *dst_fourcc, dst_frame->coded_size(), dst_frame->layout().planes(),
-      dst_frame->visible_rect(), {dst_frame->storage_type()});
-  if (image_processor_ && image_processor_->input_config() == input_config &&
-      image_processor_->output_config() == output_config) {
-    return;
-  }
-
-  // The error callback is posted to the same thread that
-  // LibYUVImageProcessorBackend::Create() is called on
-  // (i.e., |decoder_thread_|) and we control the lifetime of |decoder_thread_|.
-  // Therefore, base::Unretained(this) is safe.
-  image_processor_ = LibYUVImageProcessorBackend::Create(
-      input_config, output_config, ImageProcessorBackend::OutputMode::IMPORT,
-      VIDEO_ROTATION_0,
-      base::BindRepeating(&VaapiMjpegDecodeAccelerator::OnImageProcessorError,
-                          base::Unretained(this)),
-      decoder_task_runner_);
-}
-
-bool VaapiMjpegDecodeAccelerator::OutputPictureLibYuvOnTaskRunner(
-    int32_t task_id,
-    std::unique_ptr<ScopedVAImage> scoped_image,
-    scoped_refptr<VideoFrame> video_frame,
-    const gfx::Rect& crop_rect) {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
-
-  TRACE_EVENT1("jpeg", __func__, "task_id", task_id);
-
-  DCHECK(scoped_image);
-  const VAImage* image = scoped_image->image();
-  DCHECK(VerifyDataSize(image));
-  const gfx::Size src_size(base::strict_cast<int>(image->width),
-                           base::strict_cast<int>(image->height));
-  DCHECK(gfx::Rect(src_size).Contains(crop_rect));
-
-  // Wrap |image| into VideoFrame.
-  std::vector<int32_t> strides(image->num_planes);
-  for (uint32_t i = 0; i < image->num_planes; ++i) {
-    if (!base::CheckedNumeric<uint32_t>(image->pitches[i])
-             .AssignIfValid(&strides[i])) {
-      VLOGF(1) << "Invalid VAImage stride " << image->pitches[i]
-               << " for plane " << i;
-      return false;
-    }
-  }
-  auto* const data = static_cast<uint8_t*>(scoped_image->va_buffer()->data());
-  scoped_refptr<VideoFrame> src_frame;
-  switch (image->format.fourcc) {
-    case VA_FOURCC_YUY2:
-    case VA_FOURCC('Y', 'U', 'Y', 'V'): {
-      auto layout = VideoFrameLayout::CreateWithStrides(PIXEL_FORMAT_YUY2,
-                                                        src_size, strides);
-      if (!layout.has_value()) {
-        VLOGF(1) << "Failed to create video frame layout";
-        return false;
-      }
-      src_frame = VideoFrame::WrapExternalDataWithLayout(
-          *layout, crop_rect, crop_rect.size(), data + image->offsets[0],
-          base::strict_cast<size_t>(image->data_size), base::TimeDelta());
-      break;
-    }
-    case VA_FOURCC_I420: {
-      auto layout = VideoFrameLayout::CreateWithStrides(PIXEL_FORMAT_I420,
-                                                        src_size, strides);
-      if (!layout.has_value()) {
-        VLOGF(1) << "Failed to create video frame layout";
-        return false;
-      }
-      src_frame = VideoFrame::WrapExternalYuvDataWithLayout(
-          *layout, crop_rect, crop_rect.size(), data + image->offsets[0],
-          data + image->offsets[1], data + image->offsets[2],
-          base::TimeDelta());
-      break;
-    }
-    default:
-      VLOGF(1) << "Unsupported VA image format: "
-               << FourccToString(image->format.fourcc);
-      return false;
-  }
-  if (!src_frame) {
-    VLOGF(1) << "Failed to create video frame";
-    return false;
-  }
-
-  CreateImageProcessor(src_frame.get(), video_frame.get());
-  if (!image_processor_) {
-    VLOGF(1) << "Failed to create image processor";
-    return false;
-  }
-  image_processor_->Process(
-      std::move(src_frame), std::move(video_frame),
-      base::BindOnce(
-          [](scoped_refptr<base::SingleThreadTaskRunner> runner,
-             base::OnceClosure cb, scoped_refptr<VideoFrame> frame) {
-            runner->PostTask(FROM_HERE, std::move(cb));
-          },
-          io_task_runner_,
-          base::BindOnce(&VaapiMjpegDecodeAccelerator::VideoFrameReady,
-                         weak_this_factory_.GetWeakPtr(), task_id)));
-  return true;
-}
-
-void VaapiMjpegDecodeAccelerator::OnImageProcessorError() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
-  VLOGF(1) << "Failed to process frames using the libyuv image processor";
-  NotifyError(kInvalidTaskId, PLATFORM_FAILURE);
-  image_processor_.reset();
-}
-
-bool VaapiMjpegDecodeAccelerator::OutputPictureVppOnTaskRunner(
-    int32_t task_id,
-    const ScopedVASurface* surface,
-    scoped_refptr<VideoFrame> video_frame,
-    const gfx::Rect& crop_rect) {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
-  DCHECK(surface);
-  DCHECK(video_frame);
-  DCHECK(gfx::Rect(surface->size()).Contains(crop_rect));
-
-  TRACE_EVENT1("jpeg", __func__, "task_id", task_id);
-
-  scoped_refptr<gfx::NativePixmap> pixmap =
-      CreateNativePixmapDmaBuf(video_frame.get());
-  if (!pixmap) {
-    VLOGF(1) << "Failed to create NativePixmap from VideoFrame";
-    return false;
-  }
-
-  // Bind a VA surface to |video_frame|.
-  scoped_refptr<VASurface> output_surface =
-      vpp_vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
-  if (!output_surface) {
-    VLOGF(1) << "Cannot create VA surface for output buffer";
-    return false;
-  }
-
-  scoped_refptr<VASurface> src_surface = base::MakeRefCounted<VASurface>(
-      surface->id(), surface->size(), surface->format(),
-      /*release_cb=*/base::DoNothing());
-
-  // We should call vaSyncSurface() when passing surface between contexts, but
-  // on Intel platform, we don't have to call vaSyncSurface() because the
-  // underlying drivers handle synchronization between different contexts. See:
-  // https://lists.01.org/hyperkitty/list/intel-vaapi-media@lists.01.org/message/YNFLDHHHQM2ZBFPMH7D3U6GLMOELHPFL/
-  const bool is_intel_backend =
-      VaapiWrapper::GetImplementationType() == VAImplementation::kIntelI965 ||
-      VaapiWrapper::GetImplementationType() == VAImplementation::kIntelIHD;
-  if (!is_intel_backend && !vpp_vaapi_wrapper_->SyncSurface(surface->id())) {
-    VLOGF(1) << "Cannot sync VPP input surface";
-    return false;
-  }
-  if (!vpp_vaapi_wrapper_->BlitSurface(*src_surface, *output_surface,
-                                       crop_rect)) {
-    VLOGF(1) << "Cannot convert decoded image into output buffer";
-    return false;
-  }
-
-  // Sync target surface since the buffer is returning to client.
-  if (!vpp_vaapi_wrapper_->SyncSurface(output_surface->id())) {
-    VLOGF(1) << "Cannot sync VPP output surface";
-    return false;
-  }
-
-  io_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VaapiMjpegDecodeAccelerator::VideoFrameReady,
-                                weak_this_factory_.GetWeakPtr(), task_id));
-
-  return true;
 }
 
 void VaapiMjpegDecodeAccelerator::DecodeFromShmTask(
@@ -522,8 +241,7 @@ void VaapiMjpegDecodeAccelerator::DecodeImpl(
       VaapiWrapper::IsVppResolutionAllowed(dst_frame->visible_rect().size()) &&
       VaapiWrapper::IsVppSupportedForJpegDecodedSurfaceToFourCC(
           surface->format(), *dst_frame_va_fourcc)) {
-    if (!OutputPictureVppOnTaskRunner(task_id, surface, std::move(dst_frame),
-                                      crop_rect)) {
+    if (!OutputPictureVpp(task_id, surface, std::move(dst_frame), crop_rect)) {
       VLOGF(1) << "Output picture using VPP failed";
       NotifyError(task_id, PLATFORM_FAILURE);
     }
@@ -542,11 +260,292 @@ void VaapiMjpegDecodeAccelerator::DecodeImpl(
   }
   DCHECK_EQ(image->image()->width, surface->size().width());
   DCHECK_EQ(image->image()->height, surface->size().height());
-  if (!OutputPictureLibYuvOnTaskRunner(task_id, std::move(image),
-                                       std::move(dst_frame), crop_rect)) {
+  if (!OutputPictureLibYuv(task_id, std::move(image), std::move(dst_frame),
+                           crop_rect)) {
     VLOGF(1) << "Output picture using libyuv failed";
     NotifyError(task_id, PLATFORM_FAILURE);
   }
+}
+
+void VaapiMjpegDecodeAccelerator::OnImageProcessorError() {
+  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  VLOGF(1) << "Failed to process frames using the libyuv image processor";
+  NotifyError(kInvalidTaskId, PLATFORM_FAILURE);
+  image_processor_.reset();
+}
+
+void VaapiMjpegDecodeAccelerator::CreateImageProcessor(
+    const VideoFrame* src_frame,
+    const VideoFrame* dst_frame) {
+  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+
+  // The fourcc of |src_frame| will be either Fourcc(YUYV) or Fourcc(YU12) based
+  // on the implementation of OutputPictureLibYuv(). The fourcc of
+  // |dst_frame| should have been validated in DecodeImpl().
+  const auto src_fourcc = Fourcc::FromVideoPixelFormat(src_frame->format());
+  DCHECK(src_fourcc.has_value());
+  const auto dst_fourcc = Fourcc::FromVideoPixelFormat(dst_frame->format());
+  DCHECK(dst_fourcc.has_value());
+  const ImageProcessorBackend::PortConfig input_config(
+      *src_fourcc, src_frame->coded_size(), src_frame->layout().planes(),
+      src_frame->visible_rect(), {src_frame->storage_type()});
+  const ImageProcessorBackend::PortConfig output_config(
+      *dst_fourcc, dst_frame->coded_size(), dst_frame->layout().planes(),
+      dst_frame->visible_rect(), {dst_frame->storage_type()});
+  if (image_processor_ && image_processor_->input_config() == input_config &&
+      image_processor_->output_config() == output_config) {
+    return;
+  }
+
+  // The error callback is posted to the same thread that
+  // LibYUVImageProcessorBackend::Create() is called on
+  // (i.e., |decoder_thread_|) and we control the lifetime of |decoder_thread_|.
+  // Therefore, base::Unretained(this) is safe.
+  image_processor_ = LibYUVImageProcessorBackend::Create(
+      input_config, output_config, ImageProcessorBackend::OutputMode::IMPORT,
+      VIDEO_ROTATION_0,
+      base::BindRepeating(&VaapiMjpegDecodeAccelerator::OnImageProcessorError,
+                          base::Unretained(this)),
+      decoder_task_runner_);
+}
+
+bool VaapiMjpegDecodeAccelerator::OutputPictureLibYuv(
+    int32_t task_id,
+    std::unique_ptr<ScopedVAImage> scoped_image,
+    scoped_refptr<VideoFrame> video_frame,
+    const gfx::Rect& crop_rect) {
+  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+
+  TRACE_EVENT1("jpeg", __func__, "task_id", task_id);
+
+  DCHECK(scoped_image);
+  const VAImage* image = scoped_image->image();
+  DCHECK(VerifyDataSize(image));
+  const gfx::Size src_size(base::strict_cast<int>(image->width),
+                           base::strict_cast<int>(image->height));
+  DCHECK(gfx::Rect(src_size).Contains(crop_rect));
+
+  // Wrap |image| into VideoFrame.
+  std::vector<int32_t> strides(image->num_planes);
+  for (uint32_t i = 0; i < image->num_planes; ++i) {
+    if (!base::CheckedNumeric<uint32_t>(image->pitches[i])
+             .AssignIfValid(&strides[i])) {
+      VLOGF(1) << "Invalid VAImage stride " << image->pitches[i]
+               << " for plane " << i;
+      return false;
+    }
+  }
+  auto* const data = static_cast<uint8_t*>(scoped_image->va_buffer()->data());
+  scoped_refptr<VideoFrame> src_frame;
+  switch (image->format.fourcc) {
+    case VA_FOURCC_YUY2:
+    case VA_FOURCC('Y', 'U', 'Y', 'V'): {
+      auto layout = VideoFrameLayout::CreateWithStrides(PIXEL_FORMAT_YUY2,
+                                                        src_size, strides);
+      if (!layout.has_value()) {
+        VLOGF(1) << "Failed to create video frame layout";
+        return false;
+      }
+      src_frame = VideoFrame::WrapExternalDataWithLayout(
+          *layout, crop_rect, crop_rect.size(), data + image->offsets[0],
+          base::strict_cast<size_t>(image->data_size), base::TimeDelta());
+      break;
+    }
+    case VA_FOURCC_I420: {
+      auto layout = VideoFrameLayout::CreateWithStrides(PIXEL_FORMAT_I420,
+                                                        src_size, strides);
+      if (!layout.has_value()) {
+        VLOGF(1) << "Failed to create video frame layout";
+        return false;
+      }
+      src_frame = VideoFrame::WrapExternalYuvDataWithLayout(
+          *layout, crop_rect, crop_rect.size(), data + image->offsets[0],
+          data + image->offsets[1], data + image->offsets[2],
+          base::TimeDelta());
+      break;
+    }
+    default:
+      VLOGF(1) << "Unsupported VA image format: "
+               << FourccToString(image->format.fourcc);
+      return false;
+  }
+  if (!src_frame) {
+    VLOGF(1) << "Failed to create video frame";
+    return false;
+  }
+
+  CreateImageProcessor(src_frame.get(), video_frame.get());
+  if (!image_processor_) {
+    VLOGF(1) << "Failed to create image processor";
+    return false;
+  }
+  image_processor_->Process(
+      std::move(src_frame), std::move(video_frame),
+      base::BindOnce(
+          [](scoped_refptr<base::SingleThreadTaskRunner> runner,
+             base::OnceClosure cb, scoped_refptr<VideoFrame> frame) {
+            runner->PostTask(FROM_HERE, std::move(cb));
+          },
+          io_task_runner_,
+          base::BindOnce(&VaapiMjpegDecodeAccelerator::VideoFrameReady,
+                         weak_this_factory_.GetWeakPtr(), task_id)));
+  return true;
+}
+
+bool VaapiMjpegDecodeAccelerator::OutputPictureVpp(
+    int32_t task_id,
+    const ScopedVASurface* surface,
+    scoped_refptr<VideoFrame> video_frame,
+    const gfx::Rect& crop_rect) {
+  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK(surface);
+  DCHECK(video_frame);
+  DCHECK(gfx::Rect(surface->size()).Contains(crop_rect));
+
+  TRACE_EVENT1("jpeg", __func__, "task_id", task_id);
+
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      CreateNativePixmapDmaBuf(video_frame.get());
+  if (!pixmap) {
+    VLOGF(1) << "Failed to create NativePixmap from VideoFrame";
+    return false;
+  }
+
+  // Bind a VA surface to |video_frame|.
+  scoped_refptr<VASurface> output_surface =
+      vpp_vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
+  if (!output_surface) {
+    VLOGF(1) << "Cannot create VA surface for output buffer";
+    return false;
+  }
+
+  scoped_refptr<VASurface> src_surface = base::MakeRefCounted<VASurface>(
+      surface->id(), surface->size(), surface->format(),
+      /*release_cb=*/base::DoNothing());
+
+  // We should call vaSyncSurface() when passing surface between contexts, but
+  // on Intel platform, we don't have to call vaSyncSurface() because the
+  // underlying drivers handle synchronization between different contexts. See:
+  // https://lists.01.org/hyperkitty/list/intel-vaapi-media@lists.01.org/message/YNFLDHHHQM2ZBFPMH7D3U6GLMOELHPFL/
+  const bool is_intel_backend =
+      VaapiWrapper::GetImplementationType() == VAImplementation::kIntelI965 ||
+      VaapiWrapper::GetImplementationType() == VAImplementation::kIntelIHD;
+  if (!is_intel_backend && !vpp_vaapi_wrapper_->SyncSurface(surface->id())) {
+    VLOGF(1) << "Cannot sync VPP input surface";
+    return false;
+  }
+  if (!vpp_vaapi_wrapper_->BlitSurface(*src_surface, *output_surface,
+                                       crop_rect)) {
+    VLOGF(1) << "Cannot convert decoded image into output buffer";
+    return false;
+  }
+
+  // Sync target surface since the buffer is returning to client.
+  if (!vpp_vaapi_wrapper_->SyncSurface(output_surface->id())) {
+    VLOGF(1) << "Cannot sync VPP output surface";
+    return false;
+  }
+
+  io_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VaapiMjpegDecodeAccelerator::VideoFrameReady,
+                                weak_this_factory_.GetWeakPtr(), task_id));
+
+  return true;
+}
+
+void VaapiMjpegDecodeAccelerator::NotifyError(int32_t task_id, Error error) {
+  if (!io_task_runner_->BelongsToCurrentThread()) {
+    io_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VaapiMjpegDecodeAccelerator::NotifyError,
+                       weak_this_factory_.GetWeakPtr(), task_id, error));
+    return;
+  }
+  VLOGF(1) << "Notifying of error " << error;
+  // |error| shouldn't be NO_ERRORS because successful decodes should be handled
+  // by VideoFrameReady().
+  DCHECK_NE(chromeos_camera::MjpegDecodeAccelerator::Error::NO_ERRORS, error);
+  ReportToVAJDAResponseToClientUMA(error);
+  DCHECK(client_);
+  client_->NotifyError(task_id, error);
+}
+
+void VaapiMjpegDecodeAccelerator::VideoFrameReady(int32_t task_id) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  ReportToVAJDAResponseToClientUMA(
+      chromeos_camera::MjpegDecodeAccelerator::Error::NO_ERRORS);
+  client_->VideoFrameReady(task_id);
+}
+
+VaapiMjpegDecodeAccelerator::VaapiMjpegDecodeAccelerator(
+    const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
+    : io_task_runner_(io_task_runner),
+      client_(nullptr),
+      decoder_thread_("VaapiMjpegDecoderThread"),
+      weak_this_factory_(this) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+}
+
+// Some members expect to be destroyed on the |decoder_thread_|.
+void VaapiMjpegDecodeAccelerator::CleanUpOnDecoderThread() {
+  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK(vpp_vaapi_wrapper_->HasOneRef());
+  vpp_vaapi_wrapper_.reset();
+  decoder_.reset();
+  image_processor_.reset();
+}
+
+VaapiMjpegDecodeAccelerator::~VaapiMjpegDecodeAccelerator() {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  VLOGF(2) << "Destroying VaapiMjpegDecodeAccelerator";
+  weak_this_factory_.InvalidateWeakPtrs();
+
+  if (decoder_task_runner_) {
+    // base::Unretained() is fine here because we control |decoder_task_runner_|
+    // lifetime.
+    decoder_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VaapiMjpegDecodeAccelerator::CleanUpOnDecoderThread,
+                       base::Unretained(this)));
+  }
+  decoder_thread_.Stop();
+}
+
+void VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner(
+    chromeos_camera::MjpegDecodeAccelerator::Client* client,
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  client_ = client;
+
+  if (!decoder_thread_.Start()) {
+    VLOGF(1) << "Failed to start decoding thread.";
+    std::move(init_cb).Run(false);
+    return;
+  }
+  decoder_task_runner_ = decoder_thread_.task_runner();
+
+  // base::Unretained() is fine here because we control |decoder_task_runner_|
+  // lifetime.
+  decoder_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner,
+          base::Unretained(this), std::move(init_cb)));
+}
+
+void VaapiMjpegDecodeAccelerator::InitializeAsync(
+    chromeos_camera::MjpegDecodeAccelerator::Client* client,
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
+  VLOGF(2);
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+
+  // To guarantee that the caller receives an asynchronous call after the
+  // return path, we are making use of InitializeOnTaskRunner.
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner,
+                     weak_this_factory_.GetWeakPtr(), client,
+                     BindToCurrentLoop(std::move(init_cb))));
 }
 
 void VaapiMjpegDecodeAccelerator::Decode(

@@ -96,18 +96,18 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
   // Puts contents of |surface| within |crop_rect| into given |video_frame|
   // using VA-API Video Processing Pipeline (VPP), and passes the |task_id| of
   // the resulting picture to client for output.
-  bool OutputPictureVppOnTaskRunner(int32_t task_id,
-                                    const ScopedVASurface* surface,
-                                    scoped_refptr<VideoFrame> video_frame,
-                                    const gfx::Rect& crop_rect);
+  bool OutputPictureVpp(int32_t task_id,
+                        const ScopedVASurface* surface,
+                        scoped_refptr<VideoFrame> video_frame,
+                        const gfx::Rect& crop_rect);
 
   // Puts contents of |image| within |crop_rect| into the given |video_frame|
   // using libyuv, and passes the |task_id| of the resulting picture to client
   // for output.
-  bool OutputPictureLibYuvOnTaskRunner(int32_t task_id,
-                                       std::unique_ptr<ScopedVAImage> image,
-                                       scoped_refptr<VideoFrame> video_frame,
-                                       const gfx::Rect& crop_rect);
+  bool OutputPictureLibYuv(int32_t task_id,
+                           std::unique_ptr<ScopedVAImage> image,
+                           scoped_refptr<VideoFrame> video_frame,
+                           const gfx::Rect& crop_rect);
 
   void OnImageProcessorError();
 
