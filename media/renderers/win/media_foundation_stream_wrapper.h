@@ -33,6 +33,17 @@ struct MediaFoundationSubsampleEntry {
   DWORD cipher_bytes = 0;
 };
 
+struct PendingInputBuffer {
+  PendingInputBuffer(DemuxerStream::Status status,
+                     scoped_refptr<media::DecoderBuffer> buffer);
+  explicit PendingInputBuffer(DemuxerStream::Status status);
+  PendingInputBuffer(const PendingInputBuffer& other);
+  ~PendingInputBuffer();
+
+  DemuxerStream::Status status;
+  scoped_refptr<media::DecoderBuffer> buffer;
+};
+
 }  // namespace
 
 // IMFMediaStream implementation
@@ -172,6 +183,14 @@ class MediaFoundationStreamWrapper
 
   // If true, there is a pending a read completion from Chromium media stack.
   bool pending_stream_read_ = false;
+
+  // Maintain the buffer obtained by batch read. We push buffer into
+  // |buffer_queue_| by OnDemuxerStreamReadBuffers(), pop buffer by
+  // ProcessRequestsIfPossible(), these two operations are both on media stack
+  // thread. SetFlush() can be invoked by media stack thread or MF threadpool
+  // thread, it clears the buffer in |buffer_queue_|. So |buffer_queue_| needs
+  // to be guardedby the lock.
+  std::deque<PendingInputBuffer> buffer_queue_ GUARDED_BY(lock_);
 
   bool stream_ended_ = false;
   GUID last_key_id_ = GUID_NULL;

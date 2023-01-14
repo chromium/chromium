@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/base_tracing.h"
 #include "media/base/video_codecs.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/renderers/win/media_foundation_audio_stream.h"
@@ -19,6 +20,11 @@ namespace media {
 using Microsoft::WRL::ComPtr;
 
 namespace {
+
+// Requested buffer count. The actual returned buffer count could be less
+// according to DemuxerStream::Read() API.
+const uint32_t kBatchReadCount = 1;
+
 // |guid_string| is a binary serialization of a GUID in network byte order
 // format.
 GUID GetGUIDFromString(const std::string& guid_string) {
@@ -112,6 +118,18 @@ HRESULT AddEncryptAttributes(const DecryptConfig& decrypt_config,
 MFTIME TimeDeltaToMfTime(base::TimeDelta time) {
   return time.InNanoseconds() / 100;
 }
+
+PendingInputBuffer::PendingInputBuffer(DemuxerStream::Status status,
+                                       scoped_refptr<DecoderBuffer> buffer)
+    : status(status), buffer(std::move(buffer)) {}
+
+PendingInputBuffer::PendingInputBuffer(DemuxerStream::Status status)
+    : status(status) {}
+
+PendingInputBuffer::PendingInputBuffer(const PendingInputBuffer& other) =
+    default;
+
+PendingInputBuffer::~PendingInputBuffer() = default;
 
 }  // namespace
 
@@ -234,6 +252,8 @@ void MediaFoundationStreamWrapper::SetFlushed(bool flushed) {
   base::AutoLock auto_lock(lock_);
   flushed_ = flushed;
   if (flushed_) {
+    DVLOG_FUNC(2) << "flush buffer_queue_";
+    buffer_queue_.clear();
     while (!post_flush_buffers_.empty()) {
       post_flush_buffers_.pop();
     }
@@ -326,24 +346,63 @@ void MediaFoundationStreamWrapper::ProcessRequestsIfPossible() {
     return;
   }
 
-  if (!demuxer_stream_ || pending_stream_read_)
+  if (!demuxer_stream_) {
     return;
+  }
 
-  demuxer_stream_->Read(
-      1,
-      base::BindOnce(&MediaFoundationStreamWrapper::OnDemuxerStreamReadBuffers,
-                     weak_factory_.GetWeakPtr()));
-  pending_stream_read_ = true;
+  base::AutoLock auto_lock(lock_);
+  if (!buffer_queue_.empty()) {
+    // Using queued buffer for multi buffers read from Renderer process. If
+    // a valid buffer already exists in queued buffer, return the buffer
+    // directly without IPC calls for buffer requested from MediaEngine.
+    OnDemuxerStreamRead(buffer_queue_.front().status,
+                        std::move(buffer_queue_.front().buffer));
+    buffer_queue_.pop_front();
+    return;
+  }
+
+  // Request multi buffers by sending IPC to 'MojoDemuxerStreamImpl'.
+  if (!pending_stream_read_) {
+    DVLOG_FUNC(3) << " IPC send, BatchReadCount=" << kBatchReadCount;
+    TRACE_EVENT2("media", "MFGetBuffersFromRendererByIPC",
+                 "StreamType:", DemuxerStream::GetTypeName(stream_type_),
+                 "kBatchReadCount:", kBatchReadCount);
+    pending_stream_read_ = true;
+    demuxer_stream_->Read(
+        kBatchReadCount,
+        base::BindOnce(
+            &MediaFoundationStreamWrapper::OnDemuxerStreamReadBuffers,
+            weak_factory_.GetWeakPtr()));
+  }
 }
 
 void MediaFoundationStreamWrapper::OnDemuxerStreamReadBuffers(
     DemuxerStream::Status status,
     DemuxerStream::DecoderBufferVector buffers) {
-  // TODO(crbug.com/1347395): Support batch read.
-  DCHECK_LE(buffers.size(), 1u)
-      << "MediaFoundationStreamWrapper only reads a single-buffer.";
-  OnDemuxerStreamRead(status,
-                      buffers.empty() ? nullptr : std::move(buffers[0]));
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DVLOG_FUNC(3) << "receive data, status="
+                << DemuxerStream::GetStatusName(status)
+                << ", buffer count= " << buffers.size()
+                << ", stream type=" << DemuxerStream::GetTypeName(stream_type_);
+  {
+    base::AutoLock auto_lock(lock_);
+    DCHECK(pending_stream_read_);
+    pending_stream_read_ = false;
+
+    DemuxerStream::DecoderBufferVector pending_buffers =
+        (status == DemuxerStream::Status::kOk)
+            ? std::move(buffers)
+            : DemuxerStream::DecoderBufferVector{nullptr};
+    for (auto& buffer : pending_buffers) {
+      DVLOG_FUNC(3) << "push buffer to buffer_queue_, status="
+                    << DemuxerStream::GetStatusName(status) << ", buffer="
+                    << (buffer ? buffer->AsHumanReadableString(false) : "null");
+      buffer_queue_.emplace_back(PendingInputBuffer(status, std::move(buffer)));
+    }
+  }
+
+  // Restart processing of queued requests when we receive buffers.
+  ProcessRequestsIfPossible();
 }
 
 HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
@@ -454,12 +513,8 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
   DVLOG_FUNC(3) << "status=" << status
                 << (buffer ? " buffer=" + buffer->AsHumanReadableString(true)
                            : "");
-
   {
-    base::AutoLock auto_lock(lock_);
-    DCHECK(pending_stream_read_);
-    pending_stream_read_ = false;
-
+    lock_.AssertAcquired();
     ComPtr<IUnknown> token = pending_sample_request_tokens_.front();
     HRESULT hr = S_OK;
 
@@ -517,7 +572,12 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
     }
   }
 
-  ProcessRequestsIfPossible();
+  // ProcessRequestsIfPossible calls OnDemuxerStreamRead, OnDemuxerStreamRead
+  // calls ProcessRequestsIfPossible, so use PostTask to avoid deadlock here.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MediaFoundationStreamWrapper::ProcessRequestsIfPossible,
+                     weak_factory_.GetWeakPtr()));
 }
 
 HRESULT MediaFoundationStreamWrapper::GenerateSampleFromDecoderBuffer(

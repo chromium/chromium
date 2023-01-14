@@ -100,16 +100,17 @@ void MojoDemuxerStreamImpl::OnBufferReady(
   }
 
   DCHECK_EQ(status, Status::kOk);
-  DCHECK_EQ(buffers.size(), 1u);
 
   std::vector<mojom::DecoderBufferPtr> output_mojo_buffers;
-  mojom::DecoderBufferPtr mojo_buffer =
-      mojo_decoder_buffer_writer_->WriteDecoderBuffer(std::move(buffers[0]));
-  if (!mojo_buffer) {
-    std::move(callback).Run(Status::kAborted, {}, audio_config, video_config);
-    return;
+  for (auto& buffer : buffers) {
+    mojom::DecoderBufferPtr mojo_buffer =
+        mojo_decoder_buffer_writer_->WriteDecoderBuffer(std::move(buffer));
+    if (!mojo_buffer) {
+      std::move(callback).Run(Status::kAborted, {}, audio_config, video_config);
+      return;
+    }
+    output_mojo_buffers.emplace_back(std::move(mojo_buffer));
   }
-  output_mojo_buffers.emplace_back(std::move(mojo_buffer));
 
   // TODO(dalecurtis): Once we can write framed data to the DataPipe, fill via
   // the producer handle and then read more to keep the pipe full.  Waiting for

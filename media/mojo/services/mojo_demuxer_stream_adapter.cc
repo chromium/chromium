@@ -91,8 +91,8 @@ void MojoDemuxerStreamAdapter::OnBufferReady(
     std::vector<mojom::DecoderBufferPtr> batch_buffers,
     const absl::optional<AudioDecoderConfig>& audio_config,
     const absl::optional<VideoDecoderConfig>& video_config) {
-  DVLOG(3) << __func__ << "status=" << status
-           << " batch_buffers.size=" << batch_buffers.size();
+  DVLOG(3) << __func__ << ": status=" << status
+           << ", batch_buffers.size=" << batch_buffers.size();
   DCHECK(read_cb_);
   DCHECK_NE(type_, UNKNOWN);
 
@@ -108,13 +108,14 @@ void MojoDemuxerStreamAdapter::OnBufferReady(
   }
 
   DCHECK_EQ(status, kOk);
-  DCHECK_EQ(batch_buffers.size(), 1u);
   status_ = status;
   actual_read_count_ = batch_buffers.size();
-  mojo_decoder_buffer_reader_->ReadDecoderBuffer(
-      std::move(batch_buffers[0]),
-      base::BindOnce(&MojoDemuxerStreamAdapter::OnBufferRead,
-                     weak_factory_.GetWeakPtr()));
+  for (mojom::DecoderBufferPtr& buffer : batch_buffers) {
+    mojo_decoder_buffer_reader_->ReadDecoderBuffer(
+        std::move(buffer),
+        base::BindOnce(&MojoDemuxerStreamAdapter::OnBufferRead,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void MojoDemuxerStreamAdapter::OnBufferRead(
