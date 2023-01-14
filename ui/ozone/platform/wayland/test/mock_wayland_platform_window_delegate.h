@@ -24,9 +24,7 @@ class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
 
   std::unique_ptr<WaylandWindow> CreateWaylandWindow(
       WaylandConnection* connection,
-      PlatformWindowInitProperties properties,
-      bool update_visual_size_immediately = false,
-      bool apply_pending_state_on_update_visual_size = false);
+      PlatformWindowInitProperties properties);
 
   // MockPlatformWindowDelegate:
   gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const override;

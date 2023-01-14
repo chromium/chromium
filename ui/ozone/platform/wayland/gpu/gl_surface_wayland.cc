@@ -47,8 +47,9 @@ bool GLSurfaceWayland::Resize(const gfx::Size& size,
                               float scale_factor,
                               const gfx::ColorSpace& color_space,
                               bool has_alpha) {
-  if (size_ == size)
+  if (size_ == size) {
     return true;
+  }
   wl_egl_window_resize(egl_window_.get(), size.width(), size.height(), 0, 0);
   size_ = size;
   scale_factor_ = ceil(scale_factor);
@@ -79,7 +80,7 @@ EGLConfig GLSurfaceWayland::GetConfig() {
 
 gfx::SwapResult GLSurfaceWayland::SwapBuffers(PresentationCallback callback,
                                               gfx::FrameData data) {
-  UpdateVisualSize();
+  OnSequencePoint(data.seq);
   if (!window_->IsSurfaceConfigured()) {
     // The presentation |callback| must be called after gfx::SwapResult is sent.
     // Thus, use a scoped swap buffers object that will send the feedback later.
@@ -98,7 +99,7 @@ gfx::SwapResult GLSurfaceWayland::PostSubBuffer(int x,
                                                 int height,
                                                 PresentationCallback callback,
                                                 gfx::FrameData data) {
-  UpdateVisualSize();
+  OnSequencePoint(data.seq);
   if (!window_->IsSurfaceConfigured()) {
     // The presentation |callback| must be called after gfx::SwapResult is sent.
     // Thus, use a scoped swap buffers object that will send the feedback later.
@@ -116,10 +117,10 @@ GLSurfaceWayland::~GLSurfaceWayland() {
   Destroy();
 }
 
-void GLSurfaceWayland::UpdateVisualSize() {
+void GLSurfaceWayland::OnSequencePoint(int64_t seq) {
   window_->ui_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&WaylandWindow::UpdateVisualSize,
-                                window_->AsWeakPtr(), size_));
+      FROM_HERE, base::BindOnce(&WaylandWindow::OnSequencePoint,
+                                window_->AsWeakPtr(), seq));
 }
 
 }  // namespace ui

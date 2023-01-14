@@ -26,12 +26,8 @@ gfx::Rect MockWaylandPlatformWindowDelegate::ConvertRectToDIP(
 std::unique_ptr<WaylandWindow>
 MockWaylandPlatformWindowDelegate::CreateWaylandWindow(
     WaylandConnection* connection,
-    PlatformWindowInitProperties properties,
-    bool update_visual_size_immediately,
-    bool apply_pending_state_on_update_visual_size) {
-  auto window = WaylandWindow::Create(
-      this, connection, std::move(properties), update_visual_size_immediately,
-      apply_pending_state_on_update_visual_size);
+    PlatformWindowInitProperties properties) {
+  auto window = WaylandWindow::Create(this, connection, std::move(properties));
   wayland_window_ = window.get();
   return window;
 }

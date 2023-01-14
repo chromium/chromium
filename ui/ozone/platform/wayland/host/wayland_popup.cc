@@ -157,7 +157,7 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
 
   // The shell popup can be null if bounds are being fixed during
   // the initialization. See WaylandPopup::CreateShellPopup.
-  if (shell_popup_ && old_bounds_dip != bounds_dip && !wayland_sets_bounds_) {
+  if (shell_popup_ && old_bounds_dip != bounds_dip) {
     const auto bounds_dip_in_parent =
         wl::TranslateWindowBoundsToParentDIP(this, parent_window());
 
@@ -199,24 +199,15 @@ void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
     delegate()->OnDamageRect(gfx::Rect{applied_state().size_px});
     schedule_redraw_ = false;
   }
-  ProcessPendingBoundsDip(serial);
+  ProcessPendingConfigureState(serial);
 }
 
-void WaylandPopup::UpdateVisualSize(const gfx::Size& size_px) {
-  WaylandWindow::UpdateVisualSize(size_px);
-
+void WaylandPopup::OnSequencePoint(int64_t seq) {
   if (!shell_popup())
     return;
 
-  ProcessVisualSizeUpdate(size_px);
-  ApplyPendingBounds();
-}
-
-void WaylandPopup::ApplyPendingBounds() {
-  if (has_pending_configures()) {
-    base::AutoReset<bool> auto_reset(&wayland_sets_bounds_, true);
-    WaylandWindow::ApplyPendingBounds();
-  }
+  ProcessSequencePoint(seq);
+  MaybeApplyLatestStateRequest(/*force=*/false);
 }
 
 void WaylandPopup::UpdateWindowMask() {
@@ -312,12 +303,16 @@ bool WaylandPopup::IsSurfaceConfigured() {
 }
 
 void WaylandPopup::SetWindowGeometry(gfx::Size size_dip) {
-  DCHECK(shell_popup_);
+  if (!shell_popup_) {
+    return;
+  }
+
   const auto insets = GetDecorationInsetsInDIP();
   shell_popup_->SetWindowGeometry({{insets.left(), insets.top()}, size_dip});
 }
 
 void WaylandPopup::AckConfigure(uint32_t serial) {
-  shell_popup()->AckConfigure(serial);
+  DCHECK(shell_popup_);
+  shell_popup_->AckConfigure(serial);
 }
 }  // namespace ui

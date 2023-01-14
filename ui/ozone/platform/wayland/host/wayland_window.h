@@ -69,9 +69,7 @@ class WaylandWindow : public PlatformWindow,
   static std::unique_ptr<WaylandWindow> Create(
       PlatformWindowDelegate* delegate,
       WaylandConnection* connection,
-      PlatformWindowInitProperties properties,
-      bool update_visual_size_immediately = false,
-      bool apply_pending_state_on_update_visual_size = false);
+      PlatformWindowInitProperties properties);
 
   void OnWindowLostCapture();
 
@@ -133,9 +131,12 @@ class WaylandWindow : public PlatformWindow,
   WaylandWindow* child_window() const { return child_window_; }
 
   // Sets the window_scale for this window with respect to a display this window
-  // is located at. Returns true if the scale has changed. This determines how
-  // events can be translated and how pixel size of the surface is treated.
-  bool SetWindowScale(float new_scale);
+  // is located at. This determines how events can be translated and how pixel
+  // size of the surface is treated. This is called as a result of the window
+  // moving to a new display (output), or if the scale factor of its current
+  // display changes. This is not sent via a configure.
+  void SetWindowScale(float new_scale);
+
   float ui_scale() const { return ui_scale_; }
 
   // Returns the preferred entered output id, if any. The preferred output is
@@ -243,45 +244,20 @@ class WaylandWindow : public PlatformWindow,
                                            int32_t height,
                                            const WindowStates& window_states);
   virtual void HandlePopupConfigure(const gfx::Rect& bounds);
-  // The final size of the Wayland surface is determined by the buffer size in
-  // px that the Chromium compositor renders at. If the window changes a
-  // display (and scale changes from 1 to 2), the buffers are recreated with
-  // some delays. Thus, applying a visual size using window_scale (which is the
-  // current scale of a wl_output where the window is located at) is wrong, as
-  // it may result in a smaller visual size than needed. For example, buffers'
-  // size in px is 100x100, the buffer scale and window scale is 1. The window
-  // is moved to another display and window scale changes to 2. The window's
-  // bounds also change are multiplied by the scale factor. It takes time until
-  // buffers are recreated for a larger size in px and submitted. However, there
-  // might be an in flight frame that submits buffers with old size. Thus,
-  // applying scale factor immediately will result in a visual size in dip to be
-  // smaller than needed. This results in a bouncing window size in some
-  // scenarios like starting Chrome on a secondary display with larger scale
-  // factor than the primary display's one. Thus, this method gets a scale
-  // factor that helps to determine size of the surface in dip respecting
-  // size that GPU renders at.
-  virtual void UpdateVisualSize(const gfx::Size& size_px);
+
+  // Call when we get a new frame produced from viz with |seq| sequence ID.
+  // This is used to determine which requests have been fulfilled,
+  // and sends the appropriate acks back to the wayland server.
+  virtual void OnSequencePoint(int64_t seq) = 0;
 
   // Called by shell surfaces to indicate that this window can start submitting
   // frames. Updating state based on configure is handled separately to this.
   void OnSurfaceConfigureEvent();
 
-  // Tells if the surface has already been configured. This will be true after
-  // the first set of configure event and ack request, meaning that wl_surface
-  // can attach buffers.
-  virtual bool IsSurfaceConfigured() = 0;
-
-  // Sends configure acknowledgement to the wayland server.
-  virtual void AckConfigure(uint32_t serial) = 0;
-
-  // Updates the window decorations, if possible at the moment. Denotes that
-  // window will request new window_geometry, if there're no existing state
-  // changes in flight to server.
-  virtual void UpdateDecorations();
-
   // State describes important data about this window, for example data that
   // needs to be synchronized and acked. We apply this state to the client
-  // (us) and wait for a frame to be produced matching this state.
+  // (us) and wait for a frame to be produced matching this state. That frame
+  // is identified by the sequence id.
   struct State {
     bool operator==(const State& rhs) const {
       return std::tie(bounds_dip, size_px, window_scale) ==
@@ -295,6 +271,9 @@ class WaylandWindow : public PlatformWindow,
     gfx::Size size_px;
     // Current scale factor of the output where the window is located at.
     float window_scale = 1.0;
+    // TODO(crbug.com/1395267): Add window states here.
+
+    std::string ToString() const;
   };
 
   // See comments on the member variable for an explanation of this.
@@ -302,6 +281,14 @@ class WaylandWindow : public PlatformWindow,
 
   // See comments on the member variable for an explanation of this.
   const State& latched_state() const { return latched_state_; }
+
+  // Tells if the surface has already been configured. This will be true after
+  // the first set of configure event and ack request, meaning that wl_surface
+  // can attach buffers.
+  virtual bool IsSurfaceConfigured() = 0;
+
+  // Sends configure acknowledgement to the wayland server.
+  virtual void AckConfigure(uint32_t serial) = 0;
 
   // Handles close requests.
   virtual void OnCloseRequest();
@@ -344,8 +331,8 @@ class WaylandWindow : public PlatformWindow,
   bool IsOpaqueWindow() const;
 
   // Says if the current window is set as active by the Wayland server. This
-  // only applies to toplevel surfaces (surfaces such as popups, subsurfaces do
-  // not support that).
+  // only applies to toplevel surfaces (surfaces such as popups, subsurfaces
+  // do not support that).
   virtual bool IsActive() const;
 
   // WaylandWindow can be any type of object - WaylandToplevelWindow,
@@ -364,25 +351,15 @@ class WaylandWindow : public PlatformWindow,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // Clears the state of the |frame_manager_| when the GPU channel is destroyed.
+  // Clears the state of the |frame_manager_| when the GPU channel is
+  // destroyed.
   void OnChannelDestroyed();
-
-  // These are never intended to be used except in unit tests.
-  void set_update_visual_size_immediately_for_testing(bool update) {
-    update_visual_size_immediately_for_testing_ = update;
-  }
-
-  void set_apply_pending_state_on_update_visual_size_for_testing(bool apply) {
-    apply_pending_state_on_update_visual_size_for_testing_ = apply;
-  }
 
 #if DCHECK_IS_ON()
   void disable_null_target_dcheck_for_testing() {
     disable_null_target_dcheck_for_test_ = true;
   }
 #endif
-
-  bool has_pending_configures() const { return !pending_configures_.empty(); }
 
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
@@ -421,15 +398,37 @@ class WaylandWindow : public PlatformWindow,
   const gfx::Size& restored_size_dip() const { return restored_size_dip_; }
 
   // Configure related:
-  // Processes the pending bounds in dip.
-  void ProcessPendingBoundsDip(uint32_t serial);
 
-  // Processes the size information form visual size update and returns true if
-  // any pending configure is fulfilled.
-  bool ProcessVisualSizeUpdate(const gfx::Size& size_px);
+  // Processes the currently pending State. This may generate a new in-flight
+  // StateRequest, or apply and ack the request immediately. This should be
+  // called after the server has finished sending a configure request. The
+  // serial number comes from the server and needs to be acked when the changes
+  // from the configure have been applied.
+  void ProcessPendingConfigureState(uint32_t serial);
 
-  // Applies pending bounds.
-  virtual void ApplyPendingBounds();
+  // Requests the given state via RequestState, given that this was a server
+  // initiated change (e.g. configure).
+  void RequestStateFromServer(State state, int64_t serial);
+
+  // Requests the given state via RequestState, given that this was a client
+  // initiated change.
+  void RequestStateFromClient(State state);
+
+  // Requests the given state. If this request originates from a configure from
+  // the server, specify |serial|. If |force| is true, the state will always be
+  // applied, even if requests are being throttled.
+  void RequestState(State state, int64_t serial, bool force);
+
+  // Processes the given sequence point number. It will also latch and ack
+  // the latest fulfilled in-flight request if it exists.
+  void ProcessSequencePoint(int64_t viz_seq);
+
+  // Applies the latest in-flight StateRequest, if it exists. In-flight
+  // StateRequests need to wait for a frame generated after we inserted a
+  // sequence point for their changes. If |force| is true, the state will always
+  // be applied, even if requests are being throttled. This is used for client
+  // requested changes (server requested changes may be throttled).
+  void MaybeApplyLatestStateRequest(bool force);
 
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
@@ -440,7 +439,8 @@ class WaylandWindow : public PlatformWindow,
 
   // This holds the requested state for the next configure from the server.
   // The window may get several configuration events that update the pending
-  // bounds or other state.
+  // bounds or other state. When the configure is fully received, we may
+  // create a StateRequest for this pending State.
   PendingConfigureState pending_configure_state_;
 
  private:
@@ -475,6 +475,32 @@ class WaylandWindow : public PlatformWindow,
   std::unique_ptr<WaylandSurface> TakeWaylandSurface();
 
   void UpdateCursorShape(scoped_refptr<BitmapCursor> cursor);
+
+  // StateRequest describes a State that we are applying to the window, and the
+  // metadata about that State, such as what serial number to use for ack (if it
+  // came from a configure), or the viz sequence number.
+  struct StateRequest {
+    // State that has been requested.
+    State state;
+
+    // Wayland serial number for acking a configure. This is -1 if there is no
+    // serial number (e.g. from client initiated change).
+    int64_t serial = -1;
+
+    // Viz sequence number at the time of this request. We are looking for a
+    // frame with a number greater than this to latch this request.
+    int64_t viz_seq = -1;
+
+    // Whether this request has been applied.
+    bool applied = false;
+  };
+
+  // Latches the given request. This must be called after the frame
+  // corresponding to the request is received. This acks the request and updates
+  // any window state that should be based on the currently latched state. If
+  // |force| is true, wayland messages will be sent even if there is no change
+  // from the previous state. This is used for sending the initial state.
+  void LatchStateRequest(const StateRequest& req, bool force);
 
   raw_ptr<PlatformWindowDelegate> delegate_;
   raw_ptr<WaylandConnection> connection_;
@@ -530,32 +556,9 @@ class WaylandWindow : public PlatformWindow,
   // Set when the window enters in shutdown process.
   bool shutting_down_ = false;
 
-  // In a non-test environment, a frame update makes a SetBounds() change
-  // visible in |visual_size_px_|, but in some unit tests there will never be
-  // any frame updates. This flag causes UpdateVisualSize() to be invoked during
-  // SetBounds() in unit tests.
-  bool update_visual_size_immediately_for_testing_ = false;
-
-  // In a non-test environment, root_surface_->ApplyPendingBounds() is called to
-  // send Wayland protocol requests, but in some unit tests there will never be
-  // any frame updates. This flag causes root_surface_->ApplyPendingBounds() to
-  // be invoked during UpdateVisualSize() in unit tests.
-  bool apply_pending_state_on_update_visual_size_for_testing_ = false;
-
   // The size of the platform window before it went maximized or fullscreen in
   // dip.
   gfx::Size restored_size_dip_;
-
-  // Pending xdg-shell configures. Once this window is drawn to |bounds_dip|,
-  // ack_configure request with |serial| will be sent to the Wayland compositor.
-  struct PendingConfigure {
-    gfx::Rect bounds_dip;
-    gfx::Size size_px;
-    uint32_t serial;
-    // True if this configure has been passed to the compositor for rendering.
-    bool set = false;
-  };
-  base::circular_deque<PendingConfigure> pending_configures_;
 
   // This holds the currently applied state. When in doubt, use this as the
   // source of truth for this window's state. Whenever applied_state_ is
@@ -616,6 +619,11 @@ class WaylandWindow : public PlatformWindow,
   // values provided by the client, until we get an actual configure from the
   // server. See the comments on applied_state_ for further explanation.
   State latched_state_;
+
+  // In-flight state requests. Once a frame comes from the GPU
+  // process with the appropriate viz sequence number, ack_configure request
+  // with |serial| will be sent to the Wayland compositor if needed.
+  base::circular_deque<StateRequest> in_flight_requests_;
 
   // AcceleratedWidget for this window. This will be unique even over time.
   gfx::AcceleratedWidget accelerated_widget_;

@@ -123,13 +123,6 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   return true;
 }
 
-void WaylandToplevelWindow::ApplyPendingBounds() {
-  if (has_pending_configures()) {
-    DCHECK(shell_toplevel_);
-    WaylandWindow::ApplyPendingBounds();
-  }
-}
-
 void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     int hittest,
     const gfx::Point& pointer_location_in_px) {
@@ -463,11 +456,6 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   }
 #endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
-  // Rather than call SetBounds here for every configure event, just save the
-  // most recent bounds, and have WaylandConnection call ApplyPendingBounds
-  // when it has finished processing events. We may get many configure events
-  // in a row during an interactive resize, and only the last one matters.
-  //
   // Width or height set to 0 means that we should decide on width and height by
   // ourselves, but we don't want to set them to anything else. Use restored
   // bounds size or the current bounds iff the current state is normal (neither
@@ -508,8 +496,6 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
 
   if (did_active_change)
     delegate()->OnActivationChanged(is_active_);
-
-  state_change_in_transit_ = false;
 }
 
 void WaylandToplevelWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
@@ -532,32 +518,15 @@ void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
-  ProcessPendingBoundsDip(serial);
+  ProcessPendingConfigureState(serial);
 }
 
-void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
-  WaylandWindow::UpdateVisualSize(size_px);
-
+void WaylandToplevelWindow::OnSequencePoint(int64_t seq) {
   if (!shell_toplevel_)
     return;
 
-  if (!ProcessVisualSizeUpdate(size_px)) {
-    // Early-out if shell surface is still not configure at this point, which
-    // indicates it is not mapped yet, which should happen in an upcoming frame.
-    if (!shell_toplevel()->IsConfigured())
-      return;
-
-    if (set_geometry_on_next_frame_) {
-      auto size_dip =
-          gfx::ScaleToRoundedSize(size_px, 1.f / latched_state().window_scale);
-      SetWindowGeometry(size_dip);
-      set_geometry_on_next_frame_ = false;
-    }
-  }
-
-  // UpdateVisualSize() indicates a frame update, which means we can forward new
-  // bounds now. Apply the latest pending_configure.
-  ApplyPendingBounds();
+  ProcessSequencePoint(seq);
+  MaybeApplyLatestStateRequest(/*force=*/false);
 }
 
 bool WaylandToplevelWindow::OnInitialize(
@@ -621,11 +590,6 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Size size_dip) {
 
 void WaylandToplevelWindow::AckConfigure(uint32_t serial) {
   shell_toplevel()->AckConfigure(serial);
-}
-
-void WaylandToplevelWindow::UpdateDecorations() {
-  if (!state_change_in_transit_)
-    set_geometry_on_next_frame_ = true;
 }
 
 void WaylandToplevelWindow::PropagateBufferScale(float new_scale) {
@@ -985,10 +949,7 @@ void WaylandToplevelWindow::TriggerStateChanges() {
     shell_toplevel_->UnSetMaximized();
   }
 
-  state_change_in_transit_ = (previous_state_ != state_);
-
   delegate()->OnWindowStateChanged(previous_state_, state_);
-
   connection()->Flush();
 }
 

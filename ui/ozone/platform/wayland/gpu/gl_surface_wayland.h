@@ -55,7 +55,9 @@ class GLSurfaceWayland : public gl::NativeViewGLSurfaceEGL {
  private:
   ~GLSurfaceWayland() override;
 
-  void UpdateVisualSize();
+  // Delivers sequence number information to WaylandWindow. See the comments
+  // on WaylandWindow::applied_state() for more information.
+  void OnSequencePoint(int64_t seq);
 
   WaylandEglWindowPtr egl_window_;
   const raw_ptr<WaylandWindow> window_;

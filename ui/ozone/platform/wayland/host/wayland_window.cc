@@ -94,16 +94,19 @@ WaylandWindow::~WaylandWindow() {
     connection_->window_manager()->RemoveSubsurface(GetWidget(),
                                                     widget_subsurface.get());
   }
-  if (root_surface_)
+  if (root_surface_) {
     connection_->window_manager()->RemoveWindow(GetWidget());
+  }
 
   // This might have already been hidden and another window has been shown.
   // Thus, the parent will have another child window. Do not reset it.
-  if (parent_window_ && parent_window_->child_window() == this)
+  if (parent_window_ && parent_window_->child_window() == this) {
     parent_window_->set_child_window(nullptr);
+  }
 
-  if (child_window_)
+  if (child_window_) {
     child_window_->set_parent_window(nullptr);
+  }
 }
 
 void WaylandWindow::OnWindowLostCapture() {
@@ -120,52 +123,58 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
     // PlatformScreen implementation is expected to return to higher layer.
     auto* primary_output = output_manager->GetPrimaryOutput();
     // Primary output is unknown. i.e: WaylandScreen was not created yet.
-    if (!primary_output)
+    if (!primary_output) {
       return;
+    }
     preferred_outputs_id = primary_output->output_id();
   }
 
   auto* output = output_manager->GetOutput(preferred_outputs_id.value());
   // There can be a race between sending leave output event and destroying
   // wl_outputs. Thus, explicitly check if the output exist.
-  if (!output || !output->IsReady())
+  if (!output || !output->IsReady()) {
     return;
+  }
 
   float new_scale = output->scale_factor();
   ui_scale_ = output->GetUIScaleFactor();
-
-  if (SetWindowScale(new_scale))
-    delegate_->OnBoundsChanged({true});
+  SetWindowScale(new_scale);
 
   // Propagate update to the child windows
-  if (child_window_)
+  if (child_window_) {
     child_window_->UpdateWindowScale(update_bounds);
+  }
 }
 
 gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
   return accelerated_widget_;
 }
 
-bool WaylandWindow::SetWindowScale(float new_scale) {
+void WaylandWindow::SetWindowScale(float new_scale) {
   DCHECK_GE(new_scale, 0.f);
-  bool changed = applied_state_.window_scale != new_scale;
-  applied_state_.window_scale = new_scale;
-  applied_state_.size_px =
-      gfx::ScaleToEnclosingRect(applied_state_.bounds_dip, new_scale).size();
-  return changed;
+  if (applied_state_.window_scale == new_scale) {
+    return;
+  }
+
+  auto state = applied_state_;
+  state.window_scale = new_scale;
+
+  RequestStateFromClient(state);
 }
 
 absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
   // Child windows don't store entered outputs. Instead, take the window's
   // root parent window and use its preferred output.
-  if (parent_window_)
+  if (parent_window_) {
     return GetRootParentWindow()->GetPreferredEnteredOutputId();
+  }
 
   // It can be either a toplevel window that hasn't entered any outputs yet, or
   // still a non toplevel window that doesn't have a parent (for example, a
   // wl_surface that is being dragged).
-  if (root_surface_->entered_outputs().empty())
+  if (root_surface_->entered_outputs().empty()) {
     return absl::nullopt;
+  }
 
   // PlatformWindowType::kPopup are created as toplevel windows as well.
   DCHECK(type() == PlatformWindowType::kWindow ||
@@ -189,11 +198,13 @@ absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
     // the issue. See crbug.com/1323635.
     DCHECK(output) << " output " << output_id << " not found!";
     DCHECK(preferred_output) << " output " << preferred_id << " not found!";
-    if (!output || !preferred_output)
+    if (!output || !preferred_output) {
       return absl::nullopt;
+    }
 
-    if (output->scale_factor() > preferred_output->scale_factor())
+    if (output->scale_factor() > preferred_output->scale_factor()) {
       preferred_id = output_id;
+    }
   }
 
   return preferred_id;
@@ -203,8 +214,9 @@ void WaylandWindow::OnPointerFocusChanged(bool focused) {
   // Whenever the window gets the pointer focus back, the cursor shape must be
   // updated. Otherwise, it is invalidated upon wl_pointer::leave and is not
   // restored by the Wayland compositor.
-  if (focused && cursor_)
+  if (focused && cursor_) {
     UpdateCursorShape(cursor_);
+  }
 }
 
 bool WaylandWindow::HasPointerFocus() const {
@@ -242,21 +254,24 @@ bool WaylandWindow::StartDrag(
 
   auto alive = weak_ptr_factory_.GetWeakPtr();
   drag_loop.Run();
-  if (!alive)
+  if (!alive) {
     return false;
+  }
   return true;
 }
 
 void WaylandWindow::UpdateDragImage(const gfx::ImageSkia& image,
                                     const gfx::Vector2d& offset) {
   if (connection_->data_drag_controller()->state() !=
-      WaylandDataDragController::State::kIdle)
+      WaylandDataDragController::State::kIdle) {
     connection_->data_drag_controller()->UpdateDragImage(image, offset);
+  }
 }
 
 void WaylandWindow::CancelDrag() {
-  if (drag_loop_quit_closure_.is_null())
+  if (drag_loop_quit_closure_.is_null()) {
     return;
+  }
   std::move(drag_loop_quit_closure_).Run();
 }
 
@@ -283,12 +298,14 @@ void WaylandWindow::OnChannelDestroyed() {
       subsurfaces_to_overlays;
   subsurfaces_to_overlays.reserve(wayland_subsurfaces_.size() +
                                   (primary_subsurface() ? 1 : 0));
-  if (primary_subsurface())
+  if (primary_subsurface()) {
     subsurfaces_to_overlays.emplace_back(primary_subsurface(),
                                          wl::WaylandOverlayConfig());
-  for (auto& subsurface : wayland_subsurfaces_)
+  }
+  for (auto& subsurface : wayland_subsurfaces_) {
     subsurfaces_to_overlays.emplace_back(subsurface.get(),
                                          wl::WaylandOverlayConfig());
+  }
 
   frame_manager_->RecordFrame(
       std::make_unique<WaylandFrame>(root_surface(), wl::WaylandOverlayConfig(),
@@ -316,8 +333,9 @@ bool WaylandWindow::IsVisible() const {
 }
 
 void WaylandWindow::PrepareForShutdown() {
-  if (drag_finished_callback_)
+  if (drag_finished_callback_) {
     OnDragSessionClose(DragOperation::kNone);
+  }
 }
 
 void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
@@ -329,12 +347,18 @@ void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
 
 gfx::Rect WaylandWindow::GetBoundsInPixels() const {
   // TODO(crbug.com/1306688): This is currently used only by unit tests.
-  // Figure out how to migrate to test only methods.
-  return delegate_->ConvertRectToPixels(applied_state_.bounds_dip);
+  // Figure out how to migrate to test only methods. For now, only the size
+  // should be used outside of tests. Make up some reasonable value for origin.
+  auto origin =
+      delegate_->ConvertRectToPixels(applied_state_.bounds_dip).origin();
+  auto size = applied_state_.size_px;
+  return gfx::Rect(origin, size);
 }
 
 void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
-  UpdateBoundsInDIP(bounds_dip);
+  auto state = applied_state_;
+  state.bounds_dip = bounds_dip;
+  RequestStateFromClient(state);
 }
 
 gfx::Rect WaylandWindow::GetBoundsInDIP() const {
@@ -342,8 +366,9 @@ gfx::Rect WaylandWindow::GetBoundsInDIP() const {
 }
 
 void WaylandWindow::OnSurfaceConfigureEvent() {
-  if (received_configure_event_)
+  if (received_configure_event_) {
     return;
+  }
   received_configure_event_ = true;
   frame_manager_->MaybeProcessPendingFrame();
 }
@@ -357,13 +382,15 @@ void WaylandWindow::SetCapture() {
   // these events to another window. In this case, tell the window manager that
   // this specific window has grabbed the events, and they will be rerouted in
   // WaylandWindow::DispatchEvent method.
-  if (!HasCapture())
+  if (!HasCapture()) {
     connection_->window_manager()->GrabLocatedEvents(this);
+  }
 }
 
 void WaylandWindow::ReleaseCapture() {
-  if (HasCapture())
+  if (HasCapture()) {
     connection_->window_manager()->UngrabLocatedEvents(this);
+  }
   // See comment in SetCapture() for details on wayland and grabs.
 }
 
@@ -405,8 +432,9 @@ bool WaylandWindow::ShouldUseNativeFrame() const {
 void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   DCHECK(platform_cursor);
 
-  if (cursor_ == platform_cursor)
+  if (cursor_ == platform_cursor) {
     return;
+  }
 
   UpdateCursorShape(BitmapCursor::FromPlatformCursor(platform_cursor));
 }
@@ -442,16 +470,16 @@ bool WaylandWindow::IsTranslucentWindowOpacitySupported() const {
 }
 
 void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
+  // TODO(crbug.com/1395267): Add window geometry to WaylandWindow::State.
   if ((!frame_insets_px_ && !insets_px) ||
       (frame_insets_px_ && insets_px && *frame_insets_px_ == *insets_px)) {
     return;
   }
-  if (insets_px)
+  if (insets_px) {
     frame_insets_px_ = *insets_px;
-  else
+  } else {
     frame_insets_px_ = absl::nullopt;
-  UpdateDecorations();
-  connection_->Flush();
+  }
 }
 
 void WaylandWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
@@ -511,8 +539,9 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
   }
 
   // Dispatch all keyboard events to the root window.
-  if (event->IsKeyEvent())
+  if (event->IsKeyEvent()) {
     return GetRootParentWindow()->DispatchEventToDelegate(event);
+  }
 
   return DispatchEventToDelegate(event);
 }
@@ -520,8 +549,9 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
 // EventTarget:
 bool WaylandWindow::CanAcceptEvent(const Event& event) {
 #if DCHECK_IS_ON()
-  if (!disable_null_target_dcheck_for_test_)
+  if (!disable_null_target_dcheck_for_test_) {
     DCHECK(event.target());
+  }
 #endif
   return this == event.target();
 }
@@ -565,19 +595,6 @@ void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   NOTREACHED() << "Only shell popups must receive HandlePopupConfigure calls.";
 }
 
-void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px) {
-  if (latched_state_.size_px == size_px) {
-    return;
-  }
-  latched_state_ = applied_state_;
-  UpdateWindowMask();
-
-  if (apply_pending_state_on_update_visual_size_for_testing_) {
-    root_surface_->ApplyPendingState();
-    connection_->Flush();
-  }
-}
-
 void WaylandWindow::OnCloseRequest() {
   delegate_->OnCloseRequest();
 }
@@ -586,8 +603,9 @@ void WaylandWindow::OnDragEnter(const gfx::PointF& point,
                                 std::unique_ptr<OSExchangeData> data,
                                 int operation) {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
+  if (!drop_handler) {
     return;
+  }
 
   // TODO(crbug.com/1102857): get the real event modifier here.
   drop_handler->OnDragEnter(point, std::move(data), operation,
@@ -596,8 +614,9 @@ void WaylandWindow::OnDragEnter(const gfx::PointF& point,
 
 int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
+  if (!drop_handler) {
     return 0;
+  }
 
   // TODO(crbug.com/1102857): get the real event modifier here.
   return drop_handler->OnDragMotion(point, operation,
@@ -606,16 +625,18 @@ int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operation) {
 
 void WaylandWindow::OnDragDrop() {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
+  if (!drop_handler) {
     return;
+  }
   // TODO(crbug.com/1102857): get the real event modifier here.
   drop_handler->OnDragDrop({}, /*modifiers=*/0);
 }
 
 void WaylandWindow::OnDragLeave() {
   WmDropHandler* drop_handler = GetWmDropHandler(*this);
-  if (!drop_handler)
+  if (!drop_handler) {
     return;
+  }
   drop_handler->OnDragLeave();
 }
 
@@ -626,22 +647,6 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
   std::move(drag_loop_quit_closure_).Run();
 }
 
-void WaylandWindow::UpdateBoundsInDIP(const gfx::Rect& bounds_dip) {
-  gfx::Rect adjusted_bounds_dip = AdjustBoundsToConstraintsDIP(bounds_dip);
-  if (applied_state_.bounds_dip == adjusted_bounds_dip) {
-    return;
-  }
-  bool origin_changed =
-      applied_state_.bounds_dip.origin() != bounds_dip.origin();
-  applied_state_.bounds_dip = adjusted_bounds_dip;
-  applied_state_.size_px =
-      delegate_->ConvertRectToPixels(adjusted_bounds_dip).size();
-
-  if (update_visual_size_immediately_for_testing_)
-    UpdateVisualSize(applied_state_.size_px);
-  delegate_->OnBoundsChanged({origin_changed});
-}
-
 bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   root_surface_ = std::make_unique<WaylandSurface>(connection_, this);
   if (!root_surface_->Initialize()) {
@@ -649,14 +654,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
     return false;
   }
 
-  if (properties.inhibit_keyboard_shortcuts)
+  if (properties.inhibit_keyboard_shortcuts) {
     root_surface_->InhibitKeyboardShortcuts();
-
-  // Update visual size in tests immediately if the test config is set.
-  // Otherwise, such tests as interactive_ui_tests fail.
-  if (!update_visual_size_immediately_for_testing_) {
-    set_update_visual_size_immediately_for_testing(
-        UseTestConfigForPlatformWindows());
   }
 
   State state;
@@ -681,8 +680,9 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   if (wayland_overlay_delegation_enabled_) {
     primary_subsurface_ =
         std::make_unique<WaylandSubsurface>(connection_, this);
-    if (!primary_subsurface_->surface())
+    if (!primary_subsurface_->surface()) {
       return false;
+    }
     connection_->window_manager()->AddSubsurface(GetWidget(),
                                                  primary_subsurface_.get());
   }
@@ -701,15 +701,14 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 void WaylandWindow::SetWindowGeometry(gfx::Size size_dip) {}
 
 gfx::Vector2d WaylandWindow::GetWindowGeometryOffsetInDIP() const {
-  if (!frame_insets_px_.has_value())
+  if (!frame_insets_px_.has_value()) {
     return {};
+  }
 
   auto scale = applied_state().window_scale;
   return {static_cast<int>(frame_insets_px_->left() / scale),
           static_cast<int>(frame_insets_px_->top() / scale)};
 }
-
-void WaylandWindow::UpdateDecorations() {}
 
 gfx::Insets WaylandWindow::GetDecorationInsetsInDIP() const {
   auto scale = latched_state().window_scale;
@@ -726,8 +725,9 @@ void WaylandWindow::OnEnteredOutput() {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
-  if (AsWaylandPopup())
+  if (AsWaylandPopup()) {
     return;
+  }
 
   UpdateWindowScale(true);
 }
@@ -736,8 +736,9 @@ void WaylandWindow::OnLeftOutput() {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
-  if (AsWaylandPopup())
+  if (AsWaylandPopup()) {
     return;
+  }
 
   UpdateWindowScale(true);
 }
@@ -780,8 +781,9 @@ std::unique_ptr<WaylandSurface> WaylandWindow::TakeWaylandSurface() {
 
 bool WaylandWindow::RequestSubsurface() {
   auto subsurface = std::make_unique<WaylandSubsurface>(connection_, this);
-  if (!subsurface->surface())
+  if (!subsurface->surface()) {
     return false;
+  }
   connection_->window_manager()->AddSubsurface(GetWidget(), subsurface.get());
   subsurface_stack_above_.push_back(subsurface.get());
   auto result = wayland_subsurfaces_.emplace(std::move(subsurface));
@@ -791,8 +793,9 @@ bool WaylandWindow::RequestSubsurface() {
 
 bool WaylandWindow::ArrangeSubsurfaceStack(size_t above, size_t below) {
   while (wayland_subsurfaces_.size() < above + below) {
-    if (!RequestSubsurface())
+    if (!RequestSubsurface()) {
       return false;
+    }
   }
 
   DCHECK(subsurface_stack_below_.size() + subsurface_stack_above_.size() >=
@@ -800,16 +803,18 @@ bool WaylandWindow::ArrangeSubsurfaceStack(size_t above, size_t below) {
 
   if (subsurface_stack_above_.size() < above) {
     auto splice_start = subsurface_stack_below_.begin();
-    for (size_t i = 0; i < below; ++i)
+    for (size_t i = 0; i < below; ++i) {
       ++splice_start;
+    }
     subsurface_stack_above_.splice(subsurface_stack_above_.end(),
                                    subsurface_stack_below_, splice_start,
                                    subsurface_stack_below_.end());
 
   } else if (subsurface_stack_below_.size() < below) {
     auto splice_start = subsurface_stack_above_.end();
-    for (size_t i = 0; i < below - subsurface_stack_below_.size(); ++i)
+    for (size_t i = 0; i < below - subsurface_stack_below_.size(); ++i) {
       --splice_start;
+    }
     subsurface_stack_below_.splice(subsurface_stack_below_.end(),
                                    subsurface_stack_above_, splice_start,
                                    subsurface_stack_above_.end());
@@ -824,8 +829,9 @@ bool WaylandWindow::CommitOverlays(
     uint32_t frame_id,
     int64_t seq,
     std::vector<wl::WaylandOverlayConfig>& overlays) {
-  if (overlays.empty())
+  if (overlays.empty()) {
     return true;
+  }
 
   // |overlays| is sorted from bottom to top.
   std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
@@ -845,8 +851,9 @@ bool WaylandWindow::CommitOverlays(
 
   // Re-arrange the list of subsurfaces to fit the |overlays|. Request extra
   // subsurfaces if needed.
-  if (!ArrangeSubsurfaceStack(above, below))
+  if (!ArrangeSubsurfaceStack(above, below)) {
     return false;
+  }
 
   gfx::SizeF visual_size = (*overlays.begin()).bounds_rect.size();
   float buffer_scale = (*overlays.begin()).surface_scale_factor;
@@ -960,65 +967,137 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
   cursor_ = cursor;
 }
 
-void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
-  auto pending_bounds_dip =
-      pending_configure_state_.bounds_dip.value_or(gfx::Rect());
-  auto pending_size_px = pending_configure_state_.size_px.value_or(gfx::Size());
+void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
+  // For values not specified in pending_configure_state_, use the latest
+  // requested values.
+  auto state = in_flight_requests_.empty() ? applied_state_
+                                           : in_flight_requests_.back().state;
+  if (pending_configure_state_.bounds_dip.has_value()) {
+    state.bounds_dip = pending_configure_state_.bounds_dip.value();
+  }
+  if (pending_configure_state_.size_px.has_value()) {
+    state.size_px = pending_configure_state_.size_px.value();
+  }
 
-  if (pending_bounds_dip.IsEmpty() &&
+  if (state.bounds_dip.IsEmpty() &&
       GetPlatformWindowState() == PlatformWindowState::kMinimized &&
-      pending_configures_.empty()) {
+      in_flight_requests_.empty()) {
     // In exo, widget creation is deferred until the surface has contents and
     // |initial_show_state_| for a widget is ignored. Exo sends a configure
     // callback with empty bounds expecting client to suggest a size.
     // For the window activated from minimized state,
     // the saved window placement should be set as window geometry.
-    gfx::Rect bounds_in_dip = GetBoundsInDIP();
+    state.bounds_dip = GetBoundsInDIP();
     // As per spec, width and height must be greater than zero.
-    if (bounds_in_dip.IsEmpty())
-      bounds_in_dip = gfx::Rect(0, 0, 1, 1);
-    SetWindowGeometry(bounds_in_dip.size());
-    AckConfigure(serial);
-    root_surface()->Commit();
-  } else if (delegate()->ConvertRectToPixels(pending_bounds_dip) ==
-                 GetBoundsInPixels() &&
-             pending_configures_.empty()) {
-    // If |pending_bounds_dip| matches the current window bounds, and
-    // |pending_configures_| is empty, which implies that the window is already
-    // rendering at |pending_bounds_dip|, then a new frame matching it may take
-    // some time to arrive, despite the window delegate receives the updated
-    // bounds. Without a new frame, UpdateVisualSize() is not invoked, leaving
-    // this configure sequence unacknowledged. E.g: With static window content,
-    // a configure sequence that does not change the window size will not cause
-    // the window to redraw. Hence, acknowledge this configure sequence now to
-    // tell the Wayland compositor that the requested configuration for this
-    // window has been applied.
-    SetWindowGeometry(pending_bounds_dip.size());
-    AckConfigure(serial);
-    root_surface()->Commit();
-  } else if (!pending_configures_.empty() &&
-             pending_bounds_dip.size() ==
-                 pending_configures_.back().bounds_dip.size()) {
-    // There is an existing pending_configure with the same size, do not push a
-    // new one. Instead, update the serial of the pending_configure.
-    pending_configures_.back().serial = serial;
-  } else {
-    // Otherwise, push the pending |configure| to |pending_configures_|, wait
-    // for a frame update, which will invoke UpdateVisualSize().
-    LOG_IF(WARNING, pending_configures_.size() > 100u)
-        << "The queue of configures is longer than 100!";
-    pending_configures_.push_back(
-        {pending_bounds_dip, pending_size_px, serial});
-    // The Wayland compositor can generate xdg-shell.configure events more
-    // frequently than frame updates from gpu process. Throttle
-    // ApplyPendingBounds() such that we forward new bounds to
-    // PlatformWindowDelegate at most once per frame.
-    if (pending_configures_.size() <= 1)
-      ApplyPendingBounds();
+    if (state.bounds_dip.IsEmpty()) {
+      state.bounds_dip = gfx::Rect(0, 0, 1, 1);
+    }
   }
 
-  // Reset pending state.
+  RequestStateFromServer(state, serial);
+
+  // Reset values.
   pending_configure_state_ = PendingConfigureState();
+}
+
+void WaylandWindow::RequestStateFromServer(State state, int64_t serial) {
+  RequestState(state, serial, /*force=*/false);
+}
+
+void WaylandWindow::RequestStateFromClient(State state) {
+  // In general, client requested changes should not be throttled so force
+  // apply this.
+  RequestState(state, /*serial=*/-1, /*force=*/true);
+}
+
+void WaylandWindow::RequestState(State state, int64_t serial, bool force) {
+  LOG_IF(WARNING, in_flight_requests_.size() > 100u)
+      << "The queue of configures is longer than 100!";
+
+  // If there are no in-flight requests, then the applied state should be the
+  // latched state, because in flight configure requests are only removed on
+  // latch.
+  if (in_flight_requests_.empty()) {
+    DCHECK_EQ(applied_state_, latched_state_);
+  }
+
+  // Adjust state values if necessary.
+  state.bounds_dip = AdjustBoundsToConstraintsDIP(state.bounds_dip);
+  state.size_px =
+      gfx::ScaleToEnclosingRect(state.bounds_dip, state.window_scale).size();
+
+  if (in_flight_requests_.empty() && state == latched_state_) {
+    // If the requested state is latched, and no buffers will change the latched
+    // state until after this request, then ack it immediately. This is relied
+    // upon during window initialization, where we can receive a buffer before
+    // the corresponding configure. We need to ack on receiving the configure,
+    // rather than latching the buffer. This also handles the case of updating
+    // the window geometry when decorations are updated.
+    StateRequest req;
+    req.state = state;
+    req.serial = serial;
+    // Make sure wayland messages are delivered during window initialisation.
+    LatchStateRequest(req, /*force=*/true);
+    return;
+  }
+
+  if (!in_flight_requests_.empty() &&
+      in_flight_requests_.back().state == state) {
+    // If we already asked for this configure state, we can send back a higher
+    // wayland serial for ack while needing a lower viz_seq.
+    in_flight_requests_.back().serial =
+        std::max(in_flight_requests_.back().serial, serial);
+  } else {
+    StateRequest req;
+    req.state = state;
+    req.serial = serial;
+    // Propagate largest serial number so far, if we have one, since we
+    // can have configure requests with no serial number (value -1).
+    if (!in_flight_requests_.empty()) {
+      req.serial = std::max(req.serial, in_flight_requests_.back().serial);
+    }
+    in_flight_requests_.push_back(req);
+  }
+
+  MaybeApplyLatestStateRequest(force);
+}
+
+void WaylandWindow::ProcessSequencePoint(int64_t viz_seq) {
+  // If the sequence number is -1, it means there was a GPU process crash.
+  // In this case, latch any existing frames.
+  if (viz_seq == -1) {
+    viz_seq = INT64_MAX;
+  }
+
+  // Find last applied configure request satisfied by |seq|.
+  auto iter = in_flight_requests_.end();
+  for (auto i = in_flight_requests_.begin(); i != in_flight_requests_.end();
+       ++i) {
+    // The sequence number of each request should strictly monotonically
+    // increase, since each request needs to produce a new sequence point. Any
+    // requests that don't have a sequence id (-1) will be treated as done if
+    // they have been applied. To latch a request, our sequence number must
+    // be larger than the request's sequence number.
+    if (i->viz_seq >= viz_seq && i->viz_seq != -1) {
+      break;
+    }
+    if (i->applied) {
+      iter = i;
+    }
+  }
+
+  if (iter == in_flight_requests_.end()) {
+    return;
+  }
+
+  // Latch the latest state which was actually applied.
+  LatchStateRequest(*iter, /*force=*/false);
+
+  in_flight_requests_.erase(in_flight_requests_.begin(), ++iter);
+
+  // Now a new state is latched we may want to apply previously throttled
+  // requests.
+  MaybeApplyLatestStateRequest(/*force=*/false);
 }
 
 gfx::Rect WaylandWindow::AdjustBoundsToConstraintsPx(
@@ -1077,30 +1156,79 @@ gfx::Rect WaylandWindow::AdjustBoundsToConstraintsDIP(
   return adjusted_bounds_dip;
 }
 
-bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px) {
-  auto result =
-      base::ranges::find_if(pending_configures_, [&size_px](auto& configure) {
-        // Should we adjust?
-        return configure.size_px == size_px && configure.set;
-      });
+void WaylandWindow::LatchStateRequest(const StateRequest& req, bool force) {
+  // Latch the most up to date state we have a frame back for.
+  auto old_state = latched_state_;
+  latched_state_ = req.state;
 
-  if (result != pending_configures_.end()) {
-    auto serial = result->serial;
-    SetWindowGeometry(result->bounds_dip.size());
-    AckConfigure(serial);
-    connection()->Flush();
-    pending_configures_.erase(pending_configures_.begin(), ++result);
-    return true;
+  if (force || req.state.bounds_dip.size() != old_state.bounds_dip.size()) {
+    SetWindowGeometry(req.state.bounds_dip.size());
   }
-  return false;
+  UpdateWindowMask();
+  if (req.serial != -1) {
+    AckConfigure(req.serial);
+  }
 }
 
-void WaylandWindow::ApplyPendingBounds() {
-  DCHECK(!pending_configures_.empty());
-  for (auto& configure : pending_configures_)
-    configure.set = true;
-  // Do not call SetBoundsInDIP which may be overridden by a subclass.
-  UpdateBoundsInDIP(pending_configures_.back().bounds_dip);
+void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
+  if (in_flight_requests_.empty()) {
+    return;
+  }
+
+  if (!force) {
+    int in_flight_applied = base::ranges::count_if(
+        in_flight_requests_,
+        [](const StateRequest& req) { return req.applied; });
+
+    // Allow at most 3 configure requests to be waited on at a time.
+    constexpr int MAX_IN_FLIGHT_REQUESTS = 3;
+    if (in_flight_applied >= MAX_IN_FLIGHT_REQUESTS) {
+      return;
+    }
+  }
+
+  auto& latest = in_flight_requests_.back();
+  if (latest.applied) {
+    return;
+  }
+  latest.applied = true;
+
+  // Set the applied state here so it can be used by e.g. OnBoundsChanged to
+  // pick up the new bounds.
+  auto old = applied_state_;
+  applied_state_ = latest.state;
+
+  // Only set the sequence ID if this change will produce a frame.
+  // If it won't, we may wait indefinitely for a frame that will never come.
+  if (old.bounds_dip.size() != latest.state.bounds_dip.size() ||
+      old.size_px != latest.state.size_px ||
+      old.window_scale != latest.state.window_scale) {
+    latest.viz_seq = delegate()->InsertSequencePoint();
+  }
+
+  if (old.bounds_dip != latest.state.bounds_dip ||
+      old.size_px != latest.state.size_px ||
+      old.window_scale != latest.state.window_scale) {
+    bool origin_changed =
+        old.bounds_dip.origin() != latest.state.bounds_dip.origin();
+    delegate_->OnBoundsChanged({origin_changed});
+  }
+
+  // Latch in tests immediately if the test config is set.
+  // Otherwise, such tests as interactive_ui_tests fail.
+  if (UseTestConfigForPlatformWindows()) {
+    ProcessSequencePoint(INT64_MAX);
+  }
+}
+
+std::string WaylandWindow::State::ToString() const {
+  std::stringstream result;
+  result << "State {";
+  result << "bounds_dip = " << bounds_dip.ToString();
+  result << ", size_px = " << size_px.ToString();
+  result << ", window_scale = " << window_scale;
+  result << "}";
+  return result.str();
 }
 
 }  // namespace ui

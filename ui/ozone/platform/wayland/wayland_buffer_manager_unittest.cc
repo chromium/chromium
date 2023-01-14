@@ -133,9 +133,6 @@ class WaylandBufferManagerTest : public WaylandTest {
     buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, true,
                                     false,
                                     kAugmentedSurfaceNotSupportedVersion);
-
-    window_->set_update_visual_size_immediately_for_testing(false);
-    window_->set_apply_pending_state_on_update_visual_size_for_testing(false);
     surface_id_ = window_->root_surface()->get_surface_id();
   }
 
@@ -1430,13 +1427,7 @@ TEST_P(WaylandBufferManagerTest,
   // order to force WaylandWindow::ProcessPendingBoundsDip() to defer the very
   // first configure ack to be done in the subsequent UpdateVisualSize() call.
   window->SetRestoredBoundsInDIP(kRestoredBounds);
-
-  // Disable auto immediate visual size update (when, for example, calling into
-  // WaylandWindow::SetBoundsInPixels) so that we can emulate deferred call to
-  // WaylandToplevelWindow::UpdateVisualSize() with mismatching parameters, when
-  // processing initial frame sent by the GPU.
-  window->set_update_visual_size_immediately_for_testing(false);
-  window->set_apply_pending_state_on_update_visual_size_for_testing(false);
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   gfx::Insets insets;
   window->SetDecorationInsets(&insets);

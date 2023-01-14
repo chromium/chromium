@@ -75,8 +75,8 @@ void WaylandTestBase::SetUp() {
   PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(0, 0, 800, 600);
   properties.type = PlatformWindowType::kWindow;
-  window_ = delegate_.CreateWaylandWindow(connection_.get(),
-                                          std::move(properties), true, true);
+  window_ =
+      delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(widget_, gfx::kNullAcceleratedWidget);
 
   window_->Show(false);
@@ -246,8 +246,8 @@ std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
   properties.type = type;
   properties.parent_widget = parent_widget;
 
-  auto window = delegate->CreateWaylandWindow(
-      connection_.get(), std::move(properties), true, true);
+  auto window =
+      delegate->CreateWaylandWindow(connection_.get(), std::move(properties));
   if (window)
     window->Show(false);
   return window;
