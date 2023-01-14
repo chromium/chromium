@@ -11,7 +11,7 @@ import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_comma
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -646,9 +646,7 @@ suite('NewTabPageAppTest', () => {
       $$<HTMLElement>(app, '#customizeButton')!.click();
 
       // Assert.
-      const args = handler.getArgs('setCustomizeChromeSidePanelVisible');
-      assertGE(args.length, 1);
-      assertTrue(args.at(-1));
+      assertTrue(handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
     });
 
     test('clicking customize button hides side panel', async () => {
@@ -658,9 +656,7 @@ suite('NewTabPageAppTest', () => {
       $$<HTMLElement>(app, '#customizeButton')!.click();
 
       // Assert.
-      const args = handler.getArgs('setCustomizeChromeSidePanelVisible');
-      assertGE(args.length, 1);
-      assertFalse(args.at(-1));
+      assertFalse(handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
     });
 
     suite('modules', () => {
@@ -675,9 +671,7 @@ suite('NewTabPageAppTest', () => {
         $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));
 
         // Assert.
-        const args = handler.getArgs('setCustomizeChromeSidePanelVisible');
-        assertGE(args.length, 1);
-        assertTrue(args.at(-1));
+        assertTrue(handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
       });
     });
 
@@ -690,9 +684,7 @@ suite('NewTabPageAppTest', () => {
 
       test('URL opens side panel', () => {
         // Assert.
-        const args = handler.getArgs('setCustomizeChromeSidePanelVisible');
-        assertGE(args.length, 1);
-        assertTrue(args.at(-1));
+        assertTrue(handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
       });
     });
   });

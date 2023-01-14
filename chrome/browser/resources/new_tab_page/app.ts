@@ -122,7 +122,6 @@ export class AppElement extends PolymerElement {
         type: Boolean,
         value: () =>
             WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM),
-        observer: 'onShowCustomizeUpdate_',
       },
 
       showCustomizeDialog_: {
@@ -169,10 +168,6 @@ export class AppElement extends PolymerElement {
       customizeChromeEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('customizeChromeEnabled'),
-      },
-
-      customizeChromeSidePanelShowing_: {
-        type: Boolean,
       },
 
       logoColor_: {
@@ -299,7 +294,6 @@ export class AppElement extends PolymerElement {
   private backgroundImageAttributionUrl_: string;
   private backgroundColor_: SkColor;
   private customizeChromeEnabled_: boolean;
-  private customizeChromeSidePanelShowing_: boolean;
   private logoColor_: string;
   private singleColoredLogo_: boolean;
   private realboxLensSearchEnabled_: boolean;
@@ -367,7 +361,13 @@ export class AppElement extends PolymerElement {
         });
     this.setCustomizeChromeSidePanelVisibilityListener_ =
         this.callbackRouter_.setCustomizeChromeSidePanelVisibility.addListener(
-            this.onCustomizeChromeSidePanelVisibilityChanged_.bind(this));
+            (visible: boolean) => {
+              this.showCustomize_ = visible;
+            });
+    // Open Customize Chrome if there are Customize Chrome URL params.
+    if (this.showCustomize_) {
+      this.pageHandler_.setCustomizeChromeSidePanelVisible(this.showCustomize_);
+    }
     this.eventTracker_.add(window, 'message', (event: MessageEvent) => {
       const data = event.data;
       // Something in OneGoogleBar is sending a message that is received here.
@@ -496,23 +496,13 @@ export class AppElement extends PolymerElement {
 
   private onCustomizeClick_() {
     if (this.customizeChromeEnabled_) {
-      this.showCustomize_ = !this.customizeChromeSidePanelShowing_;
+      // TODO(crbug.com/1402251): Scroll to section requested by
+      // |this.selectedCustomizeDialogPage_|.
+      this.pageHandler_.setCustomizeChromeSidePanelVisible(
+          !this.showCustomize_);
     } else {
       this.showCustomize_ = true;
     }
-  }
-
-  private onShowCustomizeUpdate_() {
-    if (!this.customizeChromeEnabled_) {
-      return;
-    }
-    this.pageHandler_.setCustomizeChromeSidePanelVisible(this.showCustomize_);
-    // TODO(crbug.com/1402251): Scroll to section requested by
-    // |this.selectedCustomizeDialogPage_|.
-  }
-
-  private onCustomizeChromeSidePanelVisibilityChanged_(visible: boolean) {
-    this.customizeChromeSidePanelShowing_ = visible;
   }
 
   private onCustomizeDialogClose_() {
@@ -705,6 +695,9 @@ export class AppElement extends PolymerElement {
 
   private onCustomizeModule_() {
     this.showCustomize_ = true;
+    if (this.customizeChromeEnabled_) {
+      this.pageHandler_.setCustomizeChromeSidePanelVisible(this.showCustomize_);
+    }
     this.selectedCustomizeDialogPage_ = CustomizeDialogPage.MODULES;
   }
 
