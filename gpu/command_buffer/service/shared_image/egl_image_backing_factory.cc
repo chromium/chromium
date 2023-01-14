@@ -103,10 +103,15 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
        (usage & SHARED_IMAGE_USAGE_RASTER))) {
     return false;
   }
-  constexpr uint32_t kInvalidUsage =
-      SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_VIDEO_DECODE |
-      SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  constexpr uint32_t kInvalidUsage = SHARED_IMAGE_USAGE_VIDEO_DECODE |
+                                     SHARED_IMAGE_USAGE_SCANOUT |
+                                     SHARED_IMAGE_USAGE_CPU_UPLOAD;
   if (usage & kInvalidUsage) {
+    return false;
+  }
+
+  if ((usage & SHARED_IMAGE_USAGE_WEBGPU) &&
+      (use_webgpu_adapter_ != WebGPUAdapterName::kCompat)) {
     return false;
   }
 
