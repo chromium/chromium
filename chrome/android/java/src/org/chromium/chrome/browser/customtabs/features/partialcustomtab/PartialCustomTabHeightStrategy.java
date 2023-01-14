@@ -251,7 +251,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         initializeHeight();
         updateShadowOffset();
         maybeInvokeResizeCallback();
-        mRestoreAfterFindPage = false;
+        if (!isFixedHeight()) mRestoreAfterFindPage = false;
     }
 
     private int initialY() {
@@ -299,6 +299,10 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
                 // We should update CCT position before Window#FLAG_LAYOUT_NO_LIMITS is set,
                 // otherwise it is not possible to get the correct content height.
                 mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+                // Clean up the state initiated by IME so the height can be restored when
+                // rotating back to non-full-height mode later.
+                if (mVersionCompat.setImeStateCallback(null)) mStatus = HeightStatus.INITIAL_HEIGHT;
             }
             mPositionUpdater.run();
         }

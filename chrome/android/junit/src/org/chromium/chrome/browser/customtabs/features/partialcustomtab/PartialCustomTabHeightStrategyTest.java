@@ -51,6 +51,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -618,6 +619,67 @@ public class PartialCustomTabHeightStrategyTest {
 
         strategy.onImeStateChanged(/*imeVisible=*/false);
         waitForAnimationToFinish();
+        assertTabIsAtInitialPos(getWindowAttributes());
+    }
+
+    @Test
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q)
+    public void fixedHeightReactsToSoftKeyboardBelowR() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        assertTabIsAtInitialPos(getWindowAttributes());
+
+        strategy.onShowSoftInput(() -> {});
+        waitForAnimationToFinish();
+        assertTabIsFullHeight(getWindowAttributes());
+
+        strategy.onImeStateChanged(/*imeVisible=*/true);
+        assertTabIsFullHeight(getWindowAttributes());
+
+        strategy.onImeStateChanged(/*imeVisible=*/false);
+        waitForAnimationToFinish();
+        assertTabIsAtInitialPos(getWindowAttributes());
+    }
+
+    @Test
+    public void fixedHeightRotateWithSoftKeyboard() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        assertTabIsAtInitialPos(getWindowAttributes());
+
+        strategy.onShowSoftInput(() -> {});
+        waitForAnimationToFinish();
+        assertTabIsFullHeight(getWindowAttributes());
+
+        mPCCTTestRule.configLandscapeMode();
+        strategy.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+        mPCCTTestRule.configPortraitMode();
+        strategy.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+
+        assertTabIsAtInitialPos(getWindowAttributes());
+    }
+
+    @Test
+    public void fixedHeightRotateDuringFindInPage() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        strategy.setToolbarColorForTesting(PCCT_TOOLBAR_COLOR);
+        doReturn(FIND_TOOLBAR_COLOR)
+                .when(mPCCTTestRule.mResources)
+                .getColor(eq(R.color.find_in_page_background_color));
+        doReturn(mPCCTTestRule.mDragBarBackground).when(mPCCTTestRule.mDragBar).getBackground();
+        assertTabIsAtInitialPos(getWindowAttributes());
+
+        strategy.onFindToolbarShown();
+        waitForAnimationToFinish();
+        assertTabIsFullHeight(getWindowAttributes());
+
+        mPCCTTestRule.configLandscapeMode();
+        strategy.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+        mPCCTTestRule.configPortraitMode();
+        strategy.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+
+        // For fixed-height mode, move the tab back to initial height if the device was
+        // rotated while the tab was temporarily full-height due to Find-in-page feature
+        // expanding it automatically.
+        strategy.onFindToolbarHidden();
         assertTabIsAtInitialPos(getWindowAttributes());
     }
 

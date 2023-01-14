@@ -20,6 +20,7 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.List;
 
@@ -56,12 +57,15 @@ abstract class PartialCustomTabVersionCompat {
      * Sets the callback to invoke when IME (soft keyboard) visible state is updated.
      * @param callback Callback to invoke upon IME state update. Can be {@code null} to
      *        remove the callback.
+     * @return {@code true} if setting (or removing) happened as expected.
      */
-    void setImeStateCallback(@Nullable Callback<Boolean> callback) {}
+    abstract boolean setImeStateCallback(@Nullable Callback<Boolean> callback);
 
     /** Implementation that supports R+ */
     @RequiresApi(Build.VERSION_CODES.R)
     private static class PartialCustomTabVersionCompatR extends PartialCustomTabVersionCompat {
+        private WindowInsetsAnimation.Callback mAnimCallback;
+
         private PartialCustomTabVersionCompatR(Activity activity, Runnable positionUpdater) {
             super(activity, positionUpdater);
         }
@@ -104,27 +108,33 @@ abstract class PartialCustomTabVersionCompat {
         }
 
         @Override
-        void setImeStateCallback(Callback<Boolean> callback) {
-            View view = mActivity.getWindow().getDecorView();
-            var animCallback = callback == null
-                    ? null
-                    : new WindowInsetsAnimation.Callback(
-                            WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP) {
-                          @Override
-                          public WindowInsets onProgress(@NonNull WindowInsets insets,
-                                  @NonNull List<WindowInsetsAnimation> runningAnimations) {
-                              return insets;
-                          }
+        boolean setImeStateCallback(Callback<Boolean> callback) {
+            boolean update = (callback == null) ^ (mAnimCallback == null);
+            if (callback == null && mAnimCallback != null) {
+                mAnimCallback = null;
+            } else if (callback != null && mAnimCallback == null) {
+                mAnimCallback = new WindowInsetsAnimation.Callback(
+                        WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP) {
+                    @Override
+                    public WindowInsets onProgress(@NonNull WindowInsets insets,
+                            @NonNull List<WindowInsetsAnimation> runningAnimations) {
+                        return insets;
+                    }
 
-                          @Override
-                          public void onEnd(@NonNull WindowInsetsAnimation animation) {
-                              WindowInsets insets = mActivity.getWindowManager()
-                                                            .getCurrentWindowMetrics()
-                                                            .getWindowInsets();
-                              callback.onResult(insets.isVisible(WindowInsets.Type.ime()));
-                          }
-                      };
-            view.setWindowInsetsAnimationCallback(animCallback);
+                    @Override
+                    public void onEnd(@NonNull WindowInsetsAnimation animation) {
+                        WindowInsets insets = mActivity.getWindowManager()
+                                                      .getCurrentWindowMetrics()
+                                                      .getWindowInsets();
+                        callback.onResult(insets.isVisible(WindowInsets.Type.ime()));
+                    }
+                };
+            }
+            if (update) {
+                View view = mActivity.getWindow().getDecorView();
+                view.setWindowInsetsAnimationCallback(mAnimCallback);
+            }
+            return update;
         }
     }
 
@@ -135,6 +145,8 @@ abstract class PartialCustomTabVersionCompat {
 
     /** Implementation that supports version below R */
     private static class PartialCustomTabVersionCompatLegacy extends PartialCustomTabVersionCompat {
+        private View.OnLayoutChangeListener mLayoutListener;
+
         private PartialCustomTabVersionCompatLegacy(Activity activity, Runnable positionUpdater) {
             super(activity, positionUpdater);
         }
@@ -238,6 +250,33 @@ abstract class PartialCustomTabVersionCompat {
             Point size = new Point();
             display.getSize(size);
             return size.y;
+        }
+
+        @Override
+        boolean setImeStateCallback(Callback<Boolean> callback) {
+            View contentFrame = mActivity.findViewById(android.R.id.content);
+            if (callback == null && mLayoutListener != null) {
+                contentFrame.removeOnLayoutChangeListener(mLayoutListener);
+                mLayoutListener = null;
+                return true;
+            } else if (callback != null && mLayoutListener == null) {
+                // Ignores the callback if already added.
+                mLayoutListener =
+                        (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    if (oldBottom - oldTop >= bottom - top) return;
+
+                    // Note that keyboard visibility might not always be correct - i.e. can be false
+                    // when it is visible. In worst case, tab is back to initial height and remains
+                    // hidden by the keyboard. Users either have to dismiss the keyboard, or expand
+                    // the tab (in non-fixed-height mode) to use it again.
+                    boolean imeVisible = KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
+                            mActivity, view);
+                    callback.onResult(imeVisible);
+                };
+                contentFrame.addOnLayoutChangeListener(mLayoutListener);
+                return true;
+            }
+            return false; // adding or removing did not happen
         }
     }
 }
