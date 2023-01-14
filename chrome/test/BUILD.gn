@@ -3096,7 +3096,6 @@ if (!is_android) {
         "../browser/extensions/offscreen_document_browsertest.cc",
         "../browser/extensions/options_page_apitest.cc",
         "../browser/extensions/permissions_manager_browsertest.cc",
-        "../browser/extensions/preinstalled_apps_browsertest.cc",
         "../browser/extensions/process_management_browsertest.cc",
         "../browser/extensions/process_manager_browsertest.cc",
         "../browser/extensions/process_util_browsertest.cc",

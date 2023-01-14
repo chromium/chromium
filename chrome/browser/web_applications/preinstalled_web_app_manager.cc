@@ -910,13 +910,8 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
   base::UmaHistogramCounts100(kHistogramAppToReplaceStillInstalledInShelfCount,
                               app_to_replace_still_installed_in_shelf_count);
 
-  SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsGSuite.name,
-                  IsPreinstalledAppInstallFeatureEnabled(
-                      kMigrateDefaultChromeAppToWebAppsGSuite.name, *profile_));
-  SetMigrationRun(
-      profile_, kMigrateDefaultChromeAppToWebAppsNonGSuite.name,
-      IsPreinstalledAppInstallFeatureEnabled(
-          kMigrateDefaultChromeAppToWebAppsNonGSuite.name, *profile_));
+  SetMigrationRun(profile_, "MigrateDefaultChromeAppToWebAppsGSuite", true);
+  SetMigrationRun(profile_, "MigrateDefaultChromeAppToWebAppsNonGSuite", true);
   if (uninstall_and_replace_count > 0) {
     for (auto& observer : observers_) {
       observer.OnMigrationRun();

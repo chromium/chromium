@@ -110,7 +110,6 @@ ExternalInstallOptions GetConfigForGoogleDrive() {
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
-  options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsGSuite.name;
   options.uninstall_and_replace.push_back("apdfllckaahabafndbhieahigkjlhalf");
   options.load_and_await_service_worker_registration = false;
   options.launch_query_params = "usp=installed_webapp";

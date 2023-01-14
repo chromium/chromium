@@ -28,7 +28,6 @@ ExternalInstallOptions GetConfigForYouTube() {
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed"};
-  options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsNonGSuite.name;
   options.uninstall_and_replace.push_back("blpcfgokakmgnkcojhhkbfbldkacnbeo");
   options.disable_if_tablet_form_factor = true;
   options.load_and_await_service_worker_registration = false;

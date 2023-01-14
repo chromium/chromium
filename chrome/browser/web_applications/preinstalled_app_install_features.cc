@@ -24,8 +24,6 @@ namespace {
 // kShippedPreinstalledAppInstallFeatures to ensure any external installation
 // configs that reference it continue to see it as enabled.
 constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
-    &kMigrateDefaultChromeAppToWebAppsGSuite,
-    &kMigrateDefaultChromeAppToWebAppsNonGSuite,
 #if BUILDFLAG(IS_CHROMEOS)
     &kCursiveManagedStylusPreinstall,
     &kMessagesPreinstall,
@@ -36,6 +34,14 @@ constexpr const base::StringPiece kShippedPreinstalledAppInstallFeatures[] = {
     // Enables installing the PWA version of the chrome os calculator instead of
     // the deprecated chrome app.
     "DefaultCalculatorWebApp",
+
+    // Enables migration of default installed GSuite apps over to their
+    // replacement web apps.
+    "MigrateDefaultChromeAppToWebAppsGSuite",
+
+    // Enables migration of default installed non-GSuite apps over to their
+    // replacement web apps.
+    "MigrateDefaultChromeAppToWebAppsNonGSuite",
 };
 
 bool g_always_enabled_for_testing = false;
@@ -56,26 +62,7 @@ const FeatureWithEnabledFunction
 #endif
 };
 
-// Checks if the feature being passed matches any of the migration features
-// above.
-bool IsMigrationFeature(const base::Feature& feature) {
-  return &feature == &kMigrateDefaultChromeAppToWebAppsGSuite ||
-         &feature == &kMigrateDefaultChromeAppToWebAppsNonGSuite;
-}
-
 }  // namespace
-
-// Enables migration of default installed GSuite apps over to their replacement
-// web apps.
-BASE_FEATURE(kMigrateDefaultChromeAppToWebAppsGSuite,
-             "MigrateDefaultChromeAppToWebAppsGSuite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables migration of default installed non-GSuite apps over to their
-// replacement web apps.
-BASE_FEATURE(kMigrateDefaultChromeAppToWebAppsNonGSuite,
-             "MigrateDefaultChromeAppToWebAppsNonGSuite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables installing the Cursive app on managed devices with a built-in
@@ -116,15 +103,9 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
   return false;
 }
 
+// TODO(crbug.com/1406709): Retire this method.
 bool IsAnyChromeAppToWebAppMigrationEnabled(const Profile& profile) {
-  for (const base::Feature* feature : kPreinstalledAppInstallFeatures) {
-    if (IsMigrationFeature(*feature)) {
-      if (IsPreinstalledAppInstallFeatureEnabled(feature->name, profile)) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return true;
 }
 
 base::AutoReset<bool>

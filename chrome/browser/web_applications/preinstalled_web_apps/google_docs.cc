@@ -107,7 +107,6 @@ ExternalInstallOptions GetConfigForGoogleDocs() {
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
-  options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsGSuite.name;
   options.uninstall_and_replace.push_back("aohghmighlieiainnegkcijnfilokake");
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;

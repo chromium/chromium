@@ -4345,18 +4345,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowAllSitesToInitiateMirroringDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kAllowAllSitesToInitiateMirroring)},
-    {"enable-migrate-default-chrome-app-to-web-apps-gsuite",
-     flag_descriptions::kEnableMigrateDefaultChromeAppToWebAppsGSuiteName,
-     flag_descriptions::
-         kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(web_app::kMigrateDefaultChromeAppToWebAppsGSuite)},
-    {"enable-migrate-default-chrome-app-to-web-apps-non-gsuite",
-     flag_descriptions::kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteName,
-     flag_descriptions::
-         kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(web_app::kMigrateDefaultChromeAppToWebAppsNonGSuite)},
     {"enable-preinstalled-web-app-duplication-fixer",
      flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerName,
      flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerDescription,

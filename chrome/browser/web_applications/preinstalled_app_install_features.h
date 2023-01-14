@@ -14,10 +14,6 @@ class Profile;
 
 namespace web_app {
 
-BASE_DECLARE_FEATURE(kMigrateDefaultChromeAppToWebAppsGSuite);
-
-BASE_DECLARE_FEATURE(kMigrateDefaultChromeAppToWebAppsNonGSuite);
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kCursiveManagedStylusPreinstall);
 

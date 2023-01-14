@@ -160,8 +160,8 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
     // This is a temporary measure while the default web app duplication
     // issue is cleaned up.
     // TODO(crbug.com/1290716): Clean up once no longer needed.
-    if (IsPreinstalledAppInstallFeatureEnabled(
-            kMigrateDefaultChromeAppToWebAppsGSuite.name, profile)) {
+    // Default installed GSuite web apps.
+    {
       PreinstalledWebAppMigration keep_migration;
       keep_migration.install_url =
           GURL("https://keep.google.com/installwebapp?usp=chrome_default");
@@ -170,8 +170,8 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
       migrations.push_back(std::move(keep_migration));
     }
 
-    if (IsPreinstalledAppInstallFeatureEnabled(
-            kMigrateDefaultChromeAppToWebAppsNonGSuite.name, profile)) {
+    // Default installed non-GSuite web apps.
+    {
       PreinstalledWebAppMigration books_migration;
       books_migration.install_url =
           GURL("https://play.google.com/books/installwebapp?usp=chromedefault");

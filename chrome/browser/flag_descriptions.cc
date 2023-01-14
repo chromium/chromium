@@ -973,18 +973,6 @@ const char kDesktopPWAsDetailedInstallDialogDescription[] =
     "Enable PWAs with screenshots to show a detailed install dialog during "
     "installation";
 
-const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteName[] =
-    "Migrate default G Suite Chrome apps to web apps";
-const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription[] =
-    "Enable the migration of default installed G Suite Chrome apps over to "
-    "their corresponding web apps.";
-
-const char kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteName[] =
-    "Migrate default non-G Suite Chrome apps to web apps";
-const char kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteDescription[] =
-    "Enable the migration of default installed non-G Suite Chrome apps over to "
-    "their corresponding web apps.";
-
 const char kEnablePreinstalledWebAppDuplicationFixerName[] =
     "Enable the app deduplication fix for migrated preinstalled web apps";
 const char kEnablePreinstalledWebAppDuplicationFixerDescription[] =
