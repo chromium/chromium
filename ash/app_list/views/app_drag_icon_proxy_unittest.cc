@@ -47,7 +47,7 @@ TEST_F(AppDragIconProxyTest, UpdatingLocationRespectsIconOffset) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*use_blurred_background=*/false);
+      /*is_folder_icon=*/false);
 
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
@@ -74,7 +74,7 @@ TEST_F(AppDragIconProxyTest, SecondaryDisplay) {
       /*pointer_location_in_screen=*/gfx::Point(1100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*use_blurred_background=*/false);
+      /*is_folder_icon=*/false);
 
   EXPECT_EQ(gfx::Rect(gfx::Point(1065, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
@@ -99,7 +99,7 @@ TEST_F(AppDragIconProxyTest, ScaledBounds) {
       /*pointer_location_in_screen=*/gfx::Point(200, 400),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/2.0f,
-      /*use_blurred_background=*/false);
+      /*is_folder_icon=*/false);
 
   EXPECT_EQ(gfx::Rect(gfx::Point(140, 330), gfx::Size(100, 100)),
             drag_icon_proxy->GetBoundsInScreen());
@@ -110,13 +110,14 @@ TEST_F(AppDragIconProxyTest, ScaledBounds) {
 }
 
 TEST_F(AppDragIconProxyTest, BlurSetsRoundedCorners) {
+  // Create a folder icon proxy because only folder icons have background blur.
   auto drag_icon_proxy = std::make_unique<AppDragIconProxy>(
       Shell::GetPrimaryRootWindow(),
       ash::image_util::CreateEmptyImage(gfx::Size(50, 50)),
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*use_blurred_background=*/true);
+      /*is_folder_icon=*/true);
 
   // The background should be circular.
   EXPECT_EQ(gfx::RoundedCornersF(25.0f).ToString(),
@@ -133,7 +134,7 @@ TEST_F(AppDragIconProxyTest, BlurSetsRoundedCorners) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/2.0f,
-      /*use_blurred_background=*/true);
+      /*is_folder_icon=*/true);
 
   // The background should be circular.
   EXPECT_EQ(gfx::RoundedCornersF(50.0f).ToString(),
@@ -151,7 +152,7 @@ TEST_F(AppDragIconProxyTest, AnimateBoundsForClosure) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*use_blurred_background=*/false);
+      /*is_folder_icon=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
@@ -186,7 +187,7 @@ TEST_F(AppDragIconProxyTest, CloseAnimationCallbackCalledWithZeroAnimation) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*use_blurred_background=*/false);
+      /*is_folder_icon=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
@@ -218,7 +219,7 @@ TEST_F(AppDragIconProxyTest,
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*use_blurred_background=*/false);
+      /*is_folder_icon=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
@@ -275,7 +276,7 @@ TEST_F(AppDragIconProxyTest, ProxyResetDuringCloseAnimation) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*use_blurred_background=*/false);
+      /*is_folder_icon=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 
@@ -303,7 +304,7 @@ TEST_F(AppDragIconProxyTest, UpdatePositionDuringCloseIsNoOp) {
       /*pointer_location_in_screen=*/gfx::Point(100, 200),
       /*pointer_offset_from_center=*/gfx::Vector2d(10, 20),
       /*scale_factor=*/1.0f,
-      /*use_blurred_background=*/false);
+      /*is_folder_icon=*/false);
   EXPECT_EQ(gfx::Rect(gfx::Point(65, 155), gfx::Size(50, 50)),
             drag_icon_proxy->GetBoundsInScreen());
 

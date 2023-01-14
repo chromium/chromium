@@ -36,7 +36,6 @@ AppDragIconProxy::AppDragIconProxy(
     const gfx::Point& pointer_location_in_screen,
     const gfx::Vector2d& pointer_offset_from_center,
     float scale_factor,
-    bool use_blurred_background,
     bool is_folder_icon) {
   drag_image_widget_ =
       DragImageView::Create(root_window, ui::mojom::DragEventSource::kMouse);
@@ -77,7 +76,7 @@ AppDragIconProxy::AppDragIconProxy(
   image_layer->StackAtBottom(shadow_layer);
   shadow_->SetContentBounds(gfx::Rect(shadow_offset, shadow_size));
 
-  if (use_blurred_background) {
+  if (is_folder_icon) {
     const float radius = size.width() / 2.0f;
     drag_image->layer()->SetRoundedCornerRadius(
         {radius, radius, radius, radius});

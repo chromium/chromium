@@ -2348,13 +2348,11 @@ void AppsGridView::StartDragAndDropHostDrag() {
       drag_view_->GetIconBoundsInScreen().CenterPoint();
 
   const bool is_folder = drag_view_->item()->is_folder();
-  const bool use_blurred_background = is_folder && IsTabletMode();
   drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
       drag_view_->GetIconImage(), location_in_screen,
       location_in_screen - icon_location_in_screen,
-      is_folder ? kDragAndDropProxyScale : 1.0f, use_blurred_background,
-      is_folder);
+      is_folder ? kDragAndDropProxyScale : 1.0f, is_folder);
   drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
 }
 

@@ -42,16 +42,13 @@ class AppDragIconProxy : public ui::ImplicitAnimationObserver {
   //     location to maintain pointer offset from the drag image center.
   // `scale_factor` - The scale factor by which the `icon` should be scaled when
   //     shown as a drag image.
-  // `use_blurred_background` - whether the drag image should have blurred
-  //     background.
   // `is_folder_icon` - whether the icon dragged is a folder.
   AppDragIconProxy(aura::Window* root_window,
                    const gfx::ImageSkia& icon,
                    const gfx::Point& pointer_location_in_screen,
                    const gfx::Vector2d& pointer_offset_from_center,
                    float scale_factor,
-                   bool use_blurred_background,
-                   bool is_folder_icon = false);
+                   bool is_folder_icon);
   AppDragIconProxy(const AppDragIconProxy&) = delete;
   AppDragIconProxy& operator=(const AppDragIconProxy&) = delete;
   ~AppDragIconProxy() override;
