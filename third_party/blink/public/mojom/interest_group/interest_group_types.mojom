@@ -195,6 +195,32 @@ union AuctionAdConfigMaybePromiseJson {
   string json;
 };
 
+// See blink::AuctionConfig::MaybePromisePerBuyerSignals
+union AuctionAdConfigMaybePromisePerBuyerSignals {
+  uint32 promise;  // value unused
+
+  // Keys of `per_buyer_signals` must be valid HTTPS origins. Value is opaque
+  // JSON data, passed as object to auction worklet.
+  map<url.mojom.Origin, string>? per_buyer_signals;
+};
+
+// See blink::AuctionConfig::BuyerTimeouts
+struct AuctionAdConfigBuyerTimeouts {
+  // The value restricts generateBid() script's runtime of all buyers with
+  // unspecified timeouts, if not Null.
+  mojo_base.mojom.TimeDelta? all_buyers_timeout;
+
+  // Keys of `per_buyer_timeouts` must be valid HTTPS origins. Values restrict
+  // the runtime of particular buyer's generateBid() scripts.
+  map<url.mojom.Origin, mojo_base.mojom.TimeDelta>? per_buyer_timeouts;
+};
+
+// See blink::AuctionConfig::MaybePromisePerBuyerTimeouts
+union AuctionAdConfigMaybePromiseBuyerTimeouts {
+  uint32 promise;  // value unused
+  AuctionAdConfigBuyerTimeouts value;
+};
+
 // Subset of AuctionAdConfig that is not shared by all auctions that are
 // using the same SellerWorklet object (so it's "not shared" between
 // AuctionConfigs that share the same SellerWorklet). Other AuctionAdConfig
@@ -219,17 +245,9 @@ struct AuctionAdConfigNonSharedParams {
   // The value restricts the runtime of the seller's scoreAd() script.
   mojo_base.mojom.TimeDelta? seller_timeout;
 
-  // Keys of `per_buyer_signals` must be valid HTTPS origins. Value is opaque
-  // JSON data, passed as object to auction worklet.
-  map<url.mojom.Origin, string>? per_buyer_signals;
+  AuctionAdConfigMaybePromisePerBuyerSignals per_buyer_signals;
 
-  // Keys of `per_buyer_timeouts` must be valid HTTPS origins. Values restrict
-  // the runtime of particular buyer's generateBid() scripts.
-  map<url.mojom.Origin, mojo_base.mojom.TimeDelta>? per_buyer_timeouts;
-
-  // The value restricts generateBid() script's runtime of all buyers with
-  // unspecified timeouts, if not Null.
-  mojo_base.mojom.TimeDelta? all_buyers_timeout;
+  AuctionAdConfigMaybePromiseBuyerTimeouts buyer_timeouts;
 
   // Keys of `per_buyer_group_limits` must be valid HTTPS origins. Values
   // restrict the number of bidding interest groups for a particular buyer

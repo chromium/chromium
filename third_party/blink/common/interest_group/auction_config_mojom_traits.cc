@@ -95,6 +95,68 @@ bool UnionTraits<blink::mojom::AuctionAdConfigMaybePromiseJsonDataView,
   return false;
 }
 
+bool UnionTraits<
+    blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignalsDataView,
+    blink::AuctionConfig::MaybePromisePerBuyerSignals>::
+    Read(blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignalsDataView in,
+         blink::AuctionConfig::MaybePromisePerBuyerSignals* out) {
+  switch (in.tag()) {
+    case blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignalsDataView::Tag::
+        kPromise:
+      *out = blink::AuctionConfig::MaybePromisePerBuyerSignals::FromPromise();
+      return true;
+
+    case blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignalsDataView::Tag::
+        kPerBuyerSignals: {
+      absl::optional<base::flat_map<url::Origin, std::string>> payload;
+      if (!in.ReadPerBuyerSignals(&payload)) {
+        return false;
+      }
+      *out = blink::AuctionConfig::MaybePromisePerBuyerSignals::FromValue(
+          std::move(payload));
+      return true;
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
+bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
+                  blink::AuctionConfig::BuyerTimeouts>::
+    Read(blink::mojom::AuctionAdConfigBuyerTimeoutsDataView data,
+         blink::AuctionConfig::BuyerTimeouts* out) {
+  if (!data.ReadPerBuyerTimeouts(&out->per_buyer_timeouts) ||
+      !data.ReadAllBuyersTimeout(&out->all_buyers_timeout)) {
+    return false;
+  }
+  return true;
+}
+
+bool UnionTraits<blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView,
+                 blink::AuctionConfig::MaybePromiseBuyerTimeouts>::
+    Read(blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView in,
+         blink::AuctionConfig::MaybePromiseBuyerTimeouts* out) {
+  switch (in.tag()) {
+    case blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView::Tag::
+        kPromise:
+      *out = blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromPromise();
+      return true;
+
+    case blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView::Tag::
+        kValue: {
+      blink::AuctionConfig::BuyerTimeouts payload;
+      if (!in.ReadValue(&payload)) {
+        return false;
+      }
+      *out = blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
+          std::move(payload));
+      return true;
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
 bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
                   blink::AuctionConfig::NonSharedParams>::
     Read(blink::mojom::AuctionAdConfigNonSharedParamsDataView data,
@@ -104,8 +166,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadSellerSignals(&out->seller_signals) ||
       !data.ReadSellerTimeout(&out->seller_timeout) ||
       !data.ReadPerBuyerSignals(&out->per_buyer_signals) ||
-      !data.ReadPerBuyerTimeouts(&out->per_buyer_timeouts) ||
-      !data.ReadAllBuyersTimeout(&out->all_buyers_timeout) ||
+      !data.ReadBuyerTimeouts(&out->buyer_timeouts) ||
       !data.ReadPerBuyerGroupLimits(&out->per_buyer_group_limits) ||
       !data.ReadPerBuyerPrioritySignals(&out->per_buyer_priority_signals) ||
       !data.ReadAllBuyersPrioritySignals(&out->all_buyers_priority_signals) ||

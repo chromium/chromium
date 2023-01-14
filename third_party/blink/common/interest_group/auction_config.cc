@@ -71,6 +71,12 @@ int AuctionConfig::NonSharedParams::NumPromises() const {
   if (seller_signals.is_promise()) {
     ++total;
   }
+  if (per_buyer_signals.is_promise()) {
+    ++total;
+  }
+  if (buyer_timeouts.is_promise()) {
+    ++total;
+  }
   for (const blink::AuctionConfig& sub_auction : component_auctions) {
     total += sub_auction.non_shared_params.NumPromises();
   }
@@ -84,10 +90,5 @@ AuctionConfig::~AuctionConfig() = default;
 
 AuctionConfig& AuctionConfig::operator=(const AuctionConfig&) = default;
 AuctionConfig& AuctionConfig::operator=(AuctionConfig&&) = default;
-
-bool BLINK_COMMON_EXPORT operator==(const AuctionConfig::MaybePromiseJson& a,
-                                    const AuctionConfig::MaybePromiseJson& b) {
-  return a.tag() == b.tag() && a.json_payload() == b.json_payload();
-}
 
 }  // namespace blink
