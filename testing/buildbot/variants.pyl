@@ -561,8 +561,8 @@
   'CROS_ATLAS_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '109.0.5414.41',
-      'cros_img': 'atlas-release/R109-15236.35.0',
+      'cros_chrome_version': '110.0.5481.32',
+      'cros_img': 'atlas-release/R110-15278.29.0',
     },
     'enabled': False,
     'identifier': 'ATLAS_RELEASE_BETA',
@@ -643,8 +643,8 @@
   'CROS_HANA_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '109.0.5414.41',
-      'cros_img': 'hana-release/R109-15236.35.0',
+      'cros_chrome_version': '110.0.5481.32',
+      'cros_img': 'hana-release/R110-15278.29.0',
     },
     'enabled': False,
     'identifier': 'HANA_RELEASE_BETA',
@@ -688,8 +688,8 @@
   'CROS_JACUZZI_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '109.0.5414.41',
-      'cros_img': 'jacuzzi-release/R109-15236.35.0',
+      'cros_chrome_version': '110.0.5481.32',
+      'cros_img': 'jacuzzi-release/R110-15278.29.0',
     },
     'enabled': False,
     'identifier': 'JACUZZI_RELEASE_BETA',
@@ -790,8 +790,8 @@
   'CROS_STRONGBAD_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '109.0.5414.41',
-      'cros_img': 'strongbad-release/R109-15236.35.0',
+      'cros_chrome_version': '110.0.5481.32',
+      'cros_img': 'strongbad-release/R110-15278.29.0',
     },
     'enabled': False,
     'identifier': 'STRONGBAD_RELEASE_BETA',
