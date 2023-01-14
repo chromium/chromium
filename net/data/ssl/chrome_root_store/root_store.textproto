@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 8
+version_major: 9
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -35,7 +35,6 @@ trust_anchors {
 # https://valid.sfsg2.catest.starfieldtech.com/
 trust_anchors {
   sha256_hex: "568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5"
-
   ev_policy_oids: "2.16.840.1.114414.1.7.24.3"
   ev_policy_oids: "2.23.140.1.1"
 }
@@ -128,7 +127,6 @@ trust_anchors {
 # https://certdemo-ev-valid.ssl.d-trust.net/
 trust_anchors {
   sha256_hex: "eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881"
-
   ev_policy_oids: "1.3.6.1.4.1.4788.2.202.1"
 }
 
@@ -141,7 +139,6 @@ trust_anchors {
 # http://www.telesec.de/ / https://root-class3.test.telesec.de/
 trust_anchors {
   sha256_hex: "fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd"
-
   ev_policy_oids: "1.3.6.1.4.1.7879.13.24.1"
 }
 
@@ -164,7 +161,6 @@ trust_anchors {
 # https://global-root-g3.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "31ad6648f8104138c738f39ea4320133393e3a18cc02296ef97c2ac9ef6731d0"
-
   ev_policy_oids: "2.16.840.1.114412.2.1"
 }
 
@@ -182,7 +178,6 @@ trust_anchors {
 # https://trusted-root-g4.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "552f7bdcf1a7af9e6ce672017f4f12abf77240c78e761ac203d1d9d20ac89988"
-
   ev_policy_oids: "2.16.840.1.114412.2.1"
 }
 
@@ -190,7 +185,6 @@ trust_anchors {
 # https://www.digicert.com
 trust_anchors {
   sha256_hex: "7431e5f4c3c1ce4690774f0b61e05440883ba9a01ed00ba6abd7806ed3b118cf"
-
   ev_policy_oids: "2.16.840.1.114412.2.1"
 }
 
@@ -198,7 +192,6 @@ trust_anchors {
 # https://assured-id-root-g2.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "7d05ebb682339f8c9451ee094eebfefa7953a114edb2f44949452fab7d2fc185"
-
   ev_policy_oids: "2.16.840.1.114412.2.1"
 }
 
@@ -206,7 +199,6 @@ trust_anchors {
 # https://assured-id-root-g3.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2"
-
   ev_policy_oids: "2.16.840.1.114412.2.1"
 }
 
@@ -214,7 +206,6 @@ trust_anchors {
 # https://global-root-g2.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f"
-
   ev_policy_oids: "2.16.840.1.114412.2.1"
 }
 
@@ -227,7 +218,6 @@ trust_anchors {
 # https://sslev.e-tugra.com.tr
 trust_anchors {
   sha256_hex: "b0bfd52bb0d7d9bd92bf5d4dc13da255c02c542f378365ea893911f55e55f23c"
-
   ev_policy_oids: "2.16.792.3.0.4.1.1.4"
 }
 
@@ -240,7 +230,6 @@ trust_anchors {
 # https://testevg1.emsign.com/
 trust_anchors {
   sha256_hex: "40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367"
-
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -258,7 +247,6 @@ trust_anchors {
 # https://validec.entrust.net
 trust_anchors {
   sha256_hex: "02ed0eb28c14da45165c566791700d6451d7fb56f0b2ab1d3b8eb070e56edff5"
-
   ev_policy_oids: "2.16.840.1.114028.10.1.2"
 }
 
@@ -280,7 +268,6 @@ trust_anchors {
 # https://validg2.entrust.net
 trust_anchors {
   sha256_hex: "43df5774b03e7fef5fe40d931a7bedf1bb2e6b42738c4e6d3841103d3aa7f339"
-
   ev_policy_oids: "2.16.840.1.114028.10.1.2"
 }
 
@@ -300,7 +287,6 @@ trust_anchors {
 # https://www.entrust.net/
 trust_anchors {
   sha256_hex: "73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c"
-
   ev_policy_oids: "2.16.840.1.114028.10.1.2"
 }
 
@@ -327,7 +313,6 @@ trust_anchors {
 # https://2038r5.globalsign.com/
 trust_anchors {
   sha256_hex: "179fbc148a3dd00fd24ea13458cc43bfa7f59c8182d783a513f6ebec100c8924"
-
   ev_policy_oids: "1.3.6.1.4.1.4146.1.1"
 }
 
@@ -340,7 +325,6 @@ trust_anchors {
 # https://2029.globalsign.com/
 trust_anchors {
   sha256_hex: "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b"
-
   ev_policy_oids: "1.3.6.1.4.1.4146.1.1"
 }
 
@@ -348,7 +332,6 @@ trust_anchors {
 # GlobalSign Root CA
 trust_anchors {
   sha256_hex: "ebd41040e4bb3ec742c9e381d31ef2a41a48b6685c96e7cef3c1df6cd4331c99"
-
   ev_policy_oids: "1.3.6.1.4.1.4146.1.1"
 }
 
@@ -356,7 +339,6 @@ trust_anchors {
 # https://www.starfieldtech.com/
 trust_anchors {
   sha256_hex: "1465fa205397b876faa6f0a9958e5590e40fcc7faa4fb7c2c8677521fb5fb658"
-
   ev_policy_oids: "2.16.840.1.114414.1.7.23.3"
 }
 
@@ -364,7 +346,6 @@ trust_anchors {
 # https://valid.sfig2.catest.starfieldtech.com/
 trust_anchors {
   sha256_hex: "2ce1cb0bf9d2f9e102993fbe215152c3b2dd0cabde1c68e5319b839154dbb7f5"
-
   ev_policy_oids: "2.16.840.1.114414.1.7.23.3"
 }
 
@@ -372,7 +353,6 @@ trust_anchors {
 # https://valid.gdig2.catest.godaddy.com/
 trust_anchors {
   sha256_hex: "45140b3247eb9cc8c5b4f0d7b53091f73292089e6e5a63e2749dd3aca9198eda"
-
   ev_policy_oids: "2.16.840.1.114413.1.7.23.3"
 }
 
@@ -380,7 +360,6 @@ trust_anchors {
 # https://www.godaddy.com/
 trust_anchors {
   sha256_hex: "c3846bf24b9e93ca64274c0ec67c1ecc5e024ffcacd2d74019350e81fe546ae4"
-
   ev_policy_oids: "2.16.840.1.114413.1.7.23.3"
 }
 
@@ -413,7 +392,6 @@ trust_anchors {
 # https://valid-ev.ecert.gov.hk/
 trust_anchors {
   sha256_hex: "5a2fc03f0c83b090bbfa40604b0988446c7636183df9846e17101a447fb8efd6"
-
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -430,14 +408,6 @@ trust_anchors {
 # OU=AC RAIZ FNMT-RCM, O=FNMT-RCM, C=ES
 trust_anchors {
   sha256_hex: "ebc5570c29018c4d67b1aa127baf12f703b4611ebc17b7dab5573894179b93fa"
-}
-
-# CN=Staat der Nederlanden EV Root CA, O=Staat der Nederlanden, C=NL
-# https://pkioevssl-v.quovadisglobal.com/
-trust_anchors {
-  sha256_hex: "4d2491414cfe956746ec4cefa6cf6f72e28a1329432f9d8a907ac4cb5dadc15a"
-
-  ev_policy_oids: "2.16.528.1.1003.1.2.7"
 }
 
 # CN=TUBITAK Kamu SM SSL Kok Sertifikasi - Surum 1, OU=Kamu Sertifikasyon Merkezi - Kamu SM, O=Turkiye Bilimsel ve Teknolojik Arastirma Kurumu - TUBITAK, L=Gebze - Kocaeli, C=TR
@@ -484,7 +454,6 @@ trust_anchors {
 # https://servicios1.izenpe.com
 trust_anchors {
   sha256_hex: "2530cc8e98321502bad96f9b1fba1b099e2d299e0f4548bb914f363bc0d4531f"
-
   ev_policy_oids: "1.3.6.1.4.1.14777.6.1.1",
   ev_policy_oids: "1.3.6.1.4.1.14777.6.1.2"
 }
@@ -525,7 +494,6 @@ trust_anchors {
 # https://goodevssl.wisekey.com
 trust_anchors {
   sha256_hex: "6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6"
-
   ev_policy_oids: "2.16.756.5.14.7.4.8"
 }
 
@@ -543,7 +511,6 @@ trust_anchors {
 # https://www.quovadis.bm/
 trust_anchors {
   sha256_hex: "85a0dd7dd720adb7ff05f83d542b209dc7ff4528f7d677b18389fea5e5c49e86"
-
   ev_policy_oids: "1.3.6.1.4.1.8024.0.2.100.1.2"
 }
 
@@ -561,7 +528,6 @@ trust_anchors {
 # https://evsslicag3-v.quovadisglobal.com/
 trust_anchors {
   sha256_hex: "8fe4fb0af93a4d0d67db0bebb23e37c71bf325dcbcdd240ea04daf58b47e1840"
-
   ev_policy_oids: "1.3.6.1.4.1.8024.0.2.100.1.2"
 }
 
@@ -569,7 +535,6 @@ trust_anchors {
 # https://www.secomtrust.net/contact/form.html
 trust_anchors {
   sha256_hex: "513b2cecb810d4cde5dd85391adfc6c2dd60d87bb736d2b521484aa47a0ebef6"
-
   ev_policy_oids: "1.2.392.200091.100.721.1"
 }
 
@@ -582,7 +547,6 @@ trust_anchors {
 # https://secure.comodo.com/
 trust_anchors {
   sha256_hex: "1a0d20445de5ba1862d19ef880858cbce50102b36e8f0a040c3c69e74522fe6e"
-
   ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
 }
 
@@ -590,7 +554,6 @@ trust_anchors {
 # https://comodoecccertificationauthority-ev.comodoca.com/
 trust_anchors {
   sha256_hex: "1793927a0614549789adce2f8f34f7f0b66d0f3ae3a3b84d21ec15dbba4fadc7"
-
   ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
 }
 
@@ -598,7 +561,6 @@ trust_anchors {
 # https://usertrustecccertificationauthority-ev.comodoca.com/
 trust_anchors {
   sha256_hex: "4ff460d54b9c86dabfbcfc5712e0400d2bed3fbc4d4fbdaa86e06adcd2a9ad7a"
-
   ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
 }
 
@@ -606,7 +568,6 @@ trust_anchors {
 # https://comodorsacertificationauthority-ev.comodoca.com/
 trust_anchors {
   sha256_hex: "52f0e1c4e58ec629291b60317f074671b85d7ea80d5b07273463534b32b40234"
-
   ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
 }
 
@@ -619,36 +580,36 @@ trust_anchors {
 # https://usertrustrsacertificationauthority-ev.comodoca.com/
 trust_anchors {
   sha256_hex: "e793c9b02fd8aa13e21c31228accb08119643b749c898964b1746d46c3d4cbd2"
-
   ev_policy_oids: "1.3.6.1.4.1.6449.1.2.1.5.1"
 }
 
 # CN=Secure Global CA, O=SecureTrust Corporation, C=US
 trust_anchors {
   sha256_hex: "4200f5043ac8590ebb527d209ed1503029fbcbd41ca1b506ec27f15ade7dac69"
-
   ev_policy_oids: "2.16.840.1.114404.1.1.2.4.1"
 }
 
 # CN=Trustwave Global ECC P384 Certification Authority, O=Trustwave Holdings, Inc., L=Chicago, ST=Illinois, C=US
 trust_anchors {
   sha256_hex: "55903859c8c0c3ebb8759ece4e2557225ff5758bbd38ebd48276601e1bd58097"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Trustwave Global ECC P256 Certification Authority, O=Trustwave Holdings, Inc., L=Chicago, ST=Illinois, C=US
 trust_anchors {
   sha256_hex: "945bbc825ea554f489d1fd51a73ddf2ea624ac7019a05205225c22a78ccfa8b4"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Trustwave Global Certification Authority, O=Trustwave Holdings, Inc., L=Chicago, ST=Illinois, C=US
 trust_anchors {
   sha256_hex: "97552015f5ddfc3c8788c006944555408894450084f100867086bc1a2bb58dc8"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=XRamp Global Certification Authority, O=XRamp Security Services Inc, OU=www.xrampsecurity.com, C=US
 trust_anchors {
   sha256_hex: "cecddc905099d8dadfc5b1d209b737cbe2c18cfb2c10c0ff0bcf0d3286fc1aa2"
-
   ev_policy_oids: "2.16.840.1.114404.1.1.2.4.1"
 }
 
@@ -657,7 +618,6 @@ trust_anchors {
 # https://www.trustwave.com/
 trust_anchors {
   sha256_hex: "f1c1b50ae5a20dd8030ec9f6bc24823dd367b5255759b4e71b61fce9f7375d73"
-
   ev_policy_oids: "2.16.840.1.114404.1.1.2.4.1"
 }
 
@@ -670,7 +630,6 @@ trust_anchors {
 # https://rsaevg1.good.sheca.com/
 trust_anchors {
   sha256_hex: "d43af9b35473755c9684fc06d7d8cb70ee5c28e773fb294eb41ee71722924d24"
-
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -678,7 +637,6 @@ trust_anchors {
 # https://test-ev-ecc.ssl.com/
 trust_anchors {
   sha256_hex: "22a2c1f7bded704cc1e701b5f408c310880fe956b5de2a4a44f99c873a25a7c8"
-
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -686,7 +644,6 @@ trust_anchors {
 # https://test-ev-rsa.ssl.com/
 trust_anchors {
   sha256_hex: "2e7bf16cc22485a7bbe2aa8696750761b0ae39be3b2fe9d0cc6d4ef73491425c"
-
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -704,7 +661,6 @@ trust_anchors {
 # https://testevg2.swisssign.net/
 trust_anchors {
   sha256_hex: "62dd0be9b9f50a163ea0f8e75c053b1eca57ea55c8688f647c6881f2c8357b95"
-
   ev_policy_oids: "2.16.756.1.89.1.2.1.1"
 }
 
@@ -717,7 +673,6 @@ trust_anchors {
 # https://evssldemo3.twca.com.tw/index.html
 trust_anchors {
   sha256_hex: "59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b"
-
   ev_policy_oids: "1.3.6.1.4.1.40869.1.1.22.3"
 }
 
@@ -725,7 +680,6 @@ trust_anchors {
 # https://evssldemo.twca.com.tw/index.html
 trust_anchors {
   sha256_hex: "bfd88fe1101c41ae3e801bf8be56350ee9bad1a6b9bd515edc5c6d5b8711ac44"
-
   ev_policy_oids: "1.3.6.1.4.1.40869.1.1.22.3"
 }
 
@@ -747,14 +701,6 @@ trust_anchors {
 # CN=TrustCor RootCert CA-1, OU=TrustCor Certificate Authority, O=TrustCor Systems S. de R.L., L=Panama City, ST=Panama, C=PA
 trust_anchors {
   sha256_hex: "d40e9c86cd8fe468c1776959f49ea774fa548684b6c406f3909261f4dce2575c"
-}
-
-# CN=Network Solutions Certificate Authority, O=Network Solutions L.L.C., C=US
-# https://www.networksolutions.com/website-packages/index.jsp
-trust_anchors {
-  sha256_hex: "001686cd181f83a1b1217d305b365c41e3470a78a1d37b134a98cd547b92dab3"
-
-  ev_policy_oids: "1.3.6.1.4.1.782.1.2.1.8.1"
 }
 
 # CN=Certum EC-384 CA, OU=Certum Certification Authority, O=Asseco Data Systems S.A., C=PL
