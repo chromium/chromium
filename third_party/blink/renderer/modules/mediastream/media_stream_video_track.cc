@@ -1032,7 +1032,7 @@ void MediaStreamVideoTrack::StartTimerForRequestingFrames() {
   }
 
   base::TimeDelta refresh_interval = ComputeRefreshIntervalFromBounds(
-      base::Hertz(required_min_fps), min_frame_rate_, max_frame_rate_);
+      base::Hertz(required_min_fps), min_frame_rate(), max_frame_rate());
 
   if (refresh_interval.is_max()) {
     refresh_timer_.Stop();

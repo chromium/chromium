@@ -128,8 +128,8 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   const absl::optional<double>& min_frame_rate() const {
     return min_frame_rate_;
   }
-  const absl::optional<double>& max_frame_rate() const {
-    return max_frame_rate_;
+  absl::optional<double> max_frame_rate() const {
+    return adapter_settings_.max_frame_rate();
   }
   const VideoTrackAdapterSettings& adapter_settings() const {
     return adapter_settings_;
@@ -223,7 +223,6 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   absl::optional<bool> noise_reduction_;
   bool is_screencast_;
   absl::optional<double> min_frame_rate_;
-  absl::optional<double> max_frame_rate_;
   absl::optional<double> pan_;
   absl::optional<double> tilt_;
   absl::optional<double> zoom_;

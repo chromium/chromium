@@ -396,6 +396,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliverFramesAndGetSettings) {
   sink.ConnectToTrack(track);
   MediaStreamVideoTrack* const native_track =
       MediaStreamVideoTrack::From(track);
+  EXPECT_FALSE(native_track->max_frame_rate().has_value());
   MediaStreamTrackPlatform::Settings settings;
 
   auto frame1 = media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
@@ -687,6 +688,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliversConstraintsToKnownSinks) {
   settings.set_max_frame_rate(300);
   native_track->SetTrackAdapterSettings(settings);
   native_track->NotifyConstraintsConfigurationComplete();
+  EXPECT_THAT(native_track->max_frame_rate(), testing::Optional(300));
   Mock::VerifyAndClearExpectations(&sink1);
   Mock::VerifyAndClearExpectations(&sink2);
 
@@ -704,6 +706,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliversConstraintsToNewSinks) {
   settings.set_max_frame_rate(20);
   native_track->SetTrackAdapterSettings(settings);
   native_track->NotifyConstraintsConfigurationComplete();
+  EXPECT_THAT(native_track->max_frame_rate(), testing::Optional(20));
 
   MockMediaStreamVideoSink sink1;
   sink1.ConnectToTrack(track);
