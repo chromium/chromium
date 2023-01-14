@@ -299,6 +299,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kNightLightCachedLongitude[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAutoNightLightNotificationDismissed[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDynamicColorColorScheme[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDynamicColorSeedColor[];
+
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOsSettingsEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAllowScreenLock[];

@@ -10,6 +10,7 @@
 #include "ash/style/color_palette_controller.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
@@ -58,8 +59,9 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   NotifyColorModeAutoScheduleChanged();
   if (ash::features::IsJellyEnabled()) {
     // TODO(b/261505637): Observe changes to the color prefs.
-    OnStaticColorChanged(color_palette_controller_->static_color());
-    OnColorSchemeChanged(color_palette_controller_->color_scheme());
+    AccountId account_id = GetAccountId(profile_);
+    OnStaticColorChanged(color_palette_controller_->GetStaticColor(account_id));
+    OnColorSchemeChanged(color_palette_controller_->GetColorScheme(account_id));
   }
 }
 
@@ -135,7 +137,8 @@ void PersonalizationAppThemeProviderImpl::GetColorScheme(
         "Cannot call GetColorScheme without Jelly enabled.");
     return;
   }
-  std::move(callback).Run(color_palette_controller_->color_scheme());
+  std::move(callback).Run(
+      color_palette_controller_->GetColorScheme(GetAccountId(profile_)));
 }
 
 void PersonalizationAppThemeProviderImpl::SetColorScheme(
@@ -145,7 +148,8 @@ void PersonalizationAppThemeProviderImpl::SetColorScheme(
         "Cannot call SetColorScheme without Jelly enabled.");
     return;
   }
-  color_palette_controller_->SetColorScheme(color_scheme, base::DoNothing());
+  color_palette_controller_->SetColorScheme(
+      color_scheme, GetAccountId(profile_), base::DoNothing());
   OnColorSchemeChanged(color_scheme);
 }
 
@@ -156,7 +160,8 @@ void PersonalizationAppThemeProviderImpl::GetStaticColor(
         "Cannot call GetStaticColor without Jelly enabled.");
     return;
   }
-  std::move(callback).Run(color_palette_controller_->static_color());
+  std::move(callback).Run(
+      color_palette_controller_->GetStaticColor(GetAccountId(profile_)));
 }
 
 void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
@@ -165,11 +170,13 @@ void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
         "Cannot call SetStaticColor without Jelly enabled.");
     return;
   }
-  color_palette_controller_->SetStaticColor(static_color, base::DoNothing());
+  AccountId account_id = GetAccountId(profile_);
+  color_palette_controller_->SetStaticColor(static_color, account_id,
+                                            base::DoNothing());
   // TODO(b/261505637): Remove and use pref listeners once the prefs are
   // available.
   OnStaticColorChanged(static_color);
-  OnColorSchemeChanged(color_palette_controller_->color_scheme());
+  OnColorSchemeChanged(ColorScheme::kStatic);
 }
 
 void PersonalizationAppThemeProviderImpl::GenerateSampleColorSchemes(

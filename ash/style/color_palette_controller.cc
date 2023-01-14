@@ -6,15 +6,27 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace ash {
 
 namespace {
+
+PrefService* GetUserPrefService(const AccountId& account_id) {
+  DCHECK(account_id.is_valid());
+  return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
+      account_id);
+}
 
 // TODO(b/258719005): Finish implementation with code that works/uses libmonet.
 class ColorPaletteControllerImpl : public ColorPaletteController {
@@ -32,43 +44,82 @@ class ColorPaletteControllerImpl : public ColorPaletteController {
   }
 
   void SetColorScheme(ColorScheme scheme,
+                      const AccountId& account_id,
                       base::OnceClosure on_complete) override {
     DVLOG(1) << "Setting color scheme to: " << (int)scheme;
-    current_scheme_ = scheme;
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (!pref_service) {
+      DVLOG(1) << "No user pref service available.";
+      return;
+    }
+    pref_service->SetInteger(prefs::kDynamicColorColorScheme,
+                             static_cast<int>(scheme));
     // TODO(b/258719005): Call this after the native theme change has been
-    // applied. Also, actually change things.
+    // applied.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(on_complete), base::Milliseconds(100));
   }
 
   void SetStaticColor(SkColor seed_color,
+                      const AccountId& account_id,
                       base::OnceClosure on_complete) override {
     DVLOG(1) << "Static color scheme: " << (int)seed_color;
-    static_color_ = seed_color;
-    current_scheme_ = ColorScheme::kStatic;
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (!pref_service) {
+      DVLOG(1) << "No user pref service available.";
+      return;
+    }
+    pref_service->SetUint64(prefs::kDynamicColorSeedColor, seed_color);
+    pref_service->SetInteger(prefs::kDynamicColorColorScheme,
+                             static_cast<int>(ColorScheme::kStatic));
     // TODO(b/258719005): Call this after the native theme change has been
-    // applied. Also, actually change things.
+    // applied.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(on_complete), base::Milliseconds(100));
   }
 
-  ColorPaletteSeed GetColorPaletteSeed() const override {
-    // TODO(b/258719005):  Implement me!
-    return {.seed_color = static_color_,
-            .scheme = current_scheme_,
+  ColorPaletteSeed GetColorPaletteSeed(
+      const AccountId& account_id) const override {
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (!pref_service) {
+      DVLOG(1) << "No user pref service available. Returning default color "
+                  "palette seed.";
+      return {.seed_color = SK_ColorBLUE,
+              .scheme = ColorScheme::kTonalSpot,
+              .color_mode = ui::ColorProviderManager::ColorMode::kLight};
+    }
+    SkColor color = static_cast<SkColor>(
+        pref_service->GetUint64(prefs::kDynamicColorSeedColor));
+    return {.seed_color = color,
+            .scheme = GetColorScheme(account_id),
             .color_mode = ui::ColorProviderManager::ColorMode::kLight};
   }
 
-  bool UsesWallpaperSeedColor() const override {
+  bool UsesWallpaperSeedColor(const AccountId& account_id) const override {
     // Scheme tracks if wallpaper color is used.
-    return current_scheme_ != ColorScheme::kStatic;
+    return GetColorScheme(account_id) != ColorScheme::kStatic;
   }
 
-  ColorScheme color_scheme() const override { return current_scheme_; }
+  ColorScheme GetColorScheme(const AccountId& account_id) const override {
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (!pref_service) {
+      DVLOG(1)
+          << "No user pref service available. Returning default color scheme.";
+      return ColorScheme::kTonalSpot;
+    }
+    return static_cast<ColorScheme>(
+        pref_service->GetInteger(prefs::kDynamicColorColorScheme));
+  }
 
-  absl::optional<SkColor> static_color() const override {
-    if (current_scheme_ == ColorScheme::kStatic) {
-      return static_color_;
+  absl::optional<SkColor> GetStaticColor(
+      const AccountId& account_id) const override {
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (!pref_service) {
+      DVLOG(1) << "No user pref service available.";
+      return absl::nullopt;
+    }
+    if (GetColorScheme(account_id) == ColorScheme::kStatic) {
+      return pref_service->GetUint64(prefs::kDynamicColorSeedColor);
     }
 
     return absl::nullopt;
@@ -87,8 +138,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController {
   }
 
  private:
-  SkColor static_color_ = SK_ColorBLUE;
-  ColorScheme current_scheme_ = ColorScheme::kTonalSpot;
   base::ObserverList<ColorPaletteController::Observer> observers_;
 
   SampleColorScheme GenerateSampleColorScheme(ColorScheme scheme) const {
@@ -109,6 +158,13 @@ class ColorPaletteControllerImpl : public ColorPaletteController {
 // static
 std::unique_ptr<ColorPaletteController> ColorPaletteController::Create() {
   return std::make_unique<ColorPaletteControllerImpl>();
+}
+
+// static
+void ColorPaletteController::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kDynamicColorColorScheme,
+                                static_cast<int>(ColorScheme::kTonalSpot));
+  registry->RegisterUint64Pref(prefs::kDynamicColorSeedColor, 0);
 }
 
 }  // namespace ash

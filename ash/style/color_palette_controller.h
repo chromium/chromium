@@ -7,9 +7,13 @@
 
 #include "ash/ash_export.h"
 #include "base/observer_list_types.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_manager.h"
+
+class PrefRegistrySimple;
 
 namespace ash {
 
@@ -26,7 +30,7 @@ enum class ASH_EXPORT ColorScheme {
 // An encapsulation of the data which Ash provides for the generation of a color
 // palette.
 struct ASH_EXPORT ColorPaletteSeed {
-  // The color which the palette is genertated from.
+  // The color which the palette is generated from.
   SkColor seed_color;
   // The type of palette which is being generated.
   ColorScheme scheme;
@@ -73,6 +77,8 @@ class ASH_EXPORT ColorPaletteController {
 
   virtual ~ColorPaletteController() = default;
 
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
@@ -81,6 +87,7 @@ class ASH_EXPORT ColorPaletteController {
   // applied i.e. after NativeThemeObservers have executed. `on_complete` is
   // called after the change has been applied to the UI.
   virtual void SetColorScheme(ColorScheme scheme,
+                              const AccountId& account_id,
                               base::OnceClosure on_complete) = 0;
 
   // Overrides the wallpaper color with a scheme based on the provided
@@ -88,18 +95,21 @@ class ASH_EXPORT ColorPaletteController {
   // wallpaper. `on_complete` is called after the change has been applied to the
   // UI.
   virtual void SetStaticColor(SkColor seed_color,
+                              const AccountId& account_id,
                               base::OnceClosure on_complete) = 0;
 
   // Returns the most recently used ColorPaletteSeed.
-  virtual ColorPaletteSeed GetColorPaletteSeed() const = 0;
+  virtual ColorPaletteSeed GetColorPaletteSeed(
+      const AccountId& account_id) const = 0;
 
   // Returns true if using a color scheme based on the current wallpaper.
-  virtual bool UsesWallpaperSeedColor() const = 0;
+  virtual bool UsesWallpaperSeedColor(const AccountId& account_id) const = 0;
 
-  virtual ColorScheme color_scheme() const = 0;
+  virtual ColorScheme GetColorScheme(const AccountId& account_id) const = 0;
 
   // Iff a static color is the currently selected scheme, returns that color.
-  virtual absl::optional<SkColor> static_color() const = 0;
+  virtual absl::optional<SkColor> GetStaticColor(
+      const AccountId& account_id) const = 0;
 
   // Generates a tri-color SampleColorScheme based on the current configuration
   // for the provided `scheme`. i.e. uses the current seed_color and color_mode

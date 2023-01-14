@@ -594,6 +594,14 @@ const char kAmbientColorEnabled[] = "ash.ambient_color.enabled";
 // A boolean pref that indicates whether dark mode is enabled.
 const char kDarkModeEnabled[] = "ash.dark_mode.enabled";
 
+// An integer pref that indicates the color scheme used to calculate the dynamic
+// color palette.
+const char kDynamicColorColorScheme[] = "ash.dynamic_color.color_scheme";
+
+// A uint64 pref that indicates the seed color used to calculate the dynamic
+// color palette. It is an ARGB 32-bit unsigned integer stored as a uint64.
+const char kDynamicColorSeedColor[] = "ash.dynamic_color.seed_color";
+
 // An integer pref storing the number of times that dark/light mode educational
 // can still be shown. It will be initialized to the maximum number of times
 // that the nudge can be shown. And will be set to 0 if the user toggled the

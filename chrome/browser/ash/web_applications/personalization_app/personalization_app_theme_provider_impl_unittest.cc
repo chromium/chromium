@@ -10,12 +10,14 @@
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -32,6 +34,17 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
+constexpr char kTestGaiaId[] = "1234567890";
+
+void AddAndLoginUser(const AccountId& account_id) {
+  ash::FakeChromeUserManager* user_manager =
+      static_cast<ash::FakeChromeUserManager*>(
+          user_manager::UserManager::Get());
+
+  user_manager->AddUser(account_id);
+  user_manager->LoginUser(account_id);
+  user_manager->SwitchActiveUser(account_id);
+}
 
 class TestThemeObserver
     : public ash::personalization_app::mojom::ThemeObserver {
@@ -61,16 +74,18 @@ class TestThemeObserver
   }
 
   absl::optional<bool> is_dark_mode_enabled() {
-    if (!theme_observer_receiver_.is_bound())
+    if (!theme_observer_receiver_.is_bound()) {
       return absl::nullopt;
+    }
 
     theme_observer_receiver_.FlushForTesting();
     return dark_mode_enabled_;
   }
 
   bool is_color_mode_auto_schedule_enabled() {
-    if (theme_observer_receiver_.is_bound())
+    if (theme_observer_receiver_.is_bound()) {
       theme_observer_receiver_.FlushForTesting();
+    }
     return color_mode_auto_schedule_enabled_;
   }
 
@@ -82,8 +97,9 @@ class TestThemeObserver
   }
 
   absl::optional<SkColor> GetStaticColor() {
-    if (!theme_observer_receiver_.is_bound())
+    if (!theme_observer_receiver_.is_bound()) {
       return absl::nullopt;
+    }
     theme_observer_receiver_.FlushForTesting();
     return static_color_;
   }
@@ -156,14 +172,16 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   }
 
   absl::optional<bool> is_dark_mode_enabled() {
-    if (theme_provider_remote_.is_bound())
+    if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
+    }
     return test_theme_observer_.is_dark_mode_enabled();
   }
 
   bool is_color_mode_auto_schedule_enabled() {
-    if (theme_provider_remote_.is_bound())
+    if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
+    }
     return test_theme_observer_.is_color_mode_auto_schedule_enabled();
   }
 
@@ -175,8 +193,9 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   }
 
   absl::optional<SkColor> GetStaticColor() {
-    if (theme_provider_remote_.is_bound())
+    if (theme_provider_remote_.is_bound()) {
       theme_provider_remote_.FlushForTesting();
+    }
     return test_theme_observer_.GetStaticColor();
   }
 
@@ -245,6 +264,14 @@ class PersonalizationAppThemeProviderImplJellyTest
       const PersonalizationAppThemeProviderImplJellyTest&) = delete;
   PersonalizationAppThemeProviderImplJellyTest& operator=(
       const PersonalizationAppThemeProviderImplJellyTest&) = delete;
+
+  void SetUp() override {
+    PersonalizationAppThemeProviderImplTest::SetUp();
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+    AddAndLoginUser(account_id);
+    GetSessionControllerClient()->AddUserSession(account_id, kFakeTestEmail);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
