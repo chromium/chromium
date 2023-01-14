@@ -51,13 +51,12 @@ export class CategoriesElement extends PolymerElement {
 
   private onClassicChromeClick_() {
     this.pageHandler_.setClassicChromeDefaultTheme();
-    this.dispatchEvent(new Event('theme-select'));
   }
 
   private async onUploadImageClick_() {
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
-      this.dispatchEvent(new Event('theme-select'));
+      this.dispatchEvent(new Event('local-image-upload'));
     }
   }
 

@@ -76,7 +76,7 @@ export class AppElement extends PolymerElement {
     this.page_ = CustomizeChromePage.THEMES;
   }
 
-  private onThemeSelect_() {
+  private onLocalImageUpload_() {
     this.page_ = CustomizeChromePage.OVERVIEW;
   }
 }

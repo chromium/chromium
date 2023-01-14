@@ -111,7 +111,6 @@ export class ThemesElement extends PolymerElement {
     } = e.model.item;
     this.pageHandler_.setBackgroundImage(
         attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl);
-    this.dispatchEvent(new Event('theme-select'));
   }
 
   private computeIsRefreshToggleChecked_(): boolean {

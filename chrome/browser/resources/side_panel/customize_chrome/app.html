@@ -56,10 +56,10 @@
   </div>
   <customize-chrome-categories on-back-click="onBackClick_"
       on-collection-select="onCollectionSelect_" page-name="categories"
-      id="categoriesPage" on-theme-select="onThemeSelect_">
+      id="categoriesPage" on-local-image-upload="onLocalImageUpload_">
   </customize-chrome-categories>
   <customize-chrome-themes on-back-click="onBackClick_"
-      on-theme-select="onThemeSelect_" page-name="themes"
-      id="themesPage" selected-collection="[[selectedCollection_]]">
+      page-name="themes" id="themesPage" 
+      selected-collection="[[selectedCollection_]]">
   </customize-chrome-themes>
 </iron-pages>

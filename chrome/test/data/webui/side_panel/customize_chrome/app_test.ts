@@ -44,21 +44,22 @@ suite('AppTest', () => {
     assertTrue(
         customizeChromeApp.$.themesPage.classList.contains('iron-selected'));
 
-    // Send event for theme selected.
-    customizeChromeApp.$.themesPage.dispatchEvent(new Event('theme-select'));
-    // Current page should now be overview.
-    assertTrue(
-        customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
-
-    // Set page back to themes and then go back a page.
-    customizeChromeApp.$.categoriesPage.dispatchEvent(
-        new CustomEvent<BackgroundCollection>(
-            'collection-select', {detail: testCollection}));
+    // Send event for back click.
     customizeChromeApp.$.themesPage.dispatchEvent(new Event('back-click'));
     // Current page should now be categories.
     assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
         'iron-selected'));
-    // Go back again.
+
+    // Send event for upload image.
+    customizeChromeApp.$.categoriesPage.dispatchEvent(
+        new Event('local-image-upload'));
+    // Current page should now be overview.
+    assertTrue(
+        customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
+
+    // Set page back to categories and go back a page.
+    customizeChromeApp.$.appearanceElement.dispatchEvent(
+        new Event('edit-theme-click'));
     customizeChromeApp.$.categoriesPage.dispatchEvent(new Event('back-click'));
     // Current page should now be overview.
     assertTrue(

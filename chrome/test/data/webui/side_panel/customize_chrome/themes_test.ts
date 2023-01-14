@@ -71,18 +71,13 @@ suite('ThemesTest', () => {
     assertTrue(!!event);
   });
 
-  test('set theme and send event on theme click', async () => {
+  test('set theme on theme click', async () => {
     await setCollection('test', 2);
 
-    // Check that clicking a theme produces a theme-select event.
-    const eventPromise = eventToPromise('theme-select', themesElement);
+    // Check that setBackgroundImage was called on click.
     const theme =
         themesElement.shadowRoot!.querySelector('.theme')! as HTMLButtonElement;
     theme.click();
-    const event = await eventPromise;
-    assertTrue(!!event);
-
-    // Check that setBackgroundImage was called on click.
     assertEquals(1, handler.getCallCount('setBackgroundImage'));
   });
 
