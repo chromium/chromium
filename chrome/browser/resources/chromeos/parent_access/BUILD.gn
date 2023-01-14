@@ -20,6 +20,7 @@ js_type_check("closure_compile_local") {
   deps = [
     ":parent_access_after",
     ":parent_access_app",
+    ":parent_access_before",
     ":parent_access_controller",
     ":parent_access_ui",
     ":parent_access_ui_handler",
@@ -38,9 +39,18 @@ js_library("parent_access_after") {
       [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
 }
 
+js_library("parent_access_before") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
+}
+
 js_library("parent_access_app") {
   deps = [
     ":parent_access_after",
+    ":parent_access_before",
     ":parent_access_ui",
     ":parent_access_ui_handler",
     "//chrome/browser/resources/chromeos/supervision:supervised_user_error",
@@ -84,6 +94,7 @@ html_to_js("web_components") {
   js_files = [
     "parent_access_after.js",
     "parent_access_app.js",
+    "parent_access_before.js",
     "parent_access_ui.js",
   ]
 }

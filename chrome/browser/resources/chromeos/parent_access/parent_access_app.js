@@ -7,9 +7,10 @@
 // into |loadTimeData|.
 import './strings.m.js';
 import './parent_access_after.js';
+import './parent_access_before.js';
+import './parent_access_ui.js';
 import './supervision/supervised_user_error.js';
 import './supervision/supervised_user_offline.js';
-import './parent_access_ui.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,7 +20,8 @@ import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
 
 /** @enum {string} */
 export const Screens = {
-  ONLINE_FLOW: 'parent-access-ui',
+  AUTHENTICATION_FLOW: 'parent-access-ui',
+  BEFORE_FLOW: 'parent-access-before',
   AFTER_FLOW: 'parent-access-after',
   ERROR: 'supervised-user-error',
   OFFLINE: 'supervised-user-offline',
@@ -42,7 +44,7 @@ class ParentAccessApp extends PolymerElement {
        */
       currentScreen_: {
         type: Screens,
-        value: Screens.ONLINE_FLOW,
+        value: Screens.AUTHENTICATION_FLOW,
       },
     };
   }
@@ -57,13 +59,19 @@ class ParentAccessApp extends PolymerElement {
       this.shadowRoot.querySelector('parent-access-after').onShowAfterScreen();
     });
 
+    this.addEventListener('show-authentication-flow', () => {
+      this.currentScreen_ = Screens.AUTHENTICATION_FLOW;
+      /** @type {CrViewManagerElement} */ (this.$.viewManager)
+          .switchView(this.currentScreen_);
+    });
+
     this.addEventListener('show-error', () => {
       this.onError_();
     });
 
     window.addEventListener('online', () => {
       if (this.currentScreen_ !== Screens.ERROR) {
-        this.currentScreen_ = Screens.ONLINE_FLOW;
+        this.currentScreen_ = this.getInitialScreen_();
         /** @type {CrViewManagerElement} */ (this.$.viewManager)
             .switchView(this.currentScreen_);
       }
@@ -78,9 +86,15 @@ class ParentAccessApp extends PolymerElement {
     });
 
     this.currentScreen_ =
-        navigator.onLine ? Screens.ONLINE_FLOW : Screens.OFFLINE;
+        navigator.onLine ? this.getInitialScreen_() : Screens.OFFLINE;
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(this.currentScreen_);
+  }
+
+  getInitialScreen_() {
+    // TODO(b/262448394): Implement logic to check if the before screen should
+    // be shown instead of the authentication flow.
+    return Screens.AUTHENTICATION_FLOW;
   }
 
   /**

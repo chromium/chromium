@@ -1,0 +1,42 @@
+<style>
+  .action-button {
+    margin-inline-start: 8px;
+  }
+
+  #before-screen {
+    background-color: var(--cros-bg-color-elevation-1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-start;
+    padding: 26px 24px 20px;
+  }
+
+  #before-screen-buttons {
+    display: flex;
+    /* Allows the button that appears first visually to be last in tab order */
+    flex-direction: row-reverse;
+    margin-top: auto; /* position at end of flexbox */
+    width: 100%;
+  }
+
+  #illustration {
+    height: 96px;
+    width: 96px;
+  }
+</style>
+
+<div id="before-screen">
+  <picture>
+    <source srcset="images/request_approval_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img src="images/request_approval.svg" id="illustration">
+  </picture>
+  <div id="befpre-screen-body" aria-live="polite"></div>
+  <div id="before-screen-buttons">
+    <cr-button class="action-button" on-click="showParentAccessUI_">
+      $i18n{askInPersonButtonText}
+    </cr-button>
+  </div>
+</div>
