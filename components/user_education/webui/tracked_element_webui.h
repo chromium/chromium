@@ -9,6 +9,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace user_education {
 
@@ -31,13 +32,14 @@ class TrackedElementWebUI : public ui::TrackedElement {
  private:
   friend class HelpBubbleHandlerBase;
 
-  void SetVisible(bool visible);
+  void SetVisible(bool visible, gfx::RectF bounds = gfx::RectF());
   void Activate();
   void CustomEvent(ui::CustomElementEventType event_type);
   bool visible() const { return visible_; }
 
   const base::raw_ptr<HelpBubbleHandlerBase> handler_;
   bool visible_ = false;
+  gfx::RectF last_known_bounds_;
 };
 
 }  // namespace user_education

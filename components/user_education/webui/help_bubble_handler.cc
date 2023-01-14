@@ -220,7 +220,8 @@ void HelpBubbleHandlerBase::OnHelpBubbleClosing(
 
 void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
     const std::string& identifier_name,
-    bool visible) {
+    bool visible,
+    const gfx::RectF& rect) {
   ui::ElementIdentifier id;
   ElementData* const data = GetDataByName(identifier_name, &id);
   if (!data)
@@ -228,7 +229,7 @@ void HelpBubbleHandlerBase::HelpBubbleAnchorVisibilityChanged(
 
   // Note: any of the following calls could destroy *this* via a callback.
   if (!data->element->visible() && visible) {
-    data->element->SetVisible(true);
+    data->element->SetVisible(true, rect);
   } else if (data->element->visible() && !visible) {
     // Is a help bubble currently showing?
     if (data->params) {

@@ -10,6 +10,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace user_education {
 
@@ -29,14 +30,24 @@ gfx::Rect TrackedElementWebUI::GetScreenBounds() const {
   content::WebContents* const contents =
       handler_->GetController()->web_ui()->GetWebContents();
   if (contents) {
-    // TODO(dfried): this is a placeholder; the actual bounds of the element in
-    // the view should be offset by the origin of this rectangle.
-    result = contents->GetContainerBounds();
+    // Use the last known bounds, but if the bounds are empty, make them 1x1 so
+    // there's something to anchor to.
+    result = gfx::ToRoundedRect(last_known_bounds_);
+    if (result.width() < 1) {
+      result.set_width(1);
+    }
+    if (result.height() < 1) {
+      result.set_height(1);
+    }
+    // To get the screen coordinates, have to offset by the coordinates of the
+    // viewport.
+    result.Offset(contents->GetContainerBounds().OffsetFromOrigin());
   }
   return result;
 }
 
-void TrackedElementWebUI::SetVisible(bool visible) {
+void TrackedElementWebUI::SetVisible(bool visible, gfx::RectF bounds) {
+  last_known_bounds_ = bounds;
   if (visible == visible_)
     return;
 

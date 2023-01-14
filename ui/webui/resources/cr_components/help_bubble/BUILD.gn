@@ -14,7 +14,10 @@ assert(!is_android && !is_ios)
 mojom("mojo_bindings") {
   sources = [ "help_bubble.mojom" ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
 
   webui_module_path = "chrome://resources/cr_components/help_bubble/"
 }

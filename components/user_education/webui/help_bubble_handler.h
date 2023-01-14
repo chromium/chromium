@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 namespace content {
@@ -96,7 +97,8 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
 
   // mojom::HelpBubbleHandler:
   void HelpBubbleAnchorVisibilityChanged(const std::string& identifier_name,
-                                         bool visible) final;
+                                         bool visible,
+                                         const gfx::RectF& rect) final;
   void HelpBubbleAnchorActivated(const std::string& identifier_name) final;
   void HelpBubbleAnchorCustomEvent(const std::string& identifier_name,
                                    const std::string& event_name) final;

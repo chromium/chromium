@@ -20,6 +20,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
@@ -327,8 +328,16 @@ export const HelpBubbleMixin = dedupingMixin(
             this.helpBubbleHandler_.helpBubbleClosed(
                 nativeId, HelpBubbleClosedReason.kPageChanged);
           }
+          const rect = new RectF();
+          if (isVisible) {
+            const bounds = target.getBoundingClientRect();
+            rect.x = bounds.x;
+            rect.y = bounds.y;
+            rect.width = bounds.width;
+            rect.height = bounds.height;
+          }
           this.helpBubbleHandler_.helpBubbleAnchorVisibilityChanged(
-              nativeId, isVisible);
+              nativeId, isVisible, rect);
         }
 
         /**

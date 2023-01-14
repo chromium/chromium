@@ -100,11 +100,29 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
       SelectDropdownItem(kSidePanelComboboxElementId,
                          static_cast<int>(SidePanelEntry::Id::kReadingList)),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
+
+      // Expect the help bubble to display with the correct parameters.
       CheckView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
                 base::BindOnce([](user_education::HelpBubbleView* bubble) {
                   return bubble->GetDefaultButtonForTesting()->GetText() ==
                          kBubbleButtonText;
-                })));
+                })),
+
+      // Expect the bubble to overlap the side panel slightly, as the anchor
+      // element is not flush with the edge of the side panel.
+      CheckView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+                base::BindOnce(
+                    [](ui::ElementContext context, views::View* bubble) {
+                      const gfx::Rect bubble_rect =
+                          bubble->GetWidget()->GetWindowBoundsInScreen();
+                      const gfx::Rect side_panel_rect =
+                          views::ElementTrackerViews::GetInstance()
+                              ->GetFirstMatchingView(kSidePanelElementId,
+                                                     context)
+                              ->GetBoundsInScreen();
+                      return bubble_rect.Intersects(side_panel_rect);
+                    },
+                    browser()->window()->GetElementContext())));
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
