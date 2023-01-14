@@ -497,8 +497,8 @@
   'CROS_DEDEDE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'dedede',
-      'cros_chrome_version': '108.0.5359.111',
-      'cros_img': 'dedede-release/R108-15183.69.0',
+      'cros_chrome_version': '109.0.5414.94',
+      'cros_img': 'dedede-release/R109-15236.66.0',
     },
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_STABLE',
@@ -579,8 +579,8 @@
   'CROS_HANA_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '108.0.5359.172',
-      'cros_img': 'hana-release/R108-15183.78.0',
+      'cros_chrome_version': '109.0.5414.94',
+      'cros_img': 'hana-release/R109-15236.66.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_STABLE',
@@ -624,8 +624,8 @@
   'CROS_JACUZZI_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '108.0.5359.172',
-      'cros_img': 'jacuzzi-release/R108-15183.78.0',
+      'cros_chrome_version': '109.0.5414.94',
+      'cros_img': 'jacuzzi-release/R109-15236.66.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_STABLE',
