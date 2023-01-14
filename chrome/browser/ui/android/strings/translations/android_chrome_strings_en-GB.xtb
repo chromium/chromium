@@ -279,6 +279,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2569733278091928697">You’ll be able to easily manage media controls, Incognito sessions, downloads and more</translation>
 <translation id="2571711316400087311">Offer to send pages in other languages to Google Translate</translation>
 <translation id="2573452357057307036">Learn how to set Chrome as your default</translation>
+<translation id="257470231920177468">When on, a list of sites that you visit that guess your interests appears here.</translation>
 <translation id="2580436639406015883">Spam and fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
 
 Based on your interaction with a site, like regularly signing in to an account, that site can issue a private state token to your browser. Later, if other sites that you visit check for and find a valid private state token, they’re more likely to treat you like a person and not a bot.
@@ -582,6 +583,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196597275619698563">Create card</translation>
 <translation id="4198423547019359126">No available download locations</translation>
+<translation id="4202218894997543208">Topics that you blocked</translation>
 <translation id="4214315110991671325">If you allow cookies, Chrome may use them for preloading.</translation>
 <translation id="4225895483398857530">Toolbar shortcut</translation>
 <translation id="4242533952199664413">Open settings</translation>
@@ -614,6 +616,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4405224443901389797">Move to…</translation>
 <translation id="4405636711880428279">Remove your virtual card?</translation>
 <translation id="4409271659088619928">Your search engine is <ph name="DSE" />. See their instructions for deleting your search history, if applicable.</translation>
+<translation id="441383202534727410">It can take up to a week for a list of sites to appear here based on your browsing history.</translation>
 <translation id="4415276339145661267">Manage your Google Account</translation>
 <translation id="4425140285732600465">Tracking price. Get alerts if the price drops on any site.</translation>
 <translation id="442518031075347249">You’ll no longer be able to use your virtual card with Google Pay. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
@@ -1262,6 +1265,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7851858861565204677">Other devices</translation>
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7859988229622350291">Never translate</translation>
+<translation id="7864208933699511058">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />site-suggested ads<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" />, and if the site that you're viewing personalises ads.</translation>
 <translation id="7866213166286285359">Translate pages here</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> needs Nearby devices permission in order to connect to your device</translation>
 <translation id="7875915731392087153">Create email</translation>
@@ -1354,6 +1358,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="829672787777123339">Connecting to your device…</translation>
 <translation id="8310344678080805313">Standard tabs</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
+<translation id="8333340769932050274">You can block topics that you don't want to be shared with sites. Chrome also auto-deletes your topics that are older than four weeks. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>

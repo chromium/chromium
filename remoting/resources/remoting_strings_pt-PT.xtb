@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Foi detetada uma versão de protocolo incompatível. Certifique-se de que tem a versão mais recente do software instalada em ambos os computadores e tente novamente.</translation>
 <translation id="1008557486741366299">Agora não</translation>
 <translation id="1201402288615127009">Seguinte</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Todos os direitos reservados.</translation>
 <translation id="1297009705180977556">Erro ao ligar a <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">O objeto solicitado não existe.</translation>
 <translation id="1480046233931937785">Créditos</translation>
@@ -88,6 +89,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="4808503597364150972">Introduza o PIN para <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Anfitrião</translation>
 <translation id="4867841927763172006">Enviar PrtScn</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Todos os direitos reservados.</translation>
 <translation id="4974476491460646149">Ligação a <ph name="HOSTNAME" /> fechada</translation>
 <translation id="4985296110227979402">Primeiro, tem de configurar o computador para acesso remoto</translation>
 <translation id="4987330545941822761">O Ambiente de Trabalho Remoto do Chrome não consegue determinar o navegador para abrir URLs localmente. Escolha-o na lista abaixo.</translation>

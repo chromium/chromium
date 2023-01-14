@@ -8207,21 +8207,6 @@
 <translation id="8882307005437314052">Включить экранную клавиатуру на экране входа и разрешить пользователю временно ее отключать</translation>
 <translation id="8883577480680089760">Отключить функцию "<ph name="PRODUCT_NAME" />" (версия 2) и не запускать удаленный стол после входа в аккаунт</translation>
 <translation id="8887709920496070892">Время бездействия, после которого появляется диалоговое окно с предупреждением (в миллисекундах).</translation>
-<translation id="8887847586787956456">Список действий, которые необходимо выполнить, когда истечет период, заданный в правиле <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Это правило не действует, если не настроено правило <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Когда период из правила <ph name="IDLE_TIMEOUT_POLICY_NAME" /> истечет, <ph name="PRODUCT_NAME" /> выполнит указанные действия.
-
-      Если правило не настроено или значение для него не задано, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> работать не будет.
-
-      Поддерживаемые действия:
-
-      <ph name="CLOSE_BROWSERS_ACTION" /> (закрытие всех окон браузеров и современных веб-приложений в этом профиле).
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> (очистка разных категорий данных о работе в браузере). Подробные сведения об этом можно найти в правиле <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.</translation>
 <translation id="8890438048579188548">Скрывать предупреждения о прекращении поддержки сервиса "<ph name="CLOUD_PRINT_NAME" />"</translation>
 <translation id="8891334958985336685">Отключить отправку данных о системе устройства</translation>
 <translation id="8892286064305622118">Требуется свободное пространство на диске для <ph name="PLUGIN_VM_NAME" /></translation>

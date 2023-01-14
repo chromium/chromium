@@ -219,6 +219,7 @@
 <translation id="2888807692577297075">Heç bir element &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; məhsuluna uyğun gəlmədi.</translation>
 <translation id="2894654529758326923">Məlumat</translation>
 <translation id="2902734494705624966">Genişlənmiş ABŞ klaviaturası</translation>
+<translation id="2904378509913846215">"<ph name="FILENAME" />" adlı qovluq hazırda mövcuddur. Onu köçürdüyünüzlə əvəz etmək istəyirsiniz?</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Eston</translation>
 <translation id="2938685643439809023">Monqolca</translation>
@@ -638,6 +639,7 @@
 <translation id="6241349547798190358">Holland dili (Belçika)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Qoşulun</translation>
 <translation id="6269630227984243955">Malay</translation>
+<translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" diskində kifayət qədər yer olmadığı üçün faylları yükləmək mümkün deyil.</translation>
 <translation id="6287852322318138013">Bu faylı açmaq üçün bir tətbiq seçin</translation>
 <translation id="6295542640242147836">SIM'i kilidləyin</translation>
 <translation id="6296410173147755564">Yanlış PUK</translation>

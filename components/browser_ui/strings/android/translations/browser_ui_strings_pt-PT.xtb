@@ -12,6 +12,7 @@
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1289742167380433257">Para guardar os seus dados, as imagens desta página foram otimizadas pela Google.</translation>
 <translation id="129382876167171263">Os ficheiros guardados por Websites são apresentados aqui.</translation>
+<translation id="131112695174432497">Os dados que afetam a personalização de anúncios são apagados</translation>
 <translation id="1317194122196776028">Esquecer este site</translation>
 <translation id="1343356790768851700">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites</translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> adicionado</translation>
@@ -203,7 +204,6 @@
 <translation id="4994033804516042629">Não foram encontrados contactos</translation>
 <translation id="4996978546172906250">Partilhar através de</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
-<translation id="5038049331464490262">Permita cookies de terceiros para um site específico</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permitir que os sites acedam aos sensores de movimentos (recomendado)</translation>
 <translation id="5050380848339752099">Este site está prestes a partilhar informações com uma app fora do Modo de navegação anónima.</translation>
@@ -304,7 +304,6 @@
 <translation id="6746124502594467657">Mover para baixo</translation>
 <translation id="6749077623962119521">Pretende repor as autorizações?</translation>
 <translation id="6766622839693428701">Deslize rapidamente para baixo para fechar.</translation>
-<translation id="6785073030727361123">Bloqueie cookies de terceiros para um site específico</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6818926723028410516">Selecionar itens</translation>
 <translation id="6864395892908308021">Este dispositivo não suporta a tecnologia NFC.</translation>

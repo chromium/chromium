@@ -129,7 +129,7 @@
 <translation id="1610778689852195798">"Кайтаруу"</translation>
 <translation id="1611993646327628135">Күйүк</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="1632985212731562677">Switch Access функциясын Жөндөөлөр &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
+<translation id="1632985212731562677">Switch Access функциясын Параметрлер &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
 <translation id="163517899691012366">"Тынчымды алба" режими күйүп турганда билдирмелердин үнү басылат</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> түзмөк</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
@@ -260,7 +260,7 @@
 <translation id="2339073806695260576">Бир нерсе жазуу, скриншот тартуу, лазердик көрсөткүчтү же чоңойтуучу айнекти колдонуу үчүн стилус баскычын таптап коюңуз.</translation>
 <translation id="2341729377289034582">Тигинен бекитилген</translation>
 <translation id="2345226652884463045">Enter же Издөө + Боштук баскычтарын басып, түзөтүү үчүн текстти тандаңыз.</translation>
-<translation id="2350794187831162545"><ph name="LANGUAGE" /> кеп эми түзмөктө иштетилип, оффлайнда иштейт. Текстти айтып киргизүү тилин Жөндөөлөр &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өзгөртө аласыз.</translation>
+<translation id="2350794187831162545"><ph name="LANGUAGE" /> кеп эми түзмөктө иштетилип, оффлайнда иштейт. Текстти айтып киргизүү тилин Параметрлер &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өзгөртө аласыз.</translation>
 <translation id="2352467521400612932">Стилус жөндөөлөрү</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> жандыруу</translation>
 <translation id="2359808026110333948">Улантуу</translation>
@@ -662,7 +662,7 @@
 <translation id="4573176682887762361">"[Сөз / сөз айкашын] терүү"</translation>
 <translation id="4577274620589681794">Убакыт бүттү · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Алдын ала көрүүнү жашыруу</translation>
-<translation id="4578906031062871102">Жөндөөлөр менюсу ачылды</translation>
+<translation id="4578906031062871102">Параметрлер менюсу ачылды</translation>
 <translation id="458210817642223147">GIF'ти жаздыруу</translation>
 <translation id="4585337515783392668">Белгисиз алуучуга чыгарууну токтотуу</translation>
 <translation id="4596144739579517758">Караңгы тема өчүк</translation>
@@ -817,7 +817,7 @@
 <translation id="5395308026110844773">Папка түзүү үчүн, <ph name="DRAGGED_APP_NAME" /> колдонмосун <ph name="IN_PLACE_APP" /> колдонмосунун үстүнө сүйрөп барып, коё бериңиз.</translation>
 <translation id="5397578532367286026">Башкаруучу бул колдонуучунун пайдалангандарын жана таржымалын (<ph name="MANAGER_EMAIL" />) chrome.com дарегинен карап чыга алат.</translation>
 <translation id="5400461572260843123">Ыкчам жөндөөлөр, Билдирмелер борборуна өтүү үчүн Издөө + сол баскычты басыңыз.</translation>
-<translation id="5426063383988017631">Жөндөөлөр менюсу жабылды</translation>
+<translation id="5426063383988017631">Параметрлер менюсу жабылды</translation>
 <translation id="5428899915242071344">Тандап баштоо</translation>
 <translation id="5429993543155113935">Жашыруун терезелер учурда колдоого алынбайт</translation>
 <translation id="5430931332414098647">Ыкчам байланыш түйүнү</translation>
@@ -857,7 +857,7 @@
 <translation id="5662075790140998213">10-иш такта</translation>
 <translation id="5662709761327382534">Аудиону жаздыруу <ph name="CURRENT_STATE" />. Микрофонду <ph name="NEW_STATE" /> абалына өткөрүү үчүн "Enter" баскычын басыңыз</translation>
 <translation id="5669267381087807207">Жандырылууда</translation>
-<translation id="5673434351075758678">Жөндөөлөр шайкештештирилгенден кийин тил "<ph name="FROM_LOCALE" />" тилинен "<ph name="TO_LOCALE" />" тилине өзгөртүлдү.</translation>
+<translation id="5673434351075758678">Параметрлер шайкештештирилгенден кийин тил "<ph name="FROM_LOCALE" />" тилинен "<ph name="TO_LOCALE" />" тилине өзгөртүлдү.</translation>
 <translation id="5675363643668471212">Текчедеги нерсе</translation>
 <translation id="5677928146339483299">Бөгөттөлгөн</translation>
 <translation id="5678564054339031017">Кийинки аптаны көрсөтүү</translation>
@@ -1366,7 +1366,7 @@
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> бул түзмөктө жок.</translation>
 <translation id="8425213833346101688">Өзгөртүү</translation>
 <translation id="8426708595819210923">Кутмандуу кечиңиз менен, <ph name="GIVEN_NAME" />,</translation>
-<translation id="8428213095426709021">Жөндөөлөр</translation>
+<translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8433186206711564395">Тармак жөндөөлөрү</translation>
 <translation id="8433977262951327081">Баштоо панелиндеги киргизүү параметрлеринин менюсунун көбүгүн ача турган ыкчам баскычтар өзгөргөн. <ph name="OLD_SHORTCUT" /> ордуна <ph name="NEW_SHORTCUT" /> баскычтарын колдонуңуз.</translation>
 <translation id="8443879455002739353">"Көчүрүү"</translation>

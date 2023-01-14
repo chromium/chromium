@@ -800,6 +800,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2986368408720340940">Bu alım yöntemi kullanılamıyor. Farklı bir yöntem deneyin.</translation>
 <translation id="2987034854559945715">Eşleşen özellik yok</translation>
 <translation id="2989742184762224133">Üstte ikili tel zımba</translation>
+<translation id="2990882401221831923">Kredi kartı listesi kapatıldı.</translation>
 <translation id="2991174974383378012">Web Siteleriyle Paylaşma</translation>
 <translation id="299122504639061328">Varsayılan arama motorunuzu ve site aramanızı yönetin</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> web sitesi HSTS kullandığından şu anda siteyi ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
@@ -1584,6 +1585,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4976702386844183910">Son ziyaret tarihi: <ph name="DATE" /></translation>
 <translation id="498323057460789381">Şema doğrulama hatası: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofon kullanılsın mı?</translation>
+<translation id="4988822846878841743">Dokunarak doldurulacak kredi kartı listesi ekranın yarısında açıldı.</translation>
 <translation id="4989163558385430922">Tümünü göster</translation>
 <translation id="4989542687859782284">Kullanılamıyor</translation>
 <translation id="4989809363548539747">Bu eklenti desteklenmiyor</translation>
@@ -1931,6 +1933,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5863847714970149516">Gireceğiniz sayfa sizden para almaya çalışabilir</translation>
 <translation id="5866257070973731571">Telefon Numarası Ekleyin</translation>
 <translation id="5866898949289125849">Geliştirici araçları sayfasını görüntülüyorsunuz</translation>
+<translation id="5868548454963263350">Dokunarak doldurulacak kredi kartı listesi tam ekranda açıldı.</translation>
 <translation id="5869405914158311789">Bu siteye ulaşılamıyor</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="5873013647450402046">Bankanız kimliğinizi doğrulamak istiyor.</translation>
@@ -2643,6 +2646,7 @@ Ek ayrıntılar:
 <translation id="7653957176542370971">Ödeme işleyici sayfası kapatıldı</translation>
 <translation id="7654909834015434372">Ek açıklamaları düzenlediğinizde bu doküman orijinal rotasyonuna geri döner</translation>
 <translation id="765676359832457558">Gelişmiş ayarları gizle...</translation>
+<translation id="7656935528854393684">Dokunarak doldurulacak kredi kartı listesi</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7659327900411729175">Zarf Kaku 8</translation>
 <translation id="7659878911471462949">Mutluluk Gözyaşları</translation>

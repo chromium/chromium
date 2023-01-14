@@ -21,6 +21,7 @@
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1446450296470737166">‏MIDI آلات کے مکمل کنٹرول کی اجازت دیں</translation>
 <translation id="1448064542941920355">زوم آؤٹ کریں</translation>
+<translation id="1547123415014299762">فریق ثالث کوکیز کی اجازت ہے</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1633720957382884102">متعلقہ سائٹس</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
@@ -350,6 +351,7 @@
 <translation id="8042586301629853791">ترتیب دیں بلحاظ:</translation>
 <translation id="8067883171444229417">ویڈیو چلائیں</translation>
 <translation id="8068648041423924542">سرٹیفکیٹ منتخب کرنے سے قاصر ہے۔</translation>
+<translation id="8077120325605624147">آپ کی ملاحظہ کردہ کوئی بھی سائٹ آپ کو کوئی بھی اشتہار دکھا سکتی ہے</translation>
 <translation id="8087000398470557479">‏یہ مواد <ph name="DOMAIN_NAME" /> کی جانب سے ہے، جسے Google نے ڈیلیور کیا ہے۔</translation>
 <translation id="8116925261070264013">‏خاموش کردہ</translation>
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>
@@ -387,6 +389,7 @@
 <translation id="857943718398505171">اجازت یافتہ (تجویز کردہ)</translation>
 <translation id="8609465669617005112">اوپر منتقل کریں</translation>
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>
+<translation id="8681886425883659911">اشتہارات دخل انداز یا گمراہ کن اشتہارات دکھانے کے لیے جانی جانے والی سائٹس پر مسدود ہیں</translation>
 <translation id="868929229000858085">اپنے رابطوں کو تلاش کریں</translation>
 <translation id="8702612070107455751">تمام آف لائن ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
@@ -399,6 +402,7 @@
 <translation id="8816026460808729765">سینسرز تک رسائی حاصل کرنے سے سائٹس کو مسدود کریں</translation>
 <translation id="8823559166155093873">کوکیز کو مسدود کریں</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">دخل انداز اشتہارات</translation>
 <translation id="8903921497873541725">زوم ان کریں</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏اس آلہ کے لیے NFC آف ہے۔ اسے <ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں آن کریں۔</translation>

@@ -45,6 +45,7 @@
 <translation id="1041175011127912238">ఈ పేజీ ప్రతిస్పందించడం లేదు</translation>
 <translation id="1041263367839475438">అందుబాటులో ఉన్న పరికరాలు</translation>
 <translation id="1042174272890264476">మీ కంప్యూటర్‌‍లో కూడా <ph name="SHORT_PRODUCT_NAME" /> యొక్క అంతర్గత RLZ లైబ్రరీ ఉంటుంది. RLZ సెర్చ్‌లను మరియు నిర్దిష్ట ప్రమోషనల్ ప్రచారం ద్వారా ఉపయోగించబడిన <ph name="SHORT_PRODUCT_NAME" /> వినియోగాన్ని లెక్కించడానికి, ప్రత్యేకం కానటువంటి, వ్యక్తిగతంగా గుర్తించలేని ట్యాగ్‌ను సమర్పిస్తుంది. ఈ లేబుళ్లు కొన్నిసార్లు <ph name="PRODUCT_NAME" />లోని Google Search ప్రశ్నలలో కనిపిస్తాయి.</translation>
+<translation id="1042248468362992359">మొబైల్ డేటాకు కనెక్ట్ చేసి, హాట్‌స్పాట్‌ను ఉపయోగించండి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">ఏదో తప్పు జరిగింది. Linux పాక్షికంగా మాత్రమే అప్‌గ్రేడ్ అయి ఉండవచ్చు. మరింత సమాచారం కోసం లాగ్స్‌ను రివ్యూ చేయండి. Files &gt; నా ఫైల్స్ &gt; <ph name="LOG_FILE" /> అనే సెట్టింగ్‌లో లాగ్స్ సేవ్ చేయబడ్డాయి</translation>
 <translation id="104419033123549300">కీమ్యాప్ స్టయిల్</translation>
 <translation id="104710386808485638">Linuxను రీస్టార్ట్ చేయాలా?</translation>
@@ -158,6 +159,7 @@
 <translation id="1139923033416533844">మెమరీ వినియోగం</translation>
 <translation id="1140351953533677694">మీ బ్లూటూత్‌ను, క్రమానుసార పరికరాలను యాక్సెస్‌ చేయడం</translation>
 <translation id="114036956334641753">ఆడియో మరియు శీర్షికలు</translation>
+<translation id="1141949282671776404">ఈ ట్యాబ్ ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, ఇతర టాస్క్‌ల కోసం మెమరీ సేవర్ <ph name="MEMORY_VALUE" /> మెమరీని ఖాళీ చేసింది.</translation>
 <translation id="1142002900084379065">ఇటీవలి ఫోటోలు</translation>
 <translation id="1143142264369994168">సర్టిఫికెట్ సంతకందారు</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome మీ కంప్యూటర్‌లో హానికరమైన సాఫ్ట్‌వేర్‌ను కనుగొనలేదు • 1 నిమిషం క్రితం చెక్ చేయబడింది}other{Chrome మీ కంప్యూటర్‌లో హానికరమైన సాఫ్ట్‌వేర్‌ను కనుగొనలేదు • {NUM_MINS} నిమిషాల క్రితం చెక్ చేయబడింది}}</translation>
@@ -317,6 +319,7 @@
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1285484354230578868">మీ Google Drive ఖాతాలో డేటాను నిల్వ చేయండి</translation>
 <translation id="1285625592773741684">ప్రస్తుతం డేటా వినియోగం మొబైల్ డేటా ద్వారా జరిగేలా సెట్ చేయబడి ఉంది</translation>
+<translation id="1285815028662278915">మీ మొబైల్ డేటా హాట్‌స్పాట్‌ను సపోర్ట్ చేయకపోవచ్చు. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">రాత్రి కాంతి, సూర్యాస్తమయ సమయానికి ఆటోమేటిక్‌గా ఆన్ అవుతుంది</translation>
 <translation id="1288300545283011870">ప్రసంగ లక్షణాలు</translation>
 <translation id="1289619947962767206">ఈ ఆప్షన్ ఇకపై సపోర్ట్ చేయదు. ట్యాబ్‌ను ప్రెజెంట్ చేయడానికి, <ph name="GOOGLE_MEET" />ను ఉపయోగించండి.</translation>
@@ -654,6 +657,7 @@
 <translation id="1596286373007273895">అందుబాటులో ఉంది</translation>
 <translation id="1596709061955594992">బ్లూటూత్ ఆఫ్ చేయబడింది. అందుబాటులో ఉన్న పరికరాలను చూడటానికి, బ్లూటూత్‌ను ఆన్ చేయండి.</translation>
 <translation id="1596780725094407793">- సబ్-డొమైన్‌లను కలిగి ఉంటుంది</translation>
+<translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను ఉపయోగించండి</translation>
 <translation id="1598233202702788831">అప్‌డేట్‌లను మీ నిర్వాహకులు నిలిపివేశారు.</translation>
 <translation id="1600857548979126453">పేజీ డీబగ్గర్ బ్యాకెండ్‌ను యాక్సెస్ చేయండి</translation>
 <translation id="1601560923496285236">వర్తించు</translation>
@@ -1239,6 +1243,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />గమనిక:<ph name="END_BOLD" />  ప్రాసెస్ సమయంలో సిస్టమ్ రీబూట్ అవుతుంది.</translation>
 <translation id="2095774564753225041">సపోర్ట్ ఉన్న ఫైల్ రకాలు</translation>
+<translation id="2097616539631531348">ఈ ట్యాబ్ ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, ఇతర టాస్క్‌ల కోసం మెమరీ సేవర్ మెమరీని ఖాళీ చేసింది.</translation>
 <translation id="2098805196501063469">మిగిలిన పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="2099686503067610784">సర్వర్ ప్రమాణపత్రం "<ph name="CERTIFICATE_NAME" />" తొలగించాలా?</translation>
 <translation id="2100273922101894616">ఆటోమేటిక్ సైన్-ఇన్</translation>
@@ -3383,6 +3388,7 @@
 <translation id="4040041015953651705">ఈ భాష నుండి అనువదించాలి</translation>
 <translation id="4040105702484676956"><ph name="SITE_NAME" />, ఇంకా దానికి సంబంధించిన ఇన్‌స్టాల్ చేయబడిన యాప్‌లో సైట్ డేటాను, ఇంకా అనుమతులను క్లియర్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{పేజీ నుండి నిష్క్రమించండి}other{పేజీల నుండి నిష్క్రమించండి}}</translation>
+<translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను కొనసాగించండి</translation>
 <translation id="4043267180218562935">కర్సర్ సైజ్</translation>
 <translation id="4044612648082411741">మీ ప్రమాణపత్రం పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="4044708573046946214">స్క్రీన్ లాక్ పాస్‌వర్డ్</translation>
@@ -8341,6 +8347,7 @@
 <translation id="8674903726754070732">దురదృష్టవశాత్తూ, తప్పుగా ఫార్మాట్ చేయబడిన హార్డ్‌వేర్ IDతో మీ కంప్యూటర్ కాన్ఫిగర్ చేయబడింది. ఇది సెక్యూరిటీ పరిష్కారాలతో అప్‌డేట్ కాకుండా ChromeOSను నిరోధిస్తుంది, అలాగే మీ కంప్యూటర్ <ph name="BEGIN_BOLD" />హానికరమైన సాఫ్ట్‌వేర్ దాడులకు గురి కావచ్చు<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533"><ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేయడానికి ఇన్‌స్టాలర్ సరైన గమ్యస్థానాన్ని కనుగొనలేకపోయారు.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{వీడియో}other{# వీడియోలు}}</translation>
+<translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌కు సైన్ అప్ చేయండి</translation>
 <translation id="8676313779986170923">ఫీడ్‌బ్యాక్ పంపినందుకు ధన్యవాదాలు.</translation>
 <translation id="8676374126336081632">ఇన్‌పుట్‌ను తీసివేయండి</translation>
 <translation id="8676770494376880701">తక్కువ-పవర్ గల ఛార్జర్ కనెక్ట్ చేయబడింది</translation>

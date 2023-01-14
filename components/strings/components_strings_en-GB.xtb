@@ -176,6 +176,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1363819917331173092">Don‘t offer to translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">This policy is blocked; its value will be ignored.</translation>
 <translation id="1368318639262510626">Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, press space to jump over obstacles.</translation>
+<translation id="136907351928231527">It can take up to a week for a list of topics to appear here based on your recent browsing history</translation>
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1375198122581997741">About Version</translation>
 <translation id="1376836354785490390">Show Less</translation>
@@ -267,6 +268,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1559839503761818503">Your administrator will restart your device at <ph name="TIME" /> on <ph name="DATE" /></translation>
 <translation id="156703335097561114">Networking information, such as addresses, interface configuration and connection quality</translation>
 <translation id="1567040042588613346">This policy is working as intended but the same value is set elsewhere and is superseded by this policy.</translation>
+<translation id="1567405528131216114">Add <ph name="TOPIC" /></translation>
 <translation id="1569487616857761740">Enter expiry date</translation>
 <translation id="1569694109004336106">Google Chrome is trying to turn on Windows Hello for filling in passwords.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
@@ -515,6 +517,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2185836064961771414">American football</translation>
 <translation id="2187317261103489799">Detect (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
+<translation id="2197398642355049178">Your topics</translation>
 <translation id="219906046732893612">Home improvement</translation>
 <translation id="2202020181578195191">Enter a valid expiry year</translation>
 <translation id="2202627062836089804">back of your card</translation>
@@ -1212,6 +1215,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
 <translation id="4025913568718019429">Manage Google Privacy settings button, press Enter to visit your Google Account privacy settings</translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
+<translation id="4030545038933060179">When on, a list of topics appears here based on your recent browsing history</translation>
 <translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4040350669425716613">Colleges and universities</translation>
 <translation id="4047351652147966654">18 in x 24 in</translation>
@@ -1280,6 +1284,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4194250254487269611">Your card can't be saved at the moment</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196861286325780578">&amp;Redo move</translation>
+<translation id="4202218894997543208">Topics that you blocked</translation>
 <translation id="4202554117186904723">Fifth roll</translation>
 <translation id="4203769790323223880">Camera not allowed</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Checking firewall and antivirus configurations<ph name="END_LINK" /></translation>
@@ -1373,6 +1378,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4363222835916186793">Alerts for this product have been turned off</translation>
 <translation id="437040971055499437">Security event occurs</translation>
 <translation id="4372948949327679948">Expected <ph name="VALUE_TYPE" /> value.</translation>
+<translation id="4375864595697821259">Add an item back if you want it in the pool of topics that Chrome can choose from when estimating your interests</translation>
 <translation id="4377125064752653719">You attempted to reach <ph name="DOMAIN" />, but the certificate that the server presented has been revoked by its issuer. This means that the security credentials the server presented absolutely should not be trusted. You may be communicating with an attacker.</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
@@ -1425,6 +1431,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4521916730539354575">Left tray</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4524138615196389145">Confirm your cards faster by using WebAuthn from now on</translation>
+<translation id="45243788195988825">Block <ph name="TOPIC" /></translation>
 <translation id="4524805452350978254">Manage cards</translation>
 <translation id="4526465106919207193">People and society</translation>
 <translation id="4530347922939905757">Text message</translation>
@@ -1437,6 +1444,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4558551763791394412">Try disabling your extensions.</translation>
 <translation id="4566017918361049074">Outdoors</translation>
 <translation id="4567686777917670400">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="4568329205873177285">Review a list of cookies and site data in a new window</translation>
 <translation id="457875822857220463">Delivery</translation>
 <translation id="4582204425268416675">Remove card</translation>
 <translation id="4582595824823167856">Get a text message</translation>
@@ -1474,6 +1482,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4663373278480897665">Camera allowed</translation>
 <translation id="4666114623408286498">Pharmaceuticals and biotech</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4669856024297417878">Chrome notes topics of interest based on your browsing history from the last few weeks.</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4671339777629075741">Envelope DL</translation>
 <translation id="4673460618347856347">Dino game, play</translation>
@@ -2343,6 +2352,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6888584790432772780">Chrome simplified this page to make it easier to read. Chrome retrieved the original page over an insecure connection.</translation>
 <translation id="6890443033788248019">Allow location?</translation>
 <translation id="6890531741535756070">You chose to verify with <ph name="DEVICE_LABEL" /> on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="BEGIN_LINK" />request to have deleted<ph name="END_LINK" />.</translation>
+<translation id="6890956352250146925">Options for cookies and site data</translation>
 <translation id="6891596781022320156">Policy level is not supported.</translation>
 <translation id="6895330447102777224">Your card is confirmed</translation>
 <translation id="6896758677409633944">Copy</translation>
@@ -2532,6 +2542,7 @@ Additional details:
 <translation id="7365849542400970216">Know your device use?</translation>
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Payment handlers</translation>
+<translation id="7367985555340314048">Topics of interest are based on your recent browsing history and are used by sites to show you personalised ads</translation>
 <translation id="7372973238305370288">search result</translation>
 <translation id="7374461526650987610">Protocol Handlers</translation>
 <translation id="7374733840632556089">This problem happens because of a certificate that you or someone else installed on your device. The certificate is known to be used to monitor and intercept networks, and is not trusted by Chrome. While some legitimate cases for monitoring do exist, like on a school or company network, Chrome wants to make sure that you're aware it's happening, even if you can't stop it. Monitoring may happen in any browser or application that accesses the web.</translation>
@@ -2707,6 +2718,7 @@ Additional details:
 <translation id="7701040980221191251">None</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Proceed to <ph name="SITE" /> (unsafe)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Skiing and snowboarding</translation>
+<translation id="7706689436519265630">Files that you copy or move are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies.</translation>
 <translation id="7709911732293795808">Insurance</translation>
 <translation id="7714464543167945231">Certificate</translation>
 <translation id="7716147886133743102">Blocked by your administrator</translation>
@@ -2755,6 +2767,7 @@ Additional details:
 <translation id="7840103971441592723">Screen capture has started</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="7857116075376571629">Later, a site that you visit can ask Chrome for your topics to personalise the ads that you see. Chrome shares up to three topics while protecting your browsing history and identity.</translation>
 <translation id="7862185352068345852">Leave site?</translation>
 <translation id="7865448901209910068">Best speed</translation>
 <translation id="7871445724586827387">Change your Google Account password</translation>
@@ -2819,6 +2832,7 @@ Additional details:
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to set Chrome as the system's default browser</translation>
 <translation id="8025119109950072390">Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example passwords, phone numbers or credit cards).</translation>
+<translation id="8026126421313327427">Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics that you don’t want Chrome to share with sites.</translation>
 <translation id="8026334261755873520">Clear browsing data</translation>
 <translation id="8027077570865220386">Tray 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new form in Google Forms quickly</translation>
@@ -3088,6 +3102,7 @@ Additional details:
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731268612289859741">Security code</translation>
 <translation id="8731544501227493793">Manage passwords button; press enter to view and manage your passwords in Chrome settings</translation>
+<translation id="8733764070897080460">You can block topics that you don’t want to be shared with sites. Chrome also auto-deletes your topics that are older than four weeks. Learn more</translation>
 <translation id="8734529307927223492">Your <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 in x 40 in</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to open a new incognito window to browse privately</translation>
@@ -3119,6 +3134,7 @@ Additional details:
 <translation id="8805819170075074995">List entry '<ph name="LANGUAGE_ID" />': entry ignored because it is also included in the SpellcheckLanguage policy.</translation>
 <translation id="8806285662264631610">Bath and body products</translation>
 <translation id="8807160976559152894">Trim after each page</translation>
+<translation id="8809203544698246977">Blocked topics appear here</translation>
 <translation id="8813277370772331957">Remind me later</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to update Chrome from your Chrome settings</translation>

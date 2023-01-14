@@ -800,6 +800,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2986368408720340940">Este método de recogida no está disponible. Selecciona otro.</translation>
 <translation id="2987034854559945715">No se ha encontrado ninguna función</translation>
 <translation id="2989742184762224133">Grapado doble en la parte superior</translation>
+<translation id="2990882401221831923">La lista de tarjetas de crédito está cerrada.</translation>
 <translation id="2991174974383378012">Compartir con otros sitios web</translation>
 <translation id="299122504639061328">Gestiona el buscador predeterminado y las búsquedas en el sitio</translation>
 <translation id="2991571918955627853">No puedes acceder a <ph name="SITE" /> en este momento porque el sitio web utiliza HSTS. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
@@ -1584,6 +1585,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
 <translation id="498323057460789381">Error de validación del esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">¿Usar micrófono?</translation>
+<translation id="4988822846878841743">Lista de tarjetas de crédito cuyos datos puedes rellenar con un toque. Está abierta a media altura.</translation>
 <translation id="4989163558385430922">Ver todo</translation>
 <translation id="4989542687859782284">No disponibles</translation>
 <translation id="4989809363548539747">Este complemento no es compatible</translation>
@@ -1931,6 +1933,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5863847714970149516">Es posible que la página a la que vas a acceder intente aplicar algún cargo</translation>
 <translation id="5866257070973731571">Añade un número de teléfono</translation>
 <translation id="5866898949289125849">Estás viendo una página de las herramientas para desarrolladores</translation>
+<translation id="5868548454963263350">Lista de tarjetas de crédito cuyos datos puedes rellenar con un toque. Está abierta a altura completa.</translation>
 <translation id="5869405914158311789">No se puede acceder a este sitio web</translation>
 <translation id="5869522115854928033">Contraseñas guardadas</translation>
 <translation id="5873013647450402046">Tu banco quiere confirmar tu identidad.</translation>
@@ -2643,6 +2646,7 @@ Más información:
 <translation id="7653957176542370971">La hoja del controlador de pagos está cerrada</translation>
 <translation id="7654909834015434372">Si editas anotaciones, este documento volverá a su rotación original</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>
+<translation id="7656935528854393684">Lista de tarjetas de crédito cuyos datos puedes rellenar con un toque.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Sobre Kaku 8</translation>
 <translation id="7659878911471462949">Lágrimas de alegría</translation>

@@ -800,6 +800,7 @@
 <translation id="2986368408720340940">사용할 수 없는 수령 방법입니다. 다른 방법을 선택하세요.</translation>
 <translation id="2987034854559945715">일치하는 기능 없음</translation>
 <translation id="2989742184762224133">상단 듀얼 스테이플</translation>
+<translation id="2990882401221831923">신용카드 목록이 닫힙니다.</translation>
 <translation id="2991174974383378012">웹사이트와 공유</translation>
 <translation id="299122504639061328">기본 검색엔진 및 사이트 검색 관리</translation>
 <translation id="2991571918955627853">웹사이트에서 HSTS를 사용하므로 지금은 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대체로 일시적인 문제이기 때문에 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
@@ -1584,6 +1585,7 @@
 <translation id="4976702386844183910">최근 방문: <ph name="DATE" /></translation>
 <translation id="498323057460789381">스키마 유효성 검사 오류: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">마이크를 사용하시겠습니까?</translation>
+<translation id="4988822846878841743">터치하여 입력할 수 있는 신용카드 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="4989163558385430922">모두 보기</translation>
 <translation id="4989542687859782284">사용할 수 없음</translation>
 <translation id="4989809363548539747">이 플러그인은 지원되지 않습니다.</translation>
@@ -1931,6 +1933,7 @@
 <translation id="5863847714970149516">방문하려는 페이지에서 금액을 청구할 수 있습니다.</translation>
 <translation id="5866257070973731571">전화번호 추가</translation>
 <translation id="5866898949289125849">개발자 도구 페이지를 보는 중입니다.</translation>
+<translation id="5868548454963263350">터치하여 입력할 수 있는 신용카드 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="5869405914158311789">사이트에 연결할 수 없음</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
 <translation id="5873013647450402046">은행에서 본인 확인을 요청합니다.</translation>
@@ -2642,6 +2645,7 @@
 <translation id="7653957176542370971">결제 핸들러 시트가 닫힘</translation>
 <translation id="7654909834015434372">주석을 수정하면 문서가 원래 방향으로 돌아갑니다.</translation>
 <translation id="765676359832457558">고급 설정 숨기기</translation>
+<translation id="7656935528854393684">터치하여 입력할 수 있는 신용카드 목록입니다.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7659327900411729175">봉투 Kaku 8</translation>
 <translation id="7659878911471462949">기쁨의 눈물</translation>

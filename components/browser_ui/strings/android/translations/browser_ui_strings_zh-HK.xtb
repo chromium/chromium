@@ -107,6 +107,7 @@
 <translation id="3123473560110926937">在部分網站上設定封鎖</translation>
 <translation id="3143754809889689516">從頭開始播放</translation>
 <translation id="3162899666601560689">網站可使用 Cookie 來改善瀏覽體驗，例如讓您保持登入狀態或記住購物車中的商品</translation>
+<translation id="3165022941318558018">允許網站使用第三方 Cookie</translation>
 <translation id="3198916472715691905">已使用 <ph name="STORAGE_AMOUNT" /> 儲存空間</translation>
 <translation id="3203366800380907218">來自網絡</translation>
 <translation id="321187648315454507">如要讓 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
@@ -143,6 +144,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">向前快轉</translation>
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
+<translation id="3918378745482005425">部分功能可能無法正常運作。相關網站仍可使用第三方 Cookie。</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3987993985790029246">複製連結</translation>
@@ -327,6 +329,7 @@
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">《綠野仙蹤》</translation>
+<translation id="7684642910516280563">不允許網站使用第三方 Cookie</translation>
 <translation id="7690549345586282764">顯示縮放</translation>
 <translation id="7695658402549134106"><ph name="SITE_NAME" /> 的網站偏好設定</translation>
 <translation id="7719367874908701697">頁面縮放</translation>

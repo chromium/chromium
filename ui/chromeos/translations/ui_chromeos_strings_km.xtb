@@ -219,6 +219,7 @@
 <translation id="2888807692577297075">គ្មានធាតុត្រូវគ្នាទេ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ព័ត៌មាន</translation>
 <translation id="2902734494705624966">US extended</translation>
+<translation id="2904378509913846215">ថត​ដែលបានដាក់​ឈ្មោះថា "<ph name="FILENAME" />" មានរួចហើយ។ តើអ្នកចង់ជំនួសថត​នេះដោយថត​ដែលអ្នកកំពុងផ្លាស់ទីដែរឬទេ?</translation>
 <translation id="290843123675549676">ភាសា​ម៉ារ៉ាទី</translation>
 <translation id="2923240520113693977">ភាសាអេស្តូនី</translation>
 <translation id="2938685643439809023">ភាសាមុងហ្គោលី</translation>
@@ -638,6 +639,7 @@
 <translation id="6241349547798190358">ភាសា​ហូឡង់ (បែលហ្ស៊ិក)</translation>
 <translation id="6267547857941397424">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ថ្មទូរសព្ទ <ph name="BATTERY_STATUS" />%, ភ្ជាប់</translation>
 <translation id="6269630227984243955">ភាសា​ម៉ាឡេ</translation>
+<translation id="6271903698064569429">មិន​អាច​បង្ហោះ​ឯកសារ​បាន​ទេ ដោយសារ "<ph name="SHARED_DRIVE_NAME" />" មិនមាន​ទំហំ​ផ្ទុកគ្រប់គ្រាន់។</translation>
 <translation id="6287852322318138013">ជ្រើសរើសកម្មវិធីដើម្បីបើកឯកសារនេះ</translation>
 <translation id="6295542640242147836">ចាក់សោស៊ីម</translation>
 <translation id="6296410173147755564">PUK មិនត្រឹមត្រូវទេ</translation>

@@ -800,6 +800,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2986368408720340940">Ez dago erabilgarri jasotze-metodo hori. Saiatu beste metodo batekin.</translation>
 <translation id="2987034854559945715">Ez dago bat datorren eginbiderik</translation>
 <translation id="2989742184762224133">Bi grapa goian</translation>
+<translation id="2990882401221831923">Kreditu-txartelen zerrenda itxita dago.</translation>
 <translation id="2991174974383378012">Webguneekin partekatzea</translation>
 <translation id="299122504639061328">Kudeatu bilatzaile eta webgune-bilaketa lehenetsiak</translation>
 <translation id="2991571918955627853">Une honetan ezin zara joan <ph name="SITE" /> webgunera, webguneak HSTS darabilelako. Sareko erroreak eta erasoak aldi baterakoak izan ohi dira; beraz, geroago funtzionatuko du orriak, segur aski.</translation>
@@ -1580,6 +1581,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4976702386844183910">Azken bisita: <ph name="DATE" /></translation>
 <translation id="498323057460789381">Eskemaren baliozkotze-errorea: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofonoa erabili nahi duzu?</translation>
+<translation id="4988822846878841743">Haien eremuak sakatzean automatikoki beteko diren kreditu-txartelen zerrenda, altuera erdian irekia.</translation>
 <translation id="4989163558385430922">Ikusi guztiak</translation>
 <translation id="4989542687859782284">Erabilgarri ez daudenak</translation>
 <translation id="4989809363548539747">Ez da onartzen plugin hau</translation>
@@ -1927,6 +1929,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5863847714970149516">Baliteke orria dirua kobratzen saiatzea</translation>
 <translation id="5866257070973731571">Gehitu telefono-zenbakia</translation>
 <translation id="5866898949289125849">Garatzaileen tresnen orria ikusten ari zara</translation>
+<translation id="5868548454963263350">Haien eremuak sakatzean automatikoki beteko diren kreditu-txartelen zerrenda, altuera osoan irekia.</translation>
 <translation id="5869405914158311789">Ezin gara konektatu webgunera</translation>
 <translation id="5869522115854928033">Gordetako pasahitzak</translation>
 <translation id="5873013647450402046">Bankuak zeu zarela berretsi nahi du.</translation>
@@ -2638,6 +2641,7 @@ Xehetasun gehiago:
 <translation id="7653957176542370971">Ordainketa kudeatzeko orria itxita dago</translation>
 <translation id="7654909834015434372">Oharpenak editatzen dituzunean, jatorrizko biratzera itzuliko da dokumentua</translation>
 <translation id="765676359832457558">Ezkutatu ezarpen aurreratuak…</translation>
+<translation id="7656935528854393684">Haien eremuak sakatzean automatikoki beteko diren kreditu-txartelen zerrenda.</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7659327900411729175">Kaku gutun-azala 8</translation>
 <translation id="7659878911471462949">Pozezko malkoak</translation>

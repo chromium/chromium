@@ -1800,6 +1800,7 @@
 <translation id="2579596474754516455">您可按需要掃瞄 PDF 圖片並轉成文字，讓螢幕閱讀器朗讀當中的內容</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
+<translation id="2581455244799175627">進一步了解允許第三方 Cookie</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (平台：<ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">無法取得 Kerberos 票證。請再試一次，或與您機構的裝置管理員聯絡。(錯誤代碼 <ph name="ERROR_CODE" />)。</translation>
 <translation id="2585724835339714757">此分頁正在共用您的螢幕畫面。</translation>
@@ -2361,6 +2362,7 @@
 <translation id="3082780749197361769">這個分頁正在使用您的相機或麥克風。</translation>
 <translation id="3083193146044397360">已暫時封鎖相關權限以保障您的安全</translation>
 <translation id="3083899879156272923">以滑鼠游標為中心移動畫面</translation>
+<translation id="3083998949001524405">已允許使用第三方 Cookie</translation>
 <translation id="3084548735795614657">拖曳即可安裝</translation>
 <translation id="3084771660770137092">Chrome 記憶體不足或其他某些原因導致網頁處理程序終止。如要繼續執行，請重新載入或前往其他網頁。</translation>
 <translation id="3085412380278336437">網站可以使用您的相機</translation>
@@ -3065,6 +3067,7 @@
 <translation id="3764753550716962406">要讓 Google 根據購物車中的商品尋找可用折扣嗎？</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在將 <ph name="ATTACHMENTS" />傳送給「<ph name="DEVICE_NAME" />」}other{正在將 <ph name="ATTACHMENTS" />傳送給「<ph name="DEVICE_NAME" />」}}</translation>
 <translation id="3765246971671567135">無法讀取離線示範模式的政策。</translation>
+<translation id="3765696567014520261">網站不能使用 Cookie 查看您在其他網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作</translation>
 <translation id="3766687283066842296">進一步了解 Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">雪糕</translation>
@@ -3117,6 +3120,7 @@
 <translation id="3807747707162121253">取消(&amp;C)</translation>
 <translation id="3808202562160426447">調暗背景內容</translation>
 <translation id="3808443763115411087">Crostini 的 Android 應用程式開發</translation>
+<translation id="3808617121485025547">進一步了解封鎖第三方 Cookie</translation>
 <translation id="38089336910894858">使用 ⌘Q 關閉前顯示警告</translation>
 <translation id="3809272675881623365">兔子</translation>
 <translation id="3809280248639369696">外星人</translation>
@@ -8063,6 +8067,7 @@
 <translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8407199357649073301">記錄等級：</translation>
 <translation id="8408270600235826886">您可控制要與 Google 分享哪些資料。您隨時可在「設定」中變更此設定。我們會根據 Google 的《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》使用相關資料。</translation>
+<translation id="84098433273647700">您目前安裝的主題。</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">已允許<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
 <translation id="8413385045638830869">事先詢問 (建議)</translation>
@@ -8224,6 +8229,7 @@
 <translation id="8571687764447439720">新增 Kerberos 票證</translation>
 <translation id="8574990355410201600">一律允許 <ph name="HOST" /> 播放聲音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 即可離開</translation>
+<translation id="8576359558126669548">進一步了解喺無痕模式入面封鎖第三方 Cookie</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="8577052309681449949">自動點擊、游標大小、游標顏色等等</translation>
 <translation id="8578639784464423491">不可超過 99 個字母</translation>

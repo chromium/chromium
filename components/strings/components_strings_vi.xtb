@@ -800,6 +800,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2986368408720340940">Phương thức nhận hàng này không có sẵn. Hãy thử một phương thức khác.</translation>
 <translation id="2987034854559945715">Không có tính năng nào phù hợp</translation>
 <translation id="2989742184762224133">Dập 2 ghim trên cùng</translation>
+<translation id="2990882401221831923">Danh sách thẻ tín dụng đã đóng.</translation>
 <translation id="2991174974383378012">Chia sẻ với trang web</translation>
 <translation id="299122504639061328">Quản lý công cụ tìm kiếm mặc định và công cụ tìm kiếm trang web</translation>
 <translation id="2991571918955627853">Bạn không thể truy cập vào <ph name="SITE" /> ngay bây giờ vì trang web sử dụng HSTS. Lỗi mạng và các cuộc tấn công mạng thường chỉ là tạm thời nên trang này có thể sẽ hoạt động lại sau.</translation>
@@ -1585,6 +1586,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4976702386844183910">Lần truy cập gần đây nhất: <ph name="DATE" /></translation>
 <translation id="498323057460789381">Lỗi xác thực giản đồ: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Sử dụng micrô?</translation>
+<translation id="4988822846878841743">Danh sách thẻ tín dụng có thể điền bằng thao tác chạm đã mở trên một nửa màn hình.</translation>
 <translation id="4989163558385430922">Xem tất cả</translation>
 <translation id="4989542687859782284">Không được hỗ trợ</translation>
 <translation id="4989809363548539747">Plugin này không được hỗ trợ</translation>
@@ -1932,6 +1934,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5863847714970149516">Trang phía trước có thể tìm cách tính phí bạn</translation>
 <translation id="5866257070973731571">Thêm số điện thoại</translation>
 <translation id="5866898949289125849">Bạn đang xem trang công cụ dành cho nhà phát triển</translation>
+<translation id="5868548454963263350">Danh sách thẻ tín dụng có thể điền bằng thao tác chạm đã mở trên toàn màn hình.</translation>
 <translation id="5869405914158311789">Không thể truy cập trang web này</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
 <translation id="5873013647450402046">Ngân hàng của bạn muốn xác nhận danh tính của bạn.</translation>
@@ -2644,6 +2647,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7653957176542370971">Trang tính trình xử lý thanh toán đang đóng</translation>
 <translation id="7654909834015434372">Khi bạn chỉnh sửa chú thích, tài liệu này sẽ trở về hướng xoay ban đầu</translation>
 <translation id="765676359832457558">Ẩn cài đặt nâng cao...</translation>
+<translation id="7656935528854393684">Danh sách thẻ tín dụng có thể điền bằng thao tác chạm.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7659327900411729175">Phong bì Kaku 8</translation>
 <translation id="7659878911471462949">Vui chảy nước mắt</translation>

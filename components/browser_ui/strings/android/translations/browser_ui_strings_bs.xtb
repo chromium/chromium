@@ -21,7 +21,7 @@
 <translation id="1426410128494586442">Da</translation>
 <translation id="1446450296470737166">Puna kontrola MIDI uređaja</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
-<translation id="1547123415014299762">Dopušteni su kolačići trećih strana</translation>
+<translation id="1547123415014299762">Kolačići treće strane su dozvoljeni</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Srodne web lokacije</translation>
 <translation id="1644574205037202324">Historija</translation>
@@ -351,7 +351,7 @@
 <translation id="8042586301629853791">Poredaj po:</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Nije moguće odabrati potvrdu.</translation>
-<translation id="8077120325605624147">Svaka web-lokacija koju posjetite može vam prikazati bilo koji oglas</translation>
+<translation id="8077120325605624147">Bilo koja web lokacija koju posjetite vam može prikazivati bilo koje oglase</translation>
 <translation id="8087000398470557479">Ovaj sadržaj je iz domene <ph name="DOMAIN_NAME" />, a isporučio ga je Google.</translation>
 <translation id="8116925261070264013">Isključen zvuk</translation>
 <translation id="813082847718468539">Prikaz informacija o web lokaciji</translation>
@@ -389,7 +389,7 @@
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Pomjeri nagore</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>
-<translation id="8681886425883659911">Oglasi su blokirani na web-lokacijama za koje se zna da prikazuju ometajuće ili obmanjujuće oglase</translation>
+<translation id="8681886425883659911">Oglasi se blokiraju na web lokacijama za koje je poznato da prikazuju ometajuće ili obmanjujuće oglase</translation>
 <translation id="868929229000858085">Pretražite kontakte</translation>
 <translation id="8702612070107455751">Obrisat će se svi offline podaci.</translation>
 <translation id="8712637175834984815">Razumijem</translation>

@@ -8211,21 +8211,6 @@
 <translation id="8882307005437314052">Увімкнути екранну клавіатуру на екрані входу й дозволити користувачам тимчасово вимкнути цю функцію</translation>
 <translation id="8883577480680089760">Вимкнути сервіс <ph name="PRODUCT_NAME" /> версії 2 й не запускати віддалений робочий стіл після входу</translation>
 <translation id="8887709920496070892">Період часу неактивності користувача в мілісекундах, після якого з'являється діалогове вікно з попередженням</translation>
-<translation id="8887847586787956456">Список дій, які виконуються, коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Якщо правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не налаштовано, це правило не діє.
-
-      Коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> виконує дії, указані в цьому правилі.
-
-      Якщо це правило не налаштувати або не вказати для нього значення, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не діятиме.
-
-      Підтримувані дії:
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: закрити всі вікна веб-переглядача та прогресивні веб-додатки для цього профілю.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: показати вікно засобу вибору профілю.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: очистити всі відповідні дані веб-перегляду. Щоб дізнатися більше, перегляньте правило <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.</translation>
 <translation id="8890438048579188548">Приховувати попередження про припинення підтримки <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Вимкнути звітування щодо інформації про систему пристрою</translation>
 <translation id="8892286064305622118">Потрібне вільне місце на диску для <ph name="PLUGIN_VM_NAME" /></translation>

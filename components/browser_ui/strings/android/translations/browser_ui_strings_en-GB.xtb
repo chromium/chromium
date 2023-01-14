@@ -12,6 +12,7 @@
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">To save you data, this page's images have been optimised by Google.</translation>
 <translation id="129382876167171263">Files saved by websites appear here</translation>
+<translation id="131112695174432497">Data that affects Ad Personalisation is deleted</translation>
 <translation id="1317194122196776028">Forget this site</translation>
 <translation id="1343356790768851700">This site determines things that you like and then suggests ads to other sites</translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> added</translation>
@@ -203,7 +204,6 @@
 <translation id="4994033804516042629">No contacts found</translation>
 <translation id="4996978546172906250">Share via</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
-<translation id="5038049331464490262">Allow third-party cookies for a specific site</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
@@ -304,7 +304,6 @@
 <translation id="6746124502594467657">Move down</translation>
 <translation id="6749077623962119521">Reset permissions?</translation>
 <translation id="6766622839693428701">Swipe down to close.</translation>
-<translation id="6785073030727361123">Block third-party cookies for a specific site</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6818926723028410516">Select items</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
