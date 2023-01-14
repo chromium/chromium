@@ -7,7 +7,6 @@
 # third_party/WebKit/Source/bindings/core/v8/V8ContextSnapshot.{cpp|h}.
 # to speedup creating a V8 context and setting up around it.
 
-import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/v8_target_cpu.gni")
@@ -17,8 +16,8 @@ declare_args() {
   # TODO(crbug.com/764576): Enable the feature on more environments.
   # Disable in mac and win cross builds since building Blink twice is slow.
   use_v8_context_snapshot =
-      !is_chromeos && (!is_android || is_high_end_android) && !is_castos &&
-      !is_fuchsia && !(host_os == "mac" && current_cpu == "x86") &&
+      !is_chromeos && !is_android && !is_castos && !is_fuchsia &&
+      !(host_os == "mac" && current_cpu == "x86") &&
       # Android may build for both 64 bit and 32bit. When this happens, the
       # v8_target_cpu will not equal the target_cpu (for example,
       # v8_target_cpu == "arm" but target_os == "arm64").
