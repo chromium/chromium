@@ -23,7 +23,7 @@ export class OutputInterface {
    * @param {string|!Spannable} value
    * @param {{annotation: Array<*>, isUnique: (boolean|undefined)}=} opt_options
    */
-  append_(buff, value, opt_options) {}
+  append(buff, value, opt_options) {}
 
   /**
    * @param {string} text

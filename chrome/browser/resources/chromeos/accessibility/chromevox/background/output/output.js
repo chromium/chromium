@@ -304,8 +304,8 @@ export class Output {
    * @return {!Output}
    */
   withString(value) {
-    this.append_(this.speechBuffer_, value);
-    this.append_(this.brailleBuffer_, value);
+    this.append(this.speechBuffer_, value);
+    this.append(this.brailleBuffer_, value);
     this.speechFormatLog_.write('withString: ' + value + '\n');
     this.brailleFormatLog_.write('withString: ' + value + '\n');
     return this;
@@ -1043,7 +1043,7 @@ export class Output {
     if (LocalStorage.get('languageSwitching')) {
       this.assignLocaleAndAppend_(text, node, buff, options);
     } else {
-      this.append_(buff, text, options);
+      this.append(buff, text, options);
     }
     formatLog.write('subNode_: ' + text + '\n');
 
@@ -1107,10 +1107,10 @@ export class Output {
     for (const msg of allMsgs) {
       if (msg.msgId) {
         const text = Msgs.getMsg(msg.msgId, msg.subs);
-        this.append_(buff, text, {annotation: [msg.props]});
+        this.append(buff, text, {annotation: [msg.props]});
         formatLog.write('hint_: ' + text + '\n');
       } else if (msg.text) {
-        this.append_(buff, msg.text, {annotation: [msg.props]});
+        this.append(buff, msg.text, {annotation: [msg.props]});
         formatLog.write('hint_: ' + msg.text + '\n');
       } else if (msg.outputFormat) {
         formatLog.write('hint_: ...');
@@ -1319,8 +1319,11 @@ export class Output {
     return ret;
   }
 
-  /** @override */
-  append_(buff, value, opt_options) {
+  /**
+   * Only to be used by output classes.
+   * @override
+   */
+  append(buff, value, opt_options) {
     opt_options = opt_options || {isUnique: false, annotation: []};
 
     // Reject empty values without meaningful annotations.
@@ -1495,7 +1498,7 @@ export class Output {
         LocaleOutputHelper.instance.computeTextAndLocale(text, contextNode);
     const speechProps = new outputTypes.OutputSpeechProperties();
     speechProps.properties['lang'] = data.locale;
-    this.append_(buff, data.text, options);
+    this.append(buff, data.text, options);
     // Attach associated SpeechProperties if the buffer is
     // non-empty.
     if (buff.length > 0) {

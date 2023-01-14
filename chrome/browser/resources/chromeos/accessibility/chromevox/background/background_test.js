@@ -2639,7 +2639,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'OutputEmptyQueueMode', async function() {
   const root = await this.runWithLoadedTree('<p>unused</p>');
   const output = new Output();
   Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
-  output.append_(
+  output.append(
       output.speechBuffer_, new Spannable(''),
       {annotation: [new OutputAction()]});
   output.withString('test');

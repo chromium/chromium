@@ -200,7 +200,7 @@ export class OutputFormatter {
     if (typeof value === 'number') {
       value = String(value);
     }
-    this.output_.append_(buff, value, options);
+    this.output_.append(buff, value, options);
     formatLog.writeTokenWithValue(token, value);
   }
 
@@ -231,7 +231,7 @@ export class OutputFormatter {
     const msgId = this.output_.formatAsBraille ? resolvedInfo.msgId + '_brl' :
                                                  resolvedInfo.msgId;
     const msg = Msgs.getMsg(msgId);
-    this.output_.append_(buff, msg, options);
+    this.output_.append(buff, msg, options);
     formatLog.writeTokenWithValue(token, msg);
   }
 
@@ -256,7 +256,7 @@ export class OutputFormatter {
         return;
       }
       value += row.htmlAttributes['aria-rowtext'];
-      this.output_.append_(buff, value, options);
+      this.output_.append(buff, value, options);
       formatLog.writeTokenWithValue(token, value);
     } else {
       formatLog.write(token);
@@ -357,7 +357,7 @@ export class OutputFormatter {
 
       options.annotation.push(new outputTypes.OutputEarconAction(
           EarconId[tree.firstChild.value], node.location || undefined));
-      this.output_.append_(buff, '', options);
+      this.output_.append(buff, '', options);
       formatLog.writeTokenWithValue(token, tree.firstChild.value);
     }
   }
@@ -428,7 +428,7 @@ export class OutputFormatter {
     }
 
     options.annotation.push(token);
-    this.output_.append_(buff, node.description || '', options);
+    this.output_.append(buff, node.description || '', options);
     formatLog.writeTokenWithValue(token, node.description);
   }
 
@@ -492,7 +492,7 @@ export class OutputFormatter {
           break;
         }
       }
-      this.output_.append_(buff, String(count));
+      this.output_.append(buff, String(count));
       formatLog.writeTokenWithValue(token, String(count));
     }
   }
@@ -517,7 +517,7 @@ export class OutputFormatter {
     if (this.output_.formatAsBraille) {
       msgId = msgId + '_brl';
     }
-    this.output_.append_(buff, Msgs.getMsg(msgId), options);
+    this.output_.append(buff, Msgs.getMsg(msgId), options);
     formatLog.writeTokenWithValue(token, Msgs.getMsg(msgId));
   }
 
@@ -540,7 +540,7 @@ export class OutputFormatter {
       outputBuffer: unjoined,
       outputFormatLogger: formatLog,
     });
-    this.output_.append_(buff, unjoined.join(' '), options);
+    this.output_.append(buff, unjoined.join(' '), options);
     formatLog.write(
         '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
   }
@@ -561,7 +561,7 @@ export class OutputFormatter {
       }
       current = current.parent;
     }
-    this.output_.append_(buff, level.toString());
+    this.output_.append(buff, level.toString());
   }
 
   /**
@@ -658,7 +658,7 @@ export class OutputFormatter {
     }
     formatLog.write('}');
 
-    this.output_.append_(buff, msg, options);
+    this.output_.append(buff, msg, options);
     formatLog.write(': ' + msg + '\n');
   }
 
@@ -689,7 +689,7 @@ export class OutputFormatter {
     if (LocalStorage.get('languageSwitching')) {
       this.output_.assignLocaleAndAppend_(node.name || '', node, buff, options);
     } else {
-      this.output_.append_(buff, node.name || '', options);
+      this.output_.append(buff, node.name || '', options);
     }
 
     formatLog.writeTokenWithValue(token, node.name);
@@ -711,7 +711,7 @@ export class OutputFormatter {
     }
 
     options.annotation.push('name');
-    this.output_.append_(buff, node.name || '', options);
+    this.output_.append(buff, node.name || '', options);
     formatLog.writeTokenWithValue(token, node.name);
   }
 
@@ -730,7 +730,7 @@ export class OutputFormatter {
     if (node.name &&
         (node.nameFrom !== NameFromType.CONTENTS ||
          node.children.every(child => child.role === RoleType.STATIC_TEXT))) {
-      this.output_.append_(buff, node.name || '', options);
+      this.output_.append(buff, node.name || '', options);
       formatLog.writeTokenWithValue(token, node.name);
     } else {
       formatLog.writeToken(token);
@@ -776,7 +776,7 @@ export class OutputFormatter {
         for (let i = 0; i < headers.length; i++) {
           const header = headers[i].name;
           if (header) {
-            this.output_.append_(buff, header, options);
+            this.output_.append(buff, header, options);
             formatLog.writeTokenWithValue(token, header);
           }
         }
@@ -787,7 +787,7 @@ export class OutputFormatter {
         for (let i = 0; i < headers.length; i++) {
           const header = headers[i].name;
           if (header) {
-            this.output_.append_(buff, header, options);
+            this.output_.append(buff, header, options);
             formatLog.writeTokenWithValue(token, header);
           }
         }
@@ -810,7 +810,7 @@ export class OutputFormatter {
 
     const text =
         PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
-    this.output_.append_(buff, text);
+    this.output_.append(buff, text);
   }
 
   /**
@@ -830,7 +830,7 @@ export class OutputFormatter {
     }
     current = current.previousSibling;
     if (current && current.role === RoleType.LIST_MARKER) {
-      this.output_.append_(buff, current.name || '');
+      this.output_.append(buff, current.name || '');
     }
   }
 
@@ -905,7 +905,7 @@ export class OutputFormatter {
       // message id validity.
       return;
     }
-    this.output_.append_(buff, msg || '', options);
+    this.output_.append(buff, msg || '', options);
     formatLog.writeTokenWithValue(token, msg);
   }
 
@@ -952,7 +952,7 @@ export class OutputFormatter {
     }
     value = String(value + 1);
     options.annotation.push(token);
-    this.output_.append_(buff, value, options);
+    this.output_.append(buff, value, options);
     formatLog.writeTokenWithValue(token, value);
   }
 
@@ -999,7 +999,7 @@ export class OutputFormatter {
       }
     }
     const finalOutput = outputStrings.join(' ');
-    this.output_.append_(buff, finalOutput, options);
+    this.output_.append(buff, finalOutput, options);
     formatLog.writeTokenWithValue(token, finalOutput);
   }
 
@@ -1024,7 +1024,7 @@ export class OutputFormatter {
         filename = filename.substring(0, 16) + '...';
       }
     }
-    this.output_.append_(buff, filename, options);
+    this.output_.append(buff, filename, options);
     formatLog.writeTokenWithValue(token, filename);
   }
 
@@ -1057,12 +1057,12 @@ export class OutputFormatter {
     options.annotation.push(token);
     if (selectedText && !this.output_.formatAsBraille &&
         node.state[StateType.FOCUSED]) {
-      this.output_.append_(buff, selectedText, options);
-      this.output_.append_(buff, Msgs.getMsg('selected'));
+      this.output_.append(buff, selectedText, options);
+      this.output_.append(buff, Msgs.getMsg('selected'));
       formatLog.writeTokenWithValue(token, selectedText);
       formatLog.write('selected\n');
     } else {
-      this.output_.append_(buff, text, options);
+      this.output_.append(buff, text, options);
       formatLog.writeTokenWithValue(token, text);
     }
   }
