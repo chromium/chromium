@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,32 +98,37 @@ class AutofillObserverImplTest : public testing::Test {
 };
 
 TEST_F(AutofillObserverImplTest, TestFormInteraction) {
-  base::MockOnceCallback<void()> callback;
-  AutofillObserverImpl obsever(autofill_manager(), callback.Get());
+  base::MockOnceCallback<void(content::GlobalRenderFrameHostId)> callback;
+  content::GlobalRenderFrameHostId id = content::GlobalRenderFrameHostId();
+  AutofillObserverImpl obsever(id, autofill_manager(), callback.Get());
 
-  EXPECT_CALL(callback, Run()).Times(1);
+  EXPECT_CALL(callback, Run(id)).Times(1);
   OnTextFieldDidChangeForAutofillManager(autofill_manager());
 
   // Observer should no longer get notified after the first interaction.
-  EXPECT_CALL(callback, Run()).Times(0);
+  EXPECT_CALL(callback, Run(id)).Times(0);
   OnTextFieldDidChangeForAutofillManager(autofill_manager());
 }
 
 TEST_F(AutofillObserverImplTest, TestNoFormInteraction) {
-  base::MockOnceCallback<void()> callback;
-  auto* observer = new AutofillObserverImpl(autofill_manager(), callback.Get());
+  content::GlobalRenderFrameHostId id = content::GlobalRenderFrameHostId();
+  base::MockOnceCallback<void(content::GlobalRenderFrameHostId)> callback;
+  auto* observer =
+      new AutofillObserverImpl(id, autofill_manager(), callback.Get());
 
-  EXPECT_CALL(callback, Run()).Times(0);
+  EXPECT_CALL(callback, Run(id)).Times(0);
   delete observer;
 }
 
 TEST_F(AutofillObserverImplTest, TestAutofillManagerDestroy) {
-  base::MockOnceCallback<void()> callback;
-  auto* observer = new AutofillObserverImpl(autofill_manager(), callback.Get());
+  content::GlobalRenderFrameHostId id = content::GlobalRenderFrameHostId();
+  base::MockOnceCallback<void(content::GlobalRenderFrameHostId)> callback;
+  auto* observer =
+      new AutofillObserverImpl(id, autofill_manager(), callback.Get());
 
   DestroyManager();
 
-  EXPECT_CALL(callback, Run()).Times(0);
+  EXPECT_CALL(callback, Run(id)).Times(0);
   delete observer;
 }
 
@@ -180,6 +186,9 @@ TEST_F(TabInteractionRecorderAndroidTest, HadFormInteraction) {
   EXPECT_FALSE(helper->has_form_interactions());
   OnTextFieldDidChangeForAutofillManager(autofill_manager());
   EXPECT_TRUE(helper->has_form_interactions());
+  EXPECT_TRUE(FormInteractionData::GetForCurrentDocument(
+                  contents->GetPrimaryMainFrame())
+                  ->FormInteractionData::GetHasFormInteractionData());
 
   JNIEnv* env = base::android::AttachCurrentThread();
   EXPECT_TRUE(helper->HadFormInteraction(env));
@@ -240,6 +249,10 @@ TEST_F(TabInteractionRecorderAndroidTest, ResetInteractions) {
   // Simulate touch, text input, and navigation events.
   helper->DidGetUserInteraction(blink::WebTouchEvent());
   OnTextFieldDidChangeForAutofillManager(autofill_manager());
+  EXPECT_TRUE(FormInteractionData::GetForCurrentDocument(
+                  contents->GetPrimaryMainFrame())
+                  ->FormInteractionData::GetHasFormInteractionData());
+
   content::WebContentsTester::For(contents.get())
       ->NavigateAndCommit(GURL("https://bar.com"));
   task_environment()->RunUntilIdle();

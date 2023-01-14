@@ -15,6 +15,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -25,6 +26,7 @@ namespace customtabs {
 using autofill::AutofillManager;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 
 namespace {
@@ -36,13 +38,14 @@ AutofillManager* GetAutofillManager(RenderFrameHost* render_frame_host) {
     return nullptr;
   return autofill_driver->autofill_manager();
 }
-
 }  // namespace
 
 AutofillObserverImpl::AutofillObserverImpl(
+    GlobalRenderFrameHostId id,
     autofill::AutofillManager* autofill_manager,
     OnFormInteractionCallback form_interaction_callback)
-    : autofill_manager_(autofill_manager),
+    : global_id_(id),
+      autofill_manager_(autofill_manager),
       form_interaction_callback_(std::move(form_interaction_callback)) {
   autofill_manager->AddObserver(this);
 }
@@ -77,7 +80,22 @@ void AutofillObserverImpl::Invalidate() {
 
 void AutofillObserverImpl::OnFormInteraction() {
   Invalidate();
-  std::move(form_interaction_callback_).Run();
+  std::move(form_interaction_callback_).Run(global_id_);
+}
+
+DOCUMENT_USER_DATA_KEY_IMPL(FormInteractionData);
+
+FormInteractionData::~FormInteractionData() = default;
+
+FormInteractionData::FormInteractionData(RenderFrameHost* rfh)
+    : DocumentUserData<FormInteractionData>(rfh) {}
+
+void FormInteractionData::SetHasFormInteractionData() {
+  had_form_interaction_data_ = true;
+}
+
+bool FormInteractionData::GetHasFormInteractionData() {
+  return static_cast<jboolean>(had_form_interaction_data_);
 }
 
 TabInteractionRecorderAndroid::~TabInteractionRecorderAndroid() = default;
@@ -133,7 +151,10 @@ void TabInteractionRecorderAndroid::DidGetUserInteraction(
       .OnUserInteraction();
 }
 
-void TabInteractionRecorderAndroid::SetHasFormInteractions() {
+void TabInteractionRecorderAndroid::SetHasFormInteractions(
+    GlobalRenderFrameHostId id) {
+  FormInteractionData::GetForCurrentDocument(RenderFrameHost::FromID(id))
+      ->SetHasFormInteractionData();
   has_form_interactions_ = true;
   rfh_observer_map_.clear();
 }
@@ -150,9 +171,11 @@ void TabInteractionRecorderAndroid::StartObservingFrame(
   if (!autofill_manager)
     return;
 
+  FormInteractionData::CreateForCurrentDocument(render_frame_host);
+
   rfh_observer_map_[render_frame_host->GetGlobalId()] =
       std::make_unique<AutofillObserverImpl>(
-          autofill_manager,
+          render_frame_host->GetGlobalId(), autofill_manager,
           base::BindOnce(&TabInteractionRecorderAndroid::SetHasFormInteractions,
                          weak_factory_.GetWeakPtr()));
 }
