@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
@@ -501,9 +502,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
 
 VaapiJpegEncodeAccelerator::VaapiJpegEncodeAccelerator(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : io_task_runner_(std::move(io_task_runner)),
-      encoder_thread_("VaapiJpegEncoderThread"),
-      weak_this_factory_(this) {
+    : io_task_runner_(std::move(io_task_runner)), weak_this_factory_(this) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   VLOGF(2);
   weak_this_ = weak_this_factory_.GetWeakPtr();
@@ -518,7 +517,6 @@ VaapiJpegEncodeAccelerator::~VaapiJpegEncodeAccelerator() {
   if (encoder_task_runner_) {
     encoder_task_runner_->DeleteSoon(FROM_HERE, std::move(encoder_));
   }
-  encoder_thread_.Stop();
 }
 
 void VaapiJpegEncodeAccelerator::NotifyError(int32_t task_id, Status status) {
@@ -544,18 +542,15 @@ void VaapiJpegEncodeAccelerator::InitializeAsync(
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   client_ = client;
 
-  // Bind to |io_task_runner| to guarantee |init_cb| is called asynchronously.
-  init_cb = BindToCurrentLoop(std::move(init_cb));
-  if (!encoder_thread_.Start()) {
-    VLOGF(1) << "Failed to start encoding thread.";
-    std::move(init_cb).Run(THREAD_CREATION_FAILED);
-    return;
-  }
-  encoder_task_runner_ = encoder_thread_.task_runner();
+  encoder_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::BEST_EFFORT});
   DCHECK(encoder_task_runner_);
 
   encoder_ = std::make_unique<Encoder>();
 
+  // base::Unretained(encoder_) is safe because |encoder_| is passed to
+  // and destroyed on |encoder_task_runner_| in destructor. Thus |encoder_| is
+  // outlive any task that has been posted by |this|.
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -569,7 +564,7 @@ void VaapiJpegEncodeAccelerator::InitializeAsync(
               io_task_runner_,
               base::BindRepeating(&VaapiJpegEncodeAccelerator::NotifyError,
                                   weak_this_)),
-          std::move(init_cb)));
+          BindToCurrentLoop(std::move(init_cb))));
 }
 
 size_t VaapiJpegEncodeAccelerator::GetMaxCodedBufferSize(
@@ -633,6 +628,9 @@ void VaapiJpegEncodeAccelerator::Encode(scoped_refptr<VideoFrame> video_frame,
       task_id, std::move(video_frame), std::move(exif_mapping),
       std::move(output_mapping), quality);
 
+  // base::Unretained(encoder_) is safe because |encoder_| is passed to
+  // and destroyed on |encoder_task_runner_| in destructor. Thus |encoder_| is
+  // outlive any task that has been posted by |this|.
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VaapiJpegEncodeAccelerator::Encoder::EncodeTask,
@@ -686,6 +684,9 @@ void VaapiJpegEncodeAccelerator::EncodeWithDmaBuf(
     }
   }
 
+  // base::Unretained(encoder_) is safe because |encoder_| is passed to
+  // and destroyed on |encoder_task_runner_| in destructor. Thus |encoder_| is
+  // outlive any task that has been posted by |this|.
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask,

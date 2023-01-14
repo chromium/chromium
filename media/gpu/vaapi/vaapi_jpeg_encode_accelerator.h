@@ -9,12 +9,16 @@
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace media {
 
@@ -95,11 +99,8 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   // The client of this class.
   Client* client_ = nullptr;
 
-  base::Thread encoder_thread_;
-
-  // Use this to post tasks to encoder thread.
-  scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner_;
-
+  // The task runner on which the functions of |encoder_| are executed.
+  scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
   std::unique_ptr<Encoder> encoder_;
 
   // |weak_this_| is used to post tasks from |encoder_task_runner_| to
