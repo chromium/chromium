@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 
@@ -58,7 +57,7 @@ public final class ArkTabHelpers {
         ArkSwipeRefreshHandler.from(tab);
         TabFavicon.from(tab);
         TrustedCdn.from(tab);
-        TabAssociatedApp.from(tab);
+//        TabAssociatedApp.from(tab);
         ArkTabGestureStateListener.from(tab);
     }
 }

@@ -1,5 +1,6 @@
 package com.ark.browser.tab;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.core.ArkWebContents;
@@ -37,6 +38,16 @@ public abstract class ArkTabWebContentsUserData implements UserData {
             public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
                 // Intentionally do nothing to prevent automatic observer removal on detachment.
             }
+
+            @Override
+            public void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+                ArkTabWebContentsUserData.this.onAttachToWindowAndroid(windowAndroid);
+            }
+
+            @Override
+            public void onDetachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+                ArkTabWebContentsUserData.this.onDetachToWindowAndroid();
+            }
         });
     }
 
@@ -66,4 +77,12 @@ public abstract class ArkTabWebContentsUserData implements UserData {
      * @param webContents WebContents object that just became inactive.
      */
     public abstract void cleanupWebContents(ArkWebContents webContents);
+
+    public void onAttachToWindowAndroid(@NonNull WindowAndroid windowAndroid) {
+
+    }
+
+    public void onDetachToWindowAndroid() {
+
+    }
 }

@@ -1632,6 +1632,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
 
         if (mTabVisible != null) {
+            mContentView.setWebContents(mTabVisible.getWebContents());
             mTabVisible.loadIfNeeded();
             initializeTab(mTabVisible);
             mLayoutManager.onPageSelected(mTabVisible);
@@ -1675,8 +1676,8 @@ public class ArkCompositorViewHolder extends FrameLayout
         WebContents webContents = tab.getWebContents();
         ArkLogger.e(TAG, "initializeTab webContents=" + webContents);
         if (webContents != null) {
-            webContents.setViewAndroidDelegate(new ArkTabViewAndroidDelegate(tab, mContentView));
-            webContents.setAccessDelegate(mContentView);
+//            webContents.setViewAndroidDelegate(new ArkTabViewAndroidDelegate(tab, mContentView));
+//            webContents.setAccessDelegate(mContentView);
             onPhysicalBackingSizeChanged(
                     webContents, mCompositorView.getWidth(), mCompositorView.getHeight());
             onControlsResizeViewChanged(webContents, mControlsResizeView);

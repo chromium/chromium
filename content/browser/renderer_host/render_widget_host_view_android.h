@@ -309,7 +309,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     return synchronous_compositor_client_;
   }
 
-  void OnOverscrollRefreshHandlerAvailable();
+  void OnOverscrollRefreshHandlerChanged(bool reset);
 
   // TextInputManager::Observer overrides.
   void OnUpdateTextInputStateCalled(TextInputManager* text_input_manager,

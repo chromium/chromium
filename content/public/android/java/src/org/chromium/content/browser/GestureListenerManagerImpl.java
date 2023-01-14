@@ -46,7 +46,6 @@ public class GestureListenerManagerImpl
     private final WebContentsImpl mWebContents;
     private final ObserverList<GestureStateListener> mListeners;
     private final RewindableIterator<GestureStateListener> mIterator;
-    private ViewAndroidDelegate mViewDelegate;
     private InternalAccessDelegate mScrollDelegate;
 
     private long mNativeGestureListenerManager;
@@ -80,7 +79,6 @@ public class GestureListenerManagerImpl
         mWebContents = (WebContentsImpl) webContents;
         mListeners = new ObserverList<GestureStateListener>();
         mIterator = mListeners.rewindableIterator();
-        mViewDelegate = mWebContents.getViewAndroidDelegate();
         WindowEventObserverManager.from(mWebContents).addObserver(this);
         mNativeGestureListenerManager = GestureListenerManagerImplJni.get().init(
                 GestureListenerManagerImpl.this, mWebContents);
@@ -265,8 +263,13 @@ public class GestureListenerManagerImpl
                 break;
             case EventType.GESTURE_LONG_PRESS:
                 if (!consumed) break;
-                mViewDelegate.getContainerView().performHapticFeedback(
-                        HapticFeedbackConstants.LONG_PRESS);
+                ViewAndroidDelegate delegate = mWebContents.getViewAndroidDelegate();
+                if (delegate != null) {
+                    delegate.getContainerView().performHapticFeedback(
+                            HapticFeedbackConstants.LONG_PRESS);
+                } else {
+                    break;
+                }
                 for (mIterator.rewind(); mIterator.hasNext();) mIterator.next().onLongPress();
                 break;
             default:
@@ -329,11 +332,19 @@ public class GestureListenerManagerImpl
         // Adjust contentWidth/Height to be always at least as big as
         // the actual viewport (as set by onSizeChanged).
         final float deviceScale = rc.getDeviceScaleFactor();
-        View containerView = mViewDelegate.getContainerView();
+        ViewAndroidDelegate delegate = mWebContents.getViewAndroidDelegate();
+        int containerWidth = 0;
+        int containerHeight = 0;
+        if (delegate != null && delegate.getContainerView() != null) {
+            View containerView = delegate.getContainerView();
+            containerWidth = containerView.getWidth();
+            containerHeight = containerView.getHeight();
+        }
+
         contentWidth =
-                Math.max(contentWidth, containerView.getWidth() / (deviceScale * pageScaleFactor));
+                Math.max(contentWidth, containerWidth / (deviceScale * pageScaleFactor));
         contentHeight = Math.max(
-                contentHeight, containerView.getHeight() / (deviceScale * pageScaleFactor));
+                contentHeight, containerHeight / (deviceScale * pageScaleFactor));
 
         final boolean scaleLimitsChanged = minPageScaleFactor != rc.getMinPageScaleFactor()
                 || maxPageScaleFactor != rc.getMaxPageScaleFactor();
@@ -421,7 +432,11 @@ public class GestureListenerManagerImpl
      * @return true if the embedder handled the event.
      */
     private boolean offerLongPressToEmbedder() {
-        return mViewDelegate.getContainerView().performLongClick();
+        ViewAndroidDelegate delegate = mWebContents.getViewAndroidDelegate();
+        if (delegate == null) {
+            return false;
+        }
+        return delegate.getContainerView().performLongClick();
     }
 
     private int verticalScrollOffset() {

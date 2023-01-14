@@ -128,6 +128,9 @@ public class ContentView extends FrameLayout
     }
 
     public void setWebContents(WebContents webContents) {
+        if (mWebContents == webContents) {
+            return;
+        }
         boolean wasFocused = isFocused();
         boolean wasWindowFocused = hasWindowFocus();
         boolean wasAttached = isAttachedToWindow();

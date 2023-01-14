@@ -140,10 +140,11 @@ void WebContentsViewAndroid::SetContentUiEventHandler(
 void WebContentsViewAndroid::SetOverscrollRefreshHandler(
     std::unique_ptr<ui::OverscrollRefreshHandler> overscroll_refresh_handler) {
   overscroll_refresh_handler_ = std::move(overscroll_refresh_handler);
+  bool reset = GetOverscrollRefreshHandler() == nullptr;
   auto* rwhv = web_contents_->GetRenderWidgetHostView();
   if (rwhv) {
     static_cast<RenderWidgetHostViewAndroid*>(rwhv)
-        ->OnOverscrollRefreshHandlerAvailable();
+        ->OnOverscrollRefreshHandlerChanged(reset);
   }
 }
 

@@ -4,6 +4,8 @@
 
 package com.ark.browser.tab;
 
+import androidx.annotation.NonNull;
+
 import com.ark.browser.core.ArkWebContents;
 
 import org.chromium.base.ObserverList.RewindableIterator;
@@ -12,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * {@link GestureStateListener} implementation for a {@link Tab}. Associated with an active
@@ -22,14 +25,14 @@ public final class ArkTabGestureStateListener extends ArkTabWebContentsUserData 
     private static final Class<ArkTabGestureStateListener> USER_DATA_KEY =
             ArkTabGestureStateListener.class;
 
-    private final Tab mTab;
+    private final ArkTabImpl mTab;
     private GestureStateListener mGestureListener;
 
     /**
      * Creates TabGestureStateListener and lets the WebContentsUserData of the Tab manage it.
      * @param tab Tab instance that the active WebContents instance gets loaded in.
      */
-    public static ArkTabGestureStateListener from(Tab tab) {
+    public static ArkTabGestureStateListener from(ArkTabImpl tab) {
         ArkTabGestureStateListener listener = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (listener == null) {
             listener = tab.getUserDataHost().setUserData(
@@ -38,13 +41,16 @@ public final class ArkTabGestureStateListener extends ArkTabWebContentsUserData 
         return listener;
     }
 
-    private ArkTabGestureStateListener(Tab tab) {
+    private ArkTabGestureStateListener(ArkTabImpl tab) {
         super(tab);
         mTab = tab;
     }
 
     @Override
     public void initWebContents(ArkWebContents arkWeb) {
+        if (mTab.getWindowAndroid() == null) {
+            return;
+        }
         WebContents webContents = arkWeb.getWebContents();
         GestureListenerManager manager = GestureListenerManager.fromWebContents(webContents);
         mGestureListener = new GestureStateListener() {
@@ -89,6 +95,24 @@ public final class ArkTabGestureStateListener extends ArkTabWebContentsUserData 
             }
         };
         manager.addListener(mGestureListener);
+    }
+
+    @Override
+    public void onAttachToWindowAndroid(@NonNull WindowAndroid windowAndroid) {
+        ArkWebContents arkWeb = mTab.getArkWeb();
+        if (arkWeb == null) {
+            return;
+        }
+        initWebContents(arkWeb);
+    }
+
+    @Override
+    public void onDetachToWindowAndroid() {
+        ArkWebContents arkWeb = mTab.getArkWeb();
+        if (arkWeb == null) {
+            return;
+        }
+        cleanupWebContents(arkWeb);
     }
 
     @Override

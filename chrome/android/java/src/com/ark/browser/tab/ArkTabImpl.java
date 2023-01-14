@@ -448,7 +448,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
 
         if (mArkWeb != null) {
-            mArkWeb.attach(this);
+            if (mWindowAndroid == null) {
+                mArkWeb.detach(this);
+            } else {
+                mArkWeb.attach(this);
+                notifyContentChanged();
+            }
 //            mArkWeb.setTopLevelNativeWindow(window);
         }
 
@@ -1256,7 +1261,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                     mNativeTabAndroid, arkWeb.getWebContents(), bounds.right, bounds.bottom);
         }
         initWebContents(arkWeb, mWindowAndroid);
-        arkWeb.getWebContents().onShow();
+//        arkWeb.getWebContents().onShow();
 
         if (didStartLoad) {
             // Simulate the PAGE_LOAD_STARTED notification that we did not get.
@@ -1336,7 +1341,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                 mArkWeb.notifyRendererPreferenceUpdate();
             }
             ArkTabHelpers.initWebContentsHelpers(this);
-            notifyContentChanged();
+            if (windowAndroid != null) {
+                notifyContentChanged();
+            }
         } finally {
             TraceEvent.end("ChromeTab.initWebContents");
         }

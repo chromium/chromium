@@ -1356,9 +1356,13 @@ void RenderWidgetHostViewAndroid::ResetSynchronousCompositor() {
   }
 }
 
-void RenderWidgetHostViewAndroid::OnOverscrollRefreshHandlerAvailable() {
-  DCHECK(!overscroll_controller_);
-  CreateOverscrollControllerIfPossible();
+void RenderWidgetHostViewAndroid::OnOverscrollRefreshHandlerChanged(bool reset) {
+  if (reset) {
+    overscroll_controller_.reset();
+  } else {
+    DCHECK(!overscroll_controller_);
+    CreateOverscrollControllerIfPossible();
+  }
 }
 
 bool RenderWidgetHostViewAndroid::SupportsAnimation() const {

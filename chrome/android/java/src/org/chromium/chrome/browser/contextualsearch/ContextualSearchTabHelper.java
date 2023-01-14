@@ -202,6 +202,9 @@ public class ContextualSearchTabHelper
      * @param tab The current tab.
      */
     private void updateHooksForTab(Tab tab) {
+        if (tab.getWindowAndroid() == null) {
+            return;
+        }
         WebContents currentWebContents = tab.getWebContents();
         boolean webContentsChanged = currentWebContents != mWebContents;
         if (webContentsChanged || mContextualSearchManager != getContextualSearchManager(tab)) {

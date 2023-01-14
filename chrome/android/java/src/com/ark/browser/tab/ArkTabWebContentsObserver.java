@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.core.ArkWebContents;
@@ -38,6 +39,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.NetError;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
@@ -108,6 +110,11 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
 
     @Override
     public void initWebContents(ArkWebContents arkWeb) {
+
+        if (mTab.getWindowAndroid() == null) {
+            return;
+        }
+
         WebContents webContents = arkWeb.getWebContents();
         mObserver = new Observer(webContents);
 
@@ -122,6 +129,37 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
         for (Callback callback : mInitObservers) {
             callback.onResult(mTab, webContents);
         }
+    }
+
+    @Override
+    public void onAttachToWindowAndroid(@NonNull WindowAndroid windowAndroid) {
+
+        ArkWebContents arkWeb = mTab.getArkWeb();
+        if (arkWeb == null) {
+            return;
+        }
+        initWebContents(arkWeb);
+
+//        WebContents webContents = mTab.getWebContents();
+//        if (webContents == null) {
+//            return;
+//        }
+//        // For browser tabs, we want to set accessibility focus to the page when it loads. This
+//        // is not the default behavior for embedded web views.
+//        WebContentsAccessibility.fromWebContents(webContents).setShouldFocusOnPageLoad(true);
+//
+//        // Enable image descriptions feature normally, but not for Chrome Custom Tabs.
+//        WebContentsAccessibility.fromWebContents(webContents)
+//                .setAllowImageDescriptions(!mTab.isCustomTab());
+    }
+
+    @Override
+    public void onDetachToWindowAndroid() {
+        ArkWebContents arkWeb = mTab.getArkWeb();
+        if (arkWeb == null) {
+            return;
+        }
+        cleanupWebContents(arkWeb);
     }
 
     @Override

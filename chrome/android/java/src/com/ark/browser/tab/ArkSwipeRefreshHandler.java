@@ -170,9 +170,30 @@ public class ArkSwipeRefreshHandler
     @SuppressLint("NewApi")
     @Override
     public void initWebContents(ArkWebContents arkWeb) {
+        if (mTab.getWindowAndroid() == null) {
+            return;
+        }
         arkWeb.getWebContents().setOverscrollRefreshHandler(this);
         mContainerView = mTab.getContentView();
         setEnabled(true);
+    }
+
+    @Override
+    public void onAttachToWindowAndroid(@NonNull WindowAndroid windowAndroid) {
+        ArkWebContents arkWeb = mTab.getArkWeb();
+        if (arkWeb == null) {
+            return;
+        }
+        initWebContents(arkWeb);
+    }
+
+    @Override
+    public void onDetachToWindowAndroid() {
+        ArkWebContents arkWeb = mTab.getArkWeb();
+        if (arkWeb == null) {
+            return;
+        }
+        cleanupWebContents(arkWeb);
     }
 
     @SuppressLint("NewApi")
