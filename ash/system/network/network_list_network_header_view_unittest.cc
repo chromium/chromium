@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/fake_network_list_network_header_view_delegate.h"
 #include "ash/system/network/network_list_header_view.h"
@@ -28,7 +29,7 @@ class NetworkListNetworkHeaderViewTest : public AshTestBase {
     network_list_network_header_view_ =
         std::make_unique<NetworkListNetworkHeaderView>(
             &fake_network_list_network_header_delegate_,
-            IDS_ASH_STATUS_TRAY_NETWORK_MOBILE);
+            IDS_ASH_STATUS_TRAY_NETWORK_MOBILE, kPhoneHubPhoneIcon);
   }
 
   void TearDown() override {

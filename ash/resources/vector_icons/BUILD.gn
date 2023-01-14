@@ -493,6 +493,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "unified_menu_volume_medium.icon",
     "unified_menu_volume_mute.icon",
     "unified_menu_vpn.icon",
+    "unified_menu_wifi_100_percent.icon",
     "unified_menu_wifi_no_connection.icon",
     "unified_menu_wifi_off.icon",
     "unified_network_badge_captive_portal.icon",

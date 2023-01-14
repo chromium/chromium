@@ -34,7 +34,7 @@ namespace {
 using chromeos::network_config::mojom::NetworkType;
 
 constexpr auto kMainContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
-constexpr auto kTopContainerBorder = gfx::Insets::TLBR(8, 0, 8, 4);
+constexpr auto kTopContainerBorder = gfx::Insets::TLBR(4, 0, 4, 4);
 }  // namespace
 
 NetworkDetailedNetworkViewImpl::NetworkDetailedNetworkViewImpl(

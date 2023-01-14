@@ -14,12 +14,17 @@
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
-NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(Delegate* delegate,
-                                                           int label_id)
+NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
+    Delegate* delegate,
+    int label_id,
+    const gfx::VectorIcon& vector_icon)
     : NetworkListHeaderView(label_id),
       model_(Shell::Get()->system_tray_model()->network_state_model()),
       delegate_(delegate) {
@@ -30,6 +35,13 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(Delegate* delegate,
   toggle->SetID(kToggleButtonId);
   toggle_ = toggle.get();
   container()->AddView(TriView::Container::END, toggle.release());
+  if (features::IsQsRevampEnabled()) {
+    auto image_view = std::make_unique<views::ImageView>();
+    image_view->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icon, cros_tokens::kCrosSysOnSurface));
+    image_view->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 10, 0, 0));
+    container()->AddView(TriView::Container::START, image_view.release());
+  }
 }
 
 NetworkListNetworkHeaderView::~NetworkListNetworkHeaderView() = default;

@@ -31,7 +31,9 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
     virtual void OnWifiToggleClicked(bool new_state) = 0;
   };
 
-  NetworkListNetworkHeaderView(Delegate* delegate, int label_id);
+  NetworkListNetworkHeaderView(Delegate* delegate,
+                               int label_id,
+                               const gfx::VectorIcon& vector_icon);
   NetworkListNetworkHeaderView(const NetworkListNetworkHeaderView&) = delete;
   NetworkListNetworkHeaderView& operator=(const NetworkListNetworkHeaderView&) =
       delete;

@@ -4,16 +4,19 @@
 
 #include "ash/system/network/network_list_wifi_header_view.h"
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/network/network_list_network_header_view.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
 NetworkListWifiHeaderView::NetworkListWifiHeaderView(
     NetworkListNetworkHeaderView::Delegate* delegate)
-    : NetworkListNetworkHeaderView(delegate, IDS_ASH_STATUS_TRAY_NETWORK_WIFI) {
-}
+    : NetworkListNetworkHeaderView(delegate,
+                                   IDS_ASH_STATUS_TRAY_NETWORK_WIFI,
+                                   kUnifiedMenuWifi100PercentIcon) {}
 
 NetworkListWifiHeaderView::~NetworkListWifiHeaderView() = default;
 

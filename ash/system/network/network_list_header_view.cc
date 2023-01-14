@@ -31,9 +31,12 @@ NetworkListHeaderView::NetworkListHeaderView(int label_id) {
   TrayPopupUtils::ConfigureAsStickyHeader(this);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   container_ = TrayPopupUtils::CreateSubHeaderRowView(/*start_visible=*/true);
-  container_->AddView(
-      TriView::Container::START,
-      TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
+  if (!features::IsQsRevampEnabled()) {
+    container_->AddView(
+        TriView::Container::START,
+        TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
+  }
+
   AddChildView(container_);
   AddTitleView(label_id);
 }
