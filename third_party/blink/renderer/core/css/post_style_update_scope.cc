@@ -46,7 +46,7 @@ void PostStyleUpdateScope::Apply() {
   for (auto& element : pending)
     pending_vector.push_back(element);
   std::sort(pending_vector.begin(), pending_vector.end(),
-            recordreplay::CompareMemberByPointerId<Member<Element>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<Element>>());
   for (auto& element : pending_vector) {
     ElementAnimations* element_animations = element->GetElementAnimations();
     if (!element_animations)
