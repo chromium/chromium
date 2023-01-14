@@ -1108,7 +1108,7 @@ void ContentSettingMediaStreamBubbleModel::
   set_title(l10n_util::GetStringUTF16(title_id));
   set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
   SetCustomLink();
-  set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_PREFERENCES_LINK));
+  set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1308,7 +1308,7 @@ void ContentSettingGeolocationBubbleModel::
       l10n_util::GetStringUTF16(IDS_GEOLOCATION),
       l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
   set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
-  set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_PREFERENCES_LINK));
+  set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
   set_radio_group(RadioGroup());
   show_system_geolocation_bubble_ = true;
 #endif  // BUILDFLAG(IS_MAC)

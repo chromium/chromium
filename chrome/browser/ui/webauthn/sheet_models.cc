@@ -691,9 +691,7 @@ bool AuthenticatorBlePermissionMacSheetModel::IsCancelButtonVisible() const {
 
 std::u16string AuthenticatorBlePermissionMacSheetModel::GetAcceptButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(base::mac::IsAtMostOS12()
-                                       ? IDS_OPEN_PREFERENCES_LINK
-                                       : IDS_OPEN_SETTINGS_LINK);
+  return l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK);
 }
 
 void AuthenticatorBlePermissionMacSheetModel::OnAccept() {
