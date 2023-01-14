@@ -148,6 +148,7 @@ MockQuicClientSessionBase::MockQuicClientSessionBase(
     quic::QuicConnection* connection,
     quic::QuicClientPushPromiseIndex* push_promise_index)
     : quic::QuicSpdyClientSessionBase(connection,
+                                      /*visitor=*/nullptr,
                                       push_promise_index,
                                       quic::test::DefaultQuicConfig(),
                                       connection->supported_versions()) {

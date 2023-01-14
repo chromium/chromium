@@ -992,6 +992,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     NetLog* net_log)
     : quic::QuicSpdyClientSessionBase(connection,
+                                      /*visitor=*/nullptr,
                                       push_promise_index.get(),
                                       config,
                                       connection->supported_versions()),

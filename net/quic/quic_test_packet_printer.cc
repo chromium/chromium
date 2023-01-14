@@ -206,6 +206,9 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
       const QuicIetfStatelessResetPacket& packet) override {
     *output_ << "OnAuthenticatedIetfStatelessResetPacket\n";
   }
+  void OnAckEcnCounts(const quic::QuicEcnCounts& counts) override {
+    *output_ << "OnAckEcnCounts\n";
+  }
 
  private:
   raw_ptr<QuicFramer> framer_;  // Unowned.
