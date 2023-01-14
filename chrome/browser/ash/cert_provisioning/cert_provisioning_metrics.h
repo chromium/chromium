@@ -43,7 +43,9 @@ void RecordEvent(ProtocolVersion protocol_version,
                  CertProvisioningEvent event);
 
 // Records time of generation key pair by certificate provisioning worker.
-void RecordKeypairGenerationTime(CertScope scope, base::TimeDelta sample);
+void RecordKeypairGenerationTime(ProtocolVersion protocol_version,
+                                 CertScope scope,
+                                 base::TimeDelta sample);
 
 // Records time of building Verified Access response by certificate provisioning
 // worker.
