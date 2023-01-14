@@ -68,9 +68,12 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
  public:
   class JsonResolved : public ScriptFunction::Callable {
    public:
+    // `field_name` is expected to point to a literal.
     JsonResolved(AuctionHandle* auction_handle,
                  mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
-                 mojom::blink::AuctionAdConfigField field);
+                 mojom::blink::AuctionAdConfigField field,
+                 const String& seller_name,
+                 const char* field_name);
 
     ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
     void Trace(Visitor* visitor) const override;
@@ -79,6 +82,8 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     Member<AuctionHandle> auction_handle_;
     const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
     const mojom::blink::AuctionAdConfigField field_;
+    const String seller_name_;
+    const char* const field_name_;
   };
 
   class PerBuyerSignalsResolved : public ScriptFunction::Callable {
@@ -829,7 +834,8 @@ ConvertJsonPromiseFromIdlToMojo(
         MakeGarbageCollected<ScriptFunction>(
             &script_state,
             MakeGarbageCollected<NavigatorAuction::AuctionHandle::JsonResolved>(
-                auction_handle, auction_id->Clone(), field)),
+                auction_handle, auction_id->Clone(), field, input.seller(),
+                field_name)),
         MakeGarbageCollected<ScriptFunction>(
             &script_state,
             MakeGarbageCollected<NavigatorAuction::AuctionHandle::Rejected>(
@@ -1454,23 +1460,35 @@ void RecordCommonFledgeUseCounters(Document* document) {
 NavigatorAuction::AuctionHandle::JsonResolved::JsonResolved(
     AuctionHandle* auction_handle,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
-    mojom::blink::AuctionAdConfigField field)
+    mojom::blink::AuctionAdConfigField field,
+    const String& seller_name,
+    const char* field_name)
     : auction_handle_(auction_handle),
       auction_id_(std::move(auction_id)),
-      field_(field) {}
+      field_(field),
+      seller_name_(seller_name),
+      field_name_(field_name) {}
 
 ScriptValue NavigatorAuction::AuctionHandle::JsonResolved::Call(
     ScriptState* script_state,
     ScriptValue value) {
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "NavigatorAuction", "runAdAuction");
   String maybe_json;
   bool maybe_json_ok = false;
   if (!value.IsEmpty()) {
     v8::Local<v8::Value> v8_value = value.V8Value();
     if (v8_value->IsUndefined() || v8_value->IsNull()) {
-      // `maybe_json` left as the null string here.
+      // `maybe_json` left as the null string here; that's the blink equivalent
+      // of absl::nullopt for a string? in mojo.
       maybe_json_ok = true;
     } else {
       maybe_json_ok = Jsonify(*script_state, value.V8Value(), maybe_json);
+      if (!maybe_json_ok) {
+        exception_state.ThrowTypeError(
+            ErrorInvalidAuctionConfigSellerJson(seller_name_, field_name_));
+      }
     }
   }
 

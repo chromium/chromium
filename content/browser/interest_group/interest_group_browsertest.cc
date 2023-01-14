@@ -3155,9 +3155,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           () => { resolve(function() {}); }, 10) }),
       interestGroupBuyers: [$1]
   })";
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': auctionSignals for AuctionAdConfig with seller "
+      "'https://a.test:*' must be a JSON-serializable object.");
+
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
   WaitForAccessObserved({});
 }
 
@@ -3248,9 +3255,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: [$1]
   })";
 
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': sellerSignals for AuctionAdConfig with seller "
+      "'https://a.test:*' must be a JSON-serializable object.");
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
             RunAuctionAndWait(
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
   WaitForAccessObserved({});
 }
 
