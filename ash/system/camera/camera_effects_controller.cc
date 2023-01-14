@@ -517,25 +517,13 @@ void CameraEffectsController::InitializeEffectControls() {
         /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF);
     AddBackgroundBlurStateToEffect(
         effect.get(),
-        /*state_value=*/BackgroundBlurEffectState::kLowest,
-        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LOWEST);
-    AddBackgroundBlurStateToEffect(
-        effect.get(),
         /*state_value=*/BackgroundBlurEffectState::kLight,
         /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT);
     AddBackgroundBlurStateToEffect(
         effect.get(),
-        /*state_value=*/BackgroundBlurEffectState::kMedium,
-        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_MEDIUM);
-    AddBackgroundBlurStateToEffect(
-        effect.get(),
-        /*state_value=*/BackgroundBlurEffectState::kHeavy,
-        /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_HEAVY);
-    AddBackgroundBlurStateToEffect(
-        effect.get(),
         /*state_value=*/BackgroundBlurEffectState::kMaximum,
         /*string_id=*/
-        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_MAXIMUM);
+        IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL);
     AddEffect(std::move(effect));
   }
 

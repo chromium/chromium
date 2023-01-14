@@ -1481,6 +1481,9 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_MAXIMUM" desc="Text for background blur 'maximum' setting, in the VC bubble.">
         Maximum
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL" desc="Text 'full' is a synonym of the background blur 'maximum' setting, in the VC bubble.">
+        Full
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME" desc="Text for name of the portrait relight effect in the VC bubble.">
         Portrait Relighting
       </message>
