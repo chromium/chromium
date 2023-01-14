@@ -218,7 +218,7 @@ void MultiBufferDataSource::Initialize(InitializeCB init_cb) {
 
 void MultiBufferDataSource::OnRedirected(
     const scoped_refptr<UrlData>& new_destination) {
-  if (!new_destination) {
+  if (!new_destination || !url_data_) {
     // A failure occurred.
     failed_ = true;
     if (init_cb_) {
