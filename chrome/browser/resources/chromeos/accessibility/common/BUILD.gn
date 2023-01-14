@@ -51,6 +51,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "repeated_event_handler.js",
     "repeated_tree_change_handler.js",
     "sentence_utils.js",
+    "settings.js",
     "string_util.js",
     "testing/accessibility_test_base.js",
     "testing/test_node_generator.js",
