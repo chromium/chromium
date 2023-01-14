@@ -38,12 +38,6 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
     await importModule('Spannable', '/chromevox/common/spannable.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
   }
-
-  /** @override */
-  setUp() {
-    super.setUp();
-    window.ChromeVox = window.ChromeVox || {};
-  }
 };
 
 MockFeedbackUnitTest.prototype.extraLibraries = [

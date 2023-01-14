@@ -35,7 +35,7 @@ ChromeVoxDownloadTest = class extends ChromeVoxE2ETest {
   /** @override */
   setUp() {
     super.setUp();
-    window.simulateEvent = item => this.simulateEvent(item);
+    globalThis.simulateEvent = item => this.simulateEvent(item);
   }
 
   /** @override */

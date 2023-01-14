@@ -68,7 +68,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
     await importModule('KeyCode', '/common/key_code.js');
     await importModule('LocalStorage', '/common/local_storage.js');
 
-
     globalThis.simulateHitTestResult = this.simulateHitTestResult;
     globalThis.press = this.press;
     globalThis.doDefault = this.doDefault;
@@ -263,7 +262,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ClassicNamespaces', function() {
 
 /** Tests that ChromeVox's background object is not available globally. */
 AX_TEST_F('ChromeVoxBackgroundTest', 'NextNamespaces', function() {
-  assertEquals(undefined, window.Background);
+  assertEquals(undefined, globalThis.Background);
 });
 
 /** Tests consistency of navigating forward and backward. */

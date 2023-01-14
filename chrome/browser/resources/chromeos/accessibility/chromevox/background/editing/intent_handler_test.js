@@ -25,8 +25,9 @@ ChromeVoxIntentHandlerTest = class extends ChromeVoxE2ETest {
     await importModule(
         'OutputCustomEvent', '/chromevox/background/output/output_types.js');
 
-    window.Dir = constants.Dir;
-    window.IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
+    globalThis.Dir = constants.Dir;
+    globalThis.IntentTextBoundaryType =
+        chrome.automation.IntentTextBoundaryType;
   }
 };
 

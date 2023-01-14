@@ -22,7 +22,7 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
         ['QueueMode', 'TtsSpeechProperties'], '/chromevox/common/tts_types.js');
     await importModule('LocalStorage', '/common/local_storage.js');
 
-    window.tts = new PrimaryTts();
+    globalThis.tts = new PrimaryTts();
   }
 
   expectUtteranceQueueIsLike(expectedObjects) {

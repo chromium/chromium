@@ -23,7 +23,7 @@ ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxE2ETest {
         '/chromevox/background/keyboard_handler.js');
     await importModule('KeyCode', '/common/key_code.js');
 
-    window.keyboardHandler = new BackgroundKeyboardHandler();
+    globalThis.keyboardHandler = new BackgroundKeyboardHandler();
   }
 };
 
