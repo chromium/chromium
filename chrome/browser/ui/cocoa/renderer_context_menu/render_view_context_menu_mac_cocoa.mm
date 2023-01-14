@@ -18,7 +18,10 @@
 #import "chrome/browser/mac/nsprocessinfo_additions.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/menu_controller.h"
+#include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/controls/menu/menu_controller_cocoa_delegate_impl.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -208,13 +211,17 @@ void RenderViewContextMenuMacCocoa::Show() {
   const ui::ColorProvider* color_provider =
       widget ? widget->GetColorProvider() : nullptr;
 
+  menu_controller_delegate_.reset(
+      [[MenuControllerCocoaDelegateImpl alloc] init]);
   menu_controller_.reset([[MenuControllerCocoa alloc]
                initWithModel:&menu_model_
-                    delegate:nil
+                    delegate:menu_controller_delegate_.get()
                colorProvider:color_provider
       useWithPopUpButtonCell:NO]);
 
   gfx::Point params_position(params_.x, params_.y);
+  // TODO(dfried): this is almost certainly wrong; let's fix it.
+  [menu_controller_delegate_ setAnchorRect:gfx::Rect(params_position, {1, 1})];
 
   // Synthesize an event for the click, as there is no certainty that
   // [NSApp currentEvent] will return a valid event.
@@ -249,10 +256,18 @@ void RenderViewContextMenuMacCocoa::Show() {
     // be done manually.
     base::mac::ScopedSendingEvent sendingEventScoper;
 
+    NSMenu* const menu = [menu_controller_ menu];
+    if (widget) {
+      ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(
+          menu, views::ElementTrackerViews::GetContextForWidget(widget));
+    }
+
     // Show the menu.
-    [NSMenu popUpContextMenu:[menu_controller_ menu]
-                   withEvent:clickEvent
-                     forView:parent_view_];
+    [NSMenu popUpContextMenu:menu withEvent:clickEvent forView:parent_view_];
+
+    if (widget) {
+      ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
+    }
   }
 }
 
