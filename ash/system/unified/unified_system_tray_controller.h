@@ -184,6 +184,9 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Return true if UnifiedSystemTray is expanded.
   bool IsExpanded() const;
 
+  // Update the bubble view layout.
+  void UpdateBubble();
+
   scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
 
   PaginationController* pagination_controller() {

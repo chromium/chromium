@@ -118,7 +118,7 @@ void FeatureTilesContainerView::AddTiles(
   }
 
   for (auto& tile : tiles) {
-    if (create_row) {
+    if (create_row && (tile->GetVisible() || rows_.empty())) {
       int current_page_rows = pages_.back()->children().size();
       // Add a new page if we have reached the max displayable rows per page.
       if (current_page_rows == displayable_rows_) {
@@ -130,8 +130,9 @@ void FeatureTilesContainerView::AddTiles(
       create_row = false;
     }
     // Invisible tiles don't take any weight.
-    if (tile->GetVisible())
+    if (tile->GetVisible()) {
       row_weight += GetTileWeight(tile->tile_type());
+    }
     DCHECK_LE(row_weight, kMaxRowWeight);
     rows_.back()->AddChildView(std::move(tile));
 
@@ -168,6 +169,8 @@ void FeatureTilesContainerView::RelayoutTiles() {
 
   // Re-add tiles to container.
   AddTiles(std::move(tiles));
+
+  controller_->UpdateBubble();
 }
 
 void FeatureTilesContainerView::SetRowsFromHeight(int max_height) {
@@ -223,8 +226,9 @@ int FeatureTilesContainerView::CalculateRowsFromHeight(int height) {
 
   // Uses the max number of rows with the space available.
   int rows = kFeatureTileMaxRows;
-  while (height < (rows * row_height) && rows > kFeatureTileMinRows)
+  while (height < (rows * row_height) && rows > kFeatureTileMinRows) {
     rows--;
+  }
   return rows;
 }
 

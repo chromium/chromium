@@ -51,8 +51,9 @@ class DetailedViewContainer : public views::View {
 
   // views::View:
   void Layout() override {
-    for (auto* child : children())
+    for (auto* child : children()) {
       child->SetBoundsRect(GetContentsBounds());
+    }
     views::View::Layout();
   }
 };
@@ -190,11 +191,13 @@ void QuickSettingsView::AddMediaControlsView(views::View* media_controls) {
 void QuickSettingsView::ShowMediaControls() {
   media_controls_container_->SetShouldShowMediaControls(true);
 
-  if (detailed_view_container_->GetVisible())
+  if (detailed_view_container_->GetVisible()) {
     return;
+  }
 
-  if (media_controls_container_->MaybeShowMediaControls())
+  if (media_controls_container_->MaybeShowMediaControls()) {
     PreferredSizeChanged();
+  }
 }
 
 void QuickSettingsView::SetDetailedView(
@@ -214,22 +217,25 @@ void QuickSettingsView::SetDetailedView(
 void QuickSettingsView::ResetDetailedView() {
   detailed_view_container_->RemoveAllChildViews();
   detailed_view_container_->SetVisible(false);
-  if (media_controls_container_)
+  if (media_controls_container_) {
     media_controls_container_->MaybeShowMediaControls();
+  }
   system_tray_container_->SetVisible(true);
 }
 
 void QuickSettingsView::SaveFocus() {
   auto* focus_manager = GetFocusManager();
-  if (!focus_manager)
+  if (!focus_manager) {
     return;
+  }
 
   saved_focused_view_ = focus_manager->GetFocusedView();
 }
 
 void QuickSettingsView::RestoreFocus() {
-  if (saved_focused_view_)
+  if (saved_focused_view_) {
     saved_focused_view_->RequestFocus();
+  }
 }
 
 int QuickSettingsView::GetCurrentHeight() const {
@@ -260,8 +266,9 @@ bool QuickSettingsView::IsDetailedViewShown() const {
 }
 
 void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_SCROLL_FLING_START)
+  if (event->type() == ui::ET_SCROLL_FLING_START) {
     controller_->Fling(event->details().velocity_y());
+  }
 }
 
 BEGIN_METADATA(QuickSettingsView, views::View)
