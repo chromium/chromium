@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -31,15 +33,20 @@ CaptionBubbleContextViews::CaptionBubbleContextViews(
 
 CaptionBubbleContextViews::~CaptionBubbleContextViews() = default;
 
-absl::optional<gfx::Rect> CaptionBubbleContextViews::GetBounds() const {
-  views::Widget* context_widget =
-      web_contents_ ? views::Widget::GetTopLevelWidgetForNativeView(
-                          web_contents_->GetNativeView())
-                    : nullptr;
-  absl::optional<gfx::Rect> context_bounds = absl::nullopt;
-  if (context_widget)
-    context_bounds = context_widget->GetClientAreaBoundsInScreen();
-  return context_bounds;
+void CaptionBubbleContextViews::GetBounds(GetBoundsCallback callback) const {
+  if (!web_contents_) {
+    return;
+  }
+
+  views::Widget* context_widget = views::Widget::GetTopLevelWidgetForNativeView(
+      web_contents_->GetNativeView());
+  if (!context_widget) {
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                context_widget->GetClientAreaBoundsInScreen()));
 }
 
 const std::string CaptionBubbleContextViews::GetSessionId() const {

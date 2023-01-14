@@ -1019,6 +1019,33 @@ void CaptionBubble::SetBackgroundColor() {
   set_color(background_color);
 }
 
+void CaptionBubble::RepositionInContextRect(const CaptionBubbleModel* model,
+                                            const gfx::Rect& context_rect) {
+  // We shouldn't reposition ourselves into the context rect of a model that is
+  // no longer active.
+  if (model_ != model) {
+    return;
+  }
+
+  gfx::Rect inset_rect = context_rect;
+  inset_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
+  gfx::Rect bubble_bounds = GetBubbleBounds();
+
+  // The placement is based on the ratio between the center of the widget and
+  // the center of the inset_rect.
+  int target_x = inset_rect.x() + inset_rect.width() * kDefaultRatioInParentX -
+                 bubble_bounds.width() / 2.0;
+  int target_y = inset_rect.y() + inset_rect.height() * kDefaultRatioInParentY -
+                 bubble_bounds.height() / 2.0;
+  gfx::Rect target_bounds = gfx::Rect(target_x, target_y, bubble_bounds.width(),
+                                      bubble_bounds.height());
+  if (!inset_rect.Contains(target_bounds)) {
+    target_bounds.AdjustToFit(inset_rect);
+  }
+
+  GetWidget()->SetBounds(target_bounds);
+}
+
 void CaptionBubble::UpdateContentSize() {
   double text_scale_factor = GetTextScaleFactor();
   int width = kMaxWidthDip * text_scale_factor;
@@ -1068,36 +1095,11 @@ void CaptionBubble::ShowInactive() {
     return;
   has_been_shown_ = true;
 
-  // The first time that the caption bubble is shown, place it at the bottom
-  // center of the context widget for the currently set model. We do the
-  // placement at this time to ensure that the caption bubble is positioned
-  // where the user will spot it. If there are multiple browser windows open,
-  // and the user plays media on the second window, the caption bubble will show
-  // up in the bottom center of the second window, which is where the user is
-  // already looking. It also ensures that the caption bubble will appear in the
-  // right workspace if a user has Chrome windows open on multiple workspaces.
-  if (!model_->GetContext()->GetBounds().has_value())
-    return;
-  gfx::Rect context_rect = model_->GetContext()->GetBounds().value();
-
-  context_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
-  gfx::Rect bubble_bounds = GetBubbleBounds();
-
-  // The placement is based on the ratio between the center of the widget and
-  // the center of the context_rect.
-  int target_x = context_rect.x() +
-                 context_rect.width() * kDefaultRatioInParentX -
-                 bubble_bounds.width() / 2.0;
-  int target_y = context_rect.y() +
-                 context_rect.height() * kDefaultRatioInParentY -
-                 bubble_bounds.height() / 2.0;
-  gfx::Rect target_bounds = gfx::Rect(target_x, target_y, bubble_bounds.width(),
-                                      bubble_bounds.height());
-  if (!context_rect.Contains(target_bounds)) {
-    target_bounds.AdjustToFit(context_rect);
-  }
-
-  GetWidget()->SetBounds(target_bounds);
+  // The first time that the caption bubble is shown, reposition it to the
+  // bottom center of the context widget for the currently set model.
+  model_->GetContext()->GetBounds(
+      base::BindOnce(&CaptionBubble::RepositionInContextRect,
+                     weak_ptr_factory_.GetWeakPtr(), model_));
 }
 
 void CaptionBubble::Hide() {

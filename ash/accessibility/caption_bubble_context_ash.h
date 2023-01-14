@@ -27,7 +27,7 @@ class ASH_EXPORT CaptionBubbleContextAsh
   CaptionBubbleContextAsh& operator=(const CaptionBubbleContextAsh&) = delete;
 
   // ::captions::CaptionBubbleContext:
-  absl::optional<gfx::Rect> GetBounds() const override;
+  void GetBounds(GetBoundsCallback callback) const override;
   const std::string GetSessionId() const override;
   void Activate() override {}
   bool IsActivatable() const override;

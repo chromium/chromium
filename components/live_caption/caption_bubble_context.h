@@ -29,11 +29,15 @@ class CaptionBubbleContext {
   CaptionBubbleContext(const CaptionBubbleContext&) = delete;
   CaptionBubbleContext& operator=(const CaptionBubbleContext&) = delete;
 
-  // Returns the bounds of the context widget. On Chrome browser, this is the
-  // bounds in screen of the top level widget of the browser window. When Live
-  // Caption is implemented in ash, this will be bounds of the top level widget
-  // of the ash window.
-  virtual absl::optional<gfx::Rect> GetBounds() const = 0;
+  using GetBoundsCallback = base::OnceCallback<void(const gfx::Rect&)>;
+
+  // Calls the given callback with the bounds of the context widget. On Chrome
+  // browser, this is the bounds in screen of the top level widget of the
+  // browser window. When Live Caption is implemented in ash, this will be
+  // bounds of the top level widget of the ash window.
+  //
+  // If the context can't provide bounds, the callback is never executed.
+  virtual void GetBounds(GetBoundsCallback callback) const = 0;
 
   // Returns the unique identifier for a caption bubble session. A caption
   // bubble session is per-tab and resets when a user navigates away or reloads

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
@@ -52,16 +53,18 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
       const CaptionBubbleControllerViewsTest&) = delete;
 
   CaptionBubbleControllerViews* GetController() {
-    if (!controller_)
+    if (!controller_) {
       controller_ = std::make_unique<CaptionBubbleControllerViews>(
           browser()->profile()->GetPrefs());
+    }
     return controller_.get();
   }
 
   CaptionBubbleContext* GetCaptionBubbleContext() {
-    if (!caption_bubble_context_)
+    if (!caption_bubble_context_) {
       caption_bubble_context_ = CaptionBubbleContextBrowser::Create(
           browser()->tab_strip_model()->GetActiveWebContents());
+    }
     return caption_bubble_context_.get();
   }
 
@@ -155,8 +158,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   void DestroyController() { controller_.reset(nullptr); }
 
   void ClickButton(views::Button* button) {
-    if (!button)
+    if (!button) {
       return;
+    }
     button->OnMousePressed(
         ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0), gfx::Point(0, 0),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
@@ -169,8 +173,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     // TODO(crbug.com/1351722): This is a workaround for some tests which were
     // passing by side effect of the AccessibilityChecker's checks. The full
     // analysis can be found in the bug.
-    if (auto* label = GetLabel())
+    if (auto* label = GetLabel()) {
       label->GetTooltipText(gfx::Point());
+    }
 
     return OnPartialTranscription(text, GetCaptionBubbleContext());
   }
@@ -185,8 +190,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     // TODO(crbug.com/1351722): This is a workaround for some tests which were
     // passing by side effect of the AccessibilityChecker's checks. The full
     // analysis can be found in the bug.
-    if (auto* label = GetLabel())
+    if (auto* label = GetLabel()) {
       label->GetTooltipText(gfx::Point());
+    }
 
     return OnFinalTranscription(text, GetCaptionBubbleContext());
   }
@@ -227,8 +233,9 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   std::vector<ui::AXNodeData> GetAXLinesNodeData() {
     std::vector<ui::AXNodeData> node_datas;
     views::Label* label = GetLabel();
-    if (!label)
+    if (!label) {
       return node_datas;
+    }
     auto& ax_lines = GetLabel()->GetViewAccessibility().virtual_children();
     for (auto& ax_line : ax_lines) {
       node_datas.push_back(ax_line->GetCustomData());
@@ -244,6 +251,11 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
           ax_line.GetStringAttribute(ax::mojom::StringAttribute::kName));
     }
     return line_texts;
+  }
+
+  void SetWindowBounds(const gfx::Rect& bounds) {
+    browser()->window()->SetBounds(bounds);
+    base::RunLoop().RunUntilIdle();
   }
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
@@ -296,7 +308,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LaysOutCaptionLabel) {
   // with the bottom of the bubble.
   OnPartialTranscription(
       "Taylor Alison Swift (born December 13, 1989) is an American "
-      "singer-songwriter. She is known for narrative songs about her personal "
+      "singer-songwriter. She is known for narrative songs about her "
+      "personal "
       "life, which have received widespread media coverage. At age 14, Swift "
       "became the youngest artist signed by the Sony/ATV Music publishing "
       "house and, at age 15, she signed her first record deal.");
@@ -323,7 +336,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   OnPartialTranscription(
       "Taylor Alison Swift (born December 13, 1989) is an American "
-      "singer-songwriter. She is known for narrative songs about her personal "
+      "singer-songwriter. She is known for narrative songs about her "
+      "personal "
       "life, which have received widespread media coverage. At age 14, Swift "
       "became the youngest artist signed by the Sony/ATV Music publishing "
       "house and, at age 15, she signed her first record deal.");
@@ -334,14 +348,17 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, BubblePositioning) {
   int bubble_width = 536;
   gfx::Insets bubble_margins(6);
 
-  browser()->window()->SetBounds(gfx::Rect(10, 10, 800, 600));
+  SetWindowBounds(gfx::Rect(10, 10, 800, 600));
   gfx::Rect context_rect = views::Widget::GetWidgetForNativeWindow(
                                browser()->window()->GetNativeWindow())
                                ->GetClientAreaBoundsInScreen();
+
   OnPartialTranscription("Mantis shrimp have 12-16 photoreceptors");
-  gfx::Rect bubble_bounds = GetCaptionWidget()->GetWindowBoundsInScreen();
+  base::RunLoop().RunUntilIdle();
+
   // There may be some rounding errors as we do floating point math with ints.
   // Check that points are almost the same.
+  gfx::Rect bubble_bounds = GetCaptionWidget()->GetWindowBoundsInScreen();
   EXPECT_LT(
       abs(bubble_bounds.CenterPoint().x() - context_rect.CenterPoint().x()), 2);
   EXPECT_EQ(bubble_bounds.bottom(), context_rect.bottom() - 20);
@@ -349,27 +366,29 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, BubblePositioning) {
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
   // Move the window and the widget should stay in the same place.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 600));
+  SetWindowBounds(gfx::Rect(50, 50, 800, 600));
   EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
   // Shrink the window's height. The widget should stay in the same place.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 300));
+  SetWindowBounds(gfx::Rect(50, 50, 800, 300));
   EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
   // Now shrink the window width. The bubble width should not change.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 500, 500));
+  SetWindowBounds(gfx::Rect(50, 50, 500, 500));
   EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Now move the widget within the window. The bubble width should not change.
+  // Now move the widget within the window. The bubble width should not
+  // change.
   GetCaptionWidget()->SetBounds(
       gfx::Rect(200, 300, GetCaptionWidget()->GetWindowBoundsInScreen().width(),
                 GetCaptionWidget()->GetWindowBoundsInScreen().height()));
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 }
@@ -402,7 +421,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
   EXPECT_TRUE(GetLabel()->GetVisible());
   EXPECT_FALSE(GetErrorMessage()->GetVisible());
 
-  // The error should still be visible when switching back to the first stream.
+  // The error should still be visible when switching back to the first
+  // stream.
   OnError();
   EXPECT_FALSE(GetTitle()->GetVisible());
   EXPECT_FALSE(GetLabel()->GetVisible());
@@ -435,8 +455,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(IsWidgetVisible());
 }
 
-// TODO(crbug.com/1055150): Renable this test once it is passing. Tab traversal
-// works in app but doesn't work in tests right now.
+// TODO(crbug.com/1055150): Renable this test once it is passing. Tab
+// traversal works in app but doesn't work in tests right now.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        DISABLED_FocusableInTabOrder) {
   OnPartialTranscription(
@@ -475,8 +495,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
       false, false));
   EXPECT_TRUE(GetCollapseButton()->HasFocus());
 
-  // Pressing enter again should turn the collapse button into an expand button.
-  // Focus should remain on the expand button.
+  // Pressing enter again should turn the collapse button into an expand
+  // button. Focus should remain on the expand button.
   EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       GetCaptionWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
       false, false));
@@ -627,7 +647,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription(
-      "Marsupials first evolved in South America about 100 million years ago.");
+      "Marsupials first evolved in South America about 100 million years "
+      "ago.");
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
@@ -805,9 +826,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesBubble) {
   // Set some text, and ensure it stays visible when the window changes size.
   OnPartialTranscription("Newborn opossums are about 1cm long");
   EXPECT_TRUE(IsWidgetVisible());
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 200, 100));
+  SetWindowBounds(gfx::Rect(50, 50, 200, 100));
   EXPECT_TRUE(IsWidgetVisible());
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 400));
+  SetWindowBounds(gfx::Rect(50, 50, 800, 400));
   EXPECT_TRUE(IsWidgetVisible());
 #endif
 
@@ -936,7 +957,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
       prefs::kLiveCaptionBubblePinned));
 
   OnPartialTranscription(
-      "Sea otters have the densest fur of any mammal at about 1 million hairs "
+      "Sea otters have the densest fur of any mammal at about 1 million "
+      "hairs "
       "per square inch.");
   EXPECT_TRUE(GetPinButton()->GetVisible());
   EXPECT_FALSE(GetUnpinButton()->GetVisible());
@@ -1073,8 +1095,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 // Disable due to flaky, https://crbug.com/1206677
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        DISABLED_HidesAfterInactivity) {
-  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
-  // a mock tick clock that replaces the default tick clock with mock time.
+  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer
+  // with a mock tick clock that replaces the default tick clock with mock
+  // time.
   base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
   SetTickClockForTesting(test_task_runner->GetMockTickClock());
 
@@ -1129,8 +1152,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 #endif
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        MAYBE_ClearsTextAfterInactivity) {
-  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
-  // a mock tick clock that replaces the default tick clock with mock time.
+  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer
+  // with a mock tick clock that replaces the default tick clock with mock
+  // time.
   base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
   SetTickClockForTesting(test_task_runner->GetMockTickClock());
 
@@ -1179,12 +1203,15 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        ErrorHidesAfterInactivity) {
-  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
-  // a mock tick clock that replaces the default tick clock with mock time.
+  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer
+  // with a mock tick clock that replaces the default tick clock with mock
+  // time.
   base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
   SetTickClockForTesting(test_task_runner->GetMockTickClock());
 
   OnError();
+  test_task_runner->RunUntilIdle();
+
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_FALSE(HasMediaFoundationError());
   EXPECT_EQ("", GetLabelText());
@@ -1200,10 +1227,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(HasMediaFoundationError());
   EXPECT_EQ("", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-
-  // The Media Foundation renderer unsupported error should not hide to due
-  // inactivity.
-  test_task_runner->FastForwardBy(base::Seconds(15));
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
 }

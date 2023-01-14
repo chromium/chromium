@@ -33,7 +33,7 @@ class CaptionBubbleContextViews : public CaptionBubbleContextBrowser {
       delete;
 
   // CaptionBubbleContextBrowser:
-  absl::optional<gfx::Rect> GetBounds() const override;
+  void GetBounds(GetBoundsCallback callback) const override;
   const std::string GetSessionId() const override;
   void Activate() override;
   bool IsActivatable() const override;

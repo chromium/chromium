@@ -6,6 +6,8 @@
 
 #include "ash/shell.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace {
 constexpr char kAshSessionId[] = "ash";
@@ -17,9 +19,16 @@ CaptionBubbleContextAsh::CaptionBubbleContextAsh() = default;
 
 CaptionBubbleContextAsh::~CaptionBubbleContextAsh() = default;
 
-absl::optional<gfx::Rect> CaptionBubbleContextAsh::GetBounds() const {
-  return WorkAreaInsets::ForWindow(Shell::GetRootWindowForNewWindows())
-      ->user_work_area_bounds();
+void CaptionBubbleContextAsh::GetBounds(GetBoundsCallback callback) const {
+  const absl::optional<gfx::Rect> bounds =
+      WorkAreaInsets::ForWindow(Shell::GetRootWindowForNewWindows())
+          ->user_work_area_bounds();
+  if (!bounds.has_value()) {
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), *bounds));
 }
 
 const std::string CaptionBubbleContextAsh::GetSessionId() const {
