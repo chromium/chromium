@@ -98,6 +98,7 @@ enum FeedbackSource {
   kFeedbackSourceLauncher,
   kFeedbackSourceSettingsPerformancePage,
   kFeedbackSourceQuickOffice,
+  kFeedbackSourceOsSettingsSearch,
 
   // Must be last.
   kFeedbackSourceCount,

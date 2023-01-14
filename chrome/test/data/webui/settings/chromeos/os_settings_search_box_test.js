@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AboutPageBrowserProxyImpl, OpenWindowProxyImpl, personalizationSearchMojomWebui, Router, routes, routesMojomWebui, searchMojomWebui, searchResultIconMojomWebui, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojomWebui, setUserActionRecorderForTesting, userActionRecorderMojomWebui} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, personalizationSearchMojomWebui, Router, routes, routesMojomWebui, searchMojomWebui, searchResultIconMojomWebui, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojomWebui, setUserActionRecorderForTesting, userActionRecorderMojomWebui} from 'chrome://os-settings/chromeos/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -12,7 +12,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {FakePersonalizationSearchHandler} from './fake_personalization_search_handler.js';
 import {FakeSettingsSearchHandler} from './fake_settings_search_handler.js';
 import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
-import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.js';
+import {TestOsSettingsSearchBoxBrowserProxy} from './test_os_settings_search_box_browser_proxy.js';
 
 /** @fileoverview Runs tests for the OS settings search box. */
 
@@ -772,14 +772,14 @@ suite('OSSettingsSearchBox', () => {
 
   suite('SearchFeedback_OfficialBuild', () => {
     suite('when feature flag is enabled', () => {
-      /** @type {?TestAboutPageBrowserProxyChromeOS} */
+      /** @type {?TestOsSettingsSearchBoxBrowserProxy} */
       let browserProxy = null;
 
       setup(() => {
         loadTimeData.overrideValues({searchFeedbackEnabled: true});
 
-        browserProxy = new TestAboutPageBrowserProxyChromeOS();
-        AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
+        browserProxy = new TestOsSettingsSearchBoxBrowserProxy();
+        OsSettingsSearchBoxBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
         setupSearchBox();
       });
@@ -831,7 +831,7 @@ suite('OSSettingsSearchBox', () => {
                 })
                 .toString();
         return browserProxy.whenCalled(
-            'openFeedbackDialog', descriptionTemplate);
+            'openSearchFeedbackDialog', descriptionTemplate);
       });
     });
 

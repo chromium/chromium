@@ -138,7 +138,7 @@ export interface AboutPageBrowserProxy {
   /**
    * Opens the feedback dialog.
    */
-  openFeedbackDialog(descriptionTemplate?: string): void;
+  openFeedbackDialog(): void;
   // </if>
 
   /** Opens the diagnostics page. */
@@ -236,14 +236,8 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
   }
 
   // <if expr="_google_chrome">
-  openFeedbackDialog(descriptionTemplate?: string) {
-    if (descriptionTemplate) {
-      // pass the search query as the value for the feedback dialog
-      // description_template
-      chrome.send('openFeedbackDialog', [descriptionTemplate]);
-    } else {
-      chrome.send('openFeedbackDialog');
-    }
+  openFeedbackDialog() {
+    chrome.send('openFeedbackDialog');
   }
   // </if>
 

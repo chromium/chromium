@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/ash/send_search_feedback_handler.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -209,6 +210,8 @@ void MainSection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<::settings::BrowserLifetimeHandler>());
 
   web_ui->AddMessageHandler(CreatePluralStringHandler());
+
+  web_ui->AddMessageHandler(std::make_unique<SendSearchFeedbackHandler>());
 }
 
 int MainSection::GetSectionNameMessageId() const {

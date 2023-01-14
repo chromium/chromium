@@ -3089,6 +3089,8 @@ static_library("ui") {
       "webui/settings/ash/search_section.h",
       "webui/settings/ash/select_to_speak_handler.cc",
       "webui/settings/ash/select_to_speak_handler.h",
+      "webui/settings/ash/send_search_feedback_handler.cc",
+      "webui/settings/ash/send_search_feedback_handler.h",
       "webui/settings/ash/server_printer_url_util.cc",
       "webui/settings/ash/server_printer_url_util.h",
       "webui/settings/ash/settings_user_action_tracker.cc",

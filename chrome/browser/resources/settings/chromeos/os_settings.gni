@@ -357,6 +357,7 @@ non_web_component_files = [
   "chromeos/os_reset_page/os_reset_browser_proxy.ts",
   "chromeos/os_route.js",
   "chromeos/os_search_page/search_engines_browser_proxy.ts",
+  "chromeos/os_settings_search_box/os_settings_search_box_browser_proxy.ts",
   "chromeos/os_settings.js",
   "chromeos/os_settings_routes.js",
   "chromeos/parental_controls_page/parental_controls_browser_proxy.ts",

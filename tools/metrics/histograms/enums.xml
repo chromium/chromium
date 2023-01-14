@@ -42167,7 +42167,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="25" label="Channel Indicator"/>
   <int value="26" label="Launcher"/>
   <int value="27" label="Settings Performance Page"/>
-  <int value="28" label="Quick Ofice"/>
+  <int value="28" label="Quick Office"/>
+  <int value="29" label="Settings Search"/>
 </enum>
 
 <enum name="FeedContentOrder">

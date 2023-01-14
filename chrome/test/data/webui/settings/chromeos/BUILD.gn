@@ -180,6 +180,7 @@ test_files = [
   "test_os_languages_metrics_proxy.js",
   "test_os_lifetime_browser_proxy.js",
   "test_os_reset_browser_proxy.js",
+  "test_os_settings_search_box_browser_proxy.js",
   "test_os_sync_browser_proxy.js",
   "test_parental_controls_browser_proxy.js",
   "test_personalization_hub_browser_proxy.js",

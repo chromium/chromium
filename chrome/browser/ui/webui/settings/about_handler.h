@@ -77,12 +77,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 #endif
 
   // Opens the feedback dialog.
-  // |description_template| can be empty.
-  virtual void OpenFeedbackDialogWrapper(
-      const std::string& description_template);
-
-  // Opens the feedback dialog.
-  // |args| can be empty, or contains a description template.
+  // |args| must be empty.
   void HandleOpenFeedbackDialog(const base::Value::List& args);
 
   // Opens the help page. |args| must be empty.

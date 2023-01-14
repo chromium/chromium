@@ -444,22 +444,12 @@ void AboutHandler::PromoteUpdater(const base::Value::List& args) {
 }
 #endif
 
-void AboutHandler::OpenFeedbackDialogWrapper(
-    const std::string& description_template) {
+void AboutHandler::HandleOpenFeedbackDialog(const base::Value::List& args) {
+  DCHECK(args.empty());
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::OpenFeedbackDialog(browser,
-                             chrome::kFeedbackSourceMdSettingsAboutPage,
-                             description_template);
-}
-
-void AboutHandler::HandleOpenFeedbackDialog(const base::Value::List& args) {
-  if (args.empty()) {
-    OpenFeedbackDialogWrapper(/*description_template =*/std::string());
-  } else {
-    DCHECK_EQ(args.size(), 1U);
-    OpenFeedbackDialogWrapper(args.front().GetString());
-  }
+                             chrome::kFeedbackSourceMdSettingsAboutPage);
 }
 
 void AboutHandler::HandleOpenHelpPage(const base::Value::List& args) {
