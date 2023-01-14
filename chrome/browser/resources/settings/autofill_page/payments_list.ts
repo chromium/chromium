@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 import './credit_card_list_entry.js';
+import './iban_list_entry.js';
 import './passwords_shared.css.js';
 import './upi_id_list_entry.js';
 
@@ -36,9 +37,24 @@ class SettingsPaymentsListElement extends PolymerElement {
       creditCards: Array,
 
       /**
+       * An array of all saved IBANs.
+       */
+      ibans: Array,
+
+      /**
        * An array of all saved UPI Virtual Payment Addresses.
        */
       upiIds: Array,
+
+      /**
+       * True if displaying IBANs in settings is enabled.
+       */
+      enableIbans_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showIbansSettings');
+        },
+      },
 
       /**
        * True if displaying UPI IDs in settings is enabled.
@@ -78,14 +94,16 @@ class SettingsPaymentsListElement extends PolymerElement {
       showAnyPaymentMethods_: {
         type: Boolean,
         value: false,
-        computed:
-            'computeShowAnyPaymentMethods_(creditCards, upiIds, enableUpiIds_)',
+        computed: 'computeShowAnyPaymentMethods_(' +
+            'creditCards, ibans, upiIds, enableIbans_, enableUpiIds_)',
       },
     };
   }
 
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
+  ibans: chrome.autofillPrivate.IbanEntry[];
   upiIds: string[];
+  private enableIbans_: boolean;
   private enableUpiIds_: boolean;
   private removeCardExpirationAndTypeTitlesEnabled_: boolean;
   private showCreditCardUpiSeparator_: boolean;
@@ -114,6 +132,13 @@ class SettingsPaymentsListElement extends PolymerElement {
   }
 
   /**
+   * @return true iff there are IBANs to be shown.
+   */
+  private showIbans_(): boolean {
+    return this.enableIbans_ && this.hasSome_(this.ibans);
+  }
+
+  /**
    * @return true iff both credit cards and UPI IDs will be shown.
    */
   private computeShowCreditCardUpiSeparator_(): boolean {
@@ -131,7 +156,7 @@ class SettingsPaymentsListElement extends PolymerElement {
    * @return true iff any payment methods will be shown.
    */
   private computeShowAnyPaymentMethods_(): boolean {
-    return this.showCreditCards_() || this.showUpiIds_();
+    return this.showCreditCards_() || this.showIbans_() || this.showUpiIds_();
   }
 }
 

@@ -88,6 +88,8 @@ build_webui("build") {
     "autofill_page/avatar_icon.ts",
     "autofill_page/credit_card_edit_dialog.ts",
     "autofill_page/credit_card_list_entry.ts",
+    "autofill_page/iban_edit_dialog.ts",
+    "autofill_page/iban_list_entry.ts",
     "autofill_page/password_check_edit_disclaimer_dialog.ts",
     "autofill_page/password_check_list_item.ts",
     "autofill_page/password_check.ts",

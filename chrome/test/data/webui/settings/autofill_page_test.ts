@@ -13,7 +13,7 @@ import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_prox
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeSettingsPrivate} from './fake_settings_private.js';
-import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createExceptionEntry, createPasswordEntry, PaymentsManagerExpectations, TestAutofillManager, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createExceptionEntry, createIbanEntry, createPasswordEntry, PaymentsManagerExpectations, TestAutofillManager, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
 import {makeInsecureCredential} from './passwords_and_autofill_fake_data.js';
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {PasswordManagerExpectations,TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -132,6 +132,7 @@ suite('PasswordsAndForms', function() {
     const expected = new PaymentsManagerExpectations();
     expected.requestedCreditCards = 1;
     expected.listeningCreditCards = 1;
+    expected.requestedIbans = 1;
     return expected;
   }
 
@@ -248,8 +249,9 @@ suite('PasswordsAndForms', function() {
 
       const addressList = [createAddressEntry(), createAddressEntry()];
       const cardList = [createCreditCardEntry(), createCreditCardEntry()];
+      const ibanList = [createIbanEntry(), createIbanEntry()];
       autofillManager.lastCallback.setPersonalDataManagerListener!
-          (addressList, cardList);
+          (addressList, cardList, ibanList);
       flush();
 
       assertEquals(
@@ -274,8 +276,9 @@ suite('PasswordsAndForms', function() {
 
       const addressList = [createAddressEntry(), createAddressEntry()];
       const cardList = [createCreditCardEntry(), createCreditCardEntry()];
+      const ibanList = [createIbanEntry(), createIbanEntry()];
       paymentsManager.lastCallback.setPersonalDataManagerListener!
-          (addressList, cardList);
+          (addressList, cardList, ibanList);
       flush();
 
       assertEquals(
@@ -283,6 +286,33 @@ suite('PasswordsAndForms', function() {
           element.shadowRoot!
               .querySelector<SettingsPaymentsSectionElement>(
                   '#paymentsSection')!.creditCards);
+
+      // The callback is coming from the manager, so the element shouldn't
+      // have additional calls to the manager after the base expectations.
+      passwordManager.assertExpectations(basePasswordExpectations());
+      autofillManager.assertExpectations(baseAutofillExpectations());
+      paymentsManager.assertExpectations(basePaymentsExpectations());
+
+      destroyPrefs(prefs);
+    });
+  });
+
+  test('loadIbansAsync', function() {
+    return createPrefs(true, true).then(function(prefs) {
+      const element = createAutofillElement(prefs);
+
+      const addressList = [createAddressEntry(), createAddressEntry()];
+      const cardList = [createCreditCardEntry(), createCreditCardEntry()];
+      const ibanList = [createIbanEntry(), createIbanEntry()];
+      paymentsManager.lastCallback.setPersonalDataManagerListener!
+          (addressList, cardList, ibanList);
+      flush();
+
+      assertEquals(
+          ibanList,
+          element.shadowRoot!
+              .querySelector<SettingsPaymentsSectionElement>(
+                  '#paymentsSection')!.ibans);
 
       // The callback is coming from the manager, so the element shouldn't
       // have additional calls to the manager after the base expectations.

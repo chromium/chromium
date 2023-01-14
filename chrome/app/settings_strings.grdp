@@ -453,8 +453,20 @@
   <message name="IDS_SETTINGS_ADD_PAYMENT_METHOD_CREDIT_OR_DEBIT_CARD" desc="The label that appears in the drop-down selector when adding a local payment method, which allows users to add a credit or debit card.">
     Credit/Debit card
   </message>
-  <message name="IDS_SETTINGS_ADD_PAYMENT_METHOD_IBAN" desc="The label that appears in the drop-down selector when adding a local payment method, which allows users to add an IBAN.">
+  <message name="IDS_SETTINGS_ADD_PAYMENT_METHOD_IBAN" desc="The label that appears in the drop-down selector when adding a local payment method, which allows users to add an IBAN (International Bank Account Number).">
     IBAN
+  </message>
+  <message name="IDS_SETTINGS_IBAN_SAVED_TO_THIS_DEVICE_ONLY" desc="Shown in the payments section of settings. Descriptive text to inform the user that this IBAN (International Bank Account Number) will be saved to local device only.">
+   This IBAN will be saved to this device only
+  </message>
+  <message name="IDS_IBAN_NICKNAME" desc="Label for the field containing the nickname of the IBAN (International Bank Account Number) to be saved.">
+    Nickname
+  </message>
+  <message name="IDS_SETTINGS_ADD_IBAN_TITLE" desc="The title for the dialog that's shown when editing an IBAN (International Bank Account Number).">
+    Add IBAN
+  </message>
+  <message name="IDS_SETTINGS_EDIT_IBAN_TITLE" desc="The title for the dialog that's shown when entering the information for a new IBAN (International Bank Account Number).">
+    Edit IBAN
   </message>
   <message name="IDS_SETTINGS_UPI_ID_LABEL" desc="A label which appears next to UPI IDs, when they are listed as stored payment info, but it is visually separate from the UPI ID. It lets the user know this is a UPI ID (e.g. as opposed to a credit card number). UPI is a system for payments in India. A UPI ID is an email-like string.">
     UPI ID

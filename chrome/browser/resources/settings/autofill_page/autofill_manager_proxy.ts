@@ -4,7 +4,8 @@
 
 export type PersonalDataChangedListener =
     (addresses: chrome.autofillPrivate.AddressEntry[],
-     creditCards: chrome.autofillPrivate.CreditCardEntry[]) => void;
+     creditCards: chrome.autofillPrivate.CreditCardEntry[],
+     ibans: chrome.autofillPrivate.IbanEntry[]) => void;
 
 /**
  * Interface for all callbacks to the autofill API.

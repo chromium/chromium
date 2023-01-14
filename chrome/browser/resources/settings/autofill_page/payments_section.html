@@ -94,7 +94,8 @@
               on-click="onAddCreditCardClick_">
             $i18n{addPaymentMethodCreditOrDebitCard}
           </button>
-          <button id="addIban" class="dropdown-item">
+          <button id="addIban" class="dropdown-item"
+              on-click="onAddIbanClick_">
             $i18n{addPaymentMethodIban}
           </button>
         </cr-action-menu>
@@ -112,7 +113,7 @@
     class$="list-frame [[computeCssClass_(
         removeCardExpirationAndTypeTitlesEnabled_,
             virtualCardMetadataEnabled_)]]"
-    credit-cards="[[creditCards]]" upi-ids="[[upiIds]]">
+    credit-cards="[[creditCards]]" ibans="[[ibans]]" upi-ids="[[upiIds]]">
 </settings-payments-list>
 
 <cr-action-menu id="creditCardSharedMenu" role-description="$i18n{menu}">
@@ -146,6 +147,11 @@
   <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"
       on-close="onCreditCardDialogClose_">
   </settings-credit-card-edit-dialog>
+</template>
+<template is="dom-if" if="[[showIbanDialog_]]" restamp>
+  <settings-iban-edit-dialog iban="[[activeIban_]]"
+      on-close="onIbanDialogClose_" on-save-iban="onSaveIban_">
+  </settings-iban-edit-dialog>
 </template>
 
 <template is="dom-if" if="[[showVirtualCardUnenrollDialog_]]" restamp>

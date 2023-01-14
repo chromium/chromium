@@ -1,0 +1,59 @@
+<style include="cr-shared-style settings-shared">
+  cr-input {
+    /* Larger cr-input margin (by reserving space for error display). */
+    --cr-input-error-display: block;
+    margin-bottom: 0;
+    width: var(--settings-input-max-width);
+  }
+
+  /* Override the padding-top (the space is set by save-to-this-device). */
+  div[slot='button-container'] {
+    padding-top: 0;
+  }
+
+  #saved-to-this-device-only-label {
+    /* Overall space between input fields, including space between
+       nicknameInput and saved-to-this-device text, between
+       saved-to-this-device text and button. */
+    margin-bottom: 26px;
+    margin-top: 0;
+  }
+
+  #charCount {
+    font-size: var(--cr-form-field-label-font-size);
+    line-height: var(--cr-form-field-label-line-height);
+    padding-inline-start: 8px;
+  }
+
+  #nicknameInput:not(:focus-within) #charCount {
+    --cr-input-width: var(--settings-input-max-width);
+    display: none;
+    width: fit-content;
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">[[title_]]</div>
+  <div slot="body">
+    <cr-input id="valueInput" label="$i18n{addPaymentMethodIban}"
+        value="{{value_}}" autofocus>
+    </cr-input>
+    <cr-input id="nicknameInput" label="$i18n{ibanNickname}"
+        value="{{nickname_}}" spellcheck="false" maxlength="25">
+      <div id="charCount" slot="suffix">
+        [[computeNicknameCharCount_(nickname_)]]/25
+      </div>
+    </cr-input>
+    <div id="saved-to-this-device-only-label">
+      $i18n{ibanSavedToThisDeviceOnly}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        on-click="onCancelButtonClick_">$i18n{cancel}</cr-button>
+    <cr-button id="saveButton" class="action-button"
+        on-click="onIbanSaveButtonClick_"
+        disabled="[[!saveIbanEnabled_(value_)]]">
+      $i18n{save}
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -170,6 +170,23 @@ export function createCreditCardEntry():
 }
 
 /**
+ * Creates a new valid IBAN entry for testing.
+ */
+export function createIbanEntry(
+    value?: string, nickname?: string): chrome.autofillPrivate.IbanEntry {
+  return {
+    guid: makeGuid(),
+    value: (value || value === '') ? value : 'CR99 0000 0000 0000 8888 88',
+    nickname: (nickname || nickname === '') ? nickname : 'My doctor\'s IBAN',
+    metadata: {
+      isLocal: true,
+      summaryLabel: ibanPatternMaker(value || 'CR99 0000 0000 0000 8888 88'),
+      summarySublabel: nickname || 'My doctor\'s IBAN',
+    },
+  };
+}
+
+/**
  * Creates a new insecure credential.
  */
 export function makeInsecureCredential(
@@ -232,6 +249,31 @@ function patternMaker(pattern: string, base: number): string {
   return pattern.replace(/x/g, function() {
     return Math.floor(Math.random() * base).toString(base);
   });
+}
+
+/**
+ * Converts value (E.g., CH12 1234 1234 1234 1234) of IBAN to a partially masked
+ * text formatted by the following rules:
+ * 1. Reveal the first and the last four characters.
+ * 2. Mask the remaining digits.
+ * 3. The identifier string will be arranged in groups of four with a space
+ *    between each group.
+ * Examples: BE71 0961 2345 6769 will be shown as: BE71 **** **** 6769.
+ */
+function ibanPatternMaker(ibanValue: string): string {
+  let output = '';
+  const strippedValue = ibanValue.replace(/\s/g, '');
+  for (let i = 0; i < strippedValue.length; ++i) {
+    if (i % 4 === 0 && i > 0) {
+      output += ' ';
+    }
+    if (i < 4 || i >= strippedValue.length - 4) {
+      output += strippedValue.charAt(i);
+    } else {
+      output += `*`;
+    }
+  }
+  return output;
 }
 
 /**
@@ -449,6 +491,7 @@ export class PaymentsManagerExpectations {
   removedCreditCards: number = 0;
   clearedCachedCreditCards: number = 0;
   addedVirtualCards: number = 0;
+  requestedIbans: number = 0;
 }
 
 /**
@@ -460,6 +503,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
 
   data: {
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
+    ibans: chrome.autofillPrivate.IbanEntry[],
     upiIds: string[],
   };
 
@@ -471,6 +515,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'setPersonalDataManagerListener',
       'removePersonalDataManagerListener',
       'getCreditCardList',
+      'getIbanList',
       'getUpiIdList',
       'clearCachedCreditCard',
       'removeCreditCard',
@@ -480,6 +525,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     // Set these to have non-empty data.
     this.data = {
       creditCards: [],
+      ibans: [],
       upiIds: [],
     };
 
@@ -530,6 +576,14 @@ export class TestPaymentsManager extends TestBrowserProxy implements
 
   removeVirtualCard(_cardId: string) {}
 
+  saveIban(_iban: chrome.autofillPrivate.IbanEntry) {}
+
+  getIbanList() {
+    this.methodCalled('getIbanList');
+    return Promise.resolve(this.data.ibans);
+  }
+
+
   setIsUserVerifyingPlatformAuthenticatorAvailable(available: boolean|null) {
     this.isUserVerifyingPlatformAuthenticatorAvailable_ = available;
   }
@@ -555,5 +609,6 @@ export class TestPaymentsManager extends TestBrowserProxy implements
         this.getCallCount('clearCachedCreditCard'));
     assertEquals(
         expected.addedVirtualCards, this.getCallCount('addVirtualCard'));
+    assertEquals(expected.requestedIbans, this.getCallCount('getIbanList'));
   }
 }

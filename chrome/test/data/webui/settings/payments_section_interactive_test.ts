@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
-import {CrInputElement, PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import {CrInputElement, PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -33,14 +33,16 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   });
 
   /**
-   * Creates the payments section for the given credit card list.
+   * Creates the payments section for the given credit card and IBAN list.
    */
   async function createPaymentsSection(
-      creditCards: chrome.autofillPrivate.CreditCardEntry[]):
+      creditCards: chrome.autofillPrivate.CreditCardEntry[],
+      ibans: chrome.autofillPrivate.IbanEntry[]):
       Promise<SettingsPaymentsSectionElement> {
     // Override the PaymentsManagerImpl for testing.
     const paymentsManager = new TestPaymentsManager();
     paymentsManager.data.creditCards = creditCards;
+    paymentsManager.data.ibans = ibans;
     PaymentsManagerImpl.setInstance(paymentsManager);
 
     const section = document.createElement('settings-payments-section');
@@ -56,7 +58,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
    */
   async function createAddCreditCardDialog():
       Promise<SettingsCreditCardEditDialogElement> {
-    const section = await createPaymentsSection(/*creditCards=*/[]);
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[]);
     // Simulate clicking "Add" button in payments section.
     assertFalse(!!section.shadowRoot!.querySelector(
         'settings-credit-card-edit-dialog'));
@@ -77,7 +80,8 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
    */
   async function createAddCreditCardDialogFromDropdown():
       Promise<SettingsCreditCardEditDialogElement> {
-    const section = await createPaymentsSection(/*creditCards=*/[]);
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[]);
     // Simulate clicking "Add" button in payments section.
     assertFalse(!!section.shadowRoot!.querySelector(
         'settings-credit-card-edit-dialog'));
@@ -101,6 +105,36 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   }
 
   /**
+   * Creates the Add IBAN dialog. Simulate clicking "IBAN" option from the
+   * dropdown list.
+   */
+  async function createAddIbanDialogFromDropdown():
+      Promise<SettingsIbanEditDialogElement> {
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], /*ibans=*/[]);
+    // Simulate clicking "Add" button in payments section.
+    assertFalse(!!section.shadowRoot!.querySelector(
+        'settings-credit-card-edit-dialog'));
+    const addpaymentMethodsButton =
+        section.shadowRoot!.querySelector<CrButtonElement>(
+            '#addPaymentMethods');
+    assertTrue(!!addpaymentMethodsButton);
+    addpaymentMethodsButton.click();
+    flush();
+
+    // Simulate clicking the 'IBAN' option in the menu.
+    const addIbanOption =
+        section.shadowRoot!.querySelector<CrButtonElement>('#addIban');
+    assertTrue(!!addIbanOption);
+    addIbanOption.click();
+    flush();
+    const ibanDialog =
+        section.shadowRoot!.querySelector('settings-iban-edit-dialog');
+    assertTrue(!!ibanDialog);
+    return ibanDialog!;
+  }
+
+  /**
    * Creates the Edit Credit Card dialog for existing local card by simulating
    * clicking three-dots menu button then clicking editing button of the first
    * card in the card list.
@@ -108,7 +142,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   async function createEditCreditCardDialog(
       creditCards: chrome.autofillPrivate.CreditCardEntry[]):
       Promise<SettingsCreditCardEditDialogElement> {
-    const section = await createPaymentsSection(creditCards);
+    const section = await createPaymentsSection(creditCards, /*ibans=*/[]);
     // Simulate clicking three-dots menu button for the first card in the list.
     const rowShadowRoot =
         section.$.paymentsList.shadowRoot!
@@ -521,6 +555,93 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
       assertEquals('false', select.getAttribute('aria-invalid'));
       assertEquals(null, select.getAttribute('aria-errormessage'));
     }
+  });
+
+  test('add iban dialog from dropdown list', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: true,
+    });
+    const ibanDialog = await createAddIbanDialogFromDropdown();
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
+
+    const nicknameInput = ibanDialog.$.nicknameInput;
+    const valueInput = ibanDialog.$.valueInput;
+
+    // Verify the value and nickname input fields are shown.
+    assertTrue(!!valueInput);
+    assertTrue(!!nicknameInput);
+  });
+
+  test('save new IBAN', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: true,
+    });
+    const ibanDialog = await createAddIbanDialogFromDropdown();
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
+
+    const nicknameInput = ibanDialog.$.nicknameInput;
+    const valueInput = ibanDialog.$.valueInput;
+    const characterCount =
+        ibanDialog.shadowRoot!.querySelector<HTMLElement>('#charCount');
+
+    assertTrue(!!characterCount);
+    assertFalse(isVisible(characterCount));
+    // User clicks on nickname input.
+    nicknameInput!.focus();
+    // Character count is shown when nickname input field is focused.
+    assertTrue(isVisible(characterCount));
+    // For new IBAN, the nickname is unset.
+    assertTrue(characterCount.textContent!.includes('0/25'));
+
+    // Fill in IBAN value and nickname, and trigger the on-input handler.
+    nicknameInput.value = 'My doctor\'s IBAN';
+    assertTrue(characterCount.textContent!.includes('16/25'));
+
+    valueInput.value = 'IT60X0542811101000000123456';
+    flush();
+
+    const savedPromise = eventToPromise('save-iban', ibanDialog);
+    const saveButton = ibanDialog.$.saveButton;
+    saveButton!.click();
+    const saveEvent = await savedPromise;
+
+    // Verify the input values are correctly passed to save-iban.
+    // `guid` is undefined when saving a new IBAN.
+    assertEquals(saveEvent.detail.guid, undefined);
+    assertEquals(saveEvent.detail.value, 'IT60X0542811101000000123456');
+    assertEquals(saveEvent.detail.nickname, 'My doctor\'s IBAN');
+  });
+
+  test('trim IBAN when saving', async function() {
+    loadTimeData.overrideValues({
+      showIbansSettings: true,
+    });
+    const ibanDialog = await createAddIbanDialogFromDropdown();
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(ibanDialog.$.dialog, 'open', '');
+
+    // Fill in IBAN value and nickname, and trigger the on-input handler.
+    const nicknameInput = ibanDialog.$.nicknameInput;
+    const valueInput = ibanDialog.$.valueInput;
+    nicknameInput.value = '   My doctor\'s IBAN  ';
+    valueInput.value = '  IT60 X054 2811 1010 0000 0123 456 ';
+    flush();
+
+    const savedPromise = eventToPromise('save-iban', ibanDialog);
+    const saveButton = ibanDialog.$.saveButton;
+    saveButton.click();
+    const saveEvent = await savedPromise;
+
+    // Verify the input values are correctly passed to save-iban.
+    // `guid` is undefined when saving a new IBAN.
+    assertEquals(saveEvent.detail.guid, undefined);
+    assertEquals(saveEvent.detail.value, 'IT60 X054 2811 1010 0000 0123 456');
+    assertEquals(saveEvent.detail.nickname, 'My doctor\'s IBAN');
   });
 
 });
