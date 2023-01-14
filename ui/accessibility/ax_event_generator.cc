@@ -410,6 +410,9 @@ void AXEventGenerator::OnStateChanged(AXTree* tree,
     case ax::mojom::State::kRequired:
       AddEvent(node, Event::REQUIRED_STATE_CHANGED);
       break;
+    case ax::mojom::State::kAutofillAvailable:
+      AddEvent(node, Event::AUTOFILL_AVAILABILITY_CHANGED);
+      break;
     default:
       break;
   }
@@ -1228,6 +1231,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "atomicChanged";
     case AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
       return "autoCompleteChanged";
+    case AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
+      return "autofillAvailabilityChanged";
     case AXEventGenerator::Event::BUSY_CHANGED:
       return "busyChanged";
     case AXEventGenerator::Event::CARET_BOUNDS_CHANGED:

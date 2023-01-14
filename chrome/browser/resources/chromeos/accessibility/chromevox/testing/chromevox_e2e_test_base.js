@@ -61,7 +61,13 @@ ChromeVoxE2ETest = class extends E2ETestBase {
         'kChromeVoxExtensionId', ChromeVoxE2ETest.prototype.failOnConsoleError);
   }
 
-  /** @return {!MockFeedback} */
+  /**
+   * Creates a mock feedback object. Please, note that created mock also gets
+   * installed, i.e. it starts collecting tts/braille/earcons output
+   * immediately, which can affect your expectations if the environment has its
+   * own (other than induced by your test scenario) announcements.
+   * @return {!MockFeedback}
+   */
   createMockFeedback() {
     const mockFeedback = new MockFeedback(this.newCallback());
     mockFeedback.install();

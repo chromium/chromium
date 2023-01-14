@@ -138,6 +138,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     this.addListener_(
         EventType.VALUE_IN_TEXT_FIELD_CHANGED, this.onEditableChanged_);
     this.addListener_(EventType.VALUE_CHANGED, this.onValueChanged);
+    this.addListener_(
+        EventType.AUTOFILL_AVAILABILITY_CHANGED,
+        this.onAutofillAvailabilityChanged);
 
     await AutomationObjectConstructorInstaller.init(node);
     const focus = await AsyncUtil.getFocus();
@@ -793,6 +796,26 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     this.onEventDefault(evt);
+  }
+
+  /**
+   * Handles autofill availability changes.
+   * @param {!ChromeVoxEvent} evt
+   */
+  onAutofillAvailabilityChanged(evt) {
+    const node = evt.target;
+    const state = node.state;
+    const currentRange = ChromeVoxState.instance.currentRange;
+
+    // Notify the user about available autofill options on focused element.
+    if (currentRange && currentRange.isValid() && state[StateType.FOCUSED] &&
+        state[StateType.AUTOFILL_AVAILABLE]) {
+      new Output()
+          .withString(Msgs.getMsg('hint_autocomplete_list'))
+          .withLocation(currentRange, null, evt.type)
+          .withQueueMode(QueueMode.QUEUE)
+          .go();
+    }
   }
 
   /**

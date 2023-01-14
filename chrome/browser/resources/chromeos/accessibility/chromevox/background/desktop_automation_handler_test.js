@@ -36,6 +36,7 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
 
     globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;
+    globalThis.StateType = chrome.automation.StateType;
 
     globalThis.press = this.press;
   }
@@ -87,6 +88,53 @@ AX_TEST_F(
 
           .expectNextSpeechUtteranceIsNot('70%')
           .expectSpeech('80%');
+
+      await mockFeedback.replay();
+    });
+
+AX_TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest', 'OnAutofillAvailabilityChanged',
+    async function() {
+      const AUTOFILL_AVAILABLE_UTTERANCE =
+          'Press up or down arrow for auto completions';
+      const root = await this.runWithLoadedTree(`<input><button>`);
+      const input = root.find({role: RoleType.TEXT_FIELD});
+      const button = root.find({role: RoleType.BUTTON});
+      const state =
+          {[StateType.FOCUSED]: false, [StateType.AUTOFILL_AVAILABLE]: false};
+      Object.defineProperty(input, 'state', {get: () => state});
+
+      const event = new CustomAutomationEvent(
+          EventType.AUTOFILL_AVAILABILITY_CHANGED, input);
+      const utterances = [];
+      ChromeVox.tts.speak = utterances.push.bind(utterances);
+
+      // Autofill available, but it is not focused: no feedback expected
+      state[StateType.FOCUSED] = false;
+      state[StateType.AUTOFILL_AVAILABLE] = true;
+      this.handler_.onAutofillAvailabilityChanged(event);
+      assertEquals(utterances.indexOf(AUTOFILL_AVAILABLE_UTTERANCE), -1);
+
+      // Focused element with no autofill availability: no feedback
+      state[StateType.FOCUSED] = true;
+      state[StateType.AUTOFILL_AVAILABLE] = false;
+      this.handler_.onAutofillAvailabilityChanged(event);
+      assertEquals(utterances.indexOf(AUTOFILL_AVAILABLE_UTTERANCE), -1);
+
+      // Focused element receives autofill options: announce it
+      state[StateType.FOCUSED] = true;
+      state[StateType.AUTOFILL_AVAILABLE] = true;
+      this.handler_.onAutofillAvailabilityChanged(event);
+      assertNotEquals(utterances.indexOf(AUTOFILL_AVAILABLE_UTTERANCE), -1);
+
+      const mockFeedback = this.createMockFeedback();
+      mockFeedback
+          .call(() => {
+            // Get focus on element with autofill: it should be announced
+            button.focus();
+            input.focus();
+          })
+          .expectSpeech(AUTOFILL_AVAILABLE_UTTERANCE);
 
       await mockFeedback.replay();
     });

@@ -21,6 +21,7 @@
     atomicChanged,
     autoCompleteChanged,
     autocorrectionOccured,
+    autofillAvailabilityChanged,
     blur,
     busyChanged,
     caretBoundsChanged,
@@ -62,7 +63,7 @@
     labeledByChanged,
     languageChanged,
     layoutComplete,
-    layoutInvalidated,   // fired when aria-busy goes false
+    layoutInvalidated,  // fired when aria-busy goes false
     liveRegionChanged,
     liveRegionCreated,
     liveRegionNodeChanged,  // fired on a node within a live region.

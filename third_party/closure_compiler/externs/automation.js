@@ -30,6 +30,7 @@ chrome.automation.EventType = {
   ATOMIC_CHANGED: 'atomicChanged',
   AUTO_COMPLETE_CHANGED: 'autoCompleteChanged',
   AUTOCORRECTION_OCCURED: 'autocorrectionOccured',
+  AUTOFILL_AVAILABILITY_CHANGED: 'autofillAvailabilityChanged',
   BLUR: 'blur',
   BUSY_CHANGED: 'busyChanged',
   CARET_BOUNDS_CHANGED: 'caretBoundsChanged',
