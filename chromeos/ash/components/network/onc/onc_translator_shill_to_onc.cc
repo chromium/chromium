@@ -263,13 +263,15 @@ void ShillToONCTranslator::TranslateEthernet() {
 }
 
 void ShillToONCTranslator::TranslateOpenVPN() {
-  if (shill_dictionary_->FindKey(shill::kOpenVPNVerifyX509NameProperty))
+  if (shill_dictionary_->GetDict().contains(
+          shill::kOpenVPNVerifyX509NameProperty)) {
     TranslateAndAddNestedObject(::onc::openvpn::kVerifyX509);
+  }
 
   // Shill supports only one RemoteCertKU but ONC requires a list. If
   // existing, wraps the value into a list.
-  const std::string* certKU =
-      shill_dictionary_->FindStringKey(shill::kOpenVPNRemoteCertKUProperty);
+  const std::string* certKU = shill_dictionary_->GetDict().FindString(
+      shill::kOpenVPNRemoteCertKUProperty);
   if (certKU) {
     base::Value certKUs(base::Value::Type::LIST);
     certKUs.Append(base::Value(*certKU));
@@ -299,8 +301,9 @@ void ShillToONCTranslator::TranslateOpenVPN() {
                               field_translation_table_, &shill_property_name)) {
       continue;
     }
+
     const base::Value* shill_value =
-        shill_dictionary_->FindKey(shill_property_name);
+        shill_dictionary_->GetDict().Find(shill_property_name);
     if (!shill_value) {
       continue;
     }
@@ -342,8 +345,10 @@ void ShillToONCTranslator::TranslateIPsec() {
   }
 
   // This is an L2TP/IPsec VPN service.
-  if (shill_dictionary_->FindKey(shill::kL2TPIPsecXauthUserProperty))
+  if (shill_dictionary_->GetDict().contains(
+          shill::kL2TPIPsecXauthUserProperty)) {
     TranslateAndAddNestedObject(::onc::ipsec::kXAUTH);
+  }
 
   std::string authentication_type;
   if (SetPKCS11Id(shill_dictionary_, shill::kL2TPIPsecClientCertIdProperty,
@@ -359,11 +364,12 @@ void ShillToONCTranslator::TranslateIPsec() {
 void ShillToONCTranslator::TranslateL2TP() {
   CopyPropertiesAccordingToSignature();
 
-  const base::Value* lcp_echo_disabled =
-      shill_dictionary_->FindKey(shill::kL2TPIPsecLcpEchoDisabledProperty);
-  if (lcp_echo_disabled && lcp_echo_disabled->is_string()) {
-    base::Value lcp_echo_disabled_value = ConvertVpnStringToValue(
-        lcp_echo_disabled->GetString(), base::Value::Type::BOOLEAN);
+  const std::string* lcp_echo_disabled =
+      shill_dictionary_->GetDict().FindString(
+          shill::kL2TPIPsecLcpEchoDisabledProperty);
+  if (lcp_echo_disabled) {
+    base::Value lcp_echo_disabled_value =
+        ConvertVpnStringToValue(*lcp_echo_disabled, base::Value::Type::BOOLEAN);
     onc_object_.SetKey(::onc::l2tp::kLcpEchoDisabled,
                        std::move(lcp_echo_disabled_value));
   }
@@ -971,7 +977,7 @@ void ShillToONCTranslator::CopyProperty(
     return;
   }
   const base::Value* shill_value =
-      shill_dictionary_->FindKey(shill_property_name);
+      shill_dictionary_->GetDict().Find(shill_property_name);
   if (!shill_value) {
     return;
   }
@@ -1003,10 +1009,12 @@ void ShillToONCTranslator::SetDefaultsAccordingToSignature(
   for (const chromeos::onc::OncFieldSignature* field_signature =
            value_signature->fields;
        field_signature->onc_field_name != nullptr; ++field_signature) {
-    if (!field_signature->default_value_setter)
+    if (!field_signature->default_value_setter) {
       continue;
-    if (onc_object_.FindKey(field_signature->onc_field_name))
+    }
+    if (onc_object_.GetDict().contains(field_signature->onc_field_name)) {
       continue;
+    }
     onc_object_.SetKey(field_signature->onc_field_name,
                        field_signature->default_value_setter());
   }

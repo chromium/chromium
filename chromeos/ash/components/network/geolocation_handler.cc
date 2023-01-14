@@ -105,7 +105,7 @@ void GeolocationHandler::ManagerPropertiesCallback(
     return;
 
   const base::Value* value =
-      properties->FindKey(shill::kEnabledTechnologiesProperty);
+      properties->GetDict().Find(shill::kEnabledTechnologiesProperty);
   if (value)
     HandlePropertyChanged(shill::kEnabledTechnologiesProperty, *value);
 }
@@ -164,19 +164,18 @@ void GeolocationHandler::GeolocationCallback(
   //   kGeoCellTowersProperty: [ {kGeoCellIdProperty: cell_id_value, ...}, ... ]
   // }
   for (auto* device_type : kDevicePropertyNames) {
-    const base::Value* entry_list = properties->FindKey(device_type);
+    const base::Value::List* entry_list =
+        properties->GetDict().FindList(device_type);
     if (!entry_list) {
-      continue;
-    }
-
-    if (!entry_list->is_list()) {
-      LOG(WARNING) << "Geolocation dictionary value not a List: "
-                   << device_type;
+      if (properties->GetDict().contains(device_type)) {
+        LOG(WARNING) << "Geolocation dictionary value not a List: "
+                     << device_type;
+      }
       continue;
     }
 
     // List[Dictionary<key, value_str>]
-    for (const auto& entry : entry_list->GetList()) {
+    for (const auto& entry : *entry_list) {
       if (!entry.is_dict()) {
         LOG(WARNING) << "Geolocation list value not a Dictionary";
         continue;

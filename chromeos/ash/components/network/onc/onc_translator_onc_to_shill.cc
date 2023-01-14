@@ -288,7 +288,7 @@ void LocalTranslator::TranslateL2TP() {
                           shill::kSaveCredentialsProperty);
 
   const base::Value* lcp_echo_disabled =
-      onc_object_->FindKey(::onc::l2tp::kLcpEchoDisabled);
+      onc_object_->GetDict().Find(::onc::l2tp::kLcpEchoDisabled);
   if (lcp_echo_disabled) {
     base::Value lcp_echo_disabled_value =
         ConvertVpnValueToString(*lcp_echo_disabled);
@@ -392,10 +392,10 @@ void LocalTranslator::TranslateEAP() {
 
   // Set shill::kEapUseLoginPasswordProperty according to whether or not the
   // password substitution variable is set.
-  const base::Value* password_field =
-      onc_object_->FindKey(::onc::eap::kPassword);
-  if (password_field && password_field->GetString() ==
-                            ::onc::substitutes::kPasswordPlaceholderVerbatim) {
+  const std::string* password_field =
+      onc_object_->GetDict().FindString(::onc::eap::kPassword);
+  if (password_field &&
+      *password_field == ::onc::substitutes::kPasswordPlaceholderVerbatim) {
     shill_dictionary_->SetKey(shill::kEapUseLoginPasswordProperty,
                               base::Value(true));
   }
@@ -425,18 +425,19 @@ void LocalTranslator::TranslateStaticIPConfig() {
   // Shill expects 4 valid nameserver values. Ensure all values are valid and
   // replace any invalid values with 0.0.0.0 (which has no effect). See
   // https://crbug.com/922219 for details.
-  base::Value* name_servers =
-      shill_dictionary_->FindKey(shill::kNameServersProperty);
+  base::Value::List* name_servers =
+      shill_dictionary_->GetDict().FindList(shill::kNameServersProperty);
   if (name_servers) {
     static const char kDefaultIpAddr[] = "0.0.0.0";
     net::IPAddress ip_addr;
-    for (base::Value& value_ref : name_servers->GetList()) {
+    for (base::Value& value_ref : *name_servers) {
       // AssignFromIPLiteral returns true if a string is valid ipv4 or ipv6.
       if (!ip_addr.AssignFromIPLiteral(value_ref.GetString()))
         value_ref = base::Value(kDefaultIpAddr);
     }
-    while (name_servers->GetList().size() < 4)
+    while (name_servers->size() < 4) {
       name_servers->Append(base::Value(kDefaultIpAddr));
+    }
   }
 }
 
@@ -519,7 +520,7 @@ void LocalTranslator::CopyFieldsAccordingToSignature() {
 void LocalTranslator::CopyFieldFromONCToShill(
     const std::string& onc_field_name,
     const std::string& shill_property_name) {
-  const base::Value* value = onc_object_->FindKey(onc_field_name);
+  const base::Value* value = onc_object_->GetDict().Find(onc_field_name);
   if (!value)
     return;
 
