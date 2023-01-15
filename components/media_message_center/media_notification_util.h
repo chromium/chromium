@@ -13,6 +13,10 @@ namespace views {
 class Button;
 }
 
+namespace gfx {
+struct VectorIcon;
+}
+
 namespace media_message_center {
 
 // The name of the histogram used to record the number of concurrent media
@@ -54,6 +58,16 @@ media_session::mojom::MediaSessionAction GetPlayPauseIgnoredAction(
 COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
 media_session::mojom::MediaSessionAction GetPictureInPictureIgnoredAction(
     media_session::mojom::MediaSessionAction current_action);
+
+// Returns the vector icon corresponding to the |action|.
+COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
+const gfx::VectorIcon* GetVectorIconForMediaAction(
+    media_session::mojom::MediaSessionAction action);
+
+// Returns the accessible name corresponding to the |action|.
+COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
+const std::u16string GetAccessibleNameForMediaAction(
+    media_session::mojom::MediaSessionAction action);
 
 // Records the concurrent number of media notifications displayed.
 COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)

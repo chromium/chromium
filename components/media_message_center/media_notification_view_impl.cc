@@ -79,43 +79,6 @@ void RecordMetadataHistogram(MediaNotificationViewImpl::Metadata metadata) {
                             metadata);
 }
 
-const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
-  switch (action) {
-    case MediaSessionAction::kPreviousTrack:
-      return &kMediaPreviousTrackIcon;
-    case MediaSessionAction::kSeekBackward:
-      return &kMediaSeekBackwardIcon;
-    case MediaSessionAction::kPlay:
-      return &kPlayArrowIcon;
-    case MediaSessionAction::kPause:
-      return &kPauseIcon;
-    case MediaSessionAction::kSeekForward:
-      return &kMediaSeekForwardIcon;
-    case MediaSessionAction::kNextTrack:
-      return &kMediaNextTrackIcon;
-    case MediaSessionAction::kEnterPictureInPicture:
-      return &kMediaEnterPipIcon;
-    case MediaSessionAction::kExitPictureInPicture:
-      return &kMediaExitPipIcon;
-    case MediaSessionAction::kStop:
-    case MediaSessionAction::kSkipAd:
-    case MediaSessionAction::kSeekTo:
-    case MediaSessionAction::kScrubTo:
-    case MediaSessionAction::kSwitchAudioDevice:
-    case MediaSessionAction::kToggleMicrophone:
-    case MediaSessionAction::kToggleCamera:
-    case MediaSessionAction::kHangUp:
-    case MediaSessionAction::kRaise:
-    case MediaSessionAction::kSetMute:
-    case MediaSessionAction::kPreviousSlide:
-    case MediaSessionAction::kNextSlide:
-      NOTREACHED();
-      break;
-  }
-
-  return nullptr;
-}
-
 size_t GetMaxNumActions(bool expanded) {
   return expanded ? kMediaNotificationExpandedActionsCount
                   : kMediaNotificationActionsCount;

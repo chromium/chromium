@@ -16,7 +16,6 @@
 #include "components/media_message_center/media_notification_util.h"
 #include "components/media_message_center/media_notification_volume_slider_view.h"
 #include "components/media_message_center/notification_theme.h"
-#include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -86,89 +85,6 @@ void RecordMetadataHistogram(
     MediaNotificationViewModernImpl::Metadata metadata) {
   UMA_HISTOGRAM_ENUMERATION(
       MediaNotificationViewModernImpl::kMetadataHistogramName, metadata);
-}
-
-const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
-  switch (action) {
-    case MediaSessionAction::kPreviousTrack:
-      return &kMediaPreviousTrackIcon;
-    case MediaSessionAction::kSeekBackward:
-      return &kMediaSeekBackwardIcon;
-    case MediaSessionAction::kPlay:
-      return &kPlayArrowIcon;
-    case MediaSessionAction::kPause:
-      return &kPauseIcon;
-    case MediaSessionAction::kSeekForward:
-      return &kMediaSeekForwardIcon;
-    case MediaSessionAction::kNextTrack:
-      return &kMediaNextTrackIcon;
-    case MediaSessionAction::kEnterPictureInPicture:
-      return &kMediaEnterPipIcon;
-    case MediaSessionAction::kExitPictureInPicture:
-      return &kMediaExitPipIcon;
-    case MediaSessionAction::kStop:
-    case MediaSessionAction::kSkipAd:
-    case MediaSessionAction::kSeekTo:
-    case MediaSessionAction::kScrubTo:
-    case MediaSessionAction::kSwitchAudioDevice:
-    case MediaSessionAction::kToggleMicrophone:
-    case MediaSessionAction::kToggleCamera:
-    case MediaSessionAction::kHangUp:
-    case MediaSessionAction::kRaise:
-    case MediaSessionAction::kSetMute:
-    case MediaSessionAction::kPreviousSlide:
-    case MediaSessionAction::kNextSlide:
-      NOTREACHED();
-      break;
-  }
-
-  return nullptr;
-}
-
-const std::u16string GetAccessibleNameForMediaAction(
-    MediaSessionAction action) {
-  switch (action) {
-    case MediaSessionAction::kPreviousTrack:
-      return l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK);
-    case MediaSessionAction::kSeekBackward:
-      return l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_BACKWARD);
-    case MediaSessionAction::kPlay:
-      return l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
-    case MediaSessionAction::kPause:
-      return l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE);
-    case MediaSessionAction::kSeekForward:
-      return l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_FORWARD);
-    case MediaSessionAction::kNextTrack:
-      return l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
-    case MediaSessionAction::kEnterPictureInPicture:
-      return l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
-    case MediaSessionAction::kExitPictureInPicture:
-      return l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP);
-    case MediaSessionAction::kStop:
-    case MediaSessionAction::kSkipAd:
-    case MediaSessionAction::kSeekTo:
-    case MediaSessionAction::kScrubTo:
-    case MediaSessionAction::kSwitchAudioDevice:
-    case MediaSessionAction::kToggleMicrophone:
-    case MediaSessionAction::kToggleCamera:
-    case MediaSessionAction::kHangUp:
-    case MediaSessionAction::kRaise:
-    case MediaSessionAction::kSetMute:
-    case MediaSessionAction::kPreviousSlide:
-    case MediaSessionAction::kNextSlide:
-      NOTREACHED();
-      break;
-  }
-
-  return std::u16string();
 }
 
 class MediaButton : public views::ImageButton {
