@@ -257,8 +257,7 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
       case InstallerState::kInstallStarted:
       case InstallerState::kDlcInstall:
       case InstallerState::kFirmwareDownload:
-      case InstallerState::kFirmwareMount:
-      case InstallerState::kBootDiskMount:
+      case InstallerState::kPflashDownload:
       case InstallerState::kOpenFiles:
       case InstallerState::kCreateVmDisk:
       case InstallerState::kStartVm:

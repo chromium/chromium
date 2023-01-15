@@ -16,6 +16,7 @@ extern const char kBruschettaVmName[];
 extern const char kBruschettaDisplayName[];
 
 extern const char kBiosPath[];
+extern const char kPflashPath[];
 
 enum class BruschettaResult {
   kUnknown,

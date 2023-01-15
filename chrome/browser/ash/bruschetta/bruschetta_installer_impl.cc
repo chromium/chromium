@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_installer_impl.h"
 
+#include <memory>
+
 #include "base/check.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_download_client.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_params.h"
@@ -64,12 +65,19 @@ const net::NetworkTrafficAnnotationTag kBruschettaTrafficAnnotation =
       }
     )");
 
-absl::optional<std::pair<base::ScopedFD, base::ScopedFD>> OpenFdsBlocking(
+std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
     base::FilePath firmware_path,
     base::FilePath boot_disk_path,
+    base::FilePath pflash_path,
     base::FilePath profile_path);
 
 }  // namespace
+
+struct BruschettaInstallerImpl::Fds {
+  base::ScopedFD firmware;
+  base::ScopedFD boot_disk;
+  base::ScopedFD pflash;
+};
 
 BruschettaInstallerImpl::BruschettaInstallerImpl(
     Profile* profile,
@@ -131,6 +139,7 @@ void BruschettaInstallerImpl::Install(std::string vm_name,
 }
 
 void BruschettaInstallerImpl::InstallToolsDlc() {
+  VLOG(2) << "Installing DLC";
   NotifyObserver(State::kDlcInstall);
 
   dlcservice::InstallRequest request;
@@ -160,6 +169,7 @@ void BruschettaInstallerImpl::OnToolsDlcInstalled(
 
 void BruschettaInstallerImpl::StartDownload(GURL url,
                                             DownloadCallback callback) {
+  VLOG(2) << "Downloading " << url;
   auto* download_service =
       BackgroundDownloadServiceFactory::GetForKey(profile_->GetProfileKey());
 
@@ -220,6 +230,7 @@ void BruschettaInstallerImpl::DownloadSucceeded(
 }
 
 void BruschettaInstallerImpl::DownloadFirmware() {
+  VLOG(2) << "Downloading firmware";
   // We need to generate the download GUID before notifying because the tests
   // need it to set the response.
   download_guid_ = base::GUID::GenerateRandomV4();
@@ -250,39 +261,13 @@ void BruschettaInstallerImpl::OnFirmwareDownloaded(
     return;
   }
 
-  MountFirmware(completion_info.path);
-}
-
-void BruschettaInstallerImpl::MountFirmware(const base::FilePath& path) {
-  NotifyObserver(State::kFirmwareMount);
-
-  ash::disks::DiskMountManager::GetInstance()->MountPath(
-      path.AsUTF8Unsafe(), "", "", {}, ash::MountType::kArchive,
-      ash::MountAccessMode::kReadOnly,
-      base::BindOnce(&BruschettaInstallerImpl::OnFirmwareMounted,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BruschettaInstallerImpl::OnFirmwareMounted(
-    ash::MountError error_code,
-    const ash::MountPoint& mount_info) {
-  if (MaybeClose()) {
-    return;
-  }
-
-  if (error_code != ash::MountError::kSuccess) {
-    install_running_ = false;
-    NotifyObserverError();
-    LOG(ERROR) << "Failed to unpack firmware image: " << error_code;
-    return;
-  }
-
-  firmware_mount_path_ = mount_info.mount_path;
+  firmware_path_ = completion_info.path;
 
   DownloadBootDisk();
 }
 
 void BruschettaInstallerImpl::DownloadBootDisk() {
+  VLOG(2) << "Downloading boot disk";
   // We need to generate the download GUID before notifying because the tests
   // need it to set the response.
   download_guid_ = base::GUID::GenerateRandomV4();
@@ -313,106 +298,107 @@ void BruschettaInstallerImpl::OnBootDiskDownloaded(
     return;
   }
 
-  MountBootDisk(completion_info.path);
+  boot_disk_path_ = completion_info.path;
+
+  DownloadPflash();
 }
 
-void BruschettaInstallerImpl::MountBootDisk(const base::FilePath& path) {
-  NotifyObserver(State::kBootDiskMount);
+void BruschettaInstallerImpl::DownloadPflash() {
+  VLOG(2) << "Downloading pflash";
+  // We need to generate the download GUID before notifying because the tests
+  // need it to set the response.
+  download_guid_ = base::GUID::GenerateRandomV4();
+  NotifyObserver(State::kPflashDownload);
 
-  ash::disks::DiskMountManager::GetInstance()->MountPath(
-      path.AsUTF8Unsafe(), "", "", {}, ash::MountType::kArchive,
-      ash::MountAccessMode::kReadOnly,
-      base::BindOnce(&BruschettaInstallerImpl::OnBootDiskMounted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  const std::string* url = config_.FindDict(prefs::kPolicyPflashKey)
+                               ->FindString(prefs::kPolicyURLKey);
+  StartDownload(GURL(*url),
+                base::BindOnce(&BruschettaInstallerImpl::OnPflashDownloaded,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BruschettaInstallerImpl::OnBootDiskMounted(
-    ash::MountError error_code,
-    const ash::MountPoint& mount_info) {
+void BruschettaInstallerImpl::OnPflashDownloaded(
+    const download::CompletionInfo& completion_info) {
   if (MaybeClose()) {
     return;
   }
 
-  if (error_code != ash::MountError::kSuccess) {
+  const std::string* expected_hash = config_.FindDict(prefs::kPolicyPflashKey)
+                                         ->FindString(prefs::kPolicyHashKey);
+  if (!base::EqualsCaseInsensitiveASCII(completion_info.hash256,
+                                        *expected_hash)) {
     install_running_ = false;
     NotifyObserverError();
-    LOG(ERROR) << "Failed to unpack firmware image: " << error_code;
+    LOG(ERROR) << "Downloaded pflash has incorrect hash";
+    LOG(ERROR) << "Actual   " << completion_info.hash256;
+    LOG(ERROR) << "Expected " << *expected_hash;
     return;
   }
 
-  boot_disk_mount_path_ = mount_info.mount_path;
+  pflash_path_ = completion_info.path;
 
   OpenFds();
 }
 
 void BruschettaInstallerImpl::OpenFds() {
+  VLOG(2) << "Opening fds";
   NotifyObserver(State::kOpenFiles);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&OpenFdsBlocking, base::FilePath(firmware_mount_path_),
-                     base::FilePath(boot_disk_mount_path_),
-                     profile_->GetPath()),
+      base::BindOnce(&OpenFdsBlocking, firmware_path_, boot_disk_path_,
+                     pflash_path_, profile_->GetPath()),
       base::BindOnce(&BruschettaInstallerImpl::OnOpenFds,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 namespace {
 
-absl::optional<base::FilePath> FindPath(const base::FilePath& dir) {
-  auto enumerator =
-      base::FileEnumerator(dir, true, base::FileEnumerator::FILES);
-  auto filepath = enumerator.Next();
-  if (filepath.empty()) {
-    LOG(ERROR) << "No files under mount point";
-    return absl::nullopt;
-  }
-  if (!enumerator.Next().empty()) {
-    LOG(ERROR) << "Multiple files under mount point";
-    return absl::nullopt;
-  }
-  return filepath;
-}
-
-absl::optional<std::pair<base::ScopedFD, base::ScopedFD>> OpenFdsBlocking(
+std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
     base::FilePath firmware_path,
     base::FilePath boot_disk_path,
+    base::FilePath pflash_path,
     base::FilePath profile_path) {
-  auto firmware_src_path = FindPath(firmware_path);
-  if (!firmware_src_path) {
-    LOG(ERROR) << "Couldn't find firmware image";
-    return absl::nullopt;
-  }
-
-  auto boot_disk_file = FindPath(boot_disk_path);
-  if (!boot_disk_file) {
-    LOG(ERROR) << "Couldn't find boot disk";
-    return absl::nullopt;
-  }
-
   auto firmware_dest_path = profile_path.Append(kBiosPath);
-
-  if (!base::CopyFile(*firmware_src_path, firmware_dest_path)) {
+  VLOG(2) << "Copying " << firmware_path << " -> " << firmware_dest_path;
+  if (!base::CopyFile(firmware_path, firmware_dest_path)) {
     PLOG(ERROR) << "Failed to move firmware image to destination";
-    return absl::nullopt;
+    return nullptr;
+  }
+
+  auto pflash_dest_path = profile_path.Append(kPflashPath);
+  if (!base::CopyFile(pflash_path, pflash_dest_path)) {
+    PLOG(ERROR) << "Failed to move pflash image to destination";
+    return nullptr;
   }
 
   base::File firmware(firmware_dest_path,
                       base::File::FLAG_OPEN | base::File::FLAG_READ);
-  base::File boot_disk(*boot_disk_file,
-                       base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!firmware.IsValid() || !boot_disk.IsValid()) {
-    PLOG(ERROR) << "Failed to open boot disk or firmware image";
-    return absl::nullopt;
+  if (!firmware.IsValid()) {
+    PLOG(ERROR) << "Failed to open firmware";
+    return nullptr;
   }
-
-  return std::pair(base::ScopedFD(firmware.TakePlatformFile()),
-                   base::ScopedFD(boot_disk.TakePlatformFile()));
+  base::File boot_disk(boot_disk_path,
+                       base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!boot_disk.IsValid()) {
+    PLOG(ERROR) << "Failed to open boot disk";
+    return nullptr;
+  }
+  base::File pflash(pflash_dest_path,
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!pflash.IsValid()) {
+    PLOG(ERROR) << "Failed to open pflash";
+    return nullptr;
+  }
+  BruschettaInstallerImpl::Fds fds{
+      .firmware = base::ScopedFD(firmware.TakePlatformFile()),
+      .boot_disk = base::ScopedFD(boot_disk.TakePlatformFile()),
+      .pflash = base::ScopedFD(pflash.TakePlatformFile())};
+  return std::make_unique<BruschettaInstallerImpl::Fds>(std::move(fds));
 }
 }  // namespace
 
-void BruschettaInstallerImpl::OnOpenFds(
-    absl::optional<std::pair<base::ScopedFD, base::ScopedFD>> fds) {
+void BruschettaInstallerImpl::OnOpenFds(std::unique_ptr<Fds> fds) {
   if (MaybeClose()) {
     return;
   }
@@ -424,13 +410,13 @@ void BruschettaInstallerImpl::OnOpenFds(
     return;
   }
 
-  firmware_fd_ = std::move(fds->first);
-  boot_disk_fd_ = std::move(fds->second);
+  fds_ = std::move(fds);
 
   CreateVmDisk();
 }
 
 void BruschettaInstallerImpl::CreateVmDisk() {
+  VLOG(2) << "Creating VM disk";
   NotifyObserver(State::kCreateVmDisk);
 
   auto* client = ash::ConciergeClient::Get();
@@ -475,6 +461,7 @@ void BruschettaInstallerImpl::OnCreateVmDisk(
 }
 
 void BruschettaInstallerImpl::StartVm() {
+  VLOG(2) << "Starting VM";
   NotifyObserver(State::kStartVm);
 
   if (!GetInstallableConfig(profile_, config_id_)) {
@@ -502,22 +489,19 @@ void BruschettaInstallerImpl::StartVm() {
   disk->set_path(std::move(disk_path_));
   disk->set_writable(true);
 
-  request.add_kernel_params("biosdevname=0");
-  request.add_kernel_params("net.ifnames=0");
-  request.add_kernel_params("console=hvc0");
-  request.add_kernel_params("earlycon=uart8250,io,0x3f8");
-  request.add_kernel_params("g-i/track=latest");
-  request.add_kernel_params("glinux/bruschetta-alpha");
-  request.add_kernel_params("g-i/bruschetta-use-gbi=false");
-  request.add_kernel_params("g-i/undefok=bruschetta-use-gbi");
+  request.add_oem_strings("com.google.glinux.installer.arg:track=latest");
+  request.add_oem_strings("com.google.glinux.bruschetta.alpha");
   request.set_timeout(240);
 
   // fds and request.fds must have the same order.
   std::vector<base::ScopedFD> fds;
   request.add_fds(vm_tools::concierge::StartVmRequest::BIOS);
-  fds.push_back(std::move(firmware_fd_));
-  request.add_fds(vm_tools::concierge::StartVmRequest::ROOTFS);
-  fds.push_back(std::move(boot_disk_fd_));
+  fds.push_back(std::move(fds_->firmware));
+  request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
+  fds.push_back(std::move(fds_->boot_disk));
+  request.add_fds(vm_tools::concierge::StartVmRequest::PFLASH);
+  fds.push_back(std::move(fds_->pflash));
+  fds_.reset();
 
   client->StartVmWithFds(std::move(fds), request,
                          base::BindOnce(&BruschettaInstallerImpl::OnStartVm,
@@ -545,6 +529,7 @@ void BruschettaInstallerImpl::OnStartVm(
 }
 
 void BruschettaInstallerImpl::LaunchTerminal() {
+  VLOG(2) << "Launching terminal";
   NotifyObserver(State::kLaunchTerminal);
 
   // TODO(b/231899688): Implement Bruschetta sending an RPC when installation

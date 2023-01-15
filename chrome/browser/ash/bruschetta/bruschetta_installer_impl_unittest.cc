@@ -40,7 +40,7 @@ using testing::InvokeWithoutArgs;
 using testing::Sequence;
 
 // Total number of stopping points in ::ExpectStopOnStepN
-constexpr int kMaxSteps = 27;
+constexpr int kMaxSteps = 23;
 
 const char kVmName[] = "vm-name";
 const char kVmConfigId[] = "test-config-id";
@@ -50,7 +50,6 @@ const char kVmConfigHash[] =
     "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 const char kBadHash[] =
     "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210";
-const base::FilePath kDownloadPath{"/path/to/downloaded/object"};
 
 class MockObserver : public BruschettaInstaller::Observer {
  public:
@@ -110,8 +109,6 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     download_service_->SetIsReady(true);
     download_service_->set_client(&download_client_);
 
-    firmware_mount_path_ = profile_.GetPath().Append("firmware_mount");
-    boot_disk_mount_path_ = profile_.GetPath().Append("boot_disk_mount");
     ASSERT_TRUE(base::CreateDirectory(profile_.GetPath().Append("Downloads")));
 
     ash::disks::DiskMountManager::InitializeForTesting(&disk_mount_manager_);
@@ -165,19 +162,11 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   auto DownloadSuccessCallback() {
     return [this]() {
+      base::FilePath path;
+      base::CreateTemporaryFile(&path);
       download_service_->SetHash256(kVmConfigHash);
-      download_service_->SetFilePath(kDownloadPath);
+      download_service_->SetFilePath(path);
       download_service_->SetFailedDownload("", false);
-    };
-  }
-
-  auto OpenFilesCallback(base::FilePath dir, int count) {
-    return [dir, count]() {
-      ASSERT_TRUE(base::CreateDirectory(dir));
-      for (int i = 0; i < count; i++) {
-        base::File(dir.Append(base::NumberToString(i)),
-                   base::File::FLAG_CREATE | base::File::FLAG_READ);
-      }
     };
   }
 
@@ -205,24 +194,6 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         FakeConciergeClient()->set_start_vm_response(absl::nullopt);
       }
     };
-  }
-
-  void MountExpectation(Sequence seq,
-                        ash::MountError error_code,
-                        std::string mount_path) {
-    EXPECT_CALL(
-        disk_mount_manager_,
-        MountPath(kDownloadPath.AsUTF8Unsafe(), _, _, _,
-                  ash::MountType::kArchive, ash::MountAccessMode::kReadOnly, _))
-        .Times(1)
-        .InSequence(seq)
-        .WillOnce(testing::WithArg<6>(
-            [error_code, mount_path](
-                ash::disks::DiskMountManager::MountPathCallback callback) {
-              ash::MountPoint mount_info;
-              mount_info.mount_path = std::move(mount_path);
-              std::move(callback).Run(error_code, mount_info);
-            }));
   }
 
   void ErrorExpectation(Sequence seq) {
@@ -319,30 +290,6 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
       expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
     }
 
-    // Mount firmware image step
-    {
-      auto& expectation =
-          EXPECT_CALL(observer_,
-                      StateChanged(BruschettaInstaller::State::kFirmwareMount))
-              .Times(1)
-              .InSequence(seq);
-
-      if (!n--) {
-        MountExpectation(seq, ash::MountError::kSuccess,
-                         firmware_mount_path_.AsUTF8Unsafe());
-        expectation.WillOnce(CancelCallback());
-        return false;
-      }
-      if (!n--) {
-        MountExpectation(seq, ash::MountError::kUnknownError, "");
-        ErrorExpectation(seq);
-        return true;
-      }
-
-      MountExpectation(seq, ash::MountError::kSuccess,
-                       firmware_mount_path_.AsUTF8Unsafe());
-    }
-
     // Boot disk download step
     {
       auto& expectation =
@@ -372,28 +319,32 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
       expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
     }
 
-    // Mount boot disk step
+    // pflash download step
     {
       auto& expectation =
           EXPECT_CALL(observer_,
-                      StateChanged(BruschettaInstaller::State::kBootDiskMount))
+                      StateChanged(BruschettaInstaller::State::kPflashDownload))
               .Times(1)
               .InSequence(seq);
 
       if (!n--) {
-        MountExpectation(seq, ash::MountError::kSuccess,
-                         firmware_mount_path_.AsUTF8Unsafe());
         expectation.WillOnce(CancelCallback());
         return false;
       }
       if (!n--) {
-        MountExpectation(seq, ash::MountError::kUnknownError, "");
-        ErrorExpectation(seq);
+        MakeErrorPoint(expectation, seq, DownloadErrorCallback(true));
+        return true;
+      }
+      if (!n--) {
+        MakeErrorPoint(expectation, seq, DownloadErrorCallback(false));
+        return true;
+      }
+      if (!n--) {
+        MakeErrorPoint(expectation, seq, DownloadBadHashCallback());
         return true;
       }
 
-      MountExpectation(seq, ash::MountError::kSuccess,
-                       boot_disk_mount_path_.AsUTF8Unsafe());
+      expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
     }
 
     // Open files step
@@ -408,31 +359,6 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         expectation.WillOnce(CancelCallback());
         return false;
       }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq,
-                       OpenFilesCallback(firmware_mount_path_, 0));
-        return true;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq,
-                       OpenFilesCallback(firmware_mount_path_, 2));
-        return true;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq,
-                       OpenFilesCallback(firmware_mount_path_, 1),
-                       OpenFilesCallback(boot_disk_mount_path_, 0));
-        return true;
-      }
-      if (!n--) {
-        MakeErrorPoint(expectation, seq,
-                       OpenFilesCallback(firmware_mount_path_, 1),
-                       OpenFilesCallback(boot_disk_mount_path_, 2));
-        return true;
-      }
-
-      expectation.WillOnce(DoAll(OpenFilesCallback(firmware_mount_path_, 1),
-                                 OpenFilesCallback(boot_disk_mount_path_, 1)));
     }
 
     // Create VM disk step
@@ -513,8 +439,6 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   base::RunLoop run_loop_, run_loop_2_;
 
   base::Value::Dict prefs_installable_, prefs_not_installable_;
-
-  base::FilePath firmware_mount_path_, boot_disk_mount_path_;
 
   TestingProfile profile_;
   std::unique_ptr<BruschettaInstaller> installer_;
@@ -611,10 +535,6 @@ TEST_P(BruschettaInstallerTest, ErrorAndRetry) {
 
   // Installer should remain open in error state, retry the install.
   EXPECT_TRUE(installer_);
-
-  // Clean up the fake mount paths, since these should be different on each run.
-  ASSERT_TRUE(base::DeletePathRecursively(firmware_mount_path_));
-  ASSERT_TRUE(base::DeletePathRecursively(boot_disk_mount_path_));
 
   installer_->Install(kVmName, kVmConfigId);
   run_loop_2_.Run();

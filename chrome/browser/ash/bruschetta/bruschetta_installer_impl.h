@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -22,6 +21,9 @@ namespace bruschetta {
 
 class BruschettaInstallerImpl : public BruschettaInstaller {
  public:
+  // Public for a free function in the .cc file, not actually part of the public
+  // interface.
+  struct Fds;
   BruschettaInstallerImpl(Profile* profile, base::OnceClosure close_callback);
 
   BruschettaInstallerImpl(const BruschettaInstallerImpl&) = delete;
@@ -55,16 +57,12 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
       const ash::DlcserviceClient::InstallResult& install_result);
   void DownloadFirmware();
   void OnFirmwareDownloaded(const download::CompletionInfo& completion_info);
-  void MountFirmware(const base::FilePath& path);
-  void OnFirmwareMounted(ash::MountError error_code,
-                         const ash::MountPoint& mount_info);
   void DownloadBootDisk();
   void OnBootDiskDownloaded(const download::CompletionInfo& completion_info);
-  void MountBootDisk(const base::FilePath& path);
-  void OnBootDiskMounted(ash::MountError error_code,
-                         const ash::MountPoint& mount_info);
+  void DownloadPflash();
+  void OnPflashDownloaded(const download::CompletionInfo& completion_info);
   void OpenFds();
-  void OnOpenFds(absl::optional<std::pair<base::ScopedFD, base::ScopedFD>> fds);
+  void OnOpenFds(std::unique_ptr<Fds> fds);
   void CreateVmDisk();
   void OnCreateVmDisk(
       absl::optional<vm_tools::concierge::CreateDiskImageResponse> result);
@@ -84,11 +82,11 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   base::GUID download_guid_;
   DownloadCallback download_callback_;
 
-  std::string firmware_mount_path_;
-  std::string boot_disk_mount_path_;
-  base::ScopedFD firmware_fd_;
-  base::ScopedFD boot_disk_fd_;
+  base::FilePath firmware_path_;
+  base::FilePath boot_disk_path_;
+  base::FilePath pflash_path_;
   std::string disk_path_;
+  std::unique_ptr<Fds> fds_;
 
   const base::raw_ptr<Profile> profile_;
 
