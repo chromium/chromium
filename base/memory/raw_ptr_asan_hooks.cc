@@ -6,6 +6,8 @@
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
+#include <cstring>
+
 #include <sanitizer/asan_interface.h>
 
 #include "base/compiler_specific.h"
