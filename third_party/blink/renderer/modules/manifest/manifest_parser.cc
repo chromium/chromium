@@ -235,8 +235,8 @@ bool ManifestParser::Parse() {
   return has_comments;
 }
 
-const mojom::blink::ManifestPtr& ManifestParser::manifest() const {
-  return manifest_;
+mojom::blink::ManifestPtr ManifestParser::TakeManifest() {
+  return std::move(manifest_);
 }
 
 void ManifestParser::TakeErrors(

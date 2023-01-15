@@ -45,7 +45,7 @@ class ManifestParserTest : public testing::Test {
     errors_.clear();
     for (auto& error : errors)
       errors_.push_back(std::move(error->message));
-    manifest_ = parser.manifest().Clone();
+    manifest_ = parser.TakeManifest();
     return manifest_;
   }
 
@@ -78,8 +78,8 @@ TEST_F(ManifestParserTest, CrashTest) {
   bool has_comments = parser.Parse();
   EXPECT_FALSE(has_comments);
   Vector<mojom::blink::ManifestErrorPtr> errors;
-  const auto& manifest = parser.manifest();
   parser.TakeErrors(&errors);
+  auto manifest = parser.TakeManifest();
 
   // .Parse() should have been call without crashing and succeeded.
   EXPECT_EQ(0u, errors.size());

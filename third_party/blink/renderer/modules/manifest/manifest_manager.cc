@@ -88,6 +88,23 @@ void ManifestManager::RequestManifestDebugInfo(
       std::move(callback)));
 }
 
+void ManifestManager::ParseManifestFromString(
+    const KURL& document_url,
+    const KURL& manifest_url,
+    const String& manifest_contents,
+    ParseManifestFromStringCallback callback) {
+  ManifestParser parser(manifest_contents, manifest_url, document_url,
+                        GetExecutionContext());
+  parser.Parse();
+
+  mojom::blink::ManifestPtr result;
+  if (!parser.failed()) {
+    result = parser.TakeManifest();
+  }
+
+  std::move(callback).Run(std::move(result));
+}
+
 void ManifestManager::RequestManifestForTesting(
     WebManifestManager::Callback callback) {
   RequestManifestImpl(WTF::BindOnce(
@@ -209,7 +226,7 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   }
 
   manifest_url_ = response.CurrentRequestUrl();
-  manifest_ = parser.manifest().Clone();
+  manifest_ = parser.TakeManifest();
   RecordMetrics(*manifest_);
   ResolveCallbacks(ResolveState::kSuccess);
 }

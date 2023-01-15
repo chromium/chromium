@@ -24,4 +24,13 @@ interface ManifestManager {
   RequestManifestDebugInfo() => (url.mojom.Url url,
                                  Manifest? parsed_manifest,
                                  ManifestDebugInfo? debug_info);
+
+  // Parses the given |manifest_content| JSON string. |manifest_url| is the URL
+  // that the manifest content was fetched from, and |document_url| is the URL
+  // of a document which contained a link to the manifest. Returns an empty
+  // Manifest if parsing fails.
+  ParseManifestFromString(url.mojom.Url document_url,
+                          url.mojom.Url manifest_url,
+                          string manifest_content)
+      => (Manifest? parsed_manifest);
 };

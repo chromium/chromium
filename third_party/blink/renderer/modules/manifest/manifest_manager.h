@@ -60,6 +60,11 @@ class MODULES_EXPORT ManifestManager
   void RequestManifest(RequestManifestCallback callback) override;
   void RequestManifestDebugInfo(
       RequestManifestDebugInfoCallback callback) override;
+  void ParseManifestFromString(
+      const KURL& document_url,
+      const KURL& manifest_url,
+      const String& manifest_contents,
+      ParseManifestFromStringCallback callback) override;
 
   void Trace(Visitor*) const override;
 

@@ -55,9 +55,11 @@ class MODULES_EXPORT ManifestParser {
   // https://w3c.github.io/manifest/#processing
   bool Parse();
 
-  const mojom::blink::ManifestPtr& manifest() const;
   bool failed() const;
 
+  // Takes ownership of the Manifest produced by Parse(). Once called, the
+  // parser is invalid and should no longer be used.
+  mojom::blink::ManifestPtr TakeManifest();
   void TakeErrors(Vector<mojom::blink::ManifestErrorPtr>* errors);
 
  private:
