@@ -229,4 +229,14 @@ TEST_F(PrefixMatcherTest, CaseTokenPrefixMatchPreferred) {
   EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
 }
 
+TEST_F(PrefixMatcherTest, LastQueryTokenCanBeMatchedAtMostOnce) {
+  TokenizedString query(u"about c");
+  TokenizedString text(u"Chrome Canvas");
+
+  PrefixMatcher pm(query, text);
+  pm.Match();
+  double expected_score = 0;
+  EXPECT_NEAR(pm.relevance(), expected_score, kAbsError);
+}
+
 }  // namespace ash::string_matching

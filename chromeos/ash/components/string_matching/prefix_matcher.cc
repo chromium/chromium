@@ -151,6 +151,7 @@ void PrefixMatcher::TokenPrefixMatch(MatchInfo& token_match_info) {
   const std::u16string last_query_token = query_.tokens()[num_query_token - 1];
 
   size_t matched_num = 0;
+  bool last_query_token_matched = false;
   for (size_t text_pos = 0; text_pos < num_text_token; ++text_pos) {
     const std::u16string text_token = text_.tokens()[text_pos];
 
@@ -164,9 +165,12 @@ void PrefixMatcher::TokenPrefixMatch(MatchInfo& token_match_info) {
 
       UpdateInfoForTokenPrefixMatch(query_pos, text_pos, token_match_info);
       ++matched_num;
-    } else if (last_query_token.size() <= text_token.size() &&
-               text_token.compare(0, last_query_token.size(),
-                                  last_query_token) == 0) {
+    }
+    // The last query token can be matched for at most once.
+    else if (!last_query_token_matched &&
+             last_query_token.size() <= text_token.size() &&
+             text_token.compare(0, last_query_token.size(), last_query_token) ==
+                 0) {
       // This case handles an incomplete last query.
       // Example:
       //   For text: 'Google Chrome'.
@@ -176,6 +180,7 @@ void PrefixMatcher::TokenPrefixMatch(MatchInfo& token_match_info) {
       UpdateInfoForTokenPrefixMatch(num_query_token - 1, text_pos,
                                     token_match_info);
       ++matched_num;
+      last_query_token_matched = true;
     }
 
     if (matched_num == num_query_token) {
