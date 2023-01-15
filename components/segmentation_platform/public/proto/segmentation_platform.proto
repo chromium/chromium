@@ -16,52 +16,37 @@ package segmentation_platform.proto;
 // Keep in sync with SegmentationPlatformSegmentationModel in
 // //tools/metrics/histograms/enums.xml.
 enum SegmentId {
-  reserved 14, 20;
+  // Reserved fields are `OptimizationTarget`s that are not usde by segmentation
+  // to prevent accidental misuse.
+  reserved 1, 2, 3, 7, 8, 9, 13, 14, 15, 19, 20, 24, 25, 26;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
-  // Should only be applied when the page load is predicted to be painful.
-  OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
-  // Target for supplying the language detection model via the model downloader.
-  OPTIMIZATION_TARGET_LANGUAGE_DETECTION = 2;
-  // Target for determining topics present on a page.
-  OPTIMIZATION_TARGET_PAGE_TOPICS = 3;
   // Target for segmentation: New tab page user.
   OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB = 4;
   // Target for segmentation: Share user.
   OPTIMIZATION_TARGET_SEGMENTATION_SHARE = 5;
   // Target for segmentation: Voice user.
   OPTIMIZATION_TARGET_SEGMENTATION_VOICE = 6;
-  // Target for model validation.
-  OPTIMIZATION_TARGET_MODEL_VALIDATION = 7;
-  // Target for determining entities present on a page.
-  OPTIMIZATION_TARGET_PAGE_ENTITIES = 8;
-  // Target for Chrome Permissions Suggestions Service: Notification permission.
-  OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS = 9;
   // Target that enables data collection on client side for various experiments.
   OPTIMIZATION_TARGET_SEGMENTATION_DUMMY = 10;
   // Target for segmentation: Chrome Android Start user.
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID = 11;
   // Target for segmentation: Query Tiles user.
   OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES = 12;
-  // Target for determining the UI visibility of a page.
-  OPTIMIZATION_TARGET_PAGE_VISIBILITY = 13;
-  // Target for determining topics present on a page.
-  // TODO(crbug/1266504): Remove PAGE_TOPICS in favor of this target.
-  OPTIMIZATION_TARGET_PAGE_TOPICS_V2 = 15;
   // Target for segmentation: Determine users with low engagement with chrome.
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;
   // Target for segmentation: Determine users who prefer to use Feed.
   OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER = 17;
   // Target for price tracking action when shown as a contextual page action.
   OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING = 18;
-  // Target for smart text selection and entity extraction.
-  OPTIMIZATION_TARGET_TEXT_CLASSIFIER = 19;
   // Target for segmentation: Determine users who are interested in shopping.
   OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER = 21;
   // Target for segmentation: Chrome Android Start user V2.
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2 = 22;
   // Target for segmentation: Determine users who frequently search.
   OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER = 23;
+  // Target for segmentation: Segment of users who switched devices.
+  OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER = 27;
   // Target for segmentation: Adaptive toolbar.
   OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR = 28;
   // Add new entries to OptimizationTarget proto.

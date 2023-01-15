@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "net/base/url_util.h"
 #include "url/url_canon.h"
 
@@ -89,6 +90,8 @@ std::string GetStringNameForOptimizationTarget(
       return "ClientSidePhishing";
     case proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING:
       return "OmniboxUrlScoring";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER:
+      return "SegmentationDeviceSwitcher";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR:
       return "SegmentationAdaptiveToolbar";
       // Whenever a new value is added, make sure to add it to the OptTarget

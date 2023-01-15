@@ -231,7 +231,7 @@ public class AdaptiveToolbarStatePredictorTest {
                         SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
                 AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
-                        SegmentId.OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+                        SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER));
         Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
                 AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
                         SegmentId.OPTIMIZATION_TARGET_UNKNOWN));

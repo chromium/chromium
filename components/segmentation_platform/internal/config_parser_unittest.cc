@@ -29,9 +29,9 @@ TEST(ConfigParserTest, ParseValidConfig) {
     "segmentation_key": "test_key",
     "segmentation_uma_name": "TestKey",
     "segments": {
-      "2" : {"segment_uma_name" : "LowEngagement"},
-      "7" : {"segment_uma_name" : "HighEngagement"},
-      "9" : {"segment_uma_name" : "MediumEngagement"}
+      "16" : {"segment_uma_name" : "LowEngagement"},
+      "5" : {"segment_uma_name" : "HighEngagement"},
+      "6" : {"segment_uma_name" : "MediumEngagement"}
     },
     "segment_selection_ttl_days": 10
   })";
@@ -42,15 +42,15 @@ TEST(ConfigParserTest, ParseValidConfig) {
   base::flat_map<proto::SegmentId, std::unique_ptr<Config::SegmentMetadata>>
       expected1;
   expected1.insert(
-      {proto::SegmentId::OPTIMIZATION_TARGET_MODEL_VALIDATION,
+      {proto::SegmentId::
+           OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
+       std::make_unique<Config::SegmentMetadata>("LowEngagement")});
+  expected1.insert(
+      {proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
        std::make_unique<Config::SegmentMetadata>("HighEngagement")});
   expected1.insert(
-      {proto::SegmentId::
-           OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS,
+      {proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
        std::make_unique<Config::SegmentMetadata>("MediumEngagement")});
-  expected1.insert(
-      {proto::SegmentId::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-       std::make_unique<Config::SegmentMetadata>("LowEngagement")});
   EXPECT_EQ(config1->segments, expected1);
   EXPECT_EQ(config1->segment_selection_ttl, base::Days(10));
   EXPECT_EQ(config1->unknown_selection_ttl, base::Days(0));
@@ -59,7 +59,7 @@ TEST(ConfigParserTest, ParseValidConfig) {
       "segmentation_key": "test_key",
       "segmentation_uma_name": "TestKey",
       "segments": {
-        "9" : {"segment_uma_name" : "FeedUser"}
+        "5" : {"segment_uma_name" : "FeedUser"}
       },
       "segment_selection_ttl_days": 10,
       "unknown_segment_selection_ttl_days": 14
@@ -70,8 +70,7 @@ TEST(ConfigParserTest, ParseValidConfig) {
   EXPECT_EQ(config2->segmentation_uma_name, "TestKey");
   base::flat_map<proto::SegmentId, std::unique_ptr<Config::SegmentMetadata>>
       expected2;
-  expected2.insert({proto::SegmentId::
-                        OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS,
+  expected2.insert({proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
                     std::make_unique<Config::SegmentMetadata>("FeedUser")});
   EXPECT_EQ(config2->segments, expected2);
   EXPECT_EQ(config2->segment_selection_ttl, base::Days(10));

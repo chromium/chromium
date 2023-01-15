@@ -177,6 +177,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING = 25;
   // Target for Omnibox URL suggestion scoring.
   OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING = 26;
+  // Target for segmentation: Segment of users who switched devices.
+  OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER = 27;
   // Target for segmentation: Adaptive toolbar button.
   OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR = 28;
 }

@@ -81,9 +81,9 @@ TEST_F(SegmentationPlatformConfigTest, MultipleConfigs) {
     "segmentation_key": "test_key",
     "segmentation_uma_name": "TestKey",
     "segments": {
-      "2" : {"segment_uma_name" : "LowEngagement"},
-      "7" : {"segment_uma_name" : "HighEngagement"},
-      "9" : {"segment_uma_name" : "MediumEngagement"}
+      "4" : {"segment_uma_name" : "LowEngagement"},
+      "6" : {"segment_uma_name" : "HighEngagement"},
+      "5" : {"segment_uma_name" : "MediumEngagement"}
     },
     "segment_selection_ttl_days": 10
   })";
@@ -91,19 +91,17 @@ TEST_F(SegmentationPlatformConfigTest, MultipleConfigs) {
       "segmentation_key": "test_key1",
       "segmentation_uma_name": "TestKey1",
       "segments": {
-        "9" : {"segment_uma_name" : "FeedUser"}
+        "10" : {"segment_uma_name" : "FeedUser"}
       },
       "segment_selection_ttl_days": 10,
       "unknown_segment_selection_ttl_days": 14
   })";
   const base::flat_set<proto::SegmentId> segment_ids1 = {
-      proto::SegmentId::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      proto::SegmentId::OPTIMIZATION_TARGET_MODEL_VALIDATION,
-      proto::SegmentId::
-          OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS};
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE};
   const base::flat_set<proto::SegmentId> segment_ids2 = {
-      proto::SegmentId::
-          OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS};
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY};
 
   std::vector<base::test::FeatureRefAndParams> features;
   features.push_back(base::test::FeatureRefAndParams(

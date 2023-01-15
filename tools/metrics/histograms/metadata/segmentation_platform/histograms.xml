@@ -67,6 +67,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeStartAndroidV2"/>
   <variant name="ContextualPageActionPriceTracking"/>
   <variant name="CrossDeviceUser"/>
+  <variant name="DeviceSwitcher"/>
   <variant name="Dummy"/>
   <variant name="FeedUserSegment"/>
   <variant name="FrequentFeatureUserSegment"/>

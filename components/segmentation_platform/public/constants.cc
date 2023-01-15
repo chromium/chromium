@@ -95,6 +95,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
     case proto::SegmentId::
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2:
       return "ChromeStartAndroidV2";
+    case proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER:
+      return "DeviceSwitcher";
     default:
       // This case is reached when UNKNOWN segment is valid, in case of boolean
       // segment results.
