@@ -171,10 +171,6 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       strcmp(feature_name, features::kAssistMultiWord.name) == 0) {
     return features::IsAssistiveMultiWordEnabled();
   }
-  // TODO(b/218815885): Replace refs of this with true internally and delete.
-  if (strcmp(feature_name, "AssistiveMultiWordLacrosSupport") == 0) {
-    return true;
-  }
   if (strcmp(feature_name, features::kAutocorrectParamsTuning.name) == 0) {
     return base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning);
   }
@@ -184,15 +180,9 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, features::kLacrosSupport.name) == 0) {
     return base::FeatureList::IsEnabled(features::kLacrosSupport);
   }
-  if (strcmp(feature_name, "SystemChinesePhysicalTyping") == 0) {
-    return true;
-  }
   if (strcmp(feature_name, features::kSystemJapanesePhysicalTyping.name) == 0) {
     return base::FeatureList::IsEnabled(
         features::kSystemJapanesePhysicalTyping);
-  }
-  if (strcmp(feature_name, "SystemTransliterationPhysicalTyping") == 0) {
-    return true;
   }
   return false;
 }
