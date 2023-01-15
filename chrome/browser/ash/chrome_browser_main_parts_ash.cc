@@ -1418,6 +1418,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 // shutdown calls and test |pre_profile_init_called_| if necessary. See
 // crbug.com/702403 for details.
 void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
+  video_conference_manager_client_.reset();
+
   // Do this early to keep logging from taking time during shutdown.
   if (memory_pressure_detail_ != nullptr) {
     memory_pressure_detail_->Stop();
