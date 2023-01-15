@@ -113,6 +113,8 @@ void BackgroundDownloadServiceImpl::StartDownload(
   entry.target_file_path = download_dir_.AppendASCII(download_params.guid);
   entry.create_time = clock_->Now();
   entry.state = Entry::State::ACTIVE;
+  entry.custom_data = std::move(download_params.custom_data);
+
   model_->Add(entry);
 }
 
@@ -353,6 +355,7 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
 
   CompletionInfo completion_info;
   completion_info.path = file_path;
+  completion_info.custom_data = entry->custom_data;
   client->OnDownloadSucceeded(guid, completion_info);
 }
 

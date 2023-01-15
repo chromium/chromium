@@ -107,6 +107,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
     download_params.guid = kGuid;
     download_params.callback = start_callback_.Get();
     download_params.request_params.url = GURL(url);
+    download_params.custom_data["foo"] = "foobar";
     return download_params;
   }
 
@@ -263,6 +264,7 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadSuccess) {
   EXPECT_EQ(Entry::State::COMPLETE, store_->LastUpdatedEntry()->state);
   EXPECT_EQ(dir_.GetPath().AppendASCII(kGuid),
             store_->LastUpdatedEntry()->target_file_path);
+  EXPECT_EQ("foobar", store_->LastUpdatedEntry()->custom_data.at("foo"));
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectBucketCount(kCompletionHistogram,
                                       CompletionType::SUCCEED, 1);
@@ -283,6 +285,7 @@ TEST_F(BackgroundDownloadServiceImplTest, OnDownloadUpdated) {
   store_->TriggerUpdate(/*success=*/true);
   EXPECT_EQ(kGuid, store_->LastUpdatedEntry()->guid);
   EXPECT_EQ(10u, store_->LastUpdatedEntry()->bytes_downloaded);
+  EXPECT_EQ("foobar", store_->LastUpdatedEntry()->custom_data.at("foo"));
   task_environment_.RunUntilIdle();
 }
 
