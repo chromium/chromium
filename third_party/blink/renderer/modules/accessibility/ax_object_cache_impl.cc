@@ -2274,25 +2274,6 @@ void AXObjectCacheImpl::ChildrenChanged(AccessibleNode* accessible_node) {
 }
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
-  if (!node) {
-    return;
-  }
-
-  LayoutObject* layout_object = node->GetLayoutObject();
-  AXID layout_id = 0;
-  if (layout_object) {
-    auto it = layout_object_mapping_.find(layout_object);
-    if (it != layout_object_mapping_.end()) {
-      layout_id = it->value;
-    }
-  }
-  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(layout_id));
-
-  auto it = node_object_mapping_.find(node);
-  AXID node_id = it != node_object_mapping_.end() ? it->value : 0;
-  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(node_id));
-  DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
-
   ChildrenChangedWithCleanLayout(node, Get(node));
 }
 
