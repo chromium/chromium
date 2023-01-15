@@ -73,11 +73,11 @@ struct SetupProgress {
   // Estimated number of bytes that are required to store the files to pin. This
   // is a pessimistic estimate based on the assumption that each file uses an
   // integral number of fixed-size blocks. Estimated at the beginning of the
-  // setup process and left unchanged afterwards.
+  // setup process and updated if necessary afterwards.
   int64_t required_space = 0;
 
   // Estimated number of bytes that are required to download the files to pin.
-  // Estimated at the beginning of the setup process and left unchanged
+  // Estimated at the beginning of the setup process and updated if necessary
   // afterwards.
   int64_t total_bytes = 0;
 
@@ -184,8 +184,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // Returns whether anything has actually been updated.
   bool Update(StableId id,
               const std::string& path,
-              int64_t bytes_transferred,
-              int64_t bytes_to_transfer);
+              int64_t transferred,
+              int64_t total);
 
   // Updates an item to mark it in progress.
   // Does nothing if the item is not in the map.
