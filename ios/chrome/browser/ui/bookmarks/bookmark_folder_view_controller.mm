@@ -213,7 +213,7 @@ using bookmarks::BookmarkNode;
   if (section ==
           [self.tableViewModel
               sectionForSectionIdentifier:SectionIdentifierBookmarkFolders] &&
-      [self shouldShowDefaultSection]) {
+      self.allowsNewFolders) {
     CGRect separatorFrame =
         CGRectMake(0, 0, CGRectGetWidth(headerView.bounds),
                    1.0 / [[UIScreen mainScreen] scale]);  // 1-pixel divider.
@@ -247,16 +247,16 @@ using bookmarks::BookmarkNode;
 
     case SectionIdentifierBookmarkFolders: {
       int folderIndex = indexPath.row;
-      // If `shouldShowDefaultSection` is YES, the first cell on this section
+      // If new folders are allowed, the first cell on this section
       // should call `pushFolderAddViewController`.
-      if ([self shouldShowDefaultSection]) {
+      if (self.allowsNewFolders) {
         NSInteger itemType =
             [self.tableViewModel itemTypeForIndexPath:indexPath];
         if (itemType == ItemTypeCreateNewFolder) {
           [self pushFolderAddViewController];
           return;
         }
-        // If `shouldShowDefaultSection` is YES we need to offset by 1 to get
+        // If new folders are allowed, we need to offset by 1 to get
         // the right BookmarkNode from `self.folders`.
         folderIndex--;
       }
@@ -374,10 +374,6 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - Private
 
-- (BOOL)shouldShowDefaultSection {
-  return self.allowsNewFolders;
-}
-
 - (void)reloadModel {
   _folders = bookmark_utils_ios::VisibleNonDescendantNodes(self.editedNodes,
                                                            self.bookmarkModel);
@@ -399,7 +395,7 @@ using bookmarks::BookmarkNode;
       addSectionWithIdentifier:SectionIdentifierBookmarkFolders];
 
   // Adds default "Add Folder" item if needed.
-  if ([self shouldShowDefaultSection]) {
+  if (self.allowsNewFolders) {
     BookmarkFolderItem* createFolderItem =
         [[BookmarkFolderItem alloc] initWithType:ItemTypeCreateNewFolder
                                            style:BookmarkFolderStyleNewFolder];
