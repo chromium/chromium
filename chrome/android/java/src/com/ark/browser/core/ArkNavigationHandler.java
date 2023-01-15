@@ -1,4 +1,4 @@
-package com.ark.browser;
+package com.ark.browser.core;
 
 public interface ArkNavigationHandler {
 

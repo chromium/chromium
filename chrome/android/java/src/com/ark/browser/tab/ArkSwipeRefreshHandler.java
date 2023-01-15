@@ -4,16 +4,11 @@
 
 package com.ark.browser.tab;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.skin.SkinEngine;
@@ -24,23 +19,18 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
-import org.chromium.ui.base.WindowAndroid;
 
 /**
  * An overscroll handler implemented in terms a modified version of the Android
  * compat library's SwipeRefreshLayout effect.
  */
-public class ArkSwipeRefreshHandler
-        extends ArkTabWebContentsUserData implements OverscrollRefreshHandler {
+public class ArkSwipeRefreshHandler implements OverscrollRefreshHandler {
 
     private static final String TAG = "SwipeRefreshHandler";
-
-    private static final Class<ArkSwipeRefreshHandler> USER_DATA_KEY = ArkSwipeRefreshHandler.class;
 
     // Synthetic delay between the {@link #didStopRefreshing()} signal and the
     // call to stop the refresh animation.
@@ -54,16 +44,13 @@ public class ArkSwipeRefreshHandler
 
     // The modified AppCompat version of the refresh effect, handling all core
     // logic, rendering and animation.
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    @NonNull
+    private final SwipeRefreshLayout mSwipeRefreshLayout;
 
     // The Tab where the swipe occurs.
-    private final ArkTabImpl mTab;
+    private ArkTabImpl mTab;
 
     private EmptyTabObserver mTabObserver;
-
-    // The container view the SwipeRefreshHandler instance is currently
-    // associated with.
-    private ViewGroup mContainerView;
 
     // Async runnable for ending the refresh animation after the page first
     // loads a frame. This is used to provide a reasonable minimum animation time.
@@ -78,76 +65,20 @@ public class ArkSwipeRefreshHandler
 
     private boolean mNavigateForward;
 
-    public static ArkSwipeRefreshHandler from(ArkTabImpl tab) {
-        ArkSwipeRefreshHandler handler = get(tab);
-        if (handler == null) {
-            handler =
-                    tab.getUserDataHost().setUserData(USER_DATA_KEY, new ArkSwipeRefreshHandler(tab));
-        }
-        return handler;
-    }
+    private Boolean mIncognito;
 
-    @Nullable
-    public static ArkSwipeRefreshHandler get(Tab tab) {
-        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
-    }
-
-    /**
-     * Simple constructor to use when creating an OverscrollRefresh instance from code.
-     *
-     * @param tab The Tab where the swipe occurs.
-     */
-    private ArkSwipeRefreshHandler(ArkTabImpl tab) {
-        super(tab);
-        mTab = tab;
-        mTabObserver = new EmptyTabObserver() {
-//            @Override
-//            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-//                if (window == null && mSwipeRefreshLayout != null) {
-//                    cancelStopRefreshingRunnable();
-//                    detachSwipeRefreshLayoutIfNecessary();
-//                    mSwipeRefreshLayout.setOnRefreshListener(null);
-//                    mSwipeRefreshLayout.setOnResetListener(null);
-//                    mSwipeRefreshLayout = null;
-//                }
-//            }
-
-            @Override
-            public void onDetachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
-                if (mSwipeRefreshLayout != null) {
-                    cancelStopRefreshingRunnable();
-                    detachSwipeRefreshLayoutIfNecessary();
-                    mSwipeRefreshLayout.setOnRefreshListener(null);
-                    mSwipeRefreshLayout.setOnResetListener(null);
-                    mSwipeRefreshLayout = null;
-                }
-            }
-        };
-        mTab.addObserver(mTabObserver);
-    }
-
-    private void initSwipeRefreshLayout(final Context context) {
-        mSwipeRefreshLayout = new SwipeRefreshLayout(context);
-        mSwipeRefreshLayout.setLayoutParams(
-                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        final boolean incognito = mTab.isIncognito();
-        final @ColorInt int backgroundColor = incognito
-                ? context.getResources().getColor(R.color.default_bg_color_dark_elev_2_baseline)
-                : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
-        mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
-        final @ColorInt int iconColor = incognito
-                ? context.getResources().getColor(R.color.default_icon_color_blue_light)
-                : SkinEngine.getColor(context, R.attr.colorAccent);
-        mSwipeRefreshLayout.setColorSchemeColors(iconColor);
-        if (mContainerView != null) mSwipeRefreshLayout.setEnabled(true);
-
+    public ArkSwipeRefreshHandler(@NonNull SwipeRefreshLayout swipeRefreshLayout) {
+        mSwipeRefreshLayout = swipeRefreshLayout;
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            if (mTab == null) {
+                return;
+            }
             cancelStopRefreshingRunnable();
             PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, getStopRefreshingRunnable(),
                     MAX_REFRESH_ANIMATION_DURATION_MS);
             if (mAccessibilityRefreshString == null) {
                 int resId = R.string.accessibility_swipe_refresh;
-                mAccessibilityRefreshString = context.getResources().getString(resId);
+                mAccessibilityRefreshString = swipeRefreshLayout.getResources().getString(resId);
             }
             mSwipeRefreshLayout.announceForAccessibility(mAccessibilityRefreshString);
             mTab.reload();
@@ -157,60 +88,31 @@ public class ArkSwipeRefreshHandler
             if (mDetachRefreshLayoutRunnable != null) return;
             mDetachRefreshLayoutRunnable = () -> {
                 mDetachRefreshLayoutRunnable = null;
-                detachSwipeRefreshLayoutIfNecessary();
+                cancelDetachLayoutRunnable();
             };
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, mDetachRefreshLayoutRunnable);
         });
     }
 
-    private void initNavigation(Context context) {
-
+    public ArkTabImpl getTab() {
+        return mTab;
     }
 
-    @SuppressLint("NewApi")
-    @Override
-    public void initWebContents(ArkWebContents arkWeb) {
-        if (mTab.getWindowAndroid() == null) {
+    public void setTab(ArkTabImpl tab) {
+        if (mTab == tab) {
             return;
         }
-        arkWeb.getWebContents().setOverscrollRefreshHandler(this);
-        mContainerView = mTab.getContentView();
-        setEnabled(true);
+        mTab = tab;
     }
 
-    @Override
-    public void onAttachToWindowAndroid(@NonNull WindowAndroid windowAndroid) {
-        ArkWebContents arkWeb = mTab.getArkWeb();
-        if (arkWeb == null) {
-            return;
+    public void destroy() {
+        if (mTab != null) {
+            mTab = null;
         }
-        initWebContents(arkWeb);
-    }
-
-    @Override
-    public void onDetachToWindowAndroid() {
-        ArkWebContents arkWeb = mTab.getArkWeb();
-        if (arkWeb == null) {
-            return;
-        }
-        cleanupWebContents(arkWeb);
-    }
-
-    @SuppressLint("NewApi")
-    @Override
-    public void cleanupWebContents(ArkWebContents arkWeb) {
-        arkWeb.getWebContents().setOverscrollRefreshHandler(null);
-        detachSwipeRefreshLayoutIfNecessary();
-        mContainerView = null;
-        setEnabled(false);
-    }
-
-    @Override
-    public void destroyInternal() {
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.setOnRefreshListener(null);
-            mSwipeRefreshLayout.setOnResetListener(null);
-        }
+        cancelStopRefreshingRunnable();
+        cancelDetachLayoutRunnable();
+        mSwipeRefreshLayout.setOnRefreshListener(null);
+        mSwipeRefreshLayout.setOnResetListener(null);
     }
 
     /**
@@ -219,7 +121,7 @@ public class ArkSwipeRefreshHandler
      * visiblity of the animation.
      */
     public void didStopRefreshing() {
-        if (mSwipeRefreshLayout == null || !mSwipeRefreshLayout.isRefreshing()) return;
+        if (!mSwipeRefreshLayout.isRefreshing()) return;
         cancelStopRefreshingRunnable();
         mSwipeRefreshLayout.postDelayed(
                 getStopRefreshingRunnable(), STOP_REFRESH_ANIMATION_DELAY_MS);
@@ -228,15 +130,17 @@ public class ArkSwipeRefreshHandler
     @Override
     public boolean start(
             @OverscrollAction int type, float startX, float startY, boolean navigateForward) {
+        if (mTab == null) {
+            return false;
+        }
         mSwipeType = type;
         if (type == OverscrollAction.PULL_TO_REFRESH) {
-            if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
-            attachSwipeRefreshLayoutIfNecessary();
+            initRefreshLayoutStyle(mTab.isIncognito());
+            cancelDetachLayoutRunnable();
             return mSwipeRefreshLayout.start();
         } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
-
-            if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
-            attachSwipeRefreshLayoutIfNecessary();
+            initRefreshLayoutStyle(mTab.isIncognito());
+            cancelDetachLayoutRunnable();
             if (!mSwipeRefreshLayout.start()) {
                 return false;
             }
@@ -298,13 +202,28 @@ public class ArkSwipeRefreshHandler
     @Override
     public void reset() {
         cancelStopRefreshingRunnable();
-        if (mSwipeRefreshLayout != null) mSwipeRefreshLayout.reset();
+        mSwipeRefreshLayout.reset();
         // TODO navigation reset
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         if (!enabled) reset();
+    }
+
+    private void initRefreshLayoutStyle(boolean incognito) {
+        if (mIncognito == null || mIncognito != incognito) {
+            mIncognito = incognito;
+            Context context = mSwipeRefreshLayout.getContext();
+            final @ColorInt int backgroundColor = incognito
+                    ? context.getResources().getColor(R.color.default_bg_color_dark_elev_2_baseline)
+                    : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
+            mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
+            final @ColorInt int iconColor = incognito
+                    ? context.getResources().getColor(R.color.default_icon_color_blue_light)
+                    : SkinEngine.getColor(context, R.attr.colorAccent);
+            mSwipeRefreshLayout.setColorSchemeColors(iconColor);
+        }
     }
 
     private void cancelStopRefreshingRunnable() {
@@ -323,28 +242,10 @@ public class ArkSwipeRefreshHandler
     private Runnable getStopRefreshingRunnable() {
         if (mStopRefreshingRunnable == null) {
             mStopRefreshingRunnable = () -> {
-                if (mSwipeRefreshLayout != null) {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
+                mSwipeRefreshLayout.setRefreshing(false);
             };
         }
         return mStopRefreshingRunnable;
     }
 
-    // The animation view is attached/detached on-demand to minimize overlap
-    // with composited SurfaceView content.
-    private void attachSwipeRefreshLayoutIfNecessary() {
-        cancelDetachLayoutRunnable();
-        if (mSwipeRefreshLayout.getParent() == null) {
-            mContainerView.addView(mSwipeRefreshLayout);
-        }
-    }
-
-    private void detachSwipeRefreshLayoutIfNecessary() {
-        if (mSwipeRefreshLayout == null) return;
-        cancelDetachLayoutRunnable();
-        if (mSwipeRefreshLayout.getParent() != null) {
-            mContainerView.removeView(mSwipeRefreshLayout);
-        }
-    }
 }

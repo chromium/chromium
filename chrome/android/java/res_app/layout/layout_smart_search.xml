@@ -76,7 +76,7 @@
             android:background="#F9FAFC"
             android:orientation="vertical">
 
-            <com.ark.browser.ArkCompositorViewHolder
+            <com.ark.browser.core.ArkCompositorViewHolder
                 android:id="@+id/my_compositor_view_holder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

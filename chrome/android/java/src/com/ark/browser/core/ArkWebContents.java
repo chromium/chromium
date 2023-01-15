@@ -259,8 +259,11 @@ public class ArkWebContents {
         ViewAndroidDelegate delegate;
         if (cv == null) {
             delegate = ViewAndroidDelegate.createBasicDelegate(/* containerView */ null);
+            mWebContents.setOverscrollRefreshHandler(null);
         } else {
             delegate = new ArkTabViewAndroidDelegate(tab, cv);
+            mWebContents.setOverscrollRefreshHandler(tab.getWindowAndroid()
+                    .getCompositorViewHolder().getSwipeRefreshHandler());
         }
         mWebContents.initialize(VersionInfo.getProductVersion(),
                 delegate, cv, tab.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
@@ -271,6 +274,7 @@ public class ArkWebContents {
     public void detach(ArkTabImpl tab) {
         setImportance(ChildProcessImportance.NORMAL);
         WebContentsAccessibility.fromWebContents(mWebContents).setObscuredByAnotherView(false);
+        mWebContents.setOverscrollRefreshHandler(null);
     }
 
 //    public void destroy() {

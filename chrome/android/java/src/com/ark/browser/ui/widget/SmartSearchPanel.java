@@ -17,9 +17,9 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ViewDragHelper;
 
-import com.ark.browser.ArkCompositorViewHolder;
-import com.ark.browser.ArkNavigationHandler;
-import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.core.ArkCompositorViewHolder;
+import com.ark.browser.core.ArkNavigationHandler;
+import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.EmptyTabInfoObserver;
 import com.ark.browser.tab.TabCacheManager;

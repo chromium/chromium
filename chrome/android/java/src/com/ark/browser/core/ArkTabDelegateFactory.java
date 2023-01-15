@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package com.ark.browser;
+package com.ark.browser.core;
 
 import com.ark.browser.tab.ArkExternalNavigationDelegateImpl;
 import com.ark.browser.tab.ArkTabStateBrowserControlsVisibilityDelegate;
@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;

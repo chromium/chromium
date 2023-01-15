@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package com.ark.browser;
+package com.ark.browser.core;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,9 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
-import com.ark.browser.tab.ArkSwipeRefreshHandler;
+import com.ark.browser.core.ArkCompositorViewHolder;
+import com.ark.browser.core.utils.PolicyAuditor;
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.TabListManager;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ActivityState;
@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.PictureInPicture;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
-import com.ark.browser.core.utils.PolicyAuditor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,6 +42,7 @@ import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -95,8 +95,14 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
         // When the dialog is visible, keeping the refresh animation active
         // in the background is distracting and unnecessary (and likely to
         // jank when the dialog is shown).
-        ArkSwipeRefreshHandler handler = ArkSwipeRefreshHandler.get(mTab);
-        if (handler != null) handler.reset();
+
+        if (mCompositorViewHolderSupplier.hasValue()) {
+            OverscrollRefreshHandler refreshHandler =
+                    mCompositorViewHolderSupplier.get().getSwipeRefreshHandler();
+            if (refreshHandler != null) {
+                refreshHandler.reset();
+            }
+        }
 
         showRepostFormWarningTabModalDialog();
     }

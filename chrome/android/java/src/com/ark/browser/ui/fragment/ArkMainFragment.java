@@ -5,7 +5,6 @@ import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS
 import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
@@ -18,9 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.ark.browser.ArkCompositorViewHolder;
-import com.ark.browser.ArkNavigationHandler;
-import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.core.ArkCompositorViewHolder;
+import com.ark.browser.core.ArkNavigationHandler;
+import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.event.LoadUrlEvent;
@@ -36,7 +35,6 @@ import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 import com.zpj.bus.ZBus;
 import com.zpj.fragmentation.dialog.ZDialog;
-import com.zpj.toast.ZToast;
 import com.zpj.utils.FileUtils;
 
 import org.chromium.base.Callback;
@@ -72,7 +70,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 public class ArkMainFragment extends BaseFragment implements

@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.ViewCompat;
 
+import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.TabCacheManager;

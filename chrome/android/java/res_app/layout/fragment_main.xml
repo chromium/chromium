@@ -31,7 +31,7 @@
             android:layout_weight="1"
             >
 
-            <com.ark.browser.ArkCompositorViewHolder
+            <com.ark.browser.core.ArkCompositorViewHolder
                 android:id="@+id/compositor_view_holder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

@@ -19,7 +19,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.ArkBrowserActivity;
-import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.UserAgentManager;

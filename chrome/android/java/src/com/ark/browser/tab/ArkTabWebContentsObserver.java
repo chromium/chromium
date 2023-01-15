@@ -334,11 +334,11 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
                 }
             }
 
-            if (navigation.isInPrimaryMainFrame()) {
-                // Stop swipe-to-refresh animation.
-                ArkSwipeRefreshHandler handler = ArkSwipeRefreshHandler.get(mTab);
-                if (handler != null) handler.didStopRefreshing();
-            }
+//            if (navigation.isInPrimaryMainFrame()) {
+//                // Stop swipe-to-refresh animation.
+//                ArkSwipeRefreshHandler handler = ArkSwipeRefreshHandler.get(mTab);
+//                if (handler != null) handler.didStopRefreshing();
+//            }
         }
 
         @Override

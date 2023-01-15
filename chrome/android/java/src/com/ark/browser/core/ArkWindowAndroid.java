@@ -1,4 +1,4 @@
-package com.ark.browser;
+package com.ark.browser.core;
 
 import android.content.Context;
 

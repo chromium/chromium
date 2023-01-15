@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package com.ark.browser;
+package com.ark.browser.core;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -42,14 +42,14 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.ark.browser.core.ArkContentView;
+import com.ark.browser.tab.ArkSwipeRefreshHandler;
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.ArkTabViewAndroidDelegate;
 import com.ark.browser.tab.ArkTabWebContentsObserver;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.dao.ArkTabStore;
 import com.ark.browser.ui.dialog.SmartSearchPopupWindow;
 import com.ark.browser.ui.widget.SmartSearchPanel;
+import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Consumer;
@@ -85,11 +85,13 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content.browser.selection.FloatingActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
@@ -241,8 +243,18 @@ public class ArkCompositorViewHolder extends FrameLayout
             mTabStore.addTabToSaveQueue(((ArkTabImpl) tab).getArkWeb());
         }
 
+        @Override
+        public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
+            if (tab != mSwipeRefreshHandler.getTab()) {
+                return;
+            }
+            if (navigationHandle.isInPrimaryMainFrame()) {
+                mSwipeRefreshHandler.didStopRefreshing();
+            }
+        }
     };
 
+    private final ArkSwipeRefreshHandler mSwipeRefreshHandler;
 
     private EventOffsetHandler mEventOffsetHandler;
     private boolean mIsKeyboardShowing;
@@ -387,6 +399,10 @@ public class ArkCompositorViewHolder extends FrameLayout
         internalInit();
         mContentView = ArkContentView.createContentView(c, null);
         initContentView();
+
+        SwipeRefreshLayout swipeRefreshLayout = new SwipeRefreshLayout(c);
+        addView(swipeRefreshLayout, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mSwipeRefreshHandler = new ArkSwipeRefreshHandler(swipeRefreshLayout);
     }
 
     /**
@@ -400,6 +416,11 @@ public class ArkCompositorViewHolder extends FrameLayout
         internalInit();
         mContentView = ArkContentView.createContentView(c, null);
         initContentView();
+
+
+        SwipeRefreshLayout swipeRefreshLayout = new SwipeRefreshLayout(c);
+        addView(swipeRefreshLayout, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mSwipeRefreshHandler = new ArkSwipeRefreshHandler(swipeRefreshLayout);
     }
 
     private void initContentView() {
@@ -643,6 +664,8 @@ public class ArkCompositorViewHolder extends FrameLayout
             mTabContentManager = null;
         }
 
+        mSwipeRefreshHandler.destroy();
+
         if (mCallback != null) {
             mCallback.onShutDown();
         }
@@ -825,6 +848,10 @@ public class ArkCompositorViewHolder extends FrameLayout
     @Nullable
     public ContentView getContentView() {
         return mContentView;
+    }
+
+    public OverscrollRefreshHandler getSwipeRefreshHandler() {
+        return mSwipeRefreshHandler;
     }
 
     protected WebContents getWebContents() {
@@ -1631,6 +1658,7 @@ public class ArkCompositorViewHolder extends FrameLayout
             }
         }
 
+        mSwipeRefreshHandler.setTab((ArkTabImpl) mTabVisible);
         if (mTabVisible != null) {
             mContentView.setWebContents(mTabVisible.getWebContents());
             mTabVisible.loadIfNeeded();

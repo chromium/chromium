@@ -6,7 +6,6 @@ import android.util.SparseBooleanArray;
 import androidx.annotation.Nullable;
 import androidx.core.util.AtomicFile;
 
-import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.core.TabGroupImpl;
 import com.ark.browser.utils.ArkLogger;
@@ -14,15 +13,12 @@ import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
-import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
-import org.chromium.base.task.TaskRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.ByteArrayInputStream;

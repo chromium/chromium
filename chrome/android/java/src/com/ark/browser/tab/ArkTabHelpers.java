@@ -54,7 +54,7 @@ public final class ArkTabHelpers {
         InfoBarContainer.from(tab);
 
         ArkTabWebContentsObserver.from(tab);
-        ArkSwipeRefreshHandler.from(tab);
+//        ArkSwipeRefreshHandler.from(tab);
         TabFavicon.from(tab);
         TrustedCdn.from(tab);
 //        TabAssociatedApp.from(tab);

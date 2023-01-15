@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.ark.browser.ArkBrowserActivity;
-import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.core.ArkWindowAndroid;
 import com.zpj.fragmentation.SimpleFragment;
 import com.zpj.fragmentation.swipeback.SwipeBackLayout;
 import com.zpj.widget.toolbar.ZToolBar;
