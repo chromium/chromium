@@ -21,6 +21,7 @@
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1446450296470737166">Tillåt fullst. kontroll av MIDI</translation>
 <translation id="1448064542941920355">Minska zoom</translation>
+<translation id="1547123415014299762">Tredjepartscookies tillåts</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Relaterade webbplatser</translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -350,6 +351,7 @@
 <translation id="8042586301629853791">Sortera efter:</translation>
 <translation id="8067883171444229417">Spela upp video</translation>
 <translation id="8068648041423924542">Det går inte att välja certifikat.</translation>
+<translation id="8077120325605624147">Alla webbplatser du besöker kan visa alla annonser för dig</translation>
 <translation id="8087000398470557479">Innehållet kommer från <ph name="DOMAIN_NAME" /> via Google.</translation>
 <translation id="8116925261070264013">Ljudet avstängt</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
@@ -387,6 +389,7 @@
 <translation id="857943718398505171">Tillåten (rekommenderas)</translation>
 <translation id="8609465669617005112">Flytta upp</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
+<translation id="8681886425883659911">Annonser blockeras på webbplatser som är kända för att visa påträngande eller vilseledande annonser</translation>
 <translation id="868929229000858085">Sök bland kontakterna</translation>
 <translation id="8702612070107455751">All offlinedata raderas.</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
@@ -399,6 +402,7 @@
 <translation id="8816026460808729765">Blockera webbplatser från att använda enhetens sensorer</translation>
 <translation id="8823559166155093873">Blockera cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">Påträngande annonser</translation>
 <translation id="8903921497873541725">Zooma in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC är inte aktiverat på enheten. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>

@@ -56,6 +56,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
+<translation id="1273937721055267968">Bloker <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tryk for at udvide</translation>
 <translation id="1285310382777185058">Skift sprog</translation>
 <translation id="1291207594882862231">Ryd historik, cookies, websitedata, cache...</translation>
@@ -224,6 +225,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="223356358902285214">Web- og appaktivitet</translation>
 <translation id="2239812875700136898">Administrer dine historier ved hjælp af knappen Indstillinger for Discover</translation>
 <translation id="2248941474044011069">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangskodeadministrator</translation>
+<translation id="2249635629516220541">Tilpas de oplysninger, som websites kan bruge til at vise dig annoncer</translation>
 <translation id="2259659629660284697">Eksportér adgangskoder…</translation>
 <translation id="2276231040576210443">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK1" />indstillingerne<ph name="END_LINK1" />. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="2276696007612801991">Log ind på din Google-konto for at tjekke dine adgangskoder</translation>
@@ -289,6 +291,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2625189173221582860">Adgangskoden er kopieret</translation>
 <translation id="2642087927315268160">Loginfeltet i bunden er lukket.</translation>
+<translation id="2643064289437760082">Du kan til enhver tid slette data om annoncemåling ved at slette dine browserdata</translation>
 <translation id="2647434099613338025">Tilføj sprog</translation>
 <translation id="2649068648233607930">Din browser administreres af <ph name="DOMAIN" /></translation>
 <translation id="2650348088770008516">Beskrivelsen af Privatlivsguide er lukket</translation>
@@ -372,6 +375,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjælp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Der holdes øje med prisen</translation>
 <translation id="3037517125981011456">Viser anmodninger om at logge ind i Chrome</translation>
+<translation id="3038272154009688107">Se alle websites</translation>
 <translation id="3046945242843292318">Nå hurtigere frem til dette website næste gang</translation>
 <translation id="3055113921564083271">Interesser, du har fjernet</translation>
 <translation id="3055259925215945098">Bogmærket blev flyttet</translation>
@@ -421,6 +425,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3285080554353377245">Videoer om, hvordan du bruger Chrome</translation>
 <translation id="3290249595466894471">Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler</translation>
+<translation id="3293181007446299124">Din browserhistorik holdes privat på din enhed, og rapporter sendes med forsinkelse for at beskytte din identitet</translation>
 <translation id="3297344142967351106">Stemmesøgning</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
 <translation id="3305795716056605962">Oversæt sider via knappen Flere valgmuligheder</translation>
@@ -532,6 +537,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="397583555483684758">Synkroniseringen fungerer ikke mere</translation>
 <translation id="3976396876660209797">Fjern og genskab denne genvej</translation>
 <translation id="3981902534690264083">Annoncører kan få indblik i, hvordan annoncer klarer sig</translation>
+<translation id="3985022125189960801">Du kan tilføje et website igen, hvis du vil have det i samlingen af websites, der kan foretage en vurdering af, hvad du kan lide</translation>
 <translation id="3985215325736559418">Vil du downloade <ph name="FILE_NAME" /> igen?</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
 <translation id="3999683152997576765">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chrome estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
@@ -596,6 +602,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="433213510553688132">Følger...</translation>
 <translation id="4335835283689002019">Beskyttet browsing er slået fra</translation>
 <translation id="4351244548802238354">Luk dialogboksen</translation>
+<translation id="4369735607080757018">Begrænsede typer af data deles mellem websites for at måle effektiviteten af deres annoncer, f.eks. hvilket tidspunkt på dagen du fik vist en annonce</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Del kun kort</translation>
 <translation id="4384468725000734951">Søgning via Sogou</translation>
@@ -619,6 +626,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="4504667196171871375">Via Wi-Fi og mobildata</translation>
 <translation id="4508528996305412043">Feedkortmenuen er åbnet</translation>
 <translation id="4508642716788467538">Vælg dit sprog</translation>
+<translation id="4509501256689523862">Om de annoncer, du ser på nettet, er tilpassede, afhænger af denne indstilling for <ph name="BEGIN_LINK_1" />annonceemner<ph name="END_LINK_1" />, dine <ph name="BEGIN_LINK_2" />cookieindstillinger<ph name="END_LINK_2" />, og om det website, du besøger, tilpasser annoncer.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{For 1 dag siden}one{For # dag siden}other{For # dage siden}}</translation>
 <translation id="451872707440238414">Søg i dine bogmærker</translation>
 <translation id="4521489764227272523">De valgte data er fjernet fra Chrome og synkroniserede enheder.
@@ -646,6 +654,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4662373422909645029">Kaldenavnet må ikke indeholde tal</translation>
 <translation id="4663499661119906179">Se dine websites og anbefalede artikler</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bogmærker blev slettet</translation>
+<translation id="4668279686271488041">Annoncemålingsdata slettes regelmæssigt fra din enhed</translation>
 <translation id="4668347365065281350">Alle data, der gemmes af websites, bl.a. cookies og andre data, der er gemt lokalt</translation>
 <translation id="4678082183394354975">Mørkt tema på websites er aktiveret i Chrome</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
@@ -737,6 +746,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5091199029769593641">Du får snart vist historier fra <ph name="SITE_NAME" />, når du åbner en ny fane. De websites, du følger, gemmes på din Google-konto. Du kan administrere dem i indstillingerne for Discover.</translation>
 <translation id="5091249083535528968">Udvidede brugsdata</translation>
 <translation id="509429900233858213">Der opstod en fejl.</translation>
+<translation id="5097349930204431044">De websites, du besøger, kan foretage en vurdering af, hvad du kan lide, og derefter foreslå annoncer, når du fortsætter med at browse</translation>
 <translation id="5099845111805573968">Når du vælger et computerwebsite én gang, anvendes indstillingen på websitet, hver gang du besøger det</translation>
 <translation id="5102401324271069229">Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing</translation>
 <translation id="510275257476243843">1 time tilbage</translation>
@@ -1031,6 +1041,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6659594942844771486">Fane</translation>
 <translation id="666731172850799929">Åbn i <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Kopiér billede</translation>
+<translation id="6672917148207387131">Tilføj <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Angiv din adgangssætning for at starte synkroniseringen</translation>
 <translation id="6676840375528380067">Vil du rydde dine Chrome-data på denne enhed?</translation>
 <translation id="6676927815633975364">Log ind på dette website og Chrome</translation>
@@ -1043,6 +1054,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6737612727720318154">Tillad en interesse eller et website, hvis du mener, at annoncer, der er relateret til interessen, ville være nyttige for dig</translation>
 <translation id="6738516213925468394">Dine data blev krypteret med din <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Indtast adgangssætningen for at starte synkroniseringen.</translation>
 <translation id="6738867403308150051">Downloader…</translation>
+<translation id="674388916582496364">Det er almindeligt, at de websites, du besøger, husker ting, du er interesseret i, så din oplevelse tilpasses. Websites kan også gemme oplysninger med Chrome om dine interesser.</translation>
 <translation id="6751521182688001123">Åbn hurtigt en ny fane. Hold fingeren på genvejen for at redigere.</translation>
 <translation id="6756507620369789050">Del feedback</translation>
 <translation id="6767294960381293877">Åben liste i halv højde over enheder, der skal deles en fane med.</translation>
@@ -1086,6 +1098,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6963766334940102469">Slet bogmærker</translation>
 <translation id="696447261358045621">Forlad inkognitotilstand</translation>
 <translation id="6971862865055170158">Godkend ikke</translation>
+<translation id="6978717888677691380">Websites, du har blokeret</translation>
 <translation id="6979737339423435258">Altid</translation>
 <translation id="6987047470128880212">Inkognitofaner er ikke tilgængelige på denne enhed</translation>
 <translation id="6995899638241819463">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
@@ -1130,6 +1143,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7242755609445462077">Stiliseret note <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Sørg for, at synkronisering er aktiveret i Chrome på <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Placer din telefon tæt på computeren</translation>
+<translation id="7260367682327802201">Din Android-enhed har muligvis en lignende indstilling. Hvis annoncemåling er aktiveret i Chrome og på din Android-enhed, kan en virksomhed måle effektiviteten af en annonce på de websites, du besøger, og i de apps, du bruger.</translation>
 <translation id="727288900855680735">Vil du angive <ph name="ONE_TIME_CODE" /> på <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blokeret website</translation>
 <translation id="7286572596625053347">Vil du skifte til et andet sprog end <ph name="LANGUAGE" />?</translation>
@@ -1210,6 +1224,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="766587987807204883">Her vises artikler, som du kan læse, selv når du er offline</translation>
 <translation id="768232549260819724">Giffen er kopieret</translation>
 <translation id="7682724950699840886">Prøv følgende tips: Sørg for, at der er nok ledig plads på din enhed, og prøv at eksportere igen.</translation>
+<translation id="7686086654630106285">Mere om foreslåede annoncer fra websites</translation>
 <translation id="768618399695552958">Nogle af de sider, du besøger, forudindlæses. Nogle sider forudindlæses muligvis via Google-servere, når de er linket fra et Google-website.</translation>
 <translation id="7698359219371678927">Opret mail i <ph name="APP_NAME" /></translation>
 <translation id="7704317875155739195">Autofuldfør søgninger og webadresser</translation>
@@ -1378,6 +1393,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8540136935098276800">Angiv en webadresse i korrekt format</translation>
 <translation id="854522910157234410">Åbn denne side</translation>
 <translation id="8551513938758868521">Lås inkognitofaner, når du lukker Chrome</translation>
+<translation id="8559961053328923750">Chrome begrænser den samlede mængde data, som websites kan dele via browseren for at måle effektiviteten af annoncer</translation>
 <translation id="8559990750235505898">Tilbyd at oversætte sider på andre sprog</translation>
 <translation id="8560602726703398413">Se din læseliste under Bogmærker</translation>
 <translation id="8562452229998620586">Dine gemte adgangskoder vises her.</translation>
@@ -1418,6 +1434,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8773160212632396039">Behandler anmodning</translation>
 <translation id="8788265440806329501">Navigationsoversigt er lukket</translation>
 <translation id="8788968922598763114">Åbn den senest lukkede fane igen</translation>
+<translation id="879027982257117598">Hvis du f.eks. besøger et website, der sælger løbesko til langdistanceløb, kan websitet estimere, at du er interesseret i at løbe maraton. Hvis du derefter besøger et andet website, kan det pågældende website vise dig en annonce for løbesko, som foreslås af det første website.</translation>
 <translation id="8798449543960971550">Læst</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8805097383171548551">Hvis du vil scanne en QR-kode, skal du bruge en enhed med et kamera.</translation>
@@ -1460,6 +1477,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>
 <translation id="8998729206196772491">Du er ved at logge ind med en konto, der administreres af <ph name="MANAGED_DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>
+<translation id="9022871169049522985">Websites og annoncører kan måle effektiviteten af deres annoncer</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video}other{# videoer}}</translation>
 <translation id="9042893549633094279">Sikkerhed og privatliv</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>
@@ -1481,11 +1499,13 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="9108312223223904744">Understøttelse af telefonen som en sikkerhedsnøgle</translation>
 <translation id="9108808586816295166">Sikre DNS-servere er muligvis ikke altid tilgængelige</translation>
 <translation id="9128984223251192329">Privacy Sandbox-meddelelsen er åbnet i halv højde</translation>
+<translation id="9131209053278896908">Blokerede websites vises her</translation>
 <translation id="9133397713400217035">Udforsk offline</translation>
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9158770349521403363">Del kun indhold</translation>
 <translation id="9159716826369098114">Gendan fanegruppen med <ph name="TAB_COUNT" /> faner som en ny fanegruppe i baggrunden.</translation>
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
+<translation id="9183331776983279456">Chrome sletter automatisk websites, der er mere end 4 uger gamle. Et website, du besøger igen, kan blive dukke op på listen igen. Du kan også blokere et website, så det ikke kan foreslå annoncer til dig.</translation>
 <translation id="9190276265094487094">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tjekket for 1 minut siden}one{Tjekket for # minut siden}other{Tjekket for # minutter siden}}</translation>
 <translation id="9204836675896933765">1 fil tilbage</translation>
@@ -1507,6 +1527,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="96681097142096641">Vil du se en forenklet side?</translation>
 <translation id="968900484120156207">De sider, du besøger, vises her</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter tilbage</translation>
+<translation id="978317418833355355">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 4 uger gamle. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Luk alle faner</translation>
 <translation id="987264212798334818">Generelt</translation>

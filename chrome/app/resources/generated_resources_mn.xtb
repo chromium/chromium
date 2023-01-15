@@ -45,6 +45,7 @@
 <translation id="1041175011127912238">Энэ хуудас хариу өгөхгүй байна</translation>
 <translation id="1041263367839475438">Боломжтой байгаа төхөөрөмжүүд</translation>
 <translation id="1042174272890264476">Таны компьютер мөн <ph name="SHORT_PRODUCT_NAME" />-ын RLZ программын мэдээллийн сантай байдаг.  RLZ нь тодорхой кампанит ажлаар удирдуулсан хайлтууд болон <ph name="SHORT_PRODUCT_NAME" />-ын хэрэглээг хэмжих онцгой бус, мөн хувийн бус, тодорхойлох боломжтой цонхнуудыг ажиллуулдаг. Эдгээр хаягууд нь заримдаа <ph name="PRODUCT_NAME" /> дахь Google Хайлтын асуултуудад харагддаг.</translation>
+<translation id="1042248468362992359">Сүлжээний цэг ашиглахын тулд мобайл датад холбогдоно уу. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">Алдаа гарлаа. Linux-г зөвхөн хэсэгчлэн сайжруулж болно. Дэлгэрэнгүй мэдээлэл авах бол логийг шалгана уу. Логийг Файлс &gt; Миний файлууд &gt; <ph name="LOG_FILE" />-д хадгалсан</translation>
 <translation id="104419033123549300">Гарын товчлууруудын байрлалын загвар</translation>
 <translation id="104710386808485638">Linux-г дахин эхлүүлэх үү?</translation>
@@ -158,6 +159,7 @@
 <translation id="1139923033416533844">Санах ойн ашиглалт</translation>
 <translation id="1140351953533677694">Bluetooth болон Цуваа төхөөрөмжүүд рүүгээ нэвтэр</translation>
 <translation id="114036956334641753">Аудио болон хадмал</translation>
+<translation id="1141949282671776404">Энэ таб идэвхгүй байхад Санах ой хэмнэгч бусад ажилд зориулж <ph name="MEMORY_VALUE" />-н санах ойг чөлөөлсөн.</translation>
 <translation id="1142002900084379065">Саяхны зургууд</translation>
 <translation id="1143142264369994168">Сертификат баталгаажуулагч</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome таны компьютероос хортой программ хангамж олсонгүй • 1 минутын өмнө шалгасан}other{Chrome таны компьютероос хортой программ хангамж олсонгүй • {NUM_MINS} минутын өмнө шалгасан}}</translation>
@@ -317,6 +319,7 @@
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
 <translation id="1285484354230578868">Google Drive дансандаа дата хадгалах</translation>
 <translation id="1285625592773741684">Дата ашиглалтын одоогийн тохиргоо нь Мобайл дата байна</translation>
+<translation id="1285815028662278915">Таны мобайл дата сүлжээний цэг дэмждэггүй байж магадгүй. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Нар жаргахад шөнийн гэрэл автоматаар асна</translation>
 <translation id="1288300545283011870">Ярианы төлөв байдал</translation>
 <translation id="1289619947962767206">Энэ сонголтыг цаашид дэмжихээ больсон. Табыг үзүүлэхийн тулд <ph name="GOOGLE_MEET" />-г ашиглана уу.</translation>
@@ -650,6 +653,7 @@
 <translation id="1596286373007273895">Боломжтой</translation>
 <translation id="1596709061955594992">Bluetooth унтраалттай байна. Боломжтой төхөөрөмжүүдийг харахын тулд Bluetooth-г асаана уу.</translation>
 <translation id="1596780725094407793">- дэд домэйн багтана</translation>
+<translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" />-г <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р ашиглаарай</translation>
 <translation id="1598233202702788831">Таны админ шинэчлэлтийг идэвхгүй болгосон.</translation>
 <translation id="1600857548979126453">Хуудасны алдаа засах арын дэвсгэр лүү нэвтрэх</translation>
 <translation id="1601560923496285236">Ашиглах</translation>
@@ -1236,6 +1240,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" />  Уг явцын үеэр системийг дахин асаана.</translation>
 <translation id="2095774564753225041">Дэмжигдсэн файлын төрлүүд</translation>
+<translation id="2097616539631531348">Энэ таб идэвхгүй байхад Санах ой хэмнэгч бусад ажилд зориулж санах ойг чөлөөлсөн.</translation>
 <translation id="2098805196501063469">Үлдсэн нууц үгнүүдийг шалгах</translation>
 <translation id="2099686503067610784">"<ph name="CERTIFICATE_NAME" />" серверийн сертификатыг устгах уу?</translation>
 <translation id="2100273922101894616">Автоматаар нэвтэх</translation>
@@ -3379,6 +3384,7 @@
 <translation id="4040041015953651705">Орчуулах хэл</translation>
 <translation id="4040105702484676956"><ph name="SITE_NAME" /> болон түүний суулгасан аппын сайтын өгөгдөл, зөвшөөрлийг арилгах уу?</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Хуудаснаас гарах}other{Хуудаснуудаас гарах}}</translation>
+<translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> руу <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р үргэлжлүүлэх</translation>
 <translation id="4043267180218562935">Курсорын хэмжээ</translation>
 <translation id="4044612648082411741">Сертификатынхаа нууц үгийг оруулна уу</translation>
 <translation id="4044708573046946214">Дэлгэцийн түгжээний нууц үг</translation>
@@ -8338,6 +8344,7 @@
 <translation id="8674903726754070732">Харамсалтай нь таны компьютерыг алдаатай техник хангамжийн ID-р тохируулсан байна. Энэ нь ChromeOS-г хамгийн сүүлийн үеийн аюулгүй байдлын засвараар шинэчлэхээс сэргийлж байгаа бөгөөд таны компьютер <ph name="BEGIN_BOLD" />хортой дайралтуудад өртөж магадгүй<ph name="END_BOLD" />.</translation>
 <translation id="8675704450909805533">Суулгагч <ph name="DEVICE_OS" />-г суулгах хүчинтэй байршил олж чадсангүй.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Видео}other{# видео}}</translation>
+<translation id="8676276370198826499"><ph name="SITE_ETLD_PLUS_ONE" />-д <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р бүртгүүлээрэй</translation>
 <translation id="8676313779986170923">Санал хүсэлт илгээсэнд баярлалаа.</translation>
 <translation id="8676374126336081632">Оролтыг цэвэрлэх</translation>
 <translation id="8676770494376880701">Цэнэглэгчийг холбосон байна</translation>

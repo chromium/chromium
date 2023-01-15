@@ -21,6 +21,7 @@
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1446450296470737166">Tillad fuld kontrol over MIDI-enheder</translation>
 <translation id="1448064542941920355">Zoom ud</translation>
+<translation id="1547123415014299762">Tredjepartscookies er tilladt</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Relaterede websites</translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -350,6 +351,7 @@
 <translation id="8042586301629853791">Sortér efter:</translation>
 <translation id="8067883171444229417">Afspil video</translation>
 <translation id="8068648041423924542">Certifikatet kunne ikke vælges.</translation>
+<translation id="8077120325605624147">Ethvert website, du besøger, kan vise dig en hvilken som helst annonce</translation>
 <translation id="8087000398470557479">Dette indhold er fra <ph name="DOMAIN_NAME" />, som leveres af Google.</translation>
 <translation id="8116925261070264013">Websites, hvor lyden er slået fra</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
@@ -387,6 +389,7 @@
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
+<translation id="8681886425883659911">Annoncer blokeres på websites, som er kendt for at vise påtrængende eller vildledende annoncer</translation>
 <translation id="868929229000858085">Søg blandt dine kontakter</translation>
 <translation id="8702612070107455751">Alle offlinedata ryddes.</translation>
 <translation id="8712637175834984815">Forstået</translation>
@@ -399,6 +402,7 @@
 <translation id="8816026460808729765">Bloker adgang til sensorer på websites</translation>
 <translation id="8823559166155093873">Bloker cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC er deaktiveret for denne enhed. Aktivér funktionen i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>

@@ -318,6 +318,7 @@
 <translation id="4060260348856573701">Nyt adgangspunkt</translation>
 <translation id="4093865285251893588">Profilbillede</translation>
 <translation id="409427325554347132">Gem testoplysninger</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Vælg albummet <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-touchplade</translation>
 <translation id="4117637339509843559">Mørk tilstand</translation>
@@ -718,6 +719,7 @@
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Antal gennemførte cyklusser</translation>
 <translation id="7747039790905080783">Forhåndsdelt nøgle</translation>
 <translation id="7762130827864645708">Din adgangskode er ændret. Brug den nye adgangskode fremover.</translation>
@@ -801,6 +803,7 @@
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
 <translation id="8508640263392900755">Oplysninger om adgangspunkt</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="8576249514688522074">Ikke startet</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
