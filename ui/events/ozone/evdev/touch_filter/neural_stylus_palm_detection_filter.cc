@@ -601,7 +601,7 @@ bool NeuralStylusPalmDetectionFilter::
       return false;
     }
     // If the key isn't set, default to false.
-    if (value->FindKey(kOzoneNNPalmTouchCompatibleProperty) == nullptr) {
+    if (!value->GetDict().contains(kOzoneNNPalmTouchCompatibleProperty)) {
       return false;
     }
     std::string* touch_string_val =
