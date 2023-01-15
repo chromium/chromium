@@ -8,11 +8,10 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/image/image_skia.h"

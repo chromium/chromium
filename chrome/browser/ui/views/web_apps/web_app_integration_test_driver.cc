@@ -99,7 +99,6 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -131,7 +130,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #else
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif

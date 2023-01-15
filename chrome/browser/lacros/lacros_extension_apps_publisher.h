@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // This class tracks Chrome apps [i.e. extension-based apps, AKA v2 packaged

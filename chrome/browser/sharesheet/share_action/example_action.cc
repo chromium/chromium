@@ -9,7 +9,6 @@
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/components/sharesheet/constants.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace sharesheet {
 

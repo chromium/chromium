@@ -17,7 +17,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/window_open_disposition.h"

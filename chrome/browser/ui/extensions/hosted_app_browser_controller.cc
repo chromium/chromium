@@ -22,7 +22,6 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/security_state/core/security_state.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"

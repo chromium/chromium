@@ -12,7 +12,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"

@@ -22,7 +22,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 
 class GURL;
 class Profile;

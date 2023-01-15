@@ -36,7 +36,6 @@ include_rules = [
   "+components/profile_metrics",
   "+components/proxy_config",
   "+components/safe_search_api",
-  "+components/services/app_service/public/mojom/types.mojom-shared.h",
   "+components/services/heap_profiling/heap_profiling_service.h",
   "+components/services/heap_profiling/public/mojom",
   "+components/services/heap_profiling/public/cpp/settings.h",

@@ -73,7 +73,6 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
