@@ -192,10 +192,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // Returns whether anything has actually been updated.
   bool MarkInProgress(StableId id, const std::string& path);
 
- private:
   // Struct keeping track of the progress of a file being synced.
   struct Progress {
     // Path inside the Drive folder.
+    // TODO(b/265209836) Remove this field when not needed anymore.
     std::string path;
 
     // Number of bytes that have been transferred so far.

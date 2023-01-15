@@ -675,8 +675,8 @@ void DriveFsPinManager::PinSomeFiles() {
 
     // TODO(b/264932437) Use stable ID instead of path.
     VLOG(2) << "Pinning " << id << " " << Quote(path);
-    drivefs_interface_->SetPinned(
-        base::FilePath(path), true,
+    drivefs_interface_->SetPinnedByStableId(
+        static_cast<int64_t>(id), true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
                        weak_ptr_factory_.GetWeakPtr(), id, path));
 
@@ -811,9 +811,8 @@ void DriveFsPinManager::OnFilesChanged(
 
     const std::string& path = progress.path;
     VLOG(2) << "Checking changed " << id << " " << Quote(path);
-    // TODO(b/264932920) Use stable ID instead of path.
-    drivefs_interface_->GetMetadata(
-        base::FilePath(path),
+    drivefs_interface_->GetMetadataByStableId(
+        static_cast<int64_t>(id),
         base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
                        weak_ptr_factory_.GetWeakPtr(), id, path));
   }
@@ -852,9 +851,8 @@ void DriveFsPinManager::CheckUnstartedFiles() {
     if (!progress.in_progress) {
       const std::string& path = progress.path;
       VLOG(2) << "Checking unstarted " << id << " " << Quote(path);
-      // TODO(b/264932920) Use stable ID instead of path.
-      drivefs_interface_->GetMetadata(
-          base::FilePath(path),
+      drivefs_interface_->GetMetadataByStableId(
+          static_cast<int64_t>(id),
           base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
                          weak_ptr_factory_.GetWeakPtr(), id, path));
     }
