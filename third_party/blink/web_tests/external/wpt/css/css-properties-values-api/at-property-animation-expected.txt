@@ -11,5 +11,7 @@ PASS Transitioning from specified value
 PASS Transition triggered by initial value change
 PASS No transition when changing types
 FAIL No transition when removing @property rule assert_equals: expected "100px" but got " 100px"
+FAIL Unregistered properties referencing animated properties update correctly. assert_equals: expected "150px" but got " 150px"
+FAIL Registered properties referencing animated properties update correctly. assert_equals: expected "150px" but got " 150px"
 Harness: the test ran to completion.
 

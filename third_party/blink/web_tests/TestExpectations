@@ -6927,7 +6927,6 @@ crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.htt
 crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.serviceworker.html [ Failure Pass ]
 
 
-crbug.com/1406683 [ Win11 ] external/wpt/css/css-properties-values-api/at-property-animation.html [ Failure ]
 crbug.com/1406950 [ Win10.20h2 ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 
 # These tests test aspects of document.domain setting, which will (& should)
