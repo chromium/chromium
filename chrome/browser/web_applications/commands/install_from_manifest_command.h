@@ -47,11 +47,14 @@ class InstallFromManifestCommand
   // `manifest_url`: URL that the manifest content was retrieved from. Used for
   // manifest parsing.
   // `manifest_contents`: JSON string of a web app manifest to install.
+  // `expected_id`: Expected hashed App ID for the installed app. If the ID does
+  // not match, installation will abort with an error.
   // `callback`: Called when installation completes.
   InstallFromManifestCommand(webapps::WebappInstallSource install_source,
                              GURL document_url,
                              GURL manifest_url,
                              std::string manifest_contents,
+                             AppId expected_id,
                              OnceInstallCallback callback);
 
   ~InstallFromManifestCommand() override;
@@ -77,6 +80,7 @@ class InstallFromManifestCommand
   GURL document_url_;
   GURL manifest_url_;
   std::string manifest_contents_;
+  AppId expected_id_;
   OnceInstallCallback install_callback_;
 
   // SharedWebContentsLock is held while parsing the manifest.

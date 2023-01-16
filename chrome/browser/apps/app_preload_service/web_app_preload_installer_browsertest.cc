@@ -173,10 +173,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOverUserApp) {
 }
 
 // The manifest id in the proto does not match the calculated manifest id.
-// TODO(crbug.com/1402583): Disabled until InstallFromManifestCommand supports
-// checking expected ID.
 IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
-                       DISABLED_InstallMismatchedDataManifestId) {
+                       InstallMismatchedDataManifestId) {
   WebAppPreloadInstaller installer(profile());
 
   proto::AppProvisioningListAppsResponse_App app;

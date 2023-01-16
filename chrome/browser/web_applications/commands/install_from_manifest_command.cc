@@ -35,6 +35,7 @@ InstallFromManifestCommand::InstallFromManifestCommand(
     GURL document_url,
     GURL manifest_url,
     std::string manifest_contents,
+    AppId expected_id,
     OnceInstallCallback callback)
     : WebAppCommandTemplate<SharedWebContentsLock>(
           "InstallFromManifestCommand"),
@@ -42,6 +43,7 @@ InstallFromManifestCommand::InstallFromManifestCommand(
       document_url_(std::move(document_url)),
       manifest_url_(std::move(manifest_url)),
       manifest_contents_(std::move(manifest_contents)),
+      expected_id_(std::move(expected_id)),
       install_callback_(std::move(callback)),
       web_contents_lock_description_(
           std::make_unique<SharedWebContentsLockDescription>()) {}
@@ -121,6 +123,12 @@ void InstallFromManifestCommand::OnManifestParsed(
 
   AppId app_id =
       GenerateAppId(web_app_info_->manifest_id, web_app_info_->start_url);
+
+  if (app_id != expected_id_) {
+    Abort(CommandResult::kFailure,
+          webapps::InstallResultCode::kExpectedAppIdCheckFailed);
+    return;
+  }
 
   app_lock_description_ =
       command_manager()->lock_manager().UpgradeAndAcquireLock(

@@ -71,14 +71,15 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessNewInstall) {
     }
   })json";
 
+  AppId expected_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kStartUrl);
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallFromManifestCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest, result.GetCallback()));
+          kManifestUrl, kManifest, expected_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
-  EXPECT_EQ(result_id, GenerateAppId(/*manifest_id=*/absl::nullopt, kStartUrl));
+  EXPECT_EQ(result_id, expected_id);
   EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(result_id),
@@ -101,15 +102,17 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
     "name": "Test app"
   })json";
 
+  AppId expected_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, kDocumentUrl);
+
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallFromManifestCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest, result.GetCallback()));
+          kManifestUrl, kManifest, expected_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
-  EXPECT_EQ(result_id,
-            GenerateAppId(/*manifest_id=*/absl::nullopt, kDocumentUrl));
+  EXPECT_EQ(result_id, expected_id);
   EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
   EXPECT_TRUE(IsShortcutCreated(result_id, "Test app"));
 }
@@ -123,14 +126,15 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessWithManifestId) {
     "name": "Test app"
   })json";
 
+  AppId expected_id = GenerateAppId("appid", kDocumentUrl);
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallFromManifestCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest, result.GetCallback()));
+          kManifestUrl, kManifest, expected_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
-  EXPECT_EQ(result_id, GenerateAppId("appid", kDocumentUrl));
+  EXPECT_EQ(result_id, expected_id);
   EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
   EXPECT_TRUE(IsShortcutCreated(result_id, "Test app"));
 
@@ -153,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessWithExistingApp) {
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallFromManifestCommand>(
           webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
-          kManifestUrl, kManifest, result.GetCallback()));
+          kManifestUrl, kManifest, existing_id, result.GetCallback()));
 
   AppId result_id = result.Get<0>();
   EXPECT_EQ(result_id, existing_id);
@@ -176,7 +180,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidManifest) {
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallFromManifestCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest, result.GetCallback()));
+          kManifestUrl, kManifest,
+          /*expected_id=*/"", result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -194,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidStartUrl) {
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallFromManifestCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest, result.GetCallback()));
+          kManifestUrl, kManifest,
+          /*expected_id=*/"", result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -215,10 +221,34 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
   provider().command_manager().ScheduleCommand(
       std::make_unique<InstallFromManifestCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest, result.GetCallback()));
+          kManifestUrl, kManifest,
+          /*expected_id=*/"", result.GetCallback()));
 
   EXPECT_EQ(result.Get<1>(),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
+                       FailureExpectedIdMismatch) {
+  // Installation will fail because the start URL is a different origin to the
+  // document URL.
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  const char kManifest[] = R"json({
+    "start_url": "/",
+    "id": "/one",
+    "name": "Test app 2"
+  })json";
+
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+  provider().command_manager().ScheduleCommand(
+      std::make_unique<InstallFromManifestCommand>(
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
+          kManifestUrl, kManifest, GenerateAppId("/two", kDocumentUrl),
+          result.GetCallback()));
+
+  EXPECT_EQ(result.Get<1>(),
+            webapps::InstallResultCode::kExpectedAppIdCheckFailed);
 }
 
 }  // namespace web_app
