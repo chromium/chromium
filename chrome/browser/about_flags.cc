@@ -2020,6 +2020,8 @@ const FeatureEntry::FeatureVariation kFilteringPredictionFeatureVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_Immediate[] = {
     {"start_surface_return_time_seconds", "0"}};
+const FeatureEntry::FeatureParam kStartSurfaceReturnTime_10Seconds[] = {
+    {"start_surface_return_time_seconds", "10"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_1Minute[] = {
     {"start_surface_return_time_seconds", "60"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_5Minute[] = {
@@ -2029,6 +2031,8 @@ const FeatureEntry::FeatureParam kStartSurfaceReturnTime_60Minute[] = {
 const FeatureEntry::FeatureVariation kStartSurfaceReturnTimeVariations[] = {
     {"Immediate", kStartSurfaceReturnTime_Immediate,
      std::size(kStartSurfaceReturnTime_Immediate), nullptr},
+    {"10 seconds", kStartSurfaceReturnTime_10Seconds,
+     std::size(kStartSurfaceReturnTime_10Seconds), nullptr},
     {"1 minute", kStartSurfaceReturnTime_1Minute,
      std::size(kStartSurfaceReturnTime_1Minute), nullptr},
     {"5 minute", kStartSurfaceReturnTime_5Minute,
