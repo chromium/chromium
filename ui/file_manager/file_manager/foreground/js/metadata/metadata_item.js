@@ -243,5 +243,12 @@ export class MetadataItem {
      * @type {string|undefined}
      */
     this.syncStatus;
+
+    /**
+     * Represents some ongoing operation with this item. E.g., pasting, syncing.
+     * Note: currently, this is exclusively used for Drive syncing.
+     * @type {number|undefined}
+     */
+    this.progress;
   }
 }

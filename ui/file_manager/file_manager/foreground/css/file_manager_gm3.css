@@ -1272,31 +1272,38 @@ body.files-ng .thumbnail-frame > .img-container {
   position: relative;
 }
 
-body.files-ng .thumbnail-frame > .sync-status {
+#list-container.thumbnail-view .inline-status {
+  align-items: center;
+  display: none;
   height: 16px;
+  justify-content: center;
   position: absolute;
   right: 4px;
   top: 4px;
   width: 16px;
 }
 
-body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame > .sync-status {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 16px 16px;
+#list-container.thumbnail-view .inline-status .progress,
+#list-container.thumbnail-view .inline-status xf-icon {
+  display: none;
+  height: 16px;
+  width: 16px;
 }
 
-body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame[data-sync-status=in_progress] > .sync-status {
-  background-image: url(../images/files/ui/in_progress_indicator.svg);
+#list-container.thumbnail-view .inline-status xf-icon[type^=offline] {
+  --xf-icon-color: var(--cros-icon-color-secondary);
 }
 
-body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame[data-sync-status=error] > .sync-status {
-  background-image: url(../images/files/ui/error.svg);
-}
-
-body.files-ng li.directory .thumbnail-frame > .sync-status {
+#list-container.thumbnail-view li.directory .inline-status {
   height: 100%;
   top: 0;
+}
+
+#list-container.thumbnail-view li:not([renaming]):not(.dim-offline) .inline-status:has(xf-icon[type^=offline]),
+#list-container.thumbnail-view li:not([renaming]):not(.dim-offline) .inline-status xf-icon[type^=offline],
+#list-container.thumbnail-view li:not([renaming]):is([data-sync-status=in_progress], [data-sync-status=queued]) .inline-status,
+#list-container.thumbnail-view li:not([renaming]):is([data-sync-status=in_progress], [data-sync-status=queued]) .inline-status .progress {
+  display: flex;
 }
 
 html:not(.pointer-active) body[type='full-page'] .thumbnail-frame > .img-container,
@@ -2150,6 +2157,7 @@ body.files-ng .table-row-cell:first-child > * {
 
 body.files-ng .table-row-cell .filename-label {
   color: var(--cros-text-color-primary);
+  flex-grow: 1;
   padding-top: 0;
 }
 
@@ -2185,38 +2193,30 @@ body.files-ng #list-container li .detail-thumbnail {
   width: 32px;
 }
 
-.inline-status {
+#list-container .list .inline-status {
+  align-items: center;
   display: none;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
 }
 
-body.files-ng #list-container
-    li.pinned:not([renaming]):not(.dim-offline):not([data-sync-status]) .inline-status {
-  -webkit-mask-image: url(../images/files/ui/offline.svg);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  background-color: currentColor;
+#list-container .list .inline-status .progress,
+#list-container .list .inline-status xf-icon {
+  display: none;
+  height: 16px;
+  width: 16px;
+}
+
+#list-container .list .inline-status xf-icon[type=offline] {
+  --xf-icon-color: var(--cros-icon-color-secondary);
+}
+
+#list-container .list li:not([renaming]):not(.dim-offline) .inline-status:has(xf-icon[type=offline]),
+#list-container .list li:not([renaming]):not(.dim-offline) .inline-status xf-icon[type=offline],
+#list-container .list li:not([renaming]):is([data-sync-status=in_progress], [data-sync-status=queued]) .inline-status,
+#list-container .list li:not([renaming]):is([data-sync-status=in_progress], [data-sync-status=queued]) .inline-status .progress {
   display: flex;
-  height: 40px;
-  width: 40px;
-}
-
-body.files-ng #list-container li[data-sync-status]:not([renaming]):not(.dim-offline) .inline-status {
-  -webkit-mask-image: none;
-  background-color: unset;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 16px 16px;
-  display: flex;
-  height: 32px;
-  width: 32px;
-}
-
-body.files-ng #list-container li[data-sync-status=in_progress]:not([renaming]):not(.dim-offline) .inline-status {
-  background-image: url(../images/files/ui/in_progress_indicator.svg);
-}
-
-body.files-ng #list-container li[data-sync-status=error]:not([renaming]):not(.dim-offline) .inline-status {
-  background-image: url(../images/files/ui/error.svg);
 }
 
 #new-folder-button {

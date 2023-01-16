@@ -11,7 +11,7 @@ import {classMap} from 'chrome://resources/mwc/lit/directives/class-map.js';
 import {ifDefined} from 'chrome://resources/mwc/lit/directives/if-defined.js';
 import {repeat} from 'chrome://resources/mwc/lit/directives/repeat.js';
 import {styleMap} from 'chrome://resources/mwc/lit/directives/style-map.js';
-import {css, CSSResult, CSSResultGroup, html, LitElement, PropertyValues} from 'lit';
+import {css, CSSResult, CSSResultGroup, html, LitElement, nothing, PropertyValues, svg} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators';
 
 export {
@@ -22,12 +22,14 @@ export {
   customElement,
   html,
   ifDefined,
+  nothing,
   property,
   PropertyValues,
   query,
   repeat,
   state,
   styleMap,
+  svg,
 };
 
 /**

@@ -74,7 +74,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/ms365.svg",
     "foreground/images/files/ui/nudge_star_icon.svg",
     "foreground/images/files/ui/offline.svg",
-    "foreground/images/files/ui/in_progress_indicator.svg",
+    "foreground/images/files/ui/offline_outlined.svg",
     "foreground/images/files/ui/refresh.svg",
     "foreground/images/files/ui/restore.svg",
     "foreground/images/files/ui/search.svg",

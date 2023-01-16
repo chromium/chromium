@@ -294,13 +294,17 @@ export class DriveSyncHandlerImpl extends EventTarget {
       return;
     }
 
+    const metadataKeys = ['syncStatus', 'progress'];
+
     // Get the cached syncStatus metadata for received statuses.
     const entries = statuses.map(({entry}) => entry);
-    const cached = this.metadataModel_.getCache(entries, ['syncStatus']);
+    const cached = this.metadataModel_.getCache(entries, metadataKeys);
 
-    // Filter out statuses that match what we already have in the cache.
+    // Filter out statuses that match what we already have in the cache, but
+    // keep all "in_progress" statuses to retrieve their updated progress.
     const entriesToInvalidate = entries.filter(
-        (_, i) => cached[i].syncStatus !== statuses[i].transferState);
+        (_, i) => statuses[i].transferState === 'in_progress' ||
+            cached[i].syncStatus !== statuses[i].transferState);
 
     // Get unique parents of entries to be invalidated.
     const directoriesToInvalidate = await getUniqueParents(entriesToInvalidate);
@@ -308,7 +312,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
 
     // Invalidate entries and their parent directories.
     this.metadataModel_.notifyEntriesChanged(entriesToInvalidate);
-    this.metadataModel_.get(entriesToInvalidate, ['syncStatus']);
+    this.metadataModel_.get(entriesToInvalidate, metadataKeys);
   }
 
   /**

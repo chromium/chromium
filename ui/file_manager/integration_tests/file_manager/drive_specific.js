@@ -339,11 +339,11 @@ testcase.drivePinMultiple = async () => {
   await remoteCall.waitForElement(appId, '#file-context-menu[hidden]');
 
   // Wait for the pinned action to finish, it's flagged in the file list by
-  // removing CSS class "dim-offline" and adding class "pinned".
+  // removing CSS class "dim-offline" and displaying the offline icon.
   await remoteCall.waitForElementLost(
       appId, '#file-list .dim-offline[file-name="world.ogv"]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="world.ogv"] .inline-status');
+      appId, '#file-list [file-name="world.ogv"] xf-icon[type=offline]');
 
   // Select world.ogv by itself.
   await remoteCall.waitAndClickElement(
@@ -407,15 +407,16 @@ testcase.drivePinHosted = async () => {
   await remoteCall.waitForElement(appId, '#file-context-menu[hidden]');
 
   // Wait for the pinned action to finish, it's flagged in the file list by
-  // removing CSS class "dim-offline" and adding class "pinned".
+  // removing CSS class "dim-offline" and displaying the offline icon.
   await remoteCall.waitForElementLost(
       appId, '#file-list .dim-offline[file-name="hello.txt"]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="hello.txt"] .inline-status');
+      appId, '#file-list [file-name="hello.txt"] xf-icon[type=offline]');
 
   // Test Document.gdoc should not be pinned however.
   await remoteCall.waitForElement(
-      appId, '#file-list [file-name="Test Document.gdoc"]:not(.pinned)');
+      appId,
+      '#file-list [file-name="Test Document.gdoc"] xf-icon:not([type=offline])');
 
 
   // Open the context menu with both files selected.
@@ -468,7 +469,7 @@ testcase.drivePinFileMobileNetwork = async () => {
   // Check: File is pinned.
   await remoteCall.waitForElement(appId, '[command="#toggle-pinned"][checked]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="hello.txt"] .inline-status');
+      appId, '#file-list [file-name="hello.txt"] xf-icon[type=offline]');
   await waitForNotification('disabled-mobile-sync');
   await sendTestMessage({
     name: 'clickNotificationButton',
@@ -680,7 +681,7 @@ testcase.driveAvailableOfflineActionBar = async () => {
 
   // Wait for the file to be pinned.
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="hello.txt"]');
+      appId, '#file-list [file-name="hello.txt"] xf-icon[type=offline]');
 
   // Check the "Available Offline" toggle is enabled and checked.
   await remoteCall.waitForElement(
@@ -921,6 +922,12 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
 
   // Verify the "sync in progress" icon is displayed.
   await remoteCall.waitForElement(appId, syncInProgressQuery);
+
+  // On `DriveFsTestVolume::SetFileSyncStatus`, the fake event setting the
+  // path's status hardcodes the progress as 50 bytes / 100 bytes transferred.
+  // Verify this data reaches the UI as a progress value of 50%.
+  await remoteCall.waitForElement(
+      appId, '[data-sync-status=in_progress] .progress[progress="0.50"]');
 
   // Fake the file finishing syncing.
   await sendTestMessage({

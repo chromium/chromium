@@ -98,6 +98,7 @@ export class ExternalMetadataProvider extends MetadataProvider {
       item.isExternalMedia = prop.isExternalMedia;
       item.isArbitrarySyncFolder = prop.isArbitrarySyncFolder;
       item.syncStatus = prop.syncStatus;
+      item.progress = prop.progress;
       results.push(item);
     }
     return results;
@@ -136,4 +137,5 @@ ExternalMetadataProvider.PROPERTY_NAMES = [
   'isExternalMedia',
   'isArbitrarySyncFolder',
   'syncStatus',
+  'progress',
 ];

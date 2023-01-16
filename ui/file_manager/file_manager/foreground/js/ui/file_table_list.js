@@ -364,6 +364,7 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'isExternalMedia',
     'pinned',
     'syncStatus',
+    'progress',
   ])[0];
   filelist.updateListItemExternalProps(
       li, externalProps, util.isTeamDriveRoot(entry));
@@ -471,13 +472,25 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 };
 
 /**
- * Renders the Drive pinned marker in the detail table.
+ * Renders the inline status in the detail table.
  * @return {!HTMLDivElement} Created element.
  */
-filelist.renderPinned = (doc) => {
+filelist.renderInlineStatus = (doc) => {
   const icon = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
   icon.className = 'inline-status';
   icon.setAttribute('aria-label', str('OFFLINE_COLUMN_LABEL'));
+
+  const inlineStatusIcon = doc.createElement('xf-icon');
+  inlineStatusIcon.size = 'extra_small';
+  inlineStatusIcon.type = '';
+  icon.appendChild(inlineStatusIcon);
+
+  if (util.isInlineSyncStatusEnabled()) {
+    const syncProgress = doc.createElement('xf-pie-progress');
+    syncProgress.className = 'progress';
+    icon.appendChild(syncProgress);
+  }
+
   return icon;
 };
 
@@ -493,7 +506,11 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
     li.classList.toggle('dim-hosted', !!externalProps.hosted);
   }
 
-  li.classList.toggle('pinned', !!externalProps.pinned);
+  const inlineStatusIcon = li.querySelector('.inline-status xf-icon');
+  if (inlineStatusIcon) {
+    // TODO: use "XfIcon.types.OFFLINE*" instead when converting to TS.
+    inlineStatusIcon.type = externalProps.pinned ? 'offline' : '';
+  }
 
   const iconDiv = li.querySelector('.detail-icon');
   if (!iconDiv) {
@@ -514,14 +531,13 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
         'external-media-root', !!externalProps.isExternalMedia);
   }
 
-  if (util.isInlineSyncStatusEnabled() && externalProps.syncStatus) {
-    if (externalProps.syncStatus === 'not_found') {
-      li.removeAttribute('data-sync-status');
-    } else {
-      li.setAttribute('data-sync-status', externalProps.syncStatus);
-    }
-    // TODO(b/255474670): set sync status aria-label.
+  const {syncStatus, progress} = externalProps;
+  if (util.isInlineSyncStatusEnabled() && syncStatus) {
+    li.setAttribute('data-sync-status', syncStatus);
+    li.querySelector('.progress')
+        .setAttribute('progress', (progress || 0).toFixed(2));
   }
+  // TODO(b/255474670): set sync status aria-label.
 };
 
 /**

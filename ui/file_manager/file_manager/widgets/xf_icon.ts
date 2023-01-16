@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {classMap, css, customElement, html, property, PropertyValues, XfBase} from './xf_base.js';
+import {classMap, css, customElement, html, property, PropertyValues, svg, XfBase} from './xf_base.js';
 
 @customElement('xf-icon')
 export class XfIcon extends XfBase {
@@ -17,6 +17,7 @@ export class XfIcon extends XfBase {
 
   static get sizes() {
     return {
+      EXTRA_SMALL: 'extra_small',
       SMALL: 'small',
       LARGE: 'large',
     } as const;
@@ -77,6 +78,15 @@ export class XfIcon extends XfBase {
       USB: 'usb',
       VIDEO: 'video',
       WORD: 'word',
+      OFFLINE: 'offline',
+      OFFLINE_OUTLINED: 'offline_outlined',
+    };
+  }
+
+  static get multiColor() {
+    return {
+      [XfIcon.types.OFFLINE_OUTLINED]:
+          svg`<use xlink:href="foreground/images/files/ui/offline_outlined.svg#offline_outlined"></use>`,
     };
   }
 
@@ -85,6 +95,15 @@ export class XfIcon extends XfBase {
   }
 
   override render() {
+    if (Object.keys(XfIcon.multiColor).includes(this.type)) {
+      return html`
+        <span class="multi-color keep-color">
+          <svg>
+            ${XfIcon.multiColor[this.type]}
+          </svg>
+        </span>`;
+    }
+
     const shouldKeepColor = [
       XfIcon.types.EXCEL,
       XfIcon.types.POWERPOINT,
@@ -136,6 +155,17 @@ function getCSS() {
     span.keep-color {
       background-position: center center;
       background-repeat: no-repeat;
+    }
+
+    span.multi-color {
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+    }
+
+    :host([size="extra_small"]) span {
+      height: 16px;
+      width: 16px;
     }
 
     :host([size="small"]) span {
@@ -328,6 +358,10 @@ function getCSS() {
 
     :host([type="thumbnail_generic"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/filetype_placeholder_generic.svg);
+    }
+
+    :host([type="offline"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/offline.svg);
     }
 
     :host([type="tini"]) span {

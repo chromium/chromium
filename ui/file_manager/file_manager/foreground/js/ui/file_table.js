@@ -828,7 +828,7 @@ export class FileTable extends Table {
     label.appendChild(
         filelist.renderFileNameLabel(this.ownerDocument, entry, locationInfo));
     if (locationInfo && locationInfo.isDriveBased) {
-      label.appendChild(filelist.renderPinned(this.ownerDocument));
+      label.appendChild(filelist.renderInlineStatus(this.ownerDocument));
     }
     const isDlpRestricted = !!metadata.isDlpRestricted;
     if (isDlpRestricted) {
@@ -1010,6 +1010,7 @@ export class FileTable extends Table {
                   'hosted',
                   'pinned',
                   'syncStatus',
+                  'progress',
                 ])[0],
             util.isTeamDriveRoot(entry));
         listItem.toggleAttribute(
