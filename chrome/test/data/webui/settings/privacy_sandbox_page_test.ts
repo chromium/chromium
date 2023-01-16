@@ -263,8 +263,6 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(learnMoreButton, page.shadowRoot!.activeElement);
   });
 
-  // TODO(crbug.com/1378703): Add test for empty blocked topics list description
-  // when `getTopicsState()` returns an empty list.
   test('blockedTopicsNotEmpty', async function() {
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
     const blockedTopicsRow =
@@ -423,6 +421,96 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     const expectedLinks =
         ['chrome://settings/adPrivacy/sites', 'chrome://settings/cookies'];
     assertDeepEquals(hrefs, expectedLinks);
+  });
+});
+
+suite('PrivacySandboxTopicsSubpageEmptyTests', function() {
+  let page: SettingsPrivacySandboxTopicsSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setTopicsState({
+      topTopics: [],
+      blockedTopics: [],
+    });
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-topics-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('topicsDisabled', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    await flushTasks();
+    // Check the current topics descriptions.
+    assertTrue(isChildVisible(page, '#currentTopicsDescription'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    assertTrue(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
+  });
+
+  test('topicsEnabled', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    // Check the current topics descriptions.
+    assertTrue(isChildVisible(page, '#currentTopicsDescription'));
+    assertTrue(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
+    assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
+    // Check that there are no current topics.
+    const currentTopics =
+        page.shadowRoot!.querySelectorAll('privacy-sandbox-interest-item');
+    assertEquals(0, currentTopics.length);
+  });
+
+  test('blockedTopicsEmpty', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    const blockedTopicsRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow')!;
+    const blockedTopicsDescription =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#blockedTopicsDescription')!;
+    assertTrue(isVisible(blockedTopicsRow));
+    assertFalse(isVisible(blockedTopicsDescription));
+    blockedTopicsRow.click();
+    await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.BlockedTopicsOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+
+    // Check the blocked topics description.
+    assertTrue(isVisible(blockedTopicsDescription));
+    assertEquals(
+        loadTimeData.getString('topicsPageBlockedTopicsDescriptionEmpty'),
+        blockedTopicsDescription.innerText);
+
+    // Check that there are no blocked topics.
+    const blockedTopicsList =
+        page.shadowRoot!.querySelector('#blockedTopicsList')!;
+    const blockedTopics =
+        blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
+    assertEquals(0, blockedTopics.length);
   });
 });
 
