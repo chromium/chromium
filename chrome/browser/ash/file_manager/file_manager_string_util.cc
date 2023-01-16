@@ -1139,8 +1139,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
     dict->Set("DLP_ENABLED", false);
   }
 
-  dict->Set("UI_LOCALE", locale);
-  dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());
   base::Value::List vms;
   auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
   if (share_path) {
@@ -1152,4 +1150,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
     }
   }
   dict->Set("VMS_FOR_SHARING", std::move(vms));
+
+  // Lastly, set UI_LOCALE and locale-dependent settings.
+  dict->Set("UI_LOCALE", locale);
+  dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());
 }
