@@ -302,6 +302,11 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
              "AutofillExtractAllDatalists",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables support to submit feedback on Autofill. Used only in Desktop.
+BASE_FEATURE(kAutofillFeedback,
+             "AutofillFeedback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, HTML autocomplete values that do not map to any known type, but
 // look reasonable (e.g. contain "address") are simply ignored. Without the
 // feature, Autofill is disabled on such fields.
