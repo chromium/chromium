@@ -347,6 +347,7 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   web_app->AddSource(source_type);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("Name");
+  web_app->SetIsLocallyInstalled(true);
 
   return web_app;
 }

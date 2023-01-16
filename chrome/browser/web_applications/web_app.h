@@ -452,7 +452,7 @@ class WebApp {
   syncer::StringOrdinal user_page_ordinal_;
   syncer::StringOrdinal user_launch_ordinal_;
   absl::optional<WebAppChromeOsData> chromeos_data_;
-  bool is_locally_installed_ = true;
+  bool is_locally_installed_ = false;
   bool is_from_sync_and_pending_installation_ = false;
   // Note: This field is not persisted in the database.
   // TODO(crbug.com/1162477): Add this field to the protocol buffer file and

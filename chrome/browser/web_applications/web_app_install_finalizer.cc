@@ -126,25 +126,17 @@ void WebAppInstallFinalizer::FinalizeInstall(
     return;
   }
 
-  // TODO(loyso): Expose Source argument as a field of AppTraits struct.
-  const WebAppManagement::Type source = options.source;
-
   AppId app_id =
       GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
   std::unique_ptr<WebApp> web_app;
   if (existing_web_app) {
-    app_id = existing_web_app->app_id();
-    // Prepare copy-on-write:
-    // Allows changing manifest_id and start_url when manifest_id is enabled.
     web_app = std::make_unique<WebApp>(*existing_web_app);
+  } else {
+    web_app = std::make_unique<WebApp>(app_id);
+  }
 
-    // The UI may initiate a full install to overwrite the existing
-    // non-locally-installed app. Therefore, |is_locally_installed| can be
-    // promoted to |true|, but not vice versa.
-    if (!web_app->is_locally_installed())
-      web_app->SetIsLocallyInstalled(options.locally_installed);
-
+  if (existing_web_app) {
     // There is a chance that existing sources type(s) are user uninstallable
     // but the newly added source type is NOT user uninstallable. In this
     // case, the following call will unregister os uninstallation.
@@ -153,15 +145,21 @@ void WebAppInstallFinalizer::FinalizeInstall(
     // this os hook is written. The best place to fix this is to put this code
     // is where OS Hooks are called - however that is currently separate from
     // this class. See https://crbug.com/1273269.
-    MaybeUnregisterOsUninstall(web_app.get(), source, *os_integration_manager_);
-  } else {
-    // New app.
-    web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetStartUrl(web_app_info.start_url);
-    web_app->SetManifestId(web_app_info.manifest_id);
-    web_app->SetIsLocallyInstalled(options.locally_installed);
-    if (options.locally_installed)
-      web_app->SetInstallTime(base::Time::Now());
+    MaybeUnregisterOsUninstall(web_app.get(), options.source,
+                               *os_integration_manager_);
+  }
+
+  // The UI may initiate a full install to overwrite the existing
+  // non-locally-installed app. Therefore, |is_locally_installed| can be
+  // promoted to |true|, but not vice versa.
+  web_app->SetIsLocallyInstalled(web_app->is_locally_installed() ||
+                                 options.locally_installed);
+
+  if (options.locally_installed && web_app->install_time().is_null()) {
+    web_app->SetInstallTime(base::Time::Now());
+  }
+
+  if (!web_app->run_on_os_login_os_integration_state()) {
     web_app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
   }
 
@@ -198,18 +196,19 @@ void WebAppInstallFinalizer::FinalizeInstall(
   }
 
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
-  web_app->AddSource(source);
+  web_app->AddSource(options.source);
   web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetParentAppId(options.parent_app_id);
   web_app->SetInstallSourceForMetrics(options.install_surface);
 
-  WriteExternalConfigMapInfo(*web_app, source, web_app_info.is_placeholder,
+  WriteExternalConfigMapInfo(*web_app, options.source,
+                             web_app_info.is_placeholder,
                              web_app_info.install_url);
 
   if (!options.locally_installed) {
     DCHECK(!(options.add_to_applications_menu || options.add_to_desktop ||
              options.add_to_quick_launch_bar))
-        << "Cannot create os hooks for a non-locally installed ";
+        << "Cannot create os hooks for a non-locally installed app";
   }
 
   CommitCallback commit_callback = base::BindOnce(

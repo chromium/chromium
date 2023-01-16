@@ -265,6 +265,44 @@ TEST_P(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
 }
 
+TEST_P(WebAppInstallFinalizerUnitTest,
+       NonLocalThenLocalInstallSetsInstallTime) {
+  auto info = std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL("https://foo.example");
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  options.locally_installed = false;
+  // OS Hooks must be disabled for non-locally installed app.
+  options.add_to_applications_menu = false;
+  options.add_to_desktop = false;
+  options.add_to_quick_launch_bar = false;
+
+  {
+    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+    const WebApp* installed_app =
+        registrar().GetAppById(result.installed_app_id);
+
+    EXPECT_FALSE(installed_app->is_locally_installed());
+    EXPECT_TRUE(installed_app->install_time().is_null());
+  }
+
+  options.locally_installed = true;
+
+  {
+    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+    const WebApp* installed_app =
+        registrar().GetAppById(result.installed_app_id);
+
+    EXPECT_TRUE(installed_app->is_locally_installed());
+    EXPECT_FALSE(installed_app->install_time().is_null());
+  }
+}
+
 TEST_P(WebAppInstallFinalizerUnitTest, InstallNoDesktopShortcut) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL("https://foo.example");
