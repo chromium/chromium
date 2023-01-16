@@ -417,8 +417,13 @@ class RenderFrameHostManagerTest
 
     // And also simulates the 2nd and final call to GetFrameHostForNavigation
     // that determines the final frame that will commit the navigation.
+    BrowsingContextGroupSwap ignored_bcg_swap_info =
+        BrowsingContextGroupSwap::CreateDefault();
     TestRenderFrameHost* frame_host = static_cast<TestRenderFrameHost*>(
-        manager->GetFrameHostForNavigation(navigation_request.get()).value());
+        manager
+            ->GetFrameHostForNavigation(navigation_request.get(),
+                                        &ignored_bcg_swap_info)
+            .value());
     CHECK(frame_host);
 
     frame_host->SetPolicyContainerHost(
@@ -3203,7 +3208,12 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
   EXPECT_FALSE(GetPendingFrameHost(manager));
 
   // Prepare to commit, update the navigating RenderFrameHost.
-  EXPECT_EQ(host, manager->GetFrameHostForNavigation(navigation_request.get()));
+  BrowsingContextGroupSwap ignored_bcg_swap_info =
+      BrowsingContextGroupSwap::CreateDefault();
+  EXPECT_EQ(host, manager
+                      ->GetFrameHostForNavigation(navigation_request.get(),
+                                                  &ignored_bcg_swap_info)
+                      .value());
 
   // No pending RenderFrameHost as the current one should be reused.
   EXPECT_FALSE(GetPendingFrameHost(manager));

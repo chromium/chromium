@@ -1550,6 +1550,8 @@ source_set("browser") {
     "renderer_host/back_forward_cache_metrics.h",
     "renderer_host/blocked_scheme_navigation_throttle.cc",
     "renderer_host/blocked_scheme_navigation_throttle.h",
+    "renderer_host/browsing_context_group_swap.cc",
+    "renderer_host/browsing_context_group_swap.h",
     "renderer_host/browsing_context_state.cc",
     "renderer_host/browsing_context_state.h",
     "renderer_host/clipboard_host_impl.cc",

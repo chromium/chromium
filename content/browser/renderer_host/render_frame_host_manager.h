@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "content/browser/renderer_host/browsing_context_group_swap.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -418,8 +419,10 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // behavior.  The returned `reason` should fit into
   // base::debug::CrashKeySize::Size256.
   base::expected<RenderFrameHostImpl*, GetFrameHostForNavigationFailed>
-  GetFrameHostForNavigation(NavigationRequest* request,
-                            std::string* reason = nullptr);
+  GetFrameHostForNavigation(
+      NavigationRequest* request,
+      BrowsingContextGroupSwap* browsing_context_group_swap,
+      std::string* reason = nullptr);
 
   // Discards `speculative_render_frame_host_` if it exists, even if there are
   // NavigationRequests associated with it, including pending commit
@@ -568,12 +571,14 @@ class CONTENT_EXPORT RenderFrameHostManager {
   scoped_refptr<SiteInstanceImpl> GetSiteInstanceForNavigationRequest(
       NavigationRequest* navigation_request,
       IsSameSiteGetter& is_same_site,
+      BrowsingContextGroupSwap* browsing_context_group_swap,
       std::string* reason = nullptr);
 
   // Calls GetSiteInstanceForNavigationRequest with an IsSameSiteGetter that
   // does not have a cached value.
   scoped_refptr<SiteInstanceImpl> GetSiteInstanceForNavigationRequest(
       NavigationRequest* navigation_request,
+      BrowsingContextGroupSwap* browsing_context_group_swap,
       std::string* reason = nullptr);
 
   // Helper to initialize the main RenderFrame if it's not initialized.
@@ -664,12 +669,13 @@ class CONTENT_EXPORT RenderFrameHostManager {
     SiteInstanceRelation relation;
   };
 
-  // Returns kYes_* if for the navigation from `current_effective_url` to
-  // `destination_url_info`, a new SiteInstance and BrowsingInstance should be
-  // created (even if we are in a process model that doesn't usually swap).
-  // This forces a process swap and severs script connections with existing
-  // tabs.  Cases where this can happen include transitions between WebUI and
-  // regular web pages.
+  // Returns a BrowsingContextGroupSwap describing if we need to change
+  // BrowsingInstance for the navigation from `current_effective_url` to
+  // `destination_url_info`. This can happen for a variety of reasons, including
+  // differences in security level (WebUI pages to regular pages), COOP headers,
+  // or to accommodate for the BackForwardCache. The structure also contains
+  // extra information about the consequences of such a swap, including the need
+  // to clear proxies or the window's name.
   //
   // `source_instance` is the SiteInstance of the frame that initiated the
   // navigation. `current_instance` is the SiteInstance of the frame that is
@@ -688,7 +694,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // pass the effective URL for destination URL here and instead calculate the
   // destination's effective URL within the function because some methods called
   // in the function like IsNavigationSameSite expects a non-effective URL.
-  ShouldSwapBrowsingInstance ShouldSwapBrowsingInstancesForNavigation(
+  BrowsingContextGroupSwap ShouldSwapBrowsingInstancesForNavigation(
       const GURL& current_effective_url,
       bool current_is_view_source_mode,
       SiteInstanceImpl* source_instance,
@@ -705,7 +711,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool was_server_redirect,
       bool should_replace_current_entry);
 
-  ShouldSwapBrowsingInstance ShouldProactivelySwapBrowsingInstance(
+  BrowsingContextGroupSwap ShouldProactivelySwapBrowsingInstance(
       const UrlInfo& destination_url_info,
       bool is_reload,
       IsSameSiteGetter& is_same_site,
@@ -730,6 +736,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool cross_origin_opener_policy_mismatch,
       bool should_replace_current_entry,
       bool force_new_browsing_instance,
+      BrowsingContextGroupSwap* browsing_context_group_swap,
       std::string* reason);
 
   // Returns a descriptor of the appropriate SiteInstance object for the given

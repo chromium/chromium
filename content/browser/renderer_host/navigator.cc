@@ -525,8 +525,8 @@ void Navigator::DidNavigate(
   frame_tree_node->render_manager()->DidNavigateFrame(
       render_frame_host, navigation_request->common_params().has_user_gesture,
       was_within_same_document,
-      navigation_request->coop_status()
-          .require_browsing_instance_swap() /* clear_proxies_on_commit */,
+      navigation_request->browsing_context_group_swap()
+          .ShouldClearProxiesOnCommit(),
       navigation_request->commit_params().frame_policy);
 
   // Save the new page's origin and other properties, and replicate them to

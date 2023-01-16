@@ -2476,7 +2476,7 @@ void NavigationRequest::BeginNavigationImpl() {
 
       if (auto result =
               frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-                  this);
+                  this, &browsing_context_group_swap_);
           result.has_value()) {
         render_frame_host_ = result.value();
       } else {
@@ -3077,7 +3077,7 @@ void NavigationRequest::OnRequestRedirected(
   // before the navigation is ready to commit.
   scoped_refptr<SiteInstance> site_instance =
       frame_tree_node_->render_manager()->GetSiteInstanceForNavigationRequest(
-          this);
+          this, &browsing_context_group_swap_);
   speculative_site_instance_ =
       site_instance->HasProcess() ? site_instance : nullptr;
 
@@ -3942,7 +3942,8 @@ void NavigationRequest::OnResponseStarted(
     // cancelled and RFH is destroyed while NavigationRequest is alive.
   } else if (response_should_be_rendered_) {
     if (auto result =
-            frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
+            frame_tree_node_->render_manager()->GetFrameHostForNavigation(
+                this, &browsing_context_group_swap_);
         result.has_value()) {
       render_frame_host_ = result.value();
     } else {
@@ -4184,8 +4185,8 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
   // The CrossOriginRedirectAfterEarlyHints variant of
   // Navigation.MainFrame.TimeToReadyToCommit2 histogram tracks the performance
   // impacts.
-  auto result =
-      frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
+  auto result = frame_tree_node_->render_manager()->GetFrameHostForNavigation(
+      this, &browsing_context_group_swap_);
 
   // Early hints is an optimization; if it is not possible to get a suitable
   // RenderFrameHost for any reason, just bail out.
@@ -4310,7 +4311,7 @@ void NavigationRequest::OnRequestFailedInternal(
           ConvertToCrossDocumentType(common_params_->navigation_type);
       if (auto result =
               frame_tree_node_->render_manager()->GetFrameHostForNavigation(
-                  this);
+                  this, &browsing_context_group_swap_);
           result.has_value()) {
         render_frame_host = result.value();
       } else {
@@ -6501,7 +6502,7 @@ void NavigationRequest::DidCommitNavigation(
   // time. The renderer has now committed the page and we can safely enforce the
   // empty name on the browser side.
   bool should_clear_browsing_instance_name =
-      coop_status().require_browsing_instance_swap() ||
+      browsing_context_group_swap().ShouldClearWindowName() ||
       (commit_params().is_cross_site_cross_browsing_context_group &&
        base::FeatureList::IsEnabled(
            features::kClearCrossSiteCrossBrowsingContextGroupWindowName));

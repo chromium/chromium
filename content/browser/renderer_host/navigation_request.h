@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_package/web_bundle_handle.h"
 #include "content/common/content_export.h"
@@ -1095,6 +1096,10 @@ class CONTENT_EXPORT NavigationRequest
   // Once the commit params are sent to the renderer we no longer allow write
   // access to the RFSC, but read access is still available.
   const blink::RuntimeFeatureStateContext& GetRuntimeFeatureStateContext();
+
+  BrowsingContextGroupSwap browsing_context_group_swap() const {
+    return browsing_context_group_swap_;
+  }
 
  private:
   friend class NavigationRequestTest;
@@ -2337,6 +2342,20 @@ class CONTENT_EXPORT NavigationRequest
   //    the closure should re-queue itself. For more background, please see the
   //    comments in the implementation of `ResumeCommitIfNeeded()`.
   base::OnceClosure resume_commit_closure_;
+
+  // Records whether the new document will commit inside another BrowsingContext
+  // group as a result of this navigation, and for what reason. Deciding whether
+  // to clear the window name and to clear the proxies are based on this value.
+  //
+  // It is created with a default no-swap value, and is set within
+  // RenderFrameHostManager::GetSiteInstanceForNavigation(). It is generally set
+  // more than once, first for a speculative computation before receiving
+  // headers, then for each redirect, and finally once a definitve response has
+  // been received. It might also never be set if the navigation does not go
+  // through SiteInstance selection, such as for a renderer initiated
+  // same-document navigation.
+  BrowsingContextGroupSwap browsing_context_group_swap_ =
+      BrowsingContextGroupSwap::CreateDefault();
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
