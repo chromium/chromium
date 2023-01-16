@@ -49,6 +49,7 @@ class CopyOrMoveIOTask : public IOTask {
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
 
+  // Cancels the copy or move.
   void Cancel() override;
 
  private:

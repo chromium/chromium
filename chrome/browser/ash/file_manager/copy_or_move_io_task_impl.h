@@ -64,7 +64,7 @@ class CopyOrMoveIOTaskImpl {
   virtual void Execute(ProgressCallback progress_callback,
                        CompleteCallback complete_callback);
 
-  // Cancels the operation.
+  // Cancels the copy or move.
   void Cancel();
 
   // Helper function for copy or move tasks that determines whether or not
