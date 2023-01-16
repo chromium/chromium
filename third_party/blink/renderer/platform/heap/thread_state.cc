@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
+#include <fstream>
+#include <iostream>
+
 #include "base/functional/callback.h"
 #include "gin/public/v8_platform.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -18,6 +21,7 @@
 #include "v8/include/v8-embedder-heap.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
+#include "v8/include/v8-profiler.h"
 #include "v8/include/v8-traced-handle.h"
 
 namespace blink {
@@ -255,4 +259,46 @@ bool ThreadState::IsIncrementalMarking() {
          !cppgc::subtle::HeapState::IsInAtomicPause(
              ThreadState::Current()->heap_handle());
 }
+
+namespace {
+
+class BufferedStream final : public v8::OutputStream {
+ public:
+  explicit BufferedStream(std::streambuf* stream_buffer)
+      : out_stream_(stream_buffer) {}
+
+  WriteResult WriteAsciiChunk(char* data, int size) override {
+    out_stream_.write(data, size);
+    return kContinue;
+  }
+
+  void EndOfStream() override {}
+
+ private:
+  std::ostream out_stream_;
+};
+
+}  // namespace
+
+void ThreadState::TakeHeapSnapshotForTesting(const char* filename) const {
+  CHECK(IsAttachedToIsolate());
+  v8::HeapProfiler* profiler = isolate_->GetHeapProfiler();
+  CHECK(profiler);
+
+  v8::HeapProfiler::HeapSnapshotOptions options;
+  options.snapshot_mode = v8::HeapProfiler::HeapSnapshotMode::kExposeInternals;
+  const v8::HeapSnapshot* snapshot = profiler->TakeHeapSnapshot(options);
+
+  {
+    std::ofstream file_stream;
+    if (filename) {
+      file_stream.open(filename, std::ios_base::out | std::ios_base::trunc);
+    }
+    BufferedStream stream(filename ? file_stream.rdbuf() : std::cout.rdbuf());
+    snapshot->Serialize(&stream);
+  }
+
+  const_cast<v8::HeapSnapshot*>(snapshot)->Delete();
+}
+
 }  // namespace blink
