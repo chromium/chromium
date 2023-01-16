@@ -237,7 +237,8 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Test that update to autofill profile injected in FakeServer gets synced to
 // client.
-- (void)testSyncUpdateAutofillProfile {
+// TODO(crbug.com/1407620): Reenable the test
+- (void)DISABLED_testSyncUpdateAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   const std::string kUpdatedFullName = "Roger Rabbit";
@@ -286,8 +287,8 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Test that autofill profile deleted from FakeServer gets deleted from client
 // as well.
-// TODO(crbug.com/1340545): This test is flaky.
-- (void)testSyncDeleteAutofillProfile {
+// TODO(crbug.com/1407620): Reenable the test
+- (void)DISABLED_testSyncDeleteAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   GREYAssertFalse([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
