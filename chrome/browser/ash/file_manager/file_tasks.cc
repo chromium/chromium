@@ -536,6 +536,19 @@ bool TaskDescriptor::operator<(const TaskDescriptor& other) const {
   }
 }
 
+bool TaskDescriptor::operator==(const TaskDescriptor& other) const {
+  if (app_id != other.app_id) {
+    return false;
+  }
+  if (task_type != other.task_type) {
+    return false;
+  }
+  if (action_id != other.action_id) {
+    return false;
+  }
+  return true;
+}
+
 FullTaskDescriptor::FullTaskDescriptor(const TaskDescriptor& in_task_descriptor,
                                        const std::string& in_task_title,
                                        const GURL& in_icon_url,
@@ -1102,33 +1115,47 @@ std::string ToSwaActionId(const std::string& action_id) {
 
 }  // namespace
 
-void SetWordFileHandler(Profile* profile, const std::string& action_id) {
-  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
-                      ToSwaActionId(action_id));
+void SetWordFileHandler(Profile* profile, TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".doc", ".docx"},
       {"application/msword",
        "application/"
        "vnd.openxmlformats-officedocument.wordprocessingml.document"});
 }
-
-void SetExcelFileHandler(Profile* profile, const std::string& action_id) {
+void SetWordFileHandlerToFilesSWA(Profile* profile,
+                                  const std::string& action_id) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
+  SetWordFileHandler(profile, task);
+}
+
+void SetExcelFileHandler(Profile* profile, TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".xls", ".xlsx"},
       {"application/vnd.ms-excel",
        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
 }
 
-void SetPowerPointFileHandler(Profile* profile, const std::string& action_id) {
+void SetExcelFileHandlerToFilesSWA(Profile* profile,
+                                   const std::string& action_id) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
+  SetExcelFileHandler(profile, task);
+}
+
+void SetPowerPointFileHandler(Profile* profile, TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".ppt", ".pptx"},
       {"application/vnd.ms-powerpoint",
        "application/"
        "vnd.openxmlformats-officedocument.presentationml.presentation"});
+}
+
+void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
+                                        const std::string& action_id) {
+  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
+                      ToSwaActionId(action_id));
+  SetPowerPointFileHandler(profile, task);
 }
 
 void SetOfficeSetupComplete(Profile* profile, bool complete) {

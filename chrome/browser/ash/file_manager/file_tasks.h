@@ -212,6 +212,7 @@ struct TaskDescriptor {
   TaskDescriptor() = default;
 
   bool operator<(const TaskDescriptor& other) const;
+  bool operator==(const TaskDescriptor& other) const;
 
   std::string app_id;
   TaskType task_type;
@@ -394,12 +395,21 @@ bool IsHtmlFile(const base::FilePath& path);
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);
 
+// Updates the default task for each of the office file types.
+void SetWordFileHandler(Profile* profile, TaskDescriptor& task);
+void SetExcelFileHandler(Profile* profile, TaskDescriptor& task);
+void SetPowerPointFileHandler(Profile* profile, TaskDescriptor& task);
+
 // TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
-// Updates the default task for each of the office file types. |action_id| must
-// be a valid action registered with the Files app SWA.
-void SetWordFileHandler(Profile* profile, const std::string& action_id);
-void SetExcelFileHandler(Profile* profile, const std::string& action_id);
-void SetPowerPointFileHandler(Profile* profile, const std::string& action_id);
+// Updates the default task for each of the office file types to a Files
+// SWA with |action_id|. |action_id| must be a valid action registered with the
+// Files app SWA.
+void SetWordFileHandlerToFilesSWA(Profile* profile,
+                                  const std::string& action_id);
+void SetExcelFileHandlerToFilesSWA(Profile* profile,
+                                   const std::string& action_id);
+void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
+                                        const std::string& action_id);
 
 // TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
 // Sets the user preference storing whether the setup flow for office files has

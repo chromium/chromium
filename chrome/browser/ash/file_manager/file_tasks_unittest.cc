@@ -150,6 +150,34 @@ TEST(FileManagerFileTasksTest, BaseContainsFindsTaskDescriptors) {
   ASSERT_TRUE(base::Contains(tasks, task_3));
 }
 
+TEST(FileManagerFileTasksTest, EqualTaskDescriptors) {
+  TaskDescriptor task_1("a", TASK_TYPE_FILE_HANDLER, "view");
+  TaskDescriptor task_2("a", TASK_TYPE_FILE_HANDLER, "view");
+
+  ASSERT_EQ(task_1, task_2);
+}
+
+TEST(FileManagerFileTasksTest, NotEqualAppIdInTaskDescriptors) {
+  TaskDescriptor task_1("a", TASK_TYPE_FILE_HANDLER, "view");
+  TaskDescriptor task_2("b", TASK_TYPE_FILE_HANDLER, "view");
+
+  ASSERT_NE(task_1, task_2);
+}
+
+TEST(FileManagerFileTasksTest, NotEqualTaskTypeInTaskDescriptors) {
+  TaskDescriptor task_1("a", TASK_TYPE_FILE_HANDLER, "view");
+  TaskDescriptor task_2("a", TASK_TYPE_FILE_BROWSER_HANDLER, "view");
+
+  ASSERT_NE(task_1, task_2);
+}
+
+TEST(FileManagerFileTasksTest, NotEqualActionIdInTaskDescriptors) {
+  TaskDescriptor task_1("a", TASK_TYPE_FILE_HANDLER, "view");
+  TaskDescriptor task_2("a", TASK_TYPE_FILE_HANDLER, "edit");
+
+  ASSERT_NE(task_1, task_2);
+}
+
 // Test FileHandlerIsEnabled which returns whether a file handler should be
 // used.
 TEST(FileManagerFileTasksTest, FileHandlerIsEnabled) {
@@ -697,6 +725,79 @@ TEST_F(FileManagerFileTaskPreferencesTest,
           ->GetDict(prefs::kDefaultTasksByMimeType)
           .FindString(mime_type);
   ASSERT_EQ(*default_task_id, files_task_id);
+}
+
+// Test the setting of a default file task for Office files to a Files App SWA.
+TEST_F(FileManagerFileTaskPreferencesTest, SetOfficeFileHandlersToFilesSWA) {
+  file_manager::file_tasks::TaskDescriptor default_task;
+  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
+                      "chrome://file-manager/?a");
+
+  // Check no default tasks exist for Doc files.
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/msword", ".doc", &default_task));
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(),
+      "application/"
+      "vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ".docx", &default_task));
+  // Set default task for Doc files as a Files App SWA with action id "a".
+  SetWordFileHandlerToFilesSWA(profile(), "a");
+  // Check the default task for Doc files is `task`.
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/msword", ".doc", &default_task));
+  ASSERT_EQ(task, default_task);
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(),
+      "application/"
+      "vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ".docx", &default_task));
+  ASSERT_EQ(task, default_task);
+
+  // Check no default tasks exist for Excel files.
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls",
+      &default_task));
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(),
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ".xlsx", &default_task));
+  // Set default task for Excel files as a Files App SWA with action id "a".
+  SetExcelFileHandlerToFilesSWA(profile(), "a");
+  // Check the default task for Excel files is `task`.
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls",
+      &default_task));
+  ASSERT_EQ(task, default_task);
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(),
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ".xlsx", &default_task));
+  ASSERT_EQ(task, default_task);
+
+  // Check no default tasks exist for Powerpoint files.
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt",
+      &default_task));
+  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(),
+      "application/"
+      "vnd.openxmlformats-officedocument.presentationml.presentation",
+      ".pptx", &default_task));
+  // Set default task for Powerpoint files as a Files App SWA with action id
+  // "a".
+  SetPowerPointFileHandlerToFilesSWA(profile(), "a");
+  // Check the default task for Powerpoint files is `task`.
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt",
+      &default_task));
+  ASSERT_EQ(task, default_task);
+  ASSERT_TRUE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(),
+      "application/"
+      "vnd.openxmlformats-officedocument.presentationml.presentation",
+      ".pptx", &default_task));
+  ASSERT_EQ(task, default_task);
 }
 
 // Test that the office PWA file handler is hidden from the available file

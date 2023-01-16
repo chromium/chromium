@@ -165,17 +165,17 @@ bool FileIsOnODFS(Profile* profile, const FileSystemURL& url) {
 void OnDialogComplete(Profile* profile,
                       const std::vector<storage::FileSystemURL>& file_urls,
                       const std::string& action) {
-  using file_manager::file_tasks::SetExcelFileHandler;
+  using file_manager::file_tasks::SetExcelFileHandlerToFilesSWA;
   using file_manager::file_tasks::SetOfficeSetupComplete;
-  using file_manager::file_tasks::SetPowerPointFileHandler;
-  using file_manager::file_tasks::SetWordFileHandler;
+  using file_manager::file_tasks::SetPowerPointFileHandlerToFilesSWA;
+  using file_manager::file_tasks::SetWordFileHandlerToFilesSWA;
 
   if (action == kUserActionConfirmOrUploadToGoogleDrive) {
-    SetWordFileHandler(profile,
-                       file_manager::file_tasks::kActionIdWebDriveOfficeWord);
-    SetExcelFileHandler(profile,
-                        file_manager::file_tasks::kActionIdWebDriveOfficeExcel);
-    SetPowerPointFileHandler(
+    SetWordFileHandlerToFilesSWA(
+        profile, file_manager::file_tasks::kActionIdWebDriveOfficeWord);
+    SetExcelFileHandlerToFilesSWA(
+        profile, file_manager::file_tasks::kActionIdWebDriveOfficeExcel);
+    SetPowerPointFileHandlerToFilesSWA(
         profile, file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
     SetOfficeSetupComplete(profile);
     OpenOrMoveFiles(profile, file_urls, CloudProvider::kGoogleDrive);

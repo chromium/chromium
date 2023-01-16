@@ -134,11 +134,12 @@ void CloudUploadPageHandler::RespondAndClose(mojom::UserAction action) {
 void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
   using file_manager::file_tasks::kActionIdOpenInOffice;
 
-  file_manager::file_tasks::SetWordFileHandler(profile_, kActionIdOpenInOffice);
-  file_manager::file_tasks::SetExcelFileHandler(profile_,
-                                                kActionIdOpenInOffice);
-  file_manager::file_tasks::SetPowerPointFileHandler(profile_,
-                                                     kActionIdOpenInOffice);
+  file_manager::file_tasks::SetWordFileHandlerToFilesSWA(profile_,
+                                                         kActionIdOpenInOffice);
+  file_manager::file_tasks::SetExcelFileHandlerToFilesSWA(
+      profile_, kActionIdOpenInOffice);
+  file_manager::file_tasks::SetPowerPointFileHandlerToFilesSWA(
+      profile_, kActionIdOpenInOffice);
   file_manager::file_tasks::SetOfficeSetupComplete(profile_);
 }
 
