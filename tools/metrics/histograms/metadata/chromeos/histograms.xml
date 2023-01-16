@@ -673,17 +673,20 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
       variants="AllCertProvisioningProtocolVersions"/>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.Result.{CertProvisioningScope}"
+<histogram
+    name="ChromeOS.CertProvisioning.Result{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
     enum="CertProvisioningWorkerState" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
     For final states (see the list in cert_provisioning::IsFinalState): number
-    of times the certificate provisioning worker with scope
-    {CertProvisioningScope} finished on every state. For other states: number of
-    times the worker failed on every state.
+    of times the {CertProvisioningProtocolVersion} certificate provisioning
+    worker with scope {CertProvisioningScope} finished on every state. For other
+    states: number of times the worker failed on every state.
   </summary>
   <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
+  <token key="CertProvisioningProtocolVersion"
+      variants="AllCertProvisioningProtocolVersions"/>
 </histogram>
 
 <histogram name="ChromeOS.CertProvisioning.VaTime.{CertProvisioningScope}"

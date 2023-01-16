@@ -894,7 +894,8 @@ void CertProvisioningWorkerStatic::OnRemoveKeyDone(
 void CertProvisioningWorkerStatic::OnCleanUpDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RecordResult(cert_scope_, state_, prev_state_);
+  RecordResult(cert_profile_.protocol_version, cert_scope_, state_,
+               prev_state_);
   std::move(result_callback_).Run(cert_profile_, state_);
 }
 

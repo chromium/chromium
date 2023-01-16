@@ -34,7 +34,8 @@ enum class CertProvisioningEvent {
 // its |prev_state| into the same histogram. It is reasonable to put both of
 // them in the same histogram because the worker should never stop on an
 // intermediate state and even if it does, it is the same as failure.
-void RecordResult(CertScope scope,
+void RecordResult(ProtocolVersion protocol_version,
+                  CertScope scope,
                   CertProvisioningWorkerState final_state,
                   CertProvisioningWorkerState prev_state);
 
