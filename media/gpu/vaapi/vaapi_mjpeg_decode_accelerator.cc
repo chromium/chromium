@@ -23,6 +23,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/base/bind_to_current_loop.h"
@@ -548,7 +549,6 @@ VaapiMjpegDecodeAccelerator::VaapiMjpegDecodeAccelerator(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
     : io_task_runner_(io_task_runner),
       client_(nullptr),
-      decoder_thread_("VaapiMjpegDecoderThread"),
       weak_this_factory_(this) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 }
@@ -561,7 +561,6 @@ VaapiMjpegDecodeAccelerator::~VaapiMjpegDecodeAccelerator() {
   if (decoder_task_runner_) {
     decoder_task_runner_->DeleteSoon(FROM_HERE, std::move(decoder_));
   }
-  decoder_thread_.Stop();
 }
 
 void VaapiMjpegDecodeAccelerator::InitializeAsync(
@@ -571,14 +570,9 @@ void VaapiMjpegDecodeAccelerator::InitializeAsync(
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   client_ = client;
-  // Bind to |io_task_runner| to guarantee |init_cb| is called asynchronously
-  init_cb = BindToCurrentLoop(std::move(init_cb));
-  if (!decoder_thread_.Start()) {
-    VLOGF(1) << "Failed to start decoding thread.";
-    std::move(init_cb).Run(false);
-    return;
-  }
-  decoder_task_runner_ = decoder_thread_.task_runner();
+  decoder_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE});
+  DCHECK(decoder_task_runner_);
 
   auto video_frame_ready_cb = base::BindPostTask(
       io_task_runner_,
@@ -595,7 +589,8 @@ void VaapiMjpegDecodeAccelerator::InitializeAsync(
   decoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VaapiMjpegDecodeAccelerator::Decoder::Initialize,
-                     base::Unretained(decoder_.get()), std::move(init_cb)));
+                     base::Unretained(decoder_.get()),
+                     BindToCurrentLoop(std::move(init_cb))));
 }
 
 void VaapiMjpegDecodeAccelerator::Decode(

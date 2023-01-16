@@ -21,6 +21,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -79,11 +80,8 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
 
   std::unique_ptr<Decoder> decoder_;
 
-  base::Thread decoder_thread_;
-  // Use this to post tasks to |decoder_thread_| instead of
-  // |decoder_thread_.task_runner()| because the latter will be NULL once
-  // |decoder_thread_.Stop()| returns.
-  scoped_refptr<base::SingleThreadTaskRunner> decoder_task_runner_;
+  // The task runner on which the functions of |decoder_| are executed.
+  scoped_refptr<base::SequencedTaskRunner> decoder_task_runner_;
 
   // WeakPtr factory for use in posting tasks from |decoder_task_runner_| back
   // to |task_runner_|.  Since |decoder_thread_| is a fully owned member of
