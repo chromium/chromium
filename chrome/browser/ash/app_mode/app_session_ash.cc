@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 namespace ash {
@@ -31,9 +32,20 @@ void StartFloatingAccessibilityMenu() {
 }
 
 bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
+  extensions::ExtensionRegistry* extension_registry =
+      extensions::ExtensionRegistry::Get(profile);
+  if (!extension_registry) {
+    // If Lacros is enabled, extensions are running in Lacros. So Ash does not
+    // have |extension_registry|.
+    return false;
+  }
+
   const extensions::Extension* primary_app =
-      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-          app_id);
+      extension_registry->GetInstalledExtension(app_id);
+  if (!primary_app) {
+    return false;
+  }
+
   return extensions::OfflineEnabledInfo::IsOfflineEnabled(primary_app);
 }
 
