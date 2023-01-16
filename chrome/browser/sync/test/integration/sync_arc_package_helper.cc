@@ -176,8 +176,6 @@ void SyncArcPackageHelper::DisableArcService(Profile* profile) {
   arc_app_list_prefs->app_connection_holder()->CloseInstance(
       instance_map_[profile].get());
   instance_map_.erase(profile);
-
-  arc::ArcSessionManager::Get()->Shutdown();
 }
 
 void SyncArcPackageHelper::InstallPackage(

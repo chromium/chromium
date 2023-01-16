@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -24,6 +25,29 @@ bool AllProfilesHaveSameArcPackageDetails() {
   return SyncArcPackageHelper::GetInstance()
       ->AllProfilesHaveSamePackageDetails();
 }
+
+class ArcPackagesCountChecker : public SingleClientStatusChangeChecker {
+ public:
+  ArcPackagesCountChecker(Profile* profile,
+                          syncer::SyncServiceImpl* service,
+                          size_t expected_count)
+      : SingleClientStatusChangeChecker(service),
+        profile_(profile),
+        expected_count_(expected_count) {}
+  ~ArcPackagesCountChecker() override = default;
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    size_t current_count =
+        ArcAppListPrefs::Get(profile_)->GetPackagesFromPrefs().size();
+    *os << "Waiting for " << expected_count_ << " Arc packages, currently have "
+        << current_count;
+    return current_count == expected_count_;
+  }
+
+ private:
+  const base::raw_ptr<Profile> profile_;
+  const size_t expected_count_;
+};
 
 class SingleClientArcPackageSyncTest : public SyncTest {
  public:
@@ -86,7 +110,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, DisableAndReenable) {
   // happening late, after sync has started.
   sync_arc_helper()->SendRefreshPackageList(GetProfile(0));
 
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ArcPackagesCountChecker(GetProfile(0), GetSyncService(0),
+                                      /*expected_count=*/1)
+                  .Wait());
   ASSERT_TRUE(AllProfilesHaveSameArcPackageDetails());
 }
 
