@@ -72,6 +72,19 @@ void SearchController::Initialize() {
       profile_, list_controller_, base::DefaultClock::GetInstance());
 }
 
+void SearchController::OnBurnInPeriodElapsed() {
+  ranker_manager_->OnBurnInPeriodElapsed();
+  Publish();
+}
+
+void SearchController::AddProvider(std::unique_ptr<SearchProvider> provider) {
+  if (ash::IsZeroStateResultType(provider->ResultType())) {
+    ++total_zero_state_blockers_;
+  }
+  provider->set_controller(this);
+  providers_.emplace_back(std::move(provider));
+}
+
 void SearchController::StartSearch(const std::u16string& query) {
   DCHECK(!query.empty());
 
@@ -156,9 +169,10 @@ void SearchController::OnZeroStateTimedOut() {
   }
 }
 
-void SearchController::OnBurnInPeriodElapsed() {
-  ranker_manager_->OnBurnInPeriodElapsed();
-  Publish();
+void SearchController::AppListClosing() {
+  for (const auto& provider : providers_) {
+    provider->StopZeroState();
+  }
 }
 
 void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
@@ -196,40 +210,6 @@ void SearchController::InvokeResultAction(ChromeSearchResult* result,
     result->scoring().set_filtered(true);
     Publish();
   }
-}
-
-AppSearchDataSource* SearchController::GetAppSearchDataSource() {
-  return app_search_data_source_.get();
-}
-
-void SearchController::AddProvider(std::unique_ptr<SearchProvider> provider) {
-  if (ash::IsZeroStateResultType(provider->ResultType())) {
-    ++total_zero_state_blockers_;
-  }
-  provider->set_controller(this);
-  providers_.emplace_back(std::move(provider));
-}
-
-size_t SearchController::ReplaceProvidersForResultTypeForTest(
-    ash::AppListSearchResultType result_type,
-    std::unique_ptr<SearchProvider> new_provider) {
-  DCHECK_EQ(result_type, new_provider->ResultType());
-
-  size_t removed_providers = base::EraseIf(
-      providers_, [&](const std::unique_ptr<SearchProvider>& provider) {
-        return provider->ResultType() == result_type;
-      });
-  if (!removed_providers) {
-    return 0u;
-  }
-  DCHECK_EQ(1u, removed_providers);
-
-  if (ash::IsZeroStateResultType(result_type)) {
-    total_zero_state_blockers_ -= removed_providers;
-  }
-
-  AddProvider(std::move(new_provider));
-  return removed_providers;
 }
 
 void SearchController::SetResults(const SearchProvider* provider,
@@ -357,34 +337,6 @@ void SearchController::Publish() {
   }
 }
 
-ChromeSearchResult* SearchController::FindSearchResult(
-    const std::string& result_id) {
-  for (const auto& provider_results : results_) {
-    for (const auto& result : provider_results.second) {
-      if (result->id() == result_id) {
-        return result.get();
-      }
-    }
-  }
-  return nullptr;
-}
-
-ChromeSearchResult* SearchController::GetResultByTitleForTest(
-    const std::string& title) {
-  std::u16string target_title = base::ASCIIToUTF16(title);
-  for (const auto& provider_results : results_) {
-    for (const auto& result : provider_results.second) {
-      if (result->title() == target_title &&
-          result->result_type() ==
-              ash::AppListSearchResultType::kInstalledApp &&
-          !result->is_recommendation()) {
-        return result.get();
-      }
-    }
-  }
-  return nullptr;
-}
-
 void SearchController::Train(LaunchData&& launch_data) {
   // For non-zero state results (i.e. non continue section results), record the
   // last search query.
@@ -410,10 +362,20 @@ void SearchController::Train(LaunchData&& launch_data) {
   ranker_manager_->Train(launch_data);
 }
 
-void SearchController::AppListClosing() {
-  for (const auto& provider : providers_) {
-    provider->StopZeroState();
+AppSearchDataSource* SearchController::GetAppSearchDataSource() {
+  return app_search_data_source_.get();
+}
+
+ChromeSearchResult* SearchController::FindSearchResult(
+    const std::string& result_id) {
+  for (const auto& provider_results : results_) {
+    for (const auto& result : provider_results.second) {
+      if (result->id() == result_id) {
+        return result.get();
+      }
+    }
   }
+  return nullptr;
 }
 
 void SearchController::AddObserver(Observer* observer) {
@@ -432,13 +394,42 @@ base::Time SearchController::session_start() {
   return session_start_;
 }
 
-void SearchController::set_results_changed_callback_for_test(
-    ResultsChangedCallback callback) {
-  results_changed_callback_for_test_ = std::move(callback);
+size_t SearchController::ReplaceProvidersForResultTypeForTest(
+    ash::AppListSearchResultType result_type,
+    std::unique_ptr<SearchProvider> new_provider) {
+  DCHECK_EQ(result_type, new_provider->ResultType());
+
+  size_t removed_providers = base::EraseIf(
+      providers_, [&](const std::unique_ptr<SearchProvider>& provider) {
+        return provider->ResultType() == result_type;
+      });
+  if (!removed_providers) {
+    return 0u;
+  }
+  DCHECK_EQ(1u, removed_providers);
+
+  if (ash::IsZeroStateResultType(result_type)) {
+    total_zero_state_blockers_ -= removed_providers;
+  }
+
+  AddProvider(std::move(new_provider));
+  return removed_providers;
 }
 
-void SearchController::disable_ranking_for_test() {
-  disable_ranking_for_test_ = true;
+ChromeSearchResult* SearchController::GetResultByTitleForTest(
+    const std::string& title) {
+  std::u16string target_title = base::ASCIIToUTF16(title);
+  for (const auto& provider_results : results_) {
+    for (const auto& result : provider_results.second) {
+      if (result->title() == target_title &&
+          result->result_type() ==
+              ash::AppListSearchResultType::kInstalledApp &&
+          !result->is_recommendation()) {
+        return result.get();
+      }
+    }
+  }
+  return nullptr;
 }
 
 void SearchController::WaitForZeroStateCompletionForTest(
@@ -448,6 +439,15 @@ void SearchController::WaitForZeroStateCompletionForTest(
     return;
   }
   on_zero_state_done_.AddUnsafe(std::move(callback));
+}
+
+void SearchController::set_results_changed_callback_for_test(
+    ResultsChangedCallback callback) {
+  results_changed_callback_for_test_ = std::move(callback);
+}
+
+void SearchController::disable_ranking_for_test() {
+  disable_ranking_for_test_ = true;
 }
 
 }  // namespace app_list
