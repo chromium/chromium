@@ -23,6 +23,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
@@ -134,6 +135,10 @@ void WaylandPopup::Hide() {
   if (child_window())
     child_window()->Hide();
   WaylandWindow::Hide();
+  // Mutter compositor crashes if we don't reset subsurfaces when hiding.
+  if (WaylandWindow::primary_subsurface()) {
+    WaylandWindow::primary_subsurface()->ResetSubsurface();
+  }
 
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_RELEASE_SINCE_VERSION))
     SetAuraSurface(nullptr);

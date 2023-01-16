@@ -223,6 +223,10 @@ void WaylandSurface::UnsetRootWindow() {
   root_window_ = nullptr;
 }
 
+void WaylandSurface::SetRootWindow(WaylandWindow* window) {
+  root_window_ = window;
+}
+
 void WaylandSurface::set_acquire_fence(gfx::GpuFenceHandle acquire_fence) {
   // WaylandBufferManagerGPU knows if the synchronization is not available and
   // must disallow clients to use explicit synchronization.

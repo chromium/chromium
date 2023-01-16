@@ -89,6 +89,8 @@ WaylandWindow::~WaylandWindow() {
   if (wayland_overlay_delegation_enabled_) {
     connection_->window_manager()->RemoveSubsurface(GetWidget(),
                                                     primary_subsurface_.get());
+    connection_->window_manager()->RecycleSubsurface(
+        std::move(primary_subsurface_));
   }
   for (const auto& widget_subsurface : wayland_subsurfaces()) {
     connection_->window_manager()->RemoveSubsurface(GetWidget(),
@@ -282,7 +284,6 @@ void WaylandWindow::Show(bool inactive) {
 void WaylandWindow::Hide() {
   received_configure_event_ = false;
 
-  // Mutter compositor crashes if we don't remove subsurface roles when hiding.
   if (primary_subsurface_) {
     primary_subsurface()->Hide();
   }

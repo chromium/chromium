@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
 namespace ui {
@@ -108,6 +109,8 @@ class WaylandWindowManager {
   void RemoveSubsurface(gfx::AcceleratedWidget widget,
                         WaylandSubsurface* subsurface);
 
+  void RecycleSubsurface(std::unique_ptr<WaylandSubsurface> subsurface);
+
   // Creates a new unique gfx::AcceleratedWidget.
   gfx::AcceleratedWidget AllocateAcceleratedWidget();
 
@@ -120,6 +123,11 @@ class WaylandWindowManager {
   base::ObserverList<WaylandWindowObserver> observers_;
 
   base::flat_map<gfx::AcceleratedWidget, WaylandWindow*> window_map_;
+
+  // The cache of |primary_subsurface_| of the last closed WaylandWindow. This
+  // will be destroyed lazily to make sure the window closing animation works
+  // well. See crbug.com/1324548.
+  std::unique_ptr<WaylandSubsurface> subsurface_recycle_cache_;
 
   raw_ptr<WaylandWindow> located_events_grabber_ = nullptr;
 
