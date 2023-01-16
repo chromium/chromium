@@ -192,6 +192,10 @@ void AppServiceProxyBase::RegisterPublisher(AppType app_type,
   publishers_[app_type] = publisher;
 }
 
+void AppServiceProxyBase::UnregisterPublisher(AppType app_type) {
+  publishers_.erase(app_type);
+}
+
 void AppServiceProxyBase::InitializePreferredAppsForAllSubscribers() {
   preferred_apps_list_.Init(
       preferred_apps_impl_->preferred_apps_list().GetValue());

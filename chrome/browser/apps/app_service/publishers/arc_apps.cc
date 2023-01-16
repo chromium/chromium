@@ -595,7 +595,9 @@ ArcApps::ArcApps(AppServiceProxy* proxy)
       profile_(proxy->profile()),
       arc_icon_once_loader_(profile_) {}
 
-ArcApps::~ArcApps() = default;
+ArcApps::~ArcApps() {
+  proxy()->UnregisterPublisher(AppType::kArc);
+}
 
 void ArcApps::Initialize() {
   if (!arc::IsArcAllowedForProfile(profile_) ||

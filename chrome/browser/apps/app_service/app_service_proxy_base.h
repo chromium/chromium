@@ -105,6 +105,10 @@ class AppServiceProxyBase : public KeyedService,
   // than this object.
   void RegisterPublisher(AppType app_type, AppPublisher* publisher);
 
+  // UnRegisters the publisher for `app_type`, As the publisher(ArcApps) might
+  // be destroyed earlier than AppServiceProxy.
+  void UnregisterPublisher(AppType app_type);
+
   // PreferredApps::Host overrides.
   void InitializePreferredAppsForAllSubscribers() override;
   void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
