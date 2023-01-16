@@ -29,7 +29,8 @@ public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
      */
     public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
-        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this);
+        ManagedPreferencesUtils.initPreference(
+                mManagedPrefDelegate, this, /*allowManagedIcon=*/true, /*hasCustomLayout=*/true);
     }
 
     @Override

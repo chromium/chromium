@@ -76,7 +76,6 @@ android_resources("java_resources") {
     "java/res/layout/button_preference_button.xml",
     "java/res/layout/button_preference_layout.xml",
     "java/res/layout/checkable_image_view_widget.xml",
-    "java/res/layout/chrome_managed_preference.xml",
     "java/res/layout/clickable_spans_text_message_preference_layout.xml",
     "java/res/layout/image_button_widget.xml",
     "java/res/layout/long_summary_text_message_preference.xml",
@@ -94,6 +93,20 @@ android_resources("java_resources") {
   ]
 }
 
+# To be included by embedders that need to show a disclaimer that settings are
+# managed by an Enterprise admin.
+android_resources("managed_prefs_java_resources") {
+  deps = [
+    ":java_resources",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//third_party/androidx:androidx_preference_preference_java",
+  ]
+  sources = [
+    "java/managed_prefs_java_resources/layout/chrome_managed_preference.xml",
+  ]
+}
+
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
@@ -107,6 +120,7 @@ android_library("unit_device_javatests") {
     ":java",
     ":java_resources",
     ":java_test_resources",
+    ":managed_prefs_java_resources",
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -156,6 +170,7 @@ android_resources("java_test_resources") {
   ]
   deps = [
     ":java_resources",
+    ":managed_prefs_java_resources",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java_resources",
   ]

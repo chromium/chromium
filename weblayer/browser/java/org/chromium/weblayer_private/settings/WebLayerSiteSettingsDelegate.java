@@ -7,6 +7,7 @@ package org.chromium.weblayer_private.settings;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
@@ -119,6 +120,12 @@ public class WebLayerSiteSettingsDelegate
     @Override
     public boolean doesProfileHaveMultipleCustodians() {
         return false;
+    }
+
+    @Override
+    public @LayoutRes int defaultPreferenceLayoutResource() {
+        // WebLayer uses Android's default Preference layout.
+        return 0;
     }
 
     @Override

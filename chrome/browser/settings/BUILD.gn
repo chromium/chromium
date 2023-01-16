@@ -15,13 +15,16 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/settings/android:managed_prefs_java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//url:gurl_java",
   ]
+  resources_package = "org.chromium.chrome.browser.settings"
 }
 
 android_library("test_support_java") {

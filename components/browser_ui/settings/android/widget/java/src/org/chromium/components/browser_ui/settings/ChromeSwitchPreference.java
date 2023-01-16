@@ -26,17 +26,17 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     @ColorRes
     private Integer mBackgroundColorRes;
 
+    /** Indicates if the preference uses a custom layout. */
+    private final boolean mHasCustomLayout;
+
     public ChromeSwitchPreference(Context context) {
         this(context, null);
     }
 
     public ChromeSwitchPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if (SettingsFeatureList.isEnabled(
-                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
-            setLayoutResource(
-                    ManagedPreferencesUtils.getLayoutResourceForPreference(context, attrs));
-        }
+
+        mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }
 
     /**
@@ -44,7 +44,8 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
      */
     public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
-        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this);
+        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this,
+                /*allowManagedIcon=*/true, /*hasCustomLayout=*/mHasCustomLayout);
     }
 
     @Override

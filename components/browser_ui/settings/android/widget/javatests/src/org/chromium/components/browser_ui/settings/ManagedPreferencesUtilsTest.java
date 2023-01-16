@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.not;
 
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.LayoutRes;
 import androidx.preference.Preference;
 import androidx.test.filters.SmallTest;
 
@@ -22,14 +23,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.settings.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.Toast;
 
-/**
- * Tests of {@link ManagedPreferencesUtils}.
- */
+/** Tests of {@link ManagedPreferencesUtils}. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class ManagedPreferencesUtilsTest extends BlankUiTestActivityTestCase {
     public static final ManagedPreferenceDelegate UNMANAGED_DELEGATE =
             new ManagedPreferenceDelegate() {
@@ -46,6 +48,11 @@ public class ManagedPreferencesUtilsTest extends BlankUiTestActivityTestCase {
                 @Override
                 public boolean doesProfileHaveMultipleCustodians() {
                     return false;
+                }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return 0;
                 }
             };
 
@@ -65,6 +72,14 @@ public class ManagedPreferencesUtilsTest extends BlankUiTestActivityTestCase {
                 public boolean doesProfileHaveMultipleCustodians() {
                     return false;
                 }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return SettingsFeatureList.isEnabled(
+                                   SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+                            ? R.layout.chrome_managed_preference
+                            : 0;
+                }
             };
 
     public static final ManagedPreferenceDelegate SINGLE_CUSTODIAN_DELEGATE =
@@ -83,6 +98,14 @@ public class ManagedPreferencesUtilsTest extends BlankUiTestActivityTestCase {
                 public boolean doesProfileHaveMultipleCustodians() {
                     return false;
                 }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return SettingsFeatureList.isEnabled(
+                                   SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+                            ? R.layout.chrome_managed_preference
+                            : 0;
+                }
             };
 
     public static final ManagedPreferenceDelegate MULTI_CUSTODIAN_DELEGATE =
@@ -100,6 +123,14 @@ public class ManagedPreferencesUtilsTest extends BlankUiTestActivityTestCase {
                 @Override
                 public boolean doesProfileHaveMultipleCustodians() {
                     return true;
+                }
+
+                @Override
+                public @LayoutRes int defaultPreferenceLayoutResource() {
+                    return SettingsFeatureList.isEnabled(
+                                   SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+                            ? R.layout.chrome_managed_preference
+                            : 0;
                 }
             };
 
@@ -164,8 +195,8 @@ public class ManagedPreferencesUtilsTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     public void testShowManagedSettingsCannotBeResetToast() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getActivity());
+        Toast toast = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getActivity());
         });
 
         onView(withText(R.string.managed_settings_cannot_be_reset))

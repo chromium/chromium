@@ -81,7 +81,8 @@ public class ChromeImageViewPreference extends Preference {
      */
     public void setManagedPreferenceDelegate(@Nullable ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
-        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this);
+        ManagedPreferencesUtils.initPreference(
+                mManagedPrefDelegate, this, /*allowManagedIcon=*/false, /*hasCustomLayout=*/true);
     }
 
     @Override

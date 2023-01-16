@@ -20,17 +20,21 @@ import org.chromium.base.metrics.RecordUserAction;
 /**
  * A preference that supports some Chrome-specific customizations:
  *
- * 1. This preference supports being managed. If this preference is managed (as determined by its
- *    ManagedPreferenceDelegate), it updates its appearance and behavior appropriately: shows an
- *    enterprise icon, disables clicks, etc.
+ * <p>This preference supports being managed. If this preference is managed (as determined by its
+ * ManagedPreferenceDelegate), it updates its appearance and behavior appropriately: shows an
+ * enterprise icon, disables clicks, etc.
  *
- * 2. This preference can have a multiline title.
- * 3. This preference can set an icon color in XML through app:iconTint. Note that if a
- *    ColorStateList is set, only the default color will be used.
+ * <p>This preference can have a multiline title.
+ *
+ * <p>This preference can set an icon color in XML through app:iconTint. Note that if a
+ * ColorStateList is set, only the default color will be used.
  */
 public class ChromeBasePreference extends Preference {
     private ColorStateList mIconTint;
     private ManagedPreferenceDelegate mManagedPrefDelegate;
+
+    /** Indicates if the preference uses a custom layout. */
+    private final boolean mHasCustomLayout;
 
     /**
      * When null, the default Preferences Support Library logic will be used to determine dividers.
@@ -55,18 +59,14 @@ public class ChromeBasePreference extends Preference {
     public ChromeBasePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        if (SettingsFeatureList.isEnabled(
-                    SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
-            setLayoutResource(
-                    ManagedPreferencesUtils.getLayoutResourceForPreference(context, attrs));
-        }
-
         setSingleLineTitle(false);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChromeBasePreference);
         mIconTint = a.getColorStateList(R.styleable.ChromeBasePreference_iconTint);
         mUserAction = a.getString(R.styleable.ChromeBasePreference_userAction);
         a.recycle();
+
+        mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }
 
     /**
@@ -74,7 +74,8 @@ public class ChromeBasePreference extends Preference {
      */
     public void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
         mManagedPrefDelegate = delegate;
-        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this);
+        ManagedPreferencesUtils.initPreference(mManagedPrefDelegate, this,
+                /*allowManagedIcon=*/true, /*hasCustomLayout=*/mHasCustomLayout);
     }
 
     @Override

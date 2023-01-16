@@ -123,12 +123,26 @@ public class ManagedPreferencesUtils {
      * @param delegate The delegate that controls whether the preference is managed. May be null,
      *         then this method does nothing.
      * @param preference The Preference that is being initialized.
+     * @param allowManagedIcon Whether the icon view should show the managed icon when the
+     *         preference is managed.
+     * @param hasCustomLayout Whether the preference defines its own layout or should use the
+     *         embedder's default layout.
      */
-    public static void initPreference(
-            @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
+    public static void initPreference(@Nullable ManagedPreferenceDelegate delegate,
+            Preference preference, boolean allowManagedIcon, boolean hasCustomLayout) {
         if (delegate == null) return;
 
-        if (!(preference instanceof ChromeImageViewPreference)) {
+        // Embedders may define its own default layout for preferences, which can only be applied
+        // if the preference doesn't use a custom layout.
+        if (!hasCustomLayout) {
+            @LayoutRes
+            int layoutResource = delegate.defaultPreferenceLayoutResource();
+            if (layoutResource != 0) {
+                preference.setLayoutResource(layoutResource);
+            }
+        }
+
+        if (allowManagedIcon) {
             preference.setIcon(getManagedIconDrawable(delegate, preference));
         }
 
@@ -290,26 +304,21 @@ public class ManagedPreferencesUtils {
     }
 
     /**
-     * Use {@code chrome_managed_preference} as the preference layout if a custom layout has not
-     * been set. That situation happens for example in the Sync and Google service preferences in
-     * the Main Settings menu, that define their own layouts and use this class to leverage icon
-     * tinting. Also, those preferences don't need to be managed, so there is no need to change
-     * their layouts to include the managed disclaimer.
+     * Checks if a custom layout was defined for the preference. For example, Sync and Google
+     * service preferences in the Main Settings menu define their own layouts and use managed
+     * preference classes to leverage icon tinting. Also, those preferences don't need to be
+     * managed, so there is no need to change their layouts to include the managed disclaimer.
      * @param context The context for a given preference.
      * @param attrs The attributes of the XML tag that is inflating the view.
-     * @return The layout resource to be used by a managed preference.
+     * @return Whether a custom layout was defined.
      */
-    public static @LayoutRes int getLayoutResourceForPreference(
-            Context context, AttributeSet attrs) {
+    public static boolean isCustomLayoutApplied(Context context, AttributeSet attrs) {
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Preference);
 
         // Take the custom layout defined via either {@code Preference_layout} or
-        // {@code Preference_android_layout}. If neither is set, use
-        // {@code chrome_managed_preference} as fallback.
-        @LayoutRes
-        int fallback = a.getResourceId(
-                R.styleable.Preference_android_layout, R.layout.chrome_managed_preference);
-        return a.getResourceId(R.styleable.Preference_layout, fallback);
+        // {@code Preference_android_layout}.
+        return a.getResourceId(R.styleable.Preference_android_layout, 0) != 0
+                || a.getResourceId(R.styleable.Preference_layout, 0) != 0;
     }
 
     /**

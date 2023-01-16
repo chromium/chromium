@@ -5,6 +5,12 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
+    <!-- TODO(crbug.com/1407188): Remove this ID definition once it's no longer needs to be known
+         by modules in targets that WebLayer depends on. Some alternatives: (1) Move
+         `ManagedPreferencesUtils` to its own target, so that it's not imported by WebLayer;
+         (2) Move the logic that depends on this ID to `ManagedPreferenceDelegate`.
+      -->
+    <item type="id" name="managed_disclaimer_text" />
     <!-- Menu items IDs in Settings -->
     <item type="id" name="menu_id_general_help" />
     <item type="id" name="menu_id_targeted_help" />

@@ -107,11 +107,9 @@ public class ChromeBasePreferenceTest {
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(SUMMARY), isDisplayed())));
-        if (mEnableHighlightManagedPrefDisclaimerAndroid) {
-            onView(withId(R.id.managed_disclaimer_text)).check(matches(not(isDisplayed())));
-        } else {
-            onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
-        }
+        // Unmanaged preferences do not use {@code chrome_managed_preference}, so a disclaimer text
+        // view does not exist.
+        onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
         onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
     }
 

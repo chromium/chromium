@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.settings;
 
+import androidx.annotation.LayoutRes;
 import androidx.preference.Preference;
 
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.settings.SettingsFeatureList;
 import org.chromium.components.user_prefs.UserPrefs;
 
-/**
- * A ManagedPreferenceDelegate with Chrome-specific default behavior.
- */
+/** A ManagedPreferenceDelegate with Chrome-specific default behavior. */
 public interface ChromeManagedPreferenceDelegate extends ManagedPreferenceDelegate {
     @Override
     default boolean isPreferenceControlledByCustodian(Preference preference) {
@@ -25,5 +25,13 @@ public interface ChromeManagedPreferenceDelegate extends ManagedPreferenceDelega
         return !UserPrefs.get(Profile.getLastUsedRegularProfile())
                         .getString(Pref.SUPERVISED_USER_SECOND_CUSTODIAN_NAME)
                         .isEmpty();
+    }
+
+    @Override
+    default @LayoutRes int defaultPreferenceLayoutResource() {
+        return SettingsFeatureList.isEnabled(
+                       SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
+                ? R.layout.chrome_managed_preference
+                : 0;
     }
 }
