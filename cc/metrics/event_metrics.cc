@@ -681,6 +681,7 @@ void ScrollUpdateEventMetrics::CoalesceWith(
   last_timestamp_ = newer_scroll_update.last_timestamp_;
   delta_ += newer_scroll_update.delta_;
   predicted_delta_ += newer_scroll_update.predicted_delta_;
+  coalesced_event_count_ += newer_scroll_update.coalesced_event_count_;
 }
 
 ScrollUpdateEventMetrics* ScrollUpdateEventMetrics::AsScrollUpdate() {

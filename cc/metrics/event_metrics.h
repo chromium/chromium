@@ -5,6 +5,7 @@
 #ifndef CC_METRICS_EVENT_METRICS_H_
 #define CC_METRICS_EVENT_METRICS_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -377,6 +378,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   float delta() const { return delta_; }
 
   float predicted_delta() const { return predicted_delta_; }
+
+  int32_t coalesced_event_count() { return coalesced_event_count_; }
   void set_predicted_delta(float predicted_delta) {
     predicted_delta_ = predicted_delta;
   }
@@ -411,6 +414,9 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   // Timestamp of the last event coalesced into this one.
   base::TimeTicks last_timestamp_;
+
+  // Total events that were coalesced into this into this ScrollUpdate
+  int32_t coalesced_event_count_ = 1;
 };
 
 class CC_EXPORT PinchEventMetrics : public EventMetrics {

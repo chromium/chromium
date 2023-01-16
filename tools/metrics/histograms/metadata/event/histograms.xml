@@ -144,6 +144,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Event.InputEventCoalescing.ScrollUpdate.{InputType}UpdatesPerFrame"
+    units="counts" expires_after="2023-12-18">
+  <owner>nuskos@google.com</owner>
+  <owner>mekk@google.com</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Each time a user scrolls the screen, GestureScrollUpdates are handled
+    serially by chrome to generate frames corresponding to user input, this
+    metric counts the number of gestures observed in a frame.
+
+    We expect {InputType} per frame on Android, other platforms may vary.
+  </summary>
+  <token key="InputType">
+    <variant name="Fling" summary="1 fling input"/>
+    <variant name="Gesture" summary="2 inputs"/>
+  </token>
+</histogram>
+
 <histogram name="Event.InputEventPrediction.Scroll.Frame{ScoreType}"
     units="pixels" expires_after="M97">
   <owner>flackr@chromium.org</owner>

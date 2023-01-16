@@ -438,6 +438,7 @@ class CC_EXPORT CompositorFrameReporter {
   void ReportEventLatencyMetrics() const;
   void ReportCompositorLatencyTraceEvents(const FrameInfo& info) const;
   void ReportEventLatencyTraceEvents() const;
+  void ReportScrollJankMetrics() const;
 
   void EnableReportType(FrameReportType report_type) {
     report_types_.set(static_cast<size_t>(report_type));

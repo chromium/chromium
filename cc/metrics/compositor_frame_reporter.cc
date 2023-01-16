@@ -5,6 +5,7 @@
 #include "cc/metrics/compositor_frame_reporter.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
@@ -24,6 +26,7 @@
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
 #include "cc/metrics/event_latency_tracker.h"
+#include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -801,8 +804,10 @@ void CompositorFrameReporter::TerminateReporter() {
     ReportCompositorLatencyMetrics();
 
     // Only report event latency metrics if the frame was presented.
-    if (TestReportType(FrameReportType::kNonDroppedFrame))
+    if (TestReportType(FrameReportType::kNonDroppedFrame)) {
       ReportEventLatencyMetrics();
+      ReportScrollJankMetrics();
+    }
   }
 
   if (TestReportType(FrameReportType::kDroppedFrame)) {
@@ -1295,6 +1300,39 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
   }
 
   TRACE_EVENT_END(kTraceCategory, trace_track, frame_termination_time_);
+}
+
+void CompositorFrameReporter::ReportScrollJankMetrics() const {
+  int32_t fling_input_count = 0;
+  int32_t normal_input_count = 0;
+  for (const auto& event : events_metrics_) {
+    switch (event->type()) {
+      case EventMetrics::EventType::kGestureScrollUpdate:
+      case EventMetrics::EventType::kFirstGestureScrollUpdate:
+        normal_input_count += event->AsScrollUpdate()->coalesced_event_count();
+        break;
+      case EventMetrics::EventType::kInertialGestureScrollUpdate:
+        fling_input_count += event->AsScrollUpdate()->coalesced_event_count();
+        break;
+      default:
+        continue;
+    }
+  }
+
+  // Counting number of inputs per frame for flings and normal input has
+  // to be separate as the rate of input generation is different for each
+  // of them, normal input is screen generated, and flings are GPU vsync
+  // generated.
+  if (fling_input_count > 0) {
+    UMA_HISTOGRAM_COUNTS(
+        "Event.InputEventCoalescing.ScrollUpdate.FlingUpdatesPerFrame",
+        fling_input_count);
+  }
+  if (normal_input_count > 0) {
+    UMA_HISTOGRAM_COUNTS(
+        "Event.InputEventCoalescing.ScrollUpdate.GestureUpdatesPerFrame",
+        normal_input_count);
+  }
 }
 
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
