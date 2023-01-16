@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Properties declared with @property reify correctly assert_equals: expected "100px" but got " 100px"
-PASS Re-declaring a property with a different type affects reification
-Harness: the test ran to completion.
-
