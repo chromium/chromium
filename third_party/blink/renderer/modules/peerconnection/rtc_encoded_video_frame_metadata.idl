@@ -5,14 +5,40 @@
 // https://github.com/alvestrand/webrtc-media-streams/blob/master/explainer.md#api
 // TODO(guidou): Add standards link when available.
 
+enum RTCVideoCodecType {
+    "vp8",
+    "vp9",
+    "h264",
+};
+
+enum RTCDecodeTargetIndication {
+    "not-present",
+    "discardable",
+    "switch",
+    "required",
+};
+
 [Serializable]
 dictionary RTCEncodedVideoFrameMetadata {
+    // Encoding related metadata
     long long frameId;
     sequence<long long> dependencies;
     unsigned short width;
     unsigned short height;
     long spatialIndex;
     long temporalIndex;
+    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
+    sequence<RTCDecodeTargetIndication> decodeTargetIndications;
+    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
+    boolean isLastFrameInPicture;
+    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
+    unsigned short simulcastIdx;
+    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
+    RTCVideoCodecType codec;
+    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
+    RTCCodecSpecifics codecSpecifics;
+
+    // RTP related metadata
     unsigned long synchronizationSource;
     sequence<unsigned long> contributingSources;
     short payloadType;

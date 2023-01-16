@@ -538,6 +538,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/peerconnection/rtc_dtls_fingerprint.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_dtmf_sender.idl",
+          "//third_party/blink/renderer/modules/peerconnection/rtc_codec_specifics.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_dtmf_tone_change_event.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_dtmf_tone_change_event_init.idl",
           "//third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.idl",

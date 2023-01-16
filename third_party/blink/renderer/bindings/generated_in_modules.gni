@@ -101,6 +101,8 @@ generated_callback_interface_sources_in_modules = [
 ]
 
 generated_dictionary_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.cc",
@@ -1354,6 +1356,10 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_video_codec_type.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_video_codec_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_push_encryption_key_name.cc",

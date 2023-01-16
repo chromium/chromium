@@ -2385,6 +2385,11 @@
       status: "experimental",
     },
     {
+      name: "RTCEncodedVideoFrameAdditionalMetadata",
+      status: "experimental",
+      base_feature: "RTCEncodedVideoFrameAdditionalMetadata",
+    },
+    {
       name: "RTCEncodedVideoFrameClone",
       status: "experimental",
       base_feature: "RTCEncodedVideoFrameClone",

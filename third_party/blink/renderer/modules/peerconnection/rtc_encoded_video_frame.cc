@@ -6,13 +6,55 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
+
+namespace {
+
+V8RTCDecodeTargetIndication
+V8RTCDecodeTargetIndicationFromDecodeTargetIndication(
+    webrtc::DecodeTargetIndication decode_target_indication) {
+  switch (decode_target_indication) {
+    case webrtc::DecodeTargetIndication::kNotPresent:
+      return V8RTCDecodeTargetIndication(
+          V8RTCDecodeTargetIndication::Enum::kNotPresent);
+    case webrtc::DecodeTargetIndication::kDiscardable:
+      return V8RTCDecodeTargetIndication(
+          V8RTCDecodeTargetIndication::Enum::kDiscardable);
+    case webrtc::DecodeTargetIndication::kSwitch:
+      return V8RTCDecodeTargetIndication(
+          V8RTCDecodeTargetIndication::Enum::kSwitch);
+    case webrtc::DecodeTargetIndication::kRequired:
+      return V8RTCDecodeTargetIndication(
+          V8RTCDecodeTargetIndication::Enum::kRequired);
+    default:
+      NOTREACHED();
+  }
+}
+
+String RTCVideoCodecTypeFromVideoCodecType(
+    webrtc::VideoCodecType video_codec_type) {
+  switch (video_codec_type) {
+    case webrtc::VideoCodecType::kVideoCodecVP8:
+      return "vp8";
+    case webrtc::VideoCodecType::kVideoCodecVP9:
+      return "vp9";
+    case webrtc::VideoCodecType::kVideoCodecH264:
+      return "h264";
+    default:
+      return "";
+  }
+}
+
+}  // namespace
 
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame)
@@ -61,6 +103,49 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   metadata->setHeight(webrtc_metadata->GetHeight());
   metadata->setSpatialIndex(webrtc_metadata->GetSpatialIndex());
   metadata->setTemporalIndex(webrtc_metadata->GetTemporalIndex());
+  if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled()) {
+    Vector<V8RTCDecodeTargetIndication> decode_target_indications;
+    for (const auto& decode_target_indication :
+         webrtc_metadata->GetDecodeTargetIndications()) {
+      decode_target_indications.push_back(
+          V8RTCDecodeTargetIndicationFromDecodeTargetIndication(
+              decode_target_indication));
+    }
+    metadata->setDecodeTargetIndications(decode_target_indications);
+    metadata->setIsLastFrameInPicture(
+        webrtc_metadata->GetIsLastFrameInPicture());
+    metadata->setSimulcastIdx(webrtc_metadata->GetSimulcastIdx());
+    String codec =
+        RTCVideoCodecTypeFromVideoCodecType(webrtc_metadata->GetCodec());
+    if (!codec.empty()) {
+      metadata->setCodec(codec);
+    } else {
+      LOG(ERROR) << "Unrecognized RTCVideoCodecType.";
+    }
+    switch (webrtc_metadata->GetCodec()) {
+      case webrtc::VideoCodecType::kVideoCodecVP8: {
+        const webrtc::RTPVideoHeaderVP8& webrtc_vp8_specifics =
+            absl::get<webrtc::RTPVideoHeaderVP8>(
+                webrtc_metadata->GetRTPVideoHeaderCodecSpecifics());
+        RTCCodecSpecificsVP8* vp8_specifics = RTCCodecSpecificsVP8::Create();
+        vp8_specifics->setNonReference(webrtc_vp8_specifics.nonReference);
+        vp8_specifics->setPictureId(webrtc_vp8_specifics.pictureId);
+        vp8_specifics->setTl0PicIdx(webrtc_vp8_specifics.tl0PicIdx);
+        vp8_specifics->setTemporalIdx(webrtc_vp8_specifics.temporalIdx);
+        vp8_specifics->setLayerSync(webrtc_vp8_specifics.layerSync);
+        vp8_specifics->setKeyIdx(webrtc_vp8_specifics.keyIdx);
+        vp8_specifics->setPartitionId(webrtc_vp8_specifics.partitionId);
+        vp8_specifics->setBeginningOfPartition(
+            webrtc_vp8_specifics.beginningOfPartition);
+        metadata->setCodecSpecifics(vp8_specifics);
+        break;
+      }
+      default:
+        // TODO(https://crbug.com/webrtc/14709): Support more codecs.
+        LOG(ERROR) << "Unsupported RTCCodecSpecifics.";
+        break;
+    }
+  }
   return metadata;
 }
 
