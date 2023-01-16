@@ -1257,6 +1257,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-password-checkup", flag_descriptions::kIOSPasswordCheckupName,
      flag_descriptions::kIOSPasswordCheckupDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordCheckup)},
+    {"multiline-fade-truncating-label",
+     flag_descriptions::kMultilineFadeTruncatingLabelName,
+     flag_descriptions::kMultilineFadeTruncatingLabelDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMultilineFadeTruncatingLabel)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

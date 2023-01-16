@@ -453,6 +453,11 @@ extern const char kModernTabStripDescription[];
 extern const char kMostVisitedTilesName[];
 extern const char kMostVisitedTilesDescription[];
 
+// Title and description of the flag to enable multiline gradient support in
+// FadeTruncatingLabel.
+extern const char kMultilineFadeTruncatingLabelName[];
+extern const char kMultilineFadeTruncatingLabelDescription[];
+
 // Title and description of the flag to enable the native Find in Page API
 // for iOS 16 and later.
 extern const char kNativeFindInPageName[];

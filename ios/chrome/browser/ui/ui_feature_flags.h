@@ -122,6 +122,9 @@ BASE_DECLARE_FEATURE(kTabGridRecencySort);
 // Feature to enable the new bookmarks implementation.
 BASE_DECLARE_FEATURE(kEnableNewBookmarksImplementation);
 
+// Feature to enable multiline gradient support in fade truncating label.
+BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
+
 // Whether the tab grid tabs should be sorted by recency.
 bool IsTabGridSortedByRecency();
 
