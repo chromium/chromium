@@ -211,9 +211,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   NavigationItemImpl* GetPendingItem() final;
 
  private:
-  // Called when a dialog presented by JavaScriptDialogPresenter is dismissed.
-  void JavaScriptDialogClosed();
-
   // Notifies observers that `frame` will be removed and then removes it.
   void NotifyObserversAndRemoveWebFrame(WebFrame* frame);
 
@@ -236,6 +233,13 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   ScriptCommandCallbackMap& script_command_callbacks() {
     return owner_->script_command_callbacks_;
   }
+
+  // Returns a new callback with the same signature as `callback` which
+  // will clear `running_javascript_dialog_` of the current instance (if
+  // it still exists) and then invoke the original callback.
+  template <typename... Args>
+  base::OnceCallback<void(Args...)> WrapCallbackForJavaScriptDialog(
+      base::OnceCallback<void(Args...)> callback);
 
   // Owner. Never null. Owns this object.
   WebStateImpl* owner_ = nullptr;
