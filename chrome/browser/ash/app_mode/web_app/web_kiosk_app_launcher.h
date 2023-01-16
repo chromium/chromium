@@ -41,7 +41,7 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   WebKioskAppLauncher(Profile* profile,
                       const AccountId& account_id,
                       bool should_skip_install,
-                      Delegate* delegate);
+                      NetworkDelegate* network_delegate);
   WebKioskAppLauncher(const WebKioskAppLauncher&) = delete;
   WebKioskAppLauncher& operator=(const WebKioskAppLauncher&) = delete;
   ~WebKioskAppLauncher() override;
@@ -58,13 +58,15 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   void SetUrlLoaderForTesting(
       std::unique_ptr<web_app::WebAppUrlLoader> url_loader);
 
- private:
-  // KioskAppLauncher:
+  // `KioskAppLauncher`:
+  void AddObserver(KioskAppLauncher::Observer* observer) override;
+  void RemoveObserver(KioskAppLauncher::Observer* observer) override;
   void Initialize() override;
   void ContinueWithNetworkReady() override;
   void LaunchApp() override;
   void RestartLauncher() override;
 
+ private:
   // crosapi::BrowserManagerObserver:
   void OnStateChanged() override;
 
@@ -88,6 +90,8 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   // Get the current web application to be launched in the session.
   const WebKioskAppData* GetCurrentApp() const;
 
+  void NotifyAppWindowCreated();
+
   bool is_installed_ = false;  // Whether the installation was completed.
   // |profile_| may become nullptr if the profile is being destroyed.
   Profile* profile_;
@@ -95,6 +99,7 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   const bool should_skip_install_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
+  KioskAppLauncher::ObserverList observers_;
   Browser* browser_ = nullptr;  // Browser instance that runs the web kiosk app.
 
   std::unique_ptr<web_app::WebAppInstallTask>

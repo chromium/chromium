@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
@@ -103,11 +104,12 @@ class LacrosLauncher : public crosapi::BrowserManagerObserver {
       browser_manager_observation_{this};
 };
 
-StartupAppLauncher::StartupAppLauncher(Profile* profile,
-                                       const std::string& app_id,
-                                       bool should_skip_install,
-                                       StartupAppLauncher::Delegate* delegate)
-    : KioskAppLauncher(delegate),
+StartupAppLauncher::StartupAppLauncher(
+    Profile* profile,
+    const std::string& app_id,
+    bool should_skip_install,
+    StartupAppLauncher::NetworkDelegate* network_delegate)
+    : KioskAppLauncher(network_delegate),
       profile_(profile),
       app_id_(app_id),
       should_skip_install_(should_skip_install) {
@@ -123,6 +125,14 @@ StartupAppLauncher::StartupAppLauncher(Profile* profile,
 StartupAppLauncher::~StartupAppLauncher() {
   // Restore to default extension downloader backoff policy.
   KioskAppManager::Get()->SetExtensionDownloaderBackoffPolicy(absl::nullopt);
+}
+
+void StartupAppLauncher::AddObserver(KioskAppLauncher::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void StartupAppLauncher::RemoveObserver(KioskAppLauncher::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void StartupAppLauncher::Initialize() {
@@ -144,10 +154,11 @@ void StartupAppLauncher::Initialize() {
 
   // Update the offline enabled crx cache if the network is ready;
   // or just install the app.
-  if (delegate_->IsNetworkReady())
+  if (delegate_->IsNetworkReady()) {
     ContinueWithNetworkReady();
-  else
+  } else {
     BeginInstall();
+  }
 }
 
 void StartupAppLauncher::ContinueWithNetworkReady() {
@@ -180,7 +191,7 @@ void StartupAppLauncher::RestartLauncher() {
   // - notify the delegate that kiosk app is ready to launch, in case the
   // launch was delayed, for example by network config dialog.
   if (state_ == LaunchState::kReadyToLaunch) {
-    delegate_->OnAppPrepared();
+    observers_.NotifyAppPrepared();
     return;
   }
 
@@ -226,15 +237,17 @@ void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
     const std::string& app_id) {
   DCHECK(state_ == LaunchState::kWaitingForCache);
 
-  if (app_id != app_id_)
+  if (app_id != app_id_) {
     return;
+  }
 
   kiosk_app_manager_observation_.Reset();
 
-  if (KioskAppManager::Get()->HasCachedCrx(app_id_))
+  if (KioskAppManager::Get()->HasCachedCrx(app_id_)) {
     BeginInstall();
-  else
+  } else {
     OnLaunchFailure(KioskAppLaunchError::Error::kUnableToDownload);
+  }
 }
 
 void StartupAppLauncher::BeginInstall() {
@@ -253,7 +266,7 @@ void StartupAppLauncher::BeginInstall() {
 
 void StartupAppLauncher::InstallAppInAsh() {
   state_ = LaunchState::kInstallingApp;
-  delegate_->OnAppInstalling();
+  observers_.NotifyAppInstalling();
   installer_ = std::make_unique<ChromeKioskAppInstaller>(
       profile_, KioskAppManager::Get()->CreatePrimaryAppInstallData(app_id_));
   installer_->BeginInstall(base::BindOnce(
@@ -263,7 +276,7 @@ void StartupAppLauncher::InstallAppInAsh() {
 void StartupAppLauncher::InstallAppInLacros() {
   DCHECK(state_ == LaunchState::kWaitingForLacros);
   state_ = LaunchState::kInstallingApp;
-  delegate_->OnAppInstalling();
+  observers_.NotifyAppInstalling();
   crosapi_chrome_app_kiosk_service()->InstallKioskApp(
       KioskAppManager::Get()->CreatePrimaryAppInstallData(app_id_),
       base::BindOnce(&StartupAppLauncher::OnInstallComplete,
@@ -302,7 +315,7 @@ void StartupAppLauncher::OnInstallComplete(
 void StartupAppLauncher::OnInstallSuccess() {
   state_ = LaunchState::kReadyToLaunch;
 
-  delegate_->OnAppPrepared();
+  observers_.NotifyAppPrepared();
 }
 
 void StartupAppLauncher::LaunchApp() {
@@ -340,8 +353,9 @@ void StartupAppLauncher::OnLaunchComplete(
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
       return;
     case ChromeKioskAppLauncher::LaunchResult::kNetworkMissing:
-      if (!RetryWhenNetworkIsAvailable())
+      if (!RetryWhenNetworkIsAvailable()) {
         OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
+      }
       return;
     case ChromeKioskAppLauncher::LaunchResult::kUnknown:
       SYSLOG(ERROR) << "Received unknown LaunchResult";
@@ -352,15 +366,15 @@ void StartupAppLauncher::OnLaunchComplete(
 
 void StartupAppLauncher::OnLaunchSuccess() {
   state_ = LaunchState::kLaunchSucceeded;
-  delegate_->OnAppLaunched();
-  delegate_->OnAppWindowCreated();
+  observers_.NotifyAppLaunched();
+  observers_.NotifyAppWindowCreated();
 }
 
 void StartupAppLauncher::OnLaunchFailure(KioskAppLaunchError::Error error) {
   SYSLOG(ERROR) << "App launch failed, error: " << static_cast<int>(error);
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
 
-  delegate_->OnLaunchFailed(error);
+  observers_.NotifyLaunchFailed(error);
 }
 
 }  // namespace ash

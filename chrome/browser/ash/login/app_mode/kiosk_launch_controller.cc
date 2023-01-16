@@ -120,14 +120,22 @@ void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
 class ArcKioskAppServiceWrapper : public KioskAppLauncher {
  public:
   ArcKioskAppServiceWrapper(ArcKioskAppService* service,
-                            KioskAppLauncher::Delegate* delegate)
+                            KioskAppLauncher::NetworkDelegate* delegate)
       : service_(service) {
-    service_->SetDelegate(delegate);
+    service_->SetNetworkDelegate(delegate);
   }
 
-  ~ArcKioskAppServiceWrapper() override { service_->SetDelegate(nullptr); }
+  ~ArcKioskAppServiceWrapper() override {
+    service_->SetNetworkDelegate(nullptr);
+  }
 
-  // KioskAppLauncher:
+  // `KioskAppLauncher`:
+  void AddObserver(KioskAppLauncher::Observer* observer) override {
+    service_->AddObserver(observer);
+  }
+  void RemoveObserver(KioskAppLauncher::Observer* observer) override {
+    service_->RemoveObserver(observer);
+  }
   void Initialize() override { service_->Initialize(); }
   void ContinueWithNetworkReady() override {
     service_->ContinueWithNetworkReady();
@@ -136,6 +144,8 @@ class ArcKioskAppServiceWrapper : public KioskAppLauncher {
   void LaunchApp() override { service_->LaunchApp(); }
 
  private:
+  // `service_` is externally owned and it's the caller's responsibility to
+  // ensure that it outlives this wrapper.
   ArcKioskAppService* const service_;
 };
 
@@ -171,8 +181,9 @@ KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
 KioskLaunchController::KioskLaunchController() : host_(nullptr) {}
 
 KioskLaunchController::~KioskLaunchController() {
-  if (splash_screen_view_)
+  if (splash_screen_view_) {
     splash_screen_view_->SetDelegate(nullptr);
+  }
 }
 
 void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
@@ -185,24 +196,27 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   RecordKioskLaunchUMA(auto_launch);
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
 
-  if (host_)
+  if (host_) {
     host_->GetLoginDisplay()->SetUIEnabled(true);
+  }
 
   if (kiosk_app_id.type == KioskAppType::kChromeApp) {
     KioskAppManager::App app;
     DCHECK(KioskAppManager::IsInitialized());
     CHECK(KioskAppManager::Get()->GetApp(*kiosk_app_id.app_id, &app));
     kiosk_app_id_.account_id = app.account_id;
-    if (auto_launch)
+    if (auto_launch) {
       KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
           *kiosk_app_id.app_id);
+    }
   }
 
   splash_screen_view_->SetDelegate(this);
   splash_screen_view_->Show();
 
-  if (g_disable_wait_timer_and_login_operations)
+  if (g_disable_wait_timer_and_login_operations) {
     return;
+  }
 
   splash_wait_timer_.Start(FROM_HERE, kKioskSplashScreenMinTime,
                            base::BindOnce(&KioskLaunchController::OnTimerFire,
@@ -297,16 +311,19 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
         break;
     }
   }
+  app_launcher_observation_.Observe(app_launcher_.get());
 
   app_launcher_->Initialize();
-  if (network_ui_state_ == NetworkUIState::kNeedToShow)
+  if (network_ui_state_ == NetworkUIState::kNeedToShow) {
     ShowNetworkConfigureUI();
+  }
 }
 
 void KioskLaunchController::OnConfigureNetwork() {
   DCHECK(profile_);
-  if (network_ui_state_ == NetworkUIState::kShowing)
+  if (network_ui_state_ == NetworkUIState::kShowing) {
     return;
+  }
 
   network_ui_state_ = NetworkUIState::kShowing;
   if (CanConfigureNetwork() && NeedOwnerAuthToConfigureNetwork()) {
@@ -323,12 +340,14 @@ void KioskLaunchController::OnConfigureNetwork() {
 }
 
 void KioskLaunchController::OnCancelAppLaunch() {
-  if (cleaned_up_)
+  if (cleaned_up_) {
     return;
+  }
 
   // Only auto-launched apps should be cancelable.
-  if (KioskAppManager::Get()->GetDisableBailoutShortcut() && auto_launch_)
+  if (KioskAppManager::Get()->GetDisableBailoutShortcut() && auto_launch_) {
     return;
+  }
 
   SYSLOG(INFO) << "Canceling kiosk app launch.";
 
@@ -348,24 +367,27 @@ KioskAppManagerBase::App KioskLaunchController::GetAppData() {
   switch (kiosk_app_id_.type) {
     case KioskAppType::kChromeApp: {
       KioskAppManagerBase::App app;
-      if (KioskAppManager::Get()->GetApp(*kiosk_app_id_.app_id, &app))
+      if (KioskAppManager::Get()->GetApp(*kiosk_app_id_.app_id, &app)) {
         return app;
+      }
       break;
     }
     case KioskAppType::kArcApp: {
       const ArcKioskAppData* arc_app =
           ArcKioskAppManager::Get()->GetAppByAccountId(
               *kiosk_app_id_.account_id);
-      if (arc_app)
+      if (arc_app) {
         return KioskAppManagerBase::App(*arc_app);
+      }
       break;
     }
     case KioskAppType::kWebApp: {
       const WebKioskAppData* web_app =
           WebKioskAppManager::Get()->GetAppByAccountId(
               *kiosk_app_id_.account_id);
-      if (web_app)
+      if (web_app) {
         return WebKioskAppManager::CreateAppByData(*web_app);
+      }
       break;
     }
   }
@@ -390,8 +412,9 @@ void KioskLaunchController::CleanUp() {
 
   kiosk_profile_loader_.reset();
   // Can be null in tests.
-  if (host_)
+  if (host_) {
     host_->Finalize(base::OnceClosure());
+  }
   // Make sure that any kiosk launch errors get written to disk before we kill
   // the browser.
   g_browser_process->local_state()->CommitPendingWrite();
@@ -409,16 +432,18 @@ void KioskLaunchController::OnTimerFire() {
 }
 
 void KioskLaunchController::CloseSplashScreen() {
-  if (cleaned_up_)
+  if (cleaned_up_) {
     return;
+  }
   CleanUp();
 }
 
 void KioskLaunchController::OnAppInstalling() {
   SYSLOG(INFO) << "Kiosk app started installing.";
   app_state_ = AppState::kInstallingApp;
-  if (!splash_screen_view_)
+  if (!splash_screen_view_) {
     return;
+  }
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication);
 
@@ -428,11 +453,13 @@ void KioskLaunchController::OnAppInstalling() {
 void KioskLaunchController::OnAppPrepared() {
   SYSLOG(INFO) << "Kiosk app is ready to launch.";
 
-  if (!splash_screen_view_)
+  if (!splash_screen_view_) {
     return;
+  }
 
-  if (network_ui_state_ != NetworkUIState::kNotShowing)
+  if (network_ui_state_ != NetworkUIState::kNotShowing) {
     return;
+  }
 
   app_state_ = AppState::kInstallingExtensions;
 
@@ -454,8 +481,9 @@ void KioskLaunchController::OnAppPrepared() {
 }
 
 void KioskLaunchController::InitializeNetwork() {
-  if (!splash_screen_view_)
+  if (!splash_screen_view_) {
     return;
+  }
 
   network_wait_timer_.Start(FROM_HERE, g_network_wait_time, this,
                             &KioskLaunchController::OnNetworkWaitTimedOut);
@@ -469,8 +497,9 @@ void KioskLaunchController::InitializeNetwork() {
 
   app_state_ = AppState::kInitNetwork;
 
-  if (splash_screen_view_->IsNetworkReady())
+  if (splash_screen_view_->IsNetworkReady()) {
     OnNetworkStateChanged(true);
+  }
 }
 
 void KioskLaunchController::OnNetworkWaitTimedOut() {
@@ -500,8 +529,9 @@ bool KioskLaunchController::IsShowingNetworkConfigScreen() const {
 }
 
 void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
-  if (cleaned_up_)
+  if (cleaned_up_) {
     return;
+  }
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLaunchFailed);
 
@@ -553,14 +583,16 @@ void KioskLaunchController::HandleWebAppInstallFailed() {
 
   SYSLOG(WARNING) << "Failed to obtain app data, trying to launch anyway..";
 
-  if (!splash_screen_view_)
+  if (!splash_screen_view_) {
     return;
+  }
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::
           kWaitingAppWindowInstallFailed);
   splash_screen_view_->Show();
-  if (launch_on_install_ || g_skip_splash_wait_for_testing)
+  if (launch_on_install_ || g_skip_splash_wait_for_testing) {
     LaunchApp();
+  }
 }
 
 void KioskLaunchController::FinishForcedExtensionsInstall(
@@ -585,8 +617,9 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
   splash_screen_view_->Show();
 
-  if (launch_on_install_ || g_skip_splash_wait_for_testing)
+  if (launch_on_install_ || g_skip_splash_wait_for_testing) {
     LaunchApp();
+  }
 }
 
 void KioskLaunchController::OnAppLaunched() {
@@ -607,15 +640,17 @@ void KioskLaunchController::OnAppWindowCreated() {
 
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.
-  if (splash_wait_timer_.IsRunning())
+  if (splash_wait_timer_.IsRunning()) {
     return;
+  }
   CloseSplashScreen();
 }
 
 void KioskLaunchController::OnAppDataUpdated() {
   // Invokes Show() to update the app title and icon.
-  if (splash_screen_view_)
+  if (splash_screen_view_) {
     splash_screen_view_->Show();
+  }
 }
 
 void KioskLaunchController::OnProfileLoadFailed(
@@ -646,8 +681,9 @@ void KioskLaunchController::OnOwnerSigninSuccess() {
 }
 
 bool KioskLaunchController::CanConfigureNetwork() {
-  if (can_configure_network_callback)
+  if (can_configure_network_callback) {
     return can_configure_network_callback->Run();
+  }
 
   if (IsDeviceEnterpriseManaged()) {
     bool should_prompt;
@@ -665,23 +701,26 @@ bool KioskLaunchController::CanConfigureNetwork() {
 }
 
 bool KioskLaunchController::NeedOwnerAuthToConfigureNetwork() {
-  if (need_owner_auth_to_configure_network_callback)
+  if (need_owner_auth_to_configure_network_callback) {
     return need_owner_auth_to_configure_network_callback->Run();
+  }
 
   return !IsDeviceEnterpriseManaged();
 }
 
 void KioskLaunchController::MaybeShowNetworkConfigureUI() {
   SYSLOG(INFO) << "Network configure UI was requested to be shown.";
-  if (!splash_screen_view_)
+  if (!splash_screen_view_) {
     return;
+  }
 
   if (CanConfigureNetwork()) {
     if (NeedOwnerAuthToConfigureNetwork()) {
-      if (!network_wait_timedout_)
+      if (!network_wait_timedout_) {
         OnConfigureNetwork();
-      else
+      } else {
         splash_screen_view_->ToggleNetworkConfig(true);
+      }
     } else {
       ShowNetworkConfigureUI();
     }
@@ -775,8 +814,9 @@ void KioskLaunchController::OnNetworkStateChanged(bool online) {
 }
 
 void KioskLaunchController::LaunchApp() {
-  if (g_block_app_launch_for_testing)
+  if (g_block_app_launch_for_testing) {
     return;
+  }
 
   DCHECK(app_state_ == AppState::kInstalled);
   // We need to change the session state so we are able to create browser

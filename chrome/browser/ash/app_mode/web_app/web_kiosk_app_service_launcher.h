@@ -40,21 +40,24 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
   static constexpr char kWebAppInstallResultUMA[] =
       "Kiosk.AppService.WebApp.InstallResult";
 
-  WebKioskAppServiceLauncher(Profile* profile,
-                             const AccountId& account_id,
-                             KioskAppLauncher::Delegate* delegate);
+  WebKioskAppServiceLauncher(
+      Profile* profile,
+      const AccountId& account_id,
+      KioskAppLauncher::NetworkDelegate* network_delegate);
   WebKioskAppServiceLauncher(const WebKioskAppServiceLauncher&) = delete;
   WebKioskAppServiceLauncher& operator=(const WebKioskAppServiceLauncher&) =
       delete;
   ~WebKioskAppServiceLauncher() override;
 
- private:
-  // KioskAppLauncher overrides:
+  // `KioskAppLauncher`:
+  void AddObserver(KioskAppLauncher::Observer* observer) override;
+  void RemoveObserver(KioskAppLauncher::Observer* observer) override;
   void Initialize() override;
   void ContinueWithNetworkReady() override;
   void LaunchApp() override;
   void RestartLauncher() override;
 
+ private:
   // |KioskAppServiceLauncher| callbacks.
   void OnWebAppInitializled();
   void OnAppLaunched(bool success);
@@ -72,6 +75,7 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
   Profile* profile_;
   const AccountId account_id_;
   std::string app_id_;
+  KioskAppLauncher::ObserverList observers_;
 
   // Not owned. A keyed service bound to the profile.
   raw_ptr<web_app::WebAppProvider> web_app_provider_;

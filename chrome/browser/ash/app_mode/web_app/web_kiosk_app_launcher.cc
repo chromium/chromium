@@ -48,8 +48,8 @@ WebKioskAppLauncher::WebKioskAppLauncher(
     Profile* profile,
     const AccountId& account_id,
     bool should_skip_install,
-    WebKioskAppLauncher::Delegate* delegate)
-    : KioskAppLauncher(delegate),
+    WebKioskAppLauncher::NetworkDelegate* network_delegate)
+    : KioskAppLauncher(network_delegate),
       profile_(profile),
       account_id_(account_id),
       should_skip_install_(should_skip_install),
@@ -61,6 +61,14 @@ WebKioskAppLauncher::WebKioskAppLauncher(
 
 WebKioskAppLauncher::~WebKioskAppLauncher() = default;
 
+void WebKioskAppLauncher::AddObserver(KioskAppLauncher::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebKioskAppLauncher::RemoveObserver(KioskAppLauncher::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void WebKioskAppLauncher::Initialize() {
   const WebKioskAppData* app =
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_);
@@ -68,7 +76,7 @@ void WebKioskAppLauncher::Initialize() {
   SYSLOG(INFO) << "Launching web kiosk for url: " << app->install_url();
   if (app->status() == WebKioskAppData::Status::kInstalled ||
       should_skip_install_) {
-    delegate_->OnAppPrepared();
+    observers_.NotifyAppPrepared();
     return;
   }
   // If the app is not yet installed -- require network connection.
@@ -76,10 +84,11 @@ void WebKioskAppLauncher::Initialize() {
 }
 
 void WebKioskAppLauncher::ContinueWithNetworkReady() {
-  if (!profile_)
+  if (!profile_) {
     return;
+  }
 
-  delegate_->OnAppInstalling();
+  observers_.NotifyAppInstalling();
   DCHECK(!is_installed_);
   install_task_ = std::make_unique<web_app::WebAppInstallTask>(
       profile_,
@@ -104,7 +113,7 @@ void WebKioskAppLauncher::OnAppDataObtained(
   if (absl::holds_alternative<webapps::InstallResultCode>(info)) {
     RecordKioskWebAppInstallError(absl::get<webapps::InstallResultCode>(info));
     // Notify about failed installation, let the controller decide what to do.
-    delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);
+    observers_.NotifyLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
 
@@ -116,12 +125,12 @@ void WebKioskAppLauncher::OnAppDataObtained(
   if (url::Origin::Create(GetCurrentApp()->install_url()) !=
       url::Origin::Create(app_info.start_url)) {
     VLOG(1) << "Origin of the app does not match the origin of install url";
-    delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
+    observers_.NotifyLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
     return;
   }
 
   WebKioskAppManager::Get()->UpdateAppByAccountId(account_id_, app_info);
-  delegate_->OnAppPrepared();
+  observers_.NotifyAppPrepared();
 }
 
 void WebKioskAppLauncher::OnLacrosWindowCreated(
@@ -129,7 +138,7 @@ void WebKioskAppLauncher::OnLacrosWindowCreated(
   if (result != crosapi::mojom::CreationResult::kSuccess) {
     exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
     LOG(ERROR) << "The lacros window failed to be created. Result: " << result;
-    delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
+    observers_.NotifyLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
   }
 }
 
@@ -143,8 +152,9 @@ void WebKioskAppLauncher::CreateNewLacrosWindow() {
 }
 
 void WebKioskAppLauncher::LaunchApp() {
-  if (!profile_)
+  if (!profile_) {
     return;
+  }
 
   DCHECK(!browser_);
   const WebKioskAppData* app = GetCurrentApp();
@@ -156,7 +166,7 @@ void WebKioskAppLauncher::LaunchApp() {
   // spamming when it gets stable enough.
   if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
     LOG(WARNING) << "Using lacros-chrome for web kiosk session.";
-    delegate_->OnAppLaunched();
+    observers_.NotifyAppLaunched();
     if (crosapi::BrowserManager::Get()->IsRunning()) {
       CreateNewLacrosWindow();
     } else {
@@ -182,8 +192,8 @@ void WebKioskAppLauncher::LaunchApp() {
   browser_->window()->Show();
 
   WebKioskAppManager::Get()->InitSession(browser_, browser_->profile());
-  delegate_->OnAppLaunched();
-  delegate_->OnAppWindowCreated();
+  observers_.NotifyAppLaunched();
+  observers_.NotifyAppWindowCreated();
 }
 
 void WebKioskAppLauncher::RestartLauncher() {
@@ -201,8 +211,9 @@ void WebKioskAppLauncher::OnStateChanged() {
 }
 
 void WebKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {
-  if (!profile_)
+  if (!profile_) {
     return;
+  }
 
   CHECK(crosapi::browser_util::IsLacrosWindow(window));
   exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
@@ -214,9 +225,13 @@ void WebKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {
   // solved.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&KioskAppLauncher::Delegate::OnAppWindowCreated,
-                     base::Unretained(delegate_)),
+      base::BindOnce(&WebKioskAppLauncher::NotifyAppWindowCreated,
+                     weak_ptr_factory_.GetWeakPtr()),
       kSplashWindowCloseDelayTime);
+}
+
+void WebKioskAppLauncher::NotifyAppWindowCreated() {
+  observers_.NotifyAppWindowCreated();
 }
 
 void WebKioskAppLauncher::OnProfileWillBeDestroyed(Profile* profile) {

@@ -8,11 +8,58 @@ namespace ash {
 
 KioskAppLauncher::KioskAppLauncher() = default;
 
-KioskAppLauncher::KioskAppLauncher(KioskAppLauncher::Delegate* delegate)
+KioskAppLauncher::KioskAppLauncher(KioskAppLauncher::NetworkDelegate* delegate)
     : delegate_(delegate) {}
 
-void KioskAppLauncher::SetDelegate(Delegate* delegate) {
-  delegate_ = delegate;
+KioskAppLauncher::~KioskAppLauncher() = default;
+
+KioskAppLauncher::ObserverList::ObserverList() = default;
+KioskAppLauncher::ObserverList::~ObserverList() = default;
+void KioskAppLauncher::ObserverList::AddObserver(
+    KioskAppLauncher::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void KioskAppLauncher::ObserverList::RemoveObserver(
+    KioskAppLauncher::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void KioskAppLauncher::ObserverList::NotifyAppDataUpdated() {
+  for (auto& observer : observers_) {
+    observer.OnAppDataUpdated();
+  }
+}
+
+void KioskAppLauncher::ObserverList::NotifyAppInstalling() {
+  for (auto& observer : observers_) {
+    observer.OnAppInstalling();
+  }
+}
+
+void KioskAppLauncher::ObserverList::NotifyAppPrepared() {
+  for (auto& observer : observers_) {
+    observer.OnAppPrepared();
+  }
+}
+
+void KioskAppLauncher::ObserverList::NotifyAppLaunched() {
+  for (auto& observer : observers_) {
+    observer.OnAppLaunched();
+  }
+}
+
+void KioskAppLauncher::ObserverList::NotifyAppWindowCreated() {
+  for (auto& observer : observers_) {
+    observer.OnAppWindowCreated();
+  }
+}
+
+void KioskAppLauncher::ObserverList::NotifyLaunchFailed(
+    KioskAppLaunchError::Error error) {
+  for (auto& observer : observers_) {
+    observer.OnLaunchFailed(error);
+  }
 }
 
 }  // namespace ash

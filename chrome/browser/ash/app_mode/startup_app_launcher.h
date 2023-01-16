@@ -8,11 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
@@ -30,7 +29,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   StartupAppLauncher(Profile* profile,
                      const std::string& app_id,
                      bool should_skip_install,
-                     Delegate* delegate);
+                     NetworkDelegate* network_delegate);
   StartupAppLauncher(const StartupAppLauncher&) = delete;
   StartupAppLauncher& operator=(const StartupAppLauncher&) = delete;
   ~StartupAppLauncher() override;
@@ -52,7 +51,9 @@ class StartupAppLauncher : public KioskAppLauncher,
     kLaunchFailed
   };
 
-  // KioskAppLauncher:
+  // `KioskAppLauncher`:
+  void AddObserver(KioskAppLauncher::Observer* observer) override;
+  void RemoveObserver(KioskAppLauncher::Observer* observer) override;
   void Initialize() override;
   void ContinueWithNetworkReady() override;
   void RestartLauncher() override;
@@ -83,6 +84,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   int launch_attempt_ = 0;
   LaunchState state_ = LaunchState::kNotStarted;
 
+  KioskAppLauncher::ObserverList observers_;
   std::unique_ptr<ChromeKioskAppInstaller> installer_;
   std::unique_ptr<LacrosLauncher> lacros_launcher_;
   std::unique_ptr<ChromeKioskAppLauncher> launcher_;

@@ -43,13 +43,18 @@ const char kAppWindowAppId[] = "org.chromium.arc.0";
 
 }  // namespace
 
-class FakeController : public KioskAppLauncher::Delegate {
+class FakeController : public KioskAppLauncher::NetworkDelegate,
+                       public KioskAppLauncher::Observer {
  public:
   explicit FakeController(ArcKioskAppService* service) : service_(service) {
-    service_->SetDelegate(this);
+    service_->SetNetworkDelegate(this);
+    service_->AddObserver(this);
   }
 
-  ~FakeController() override { service_->SetDelegate(nullptr); }
+  ~FakeController() override {
+    service_->SetNetworkDelegate(nullptr);
+    service_->RemoveObserver(this);
+  }
 
   // KioskAppLauncher::Delegate:
   bool IsNetworkReady() const override { return true; }

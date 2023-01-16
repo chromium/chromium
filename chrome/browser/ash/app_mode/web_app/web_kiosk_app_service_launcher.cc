@@ -23,8 +23,10 @@ namespace ash {
 WebKioskAppServiceLauncher::WebKioskAppServiceLauncher(
     Profile* profile,
     const AccountId& account_id,
-    KioskAppLauncher::Delegate* delegate)
-    : KioskAppLauncher(delegate), profile_(profile), account_id_(account_id) {}
+    KioskAppLauncher::NetworkDelegate* network_delegate)
+    : KioskAppLauncher(network_delegate),
+      profile_(profile),
+      account_id_(account_id) {}
 
 WebKioskAppServiceLauncher::~WebKioskAppServiceLauncher() = default;
 
@@ -33,6 +35,16 @@ const WebKioskAppData* WebKioskAppServiceLauncher::GetCurrentApp() const {
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_);
   DCHECK(app);
   return app;
+}
+
+void WebKioskAppServiceLauncher::AddObserver(
+    KioskAppLauncher::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebKioskAppServiceLauncher::RemoveObserver(
+    KioskAppLauncher::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void WebKioskAppServiceLauncher::Initialize() {
@@ -81,7 +93,7 @@ void WebKioskAppServiceLauncher::OnWebAppInitializled() {
   app_id_ = app_id.value();
 
   // Don't enforce network status in web Kiosk if the app is already installed.
-  delegate_->OnAppPrepared();
+  observers_.NotifyAppPrepared();
 }
 
 void WebKioskAppServiceLauncher::ContinueWithNetworkReady() {
@@ -89,7 +101,7 @@ void WebKioskAppServiceLauncher::ContinueWithNetworkReady() {
 }
 
 void WebKioskAppServiceLauncher::InstallApp() {
-  delegate_->OnAppInstalling();
+  observers_.NotifyAppInstalling();
 
   web_app::ExternalInstallOptions options(
       GetCurrentApp()->install_url(),
@@ -112,7 +124,7 @@ void WebKioskAppServiceLauncher::OnExternalInstallCompleted(
   base::UmaHistogramEnumeration(kWebAppInstallResultUMA, result.code);
   if (!webapps::IsSuccess(result.code)) {
     SYSLOG(ERROR) << "Failed to install Kiosk web app, code " << result.code;
-    delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);
+    observers_.NotifyLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);
     return;
   }
 
@@ -120,7 +132,7 @@ void WebKioskAppServiceLauncher::OnExternalInstallCompleted(
   SYSLOG(INFO) << "Successfully installed Kiosk web app.";
   app_id_ = result.app_id.value();
 
-  delegate_->OnAppPrepared();
+  observers_.NotifyAppPrepared();
 }
 
 void WebKioskAppServiceLauncher::LaunchApp() {
@@ -135,14 +147,14 @@ void WebKioskAppServiceLauncher::LaunchApp() {
 
 void WebKioskAppServiceLauncher::OnAppLaunched(bool success) {
   if (!success) {
-    delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
+    observers_.NotifyLaunchFailed(KioskAppLaunchError::Error::kUnableToLaunch);
     return;
   }
-  delegate_->OnAppLaunched();
+  observers_.NotifyAppLaunched();
 }
 
 void WebKioskAppServiceLauncher::OnAppBecomesVisible() {
-  delegate_->OnAppWindowCreated();
+  observers_.NotifyAppWindowCreated();
 }
 
 void WebKioskAppServiceLauncher::RestartLauncher() {

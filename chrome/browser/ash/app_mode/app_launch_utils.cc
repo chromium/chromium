@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -43,7 +44,8 @@ std::vector<std::string>* test_prefs_to_reset = nullptr;
 // A simple manager for the app launch that starts the launch
 // and deletes itself when the launch finishes. On launch failure,
 // it exits the browser process.
-class AppLaunchManager : public StartupAppLauncher::Delegate {
+class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
+                         public KioskAppLauncher::Observer {
  public:
   AppLaunchManager(Profile* profile, const KioskAppId& kiosk_app_id) {
     CHECK(kiosk_app_id.type != KioskAppType::kArcApp);
@@ -51,16 +53,17 @@ class AppLaunchManager : public StartupAppLauncher::Delegate {
     if (kiosk_app_id.type == KioskAppType::kChromeApp) {
       app_launcher_ = std::make_unique<StartupAppLauncher>(
           profile, *kiosk_app_id.app_id, /*should_skip_install=*/true,
-          /*delegate=*/this);
+          /*network_delegate=*/this);
     } else if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
                !crosapi::browser_util::IsLacrosEnabled()) {
       app_launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
-          profile, *kiosk_app_id.account_id, /*delegate=*/this);
+          profile, *kiosk_app_id.account_id, /*network_delegate=*/this);
     } else {
       app_launcher_ = std::make_unique<WebKioskAppLauncher>(
           profile, *kiosk_app_id.account_id,
-          /*should_skip_install=*/true, /*delegate=*/this);
+          /*should_skip_install=*/true, /*network_delegate=*/this);
     }
+    observation_.Observe(app_launcher_.get());
   }
   AppLaunchManager(const AppLaunchManager&) = delete;
   AppLaunchManager& operator=(const AppLaunchManager&) = delete;
@@ -72,7 +75,7 @@ class AppLaunchManager : public StartupAppLauncher::Delegate {
 
   void Cleanup() { delete this; }
 
-  // KioskAppLauncher::Delegate:
+  // KioskAppLauncher::NetworkDelegate:
   void InitializeNetwork() override {
     // This is on crash-restart path and assumes network is online.
     app_launcher_->ContinueWithNetworkReady();
@@ -81,6 +84,9 @@ class AppLaunchManager : public StartupAppLauncher::Delegate {
     // See comments above. Network is assumed to be online here.
     return true;
   }
+  bool IsShowingNetworkConfigScreen() const override { return false; }
+
+  // KioskAppLauncher::Observer:
   void OnAppInstalling() override {}
   void OnAppPrepared() override { app_launcher_->LaunchApp(); }
   void OnAppLaunched() override {}
@@ -90,9 +96,10 @@ class AppLaunchManager : public StartupAppLauncher::Delegate {
     chrome::AttemptUserExit();
     Cleanup();
   }
-  bool IsShowingNetworkConfigScreen() const override { return false; }
 
   std::unique_ptr<KioskAppLauncher> app_launcher_;
+  base::ScopedObservation<KioskAppLauncher, KioskAppLauncher::Observer>
+      observation_{this};
 };
 
 void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id) {

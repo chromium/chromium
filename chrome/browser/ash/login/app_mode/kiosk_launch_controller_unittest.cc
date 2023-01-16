@@ -101,7 +101,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     disable_wait_timer_and_login_operations_for_testing_ =
         KioskLaunchController::DisableWaitTimerAndLoginOperationsForTesting();
 
-    auto app_launcher = std::make_unique<MockWebKioskAppLauncher>(&profile_);
+    auto app_launcher = std::make_unique<MockWebKioskAppLauncher>();
     app_launcher_ = app_launcher.get();
 
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
@@ -126,7 +126,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   KioskLaunchController& controller() { return *controller_; }
 
-  KioskAppLauncher::Delegate& launch_controls() { return *controller_; }
+  KioskAppLauncher::NetworkDelegate& network_delegate() { return *controller_; }
 
   KioskProfileLoader::Delegate& profile_controls() { return *controller_; }
 
@@ -173,8 +173,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   void RunUntilAppPrepared() {
     controller().Start(kiosk_app_id(), /*auto_launch=*/false);
     profile_controls().OnProfileLoaded(profile());
-    launch_controls().OnAppInstalling();
-    launch_controls().OnAppPrepared();
+    launcher().CallOnAppInstalling();
+    launcher().CallOnAppPrepared();
   }
 
   void VerifyLaunchStateCrashKey(KioskLaunchState state) {
@@ -212,7 +212,7 @@ TEST_F(KioskLaunchControllerTest, AppInstallingShouldUpdateSplashScreen) {
   VerifyLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
   profile_controls().OnProfileLoaded(profile());
 
-  launch_controls().OnAppInstalling();
+  launcher().CallOnAppInstalling();
 
   EXPECT_THAT(
       view(),
@@ -223,9 +223,9 @@ TEST_F(KioskLaunchControllerTest, AppInstallingShouldUpdateSplashScreen) {
 TEST_F(KioskLaunchControllerTest, AppPreparedShouldUpdateInternalState) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
   profile_controls().OnProfileLoaded(profile());
-  launch_controls().OnAppInstalling();
+  launcher().CallOnAppInstalling();
 
-  launch_controls().OnAppPrepared();
+  launcher().CallOnAppPrepared();
 
   EXPECT_THAT(controller(),
               HasState(AppState::kInstalled, NetworkUIState::kNotShowing));
@@ -249,7 +249,7 @@ TEST_F(KioskLaunchControllerTest,
        SplashScreenTimerShouldNotLaunchUnpreparedApp) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
   profile_controls().OnProfileLoaded(profile());
-  launch_controls().OnAppInstalling();
+  launcher().CallOnAppInstalling();
 
   EXPECT_CALL(launcher(), LaunchApp()).Times(0);
   FireSplashScreenTimer();
@@ -257,14 +257,14 @@ TEST_F(KioskLaunchControllerTest,
   Mock::VerifyAndClearExpectations(&launcher());
 
   EXPECT_CALL(launcher(), LaunchApp()).Times(1);
-  launch_controls().OnAppPrepared();
+  launcher().CallOnAppPrepared();
 }
 
 TEST_F(KioskLaunchControllerTest, AppLaunchedShouldStartSession) {
   RunUntilAppPrepared();
   FireSplashScreenTimer();
 
-  launch_controls().OnAppLaunched();
+  launcher().CallOnAppLaunched();
 
   EXPECT_THAT(controller(),
               HasState(AppState::kLaunched, NetworkUIState::kNotShowing));
@@ -280,7 +280,7 @@ TEST_F(KioskLaunchControllerTest,
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
   profile_controls().OnProfileLoaded(profile());
 
-  launch_controls().InitializeNetwork();
+  network_delegate().InitializeNetwork();
   EXPECT_THAT(controller(),
               HasState(AppState::kInitNetwork, NetworkUIState::kNotShowing));
   EXPECT_THAT(
@@ -297,7 +297,7 @@ TEST_F(KioskLaunchControllerTest,
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
   profile_controls().OnProfileLoaded(profile());
 
-  launch_controls().InitializeNetwork();
+  network_delegate().InitializeNetwork();
   EXPECT_THAT(controller(),
               HasState(AppState::kInitNetwork, NetworkUIState::kNotShowing));
   EXPECT_THAT(
@@ -343,7 +343,7 @@ TEST_F(KioskLaunchControllerTest, ConfigureNetworkDuringInstallation) {
   EXPECT_CALL(launcher(), Initialize()).Times(1);
   profile_controls().OnProfileLoaded(profile());
 
-  launch_controls().OnAppInstalling();
+  launcher().CallOnAppInstalling();
 
   // User presses the hotkey, current installation is canceled.
   EXPECT_CALL(launcher(), RestartLauncher()).Times(1);
@@ -401,12 +401,12 @@ TEST_F(KioskLaunchControllerTest,
   RunUntilAppPrepared();
   FireSplashScreenTimer();
 
-  launch_controls().InitializeNetwork();
+  network_delegate().InitializeNetwork();
   EXPECT_THAT(controller(),
               HasState(AppState::kInitNetwork, NetworkUIState::kNotShowing));
 
   EXPECT_CALL(launcher(), LaunchApp()).Times(1);
-  launch_controls().OnAppPrepared();
+  launcher().CallOnAppPrepared();
 }
 
 class KioskLaunchControllerWithExtensionTest
@@ -465,7 +465,7 @@ TEST_F(KioskLaunchControllerWithExtensionTest,
   EXPECT_CALL(launcher(), LaunchApp()).Times(1);
   FireSplashScreenTimer();
 
-  launch_controls().OnAppLaunched();
+  launcher().CallOnAppLaunched();
   EXPECT_THAT(controller(),
               HasState(AppState::kLaunched, NetworkUIState::kNotShowing));
   EXPECT_THAT(

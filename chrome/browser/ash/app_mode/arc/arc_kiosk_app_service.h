@@ -46,6 +46,8 @@ class ArcKioskAppService : public KeyedService,
   static ArcKioskAppService* Create(Profile* profile);
   static ArcKioskAppService* Get(content::BrowserContext* context);
 
+  void SetNetworkDelegate(NetworkDelegate* network_delegate);
+
   // KeyedService overrides
   void Shutdown() override;
 
@@ -83,7 +85,9 @@ class ArcKioskAppService : public KeyedService,
   void OnComplianceReportReceived(
       const base::Value* compliance_report) override;
 
-  // KioskAppLauncher:
+  // `KioskAppLauncher`:
+  void AddObserver(KioskAppLauncher::Observer* observer) override;
+  void RemoveObserver(KioskAppLauncher::Observer* observer) override;
   void Initialize() override;
   void ContinueWithNetworkReady() override;
   void RestartLauncher() override;
@@ -113,6 +117,8 @@ class ArcKioskAppService : public KeyedService,
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info_;
   std::unique_ptr<ArcAppIcon> app_icon_;
   int32_t task_id_ = -1;
+  KioskAppLauncher::ObserverList observers_;
+
   // This contains the list of apps that must be installed for the device to be
   // policy-compliant according to the policy report. Even if an app has already
   // finished installing, it could still remain in this list for some time.

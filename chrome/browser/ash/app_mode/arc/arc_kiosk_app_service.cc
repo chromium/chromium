@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "ui/base/layout.h"
 #include "ui/display/display.h"
@@ -42,11 +41,24 @@ ArcKioskAppService* ArcKioskAppService::Get(content::BrowserContext* context) {
   return ArcKioskAppServiceFactory::GetForBrowserContext(context);
 }
 
+void ArcKioskAppService::SetNetworkDelegate(NetworkDelegate* network_delegate) {
+  delegate_ = network_delegate;
+}
+
+void ArcKioskAppService::AddObserver(KioskAppLauncher::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ArcKioskAppService::RemoveObserver(KioskAppLauncher::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void ArcKioskAppService::Shutdown() {
   ArcAppListPrefs::Get(profile_)->RemoveObserver(this);
   // It can be null unittests.
-  if (arc::ArcSessionManager::Get())
+  if (arc::ArcSessionManager::Get()) {
     arc::ArcSessionManager::Get()->RemoveObserver(this);
+  }
   app_manager_->RemoveObserver(this);
   arc::ArcPolicyBridge::GetForBrowserContext(profile_)->RemoveObserver(this);
 }
@@ -54,16 +66,18 @@ void ArcKioskAppService::Shutdown() {
 void ArcKioskAppService::OnAppRegistered(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  if (!app_id_.empty() && app_id != app_id_)
+  if (!app_id_.empty() && app_id != app_id_) {
     return;
+  }
   PreconditionsChanged();
 }
 
 void ArcKioskAppService::OnAppStatesChanged(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  if (!app_id_.empty() && app_id != app_id_)
+  if (!app_id_.empty() && app_id != app_id_) {
     return;
+  }
   PreconditionsChanged();
 }
 
@@ -85,8 +99,7 @@ void ArcKioskAppService::OnTaskCreated(int32_t task_id,
   if (app_info_ && package_name == app_info_->package_name &&
       activity == app_info_->activity) {
     task_id_ = task_id;
-    if (delegate_)
-      delegate_->OnAppLaunched();
+    observers_.NotifyAppLaunched();
   }
 }
 
@@ -110,16 +123,16 @@ void ArcKioskAppService::OnMaintenanceSessionCreated() {
 }
 
 void ArcKioskAppService::OnMaintenanceSessionFinished() {
-  if (!maintenance_timeout_timer_.IsRunning())
+  if (!maintenance_timeout_timer_.IsRunning()) {
     VLOG(1) << "Maintenance session timeout";
+  }
   maintenance_timeout_timer_.Stop();
   maintenance_session_running_ = false;
   PreconditionsChanged();
 }
 
 void ArcKioskAppService::OnAppWindowLaunched() {
-  if (delegate_)
-    delegate_->OnAppWindowCreated();
+  observers_.NotifyAppWindowCreated();
 }
 
 void ArcKioskAppService::OnIconUpdated(ArcAppIcon* icon) {
@@ -131,8 +144,7 @@ void ArcKioskAppService::OnIconUpdated(ArcAppIcon* icon) {
   AccountId account_id = multi_user_util::GetAccountIdFromProfile(profile_);
   app_manager_->UpdateNameAndIcon(account_id, app_info_->name,
                                   app_icon_->image_skia());
-  if (delegate_)
-    delegate_->OnAppDataUpdated();
+  observers_.NotifyAppDataUpdated();
 }
 
 void ArcKioskAppService::OnArcSessionRestarting() {
@@ -162,12 +174,14 @@ void ArcKioskAppService::OnComplianceReportReceived(
   for (const auto& detail : details->GetList()) {
     const base::Value* const reason =
         detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
-    if (!reason || reason->GetInt() != kNonComplianceReasonAppNotInstalled)
+    if (!reason || reason->GetInt() != kNonComplianceReasonAppNotInstalled) {
       continue;
+    }
     const base::Value* const app_name =
         detail.FindKeyOfType("packageName", base::Value::Type::STRING);
-    if (!app_name || app_name->GetString().empty())
+    if (!app_name || app_name->GetString().empty()) {
       continue;
+    }
     pending_policy_app_installs_.insert(app_name->GetString());
   }
   PreconditionsChanged();
@@ -189,8 +203,9 @@ ArcKioskAppService::~ArcKioskAppService() {
 
 void ArcKioskAppService::RequestNameAndIconUpdate() {
   // Request only once when app_icon_ is not initialized.
-  if (!app_info_ || !app_info_->ready || app_icon_)
+  if (!app_info_ || !app_info_->ready || app_icon_) {
     return;
+  }
   app_icon_ = std::make_unique<ArcAppIcon>(
       profile_, app_id_,
       SharedAppListConfig::instance().default_grid_icon_dimension(), this);
@@ -228,8 +243,7 @@ void ArcKioskAppService::PreconditionsChanged() {
       VLOG(2) << "Starting kiosk app";
       app_launcher_ = std::make_unique<ArcKioskAppLauncher>(
           profile_, ArcAppListPrefs::Get(profile_), app_id_, this);
-      if (delegate_)
-        delegate_->OnAppPrepared();
+      observers_.NotifyAppPrepared();
     }
   } else if (task_id_ != -1) {
     VLOG(2) << "Kiosk app should be closed";
@@ -240,16 +254,19 @@ void ArcKioskAppService::PreconditionsChanged() {
 std::string ArcKioskAppService::GetAppId() {
   AccountId account_id = multi_user_util::GetAccountIdFromProfile(profile_);
   const ArcKioskAppData* app = app_manager_->GetAppByAccountId(account_id);
-  if (!app)
+  if (!app) {
     return std::string();
+  }
   std::unordered_set<std::string> app_ids =
       ArcAppListPrefs::Get(profile_)->GetAppsForPackage(app->package_name());
-  if (app_ids.empty())
+  if (app_ids.empty()) {
     return std::string();
+  }
   // If |activity| and |intent| are not specified, return any app from the
   // package.
-  if (app->activity().empty() && app->intent().empty())
+  if (app->activity().empty() && app->intent().empty()) {
     return *app_ids.begin();
+  }
   // Check that the app is registered for given package.
   return app_ids.count(app->app_id()) ? app->app_id() : std::string();
 }
