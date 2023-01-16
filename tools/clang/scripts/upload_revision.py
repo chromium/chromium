@@ -206,8 +206,9 @@ def GetLatestRustVersion(sub_revision: int):
 
 
 def FetchRust(rust_version):
-  print(f'Removing {RUST_SRC_PATH}.')
-  shutil.rmtree(RUST_SRC_PATH)
+  if os.path.exists(RUST_SRC_PATH):
+    print(f'Removing {RUST_SRC_PATH}.')
+    shutil.rmtree(RUST_SRC_PATH)
 
   print(f'Fetching Rust {rust_version} into {RUST_SRC_PATH}')
   version_str = rust_version.string_with_dashes(with_tag=True)
