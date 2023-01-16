@@ -295,11 +295,24 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
 }
 
 + (void)verifyWebSigninIsVisible:(BOOL)isVisible {
-  id<GREYMatcher> visibilityMatcher =
+  NSString* conditionDescription = isVisible
+                                       ? @"Web sign-in should be visible"
+                                       : @"Web sign-in should not be visible";
+  id<GREYMatcher> matcher =
       isVisible ? grey_sufficientlyVisible() : grey_notVisible();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kWebSigninAccessibilityIdentifier)]
-      assertWithMatcher:visibilityMatcher];
+  GREYCondition* condition = [GREYCondition
+      conditionWithName:conditionDescription
+                  block:^BOOL {
+                    NSError* error;
+                    [[EarlGrey selectElementWithMatcher:
+                                   grey_accessibilityID(
+                                       kWebSigninAccessibilityIdentifier)]
+                        assertWithMatcher:matcher
+                                    error:&error];
+                    return error == nil;
+                  }];
+  GREYAssertTrue([condition waitWithTimeout:10 pollInterval:0.1],
+                 conditionDescription);
 }
 
 + (void)submitSyncPassphrase:(NSString*)passphrase {
