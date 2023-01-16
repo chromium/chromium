@@ -2138,6 +2138,51 @@ be describing additional metrics about the same event.
       Whether there was a value before autofill in the field.
     </summary>
   </metric>
+  <metric name="HeuristicType" enum="AutofillServerFieldType">
+    <summary>
+      There are multiple heuristic classification strategies working in
+      parallel. This type is predicted from the active pattern source.
+    </summary>
+  </metric>
+  <metric name="HeuristicTypeDefault" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from the source of local heuristics on the
+      client, which uses patterns applied for most users, the types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="HeuristicTypeExperimental" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from the heuristics that uses experimental
+      patterns, the types are from |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="HeuristicTypeLegacy" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from patterns whose stability is above
+      suspicion, the types are from |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="HeuristicTypeNextGen" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from the heuristics that uses patterns
+      only for non-user-visible metrics, one step before experimental, the types
+      are from |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="IsFocusable" enum="Boolean">
+    <summary>
+      Whether the field is focusable to the user. This is an approximation of
+      visibility with false positives.
+    </summary>
+  </metric>
+  <metric name="RankInFieldSignatureGroup">
+    <summary>
+      If multiple fields have the same signature, this indicates the position
+      within this set of fields. This allows us to understand problems related
+      to duplicated field signatures.
+    </summary>
+  </metric>
   <metric name="SuggestionWasAccepted" enum="Boolean">
     <summary>
       Whether the suggestion was accepted. This is only set for a field where a

@@ -1384,12 +1384,25 @@ void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
   if (field_type_map.empty())
     return;
 
+  // Fields can share the same field signature. This map records for each
+  // signature how many fields with the same signature have been observed.
+  std::map<FieldSignature, size_t> field_rank_id_map;
   for (const auto& field : fields_) {
     auto iter = field_type_map.find(field->global_id());
     if (iter == field_type_map.end())
       continue;
     const FieldCandidates& candidates = iter->second;
     field->set_heuristic_type(pattern_source, candidates.BestHeuristicType());
+
+    ++field_rank_id_map[field->GetFieldSignature()];
+    // Log the field type predicted from local heuristics.
+    field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
+        .field_type = field->heuristic_type(pattern_source),
+        .pattern_source = pattern_source,
+        .is_active_pattern_source = GetActivePatternSource() == pattern_source,
+        .rank_in_field_signature_group =
+            field_rank_id_map[field->GetFieldSignature()],
+    });
   }
 }
 

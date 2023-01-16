@@ -106,6 +106,7 @@ using testing::Each;
 using testing::ElementsAre;
 using testing::Field;
 using testing::HasSubstr;
+using testing::Matcher;
 using testing::NiceMock;
 using testing::Not;
 using testing::Return;
@@ -762,7 +763,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   // Matches a AskForValuesToFillFieldLogEvent by equality of fields.
-  auto Equal(AskForValuesToFillFieldLogEvent expected) {
+  auto Equal(const AskForValuesToFillFieldLogEvent& expected) {
     return VariantWith<AskForValuesToFillFieldLogEvent>(
         AllOf(Field("has_suggestion",
                     &AskForValuesToFillFieldLogEvent::has_suggestion,
@@ -772,9 +773,16 @@ class BrowserAutofillManagerTest : public testing::Test {
                     expected.suggestion_is_shown)));
   }
 
+  // Matches a TriggerFillFieldLogEvent by equality of fields.
+  auto Equal(const TriggerFillFieldLogEvent& expected) {
+    return VariantWith<TriggerFillFieldLogEvent>(
+        AllOf(Field("fill_event_id", &TriggerFillFieldLogEvent::fill_event_id,
+                    expected.fill_event_id)));
+  }
+
   // Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
   // you want to ignore the fill_event_id.
-  auto Equal(FillFieldLogEvent expected) {
+  auto Equal(const FillFieldLogEvent& expected) {
     return VariantWith<FillFieldLogEvent>(
         AllOf(testing::Conditional(
                   expected.fill_event_id == FillEventId(-1), _,
@@ -794,10 +802,50 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   // Matches a TypingFieldLogEvent by equality of fields.
-  auto Equal(TypingFieldLogEvent expected) {
-    return VariantWith<TypingFieldLogEvent>(AllOf(Field(
+  auto Equal(const TypingFieldLogEvent& expected) {
+    return VariantWith<TypingFieldLogEvent>(Field(
         "has_value_after_typing", &TypingFieldLogEvent::has_value_after_typing,
-        expected.has_value_after_typing)));
+        expected.has_value_after_typing));
+  }
+
+  // Matches a HeuristicPredictionFieldLogEvent by equality of fields.
+  auto Equal(const HeuristicPredictionFieldLogEvent& expected) {
+    return VariantWith<HeuristicPredictionFieldLogEvent>(AllOf(
+        Field("field_type", &HeuristicPredictionFieldLogEvent::field_type,
+              expected.field_type),
+        Field("pattern_source",
+              &HeuristicPredictionFieldLogEvent::pattern_source,
+              expected.pattern_source),
+        Field("is_active_pattern_source",
+              &HeuristicPredictionFieldLogEvent::is_active_pattern_source,
+              expected.is_active_pattern_source),
+        Field("rank_in_field_signature_group",
+              &HeuristicPredictionFieldLogEvent::rank_in_field_signature_group,
+              expected.rank_in_field_signature_group)));
+  }
+
+  // Matches a vector of FieldLogEventType objects by equality of fields of each
+  // log event type.
+  auto ArrayEquals(
+      const std::vector<AutofillField::FieldLogEventType>& expected) {
+    std::vector<Matcher<AutofillField::FieldLogEventType>> matchers;
+    for (const auto& event : expected) {
+      if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(event)) {
+        matchers.push_back(
+            Equal(absl::get<AskForValuesToFillFieldLogEvent>(event)));
+      } else if (absl::holds_alternative<TriggerFillFieldLogEvent>(event)) {
+        matchers.push_back(Equal(absl::get<TriggerFillFieldLogEvent>(event)));
+      } else if (absl::holds_alternative<FillFieldLogEvent>(event)) {
+        matchers.push_back(Equal(absl::get<FillFieldLogEvent>(event)));
+      } else if (absl::holds_alternative<TypingFieldLogEvent>(event)) {
+        matchers.push_back(Equal(absl::get<TypingFieldLogEvent>(event)));
+      } else if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(
+                     event)) {
+        matchers.push_back(
+            Equal(absl::get<HeuristicPredictionFieldLogEvent>(event)));
+      }
+    }
+    return ElementsAreArray(matchers);
   }
 
  protected:
@@ -5280,8 +5328,79 @@ class BrowserAutofillManagerWithLogEventsTest
     : public BrowserAutofillManagerTest {
  protected:
   BrowserAutofillManagerWithLogEventsTest() {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillLogUKMEventsWithSampleRate);
+    scoped_features_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillLogUKMEventsWithSampleRate,
+                              features::kAutofillParsingPatternProvider},
+        /*disabled_features=*/{});
+  }
+
+  std::vector<AutofillField::FieldLogEventType> ToHeuristicFieldTypes(
+      ServerFieldType heuristic_type) {
+    std::vector<AutofillField::FieldLogEventType> expected_events;
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+    // Default pattern.
+    expected_events.push_back(HeuristicPredictionFieldLogEvent{
+        .field_type = heuristic_type,
+        .pattern_source = PatternSource::kDefault,
+        .is_active_pattern_source = true,
+        .rank_in_field_signature_group = 1,
+    });
+    // Legacy pattern.
+    expected_events.push_back(HeuristicPredictionFieldLogEvent{
+        .field_type = heuristic_type,
+        .pattern_source = PatternSource::kLegacy,
+        .is_active_pattern_source = false,
+        .rank_in_field_signature_group = 1,
+    });
+    // Experimental pattern.
+    expected_events.push_back(HeuristicPredictionFieldLogEvent{
+        .field_type = heuristic_type,
+        .pattern_source = PatternSource::kExperimental,
+        .is_active_pattern_source = false,
+        .rank_in_field_signature_group = 1,
+    });
+    // Nextgen pattern.
+    expected_events.push_back(HeuristicPredictionFieldLogEvent{
+        .field_type = heuristic_type,
+        .pattern_source = PatternSource::kNextGen,
+        .is_active_pattern_source = false,
+        .rank_in_field_signature_group = 1,
+    });
+#else
+    // Legacy pattern.
+    expected_events.push_back(HeuristicPredictionFieldLogEvent{
+        .field_type = heuristic_type,
+        .pattern_source = PatternSource::kLegacy,
+        .is_active_pattern_source = true,
+        .rank_in_field_signature_group = 1,
+    });
+#endif
+    return expected_events;
+  }
+
+  // n = 1 means the first instance.
+  template <class T>
+  const T* FindNthEventOfType(
+      const std::vector<AutofillField::FieldLogEventType>& events,
+      size_t n) {
+    // |count| represents the number of events of type T having been seen so
+    // far.
+    size_t count = 0;
+    for (const auto& event : events) {
+      if (const T* log_event = absl::get_if<T>(&event)) {
+        ++count;
+        if (count == n) {
+          return log_event;
+        }
+      }
+    }
+    return nullptr;
+  }
+
+  template <class T>
+  const T* FindFirstEventOfType(
+      const std::vector<AutofillField::FieldLogEventType>& events) {
+    return FindNthEventOfType<T>(events, 1);
   }
 
  private:
@@ -5316,37 +5435,37 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(2U, focus_field_log_events.size());
   ASSERT_EQ(u"First Name", autofill_field->parseable_label());
-
-  auto* trigger_fill_field_log_event =
-      absl::get_if<TriggerFillFieldLogEvent>(&focus_field_log_events[0]);
+  const TriggerFillFieldLogEvent* trigger_fill_field_log_event =
+      FindFirstEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events);
   ASSERT_TRUE(trigger_fill_field_log_event);
-
-  // All filled fields share the same expected FillFieldLogEvent.
-  // The first TriggerFillFieldLogEvent determines the fill_event_id for
-  // all following FillFieldLogEvents.
-  FillFieldLogEvent expected_fill_field_log_event{
-      .fill_event_id = trigger_fill_field_log_event->fill_event_id,
-      .had_value_before_filling = OptionalBoolean::kFalse,
-      .autofill_skipped_status = SkipStatus::kNotSkipped,
-      .was_autofilled = OptionalBoolean::kTrue,
-      .had_value_after_filling = OptionalBoolean::kTrue,
-  };
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events =
-        autofill_field_ptr->field_log_events();
+    // All parsed fields share the same expected
+    // HeuristicPredictionFieldLogEvent.
+    std::vector<AutofillField::FieldLogEventType> expected_events =
+        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+
     if (autofill_field_ptr->parseable_label() == u"First Name") {
-      ASSERT_EQ(2U, field_log_events.size());
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
-      EXPECT_THAT(field_log_events[1], Equal(expected_fill_field_log_event));
-    } else {
-      ASSERT_EQ(1U, field_log_events.size());
-      EXPECT_THAT(field_log_events[0], Equal(expected_fill_field_log_event));
+      expected_events.push_back(TriggerFillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event->fill_event_id,
+      });
     }
+    // All filled fields share the same expected FillFieldLogEvent.
+    // The first TriggerFillFieldLogEvent determines the fill_event_id for
+    // all following FillFieldLogEvents.
+    expected_events.push_back(FillFieldLogEvent{
+        .fill_event_id = trigger_fill_field_log_event->fill_event_id,
+        .had_value_before_filling = OptionalBoolean::kFalse,
+        .autofill_skipped_status = SkipStatus::kNotSkipped,
+        .was_autofilled = OptionalBoolean::kTrue,
+        .had_value_after_filling = OptionalBoolean::kTrue,
+    });
+    EXPECT_THAT(autofill_field_ptr->field_log_events(),
+                ArrayEquals(expected_events));
   }
 }
 
@@ -5394,11 +5513,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(2U, focus_field_log_events.size());
   ASSERT_EQ(u"First Name", autofill_field->parseable_label());
-
-  auto* trigger_fill_field_log_event =
-      absl::get_if<TriggerFillFieldLogEvent>(&focus_field_log_events[0]);
+  const TriggerFillFieldLogEvent* trigger_fill_field_log_event =
+      FindFirstEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events);
   ASSERT_TRUE(trigger_fill_field_log_event);
 
   // The first TriggerFillFieldLogEvent determines the fill_event_id for
@@ -5406,54 +5523,54 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FillEventId fill_event_id = trigger_fill_field_log_event->fill_event_id;
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events =
-        autofill_field_ptr->field_log_events();
+    // All parsed fields share the same expected
+    // HeuristicPredictionFieldLogEvent.
+    std::vector<AutofillField::FieldLogEventType> expected_events =
+        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+
     if (autofill_field_ptr->parseable_label() == u"First Name") {
-      ASSERT_EQ(2U, field_log_events.size());
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
-      EXPECT_THAT(field_log_events[1],
-                  Equal(FillFieldLogEvent{
-                      .fill_event_id = fill_event_id,
-                      .had_value_before_filling = OptionalBoolean::kTrue,
-                      .autofill_skipped_status = SkipStatus::kNotSkipped,
-                      .was_autofilled = OptionalBoolean::kTrue,
-                      .had_value_after_filling = OptionalBoolean::kTrue,
-                  }));
+      expected_events.push_back(TriggerFillFieldLogEvent{
+          .fill_event_id = fill_event_id,
+      });
+      expected_events.push_back(FillFieldLogEvent{
+          .fill_event_id = fill_event_id,
+          .had_value_before_filling = OptionalBoolean::kTrue,
+          .autofill_skipped_status = SkipStatus::kNotSkipped,
+          .was_autofilled = OptionalBoolean::kTrue,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+      });
     } else if (autofill_field_ptr->parseable_label() == u"Phone Number" ||
                autofill_field_ptr->parseable_label() == u"Email") {
       // Not filled because the address profile contained no data to fill.
-      ASSERT_EQ(1U, field_log_events.size());
-      EXPECT_THAT(field_log_events[0],
-                  Equal(FillFieldLogEvent{
-                      .fill_event_id = fill_event_id,
-                      .had_value_before_filling = OptionalBoolean::kFalse,
-                      .autofill_skipped_status = SkipStatus::kNotSkipped,
-                      .was_autofilled = OptionalBoolean::kFalse,
-                      .had_value_after_filling = OptionalBoolean::kFalse,
-                  }));
+      expected_events.push_back(FillFieldLogEvent{
+          .fill_event_id = fill_event_id,
+          .had_value_before_filling = OptionalBoolean::kFalse,
+          .autofill_skipped_status = SkipStatus::kNotSkipped,
+          .was_autofilled = OptionalBoolean::kFalse,
+          .had_value_after_filling = OptionalBoolean::kFalse,
+      });
     } else if (autofill_field_ptr->parseable_label() == u"Last Name") {
-      ASSERT_EQ(1U, field_log_events.size());
       // Not filled because the field contained a user typed value already.
-      EXPECT_THAT(field_log_events[0],
-                  Equal(FillFieldLogEvent{
-                      .fill_event_id = fill_event_id,
-                      .had_value_before_filling = OptionalBoolean::kTrue,
-                      .autofill_skipped_status = SkipStatus::kUserFilledFields,
-                      .was_autofilled = OptionalBoolean::kFalse,
-                      .had_value_after_filling = OptionalBoolean::kTrue,
-                  }));
+      expected_events.push_back(FillFieldLogEvent{
+          .fill_event_id = fill_event_id,
+          .had_value_before_filling = OptionalBoolean::kTrue,
+          .autofill_skipped_status = SkipStatus::kUserFilledFields,
+          .was_autofilled = OptionalBoolean::kFalse,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+      });
     } else {
-      ASSERT_EQ(1U, field_log_events.size());
-      EXPECT_THAT(field_log_events[0],
-                  Equal(FillFieldLogEvent{
-                      .fill_event_id = fill_event_id,
-                      .had_value_before_filling = OptionalBoolean::kFalse,
-                      .autofill_skipped_status = SkipStatus::kNotSkipped,
-                      .was_autofilled = OptionalBoolean::kTrue,
-                      .had_value_after_filling = OptionalBoolean::kTrue,
-                  }));
+      expected_events.push_back(FillFieldLogEvent{
+          .fill_event_id = fill_event_id,
+          .had_value_before_filling = OptionalBoolean::kFalse,
+          .autofill_skipped_status = SkipStatus::kNotSkipped,
+          .was_autofilled = OptionalBoolean::kTrue,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+      });
     }
+    EXPECT_THAT(autofill_field_ptr->field_log_events(),
+                ArrayEquals(expected_events));
   }
 }
 
@@ -5503,12 +5620,13 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(4U, focus_field_log_events.size());
   ASSERT_EQ(u"First Name", autofill_field->parseable_label());
-
-  auto* trigger_fill_field_log_event1 =
-      absl::get_if<TriggerFillFieldLogEvent>(&focus_field_log_events[0]);
+  const TriggerFillFieldLogEvent* trigger_fill_field_log_event1 =
+      FindNthEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events, 1);
   ASSERT_TRUE(trigger_fill_field_log_event1);
+  const TriggerFillFieldLogEvent* trigger_fill_field_log_event2 =
+      FindNthEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events, 2);
+  ASSERT_TRUE(trigger_fill_field_log_event2);
 
   // All filled fields share the same expected FillFieldLogEvent.
   // The first TriggerFillFieldLogEvent determines the fill_event_id for
@@ -5520,11 +5638,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       .was_autofilled = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
   };
-
-  auto* trigger_fill_field_log_event2 =
-      absl::get_if<TriggerFillFieldLogEvent>(&focus_field_log_events[2]);
-  ASSERT_TRUE(trigger_fill_field_log_event2);
-
   FillFieldLogEvent expected_fill_field_log_event2{
       .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
       .had_value_before_filling = OptionalBoolean::kTrue,
@@ -5532,41 +5645,46 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       .was_autofilled = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
   };
-  FillFieldLogEvent expected_skip_refill_field_log_event{
-      .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
-      .had_value_before_filling = OptionalBoolean::kTrue,
-      .autofill_skipped_status = SkipStatus::kAutofilledFieldsNotRefill,
-      .was_autofilled = OptionalBoolean::kFalse,
-      .had_value_after_filling = OptionalBoolean::kTrue,
-  };
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events =
-        autofill_field_ptr->field_log_events();
+    // All parsed fields share the same expected
+    // HeuristicPredictionFieldLogEvent.
+    std::vector<AutofillField::FieldLogEventType> expected_events =
+        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+
     if (autofill_field_ptr->parseable_label() == u"First Name") {
-      ASSERT_EQ(4U, field_log_events.size());
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
-      EXPECT_THAT(field_log_events[1], Equal(expected_fill_field_log_event1));
-      EXPECT_THAT(field_log_events[3], Equal(expected_fill_field_log_event2));
+      expected_events.push_back(TriggerFillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event1->fill_event_id,
+      });
+      expected_events.push_back(expected_fill_field_log_event1);
+      expected_events.push_back(TriggerFillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
+      });
+      expected_events.push_back(expected_fill_field_log_event2);
     } else if (autofill_field_ptr->parseable_label() == u"Phone Number" ||
                autofill_field_ptr->parseable_label() == u"Email") {
-      ASSERT_EQ(2U, field_log_events.size());
       FillFieldLogEvent expected_event = expected_fill_field_log_event1;
       expected_event.was_autofilled = OptionalBoolean::kFalse;
       expected_event.had_value_after_filling = OptionalBoolean::kFalse;
-      EXPECT_THAT(field_log_events[0], Equal(expected_event));
+      expected_events.push_back(expected_event);
 
       FillFieldLogEvent expected_event2 = expected_fill_field_log_event2;
       expected_event2.had_value_before_filling = OptionalBoolean::kFalse;
-      EXPECT_THAT(field_log_events[1], Equal(expected_event2));
+      expected_events.push_back(expected_event2);
     } else {
-      ASSERT_EQ(2U, field_log_events.size());
-      EXPECT_THAT(field_log_events[0], Equal(expected_fill_field_log_event1));
-      EXPECT_THAT(field_log_events[1],
-                  Equal(expected_skip_refill_field_log_event));
+      expected_events.push_back(expected_fill_field_log_event1);
+
+      FillFieldLogEvent expected_event2 = expected_fill_field_log_event2;
+      expected_event2.autofill_skipped_status =
+          SkipStatus::kAutofilledFieldsNotRefill;
+      expected_event2.was_autofilled = OptionalBoolean::kFalse;
+      expected_events.push_back(expected_event2);
     }
+    EXPECT_THAT(autofill_field_ptr->field_log_events(),
+                ArrayEquals(expected_events));
   }
 }
 
@@ -5609,11 +5727,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(3U, focus_field_log_events.size());
   ASSERT_EQ(u"First Name", autofill_field->parseable_label());
-
-  auto* trigger_fill_field_log_event =
-      absl::get_if<TriggerFillFieldLogEvent>(&focus_field_log_events[0]);
+  const TriggerFillFieldLogEvent* trigger_fill_field_log_event =
+      FindFirstEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events);
   ASSERT_TRUE(trigger_fill_field_log_event);
 
   // All filled fields share the same expected FillFieldLogEvent.
@@ -5629,21 +5745,26 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events =
-        autofill_field_ptr->field_log_events();
+    // All parsed fields share the same expected
+    // HeuristicPredictionFieldLogEvent.
+    std::vector<AutofillField::FieldLogEventType> expected_events =
+        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+
     if (autofill_field_ptr->parseable_label() == u"First Name") {
-      ASSERT_EQ(3U, field_log_events.size());
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
-      EXPECT_THAT(field_log_events[1], Equal(expected_fill_field_log_event));
-      EXPECT_THAT(field_log_events[2],
-                  Equal(TypingFieldLogEvent{
-                      .has_value_after_typing = OptionalBoolean::kTrue,
-                  }));
+      expected_events.push_back(TriggerFillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event->fill_event_id,
+      });
+      expected_events.push_back(expected_fill_field_log_event);
+      expected_events.push_back(TypingFieldLogEvent{
+          .has_value_after_typing = OptionalBoolean::kTrue,
+      });
     } else {
-      ASSERT_EQ(1U, field_log_events.size());
-      EXPECT_THAT(field_log_events[0], Equal(expected_fill_field_log_event));
+      expected_events.push_back(expected_fill_field_log_event);
     }
+    EXPECT_THAT(autofill_field_ptr->field_log_events(),
+                ArrayEquals(expected_events));
   }
 }
 
@@ -5682,11 +5803,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(3U, focus_field_log_events.size());
   ASSERT_EQ(u"Name on Card", autofill_field->parseable_label());
-
-  auto* trigger_fill_field_log_event =
-      absl::get_if<TriggerFillFieldLogEvent>(&focus_field_log_events[1]);
+  const TriggerFillFieldLogEvent* trigger_fill_field_log_event =
+      FindFirstEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events);
   ASSERT_TRUE(trigger_fill_field_log_event);
 
   // All filled fields share the same expected FillFieldLogEvent.
@@ -5702,36 +5821,38 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   for (const auto& autofill_field_ptr : *form_structure) {
     SCOPED_TRACE(autofill_field_ptr->parseable_label());
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events =
-        autofill_field_ptr->field_log_events();
+    // All parsed fields share the same expected
+    // HeuristicPredictionFieldLogEvent.
+    std::vector<AutofillField::FieldLogEventType> expected_events =
+        ToHeuristicFieldTypes(autofill_field_ptr->heuristic_type());
+
     if (autofill_field_ptr->parseable_label() == u"Name on Card") {
-      ASSERT_EQ(3U, field_log_events.size());
       // The "Name on Card" field gets focus and shows a suggestion so it
       // contains the AskForValuesToFillFieldLogEvent.
-      EXPECT_THAT(field_log_events[0],
-                  Equal(AskForValuesToFillFieldLogEvent{
-                      .has_suggestion = OptionalBoolean::kTrue,
-                      .suggestion_is_shown = OptionalBoolean::kTrue,
-                  }));
+      expected_events.push_back(AskForValuesToFillFieldLogEvent{
+          .has_suggestion = OptionalBoolean::kTrue,
+          .suggestion_is_shown = OptionalBoolean::kTrue,
+      });
+      expected_events.push_back(TriggerFillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event->fill_event_id,
+      });
       // The "Name on Card" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
-      EXPECT_THAT(field_log_events[2], Equal(expected_fill_field_log_event));
+      expected_events.push_back(expected_fill_field_log_event);
     } else if (autofill_field_ptr->parseable_label() == u"CVC") {
-      ASSERT_EQ(1U, field_log_events.size());
       // CVC field is not autofilled.
-      EXPECT_THAT(
-          field_log_events[0],
-          Equal(FillFieldLogEvent{
-              .fill_event_id = trigger_fill_field_log_event->fill_event_id,
-              .had_value_before_filling = OptionalBoolean::kFalse,
-              .autofill_skipped_status = SkipStatus::kNotSkipped,
-              .was_autofilled = OptionalBoolean::kFalse,
-              .had_value_after_filling = OptionalBoolean::kFalse,
-          }));
+      expected_events.push_back(FillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event->fill_event_id,
+          .had_value_before_filling = OptionalBoolean::kFalse,
+          .autofill_skipped_status = SkipStatus::kNotSkipped,
+          .was_autofilled = OptionalBoolean::kFalse,
+          .had_value_after_filling = OptionalBoolean::kFalse,
+      });
     } else {
-      ASSERT_EQ(1U, field_log_events.size());
-      EXPECT_THAT(field_log_events[0], Equal(expected_fill_field_log_event));
+      expected_events.push_back(expected_fill_field_log_event);
     }
+    EXPECT_THAT(autofill_field_ptr->field_log_events(),
+                ArrayEquals(expected_events));
   }
 }
 

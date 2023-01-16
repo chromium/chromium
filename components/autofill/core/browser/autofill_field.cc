@@ -48,36 +48,36 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
   }
 
   static_assert(
-      absl::variant_size<AutofillField::FieldLogEventType>() == 5,
+      absl::variant_size<AutofillField::FieldLogEventType>() == 6,
       "If you add a new field event type, you need to update this function");
 
-  // absl::monostate
   if (absl::holds_alternative<absl::monostate>(event1)) {
     using E = absl::monostate;
     return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
   }
 
-  // AskForValuesToFillFieldLogEvent
   if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(event1)) {
     using E = AskForValuesToFillFieldLogEvent;
     return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
   }
 
-  // TriggerFillFieldLogEvent
   if (absl::holds_alternative<TriggerFillFieldLogEvent>(event1)) {
     using E = TriggerFillFieldLogEvent;
     return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
   }
 
-  // FillFieldLogEvent
   if (absl::holds_alternative<FillFieldLogEvent>(event1)) {
     using E = FillFieldLogEvent;
     return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
   }
 
-  // TypingFieldLogEvent
   if (absl::holds_alternative<TypingFieldLogEvent>(event1)) {
     using E = TypingFieldLogEvent;
+    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
+  }
+
+  if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(event1)) {
+    using E = HeuristicPredictionFieldLogEvent;
     return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
   }
 

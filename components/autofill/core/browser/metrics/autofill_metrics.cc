@@ -2533,8 +2533,31 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   // TODO(crbug.com/1325851): Add a metric in |FieldInfo| UKM event to indicate
   // whether the user had any data available for the respective field type.
 
+  // Field types from local heuristics prediction.
+  // The field type from the active local heuristic pattern.
+  ServerFieldType heuristic_type = UNKNOWN_TYPE;
+  // The type of the field predicted from patterns whose stability is above
+  // suspicion.
+  ServerFieldType heuristic_legacy_type = UNKNOWN_TYPE;
+  // The type of the field predicted from the source of local heuristics on
+  // the client, which uses patterns applied for most users.
+  ServerFieldType heuristic_default_type = UNKNOWN_TYPE;
+  // The type of the field predicted from the heuristics that uses experimental
+  // patterns.
+  ServerFieldType heuristic_experimental_type = UNKNOWN_TYPE;
+  // The type of the field predicted from the heuristics that uses patterns
+  // only for non-user-visible metrics, one step before experimental.
+  ServerFieldType heuristic_next_gen_type = UNKNOWN_TYPE;
+
+  // If multiple fields have the same signature, this indicates the position
+  // within this set of fields. This allows us to understand problems related
+  // to duplicated field signatures.
+  size_t rank_in_field_signature_group = 0;
+
+  bool had_heuristic_type = false;
+
   for (const auto& log_event : field_log_events) {
-    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 5,
+    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 6,
                   "When adding new variants check that this function does not "
                   "need to be updated.");
     if (auto* event =
@@ -2566,6 +2589,38 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       filled_value_was_modified |= was_autofilled;
       has_value_after_typing = event->has_value_after_typing;
     }
+
+    if (auto* event =
+            absl::get_if<HeuristicPredictionFieldLogEvent>(&log_event)) {
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+      switch (event->pattern_source) {
+        case PatternSource::kLegacy:
+          heuristic_legacy_type = event->field_type;
+          break;
+        case PatternSource::kDefault:
+          heuristic_default_type = event->field_type;
+          break;
+        case PatternSource::kExperimental:
+          heuristic_experimental_type = event->field_type;
+          break;
+        case PatternSource::kNextGen:
+          heuristic_next_gen_type = event->field_type;
+          break;
+      }
+#else
+      switch (event->pattern_source) {
+        case PatternSource::kLegacy:
+          heuristic_legacy_type = event->field_type;
+          break;
+      }
+#endif
+
+      if (event->is_active_pattern_source) {
+        heuristic_type = event->field_type;
+      }
+      rank_in_field_signature_group = event->rank_in_field_signature_group;
+      had_heuristic_type = true;
+    }
   }
 
   if (had_value_after_filling != OptionalBoolean::kUndefined ||
@@ -2582,7 +2637,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       .SetFieldSessionIdentifier(
           AutofillMetrics::FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetWasFocused(OptionalBooleanToBool(was_focused));
+      .SetWasFocused(OptionalBooleanToBool(was_focused))
+      .SetIsFocusable(field.IsFocusable());
 
   if (was_focused == OptionalBoolean::kTrue) {
     builder
@@ -2613,6 +2669,15 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   if (had_typed_or_filled_value_at_submission != OptionalBoolean::kUndefined) {
     builder.SetHadTypedOrFilledValueAtSubmission(
         OptionalBooleanToBool(had_typed_or_filled_value_at_submission));
+  }
+
+  if (had_heuristic_type) {
+    builder.SetHeuristicType(heuristic_type)
+        .SetHeuristicTypeLegacy(heuristic_legacy_type)
+        .SetHeuristicTypeDefault(heuristic_default_type)
+        .SetHeuristicTypeExperimental(heuristic_experimental_type)
+        .SetHeuristicTypeNextGen(heuristic_next_gen_type)
+        .SetRankInFieldSignatureGroup(rank_in_field_signature_group);
   }
 
   builder.Record(ukm_recorder_);

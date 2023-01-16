@@ -70,4 +70,13 @@ bool AreCollapsible(const TypingFieldLogEvent& event1,
   return event1.has_value_after_typing == event2.has_value_after_typing;
 }
 
+bool AreCollapsible(const HeuristicPredictionFieldLogEvent& event1,
+                    const HeuristicPredictionFieldLogEvent& event2) {
+  return event1.field_type == event2.field_type &&
+         event1.pattern_source == event2.pattern_source &&
+         event1.is_active_pattern_source == event2.is_active_pattern_source &&
+         event1.rank_in_field_signature_group ==
+             event2.rank_in_field_signature_group;
+}
+
 }  // namespace autofill

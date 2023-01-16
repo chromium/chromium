@@ -7,6 +7,8 @@
 
 #include "base/time/time.h"
 #include "base/types/id_type.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -104,6 +106,20 @@ using TypingFieldLogEvent = TypingFieldLogEventImpl<>;
 // Compare two field log events of TypingFieldLogEvent type.
 bool AreCollapsible(const TypingFieldLogEvent& event1,
                     const TypingFieldLogEvent& event2);
+
+// Predict the field type from local heuristic.
+template <typename IsRequired = void>
+struct HeuristicPredictionFieldLogEventImpl {
+  ServerFieldType field_type = IsRequired();
+  PatternSource pattern_source = IsRequired();
+  bool is_active_pattern_source = IsRequired();
+  size_t rank_in_field_signature_group = IsRequired();
+};
+using HeuristicPredictionFieldLogEvent = HeuristicPredictionFieldLogEventImpl<>;
+
+// Compare two field log events of HeuristicPredictionFieldLogEvent type.
+bool AreCollapsible(const HeuristicPredictionFieldLogEvent& event1,
+                    const HeuristicPredictionFieldLogEvent& event2);
 
 }  // namespace autofill
 
