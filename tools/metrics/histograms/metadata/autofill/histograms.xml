@@ -1410,6 +1410,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.FastCheckout.CapabilitiesFetcher.CacheStateForIsTriggerFormSupported"
+    enum="FastCheckoutCacheStateForIsTriggerFormSupported"
+    expires_after="2023-08-15">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Cache state for when a given origin and form signature are checked for their
+    Fast Checkout trigger form capability.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FastCheckout.CapabilitiesFetcher.ParsingResult"
+    enum="FastCheckoutCapabilitiesParsingResult" expires_after="2023-08-15">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Parsing result of the response body of a Fast Checkout capabilities fetch.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FastCheckout.RunOutcome"
     enum="FastCheckoutRunOutcome" expires_after="2023-04-06">
   <owner>bwolfgang@google.com</owner>

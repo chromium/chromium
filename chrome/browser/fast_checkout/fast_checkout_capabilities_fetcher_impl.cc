@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_funnels.pb.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/origin.h"
 
 namespace {
@@ -18,6 +20,15 @@ constexpr char kFastCheckoutFunnelsUrl[] =
     "https://www.gstatic.com/autofill/fast_checkout/funnels.binarypb";
 constexpr base::TimeDelta kCacheTimeout(base::Minutes(10));
 constexpr base::TimeDelta kFetchTimeout(base::Seconds(3));
+constexpr char kUmaKeyCacheStateIsTriggerFormSupported[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher."
+    "CacheStateForIsTriggerFormSupported";
+constexpr char kUmaKeyParsingResult[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.ParsingResult";
+constexpr char kUmaKeyResponseAndNetErrorCode[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseAndNetErrorCode";
+constexpr char kUmaKeyResponseTime[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.ResponseTime";
 }  // namespace
 
 FastCheckoutCapabilitiesFetcherImpl::FastCheckoutFunnel::FastCheckoutFunnel() =
@@ -88,7 +99,7 @@ void FastCheckoutCapabilitiesFetcherImpl::FetchCapabilities() {
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&FastCheckoutCapabilitiesFetcherImpl::OnFetchComplete,
-                     base::Unretained(this)),
+                     base::Unretained(this), base::TimeTicks::Now()),
       kMaxDownloadSizeInBytes);
 }
 
@@ -98,30 +109,44 @@ bool FastCheckoutCapabilitiesFetcherImpl::IsCacheStale() const {
 }
 
 void FastCheckoutCapabilitiesFetcherImpl::OnFetchComplete(
+    base::TimeTicks start_time,
     std::unique_ptr<std::string> response_body) {
-  // TODO(crbug.com/1334642): Log duration.
+  base::UmaHistogramTimes(kUmaKeyResponseTime,
+                          base::TimeTicks::Now() - start_time);
 
   int net_error = url_loader_->NetError();
+  bool report_http_response_code =
+      (net_error == net::OK ||
+       net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE) &&
+      url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers;
+  base::UmaHistogramSparse(
+      kUmaKeyResponseAndNetErrorCode,
+      report_http_response_code
+          ? url_loader_->ResponseInfo()->headers->response_code()
+          : net_error);
 
   // Reset `url_loader_` so that another request could be made.
   url_loader_.reset();
   last_fetch_timestamp_ = base::TimeTicks::Now();
 
   if (net_error != net::OK) {
-    // TODO(crbug.com/1334642): Log `url_loader_->NetError()`.
     return;
   }
 
   if (!response_body) {
-    // TODO(crbug.com/1334642): Log no response received.
+    base::UmaHistogramEnumeration(kUmaKeyParsingResult,
+                                  ParsingResult::kNullResponse);
     return;
   }
 
   ::fast_checkout::FastCheckoutFunnels funnels;
   if (!funnels.ParseFromString(*response_body)) {
-    // TODO(crbug.com/1334642): Log parsing error.
+    base::UmaHistogramEnumeration(kUmaKeyParsingResult,
+                                  ParsingResult::kParsingError);
     return;
   }
+
+  base::UmaHistogramEnumeration(kUmaKeyParsingResult, ParsingResult::kSuccess);
 
   for (const ::fast_checkout::FastCheckoutFunnels_FastCheckoutFunnel&
            funnel_proto : funnels.funnels()) {
@@ -150,11 +175,19 @@ bool FastCheckoutCapabilitiesFetcherImpl::IsTriggerFormSupported(
   }
 
   if (!cache_.contains(origin)) {
-    // TODO(crbug.com/1334642): Log `origin` not in `cache_`.
+    base::UmaHistogramEnumeration(
+        kUmaKeyCacheStateIsTriggerFormSupported,
+        url_loader_ ? CacheStateForIsTriggerFormSupported::kFetchOngoing
+                    : CacheStateForIsTriggerFormSupported::kEntryNotAvailable);
     return false;
   }
 
   bool is_supported = cache_.at(origin).trigger.contains(form_signature);
-  // TODO(crbug.com/1334642): Log `is_supported`.
+  base::UmaHistogramEnumeration(
+      kUmaKeyCacheStateIsTriggerFormSupported,
+      is_supported
+          ? CacheStateForIsTriggerFormSupported::kEntryAvailableAndFormSupported
+          : CacheStateForIsTriggerFormSupported::
+                kEntryAvailableAndFormNotSupported);
   return is_supported;
 }

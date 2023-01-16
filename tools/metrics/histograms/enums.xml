@@ -36647,6 +36647,29 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Regular User"/>
 </enum>
 
+<enum name="FastCheckoutCacheStateForIsTriggerFormSupported">
+  <summary>
+    Possible different cache states that `FastCheckoutCapabilitiesFetcherImpl`
+    can encounter when `IsTriggerFormSupported` is called.
+  </summary>
+  <int value="0" label="Availability request has not completed yet."/>
+  <int value="1" label="Entry available and form not supported."/>
+  <int value="2" label="Entry available and form supported."/>
+  <int value="3" label="Entry not available."/>
+</enum>
+
+<enum name="FastCheckoutCapabilitiesParsingResult">
+  <summary>
+    Possible states of parsing the response body when a fetch completes in
+    `FastCheckoutCapabilitiesFetcherImpl`.
+  </summary>
+  <int value="0" label="Failure: The response body was null."/>
+  <int value="1"
+      label="Failure: The response body could not be parsed as
+             `FastCheckoutFunnels` proto message."/>
+  <int value="2" label="Success: Parsing was successful."/>
+</enum>
+
 <enum name="FastCheckoutRunOutcome">
   <summary>Defines possible outcomes of a Fast Checkout run.</summary>
   <int value="0"

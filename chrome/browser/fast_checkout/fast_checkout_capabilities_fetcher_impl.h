@@ -15,6 +15,57 @@
 class FastCheckoutCapabilitiesFetcherImpl
     : public FastCheckoutCapabilitiesFetcher {
  public:
+  // Possible different cache states that `FastCheckoutCapabilitiesFetcherImpl`
+  // can encounter when `IsTriggerFormSupported` is called.
+  //
+  // Needs to be kept in sync with
+  // `FastCheckoutCacheStateForIsTriggerFormSupported` in
+  // tools/metrics/histograms/enums.xml.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CacheStateForIsTriggerFormSupported {
+    // Availability is currently being fetched but the request has not completed
+    // yet.
+    kFetchOngoing = 0,
+
+    // There is a valid cache entry for this origin and the form signature that
+    // is being checked is not supported.
+    kEntryAvailableAndFormNotSupported = 1,
+
+    // There is a valid cache entry for this origin and the form signature that
+    // is being checked is supported.
+    kEntryAvailableAndFormSupported = 2,
+
+    // No availability was fetched for this origin within the lifetime of the
+    // cache.
+    kEntryNotAvailable = 3,
+
+    kMaxValue = kEntryNotAvailable
+  };
+
+  // Possible states of parsing the response body when a fetch completes in
+  // `FastCheckoutCapabilitiesFetcherImpl`.
+  //
+  // Needs to be kept in sync with `FastCheckoutCapabilitiesParsingResult` in
+  // tools/metrics/histograms/enums.xml.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ParsingResult {
+    // The response body was null.
+    kNullResponse = 0,
+
+    // The response body could not be parsed as `FastCheckoutFunnels` proto
+    // message.
+    kParsingError = 1,
+
+    // Parsing was successful.
+    kSuccess = 2,
+
+    kMaxValue = kSuccess
+  };
+
   explicit FastCheckoutCapabilitiesFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~FastCheckoutCapabilitiesFetcherImpl() override;
@@ -38,7 +89,8 @@ class FastCheckoutCapabilitiesFetcherImpl
     base::flat_set<autofill::FormSignature> fill;
   };
   // Called when the request's response arrives.
-  void OnFetchComplete(std::unique_ptr<std::string> response_body);
+  void OnFetchComplete(base::TimeTicks start_time,
+                       std::unique_ptr<std::string> response_body);
   // Returns if the cache is stale, i.e. if `kCacheTimeout` minutes since the
   // last successful request have passed or if no request was done yet.
   bool IsCacheStale() const;

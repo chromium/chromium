@@ -4,6 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/fast_checkout/fast_checkout_funnels.pb.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -13,7 +14,7 @@
 namespace {
 constexpr char kFastCheckoutFunnelsUrl[] =
     "https://www.gstatic.com/autofill/fast_checkout/funnels.binarypb";
-
+constexpr char kInvalidResponseBody[] = "invalid response body";
 constexpr char kDomain[] = "https://www.example.com";
 constexpr char kUnsupportedDomain[] = "https://www.example2.com";
 constexpr char kInvalidDomain[] = "invaliddomain";
@@ -24,6 +25,15 @@ constexpr autofill::FormSignature kTriggerFormSignature =
     autofill::FormSignature(1234567890UL);
 constexpr autofill::FormSignature kFillFormSignature =
     autofill::FormSignature(9876543210UL);
+constexpr char kUmaKeyCacheStateIsTriggerFormSupported[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher."
+    "CacheStateForIsTriggerFormSupported";
+constexpr char kUmaKeyParsingResult[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.ParsingResult";
+constexpr char kUmaKeyResponseAndNetErrorCode[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.HttpResponseAndNetErrorCode";
+constexpr char kUmaKeyResponseTime[] =
+    "Autofill.FastCheckout.CapabilitiesFetcher.ResponseTime";
 
 std::string CreateBinaryProtoResponse() {
   ::fast_checkout::FastCheckoutFunnels funnels;
@@ -74,6 +84,7 @@ class FastCheckoutCapabilitiesFetcherImplTest
     task_environment()->FastForwardBy(delta);
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
   const std::string& GetBinaryProtoResponse() { return binary_proto_response_; }
   const url::Origin& GetOrigin() { return origin_; }
   const url::Origin& GetUnsupportedOrigin() { return unsupported_origin_; }
@@ -96,6 +107,7 @@ class FastCheckoutCapabilitiesFetcherImplTest
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<FastCheckoutCapabilitiesFetcherImpl> fetcher_;
+  base::HistogramTester histogram_tester_;
   std::string binary_proto_response_;
   url::Origin origin_;
   url::Origin unsupported_origin_;
@@ -167,6 +179,97 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
 
 TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
        IsTriggerFormSupported_ReturnsFalseIfRequestFailed) {
-  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse(net::HTTP_BAD_REQUEST));
+  net::HttpStatusCode http_status = net::HTTP_BAD_REQUEST;
+
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse(http_status));
   EXPECT_FALSE(IsTriggerFormSupportedOnSupportedDomain());
+
+  histogram_tester().ExpectUniqueSample(kUmaKeyResponseAndNetErrorCode,
+                                        http_status, 1u);
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       OnFetchComplete_RecordsResponseTime) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+
+  histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 1u);
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       OnFetchComplete_SuccessfulRequest_RecordsHttpOkCode) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+
+  histogram_tester().ExpectUniqueSample(kUmaKeyResponseAndNetErrorCode,
+                                        net::HTTP_OK, 1u);
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       OnFetchComplete_ValidResponseBody_RecordsSucessfulParsing) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+
+  histogram_tester().ExpectUniqueSample(
+      kUmaKeyParsingResult,
+      FastCheckoutCapabilitiesFetcherImpl::ParsingResult::kSuccess, 1u);
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       OnFetchComplete_InvalidResponseBody_RecordsParsingError) {
+  fetcher()->FetchCapabilities();
+  EXPECT_TRUE(url_loader_factory()->SimulateResponseForPendingRequest(
+      kFastCheckoutFunnelsUrl, kInvalidResponseBody));
+
+  histogram_tester().ExpectUniqueSample(
+      kUmaKeyParsingResult,
+      FastCheckoutCapabilitiesFetcherImpl::ParsingResult::kParsingError, 1u);
+}
+
+TEST_F(
+    FastCheckoutCapabilitiesFetcherImplTest,
+    IsTriggerFormSupported_TriggerFormSignature_RecordsTriggerFormSupported) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+  EXPECT_TRUE(IsTriggerFormSupportedOnSupportedDomain());
+
+  histogram_tester().ExpectUniqueSample(
+      kUmaKeyCacheStateIsTriggerFormSupported,
+      FastCheckoutCapabilitiesFetcherImpl::CacheStateForIsTriggerFormSupported::
+          kEntryAvailableAndFormSupported,
+      1u);
+}
+
+TEST_F(
+    FastCheckoutCapabilitiesFetcherImplTest,
+    IsTriggerFormSupported_FillFormSignature_RecordsTriggerFormNotSupported) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+  EXPECT_FALSE(
+      fetcher()->IsTriggerFormSupported(GetOrigin(), kFillFormSignature));
+
+  histogram_tester().ExpectUniqueSample(
+      kUmaKeyCacheStateIsTriggerFormSupported,
+      FastCheckoutCapabilitiesFetcherImpl::CacheStateForIsTriggerFormSupported::
+          kEntryAvailableAndFormNotSupported,
+      1u);
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       IsTriggerFormSupported_FetchOngoing_RecordsFetchOngoing) {
+  fetcher()->FetchCapabilities();
+  EXPECT_FALSE(IsTriggerFormSupportedOnSupportedDomain());
+
+  histogram_tester().ExpectUniqueSample(
+      kUmaKeyCacheStateIsTriggerFormSupported,
+      FastCheckoutCapabilitiesFetcherImpl::CacheStateForIsTriggerFormSupported::
+          kFetchOngoing,
+      1u);
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       IsTriggerFormSupported_InvalidDomain_RecordsNotAvailable) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+  fetcher()->IsTriggerFormSupported(GetInvalidOrigin(), kTriggerFormSignature);
+
+  histogram_tester().ExpectUniqueSample(
+      kUmaKeyCacheStateIsTriggerFormSupported,
+      FastCheckoutCapabilitiesFetcherImpl::CacheStateForIsTriggerFormSupported::
+          kEntryNotAvailable,
+      1u);
 }
