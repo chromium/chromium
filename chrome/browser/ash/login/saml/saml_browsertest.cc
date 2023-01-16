@@ -1968,7 +1968,14 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, EmptyPolicy) {
 
 // Verify that device attestation is not available when device is not enterprise
 // enrolled.
-IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest, NotEnterpriseEnrolledError) {
+// TODO(crbug.com/1407565): Re-enable when no longer flaky.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NotEnterpriseEnrolledError DISABLED_NotEnterpriseEnrolledError
+#else
+#define MAYBE_NotEnterpriseEnrolledError NotEnterpriseEnrolledError
+#endif
+IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationTest,
+                       MAYBE_NotEnterpriseEnrolledError) {
   SetAllowedUrlsPolicy({fake_saml_idp()->GetIdpHost()});
 
   StartSamlAndWaitForIdpPageLoad(
