@@ -1525,7 +1525,7 @@ class DownloadFencedFrameTest : public DownloadContentTest {
     TestNavigationManager navigation(shell()->web_contents(), url);
     EXPECT_EQ(url.spec(),
               EvalJs(rfh, JsReplace(kNavigateInFencedFrameScript, url)));
-    navigation.WaitForNavigationFinished();
+    EXPECT_TRUE(navigation.WaitForNavigationFinished());
 
     EXPECT_FALSE(target_node->current_frame_host()->IsErrorDocument());
     return target_node->current_frame_host();
@@ -4196,8 +4196,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadAttributeNetworkError) {
   content::TestNavigationManager navigation_document(content, document_url);
   content::TestNavigationManager navigation_download(content, server_url);
   shell()->LoadURL(document_url);
-  navigation_document.WaitForNavigationFinished();
-  navigation_download.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_document.WaitForNavigationFinished());
+  ASSERT_TRUE(navigation_download.WaitForNavigationFinished());
 
   EXPECT_TRUE(navigation_document.was_successful());
   EXPECT_FALSE(navigation_download.was_successful());
