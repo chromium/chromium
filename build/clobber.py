@@ -7,40 +7,119 @@
 
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 
 
-_SRC_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+def extract_gn_build_commands(build_ninja_file):
+  """Extracts from a build.ninja the commands to run GN.
+
+  The commands to run GN are the gn rule and build.ninja build step at the
+  top of the build.ninja file. We want to keep these when deleting GN builds
+  since we want to preserve the command-line flags to GN.
+
+  On error, returns the empty string."""
+  result = ""
+  with open(build_ninja_file, 'r') as f:
+    # Reads until the first empty line after the "build build.ninja:" target.
+    # We assume everything before it necessary as well (eg the
+    # "ninja_required_version" line).
+    found_build_dot_ninja_target = False
+    for line in f.readlines():
+      result += line
+      if line.startswith('build build.ninja:'):
+        found_build_dot_ninja_target = True
+      if found_build_dot_ninja_target and line[0] == '\n':
+        return result
+  return ''  # We got to EOF and didn't find what we were looking for.
 
 
-def _generate_build_ninja(build_dir):
-  gn_gen_cmd = ['gn', 'gen', '--root=%s' % _SRC_DIR, '-C', build_dir]
-  print('Running %s' % ' '.join(gn_gen_cmd))
-  subprocess.run(gn_gen_cmd, check=True)
+def delete_dir(build_dir):
+  if os.path.islink(build_dir):
+    return
+  # For unknown reasons (anti-virus?) rmtree of Chromium build directories
+  # often fails on Windows.
+  if sys.platform.startswith('win'):
+    subprocess.check_call(['rmdir', '/s', '/q', build_dir], shell=True)
+  else:
+    shutil.rmtree(build_dir)
 
 
-def _clean_build_dir(build_dir):
-  print('Cleaning %s' % build_dir)
+def delete_build_dir(build_dir):
+  # GN writes a build.ninja.d file. Note that not all GN builds have args.gn.
+  build_ninja_d_file = os.path.join(build_dir, 'build.ninja.d')
+  if not os.path.exists(build_ninja_d_file):
+    delete_dir(build_dir)
+    return
 
-  gn_clean_cmd = ['gn', 'clean', '--root=%s' % _SRC_DIR, '-C', build_dir]
-  print('Running %s' % ' '.join(gn_clean_cmd))
+  # GN builds aren't automatically regenerated when you sync. To avoid
+  # messing with the GN workflow, erase everything but the args file, and
+  # write a dummy build.ninja file that will automatically rerun GN the next
+  # time Ninja is run.
+  build_ninja_file = os.path.join(build_dir, 'build.ninja')
+  build_commands = extract_gn_build_commands(build_ninja_file)
+
   try:
-    subprocess.run(gn_clean_cmd, check=True)
-  except Exception:
-    # gn clean may fail when build.ninja is corrupted or missing.
-    # Regenerate build.ninja and retry gn clean again.
-    _generate_build_ninja(build_dir)
-    print('Running %s' % ' '.join(gn_clean_cmd))
-    subprocess.run(gn_clean_cmd, check=True)
+    gn_args_file = os.path.join(build_dir, 'args.gn')
+    with open(gn_args_file, 'r') as f:
+      args_contents = f.read()
+  except IOError:
+    args_contents = ''
+
+  exception_during_rm = None
+  try:
+    # delete_dir and os.mkdir() may fail, such as when chrome.exe is running,
+    # and we still want to restore args.gn/build.ninja/build.ninja.d, so catch
+    # the exception and rethrow it later.
+    delete_dir(build_dir)
+    os.mkdir(build_dir)
+  except Exception as e:
+    exception_during_rm = e
+
+  # Put back the args file (if any).
+  if args_contents != '':
+    with open(gn_args_file, 'w') as f:
+      f.write(args_contents)
+
+  # Write the build.ninja file sufficiently to regenerate itself.
+  with open(os.path.join(build_dir, 'build.ninja'), 'w') as f:
+    if build_commands != '':
+      f.write(build_commands)
+    else:
+      # Couldn't parse the build.ninja file, write a default thing.
+      f.write('''ninja_required_version = 1.7.2
+
+rule gn
+  command = gn -q gen //out/%s/
+  description = Regenerating ninja files
+
+build build.ninja: gn
+  generator = 1
+  depfile = build.ninja.d
+''' % (os.path.split(build_dir)[1]))
+
+  # Write a .d file for the build which references a nonexistant file. This
+  # will make Ninja always mark the build as dirty.
+  with open(build_ninja_d_file, 'w') as f:
+    f.write('build.ninja: nonexistant_file.gn\n')
+
+  if exception_during_rm:
+    # Rethrow the exception we caught earlier.
+    raise exception_during_rm
 
 
 def clobber(out_dir):
-  """Clobber contents of build directory."""
+  """Clobber contents of build directory.
+
+  Don't delete the directory itself: some checkouts have the build directory
+  mounted."""
   for f in os.listdir(out_dir):
     path = os.path.join(out_dir, f)
-    if os.path.isdir(path):
-      _clean_build_dir(path)
+    if os.path.isfile(path):
+      os.unlink(path)
+    elif os.path.isdir(path):
+      delete_build_dir(path)
 
 
 def main():
