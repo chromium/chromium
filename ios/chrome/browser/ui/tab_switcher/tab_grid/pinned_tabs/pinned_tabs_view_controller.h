@@ -67,6 +67,10 @@
 - (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout*)layout
     NS_UNAVAILABLE;
 
+// Notifies the ViewController that its content is being displayed or hidden.
+- (void)contentWillAppearAnimated:(BOOL)animated;
+- (void)contentWillDisappear;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_PINNED_TABS_PINNED_TABS_VIEW_CONTROLLER_H_

@@ -106,6 +106,19 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Public
 
+- (void)contentWillAppearAnimated:(BOOL)animated {
+  [self.collectionView reloadData];
+  [self updateEmptyCollectionViewLabelVisibility];
+
+  [self scrollCollectionViewToSelectedItem];
+
+  // Update the delegate, in case it wasn't set when `items` was populated.
+  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
+}
+
+- (void)contentWillDisappear {
+}
+
 - (void)dragSessionEnabled:(BOOL)enabled {
   _isDragActionInProgress = enabled;
 
@@ -510,13 +523,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 }
 
-// Notifies the ViewController that its content is being displayed.
-- (void)contentWillAppearAnimated:(BOOL)animated {
-  [self.collectionView reloadData];
-  [self updateEmptyCollectionViewLabelVisibility];
+// Scrolls collection view to make the selected item visible.
+- (void)scrollCollectionViewToSelectedItem {
+  NSUInteger selectedIndex = self.selectedIndex;
 
-  // Update the delegate, in case it wasn't set when `items` was populated.
-  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
+  if (selectedIndex != NSNotFound && selectedIndex < _items.count) {
+    [self.collectionView
+        selectItemAtIndexPath:CreateIndexPath(selectedIndex)
+                     animated:NO
+               scrollPosition:
+                   UICollectionViewScrollPositionCenteredHorizontally];
+  }
 }
 
 // Configures the collectionView.
@@ -587,8 +604,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 // Configures `cell`'s title synchronously, and favicon asynchronously with
-// information from `item`. Updates the `cell`'s theme to this view controller's
-// theme.
+// information from `item`. Updates the `cell`'s theme to this view
+// controller's theme.
 - (void)configureCell:(PinnedCell*)cell withItem:(TabSwitcherItem*)item {
   if (item) {
     cell.itemIdentifier = item.identifier;

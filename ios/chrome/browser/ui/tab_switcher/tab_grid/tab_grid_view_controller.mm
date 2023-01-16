@@ -507,8 +507,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self broadcastIncognitoContentVisibility];
 
   [self.incognitoTabsViewController contentWillAppearAnimated:animated];
-
   [self.regularTabsViewController contentWillAppearAnimated:animated];
+  [self.pinnedTabsViewController contentWillAppearAnimated:animated];
 
   self.remoteTabsViewController.session = self.view.window.windowScene.session;
 
@@ -547,6 +547,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self.incognitoTabsViewController contentWillDisappear];
   [self.regularTabsViewController contentWillDisappear];
+  [self.pinnedTabsViewController contentWillDisappear];
   self.remoteTabsViewController.preventUpdates = YES;
 }
 
@@ -1501,7 +1502,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   pinnedTabsViewController.delegate = self;
   pinnedTabsViewController.dragDropHandler = self.pinnedTabsDragDropHandler;
 
+  [self addChildViewController:pinnedTabsViewController];
   [self.view addSubview:pinnedTabsViewController.view];
+  [pinnedTabsViewController didMoveToParentViewController:self];
 
   NSMutableArray* pinnedTabsConstraints =
       [[NSMutableArray alloc] initWithArray:@[
