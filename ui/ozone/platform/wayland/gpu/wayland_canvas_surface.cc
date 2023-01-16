@@ -27,7 +27,7 @@ namespace ui {
 namespace {
 
 // The maximum number of buffers we allow to be created.
-constexpr size_t kMaxNumberOfBuffers = 3;
+constexpr uint32_t kMaxNumbferOfBuffers = 3;
 
 }  // namespace
 
@@ -50,13 +50,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   SharedMemoryBuffer(const SharedMemoryBuffer&) = delete;
   SharedMemoryBuffer& operator=(const SharedMemoryBuffer&) = delete;
 
-  ~SharedMemoryBuffer() {
-    if (swap_ack_callback_) {
-      OnRelease();
-    }
-
-    buffer_manager_->DestroyBuffer(buffer_id_);
-  }
+  ~SharedMemoryBuffer() { buffer_manager_->DestroyBuffer(buffer_id_); }
 
   // Returns SkSurface, which the client can use to write to this buffer.
   sk_sp<SkSurface> sk_surface() const { return sk_surface_; }
@@ -121,11 +115,6 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     used_ = false;
   }
 
-  void OnSubmission() {
-    DCHECK(swap_ack_callback_);
-    std::move(swap_ack_callback_).Run(size_);
-  }
-
   void UpdateDirtyRegion(const gfx::Rect& damage, SkRegion::Op op) {
     SkIRect sk_damage = gfx::RectToSkIRect(damage);
     dirty_region_.op(sk_damage, op);
@@ -154,11 +143,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     return pending_damage_region_;
   }
 
-  void SetPendingSwapData(const gfx::FrameData& data,
-                          SwapBuffersCallback swap_ack_callback) {
-    frame_data_ = data;
-    swap_ack_callback_ = std::move(swap_ack_callback);
-  }
+  void set_frame_data(const gfx::FrameData& data) { frame_data_ = data; }
 
  private:
   // The size of the buffer.
@@ -190,9 +175,6 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   // Frame data.
   gfx::FrameData frame_data_;
-
-  // Swap ack callback.
-  SwapBuffersCallback swap_ack_callback_;
 };
 
 class WaylandCanvasSurface::VSyncProvider : public gfx::VSyncProvider {
@@ -253,9 +235,11 @@ SkCanvas* WaylandCanvasSurface::GetCanvas() {
   }
 
   if (!pending_buffer_) {
-    // It must be impossible that the maximum number of buffers that can be
-    // created is achieved.
-    DCHECK_LE(buffers_.size(), kMaxNumberOfBuffers);
+    if (buffers_.size() >= kMaxNumbferOfBuffers) {
+      // We have achieved the maximum number of buffers we can create. Wait for
+      // a free buffer.
+      return nullptr;
+    }
     auto buffer = CreateSharedMemoryBuffer();
     pending_buffer_ = buffer.get();
     buffers_.push_back(std::move(buffer));
@@ -296,13 +280,16 @@ bool WaylandCanvasSurface::SupportsAsyncBufferSwap() const {
 
 void WaylandCanvasSurface::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
                                          gfx::FrameData data) {
-  DCHECK(pending_buffer_);
-  pending_buffer_->SetPendingSwapData(data, std::move(swap_ack_callback));
-  unsubmitted_buffers_.push_back(pending_buffer_);
-  pending_buffer_ = nullptr;
+  if (pending_buffer_) {
+    pending_buffer_->set_frame_data(data);
+    unsubmitted_buffers_.push_back(pending_buffer_);
+    pending_buffer_ = nullptr;
+  }
 
   if (!unsubmitted_buffers_.empty())
     ProcessUnsubmittedBuffers();
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(swap_ack_callback), size_));
 }
 
 std::unique_ptr<gfx::VSyncProvider>
@@ -364,8 +351,6 @@ void WaylandCanvasSurface::OnSubmission(uint32_t frame_id,
 
   DCHECK(current_buffer_);
   DCHECK_EQ(current_buffer_->buffer_id(), frame_id);
-
-  current_buffer_->OnSubmission();
 
   if (previous_buffer_)
     previous_buffer_->OnRelease();

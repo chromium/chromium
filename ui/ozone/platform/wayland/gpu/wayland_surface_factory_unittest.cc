@@ -150,16 +150,6 @@ class CallbacksHelper {
                 pending_local_swap_ids_.front() > local_swap_id);
   }
 
-  // Corresponds to SoftwareOutputDevice::SwapBuffersCallback so that it can be
-  // used with canvas surfaces.
-  void CanvasSwapBuffersCallback(const gfx::Size& pixel_size) {
-    last_canvas_swap_pixel_size_ = pixel_size;
-  }
-
-  gfx::Size GetLastCanvasSwapPixelSize() const {
-    return std::move(last_canvas_swap_pixel_size_);
-  }
-
  private:
   uint32_t local_swap_id_ = 0;
   // Make sure that local_swap_id_ != last_finish_swap_id_.
@@ -168,10 +158,6 @@ class CallbacksHelper {
 
   // Keeps track of a displayed image.
   std::vector<scoped_refptr<OverlayImageHolder>> displayed_images_;
-
-  // Keeps track of last swap pixel size. Used only for the path that uses
-  // canvas.
-  gfx::Size last_canvas_swap_pixel_size_;
 };
 
 }  // namespace
@@ -994,84 +980,6 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasResize) {
     EXPECT_EQ(wl_shm_buffer_get_width(buffer), 100);
     EXPECT_EQ(wl_shm_buffer_get_height(buffer), 50);
   });
-}
-
-// Checks that buffer swap ack is called only after Wayland calls OnSubmission.
-TEST_P(WaylandSurfaceFactoryTest, CanvasBufferSwapAck) {
-  constexpr float kDefaultScaleFactor = 1u;
-  auto canvas = CreateCanvas(widget_);
-  ASSERT_TRUE(canvas);
-
-  auto bounds_px = window_->GetBoundsInPixels();
-
-  canvas->ResizeCanvas(bounds_px.size(), kDefaultScaleFactor);
-
-  const uint32_t surface_id = window_->root_surface()->get_surface_id();
-
-  // Send the first buffer. OnSubmission must be received immediately.
-  {
-    auto* sk_canvas = canvas->GetCanvas();
-    ASSERT_TRUE(sk_canvas);
-
-    canvas->PresentCanvas(gfx::Rect(5, 10, 20, 15));
-    CallbacksHelper cbs_helper;
-    canvas->OnSwapBuffers(
-        base::BindOnce(&CallbacksHelper::CanvasSwapBuffersCallback,
-                       base::Unretained(&cbs_helper)),
-        gfx::FrameData());
-
-    // Wait until the mojo calls are done.
-    base::RunLoop().RunUntilIdle();
-
-    PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
-      auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
-      mock_surface->SendFrameCallback();
-    });
-
-    base::RunLoop().RunUntilIdle();
-
-    // The first OnSubmission comes immediately regardless on buffer releases.
-    EXPECT_EQ(cbs_helper.GetLastCanvasSwapPixelSize(), bounds_px.size());
-  }
-
-  // Now submit the second buffer. OnSubmission must come only after the buffer
-  // is released.
-  {
-    auto* sk_canvas = canvas->GetCanvas();
-    ASSERT_TRUE(sk_canvas);
-
-    canvas->PresentCanvas(gfx::Rect(1, 1, 30, 55));
-    CallbacksHelper cbs_helper;
-    canvas->OnSwapBuffers(
-        base::BindOnce(&CallbacksHelper::CanvasSwapBuffersCallback,
-                       base::Unretained(&cbs_helper)),
-        gfx::FrameData());
-
-    // Wait until the mojo calls are done.
-    base::RunLoop().RunUntilIdle();
-
-    PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
-      auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
-      mock_surface->SendFrameCallback();
-    });
-
-    base::RunLoop().RunUntilIdle();
-
-    // The second OnSubmission will come only after a buffer is released.
-    EXPECT_TRUE(cbs_helper.GetLastCanvasSwapPixelSize().IsEmpty());
-
-    PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
-      auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
-      auto* buffer_resource = mock_surface->prev_attached_buffer();
-      ASSERT_TRUE(buffer_resource);
-      mock_surface->ReleaseBufferFenced(buffer_resource, {});
-    });
-
-    base::RunLoop().RunUntilIdle();
-
-    // The second OnSubmission will come only after a buffer is released.
-    EXPECT_EQ(cbs_helper.GetLastCanvasSwapPixelSize(), bounds_px.size());
-  }
 }
 
 TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {
