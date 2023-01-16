@@ -5,6 +5,8 @@
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 
 #include "base/callback.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_mapper.h"
+#include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -135,7 +137,18 @@ void AppDeduplicationServerConnector::OnGetDeduplicateAppsResponse(
     return;
   }
 
-  std::move(callback).Run(std::move(response));
+  deduplication::AppDeduplicationMapper mapper =
+      deduplication::AppDeduplicationMapper();
+  absl::optional<proto::DeduplicateData> deduplicate_data =
+      mapper.ToDeduplicateData(response);
+
+  if (!deduplicate_data.has_value()) {
+    LOG(ERROR) << "Mapping to deduplicate data proto failed.";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(std::move(deduplicate_data));
 }
 
 }  // namespace apps

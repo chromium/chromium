@@ -1,0 +1,31 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package apps.proto;
+
+// This file represents the format of the deduplication data stored on disk.
+// The DeduplicateResponse proto will be mapped to the DeduplicateData proto
+// before being saved to disk.
+
+message Application {
+  // The unique App identifier for the given platform.
+  optional string app_id = 1;
+
+  // The platform of the Duplicated App (e.g. PhoneHub, ARC, Website).
+  optional string platform = 2;
+}
+
+message DeduplicateData {
+  // The list of Application Groups corresponding to the requested applications.
+  repeated Group app_group = 1;
+
+  message Group {
+    // Applications which belong to the App Group.
+    repeated Application app = 1;
+  }
+}

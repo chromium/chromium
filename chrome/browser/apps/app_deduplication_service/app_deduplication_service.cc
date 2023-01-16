@@ -196,7 +196,7 @@ void AppDeduplicationService::GetDeduplicateDataFromServer() {
 }
 
 void AppDeduplicationService::OnGetDeduplicateDataFromServerCompleted(
-    absl::optional<proto::DeduplicateResponse> response) {
+    absl::optional<proto::DeduplicateData> response) {
   // TODO(b/264216262): handle response data and store in disk.
 }
 

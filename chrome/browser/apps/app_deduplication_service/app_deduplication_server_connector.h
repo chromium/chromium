@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
+#include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,7 +25,7 @@ class SimpleURLLoader;
 namespace apps {
 
 using GetDeduplicateAppsCallback =
-    base::OnceCallback<void(absl::optional<proto::DeduplicateResponse>)>;
+    base::OnceCallback<void(absl::optional<proto::DeduplicateData>)>;
 
 // The AppDeduplicationServerConnector is used to talk to the App Deduplication
 // Service API endpoint in the Fondue server. Its role is to make requests and
