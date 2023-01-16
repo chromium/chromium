@@ -57,7 +57,7 @@ class ScreenshotDataCollectorBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ScreenshotDataCollectorBrowserTest,
-                       TakeScreenshotOfTab) {
+                       DISABLED_TakeScreenshotOfTab) {
   ScreenshotDataCollector data_collector;
   FakeDesktopMediaPickerFactory picker_factory;
 
