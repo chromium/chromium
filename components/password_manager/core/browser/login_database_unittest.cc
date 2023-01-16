@@ -99,7 +99,7 @@ PasswordForm GenerateExamplePasswordForm() {
   form.submit_element = u"signIn";
   form.signon_realm = "http://www.google.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
-  form.times_used = 1;
+  form.times_used_in_html_form = 1;
   form.form_data.name = u"form_name";
   form.date_last_used = base::Time::Now();
   form.date_password_modified = base::Time::Now() - base::Days(1);
@@ -1260,7 +1260,7 @@ TEST_F(LoginDatabaseTest, DoubleAdd) {
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   // Add almost the same form again.
-  form.times_used++;
+  form.times_used_in_html_form++;
   PasswordStoreChangeList list;
   list.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
   list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
@@ -1361,7 +1361,7 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   form.password_value = u"my_new_password";
   form.all_possible_usernames.push_back(
       ValueElementPair(u"my_new_username", u"new_username_id"));
-  form.times_used = 20;
+  form.times_used_in_html_form = 20;
   form.submit_element = u"submit_element";
   form.date_created = base::Time::Now() - base::Days(3);
   form.date_last_used = base::Time::Now();
@@ -1404,7 +1404,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.action = GURL("http://accounts.google.com/login");
   form.all_possible_usernames.push_back(
       ValueElementPair(u"my_new_username", u"new_username_id"));
-  form.times_used = 20;
+  form.times_used_in_html_form = 20;
   form.submit_element = u"submit_element";
   form.date_created = base::Time::Now() - base::Days(3);
   form.date_last_used = base::Time::Now();
@@ -1453,26 +1453,26 @@ void AddMetricsTestData(LoginDatabase* db) {
   password_form.username_value = u"test1@gmail.com";
   password_form.password_value = u"test";
   password_form.signon_realm = "http://example.com/";
-  password_form.times_used = 0;
+  password_form.times_used_in_html_form = 0;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
   password_form.username_value = u"test2@gmail.com";
-  password_form.times_used = 1;
+  password_form.times_used_in_html_form = 1;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
   password_form.url = GURL("http://second.example.com");
   password_form.signon_realm = "http://second.example.com";
-  password_form.times_used = 3;
+  password_form.times_used_in_html_form = 3;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
   password_form.username_value = u"test3@gmail.com";
   password_form.type = PasswordForm::Type::kGenerated;
-  password_form.times_used = 2;
+  password_form.times_used_in_html_form = 2;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
   password_form.url = GURL("ftp://third.example.com/");
   password_form.signon_realm = "ftp://third.example.com/";
-  password_form.times_used = 4;
+  password_form.times_used_in_html_form = 4;
   password_form.scheme = PasswordForm::Scheme::kOther;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
@@ -1480,7 +1480,7 @@ void AddMetricsTestData(LoginDatabase* db) {
   password_form.signon_realm = "http://fourth.example.com/";
   password_form.type = PasswordForm::Type::kFormSubmission;
   password_form.username_value = u"";
-  password_form.times_used = 10;
+  password_form.times_used_in_html_form = 10;
   password_form.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 

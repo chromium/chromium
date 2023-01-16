@@ -262,7 +262,7 @@ void VotesUploader::SendVotesOnSave(
     const PasswordForm& submitted_form,
     const std::vector<const PasswordForm*>& best_matches,
     PasswordForm* pending_credentials) {
-  if (pending_credentials->times_used == 1 ||
+  if (pending_credentials->times_used_in_html_form == 1 ||
       IsAddingUsernameToExistingMatch(*pending_credentials, best_matches)) {
     UploadFirstLoginVotes(best_matches, *pending_credentials, submitted_form);
   }
@@ -271,7 +271,7 @@ void VotesUploader::SendVotesOnSave(
   // by password generation to help determine account creation sites.
   // Credentials that have been previously used (e.g., PSL matches) are checked
   // to see if they are valid account creation forms.
-  if (pending_credentials->times_used == 0) {
+  if (pending_credentials->times_used_in_html_form == 0) {
     MaybeSendSingleUsernameVote();
     UploadPasswordVote(*pending_credentials, submitted_form, autofill::PASSWORD,
                        std::string());
@@ -307,7 +307,7 @@ void VotesUploader::SendVoteOnCredentialsReuse(
     // they aren't from an account creation form.
     // Also bypass uploading if the username was edited. Offering generation
     // in cases where we currently save the wrong username isn't great.
-    if (pending->times_used == 1) {
+    if (pending->times_used_in_html_form == 1) {
       if (UploadPasswordVote(*pending, submitted_form,
                              autofill::ACCOUNT_CREATION_PASSWORD,
                              observed_structure.FormSignatureAsStr())) {
@@ -422,7 +422,7 @@ bool VotesUploader::UploadPasswordVote(
         autofill_type == autofill::NEW_PASSWORD) {
       // The password attributes should be uploaded only on the first save or an
       // update.
-      DCHECK_EQ(form_to_upload.times_used, 0);
+      DCHECK_EQ(form_to_upload.times_used_in_html_form, 0);
       GeneratePasswordAttributesVote(autofill_type == autofill::PASSWORD
                                          ? form_to_upload.password_value
                                          : form_to_upload.new_password_value,

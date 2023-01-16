@@ -34,7 +34,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     finished_ = false;
     time_ = base::Time::Now();
-    times_used_ = 0;
+    times_used_in_html_form_ = 0;
     store_ = PasswordStoreFactory::GetForProfile(
                  browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
                  .get();
@@ -74,7 +74,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
 
   void RevertTimeInDays(int days) { time_ -= base::Days(days); }
 
-  void SetTimesUsed(int occurrences) { times_used_ = occurrences; }
+  void SetTimesUsed(int occurrences) { times_used_in_html_form_ = occurrences; }
 
   void WaitForCounting() {
     // The counting takes place on the background thread. Wait until it
@@ -141,7 +141,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     }
     result.blocked_by_user = blocked_by_user;
     result.date_created = time_;
-    result.times_used = times_used_;
+    result.times_used_in_html_form = times_used_in_html_form_;
     return result;
   }
 
@@ -149,7 +149,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::Time time_;
-  int times_used_;
+  int times_used_in_html_form_;
 
   bool finished_;
   BrowsingDataCounter::ResultInt result_;

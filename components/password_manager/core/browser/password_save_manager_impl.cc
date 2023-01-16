@@ -169,14 +169,14 @@ PendingCredentialsState ResolvePendingCredentialsStates(
 }
 
 // Returns a PasswordForm that has all fields taken from |update| except
-// date_created, times_used and moving_blocked_for_list that are
+// date_created, times_used_in_html_form and moving_blocked_for_list that are
 // taken from |original_form|.
 PasswordForm UpdateFormPreservingDifferentFieldsAcrossStores(
     const PasswordForm& original_form,
     const PasswordForm& update) {
   PasswordForm result(update);
   result.date_created = original_form.date_created;
-  result.times_used = original_form.times_used;
+  result.times_used_in_html_form = original_form.times_used_in_html_form;
   result.moving_blocked_for_list = original_form.moving_blocked_for_list;
   return result;
 }
@@ -299,7 +299,7 @@ void PasswordSaveManagerImpl::Save(const FormData* observed_form,
 
   SavePendingToStore(observed_form, parsed_submitted_form);
 
-  if (pending_credentials_.times_used == 1 &&
+  if (pending_credentials_.times_used_in_html_form == 1 &&
       pending_credentials_.type == PasswordForm::Type::kGenerated) {
     // This also includes PSL matched credentials.
     metrics_util::LogPasswordGenerationSubmissionEvent(
@@ -695,11 +695,15 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
           UpdateFormPreservingDifferentFieldsAcrossStores(
               *states.similar_saved_form_from_profile_store,
               pending_credentials_);
-      // For other cases, |pending_credentials_.times_used| is updated in
-      // UpdateMetadataForUsage() invoked from UploadVotesAndMetrics().
+      // For other cases, |pending_credentials_.times_used_in_html_form| is
+      // updated in UpdateMetadataForUsage() invoked from
+      // UploadVotesAndMetrics().
       // UpdateFormPreservingDifferentFieldsAcrossStores() preserved the
-      // original times_used, and hence we should increment it here.
-      form_to_update.times_used++;
+      // original times_used_in_html_form, and hence we should increment it
+      // here.
+      if (form_to_update.scheme == PasswordForm::Scheme::kHtml) {
+        form_to_update.times_used_in_html_form++;
+      }
       profile_store_form_saver_->Update(form_to_update, profile_matches,
                                         old_profile_password);
     } break;
@@ -729,11 +733,15 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
             UpdateFormPreservingDifferentFieldsAcrossStores(
                 *states.similar_saved_form_from_account_store,
                 pending_credentials_);
-        // For other cases, |pending_credentials_.times_used| is updated in
-        // UpdateMetadataForUsage() invoked from UploadVotesAndMetrics().
+        // For other cases, |pending_credentials_.times_used_in_html_form| is
+        // updated in UpdateMetadataForUsage() invoked from
+        // UploadVotesAndMetrics().
         // UpdateFormPreservingDifferentFieldsAcrossStores() preserved the
-        // original times_used, and hence we should increment it here.
-        form_to_update.times_used++;
+        // original times_used_in_html_form, and hence we should increment it
+        // here.
+        if (form_to_update.scheme == PasswordForm::Scheme::kHtml) {
+          form_to_update.times_used_in_html_form++;
+        }
         account_store_form_saver_->Update(form_to_update, account_matches,
                                           old_account_password);
       } break;
@@ -811,7 +819,7 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
         FormStructure(pending_credentials_.form_data).FormSignatureAsStr());
   }
 
-  if (pending_credentials_.times_used == 1) {
+  if (pending_credentials_.times_used_in_html_form == 1) {
     votes_uploader_->UploadFirstLoginVotes(form_fetcher_->GetBestMatches(),
                                            pending_credentials_,
                                            parsed_submitted_form);

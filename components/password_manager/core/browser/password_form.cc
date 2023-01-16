@@ -153,7 +153,7 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("date_password_modified", form.date_password_modified.ToDoubleT());
   target.Set("date_created", form.date_created.ToDoubleT());
   target.Set("type", ToString(form.type));
-  target.Set("times_used", form.times_used);
+  target.Set("times_used_in_html_form", form.times_used_in_html_form);
   target.Set("form_data", ToString(form.form_data));
   target.Set("generation_upload_status",
              ToString(form.generation_upload_status));
@@ -369,7 +369,7 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.date_last_used == rhs.date_last_used &&
          lhs.date_password_modified == rhs.date_password_modified &&
          lhs.blocked_by_user == rhs.blocked_by_user && lhs.type == rhs.type &&
-         lhs.times_used == rhs.times_used &&
+         lhs.times_used_in_html_form == rhs.times_used_in_html_form &&
          lhs.form_data.SameFormAs(rhs.form_data) &&
          lhs.generation_upload_status == rhs.generation_upload_status &&
          lhs.display_name == rhs.display_name && lhs.icon_url == rhs.icon_url &&

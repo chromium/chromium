@@ -335,10 +335,10 @@ struct PasswordForm {
   Type type = Type::kFormSubmission;
 
   // The number of times that this username/password has been used to
-  // authenticate the user.
+  // authenticate the user in an HTML form.
   //
   // When parsing an HTML form, this is not used.
-  int times_used = 0;
+  int times_used_in_html_form = 0;
 
   // Autofill representation of this form. Used to communicate with the
   // Autofill servers if necessary. Currently this is only used to help

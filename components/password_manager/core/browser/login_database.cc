@@ -210,7 +210,7 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   s->BindInt(COLUMN_BLOCKLISTED_BY_USER, form.blocked_by_user);
   s->BindInt(COLUMN_SCHEME, static_cast<int>(form.scheme));
   s->BindInt(COLUMN_PASSWORD_TYPE, static_cast<int>(form.type));
-  s->BindInt(COLUMN_TIMES_USED, form.times_used);
+  s->BindInt(COLUMN_TIMES_USED, form.times_used_in_html_form);
   base::Pickle form_data_pickle;
   autofill::SerializeFormData(form.form_data, &form_data_pickle);
   s->BindBlob(COLUMN_FORM_DATA, PickleToSpan(form_data_pickle));
@@ -1122,7 +1122,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   s.BindInt(next_param++, form.blocked_by_user);
   s.BindInt(next_param++, static_cast<int>(form.scheme));
   s.BindInt(next_param++, static_cast<int>(form.type));
-  s.BindInt(next_param++, form.times_used);
+  s.BindInt(next_param++, form.times_used_in_html_form);
   base::Pickle form_data_pickle;
   autofill::SerializeFormData(form.form_data, &form_data_pickle);
   s.BindBlob(next_param++, PickleToSpan(form_data_pickle));
@@ -1380,7 +1380,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
     base::Pickle pickle = PickleFromSpan(possible_username_pairs_blob);
     form->all_possible_usernames = DeserializeValueElementPairs(pickle);
   }
-  form->times_used = s.ColumnInt(COLUMN_TIMES_USED);
+  form->times_used_in_html_form = s.ColumnInt(COLUMN_TIMES_USED);
   base::span<const uint8_t> form_data_blob = s.ColumnBlob(COLUMN_FORM_DATA);
   if (!form_data_blob.empty()) {
     base::Pickle form_data_pickle = PickleFromSpan(form_data_blob);

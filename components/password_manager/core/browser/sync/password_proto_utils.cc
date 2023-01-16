@@ -250,7 +250,7 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
       password_form.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
   password_data.set_blacklisted(password_form.blocked_by_user);
   password_data.set_type(static_cast<int>(password_form.type));
-  password_data.set_times_used(password_form.times_used);
+  password_data.set_times_used(password_form.times_used_in_html_form);
   password_data.set_display_name(base::UTF16ToUTF8(password_form.display_name));
   password_data.set_avatar_url(password_form.icon_url.spec());
   password_data.set_federation_url(
@@ -295,7 +295,7 @@ PasswordForm PasswordFromSpecifics(
   password.date_created = ConvertToBaseTime(password_data.date_created());
   password.blocked_by_user = password_data.blacklisted();
   password.type = static_cast<PasswordForm::Type>(password_data.type());
-  password.times_used = password_data.times_used();
+  password.times_used_in_html_form = password_data.times_used();
   password.display_name = base::UTF8ToUTF16(password_data.display_name());
   password.icon_url = GURL(password_data.avatar_url());
   password.federation_origin =

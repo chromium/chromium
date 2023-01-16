@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
   EXPECT_FALSE(prompt_observer.IsUpdatePromptShownAutomatically());
   signin_form.skip_zero_click = false;
-  signin_form.times_used = 1;
+  signin_form.times_used_in_html_form = 1;
   signin_form.password_value = u"API";
   password_manager::TestPasswordStore::PasswordMap stored =
       password_store->stored_passwords();

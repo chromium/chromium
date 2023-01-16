@@ -37,7 +37,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = SysNSStringToUTF16(credential.user);
   form.encrypted_password = SysNSStringToUTF8(credential.keychainIdentifier);
-  form.times_used = credential.rank;
+  form.times_used_in_html_form = credential.rank;
 
   return form;
 }
@@ -90,7 +90,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
 
   return [self initWithFavicon:favicon
             keychainIdentifier:keychainIdentifier
-                          rank:passwordForm.times_used
+                          rank:passwordForm.times_used_in_html_form
               recordIdentifier:RecordIdentifierForPasswordForm(passwordForm)
              serviceIdentifier:serviceIdentifier
                    serviceName:serviceName

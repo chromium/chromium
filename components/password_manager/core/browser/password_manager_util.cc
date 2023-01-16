@@ -72,7 +72,9 @@ bool IsBetterMatch(const PasswordForm* lhs, const PasswordForm* rhs) {
 
 // Update |credential| to reflect usage.
 void UpdateMetadataForUsage(PasswordForm* credential) {
-  ++credential->times_used;
+  if (credential->scheme == PasswordForm::Scheme::kHtml) {
+    ++credential->times_used_in_html_form;
+  }
 
   // Remove alternate usernames. At this point we assume that we have found
   // the right username.
