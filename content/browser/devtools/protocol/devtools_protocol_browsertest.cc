@@ -2509,7 +2509,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(RenderFrameDevToolsAgentHost::GetFor(child), main_frame_agent);
 
   // Resume navigation.
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // Target for OOPIF should get attached.
   auto notification = WaitForNotification("Target.attachedToTarget", true);
