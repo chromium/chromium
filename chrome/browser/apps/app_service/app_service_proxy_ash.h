@@ -246,7 +246,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void ReadIcons(AppType app_type,
                  const std::string& app_id,
                  int32_t size_in_dip,
-                 const IconKey& icon_key,
+                 std::unique_ptr<IconKey> icon_key,
                  IconType icon_type,
                  LoadIconCallback callback) override;
 
@@ -268,6 +268,11 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        IconType icon_type,
                        LoadIconCallback callback,
                        bool install_success);
+
+  // Invoked when the icon folders for `app_ids` has being deleted. The saved
+  // `ReadIcons` requests in `pending_read_icon_requests_` are run to request
+  // the new raw icon from the app platforms, then load icons for `app_ids`.
+  void PostIconFoldersDeletion(const std::vector<std::string>& app_ids);
 
   // Returns an instance of `IntentLaunchInfo` created based on `intent`,
   // `filter`, and `update`.
@@ -302,6 +307,14 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   PausedApps pending_pause_requests_;
 
   UninstallDialogs uninstall_dialogs_;
+
+  // When the icon folder is being deleted, the `ReadIcons` request is added to
+  // `pending_read_icon_requests_` to wait for the deletion. When the icon
+  // folder has being deleted, the saved `ReadIcons` requests in
+  // `pending_read_icon_requests_` are run to get the new raw icon from the
+  // app platforms, then load icons.
+  std::map<std::string, std::vector<base::OnceCallback<void()>>>
+      pending_read_icon_requests_;
 
   std::unique_ptr<apps::AppPlatformMetricsService>
       app_platform_metrics_service_;

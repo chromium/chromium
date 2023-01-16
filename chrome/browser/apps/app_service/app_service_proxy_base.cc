@@ -88,8 +88,8 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
   }
 
   if (host_->ShouldReadIcons()) {
-    host_->ReadIcons(app_type, app_id, size_hint_in_dip, icon_key, icon_type,
-                     std::move(callback));
+    host_->ReadIcons(app_type, app_id, size_hint_in_dip, icon_key.Clone(),
+                     icon_type, std::move(callback));
     return nullptr;
   }
 

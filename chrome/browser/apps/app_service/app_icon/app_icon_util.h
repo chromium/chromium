@@ -131,9 +131,10 @@ std::map<ui::ResourceScaleFactor, IconValuePtr> ReadIconFilesOnBackgroundThread(
     const std::string& app_id,
     int32_t size_in_dip);
 
-// Schedules deletion of the icon folders for `app_ids`.
+// Schedules deletion of the icon folders for `app_ids`, then call `callback`.
 void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
-                                 const std::vector<std::string>& app_ids);
+                                 const std::vector<std::string>& app_ids,
+                                 base::OnceCallback<void()> callback);
 
 }  // namespace apps
 

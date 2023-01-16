@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -201,12 +202,22 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
     for (const auto& delta : deltas) {
       if (delta->readiness != Readiness::kUnknown &&
           !apps_util::IsInstalled(delta->readiness)) {
+        // If there's already a deletion in progress, skip the deletion request.
+        if (base::Contains(pending_read_icon_requests_, delta->app_id)) {
+          continue;
+        }
+
         app_ids.push_back(delta->app_id);
+        pending_read_icon_requests_[delta->app_id] =
+            std::vector<base::OnceCallback<void()>>();
       }
     }
 
     if (!app_ids.empty()) {
-      ScheduleIconFoldersDeletion(profile_->GetPath(), app_ids);
+      ScheduleIconFoldersDeletion(
+          profile_->GetPath(), app_ids,
+          base::BindOnce(&AppServiceProxyAsh::PostIconFoldersDeletion,
+                         weak_ptr_factory_.GetWeakPtr(), app_ids));
     }
   }
 
@@ -355,7 +366,7 @@ void AppServiceProxyAsh::ReadIconsForTesting(AppType app_type,
                                              const IconKey& icon_key,
                                              IconType icon_type,
                                              LoadIconCallback callback) {
-  ReadIcons(app_type, app_id, size_in_dip, icon_key, icon_type,
+  ReadIcons(app_type, app_id, size_in_dip, icon_key.Clone(), icon_type,
             std::move(callback));
 }
 
@@ -698,16 +709,27 @@ bool AppServiceProxyAsh::ShouldReadIcons() {
 void AppServiceProxyAsh::ReadIcons(AppType app_type,
                                    const std::string& app_id,
                                    int32_t size_in_dip,
-                                   const IconKey& icon_key,
+                                   std::unique_ptr<IconKey> icon_key,
                                    IconType icon_type,
                                    LoadIconCallback callback) {
+  auto it = pending_read_icon_requests_.find(app_id);
+  if (it != pending_read_icon_requests_.end()) {
+    // The icon folder is being deleted, so add the `ReadIcons` request to
+    // `pending_read_icon_requests_` to wait for the deletion.
+    it->second.push_back(base::BindOnce(
+        &AppServiceProxyAsh::ReadIcons, weak_ptr_factory_.GetWeakPtr(),
+        app_type, app_id, size_in_dip, std::move(icon_key), icon_type,
+        std::move(callback)));
+    return;
+  }
+
   icon_reader_.ReadIcons(
-      app_id, size_in_dip, icon_key, icon_type,
+      app_id, size_in_dip, *icon_key, icon_type,
       base::BindOnce(&AppServiceProxyAsh::OnIconRead,
                      weak_ptr_factory_.GetWeakPtr(), app_type, app_id,
                      size_in_dip,
-                     static_cast<IconEffects>(icon_key.icon_effects), icon_type,
-                     std::move(callback)));
+                     static_cast<IconEffects>(icon_key->icon_effects),
+                     icon_type, std::move(callback)));
 }
 
 void AppServiceProxyAsh::OnIconRead(AppType app_type,
@@ -759,6 +781,24 @@ void AppServiceProxyAsh::OnIconInstalled(AppType app_type,
   icon_key.icon_effects = icon_effects;
   icon_reader_.ReadIcons(app_id, size_in_dip, icon_key, icon_type,
                          std::move(callback));
+}
+
+void AppServiceProxyAsh::PostIconFoldersDeletion(
+    const std::vector<std::string>& app_ids) {
+  for (const auto& app_id : app_ids) {
+    auto it = pending_read_icon_requests_.find(app_id);
+    if (it == pending_read_icon_requests_.end()) {
+      continue;
+    }
+
+    // The saved `ReadIcons` requests in `pending_read_icon_requests_` are run
+    // to load the icon for `app_id`.
+    std::vector<base::OnceCallback<void()>> callbacks = std::move(it->second);
+    pending_read_icon_requests_.erase(it);
+    for (auto& callback : callbacks) {
+      std::move(callback).Run();
+    }
+  }
 }
 
 IntentLaunchInfo AppServiceProxyAsh::CreateIntentLaunchInfo(

@@ -393,7 +393,7 @@ class AppServiceProxyBase : public KeyedService,
   virtual void ReadIcons(AppType app_type,
                          const std::string& app_id,
                          int32_t size_in_dip,
-                         const IconKey& icon_key,
+                         std::unique_ptr<IconKey> icon_key,
                          IconType icon_type,
                          LoadIconCallback callback) {}
 
