@@ -199,8 +199,6 @@ void BaseRenderingContext2D::beginLayer() {
     // We also need to flip how and where the shadows and filter are applied
     // if there are shadows.
     cc::PaintFlags flags;
-    GetState().FillStyle()->ApplyToFlags(flags);
-    flags.setColor(GetState().FillStyle()->PaintColor());
     flags.setBlendMode(GetState().GlobalComposite());
     flags.setImageFilter(GetState().ShouldDrawShadows()
                              ? GetState().ShadowAndForegroundImageFilter()
@@ -215,16 +213,12 @@ void BaseRenderingContext2D::beginLayer() {
         std::max(state_stack_.size(), max_state_stack_depth_);
 
     cc::PaintFlags extra_flags;
-    GetState().FillStyle()->ApplyToFlags(extra_flags);
-    extra_flags.setColor(GetState().FillStyle()->PaintColor());
     extra_flags.setAlpha(globalAlpha() * 255);
     if (GetState().ShouldDrawShadows())
       extra_flags.setImageFilter(StateGetFilter());
     canvas->saveLayer(extra_flags);
   } else {
     cc::PaintFlags flags;
-    GetState().FillStyle()->ApplyToFlags(flags);
-    flags.setColor(GetState().FillStyle()->PaintColor());
     flags.setBlendMode(GetState().GlobalComposite());
     // This ComposePaintFilter will work always, whether there is only
     // shadows, or filters, both of them, or none of them.
