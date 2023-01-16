@@ -35,20 +35,6 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace ash {
-namespace {
-
-class UsernameHashMatcher {
- public:
-  explicit UsernameHashMatcher(const std::string& h) : username_hash(h) {}
-  bool operator()(const user_manager::User* user) const {
-    return user->username_hash() == username_hash;
-  }
-
- private:
-  const std::string& username_hash;
-};
-
-}  // anonymous namespace
 
 // static
 bool ProfileHelper::enable_profile_to_user_testing = false;
@@ -338,15 +324,11 @@ const user_manager::User* ProfileHelperImpl::GetUserByProfile(
     return user_manager->GetActiveUser();
   }
 
-  // Finds the matching user in logged-in user list since only a logged-in
-  // user would have a profile.
-  const std::string username_hash =
-      ProfileHelper::GetUserIdHashFromProfile(profile);
-  const user_manager::UserList& users = user_manager->GetLoggedInUsers();
-  const user_manager::UserList::const_iterator pos =
-      base::ranges::find_if(users, UsernameHashMatcher(username_hash));
-  if (pos != users.end())
-    return *pos;
+  if (const auto* user = browser_context_helper_->GetUserByBrowserContext(
+          const_cast<Profile*>(profile));
+      user) {
+    return user;
+  }
 
   // Many tests do not have their users registered with UserManager and
   // runs here. If |active_user_| matches |profile|, returns it.

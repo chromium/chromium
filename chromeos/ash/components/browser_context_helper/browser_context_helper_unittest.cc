@@ -213,6 +213,46 @@ TEST_F(BrowserContextHelperTest, GetBrowserContextByUser_Guest) {
   EXPECT_EQ(otr_browser_context, helper.GetBrowserContextByUser(user));
 }
 
+TEST_F(BrowserContextHelperTest, GetUserByBrowserContext) {
+  // Set up BrowserContextHelper instance.
+  auto delegate = std::make_unique<FakeBrowserContextHelperDelegate>();
+  auto* delegate_ptr = delegate.get();
+  BrowserContextHelper helper(std::move(delegate));
+
+  // Set up UserManager.
+  user_manager::ScopedUserManager scoped_user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+  auto* fake_user_manager = static_cast<user_manager::FakeUserManager*>(
+      user_manager::UserManager::Get());
+
+  const AccountId account_id = AccountId::FromUserEmail("test@test");
+  const std::string username_hash =
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+  const user_manager::User* user = fake_user_manager->AddUser(account_id);
+  content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
+      delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
+      /*is_off_the_record=*/false);
+  fake_user_manager->UserLoggedIn(account_id, username_hash,
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+
+  EXPECT_EQ(user, helper.GetUserByBrowserContext(browser_context));
+
+  // Special browser_context.
+  content::BrowserContext* signin_browser_context =
+      delegate_ptr->CreateBrowserContext(
+          delegate_ptr->GetUserDataDir()->Append(kSigninBrowserContextBaseName),
+          /*is_off_the_record=*/false);
+  EXPECT_FALSE(helper.GetUserByBrowserContext(signin_browser_context));
+
+  // Returns nullptr for unknown browser context.
+  content::BrowserContext* unknown_browser_context =
+      delegate_ptr->CreateBrowserContext(
+          delegate_ptr->GetUserDataDir()->Append("unknown@user"),
+          /*is_off_the_record=*/false);
+  EXPECT_FALSE(helper.GetUserByBrowserContext(unknown_browser_context));
+}
+
 TEST_F(BrowserContextHelperTest, GetUserBrowserContextDirName) {
   constexpr struct {
     const char* expect;

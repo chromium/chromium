@@ -158,6 +158,8 @@ class ProfileHelper
   // Otherwise, returns NULL.
   virtual Profile* GetProfileByUser(const user_manager::User* user) = 0;
 
+  // DEPRECATED: Please use
+  // BrowserContextHelper::GetUserByBrowserContext() instead.
   // Returns NULL if User is not created.
   virtual const user_manager::User* GetUserByProfile(
       const Profile* profile) const = 0;
