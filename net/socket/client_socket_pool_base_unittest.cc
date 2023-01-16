@@ -713,11 +713,15 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       nullptr /* websocket_endpoint_lock_manager */};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
-  raw_ptr<TestConnectJobFactory> connect_job_factory_;
   RecordingNetLogObserver net_log_observer_;
+
   // These parameters are never actually used to create a TransportConnectJob.
   scoped_refptr<ClientSocketPool::SocketParams> params_;
+
+  // Must outlive `connect_job_factory_`
   std::unique_ptr<TransportClientSocketPool> pool_;
+
+  raw_ptr<TestConnectJobFactory> connect_job_factory_;
   ClientSocketPoolTest test_base_;
 };
 
