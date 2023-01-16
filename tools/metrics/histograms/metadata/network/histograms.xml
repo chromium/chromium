@@ -2323,21 +2323,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Vpn.L2tpIpsec.StrokeEndReason"
-    enum="NetworkServiceError" expires_after="2023-02-19">
-  <owner>jiejiang@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS network usage metric emitted on the end of each L2TP/IPsec VPN
-    connection initiated by the stroke-based driver that tracks the reason that
-    the connection is ended. This metric will be emitted no matter if the
-    connection is established successfully, i.e., it will be emitted if an error
-    happens during connecting. This metric will be used to compare the stability
-    of the stroke-based driver and swanctl-based driver (b/204261554).
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Vpn.L2tpIpsec.SwanctlEndReason"
     enum="NetworkServiceError" expires_after="2023-06-25">
   <owner>jiejiang@chromium.org</owner>
@@ -2348,8 +2333,7 @@ chromium-metrics-reviews@google.com.
     connection initiated by the swanctl-based driver that tracks the reason that
     the connection is ended. This metric will be emitted no matter if the
     connection is established successfully, i.e., it will be emitted if an error
-    happens during connecting. This metric will be used to compare the stability
-    of the stroke-based driver and swanctl-based driver (b/204261554).
+    happens during connecting.
   </summary>
 </histogram>
 
