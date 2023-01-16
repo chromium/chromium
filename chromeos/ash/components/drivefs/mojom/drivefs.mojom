@@ -209,7 +209,17 @@ interface DriveFsDelegate {
   OnMirrorSyncingStatusUpdate(SyncingStatus status);
 };
 
-// Next MinVersion: 7
+[Extensible]
+enum CSESupport {
+  // Do not show CSE files in the mounted file system.
+  [Default] kNone,
+
+  // Show CSE files in the mounted file system, but don't allow to read/write
+  // them: any attempt to open such a file will result in an error.
+  kListing,
+};
+
+// Next MinVersion: 8
 struct DriveFsConfiguration {
   string user_email;
 
@@ -234,6 +244,13 @@ struct DriveFsConfiguration {
   // the |drive-fs-chrome-networking| flag.
   [MinVersion=6]
   bool enable_cros_network = false;
+
+  // The level of CSE files support Chrome expects from DriveFS and can handle.
+  // CSE stands for Client-Side Encryption and is an enterprise technology to
+  // encrypt data with a key not accessible by Google.
+  // See more: https://support.google.com/a/answer/10741897
+  [MinVersion=7]
+  CSESupport cse_support = kNone;
 };
 
 enum AccessTokenStatus {
