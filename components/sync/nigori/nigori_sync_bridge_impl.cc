@@ -224,8 +224,6 @@ bool UpdatePassphraseType(NigoriSpecifics::PassphraseType new_type,
 bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
                                      const NigoriSpecifics& specifics) {
   // We don't support relaxing the encryption requirements.
-  // TODO(crbug.com/922900): more logic is to be added here, once we support
-  // enforced encryption for individual datatypes.
   return specifics.encrypt_everything() || !old_encrypt_everything;
 }
 
@@ -310,10 +308,6 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
     : processor_(std::move(processor)),
       storage_(std::move(storage)),
       broadcasting_observer_(std::make_unique<BroadcastingObserver>()) {
-  // TODO(crbug.com/922900): we currently don't verify |deserialized_data|.
-  // It's quite unlikely we get a corrupted data, since it was successfully
-  // deserialized and decrypted. But we may want to consider some
-  // verifications, taking into account sensitivity of this data.
   absl::optional<sync_pb::NigoriLocalData> deserialized_data =
       storage_->RestoreData();
   if (!deserialized_data) {
@@ -367,8 +361,6 @@ void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
   // We need to expose whole bridge state through notifications, because it
   // can be different from default due to restoring from the file or
   // completeness of first sync cycle (which happens before Init() call).
-  // TODO(crbug.com/922900): try to avoid double notification (second one can
-  // happen during UpdateLocalState() call).
   broadcasting_observer_->OnEncryptedTypesChanged(state_.GetEncryptedTypes(),
                                                   state_.encrypt_everything);
   broadcasting_observer_->OnCryptographerStateChanged(
@@ -604,9 +596,11 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::MergeSyncData(
   // default keystore Nigori.
   DCHECK(state_.keystore_keys_cryptographer);
   if (state_.keystore_keys_cryptographer->IsEmpty()) {
-    // TODO(crbug.com/922900): try to relax this requirement for Nigori
+    // TODO(crbug.com/1407699): try to relax this requirement for Nigori
     // initialization as well. Keystore keys might not arrive, for example, due
-    // to throttling.
+    // to throttling. It seems easier after complete deprecation of
+    // IMPLICIT_PASSPHRASE, where not initialized state will be well
+    // distinguished.
     return ModelError(FROM_HERE,
                       "Keystore keys are not set during first time sync.");
   }

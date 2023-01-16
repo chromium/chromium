@@ -249,9 +249,9 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
       *specifics.mutable_keystore_decryptor_token() =
           *pending_keystore_decryptor_token;
     } else {
-      // TODO(crbug.com/922900): error handling (crypto errors, which could
-      // cause empty |keystore_keys_cryptographer| or can occur during
-      // encryption).
+      // TODO(crbug.com/1368018): ensure correct error handling, e.g. in case
+      // of empty |keystore_keys_cryptographer| or crypto errors (should be
+      // impossible, but code doesn't yet guarantee that).
       keystore_keys_cryptographer->EncryptKeystoreDecryptorToken(
           cryptographer->ExportDefaultKey(),
           specifics.mutable_keystore_decryptor_token());

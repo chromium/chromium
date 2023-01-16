@@ -57,8 +57,8 @@ NigoriKeyBag NigoriKeyBag::CreateFromProto(const sync_pb::NigoriKeyBag& proto) {
   NigoriKeyBag output;
   for (const sync_pb::NigoriKey& key : proto.key()) {
     if (output.AddKeyFromProto(key).empty()) {
-      // TODO(crbug.com/922900): Consider propagating this error to callers such
-      // that they can do smarter handling.
+      // TODO(crbug.com/1368018): Consider propagating this error to callers
+      // such that they can do smarter handling.
       DLOG(ERROR) << "Invalid NigoriKey protocol buffer message.";
     }
   }

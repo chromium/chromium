@@ -88,10 +88,7 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
     UMA_HISTOGRAM_BOOLEAN("Sync.CustomEncryption", true);
   }
 
-  void OnFailure(SyncEncryptionHandler::Observer* observer) override {
-    // TODO(crbug.com/922900): investigate whether we need to call
-    // OnPassphraseRequired() to prompt for decryption passphrase.
-  }
+  void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
 
  private:
   const std::string passphrase_;
@@ -147,8 +144,6 @@ class KeystoreReencryptor : public PendingLocalNigoriCommit {
     if (!state->NeedsKeystoreReencryption()) {
       return false;
     }
-    // TODO(crbug.com/922900): ensure that |cryptographer| contains all
-    // keystore keys? (In theory it's safe to add only last one).
     const std::string new_default_key_name = state->cryptographer->EmplaceKey(
         state->keystore_keys_cryptographer->keystore_keys().back(),
         KeyDerivationParams::CreateForPbkdf2());

@@ -153,7 +153,7 @@ void BackendMigrator::OnConfigureDoneImpl(
     // DataTypeManager, which means it's never returned in GetPurgedDataTypes().
     // Luckily, there's no need to wait until NIGORI is purged, because that
     // takes effect immediately.
-    // TODO(crbug.com/922900): try to find better way to implement this logic.
+    // TODO(crbug.com/1142771): try to find better way to implement this logic.
     purged_types.Put(NIGORI);
 
     if (!purged_types.HasAll(to_migrate_)) {

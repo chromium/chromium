@@ -31,7 +31,6 @@ enum class PassphraseType;
 // and keeps the nigori node up to date.
 // Implementations of this class must be assumed to be non-thread-safe. All
 // methods must be invoked on the sync thread.
-// TODO(crbug.com/1010397): Rename this class.
 class SyncEncryptionHandler {
  public:
   // All Observer methods are done synchronously from within a transaction and

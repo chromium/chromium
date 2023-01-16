@@ -20,7 +20,6 @@ namespace syncer {
 
 class KeyDerivationParams;
 
-// TODO(crbug.com/922900): inline kNigoriKeyName into Nigori::Permute().
 inline constexpr char kNigoriKeyName[] = "nigori-key";
 
 // A (partial) implementation of Nigori, a protocol to securely store secrets in
@@ -58,6 +57,8 @@ class Nigori {
   // |username| and |password| are kept constant, a given |type| and |name| pair
   // always yields the same |permuted| value. Note that |permuted| will be
   // Base64 encoded.
+  // TODO(crbug.com/1407696): inline |type| and |name|, they are hardcoded
+  // constants.
   bool Permute(Type type, const std::string& name, std::string* permuted) const;
 
   // Encrypts |value|. Note that the returned value is Base64 encoded.
