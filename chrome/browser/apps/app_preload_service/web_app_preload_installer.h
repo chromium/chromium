@@ -14,7 +14,6 @@
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 class Profile;
 
@@ -58,15 +57,10 @@ class WebAppPreloadInstaller {
  private:
   void InstallAppImpl(PreloadAppDefinition app,
                       WebAppPreloadInstalledCallback callback);
-  void SendInstallCommand(WebAppPreloadInstalledCallback callback,
-                          std::unique_ptr<WebAppInstallInfo> install_info);
   void OnManifestRetrieved(PreloadAppDefinition app,
                            WebAppPreloadInstalledCallback callback,
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
                            std::unique_ptr<std::string> response);
-  void OnManifestParsed(PreloadAppDefinition app,
-                        WebAppPreloadInstalledCallback callback,
-                        data_decoder::DataDecoder::ValueOrError parsing_result);
   void OnAppInstalled(WebAppPreloadInstalledCallback callback,
                       const web_app::AppId& app_id,
                       webapps::InstallResultCode code);
