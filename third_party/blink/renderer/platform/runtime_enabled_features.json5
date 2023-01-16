@@ -791,7 +791,7 @@
     },
     {
       name: "CSSNewRootFontUnits",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSObjectViewBox",
