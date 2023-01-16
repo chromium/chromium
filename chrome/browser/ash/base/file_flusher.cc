@@ -7,15 +7,16 @@
 #include <algorithm>
 #include <set>
 
+#include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace ash {
 
@@ -24,10 +25,10 @@ namespace ash {
 
 class FileFlusher::Job {
  public:
-  Job(const base::WeakPtr<FileFlusher>& flusher,
-      const base::FilePath& path,
+  Job(const base::FilePath& path,
       bool recursive,
       const FileFlusher::OnFlushCallback& on_flush_callback,
+      const base::WeakPtr<FileFlusher>& flusher,
       base::OnceClosure callback);
 
   Job(const Job&) = delete;
@@ -45,36 +46,42 @@ class FileFlusher::Job {
   // Flush files on a blocking pool thread.
   void FlushAsync();
 
-  // Schedule a FinishOnUIThread task to run on the UI thread.
+  // Schedule a FinishOnUIThread task to run on the original sequence.
   void ScheduleFinish();
 
-  // Finish the job by notifying |flusher_| and self destruct on the UI thread.
+  // Finish the job by notifying |flusher_| and self destruct on the original
+  // sequence.
   void FinishOnUIThread();
 
-  base::WeakPtr<FileFlusher> flusher_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
   const base::FilePath path_;
   const bool recursive_;
   const FileFlusher::OnFlushCallback on_flush_callback_;
-  base::OnceClosure callback_;
 
+  // Followings can be accessed only on the original sequence.
+  base::WeakPtr<FileFlusher> flusher_;
+  base::OnceClosure callback_;
   bool started_ = false;
-  base::AtomicFlag cancel_flag_;
   bool finish_scheduled_ = false;
+
+  // Can be accessed on both the original sequence, or thread pool.
+  base::AtomicFlag cancel_flag_;
 };
 
-FileFlusher::Job::Job(const base::WeakPtr<FileFlusher>& flusher,
-                      const base::FilePath& path,
+FileFlusher::Job::Job(const base::FilePath& path,
                       bool recursive,
                       const FileFlusher::OnFlushCallback& on_flush_callback,
+                      const base::WeakPtr<FileFlusher>& flusher,
                       base::OnceClosure callback)
-    : flusher_(flusher),
-      path_(path),
+    : path_(path),
       recursive_(recursive),
       on_flush_callback_(on_flush_callback),
+      flusher_(flusher),
       callback_(std::move(callback)) {}
 
 void FileFlusher::Job::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!started());
 
   started_ = true;
@@ -92,7 +99,7 @@ void FileFlusher::Job::Start() {
 }
 
 void FileFlusher::Job::Cancel() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cancel_flag_.Set();
 
@@ -125,17 +132,19 @@ void FileFlusher::Job::FlushAsync() {
 }
 
 void FileFlusher::Job::ScheduleFinish() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (finish_scheduled_)
     return;
 
   finish_scheduled_ = true;
-  content::GetUIThreadTaskRunner({})->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&Job::FinishOnUIThread, base::Unretained(this)));
 }
 
 void FileFlusher::Job::FinishOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!callback_.is_null())
     std::move(callback_).Run();
@@ -164,8 +173,8 @@ void FileFlusher::RequestFlush(const base::FilePath& path,
       job->Cancel();
   }
 
-  jobs_.push_back(new Job(weak_factory_.GetWeakPtr(), path, recursive,
-                          on_flush_callback_for_test_, std::move(callback)));
+  jobs_.push_back(new Job(path, recursive, on_flush_callback_for_test_,
+                          weak_factory_.GetWeakPtr(), std::move(callback)));
   ScheduleJob();
 }
 

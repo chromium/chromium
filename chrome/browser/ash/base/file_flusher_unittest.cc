@@ -6,26 +6,27 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
+#include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "content/public/test/browser_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 namespace {
 
-void WriteStringToFile(const base::FilePath path, const std::string& data) {
+void WriteStringToFile(const base::FilePath& path, base::StringPiece data) {
   ASSERT_TRUE(base::CreateDirectory(path.DirName()))
       << "Failed to create directory " << path.DirName().value();
-
-  int size = data.size();
-  ASSERT_TRUE(base::WriteFile(path, data.c_str(), size) == size)
+  ASSERT_TRUE(base::WriteFile(path, data))
       << "Failed to write " << path.value();
 }
 
@@ -36,12 +37,10 @@ void WriteStringToFile(const base::FilePath path, const std::string& data) {
 // file system for actually persisting the data.
 class FileFlusherTest : public testing::Test {
  public:
-  FileFlusherTest() {}
-
+  FileFlusherTest() = default;
   FileFlusherTest(const FileFlusherTest&) = delete;
   FileFlusherTest& operator=(const FileFlusherTest&) = delete;
-
-  ~FileFlusherTest() override {}
+  ~FileFlusherTest() override = default;
 
   // testing::Test
   void SetUp() override {
@@ -60,7 +59,7 @@ class FileFlusherTest : public testing::Test {
   }
 
   std::unique_ptr<FileFlusher> CreateFileFlusher() {
-    std::unique_ptr<FileFlusher> flusher(new FileFlusher);
+    auto flusher = std::make_unique<FileFlusher>();
     flusher->set_on_flush_callback_for_test(
         base::BindRepeating(&FileFlusherTest::OnFlush, base::Unretained(this)));
     return flusher;
@@ -68,8 +67,9 @@ class FileFlusherTest : public testing::Test {
 
   base::FilePath GetTestFilePath(const std::string& path_string) const {
     const base::FilePath path = base::FilePath::FromUTF8Unsafe(path_string);
-    if (path.IsAbsolute())
+    if (path.IsAbsolute()) {
       return path;
+    }
 
     return temp_dir_.GetPath().Append(path);
   }
@@ -83,7 +83,7 @@ class FileFlusherTest : public testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::map<base::FilePath, int> flush_counts_;
 };
@@ -91,10 +91,11 @@ class FileFlusherTest : public testing::Test {
 TEST_F(FileFlusherTest, Flush) {
   std::unique_ptr<FileFlusher> flusher(CreateFileFlusher());
   base::RunLoop run_loop;
+  auto completion_callback = base::BarrierClosure(2, run_loop.QuitClosure());
   flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
-                        base::OnceClosure());
+                        completion_callback);
   flusher->RequestFlush(GetTestFilePath("dir2"), /*recursive=*/false,
-                        run_loop.QuitClosure());
+                        completion_callback);
   run_loop.Run();
 
   EXPECT_EQ(1, GetFlushCount("dir1/file1"));
@@ -110,10 +111,11 @@ TEST_F(FileFlusherTest, DuplicateRequests) {
   std::unique_ptr<FileFlusher> flusher(CreateFileFlusher());
   base::RunLoop run_loop;
   flusher->PauseForTest();
+  auto completion_callback = base::BarrierClosure(2, run_loop.QuitClosure());
   flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
-                        base::OnceClosure());
+                        completion_callback);
   flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
-                        run_loop.QuitClosure());
+                        completion_callback);
   flusher->ResumeForTest();
   run_loop.Run();
 
