@@ -3108,7 +3108,7 @@ testcase.openQuickViewAndDeleteSingleSelection = async () => {
     let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
     deleteDialogButton =
         await remoteCall.waitAndClickElement(appId, deleteDialogButton);
-    chrome.test.assertEq('Delete', deleteDialogButton.text);
+    chrome.test.assertEq('Delete forever', deleteDialogButton.text);
   }
 
   // Check: |hello.txt| should have been deleted.
@@ -3167,7 +3167,7 @@ testcase.openQuickViewAndDeleteCheckSelection = async () => {
     let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
     deleteDialogButton =
         await remoteCall.waitAndClickElement(appId, deleteDialogButton);
-    chrome.test.assertEq('Delete', deleteDialogButton.text);
+    chrome.test.assertEq('Delete forever', deleteDialogButton.text);
   }
 
   // Check: |hello.txt| should have been deleted.

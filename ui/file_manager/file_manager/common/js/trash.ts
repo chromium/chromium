@@ -117,6 +117,23 @@ export function isAllTrashEntries(
 }
 
 /**
+ * Returns true if all supplied entries are on a volume that has trash enabled.
+ */
+export function isAllEntriesOnTrashEnabledVolumes(
+    entries: FileSystemEntry[], volumeManager: VolumeManager): boolean {
+  const enabledTrashVolumeURLs =
+      getEnabledTrashVolumeURLs(volumeManager, /*includeTrashPath=*/ false);
+  return entries.every((e: FileSystemEntry) => {
+    for (const volumeURL of enabledTrashVolumeURLs) {
+      if (e.toURL().startsWith(volumeURL)) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+/**
  * Returns true if all entries are on a trashable volume and they aren't already
  * trashed.
  */

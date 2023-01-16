@@ -33,12 +33,10 @@ async function clickDeleteButton(appId) {
 }
 
 /**
- * Clicks the delete button and confirms the deletion.
+ * Confirm the deletion happens and assert the dialog has the correct text.
  * @param {string} appId
  */
-async function clickDeleteButtonAndConfirmDeletion(appId) {
-  await clickDeleteButton(appId);
-
+async function confirmPermanentDeletion(appId) {
   // Check: the delete confirm dialog should appear.
   await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
@@ -55,6 +53,15 @@ async function clickDeleteButtonAndConfirmDeletion(appId) {
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
+}
+
+/**
+ * Clicks the delete button and confirms the deletion.
+ * @param {string} appId
+ */
+async function clickDeleteButtonAndConfirmDeletion(appId) {
+  await clickDeleteButton(appId);
+  await confirmPermanentDeletion(appId);
 }
 
 /**
@@ -163,12 +170,9 @@ testcase.trashPermanentlyDelete = async () => {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, shiftDeleteKey),
       'Pressing Shift+Delete failed.');
-  await remoteCall.waitAndClickElement(
-      appId, '.files-confirm-dialog .cr-dialog-ok');
 
-  // Wait for completion of file deletion.
-  await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="hello.txt"]');
+  // Confirm the permanent deletion of the "hello.txt" file.
+  await confirmPermanentDeletion(appId);
 };
 
 /**
@@ -209,10 +213,6 @@ testcase.trashDeleteFromTrashOriginallyFromMyFiles = async () => {
 
   // Delete selected item.
   await clickDeleteButtonAndConfirmDeletion(appId);
-
-  // Wait for completion of file deletion.
-  await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="hello.txt"]');
 };
 
 /**
@@ -417,10 +417,6 @@ testcase.trashDeleteFromTrash = async () => {
 
   // Delete selected item.
   await clickDeleteButtonAndConfirmDeletion(appId);
-
-  // Wait for completion of file deletion.
-  await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="hello.txt"]');
 };
 
 /**
