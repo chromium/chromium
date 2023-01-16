@@ -644,14 +644,12 @@ class IntegrationTest(unittest.TestCase):
     metadata = itertools.chain.from_iterable(
         itertools.chain([c.name], describe.DescribeDict(c.metadata))
         for c in size_info.containers)
-    return itertools.chain(
-        ['BuildConfig:'],
-        build_config,
-        ['Metadata:'],
-        metadata,
-        ['Symbols:'],
-        sym_strs,
-    )
+    metrics_by_file = itertools.chain.from_iterable(
+        itertools.chain([c.name], describe.DescribeDict(c.metrics_by_file))
+        for c in size_info.containers)
+    return itertools.chain(['BuildConfig:'], build_config, ['Metadata:'],
+                           metadata, ['Symbols:'], sym_strs, ['MetricsByFile:'],
+                           metrics_by_file)
 
 
 def main():

@@ -312,6 +312,7 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
 
   raw_symbols = []
   section_sizes = {}
+  metrics_by_file = {}
   default_component = apk_spec.default_component if apk_spec else ''
 
   def add_syms(section_ranges,
@@ -354,13 +355,13 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
 
   elf_info = None
   if native_spec:
-    section_ranges, new_raw_symbols, elf_info = native.CreateSymbols(
+    section_ranges, native_symbols, elf_info = native.CreateSymbols(
         apk_spec=apk_spec,
         native_spec=native_spec,
         output_directory=output_directory,
         pak_id_map=pak_id_map)
     add_syms(section_ranges,
-             new_raw_symbols,
+             native_symbols,
              source_path_prefix=native_spec.source_path_prefix,
              component=native_spec.component,
              paths_already_normalized=True)
@@ -373,14 +374,20 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
       mapping_path = apk_spec.mapping_path  # May be None.
       class_deobfuscation_map = (
           dex_deobfuscator_cache.GetForMappingFile(mapping_path))
-      add_syms(*apkanalyzer.CreateDexSymbols(
-          apk_spec.apk_path, apk_analyzer_results[container_name],
-          dex_total_size, class_deobfuscation_map, apk_spec.size_info_prefix))
+      section_ranges, dex_symbols, dex_metrics_by_file = (
+          apkanalyzer.CreateDexSymbols(apk_spec.apk_path,
+                                       apk_analyzer_results[container_name],
+                                       dex_total_size, class_deobfuscation_map,
+                                       apk_spec.size_info_prefix))
+      add_syms(section_ranges, dex_symbols)
+      metrics_by_file.update(dex_metrics_by_file)
   if pak_spec:
-    add_syms(*_CreatePakSymbols(pak_spec=pak_spec,
-                                pak_id_map=pak_id_map,
-                                apk_spec=apk_spec,
-                                output_directory=output_directory))
+    section_ranges, pak_symbols = _CreatePakSymbols(
+        pak_spec=pak_spec,
+        pak_id_map=pak_id_map,
+        apk_spec=apk_spec,
+        output_directory=output_directory)
+    add_syms(section_ranges, pak_symbols)
   apk_metadata = {}
   if not native_spec and apk_spec:
     section_ranges, new_raw_symbols, apk_metadata = apk.CreateApkOtherSymbols(
@@ -392,7 +399,8 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
   metadata.update(apk_metadata)
   container = models.Container(name=container_name,
                                metadata=metadata,
-                               section_sizes=section_sizes)
+                               section_sizes=section_sizes,
+                               metrics_by_file=metrics_by_file)
   for symbol in raw_symbols:
     symbol.container = container
 

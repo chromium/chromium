@@ -289,6 +289,7 @@ def _SaveSizeInfoToFile(size_info,
         'name': c.name,
         'metadata': c.metadata,
         'section_sizes': c.section_sizes,
+        'metrics_by_file': c.metrics_by_file,
     } for c in size_info.containers]
   else:
     # Write using old format.
@@ -457,7 +458,8 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
     for cfield in fields['containers']:
       c = models.Container(name=cfield['name'],
                            metadata=cfield['metadata'],
-                           section_sizes=cfield['section_sizes'])
+                           section_sizes=cfield['section_sizes'],
+                           metrics_by_file=cfield.get('metrics_by_file', {}))
       containers.append(c)
   else:  # Old format.
     build_config = {}
@@ -471,7 +473,8 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
     containers.append(
         models.Container(name='',
                          metadata=metadata,
-                         section_sizes=section_sizes))
+                         section_sizes=section_sizes,
+                         metrics_by_file={}))
   models.BaseContainer.AssignShortNames(containers)
 
   has_components = fields.get('has_components', False)

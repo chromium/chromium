@@ -573,9 +573,11 @@ class DescriberText(Describer):
       containers = size_info.containers
     else:
       containers = [
-          models.Container(name='',
-                           metadata=size_info.metadata_legacy,
-                           section_sizes=size_info.containers[0].section_sizes)
+          models.Container(
+              name='',
+              metadata=size_info.metadata_legacy,
+              section_sizes=size_info.containers[0].section_sizes,
+              metrics_by_file=size_info.containers[0].metrics_by_file)
       ]
     for c in containers:
       if c.name:

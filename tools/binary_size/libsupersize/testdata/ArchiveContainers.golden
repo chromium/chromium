@@ -441,3 +441,9 @@ Symbols:
 <Container1:>.other@0(size_without_padding=1048576,padding=0,full_name=assets/icudtl.dat,object_path=,source_path=third_party/icu/android/icudtl.dat,flags={},num_aliases=1,component=Internal>Android)
 <Container1:>.other@0(size_without_padding=1024,padding=0,full_name=res/drawable-v13/test.xml,object_path=,source_path=chrome/android/res/drawable/test.xml,flags={},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=0,padding=818,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
+MetricsByFile:
+Container1:/test.so (armeabi-v7a)
+Container2:
+Container1:/smalltest.so (x86)
+Container1:
+classes.dex={'COUNT.ANNOTATION': 1, 'COUNT.ANNOTATIONS_DIRECTORY': 1, 'COUNT.ANNOTATION_SET': 2, 'COUNT.CLASS_DATA': 2, 'COUNT.CLASS_DEF': 2, 'COUNT.CODE': 8, 'COUNT.DEBUG_INFO': 8, 'COUNT.ENCODED_ARRAY': 1, 'COUNT.FIELD_ID': 2, 'COUNT.HEADER': 1, 'COUNT.MAP': 1, 'COUNT.METHOD_ID': 14, 'COUNT.PROTO_ID': 10, 'COUNT.STRING_DATA': 40, 'COUNT.STRING_ID': 40, 'COUNT.TYPE': 6, 'COUNT.TYPE_ID': 13, 'SIZE.ANNOTATION': 8, 'SIZE.ANNOTATIONS_DIRECTORY': 24, 'SIZE.ANNOTATION_SET': 12, 'SIZE.CLASS_DATA': 48, 'SIZE.CLASS_DEF': 64, 'SIZE.CODE': 432, 'SIZE.DEBUG_INFO': 72, 'SIZE.ENCODED_ARRAY': 4, 'SIZE.FIELD_ID': 16, 'SIZE.HEADER': 112, 'SIZE.MAP': 208, 'SIZE.METHOD_ID': 112, 'SIZE.PROTO_ID': 120, 'SIZE.STRING_DATA': 522, 'SIZE.STRING_ID': 160, 'SIZE.TYPE': 50, 'SIZE.TYPE_ID': 52}

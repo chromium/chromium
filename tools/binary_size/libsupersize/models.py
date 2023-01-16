@@ -235,12 +235,14 @@ class Container(BaseContainer):
   __slots__ = (
       'metadata',
       'section_sizes',
+      'metrics_by_file',
   )
 
-  def __init__(self, name, metadata, section_sizes):
+  def __init__(self, name, metadata, section_sizes, metrics_by_file):
     super().__init__(name)
     self.metadata = metadata or {}
     self.section_sizes = section_sizes  # E.g. {SECTION_TEXT: 0}
+    self.metrics_by_file = metrics_by_file
 
   @staticmethod
   def Empty():
@@ -250,7 +252,10 @@ class Container(BaseContainer):
     exist, unfortunately). Creating a new instance instead of using a global
     singleton for robustness.
     """
-    return Container(name='(empty)', metadata={}, section_sizes={})
+    return Container(name='(empty)',
+                     metadata={},
+                     section_sizes={},
+                     metrics_by_file={})
 
 
 class DeltaContainer(BaseContainer):
@@ -270,6 +275,19 @@ class DeltaContainer(BaseContainer):
     ret = collections.Counter(self.after.section_sizes)
     ret.update({k: -v for k, v in self.before.section_sizes.items()})
     return dict(ret)
+
+  @property
+  def metrics_by_file(self):
+    keys = (set(self.before.metrics_by_file.keys())
+            | set(self.after.metrics_by_file.keys()))
+    ret = {}
+    for key in keys:
+      before_contents = self.before.metrics_by_file.get(key, {})
+      after_contents = self.after.metrics_by_file.get(key, {})
+      delta_contents = collections.Counter(after_contents)
+      delta_contents.update({k: -v for k, v in before_contents.items()})
+      ret[key] = dict(delta_contents)
+    return ret
 
 
 class BaseSizeInfo:

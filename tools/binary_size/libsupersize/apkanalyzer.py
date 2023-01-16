@@ -473,7 +473,7 @@ def _ParseMainDexfileInApk(apk_path):
             'Found multiple .dex files in %s: Only the first will be used.',
             apk_path)
       dex_data = src_zip.read(dex_infos[0])
-      return dex_parser.DexFile(dex_data)
+      return dex_infos[0].filename, dex_parser.DexFile(dex_data)
 
   return None
 
@@ -488,6 +488,7 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
     dex_total_size: Sum of the sizes of all .dex files in the apk.
     class_deobfuscation_map: Map from obfuscated names to class names.
     size_info_prefix: Path such as: out/Release/size-info/BaseName.
+    metrics_by_file: Dict from DEX file name to a dict of {metric_name: value}.
 
   Returns:
     A tuple of (section_ranges, raw_symbols).
@@ -515,7 +516,7 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
 
   dex_method_symbols, dex_other_symbols = _SymbolsFromNodes(nodes, source_map)
 
-  dexfile = _ParseMainDexfileInApk(apk_path)
+  dex_path, dexfile = _ParseMainDexfileInApk(apk_path)
   # TODO(huangs): Handle the case where an APK contains multiple DEX files.
   dex_string_symbols, dex_string_data_size = _StringSymbolsFromDexFile(
       apk_path, dexfile, source_map, class_deobfuscation_map)
@@ -552,4 +553,10 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
 
   dex_other_symbols.extend(dex_method_symbols)
   dex_other_symbols.extend(dex_string_symbols)
-  return section_ranges, dex_other_symbols
+
+  map_item_sizes = dexfile.ComputeMapItemSizes()
+  metrics = {}
+  for item in map_item_sizes:
+    metrics['SIZE.' + item['name']] = item['byte_size']
+    metrics['COUNT.' + item['name']] = item['size']
+  return section_ranges, dex_other_symbols, {dex_path: metrics}
