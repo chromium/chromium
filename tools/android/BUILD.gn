@@ -50,6 +50,10 @@ group("spnego_authenticator") {
   ]
 }
 
+group("touch_replay") {
+  deps = [ "//tools/android/touch_replay" ]
+}
+
 group("customtabs_benchmark") {
   deps = [ "//tools/android/customtabs_benchmark:customtabs_benchmark_apk" ]
 }
