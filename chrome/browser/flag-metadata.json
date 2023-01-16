@@ -580,7 +580,7 @@
   {
     "name": "autofill-keyboard-accessory-view",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "autofill-more-prominent-popup",
@@ -1774,7 +1774,7 @@
   {
     "name": "enable-autofill-manual-fallback",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "enable-autofill-refresh-style",
@@ -5898,7 +5898,7 @@
   {
     "name": "recover-from-never-save-android",
     "owners": [ "ioanap", "fhorschig" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 114
   },
   {
     "name": "reduce-accept-language",
