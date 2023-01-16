@@ -134,15 +134,12 @@ void CardUnmaskPromptViews::GotVerificationResult(
           std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
               kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity)));
 
-      // Create and add the label of the overlay, and show the error in red.
-      auto error_label = std::make_unique<views::Label>(error_message);
-      views::SetCascadingColorProviderColor(error_label.get(),
-                                            views::kCascadingLabelEnabledColor,
-                                            ui::kColorAlertHighSeverity);
+      // Create and add the label of the overlay, and show the error in gray.
+      auto* error_label = overlay_->AddChildView(std::make_unique<views::Label>(
+          error_message, views::style::CONTEXT_LABEL,
+          views::style::STYLE_SECONDARY));
       error_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
       error_label->SetMultiLine(true);
-
-      overlay_->AddChildView(std::move(error_label));
 
       // Re-layout to correctly format the views on the overlay.
       overlay_->Layout();
