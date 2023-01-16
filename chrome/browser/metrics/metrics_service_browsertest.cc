@@ -164,10 +164,13 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
       "Stability.Counts2", metrics::StabilityEventType::kRendererCrash, 0);
 }
 
-// Flaky on Linux. See http://crbug.com/131094
 // Child crashes fail the process on ASan (see crbug.com/411251,
 // crbug.com/368525).
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
+// Note to sheriffs: Do not disable these tests if they starts to flake. If
+// either of these tests start to fail then changes likely need to be made
+// elsewhere in crash processing, metrics analysis, and dashboards. Please
+// consult Stability Team before disabling.
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_CrashRenderers DISABLED_CrashRenderers
 #define MAYBE_CheckCrashRenderers DISABLED_CheckCrashRenderers
 #else
@@ -244,8 +247,14 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
   histogram_tester.ExpectUniqueSample(
       "CrashExitCodes.Renderer",
       std::abs(static_cast<int32_t>(STATUS_BREAKPOINT)), 1);
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(IS_MAC)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGTRAP);
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if defined(OFFICIAL_BUILD)
+  VerifyRendererExitCodeIsSignal(histogram_tester, SIGILL);
+#else
+  VerifyRendererExitCodeIsSignal(histogram_tester, SIGSEGV);
+#endif  // defined(OFFICIAL_BUILD)
 #endif
 }
 
