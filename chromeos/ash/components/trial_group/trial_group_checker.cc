@@ -13,6 +13,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -58,13 +59,14 @@ void TrialGroupChecker::OnRequestComplete(
     return;
   }
 
-  base::Value* member_status = membership_info->FindKey("membership_info");
-  if (member_status == nullptr || !member_status->is_int()) {
+  absl::optional<int> member_status =
+      membership_info->GetDict().FindInt("membership_info");
+  if (!member_status) {
     std::move(callback_).Run(false);
     return;
   }
 
-  bool is_member = (member_status->GetInt() == kIsMember);
+  bool is_member = (member_status.value() == kIsMember);
   std::move(callback_).Run(is_member);
 }
 
