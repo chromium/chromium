@@ -271,10 +271,10 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     parent_proxy->GetAssociatedRemoteFrame()->CreateRemoteChild(
         frame_token_, opener_frame_token, frame_tree_node_->tree_scope_type(),
         frame_tree_node_->current_replication_state().Clone(),
+        frame_tree_node_->frame_owner_properties().Clone(),
         frame_tree_node_->IsLoading(),
         frame_tree_node_->current_frame_host()->devtools_frame_token(),
         CreateAndBindRemoteFrameInterfaces());
-
   } else {
     GetRenderViewHost()->GetAssociatedPageBroadcast()->CreateRemoteMainFrame(
         frame_token_, opener_frame_token,
@@ -286,18 +286,6 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   }
 
   SetRenderFrameProxyCreated(true);
-
-  // For subframes, initialize the proxy's FrameOwnerProperties only if they
-  // differ from default values.
-  bool should_send_properties =
-      !frame_tree_node_->frame_owner_properties().Equals(
-          blink::mojom::FrameOwnerProperties());
-  if (frame_tree_node_->parent() && should_send_properties) {
-    auto frame_owner_properties =
-        frame_tree_node_->frame_owner_properties().Clone();
-    GetAssociatedRemoteFrame()->SetFrameOwnerProperties(
-        std::move(frame_owner_properties));
-  }
 
   return true;
 }

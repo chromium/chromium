@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
@@ -344,12 +345,13 @@ WebRemoteFrameImpl* CreateRemoteChild(
   auto* frame = To<WebRemoteFrameImpl>(parent).CreateRemoteChild(
       mojom::blink::TreeScopeType::kDocument, RemoteFrameToken(),
       /*is_loading=*/false,
-      /*devtools_frame_token=*/base::UnguessableToken(), /*opener=*/nullptr,
+      /*devtools_frame_token=*/base::UnguessableToken(),
+      /*opener=*/nullptr,
       CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
           mojo::NullAssociatedRemote()),
       mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
           .BindNewEndpointAndPassDedicatedReceiver(),
-      std::move(replicated_state));
+      std::move(replicated_state), mojom::blink::FrameOwnerProperties::New());
   return frame;
 }
 

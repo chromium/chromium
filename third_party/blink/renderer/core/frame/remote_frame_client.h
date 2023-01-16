@@ -7,6 +7,7 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink-forward.h"
@@ -32,6 +33,7 @@ class RemoteFrameClient : public FrameClient {
       const absl::optional<FrameToken>& opener_frame_token,
       mojom::blink::TreeScopeType tree_scope_type,
       mojom::blink::FrameReplicationStatePtr replication_state,
+      mojom::blink::FrameOwnerPropertiesPtr owner_properties,
       bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
       mojom::blink::RemoteFrameInterfacesFromBrowserPtr

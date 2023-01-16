@@ -319,7 +319,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateRemoteChild(
     mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
         remote_frame_host,
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
-    mojom::blink::FrameReplicationStatePtr replicated_state) {
+    mojom::blink::FrameReplicationStatePtr replicated_state,
+    mojom::blink::FrameOwnerPropertiesPtr owner_properties) {
   auto* child = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
   auto* owner = MakeGarbageCollected<RemoteFrameOwner>(
       replicated_state->frame_policy, WebFrameOwnerProperties());
@@ -338,9 +339,14 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateRemoteChild(
   child->SetReplicatedState(std::move(replicated_state));
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
   ToCoreFrame(*child)->SetOpenerDoNotNotify(opener_frame);
+
   if (is_loading) {
     child->DidStartLoading();
   }
+
+  DCHECK(owner_properties);
+  child->SetFrameOwnerProperties(std::move(owner_properties));
+
   return child;
 }
 
@@ -384,6 +390,11 @@ void WebRemoteFrameImpl::SetReplicatedOrigin(
 
 void WebRemoteFrameImpl::DidStartLoading() {
   GetFrame()->DidStartLoading();
+}
+
+void WebRemoteFrameImpl::SetFrameOwnerProperties(
+    mojom::blink::FrameOwnerPropertiesPtr owner_properties) {
+  GetFrame()->SetFrameOwnerProperties(std::move(owner_properties));
 }
 
 v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {

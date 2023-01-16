@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_REMOTE_FRAME_IMPL_H_
 
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
@@ -104,7 +105,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
           remote_frame_host,
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
-      mojom::blink::FrameReplicationStatePtr replicated_state);
+      mojom::blink::FrameReplicationStatePtr replicated_state,
+      mojom::blink::FrameOwnerPropertiesPtr owner_properties);
 
   static WebRemoteFrameImpl* FromFrame(RemoteFrame&);
 
@@ -115,6 +117,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
   void SetReplicatedState(mojom::FrameReplicationStatePtr replicated_state);
   void SetReplicatedState(
       mojom::blink::FrameReplicationStatePtr replicated_state);
+  void SetFrameOwnerProperties(
+      mojom::blink::FrameOwnerPropertiesPtr owner_properties);
 
  private:
   friend class RemoteFrameClientImpl;

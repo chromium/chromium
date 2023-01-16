@@ -97,6 +97,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       const absl::optional<blink::FrameToken>& opener_frame_token,
       blink::mojom::TreeScopeType tree_scope_type,
       blink::mojom::FrameReplicationStatePtr replication_state,
+      blink::mojom::FrameOwnerPropertiesPtr owner_properties,
       bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
       blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)

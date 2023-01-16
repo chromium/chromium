@@ -1099,12 +1099,14 @@ void RemoteFrame::CreateRemoteChild(
     const absl::optional<FrameToken>& opener_frame_token,
     mojom::blink::TreeScopeType tree_scope_type,
     mojom::blink::FrameReplicationStatePtr replication_state,
+    mojom::blink::FrameOwnerPropertiesPtr owner_properties,
     bool is_loading,
     const base::UnguessableToken& devtools_frame_token,
     mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces) {
   Client()->CreateRemoteChild(
       token, opener_frame_token, tree_scope_type, std::move(replication_state),
-      is_loading, devtools_frame_token, std::move(remote_frame_interfaces));
+      std::move(owner_properties), is_loading, devtools_frame_token,
+      std::move(remote_frame_interfaces));
 }
 
 }  // namespace blink

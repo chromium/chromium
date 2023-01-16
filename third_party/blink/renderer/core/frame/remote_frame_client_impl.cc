@@ -71,6 +71,7 @@ void RemoteFrameClientImpl::CreateRemoteChild(
     const absl::optional<FrameToken>& opener_frame_token,
     mojom::blink::TreeScopeType tree_scope_type,
     mojom::blink::FrameReplicationStatePtr replication_state,
+    mojom::blink::FrameOwnerPropertiesPtr owner_properties,
     bool is_loading,
     const base::UnguessableToken& devtools_frame_token,
     mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces) {
@@ -81,7 +82,7 @@ void RemoteFrameClientImpl::CreateRemoteChild(
       tree_scope_type, token, is_loading, devtools_frame_token, opener,
       std::move(remote_frame_interfaces->frame_host),
       std::move(remote_frame_interfaces->frame_receiver),
-      std::move(replication_state));
+      std::move(replication_state), std::move(owner_properties));
 }
 
 unsigned RemoteFrameClientImpl::BackForwardLength() {

@@ -216,6 +216,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       const absl::optional<FrameToken>& opener_frame_token,
       mojom::blink::TreeScopeType tree_scope_type,
       mojom::blink::FrameReplicationStatePtr replication_state,
+      mojom::blink::FrameOwnerPropertiesPtr owner_properties,
       bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
       mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
