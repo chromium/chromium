@@ -164,6 +164,15 @@ public final class PrivacySandboxDialogTest {
         while (true) {
             try {
                 onView(withId(R.id.more_button)).perform(click());
+                var promptType = mFakePrivacySandboxBridge.getRequiredPromptType();
+                if (promptType == PromptType.M1_CONSENT) {
+                    assertEquals("Last dialog action", PromptAction.CONSENT_MORE_BUTTON_CLICKED,
+                            (int) mFakePrivacySandboxBridge.getLastPromptAction());
+                } else if (promptType == PromptType.M1_NOTICE_EEA
+                        || promptType == PromptType.M1_NOTICE_ROW) {
+                    assertEquals("Last dialog action", PromptAction.NOTICE_MORE_BUTTON_CLICKED,
+                            (int) mFakePrivacySandboxBridge.getLastPromptAction());
+                }
             } catch (PerformException e) {
                 return;
             }

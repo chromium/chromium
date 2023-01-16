@@ -103,6 +103,7 @@ public class PrivacySandboxDialogConsentEEAV4
             PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.more_button) {
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_BUTTON_CLICKED);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mScrollView.post(() -> { mScrollView.pageScroll(ScrollView.FOCUS_DOWN); });
             } else {
