@@ -498,7 +498,8 @@ void CertProvisioningWorkerStatic::OnBuildVaChallengeResponseDone(
     const attestation::TpmChallengeKeyResult& challenge_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RecordVerifiedAccessTime(cert_scope_, base::TimeTicks::Now() - start_time);
+  RecordVerifiedAccessTime(cert_profile_.protocol_version, cert_scope_,
+                           base::TimeTicks::Now() - start_time);
 
   if (!challenge_result.IsSuccess()) {
     failure_message_ = ConstructFailureMessage(challenge_result);

@@ -50,7 +50,9 @@ void RecordKeypairGenerationTime(ProtocolVersion protocol_version,
 
 // Records time of building Verified Access response by certificate provisioning
 // worker.
-void RecordVerifiedAccessTime(CertScope scope, base::TimeDelta sample);
+void RecordVerifiedAccessTime(ProtocolVersion protocol_version,
+                              CertScope scope,
+                              base::TimeDelta sample);
 
 // Records time of signing a CSR by certificate provisioning worker.
 void RecordCsrSignTime(CertScope scope, base::TimeDelta sample);

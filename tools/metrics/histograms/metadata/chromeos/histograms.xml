@@ -689,16 +689,19 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
       variants="AllCertProvisioningProtocolVersions"/>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.VaTime.{CertProvisioningScope}"
+<histogram
+    name="ChromeOS.CertProvisioning.VaTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
     units="ms" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
-    The amount of time it took the certificate provisioning worker with scope
-    {CertProvisioningScope} to build one Verified Access response. Emitted after
-    the response is built.
+    The amount of time it took the {CertProvisioningProtocolVersion} certificate
+    provisioning worker with scope {CertProvisioningScope} to build one Verified
+    Access response. Emitted after the response is built.
   </summary>
   <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
+  <token key="CertProvisioningProtocolVersion"
+      variants="AllCertProvisioningProtocolVersions"/>
 </histogram>
 
 <histogram name="ChromeOS.CWP.CollectPerf"
