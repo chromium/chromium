@@ -599,8 +599,6 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
         loadTimeData.getString('fledgePageToggleSubLabel'),
         page.$.fledgeToggle.subLabel);
     assertTrue(isChildVisible(page, '#currentSitesDescription'));
-    // TODO(crbug.com/1378703): Add test for `#currentSitesDescriptionEmpty`
-    // when `getFledgeState()` returns an empty list.
     assertFalse(isChildVisible(page, '#currentSitesDescriptionEmpty'));
     assertFalse(isChildVisible(page, '#currentSitesDescriptionDisabled'));
 
@@ -651,8 +649,6 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertEquals(learnMoreButton, page.shadowRoot!.activeElement);
   });
 
-  // TODO(crbug.com/1378703): Add test for empty blocked sites list description
-  // when `getFledgeState()` returns an empty list.
   test('blockedSitesDescriptionNotEmpty', async function() {
     page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
     const blockedSitesRow =
@@ -801,6 +797,96 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     const expectedLinks =
         ['chrome://settings/adPrivacy/interests', 'chrome://settings/cookies'];
     assertDeepEquals(hrefs, expectedLinks);
+  });
+});
+
+suite('PrivacySandboxFledgeSubpageEmptyTests', function() {
+  let page: SettingsPrivacySandboxFledgeSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setFledgeState({
+      joiningSites: [],
+      blockedSites: [],
+    });
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-fledge-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getFledgeState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('fledgeDisabled', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
+    await flushTasks();
+    // Check the current sites descriptions.
+    assertTrue(isChildVisible(page, '#currentSitesDescription'));
+    assertFalse(isChildVisible(page, '#currentSitesDescriptionEmpty'));
+    assertTrue(isChildVisible(page, '#currentSitesDescriptionDisabled'));
+  });
+
+  test('fledgeEnabled', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+    // Check the current sites descriptions.
+    assertTrue(isChildVisible(page, '#currentSitesDescription'));
+    assertTrue(isChildVisible(page, '#currentSitesDescriptionEmpty'));
+    assertFalse(isChildVisible(page, '#currentSitesDescriptionDisabled'));
+    assertFalse(isChildVisible(page, '#seeAllSites'));
+    // Check that there are no current sites.
+    const currentSites =
+        page.shadowRoot!.querySelectorAll('privacy-sandbox-interest-item');
+    assertEquals(0, currentSites.length);
+  });
+
+  test('blockedSitesEmpty', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+    const blockedSitesRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#blockedSitesRow')!;
+    const blockedSitesDescription = page.shadowRoot!.querySelector<HTMLElement>(
+        '#blockedSitesDescription')!;
+    assertTrue(isVisible(blockedSitesRow));
+    assertFalse(isVisible(blockedSitesDescription));
+    blockedSitesRow.click();
+    await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.BlockedSitesOpened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+
+    // Check the blocked sites description.
+    assertTrue(isVisible(blockedSitesDescription));
+    assertEquals(
+        loadTimeData.getString('fledgePageBlockedSitesDescriptionEmpty'),
+        blockedSitesDescription.innerText);
+
+    // Check that there are no blocked sites.
+    const blockedSitesList =
+        page.shadowRoot!.querySelector('#blockedSitesList')!;
+    const blockedSites =
+        blockedSitesList.querySelectorAll('privacy-sandbox-interest-item');
+    assertEquals(0, blockedSites.length);
   });
 });
 
