@@ -38,6 +38,3 @@ IPC_STRUCT_END|\
 IPC_STRUCT_TRAITS_END|\
 POLPARAMS_END|\
 PPAPI_END_MESSAGE_MAP$"
-
-# TODO: Remove this once clang-format r357700 is rolled in.
-JavaImportGroups: ['android', 'androidx', 'com', 'dalvik', 'junit', 'org', 'com.google.android.apps.chrome', 'org.chromium', 'java', 'javax']
