@@ -478,7 +478,6 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
                               const bool should_pin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
-  DCHECK(complete_callback);
 
   should_pin_ = should_pin;
   complete_callback_ = std::move(complete_callback);
@@ -502,6 +501,21 @@ void DriveFsPinManager::Stop() {
   if (InProgress(progress_.stage)) {
     VLOG(1) << "Stopping";
     Complete(SetupStage::kStopped);
+  }
+}
+
+void DriveFsPinManager::Enable(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (enabled == InProgress(progress_.stage)) {
+    VLOG(1) << "Pin manager is already " << (enabled ? "enabled" : "disabled");
+    return;
+  }
+
+  if (enabled) {
+    Start();
+  } else {
+    Stop();
   }
 }
 

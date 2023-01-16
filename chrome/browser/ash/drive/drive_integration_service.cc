@@ -377,7 +377,7 @@ class DriveIntegrationService::PreferenceWatcher
     if (ash::features::IsDriveFsBulkPinningEnabled()) {
       pref_change_registrar_.Add(
           prefs::kDriveFsBulkPinningEnabled,
-          base::BindRepeating(&PreferenceWatcher::UpdateBulkPinningState,
+          base::BindRepeating(&PreferenceWatcher::ToggleBulkPinning,
                               weak_ptr_factory_.GetWeakPtr()));
     }
   }
@@ -444,24 +444,9 @@ class DriveIntegrationService::PreferenceWatcher
     }
   }
 
-  void UpdateBulkPinningState() {
+  void ToggleBulkPinning() {
     DCHECK(integration_service_);
-    drivefs::pinning::DriveFsPinManager* const pin_manager =
-        integration_service_->GetDriveFsPinManager();
-    if (!pin_manager) {
-      return;
-    }
-
-    const bool enabled =
-        pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
-    integration_service_->GetDriveFsHost()->SetAlwaysEnableDocsOffline(enabled);
-    if (enabled) {
-      VLOG(1) << "Starting bulk pinning";
-      pin_manager->Start(base::DoNothing());
-    } else {
-      VLOG(1) << "Stopping bulk pinning";
-      pin_manager->Stop();
-    }
+    integration_service_->ToggleBulkPinning();
   }
 
   void AddNetworkPortalDetectorObserver() {
@@ -687,7 +672,7 @@ DriveIntegrationService::DriveIntegrationService(
   }
 
   bool migrated_to_drivefs =
-      profile_->GetPrefs()->GetBoolean(prefs::kDriveFsPinnedMigrated);
+      GetPrefs()->GetBoolean(prefs::kDriveFsPinnedMigrated);
   if (migrated_to_drivefs) {
     state_ = INITIALIZED;
   } else {
@@ -701,6 +686,10 @@ DriveIntegrationService::DriveIntegrationService(
 
 DriveIntegrationService::~DriveIntegrationService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
+
+PrefService* DriveIntegrationService::GetPrefs() const {
+  return profile_->GetPrefs();
 }
 
 void DriveIntegrationService::Shutdown() {
@@ -916,7 +905,7 @@ void DriveIntegrationService::AddDriveMountPoint() {
   }
 
   const bool was_ever_mounted =
-      profile_->GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
+      GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
 
   if (mount_start_.is_null() || was_ever_mounted) {
     mount_start_ = base::TimeTicks::Now();
@@ -938,7 +927,7 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
   // Check if the data dir was missing (probably because it got removed while
   // the user was logged out).
   if (data_dir_result == DirResult::kCreated &&
-      profile_->GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce)) {
+      GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce)) {
     LOG(WARNING) << "DriveFS data directory '" << data_dir
                  << "' was missing and got created again";
 
@@ -983,7 +972,7 @@ bool DriveIntegrationService::AddDriveMountPointAfterMounted() {
   if (preference_watcher_) {
     preference_watcher_->UpdateSyncPauseState();
   }
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kDriveFsPinnedMigrated)) {
+  if (!GetPrefs()->GetBoolean(prefs::kDriveFsPinnedMigrated)) {
     MigratePinnedFiles();
   }
 
@@ -1067,7 +1056,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
 
 void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   if (AddDriveMountPointAfterMounted()) {
-    PrefService* prefs = profile_->GetPrefs();
+    PrefService* prefs = GetPrefs();
     bool was_ever_mounted =
         prefs->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
     if (was_ever_mounted) {
@@ -1082,7 +1071,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
 
   // Enable MirrorSync if the feature is enabled.
   if (ash::features::IsDriveFsMirroringEnabled() &&
-      profile_->GetPrefs()->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
+      GetPrefs()->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
     ToggleMirroring(
         true,
         base::BindOnce(&DriveIntegrationService::OnEnableMirroringStatusUpdate,
@@ -1093,6 +1082,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
     pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
         profile_->GetPath(), GetDriveFsInterface());
     GetDriveFsHost()->AddObserver(pin_manager_.get());
+    ToggleBulkPinning();
   }
 }
 
@@ -1106,7 +1096,7 @@ void DriveIntegrationService::OnUnmounted(
 void DriveIntegrationService::OnMountFailed(
     MountFailure failure,
     absl::optional<base::TimeDelta> remount_delay) {
-  PrefService* prefs = profile_->GetPrefs();
+  PrefService* prefs = GetPrefs();
   DriveMountStatus status = ConvertMountFailure(failure);
   UmaEmitMountStatus(status);
   bool was_ever_mounted =
@@ -1142,7 +1132,7 @@ void DriveIntegrationService::InitializeAfterMetadataInitialized(
   DCHECK_EQ(INITIALIZING, state_);
 
   if (error != FILE_ERROR_OK) {
-    profile_->GetPrefs()->SetBoolean(prefs::kDriveFsPinnedMigrated, true);
+    GetPrefs()->SetBoolean(prefs::kDriveFsPinnedMigrated, true);
     metadata_storage_.reset();
     blocking_task_runner_->PostTask(
         FROM_HERE,
@@ -1158,7 +1148,7 @@ void DriveIntegrationService::InitializeAfterMetadataInitialized(
 
 void DriveIntegrationService::AvoidDriveAsDownloadDirectoryPreference() {
   if (DownloadDirectoryPreferenceIsInDrive()) {
-    profile_->GetPrefs()->SetFilePath(
+    GetPrefs()->SetFilePath(
         ::prefs::kDownloadDefaultDirectory,
         file_manager::util::GetDownloadsFolderForProfile(profile_));
   }
@@ -1166,7 +1156,7 @@ void DriveIntegrationService::AvoidDriveAsDownloadDirectoryPreference() {
 
 bool DriveIntegrationService::DownloadDirectoryPreferenceIsInDrive() {
   const auto downloads_path =
-      profile_->GetPrefs()->GetFilePath(::prefs::kDownloadDefaultDirectory);
+      GetPrefs()->GetFilePath(::prefs::kDownloadDefaultDirectory);
   const auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   return user && user->GetAccountId().HasAccountIdKey() &&
          GetMountPointPath().IsParent(downloads_path);
@@ -1196,7 +1186,19 @@ void DriveIntegrationService::PinFiles(
   for (const auto& path : files_to_pin) {
     GetDriveFsInterface()->SetPinned(path, true, base::DoNothing());
   }
-  profile_->GetPrefs()->SetBoolean(prefs::kDriveFsPinnedMigrated, true);
+  GetPrefs()->SetBoolean(prefs::kDriveFsPinnedMigrated, true);
+}
+
+void DriveIntegrationService::ToggleBulkPinning() {
+  if (!pin_manager_) {
+    VLOG(1) << "No bulk-pinning manager";
+    return;
+  }
+
+  const bool enabled =
+      GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
+  GetDriveFsHost()->SetAlwaysEnableDocsOffline(enabled);
+  pin_manager_->Enable(enabled);
 }
 
 void DriveIntegrationService::GetQuickAccessItems(

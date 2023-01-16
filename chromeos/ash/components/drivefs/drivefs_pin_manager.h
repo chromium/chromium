@@ -136,16 +136,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   ~DriveFsPinManager() override;
 
-  // Start up the manager, which will first search for any unpinned items and
+  // Starts up the manager, which will first search for any unpinned items and
   // pin them (within the users My drive) then turn to a "monitoring" phase
   // which will ensure any new files created and switched to pinned state
   // automatically. The complete callback will be called once the initial
   // pinning has completed.
   using CompletionCallback = base::OnceCallback<void(SetupStage)>;
-  void Start(CompletionCallback complete_callback, bool should_pin = true);
+  void Start(CompletionCallback complete_callback = {}, bool should_pin = true);
 
-  // Stop the syncing setup.
+  // Stops the syncing setup.
   void Stop();
+
+  // Starts or stops the syncing engine if necessary.
+  void Enable(bool enabled);
 
   // Gets the current progress status.
   SetupProgress GetProgress() const {
