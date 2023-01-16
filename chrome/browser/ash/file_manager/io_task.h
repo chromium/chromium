@@ -72,7 +72,9 @@ struct EntryStatus {
   EntryStatus(EntryStatus&& other);
   EntryStatus& operator=(EntryStatus&& other);
 
+  // The entry FileSystemURL.
   storage::FileSystemURL url;
+
   // May be empty if the entry has not been fully processed yet.
   absl::optional<base::File::Error> error;
 };
