@@ -3304,7 +3304,9 @@ ArcBluetoothBridge::CreateBluetoothConnectSocket(
 void ArcBluetoothBridge::OnBluetoothConnectingSocketReady(
     ArcBluetoothBridge::BluetoothConnectingSocket* sock_wrapper) {
   // When connect() is ready, we will transfer this fd to Android, and Android
-  // is responsible for closing it.
+  // is responsible for closing it. The file watcher |controller| needs to be
+  // disabled first, and then the fd ownership is transferred.
+  sock_wrapper->controller.reset();
   base::ScopedFD fd = std::move(sock_wrapper->file);
 
   // Checks whether connect() succeeded.
