@@ -47,8 +47,10 @@ export interface BrowserProxy {
   getAllDataCollectors(): Promise<DataCollectorItem[]>;
 
   startDataCollection(
-      issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[]):
-      Promise<StartDataCollectionResult>;
+      issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[],
+      screenshotBase64: string): Promise<StartDataCollectionResult>;
+
+  takeScreenshot(): void;
 
   cancelDataCollection(): void;
 
@@ -73,9 +75,15 @@ export class BrowserProxyImpl implements BrowserProxy {
     return sendWithPromise('getAllDataCollectors');
   }
 
+  takeScreenshot() {
+    chrome.send('takeScreenshot');
+  }
+
   startDataCollection(
-      issueDetails: IssueDetails, dataCollectors: DataCollectorItem[]) {
-    return sendWithPromise('startDataCollection', issueDetails, dataCollectors);
+      issueDetails: IssueDetails, dataCollectors: DataCollectorItem[],
+      screenshotBase64: string) {
+    return sendWithPromise(
+        'startDataCollection', issueDetails, dataCollectors, screenshotBase64);
   }
 
   cancelDataCollection() {

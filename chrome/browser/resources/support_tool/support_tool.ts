@@ -89,6 +89,8 @@ export class SupportToolElement extends SupportToolElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.addWebUiListener(
+        'screenshot-received', this.onScreenshotReceived_.bind(this));
+    this.addWebUiListener(
         'data-collection-completed',
         this.onDataCollectionCompleted_.bind(this));
     this.addWebUiListener(
@@ -98,6 +100,12 @@ export class SupportToolElement extends SupportToolElementBase {
         'support-data-export-started', this.onDataExportStarted_.bind(this));
     this.addWebUiListener(
         'data-export-completed', this.onDataExportCompleted_.bind(this));
+  }
+
+  private onScreenshotReceived_(dataBase64: string) {
+    if (dataBase64 !== 'CANCELED') {
+      this.$.dataCollectors.setScreenshotData(dataBase64);
+    }
   }
 
   private onDataExportStarted_() {
@@ -153,7 +161,8 @@ export class SupportToolElement extends SupportToolElementBase {
       this.browserProxy_
           .startDataCollection(
               this.$.issueDetails.getIssueDetails(),
-              this.$.dataCollectors.getDataCollectors())
+              this.$.dataCollectors.getDataCollectors(),
+              this.$.dataCollectors.getEditedScreenshotBase64())
           .then(this.onDataCollectionStart_.bind(this));
     } else {
       this.selectedPage_ = this.selectedPage_ + 1;

@@ -16,11 +16,22 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails, PiiDataItem, UrlGenerationResult} from 'chrome://support-tool/browser_proxy.js';
+import {ScreenshotElement} from 'chrome://support-tool/screenshot.js';
 import {DataExportResult, SupportToolElement, SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
 import {UrlGeneratorElement} from 'chrome://support-tool/url_generator.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+const SCREENSHOT_BASE64: string =
+    'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwME' +
+    'AwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT' +
+    '/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB' +
+    'QUFBQUFBQUFBQUFBQUFBT/wAARCABkAGQDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAA' +
+    'AAAAAj/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAcJ/8QA' +
+    'FBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AnQBDGqYAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
+    'AAAAD/2Q==';
 
 const EMAIL_ADDRESSES: string[] =
     ['testemail1@test.com', 'testemail2@test.com'];
@@ -79,6 +90,7 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'takeScreenshot',
       'getEmailAddresses',
       'getDataCollectors',
       'startDataCollection',
@@ -88,6 +100,10 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
       'getAllDataCollectors',
       'generateCustomizedUrl',
     ]);
+  }
+
+  takeScreenshot() {
+    this.methodCalled('takeScreenshot');
   }
 
   getEmailAddresses() {
@@ -109,9 +125,11 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
   }
 
   startDataCollection(
-      issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[]) {
+      issueDetails: IssueDetails, selectedDataCollectors: DataCollectorItem[],
+      screenshot: string) {
     this.methodCalled(
-        'startDataCollection', issueDetails, selectedDataCollectors);
+        'startDataCollection', issueDetails, selectedDataCollectors,
+        screenshot);
     // Return result with success for testing.
     const result = {success: true, errorMessage: ''};
     return Promise.resolve(result);
@@ -208,6 +226,31 @@ suite('SupportToolTest', function() {
       assertEquals(listItem.isIncluded, DATA_COLLECTORS[i]!.isIncluded);
       assertEquals(listItem.protoEnum, DATA_COLLECTORS[i]!.protoEnum);
     }
+  });
+
+  test('take and remove screenshot', async () => {
+    // Take screenshot.
+    const screenshot = supportTool.$.dataCollectors.shadowRoot!
+                           .querySelector<ScreenshotElement>('#screenshot')!;
+    const takeScreenshotButton =
+        screenshot.shadowRoot!.getElementById('takeScreenshot')!;
+    const removeScreenshotButton =
+        screenshot.shadowRoot!.getElementById('removeScreenshot')!;
+    takeScreenshotButton.click();
+    await browserProxy.whenCalled('takeScreenshot');
+    webUIListenerCallback('screenshot-received', SCREENSHOT_BASE64);
+    assertFalse(
+        screenshot.shadowRoot!.getElementById('screenshotPreview')!.hidden);
+    assertFalse(removeScreenshotButton.hidden);
+    assertTrue(takeScreenshotButton.hidden);
+    assertNotEquals(screenshot.getEditedScreenshotBase64(), '');
+    // Remove screenshot.
+    removeScreenshotButton.click();
+    assertTrue(
+        screenshot.shadowRoot!.getElementById('screenshotPreview')!.hidden);
+    assertTrue(removeScreenshotButton.hidden);
+    assertFalse(takeScreenshotButton.hidden);
+    assertEquals(screenshot.getEditedScreenshotBase64(), '');
   });
 
   test('spinner page', () => {

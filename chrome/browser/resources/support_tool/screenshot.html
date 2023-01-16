@@ -1,0 +1,48 @@
+<!-- Copyright 2023 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<style include="support-tool-shared cr-shared-style">
+  #screenshotButtons {
+    float: left;
+    left: 0;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .screenshot-button {
+    margin-inline-end: 8px;
+  }
+
+  #screenshotPreview {
+    margin-bottom: 8px;
+    margin-top: 8px;
+    width: 520px;
+  }
+</style>
+
+<div class="support-tool-title">Attach additional files</div>
+
+<div id="screenshotButtons">
+  <cr-button
+      id="takeScreenshot"
+      class="screenshot-button"
+      hidden$="[[hasScreenshotPreview_]]"
+      on-click="onTakeScreenshotClick_">
+    Take Screenshot
+  </cr-button>
+  <cr-button
+      id="removeScreenshot"
+      class="screenshot-button"
+      hidden$="[[!hasScreenshotPreview_]]"
+      on-click="onRemoveScreenshotClick_">
+    Remove Screenshot
+  </cr-button>
+</div>
+
+<div>
+  <img id="screenshotPreview"
+       hidden$="[[!hasScreenshotPreview_]]"
+       src="[[screenshotBase64_]]"
+       alt="Screenshot">
+</div>

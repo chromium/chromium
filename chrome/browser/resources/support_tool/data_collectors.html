@@ -21,3 +21,7 @@ found in the LICENSE file.
     </cr-checkbox>
   </template>
 </iron-list>
+
+<template is="dom-if" if="[[enableScreenshot_]]" restamp>
+  <screenshot-element id="screenshot"></screenshot-element>
+</template>
