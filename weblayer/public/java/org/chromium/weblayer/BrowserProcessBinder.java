@@ -30,26 +30,32 @@ class BrowserProcessBinder extends IWebSandboxService.Stub {
 
     @Override
     public void isAvailable(IBooleanCallback callback) {
-        try {
-            callback.onResult(WebLayer.isAvailable(mContext));
-        } catch (RemoteException e) {
-        }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            try {
+                callback.onResult(WebLayer.isAvailable(mContext));
+            } catch (RemoteException e) {
+            }
+        });
     }
 
     @Override
     public void getVersion(IStringCallback callback) {
-        try {
-            callback.onResult(WebLayer.getSupportedFullVersion(mContext));
-        } catch (RemoteException e) {
-        }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            try {
+                callback.onResult(WebLayer.getSupportedFullVersion(mContext));
+            } catch (RemoteException e) {
+            }
+        });
     }
 
     @Override
     public void getProviderPackageName(IStringCallback callback) {
-        try {
-            callback.onResult(WebLayer.getProviderPackageName(mContext));
-        } catch (RemoteException e) {
-        }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            try {
+                callback.onResult(WebLayer.getProviderPackageName(mContext));
+            } catch (RemoteException e) {
+            }
+        });
     }
 
     @Override
