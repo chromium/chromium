@@ -638,11 +638,6 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSimpleSelector(
 bool RuleFeatureSet::InsertIntoSelfInvalidationBloomFilter(
     const AtomicString& value,
     int salt) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kInvalidationSetClassBloomFilter)) {
-    return false;
-  }
-
   if (names_with_self_invalidation_ == nullptr) {
     if (num_candidates_for_names_bloom_filter_++ < 50) {
       // It's not worth spending 2 kB on the Bloom filter for this
@@ -1838,9 +1833,7 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
   for (const auto& entry : other.class_invalidation_sets_) {
     MergeInvalidationSet(class_invalidation_sets_, entry.key, entry.value);
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kInvalidationSetClassBloomFilter) &&
-      other.names_with_self_invalidation_) {
+  if (other.names_with_self_invalidation_) {
     if (names_with_self_invalidation_ == nullptr) {
       names_with_self_invalidation_ = std::make_unique<WTF::BloomFilter<14>>();
     }
@@ -1922,16 +1915,13 @@ void RuleFeatureSet::CollectInvalidationSetsForClass(
     InvalidationLists& invalidation_lists,
     Element& element,
     const AtomicString& class_name) const {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kInvalidationSetClassBloomFilter)) {
-    // Implicit self-invalidation sets for all classes (with Bloom filter
-    // rejection); see comment on class_invalidation_sets_.
-    if (names_with_self_invalidation_ &&
-        names_with_self_invalidation_->MayContain(
-            class_name.Impl()->ExistingHash() * kClassSalt)) {
-      invalidation_lists.descendants.push_back(
-          InvalidationSet::SelfInvalidationSet());
-    }
+  // Implicit self-invalidation sets for all classes (with Bloom filter
+  // rejection); see comment on class_invalidation_sets_.
+  if (names_with_self_invalidation_ &&
+      names_with_self_invalidation_->MayContain(
+          class_name.Impl()->ExistingHash() * kClassSalt)) {
+    invalidation_lists.descendants.push_back(
+        InvalidationSet::SelfInvalidationSet());
   }
 
   InvalidationSetMap::const_iterator it =

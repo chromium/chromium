@@ -272,8 +272,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.EARLY_EXIT_ON_NOOP_CLASS_OR_STYLE_CHANGE,
                     "Early exit when the style or class attribute of a DOM element is set to the"
                             + " same value as before."),
-            Flag.baseFeature(BlinkFeatures.INVALIDATION_SET_CLASS_BLOOM_FILTER,
-                    "If enabled, style invalidation will use a Bloom filter."),
             Flag.baseFeature(BlinkFeatures.THREADED_PRELOAD_SCANNER,
                     "If enabled, the HTMLPreloadScanner will run on a worker thread."),
             Flag.baseFeature(BlinkFeatures.TIMED_HTML_PARSER_BUDGET,

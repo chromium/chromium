@@ -674,11 +674,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // If enabled, expose non-standard stats in the WebRTC getStats API.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcExposeNonStandardStats);
 
-// If enabled, style invalidation will use a Bloom filter for storing
-// CSS classes that need (only) self-invalidation, instead of having them
-// in the main hash map.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInvalidationSetClassBloomFilter);
-
 // Whether the pending beacon API is enabled or not.
 // https://github.com/WICG/pending-beacon/blob/main/README.md
 // - kPendingBeaconAPI = {true: {"requires_origin_trial": false}} to enable the

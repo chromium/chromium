@@ -272,8 +272,7 @@ class CORE_EXPORT RuleFeatureSet {
 
   // Inserts the given value as a key for self-invalidation.
   // Return true if the insertion was successful. (It may fail because
-  // e.g. the experiment is not active, or because there is no Bloom
-  // filter yet.)
+  // there is no Bloom filter yet.)
   bool InsertIntoSelfInvalidationBloomFilter(const AtomicString& value,
                                              int salt);
   const int kClassSalt = 13;
@@ -815,8 +814,6 @@ class CORE_EXPORT RuleFeatureSet {
 
   FeatureMetadata metadata_;
 
-  // If the InvalidationSetClassBloomFilter experiment is active:
-  //
   // Class and ID invalidation have a special rule that is different from the
   // other sets; we do not store self-invalidation entries directly, but as a
   // Bloom filter (which can have false positives) keyed on the class/ID name's
@@ -841,10 +838,10 @@ class CORE_EXPORT RuleFeatureSet {
   InvalidationSetMap class_invalidation_sets_;
   std::unique_ptr<WTF::BloomFilter<14>> names_with_self_invalidation_;
 
-  // We don't create the Bloom filter right away; the experiment might be off,
-  // or there may be so few of them that we don't really bother. This number
-  // counts the times we've inserted something that could go in there; once it
-  // reaches 50 (for this style sheet), we create the Bloom filter and start
+  // We don't create the Bloom filter right away; there may be so few of
+  // them that we don't really bother. This number counts the times we've
+  // inserted something that could go in there; once it reaches 50
+  // (for this style sheet), we create the Bloom filter and start
   // inserting there instead. Note that we don't _remove_ any of the sets,
   // though; they will remain. This also means that when merging the
   // RuleFeatureSets into the global one, we can go over 50 such entries
