@@ -216,9 +216,10 @@ class WaylandSurface {
   // effect immediately.
   void ForceImmediateStateApplication();
 
-  // Requests to wayland compositor to send key events even if it matches
-  // with the compositor's accelerator keys.
-  void InhibitKeyboardShortcuts();
+  // Requests to Wayland compositor to enables or disable the keyboard shortcuts
+  // inhibition. i.e: to send key events even if they match compositor
+  // accelerators, for example.
+  void SetKeyboardShortcutsInhibition(bool enabled);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
