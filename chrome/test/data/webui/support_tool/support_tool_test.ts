@@ -14,6 +14,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {track} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails, PiiDataItem, UrlGenerationResult} from 'chrome://support-tool/browser_proxy.js';
 import {ScreenshotElement} from 'chrome://support-tool/screenshot.js';
@@ -229,28 +230,73 @@ suite('SupportToolTest', function() {
   });
 
   test('take and remove screenshot', async () => {
+    // Go to the data collector selection page.
+    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    assertEquals(
+        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
     // Take screenshot.
     const screenshot = supportTool.$.dataCollectors.shadowRoot!
                            .querySelector<ScreenshotElement>('#screenshot')!;
     const takeScreenshotButton =
         screenshot.shadowRoot!.getElementById('takeScreenshot')!;
-    const removeScreenshotButton =
+    const removeButton =
         screenshot.shadowRoot!.getElementById('removeScreenshot')!;
+    const hideInfoButton = screenshot.shadowRoot!.getElementById('hideInfo')!;
+    takeScreenshotButton.click();
+    await browserProxy.whenCalled('takeScreenshot');
+    webUIListenerCallback('screenshot-received', SCREENSHOT_BASE64);
+    assertFalse(removeButton.hidden);
+    assertFalse(hideInfoButton.hidden);
+    assertTrue(takeScreenshotButton.hidden);
+    assertNotEquals('', screenshot.getEditedScreenshotBase64());
+    // Remove screenshot.
+    screenshot.shadowRoot!.getElementById('removeScreenshot')!.click();
+    assertTrue(removeButton.hidden);
+    assertTrue(hideInfoButton.hidden);
+    assertFalse(takeScreenshotButton.hidden);
+    assertEquals('', screenshot.getEditedScreenshotBase64());
+  });
+
+  test('take and edit screenshot', async () => {
+    // Go to the data collector selection page.
+    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    assertEquals(
+        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
+    // Take a screenshot.
+    const screenshot = supportTool.$.dataCollectors.shadowRoot!
+                           .querySelector<ScreenshotElement>('#screenshot')!;
+    const takeScreenshotButton =
+        screenshot.shadowRoot!.getElementById('takeScreenshot')!;
+    const removeButton =
+        screenshot.shadowRoot!.getElementById('removeScreenshot')!;
+    const hideInfoButton = screenshot.shadowRoot!.getElementById('hideInfo')!;
     takeScreenshotButton.click();
     await browserProxy.whenCalled('takeScreenshot');
     webUIListenerCallback('screenshot-received', SCREENSHOT_BASE64);
     assertFalse(
         screenshot.shadowRoot!.getElementById('screenshotPreview')!.hidden);
-    assertFalse(removeScreenshotButton.hidden);
+    assertFalse(removeButton.hidden);
+    assertFalse(hideInfoButton.hidden);
     assertTrue(takeScreenshotButton.hidden);
-    assertNotEquals(screenshot.getEditedScreenshotBase64(), '');
-    // Remove screenshot.
-    removeScreenshotButton.click();
-    assertTrue(
-        screenshot.shadowRoot!.getElementById('screenshotPreview')!.hidden);
-    assertTrue(removeScreenshotButton.hidden);
-    assertFalse(takeScreenshotButton.hidden);
-    assertEquals(screenshot.getEditedScreenshotBase64(), '');
+    assertNotEquals('', screenshot.getEditedScreenshotBase64());
+    const originalScreenshot = screenshot.getOriginalScreenshotBase64();
+
+    // Edit the screenshot.
+    hideInfoButton.click();
+    await waitAfterNextRender(screenshot);
+    const canvas = screenshot.shadowRoot!.querySelector<HTMLCanvasElement>(
+        '#screenshotCanvas')!;
+    const confirmButton = screenshot.shadowRoot!.getElementById('confirmEdit')!;
+
+    // After clicking the confirm button, the image is changed.
+    hideInfoButton.click();
+    await waitAfterNextRender(screenshot);
+    track(canvas, canvas.width / 4, canvas.height / 4, 1);
+    confirmButton.click();
+    await waitAfterNextRender(screenshot);
+    assertNotEquals(originalScreenshot, screenshot.getEditedScreenshotBase64());
   });
 
   test('spinner page', () => {

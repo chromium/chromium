@@ -102,9 +102,10 @@ export class SupportToolElement extends SupportToolElementBase {
         'data-export-completed', this.onDataExportCompleted_.bind(this));
   }
 
-  private onScreenshotReceived_(dataBase64: string) {
-    if (dataBase64 !== 'CANCELED') {
-      this.$.dataCollectors.setScreenshotData(dataBase64);
+  private onScreenshotReceived_(screenshotBase64: string) {
+    if (screenshotBase64 !== 'CANCELED') {
+      // Only continues if the user didn't cancel the screenshot.
+      this.$.dataCollectors.setScreenshotData(screenshotBase64);
     }
   }
 
