@@ -387,15 +387,16 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
       continue;
     }
 
-    const base::Value* pattern = pattern_filter->FindKey("pattern");
-    const base::Value* filter = pattern_filter->FindKey("filter");
+    const base::Value::Dict& pattern_filter_dict = pattern_filter->GetDict();
+    const std::string* pattern = pattern_filter_dict.FindString("pattern");
+    const base::Value* filter = pattern_filter_dict.Find("filter");
     if (!pattern || !filter) {
       VLOG(1) << "Ignoring invalid certificate auto select setting. Reason:"
               << " Missing pattern or filter.";
       continue;
     }
 
-    const std::string& pattern_str = pattern->GetString();
+    const std::string& pattern_str = *pattern;
     if (filters_map.find(pattern_str) == filters_map.end())
       filters_map[pattern_str].Set("filters", base::Value::List());
 
