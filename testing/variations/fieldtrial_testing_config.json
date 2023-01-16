@@ -3330,7 +3330,7 @@
             ]
         }
     ],
-    "CrosDeviceActiveCountingMonthlyCheckMembership": [
+    "CrosDeviceActiveCounting28DayActiveCheckIn": [
         {
             "platforms": [
                 "chromeos"
@@ -3339,7 +3339,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DeviceActiveClientMonthlyCheckMembership"
+                        "DeviceActiveClient28DayActiveCheckIn"
                     ]
                 }
             ]
