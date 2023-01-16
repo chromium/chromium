@@ -108766,6 +108766,11 @@ Called by update_scheduler_enums.py.-->
   <int value="1" label="Supports DMS"/>
 </enum>
 
+<enum name="WiFiApAlternateEDCASupport">
+  <int value="0" label="Does not support alternate EDCA"/>
+  <int value="1" label="Supports alternate EDCA"/>
+</enum>
+
 <enum name="WiFiApChannelSwitch">
   <int value="0" label="Unknown frequency range"/>
   <int value="1" label="2.4GHz -&gt; 2.4GHz"/>
@@ -108778,6 +108783,13 @@ Called by update_scheduler_enums.py.-->
   <int value="0" label="Unknown"/>
   <int value="1" label="Managed"/>
   <int value="2" label="AdHoc"/>
+</enum>
+
+<enum name="WiFiApSCSupport">
+  <int value="0" label="Does not support stream classification"/>
+  <int value="1" label="Supports only SCS"/>
+  <int value="2" label="Supports only MSCS"/>
+  <int value="3" label="Supports both SCS and MSCS"/>
 </enum>
 
 <enum name="WiFiBSSTransitionManagementSupport">
