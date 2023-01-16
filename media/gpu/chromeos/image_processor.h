@@ -57,8 +57,7 @@ class MEDIA_GPU_EXPORT ImageProcessor {
           const PortConfig& output_config,
           OutputMode output_mode,
           VideoRotation relative_rotation,
-          ErrorCB error_cb,
-          scoped_refptr<base::SequencedTaskRunner> backend_task_runner)>;
+          ErrorCB error_cb)>;
 
   static std::unique_ptr<ImageProcessor> Create(
       CreateBackendCB create_backend_cb,

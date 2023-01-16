@@ -9,6 +9,7 @@
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -105,14 +106,18 @@ GLImageProcessorBackend::GLImageProcessorBackend(
     const PortConfig& output_config,
     OutputMode output_mode,
     VideoRotation relative_rotation,
-    ErrorCB error_cb,
-    scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
-    : ImageProcessorBackend(input_config,
-                            output_config,
-                            output_mode,
-                            relative_rotation,
-                            std::move(error_cb),
-                            std::move(backend_task_runner)) {}
+    ErrorCB error_cb)
+    : ImageProcessorBackend(
+          input_config,
+          output_config,
+          output_mode,
+          relative_rotation,
+          std::move(error_cb),
+          // Note: we use a single thread task runner because the GL context is
+          // thread local, so we need to make sure we run the
+          // GLImageProcessorBackend on the same thread always.
+          base::ThreadPool::CreateSingleThreadTaskRunner(
+              {base::TaskPriority::USER_VISIBLE})) {}
 
 bool GLImageProcessorBackend::IsSupported(const PortConfig& input_config,
                                           const PortConfig& output_config,
@@ -172,8 +177,7 @@ std::unique_ptr<ImageProcessorBackend> GLImageProcessorBackend::Create(
     const PortConfig& output_config,
     OutputMode output_mode,
     VideoRotation relative_rotation,
-    ErrorCB error_cb,
-    scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
+    ErrorCB error_cb) {
   DCHECK_EQ(output_mode, OutputMode::IMPORT);
 
   if (!IsSupported(input_config, output_config, relative_rotation))
@@ -184,8 +188,7 @@ std::unique_ptr<ImageProcessorBackend> GLImageProcessorBackend::Create(
                       std::default_delete<ImageProcessorBackend>>(
           new GLImageProcessorBackend(input_config, output_config,
                                       OutputMode::IMPORT, relative_rotation,
-                                      std::move(error_cb),
-                                      std::move(backend_task_runner)));
+                                      std::move(error_cb)));
 
   // Initialize GLImageProcessorBackend on the |backend_task_runner_| so that
   // the GL context is bound to the right thread and all the shaders are

@@ -27,13 +27,15 @@ namespace media {
 // An image processor which uses GL to perform scaling.
 class MEDIA_GPU_EXPORT GLImageProcessorBackend : public ImageProcessorBackend {
  public:
+  GLImageProcessorBackend(const GLImageProcessorBackend&) = delete;
+  GLImageProcessorBackend& operator=(const GLImageProcessorBackend&) = delete;
+
   static std::unique_ptr<ImageProcessorBackend> Create(
       const PortConfig& input_config,
       const PortConfig& output_config,
       OutputMode output_mode,
       VideoRotation relative_rotation,
-      ErrorCB error_cb,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+      ErrorCB error_cb);
 
   // ImageProcessorBackend implementation.
   void Process(scoped_refptr<VideoFrame> input_frame,
@@ -48,16 +50,12 @@ class MEDIA_GPU_EXPORT GLImageProcessorBackend : public ImageProcessorBackend {
   // Callback for initialization.
   using InitCB = base::OnceCallback<void(bool)>;
 
-  GLImageProcessorBackend(
-      const PortConfig& input_config,
-      const PortConfig& output_config,
-      OutputMode output_mode,
-      VideoRotation relative_rotation,
-      ErrorCB error_cb,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
-  GLImageProcessorBackend(const GLImageProcessorBackend&) = delete;
+  GLImageProcessorBackend(const PortConfig& input_config,
+                          const PortConfig& output_config,
+                          OutputMode output_mode,
+                          VideoRotation relative_rotation,
+                          ErrorCB error_cb);
   ~GLImageProcessorBackend() override;
-  GLImageProcessorBackend& operator=(const GLImageProcessorBackend&) = delete;
 
   void InitializeTask(base::WaitableEvent* done, bool* success);
   void DestroyTask();

@@ -37,8 +37,7 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
       const PortConfig& output_config,
       OutputMode output_mode,
       VideoRotation relative_rotation,
-      ErrorCB error_cb,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+      ErrorCB error_cb);
 
   // ImageProcessor implementation.
   void Process(scoped_refptr<VideoFrame> input_frame,
@@ -47,13 +46,11 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
   void Reset() override;
 
  private:
-  VaapiImageProcessorBackend(
-      const PortConfig& input_config,
-      const PortConfig& output_config,
-      OutputMode output_mode,
-      VideoRotation relative_rotation,
-      ErrorCB error_cb,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+  VaapiImageProcessorBackend(const PortConfig& input_config,
+                             const PortConfig& output_config,
+                             OutputMode output_mode,
+                             VideoRotation relative_rotation,
+                             ErrorCB error_cb);
   ~VaapiImageProcessorBackend() override;
 
   const VASurface* GetSurfaceForVideoFrame(scoped_refptr<VideoFrame> frame,

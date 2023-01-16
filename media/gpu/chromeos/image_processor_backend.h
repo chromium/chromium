@@ -116,6 +116,10 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
 
   virtual bool supports_incoherent_buffers() const;
 
+  const scoped_refptr<base::SequencedTaskRunner>& task_runner() const {
+    return backend_task_runner_;
+  }
+
  protected:
   friend struct std::default_delete<ImageProcessorBackend>;
 
@@ -144,8 +148,9 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   const ErrorCB error_cb_;
 
   // The main sequence and its checker. Except getter methods, all public
-  // methods and callbacks are called on this sequence.
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  // methods and callbacks are called on this sequence. The proper
+  // SequencedTaskRunner is created by ImageProcessorBackend.
+  const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   SEQUENCE_CHECKER(backend_sequence_checker_);
 };
 

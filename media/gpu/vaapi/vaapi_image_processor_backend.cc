@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -65,8 +66,7 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     const PortConfig& output_config,
     OutputMode output_mode,
     VideoRotation relative_rotation,
-    ErrorCB error_cb,
-    scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
+    ErrorCB error_cb) {
   DCHECK_EQ(output_mode, OutputMode::IMPORT)
       << "Only OutputMode::IMPORT supported";
 // VaapiImageProcessorBackend supports ChromeOS only.
@@ -123,7 +123,7 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
   // scenario.
   return base::WrapUnique<ImageProcessorBackend>(new VaapiImageProcessorBackend(
       input_config, output_config, OutputMode::IMPORT, relative_rotation,
-      std::move(error_cb), std::move(backend_task_runner)));
+      std::move(error_cb)));
 #endif
 }
 
@@ -132,14 +132,14 @@ VaapiImageProcessorBackend::VaapiImageProcessorBackend(
     const PortConfig& output_config,
     OutputMode output_mode,
     VideoRotation relative_rotation,
-    ErrorCB error_cb,
-    scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
+    ErrorCB error_cb)
     : ImageProcessorBackend(input_config,
                             output_config,
                             output_mode,
                             relative_rotation,
                             std::move(error_cb),
-                            std::move(backend_task_runner)) {}
+                            base::ThreadPool::CreateSequencedTaskRunner(
+                                {base::TaskPriority::USER_VISIBLE})) {}
 
 VaapiImageProcessorBackend::~VaapiImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);

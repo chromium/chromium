@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
@@ -165,6 +166,20 @@ SupportResult IsConversionSupported(Fourcc input_fourcc,
 
 // static
 std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
+    const PortConfig& input_config,
+    const PortConfig& output_config,
+    OutputMode output_mode,
+    VideoRotation relative_rotation,
+    ErrorCB error_cb) {
+  return CreateWithTaskRunner(input_config, output_config, output_mode,
+                              relative_rotation, error_cb,
+                              base::ThreadPool::CreateSequencedTaskRunner(
+                                  {base::TaskPriority::USER_VISIBLE}));
+}
+
+// static
+std::unique_ptr<ImageProcessorBackend>
+LibYUVImageProcessorBackend::CreateWithTaskRunner(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
