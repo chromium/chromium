@@ -1132,10 +1132,17 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
       crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone;
   if (policy_init_state ==
       crosapi::browser_util::PolicyInitState::kBeforeInit) {
-    auto parsed = crosapi::browser_util::ParseLacrosDataBackwardMigrationMode(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+    absl::optional<crosapi::browser_util::LacrosDataBackwardMigrationMode>
+        parsed = absl::nullopt;
+
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             crosapi::browser_util::
-                kLacrosDataBackwardMigrationModePolicySwitch));
+                kLacrosDataBackwardMigrationModePolicySwitch)) {
+      parsed = crosapi::browser_util::ParseLacrosDataBackwardMigrationMode(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              crosapi::browser_util::
+                  kLacrosDataBackwardMigrationModePolicySwitch));
+    }
 
     migration_mode =
         parsed.has_value()
