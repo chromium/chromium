@@ -318,18 +318,6 @@ std::string WinWebAuthnApiAuthenticator::GetId() const {
   return "WinWebAuthnApiAuthenticator";
 }
 
-bool WinWebAuthnApiAuthenticator::IsInPairingMode() const {
-  return false;
-}
-
-bool WinWebAuthnApiAuthenticator::IsPaired() const {
-  return false;
-}
-
-bool WinWebAuthnApiAuthenticator::RequiresBlePairingPin() const {
-  return false;
-}
-
 absl::optional<FidoTransportProtocol>
 WinWebAuthnApiAuthenticator::AuthenticatorTransport() const {
   // The Windows API could potentially use any external or

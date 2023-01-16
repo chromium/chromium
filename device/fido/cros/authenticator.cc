@@ -447,18 +447,6 @@ void ChromeOSAuthenticator::IsLacrosSupported(
           std::move(callback)));
 }
 
-bool ChromeOSAuthenticator::IsInPairingMode() const {
-  return false;
-}
-
-bool ChromeOSAuthenticator::IsPaired() const {
-  return false;
-}
-
-bool ChromeOSAuthenticator::RequiresBlePairingPin() const {
-  return false;
-}
-
 bool ChromeOSAuthenticator::SupportsEnterpriseAttestation() const {
   // Enterprise attestation is enabled in the authenticator if its U2F/G2F mode
   // is enabled.

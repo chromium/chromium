@@ -1200,18 +1200,6 @@ FidoDeviceAuthenticator::AuthenticatorTransport() const {
   return device_->DeviceTransport();
 }
 
-bool FidoDeviceAuthenticator::IsInPairingMode() const {
-  return device_->IsInPairingMode();
-}
-
-bool FidoDeviceAuthenticator::IsPaired() const {
-  return device_->IsPaired();
-}
-
-bool FidoDeviceAuthenticator::RequiresBlePairingPin() const {
-  return device_->RequiresBlePairingPin();
-}
-
 void FidoDeviceAuthenticator::SetTaskForTesting(
     std::unique_ptr<FidoTask> task) {
   task_ = std::move(task);

@@ -311,9 +311,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       const = 0;
   virtual absl::optional<FidoTransportProtocol> AuthenticatorTransport()
       const = 0;
-  virtual bool IsInPairingMode() const = 0;
-  virtual bool IsPaired() const = 0;
-  virtual bool RequiresBlePairingPin() const = 0;
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;
 };
 

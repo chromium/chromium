@@ -153,18 +153,6 @@ TouchIdAuthenticator::Options() const {
   return options;
 }
 
-bool TouchIdAuthenticator::IsInPairingMode() const {
-  return false;
-}
-
-bool TouchIdAuthenticator::IsPaired() const {
-  return false;
-}
-
-bool TouchIdAuthenticator::RequiresBlePairingPin() const {
-  return false;
-}
-
 void TouchIdAuthenticator::GetTouch(base::OnceClosure callback) {
   NOTREACHED();
   std::move(callback).Run();

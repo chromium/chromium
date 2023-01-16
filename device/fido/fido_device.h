@@ -91,14 +91,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDevice {
   virtual std::string GetDisplayName() const;
   virtual FidoTransportProtocol DeviceTransport() const = 0;
 
-  // These must only be called on Bluetooth devices.
-  virtual bool IsInPairingMode() const;
-  virtual bool IsPaired() const;
-
-  // Returns whether the service bit is set to require a PIN or passkey to pair
-  // for a FIDO Bluetooth device.
-  virtual bool RequiresBlePairingPin() const;
-
   // NoSilentRequests returns true if this device does not support up=false
   // requests.
   bool NoSilentRequests() const;
