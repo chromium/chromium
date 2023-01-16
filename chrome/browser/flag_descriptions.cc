@@ -3334,12 +3334,6 @@ const char kSanitizerApiName[] = "Sanitizer API";
 const char kSanitizerApiDescription[] =
     "Enable the Sanitizer API. See: https://github.com/WICG/sanitizer-api";
 
-const char kSanitizerApiv0Name[] = "Sanitizer API, Initial version";
-const char kSanitizerApiv0Description[] =
-    "Enable the initial version of the Sanitizer API. This includes the "
-    "Element.setHTML method, but not any sanitization methods on the "
-    "Sanitizer instances. See also the #sanitizer-api flag.";
-
 const char kUsePassthroughCommandDecoderName[] =
     "Use passthrough command decoder";
 const char kUsePassthroughCommandDecoderDescription[] =

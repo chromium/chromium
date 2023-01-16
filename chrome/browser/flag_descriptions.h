@@ -1907,9 +1907,6 @@ extern const char kDrawPredictedPointsName[];
 extern const char kSanitizerApiName[];
 extern const char kSanitizerApiDescription[];
 
-extern const char kSanitizerApiv0Name[];
-extern const char kSanitizerApiv0Description[];
-
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 

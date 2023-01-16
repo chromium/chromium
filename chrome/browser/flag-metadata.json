@@ -6082,11 +6082,6 @@
     "expiry_milestone": 109
   },
   {
-    "name": "sanitizer-api-v0",
-    "owners": [ "//third_party/blink/renderer/modules/sanitizer_api/OWNERS" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel", "mnissler" ],
     // This flag never expires because some users need to override CPU security
