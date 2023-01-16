@@ -133,7 +133,7 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
           webapps::WebappInstallSource::PRELOADED_OEM,
           /*document_url=*/GURL(app.GetWebAppManifestId()).GetWithEmptyPath(),
           /*manifest_url=*/app.GetWebAppOriginalManifestUrl(),
-          std::move(*response.release()), GetAppId(app),
+          std::move(*response), GetAppId(app),
           base::BindOnce(&WebAppPreloadInstaller::OnAppInstalled,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
