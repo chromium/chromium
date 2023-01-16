@@ -67,16 +67,14 @@ export class MoveConfirmationPageElement extends HTMLElement {
     this.proxy.handler.setAlwaysMoveOfficeFiles(checkbox.checked);
 
     if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
-      this.proxy.handler.respondWithUserActionAndClose(
-          UserAction.kUploadToOneDrive);
+      this.proxy.handler.respondAndClose(UserAction.kUploadToOneDrive);
     } else {
-      this.proxy.handler.respondWithUserActionAndClose(
-          UserAction.kUploadToGoogleDrive);
+      this.proxy.handler.respondAndClose(UserAction.kUploadToGoogleDrive);
     }
   }
 
   private onCancelButtonClick(): void {
-    this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
+    this.proxy.handler.respondAndClose(UserAction.kCancel);
   }
 }
 

@@ -132,12 +132,11 @@ export class CloudUploadElement extends HTMLElement {
   private cancelSetup(): void {
     if (this.currentPage instanceof OneDriveUploadPageElement) {
       // No need to show the cancel dialog as setup is finished.
-      this.proxy.handler.respondWithUserActionAndClose(UserAction.kCancel);
+      this.proxy.handler.respondAndClose(UserAction.kCancel);
       return;
     }
     this.cancelDialog.show(
-        () => this.proxy.handler.respondWithUserActionAndClose(
-            UserAction.kCancel));
+        () => this.proxy.handler.respondAndClose(UserAction.kCancel));
   }
 
   /**

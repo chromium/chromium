@@ -387,10 +387,6 @@ void ChooseAndSetDefaultTask(Profile* profile,
                              const std::vector<extensions::EntryInfo>& entries,
                              ResultingTasks* resulting_tasks);
 
-bool IsWebDriveOfficeTask(const TaskDescriptor& task);
-
-bool IsOpenInOfficeTask(const TaskDescriptor& task);
-
 bool IsExtensionInstalled(Profile* profile, const std::string& extension_id);
 
 // Returns whether |path| is an HTML file according to its extension.

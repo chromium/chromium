@@ -27,17 +27,14 @@ namespace ash::cloud_upload {
 // the browser process exposing various methods for the JS to invoke.
 class CloudUploadPageHandler : public mojom::PageHandler {
  public:
-  using RespondWithUserActionAndCloseCallback =
+  using RespondAndCloseCallback =
       base::OnceCallback<void(mojom::UserAction action)>;
-  using RespondWithLocalTaskAndCloseCallback =
-      base::OnceCallback<void(int task_position)>;
   CloudUploadPageHandler(
       content::WebUI* web_ui,
       Profile* profile,
       mojom::DialogArgsPtr args,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
-      RespondWithUserActionAndCloseCallback user_action_callback,
-      RespondWithLocalTaskAndCloseCallback local_task_callback);
+      RespondAndCloseCallback callback);
 
   CloudUploadPageHandler(const CloudUploadPageHandler&) = delete;
   CloudUploadPageHandler& operator=(const CloudUploadPageHandler&) = delete;
@@ -55,8 +52,7 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   void InstallOfficeWebApp(InstallOfficeWebAppCallback callback) override;
   void IsODFSMounted(IsODFSMountedCallback callback) override;
   void SignInToOneDrive(SignInToOneDriveCallback callback) override;
-  void RespondWithUserActionAndClose(mojom::UserAction action) override;
-  void RespondWithLocalTaskAndClose(int task_position) override;
+  void RespondAndClose(mojom::UserAction action) override;
   void SetOfficeAsDefaultHandler() override;
   void SetAlwaysMoveOfficeFiles(bool always_move) override;
 
@@ -66,8 +62,7 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   mojom::DialogArgsPtr dialog_args_;
 
   mojo::Receiver<PageHandler> receiver_;
-  RespondWithUserActionAndCloseCallback user_action_callback_;
-  RespondWithLocalTaskAndCloseCallback local_task_callback_;
+  RespondAndCloseCallback callback_;
 
   base::WeakPtrFactory<CloudUploadPageHandler> weak_ptr_factory_{this};
 };

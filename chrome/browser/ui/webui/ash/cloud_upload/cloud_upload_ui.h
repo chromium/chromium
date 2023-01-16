@@ -49,8 +49,7 @@ class CloudUploadUI : public ui::MojoWebDialogUI,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler) override;
 
  private:
-  void RespondWithUserActionAndCloseDialog(mojom::UserAction action);
-  void RespondWithLocalTaskAndCloseDialog(int task_position);
+  void RespondAndCloseDialog(mojom::UserAction action);
 
   mojom::DialogArgsPtr dialog_args_;
   std::unique_ptr<CloudUploadPageHandler> page_handler_;

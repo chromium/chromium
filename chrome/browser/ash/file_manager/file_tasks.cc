@@ -164,6 +164,21 @@ std::string ParseFilesAppActionId(const std::string& action_id) {
   return action_id;
 }
 
+// Returns true if the `task` is a Web Drive Office task.
+bool IsWebDriveOfficeTask(const TaskDescriptor& task) {
+  const std::string action_id = ParseFilesAppActionId(task.action_id);
+  bool is_web_drive_office_action_id =
+      action_id == kActionIdWebDriveOfficeWord ||
+      action_id == kActionIdWebDriveOfficeExcel ||
+      action_id == kActionIdWebDriveOfficePowerPoint;
+  return IsFilesAppId(task.app_id) && is_web_drive_office_action_id;
+}
+
+bool IsOpenInOfficeTask(const TaskDescriptor& task) {
+  const std::string action_id = ParseFilesAppActionId(task.action_id);
+  return IsFilesAppId(task.app_id) && action_id == kActionIdOpenInOffice;
+}
+
 // Returns true if path_mime_set contains a Google document.
 bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
   for (const auto& it : entries) {
@@ -1062,20 +1077,6 @@ void ChooseAndSetDefaultTask(Profile* profile,
       return;
     }
   }
-}
-
-bool IsWebDriveOfficeTask(const TaskDescriptor& task) {
-  const std::string action_id = ParseFilesAppActionId(task.action_id);
-  bool is_web_drive_office_action_id =
-      action_id == kActionIdWebDriveOfficeWord ||
-      action_id == kActionIdWebDriveOfficeExcel ||
-      action_id == kActionIdWebDriveOfficePowerPoint;
-  return IsFilesAppId(task.app_id) && is_web_drive_office_action_id;
-}
-
-bool IsOpenInOfficeTask(const TaskDescriptor& task) {
-  const std::string action_id = ParseFilesAppActionId(task.action_id);
-  return IsFilesAppId(task.app_id) && action_id == kActionIdOpenInOffice;
 }
 
 bool IsExtensionInstalled(Profile* profile, const std::string& extension_id) {
