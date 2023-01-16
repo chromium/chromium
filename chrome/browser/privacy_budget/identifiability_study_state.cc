@@ -65,7 +65,8 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
               // However, `MesaDistribution` needs a `pivot_point` parameter
               // bigger than 0.
               : 1,
-          kMesaDistributionRatio),
+          kMesaDistributionRatio,
+          kMesaDistributionGeometricDistributionParam),
       reid_estimator_(
           PrivacyBudgetReidScoreEstimator(&settings_, pref_service)) {
   InitializeGlobalStudySettings();

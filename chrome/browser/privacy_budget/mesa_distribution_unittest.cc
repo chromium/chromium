@@ -17,10 +17,12 @@ namespace {
 constexpr auto kSeed = 3;
 constexpr auto kPivotPoint = 300;
 constexpr auto kDistRatio = 0.9l;
+constexpr auto kGeometricDistributionParam = 0.5l;
 }  // namespace
 
 TEST(MesaDistributionTest, Get) {
-  MesaDistribution<int> mesa(kPivotPoint, kDistRatio);
+  MesaDistribution<int> mesa(kPivotPoint, kDistRatio,
+                             kGeometricDistributionParam);
   std::mt19937 g(kSeed);
   auto v1 = mesa.Get(g);
   g.seed(kSeed);
@@ -69,7 +71,7 @@ TEST(MesaDistributionTest, SpreadTest_MaybeSlow) {
   std::array<double, kMaxOffset + 1> occurrences = {0.0};
 
   // The distribution under test:
-  MesaDistribution<int> mesa(kPivotPoint, kDistRatio);
+  MesaDistribution<int> mesa(kPivotPoint, kDistRatio, kGamma);
 
   std::mt19937 random_bit_generator(kSeed);
 

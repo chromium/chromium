@@ -15,14 +15,13 @@
 //
 // The PDF is:
 //
-//            ⎧    0                            ... if x < 0
+//            ⎧    0                               ... if x < 0
 //            ⎪
-//            ⎪    λ                            ... if 0 <= x < T
-//     P(x) = ⎨
-//            ⎪    λ (1 - γ)⁽ˣ⁻ᵀ⁾               ... otherwise
+//     P(x) = ⎨    λ                               ... if 0 <= x < T
 //            ⎪
-//            ⎩
-// where ...
+//            ⎩    (1 - τ) * γ * (1 - γ)^{X - T}   ... otherwise
+//
+// where
 //
 //   T = Value at which the PDF switches from a uniform to a geometric
 //       distribution. Referred to in code as the `pivot_point`.
@@ -31,16 +30,14 @@
 //       then 90% of the probability space is in the linear region. The ratio is
 //       referred to in code as `dist_ratio`.
 //
+//   γ = Parameter of the geometric distribution.
+//
 //        τ
 //   λ = ───
 //        T
 //
-//         λ          τ
-//   γ = ───── = ───────────
-//       1 - τ   T * (1 - τ)
-//
 // In otherwords, the PDF is uniform up to T with a probability of λ, and then
-// switches to a geometric distribution with parameter λ that extends to
+// switches to a geometric distribution with parameter γ that extends to
 // infinity.
 //
 // It looks like this in the form of a graph which should make a little bit more
@@ -73,11 +70,12 @@ template <typename ResultType,
           std::enable_if_t<std::is_integral<ResultType>::value, int> = 0>
 class MesaDistribution {
  public:
-  MesaDistribution(ResultType pivot_point, double dist_ratio)
+  MesaDistribution(ResultType pivot_point,
+                   double dist_ratio,
+                   double geometric_distribution_param)
       : pivot_point_(pivot_point),
         uniform_distribution_(0, std::ceil(pivot_point / dist_ratio)),
-        geometric_distribution_(dist_ratio /
-                                (pivot_point * (1.0l - dist_ratio))) {
+        geometric_distribution_(geometric_distribution_param) {
     DCHECK_GT(pivot_point, static_cast<ResultType>(0));
     DCHECK_GT(dist_ratio, 0);
     DCHECK_LT(dist_ratio, 1);

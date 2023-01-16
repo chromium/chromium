@@ -135,6 +135,10 @@ class IdentifiabilityStudyState {
   // of random numbers for selecting identifiable surface for measurement.
   static constexpr double kMesaDistributionRatio = 0.9;
 
+  // The parameter of the geometric distribution used for the tail of the Mesa
+  // distribution.
+  static constexpr double kMesaDistributionGeometricDistributionParam = 0.5;
+
  private:
   friend class test_utils::InspectableIdentifiabilityStudyState;
 
