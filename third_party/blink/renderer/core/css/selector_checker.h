@@ -170,8 +170,8 @@ class CORE_EXPORT SelectorChecker {
     Element* vtt_originating_element = nullptr;
     ContainerNode* relative_anchor_element = nullptr;
 
-    PseudoId pseudo_id = kPseudoIdNone;
     AtomicString* pseudo_argument = nullptr;
+    PseudoId pseudo_id = kPseudoIdNone;
 
     bool is_sub_selector = false;
     bool in_rightmost_compound = true;
