@@ -879,7 +879,7 @@
       //
       // https://drafts.csswg.org/selectors-4/#the-nth-child-pseudo
       name: "CSSSelectorNthChildComplexSelector",
-      status: "experimental"
+      status: "stable"
     },
     {
       // Support for CSS ::spelling-error, ::grammar-error, and the
