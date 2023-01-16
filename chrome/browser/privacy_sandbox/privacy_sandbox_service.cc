@@ -494,6 +494,108 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
   }
 }
 
+void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
+  // TODO(crbug.com/1378703): Add metrics for inidividial PS APIs being enabled
+  // or not in the beginning here.
+
+  const std::string privacy_sandbox_prompt_startup_histogram =
+      "Settings.PrivacySandbox.PromptStartupState";
+
+  // Prompt suppressed cases.
+  PromptSuppressedReason prompt_suppressed_reason =
+      static_cast<PromptSuppressedReason>(
+          pref_service_->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed));
+
+  switch (prompt_suppressed_reason) {
+    // Prompt never suppressed.
+    case PromptSuppressedReason::kNone: {
+      break;
+    }
+
+    case PromptSuppressedReason::kRestricted: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::kPromptNotShownDueToPrivacySandboxRestricted);
+      return;
+    }
+
+    case PromptSuppressedReason::kThirdPartyCookiesBlocked: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::kPromptNotShownDueTo3PCBlocked);
+      return;
+    }
+
+    case PromptSuppressedReason::kTrialsConsentDeclined: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::kPromptNotShownDueToTrialConsentDeclined);
+      return;
+    }
+
+    case PromptSuppressedReason::kTrialsDisabledAfterNotice: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::
+              kPromptNotShownDueToTrialsDisabledAfterNoticeShown);
+      return;
+    }
+
+    case PromptSuppressedReason::kPolicy: {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::kPromptNotShownDueToManagedState);
+      return;
+    }
+  }
+
+  // Prompt was not suppressed at this point.
+
+  // EEA
+  if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+    // Consent decision not made
+    if (!pref_service_->GetBoolean(
+            prefs::kPrivacySandboxM1ConsentDecisionMade)) {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::kEEAConsentPromptWaiting);
+      return;
+    }
+
+    // Consent decision made at this point.
+    const bool topics_enabled =
+        pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+
+    // Notice Acknowledged
+    const bool notice_acknowledged = pref_service_->GetBoolean(
+        prefs::kPrivacySandboxM1EEANoticeAcknowledged);
+    if (notice_acknowledged) {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          topics_enabled
+              ? PromptStartupState::kEEAFlowCompletedWithTopicsAccepted
+              : PromptStartupState::kEEAFlowCompletedWithTopicsDeclined);
+    } else {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PrivacySandboxService::PromptStartupState::kEEANoticePromptWaiting);
+    }
+    return;
+  }
+
+  // ROW
+  if (privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get()) {
+    const bool row_notice_acknowledged = pref_service_->GetBoolean(
+        prefs::kPrivacySandboxM1RowNoticeAcknowledged);
+
+    base::UmaHistogramEnumeration(
+        privacy_sandbox_prompt_startup_histogram,
+        row_notice_acknowledged ? PromptStartupState::kROWNoticeFlowCompleted
+                                : PromptStartupState::kROWNoticePromptWaiting);
+    return;
+  }
+}
+
 void PrivacySandboxService::LogPrivacySandboxState() {
   // Do not record metrics for non-regular profiles.
   if (!IsRegularProfile(profile_type_))
@@ -510,8 +612,13 @@ void PrivacySandboxService::LogPrivacySandboxState() {
   }
   RecordFirstPartySetsStateHistogram(fps_status);
 
-  // Start by recording any metrics for Privacy Sandbox 3.
-  RecordPrivacySandbox3StartupMetrics();
+  // Start by recording any metrics for Privacy Sandbox.
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    RecordPrivacySandbox4StartupMetrics();
+    return;
+  } else {
+    RecordPrivacySandbox3StartupMetrics();
+  }
 
   // Check policy status first.
   std::string default_cookie_setting_provider;

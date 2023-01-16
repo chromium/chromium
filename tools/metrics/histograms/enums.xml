@@ -92224,6 +92224,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              07/2022)"/>
 </enum>
 
+<enum name="SettingsPrivacySandboxPromptStartupState">
+  <int value="0" label="EEA consent prompt waiting to show"/>
+  <int value="1" label="EEA notice prompt waiting to show"/>
+  <int value="2" label="ROW notice prompt waiting to show"/>
+  <int value="3" label="EEA flow completed with topics accepted"/>
+  <int value="4" label="EEA flow completed with topics declined"/>
+  <int value="5" label="ROW notice flow completed"/>
+  <int value="6"
+      label="Prompt not shown because privacy sandbox is restricted"/>
+  <int value="7"
+      label="Prompt not shown because third-party cookies are blocked"/>
+  <int value="8"
+      label="Prompt not shown because the trial consent was declined"/>
+  <int value="9"
+      label="Prompt not shown because the trials were disabled after seeing
+             the notice"/>
+  <int value="10" label="Prompt not shown because it is managed"/>
+</enum>
+
 <enum name="SettingsPrivacySandboxStartupStates">
   <int value="0" label="Prompt waiting to show"/>
   <int value="1" label="Prompt Off, previously disabled, Enabled"/>

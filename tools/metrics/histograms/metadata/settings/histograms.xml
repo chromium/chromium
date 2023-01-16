@@ -404,6 +404,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.PromptStartupState"
+    enum="SettingsPrivacySandboxStartupStates" expires_after="M115">
+  <owner>sauski@google.com</owner>
+  <owner>olesiamarukhno@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    Records the startup state of the privacy sandbox prompt for Privacy Sandbox
+    GA M1. This is recorded during the profile start up.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.StartupState"
     enum="SettingsPrivacySandboxStartupStates" expires_after="2023-06-18">
   <owner>sauski@google.com</owner>
