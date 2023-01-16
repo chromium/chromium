@@ -187,6 +187,11 @@ static void MeasureStyleForDumpedPage(const char* filename, const char* label) {
     reporter.AddResult("RecalcTime", style_time);
   }
 
+  // Loading the document may have posted tasks, which can hold on to memory.
+  // Run them now, to make sure they don't leak or otherwise skew the
+  // statistics.
+  test::RunPendingTasks();
+
   size_t gc_allocated_bytes = blink::ProcessHeap::TotalAllocatedObjectSize();
   size_t partition_allocated_bytes =
       WTF::Partitions::TotalSizeOfCommittedPages();
