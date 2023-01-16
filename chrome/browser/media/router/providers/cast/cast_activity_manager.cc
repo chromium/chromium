@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -18,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider_metrics.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
@@ -160,26 +162,29 @@ void CastActivityManager::LaunchSessionParsed(
                                frame_tree_node_id, std::move(opt_result),
                                std::move(callback));
 
-  // If there is currently a session on the sink, it must be terminated before
-  // the new session can be launched.
-  auto activity_it =
-      base::ranges::find(activities_, sink_id, [](const auto& activity) {
-        return activity.second->route().media_sink_id();
-      });
-
+  auto activity_it = FindActivityBySink(sink);
   if (activity_it == activities_.end()) {
     DoLaunchSession(std::move(params));
   } else {
-    const MediaRoute::Id& existing_route_id =
-        activity_it->second->route().media_route_id();
-    // We cannot launch the new session in the TerminateSession() callback
-    // because if we create a session there, then it may get deleted when
-    // OnSessionRemoved() is called to notify that the previous session
-    // was removed on the receiver.
-    TerminateSession(existing_route_id, base::DoNothing());
-    // The new session will be launched when OnSessionRemoved() is called for
-    // the old session.
-    SetPendingLaunch(std::move(params));
+    if (base::FeatureList::IsEnabled(kStartCastSessionWithoutTerminating)) {
+      // Here we assume that when OnSessionRemoved() is next called for
+      // `sink_id`, it will be for removing the pre-existing activity.
+      pending_activity_removal_ = {
+          activity_it->second->sink().id(),
+          activity_it->second->route().media_route_id()};
+      DoLaunchSession(std::move(params));
+    } else {
+      const MediaRoute::Id& existing_route_id =
+          activity_it->second->route().media_route_id();
+      // We cannot launch the new session in the TerminateSession() callback
+      // because if we create a session there, then it may get deleted when
+      // OnSessionRemoved() is called to notify that the previous session
+      // was removed on the receiver.
+      TerminateSession(existing_route_id, base::DoNothing());
+      // The new session will be launched when OnSessionRemoved() is called for
+      // the old session.
+      SetPendingLaunch(std::move(params));
+    }
   }
 }
 
@@ -607,7 +612,15 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
 }
 
 void CastActivityManager::OnSessionRemoved(const MediaSinkInternal& sink) {
-  auto activity_it = FindActivityBySink(sink);
+  auto activity_it = activities_.end();
+  if (base::FeatureList::IsEnabled(kStartCastSessionWithoutTerminating) &&
+      pending_activity_removal_ &&
+      pending_activity_removal_->first == sink.id()) {
+    activity_it = activities_.find(pending_activity_removal_->second);
+    pending_activity_removal_.reset();
+  } else {
+    activity_it = FindActivityBySink(sink);
+  }
   if (activity_it != activities_.end()) {
     logger_->LogInfo(
         mojom::LogCategory::kRoute, kLoggerComponent,
@@ -617,7 +630,8 @@ void CastActivityManager::OnSessionRemoved(const MediaSinkInternal& sink) {
     RemoveActivity(activity_it, PresentationConnectionState::TERMINATED,
                    PresentationConnectionCloseReason::CLOSED);
   }
-  if (pending_launch_ && pending_launch_->sink.id() == sink.id()) {
+  if (!base::FeatureList::IsEnabled(kStartCastSessionWithoutTerminating) &&
+      pending_launch_ && pending_launch_->sink.id() == sink.id()) {
     DoLaunchSession(std::move(*pending_launch_));
     pending_launch_.reset();
   }

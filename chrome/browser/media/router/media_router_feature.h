@@ -50,6 +50,10 @@ BASE_DECLARE_FEATURE(kGlobalMediaControlsCastStartStop);
 // Presentation API. If disabled, only the allowlisted sites can do so.
 BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
 
+// If enabled, the Cast Media Route Provider starts a session without
+// terminating any existing session on the same sink.
+BASE_DECLARE_FEATURE(kStartCastSessionWithoutTerminating);
+
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

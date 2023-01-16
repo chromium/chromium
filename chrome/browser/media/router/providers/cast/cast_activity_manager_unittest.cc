@@ -18,8 +18,10 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
@@ -440,8 +442,8 @@ class CastActivityManagerTest : public testing::Test,
         });
   }
 
-  // Expect a call to OnRoutesUpdated() with a single route, which will
-  // optionally be saved in the variable pointed to by |route_ptr|.
+  // Expect a call to OnRoutesUpdated() with a single route, which will be saved
+  // in |updated_route_|.
   void ExpectSingleRouteUpdate() {
     updated_route_ = absl::nullopt;
     EXPECT_CALL(mock_router_, OnRoutesUpdated(mojom::MediaRouteProviderId::CAST,
@@ -711,49 +713,6 @@ TEST_F(CastActivityManagerTest, LaunchAppSessionFailsWithAppParams) {
   RunUntilIdle();
 }
 
-TEST_F(CastActivityManagerTest, LaunchSessionTerminatesExistingSessionOnSink) {
-  LaunchAppSession();
-  ExpectAppActivityStoppedTimes(1);
-
-  {
-    testing::InSequence dummy;
-
-    // Existing route is terminated before new route is created.
-    // MediaRouter is notified of terminated route.
-    ExpectEmptyRouteUpdate();
-
-    // After existing route is terminated, new route is created.
-    // MediaRouter is notified of new route.
-    ExpectSingleRouteUpdate();
-  }
-
-  // Launch a new session on the same sink.
-  auto source = CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId2));
-  // Use LaunchSessionParsed() instead of LaunchSession() here because
-  // LaunchSessionParsed() is called asynchronously and will fail the test.
-  manager_->LaunchSessionParsed(
-      // TODO(crbug.com/1291744): Verify that presentation ID is used correctly.
-      *source, sink_, kPresentationId2, origin_,
-      kFrameTreeNodeId2, /*incognito*/
-      false,
-      base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
-                     base::Unretained(this)),
-      data_decoder::DataDecoder::ValueOrError());
-
-  // LaunchSession() should not be called until we notify |mananger_| that the
-  // previous session was removed.
-  EXPECT_CALL(message_handler_,
-              LaunchSession(kChannelId, "BBBBBBBB", kDefaultLaunchTimeout,
-                            testing::ElementsAre("WEB"),
-                            /* absl::optional<base::Value> appParams */
-                            testing::Eq(absl::nullopt), _))
-      .WillOnce(WithArg<5>([this](auto callback) {
-        launch_session_callback_ = std::move(callback);
-      }));
-
-  manager_->OnSessionRemoved(sink_);
-}
-
 TEST_F(CastActivityManagerTest, LaunchSessionTerminatesExistingSessionFromTab) {
   LaunchAppSession();
   ExpectAppActivityStoppedTimes(1);
@@ -908,30 +867,6 @@ TEST_F(CastActivityManagerTest, OnMediaStatusUpdated) {
   manager_->OnMediaStatusUpdated(sink_, ParseJsonDict(status), request_id);
 }
 
-TEST_F(CastActivityManagerTest, SecondPendingRequestCancelsTheFirst) {
-  auto source =
-      CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId1, "", kClientId));
-  MockLaunchSessionCallback callback;
-  // Launch a session so that the next launch request gets queued.
-  LaunchAppSession();
-
-  // Ignore StopSession() so that pending requests don't get executed.
-  EXPECT_CALL(message_handler_, StopSession).WillRepeatedly([]() {});
-  // The first request gets queued, then cancelled when the second request
-  // replaces it.
-  EXPECT_CALL(callback, Run)
-      .WillOnce(WithArg<3>([](mojom::RouteRequestResultCode code) {
-        EXPECT_EQ(mojom::RouteRequestResultCode::CANCELLED, code);
-      }));
-  for (int i = 0; i < 2; i++) {
-    manager_->LaunchSession(*source, sink_, kPresentationId, origin_,
-                            kFrameTreeNodeId,
-                            /*incognito*/ false,
-                            base::BindOnce(&MockLaunchSessionCallback::Run,
-                                           base::Unretained(&callback)));
-  }
-}
-
 TEST_F(CastActivityManagerTest, OnSourceChanged) {
   LaunchNonSdkMirroringSession();
 
@@ -965,6 +900,112 @@ TEST_F(CastActivityManagerTest, OnSourceChanged) {
 
   UpdateRouteSourceTabInRoutesMap(kFrameTreeNodeId, route_id, kFrameTreeNodeId2,
                                   route_id2);
+}
+
+TEST_F(CastActivityManagerTest, StartSessionAndRemoveExistingSessionOnSink) {
+  LaunchAppSession();
+
+  // Launch another route on the same sink and store it in `route_`.
+  EXPECT_CALL(message_handler_, LaunchSession(kChannelId, kAppId2, _, _, _, _))
+      .WillOnce(WithArg<5>([this](auto callback) {
+        launch_session_callback_ = std::move(callback);
+      }));
+  auto source = CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId2));
+  manager_->LaunchSessionParsed(
+      *source, sink_, kPresentationId2, origin_, kFrameTreeNodeId2,
+      /*incognito*/ false,
+      base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
+                     base::Unretained(this)),
+      data_decoder::DataDecoder::ValueOrError());
+  RunUntilIdle();
+  ReceiveLaunchSuccessResponseFromReceiver(kAppId2);
+
+  // Removing a session from the sink removes the first route, leaving us with
+  // `route_`.
+  ExpectSingleRouteUpdate();
+  manager_->OnSessionRemoved(sink_);
+  RunUntilIdle();
+  EXPECT_EQ(updated_route_->media_route_id(), route_->media_route_id());
+}
+
+class CastActivityManagerWithTerminatingTest : public CastActivityManagerTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(kStartCastSessionWithoutTerminating);
+    CastActivityManagerTest::SetUp();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(CastActivityManagerWithTerminatingTest,
+       LaunchSessionTerminatesExistingSessionOnSink) {
+  LaunchAppSession();
+  ExpectAppActivityStoppedTimes(1);
+
+  {
+    testing::InSequence dummy;
+
+    // Existing route is terminated before new route is created.
+    // MediaRouter is notified of terminated route.
+    ExpectEmptyRouteUpdate();
+
+    // After existing route is terminated, new route is created.
+    // MediaRouter is notified of new route.
+    ExpectSingleRouteUpdate();
+  }
+
+  // Launch a new session on the same sink.
+  auto source = CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId2));
+  // Use LaunchSessionParsed() instead of LaunchSession() here because
+  // LaunchSessionParsed() is called asynchronously and will fail the test.
+  manager_->LaunchSessionParsed(
+      // TODO(crbug.com/1291744): Verify that presentation ID is used correctly.
+      *source, sink_, kPresentationId2, origin_,
+      kFrameTreeNodeId2, /*incognito*/
+      false,
+      base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
+                     base::Unretained(this)),
+      data_decoder::DataDecoder::ValueOrError());
+
+  // LaunchSession() should not be called until we notify |mananger_| that the
+  // previous session was removed.
+  EXPECT_CALL(message_handler_,
+              LaunchSession(kChannelId, "BBBBBBBB", kDefaultLaunchTimeout,
+                            testing::ElementsAre("WEB"),
+                            /* absl::optional<base::Value> appParams */
+                            testing::Eq(absl::nullopt), _))
+      .WillOnce(WithArg<5>([this](auto callback) {
+        launch_session_callback_ = std::move(callback);
+      }));
+
+  manager_->OnSessionRemoved(sink_);
+}
+
+TEST_F(CastActivityManagerWithTerminatingTest,
+       SecondPendingRequestCancelsTheFirst) {
+  auto source =
+      CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId1, "", kClientId));
+  MockLaunchSessionCallback callback;
+  // Launch a session so that the next launch request gets queued.
+  LaunchAppSession();
+
+  // Ignore StopSession() so that pending requests don't get executed.
+  EXPECT_CALL(message_handler_, StopSession).WillRepeatedly([]() {});
+  // The first request gets queued, then cancelled when the second request
+  // replaces it.
+  EXPECT_CALL(callback, Run)
+      .WillOnce(WithArg<3>([](mojom::RouteRequestResultCode code) {
+        EXPECT_EQ(mojom::RouteRequestResultCode::CANCELLED, code);
+      }));
+  for (int i = 0; i < 2; i++) {
+    manager_->LaunchSession(*source, sink_, kPresentationId, origin_,
+                            kFrameTreeNodeId,
+                            /*incognito*/ false,
+                            base::BindOnce(&MockLaunchSessionCallback::Run,
+                                           base::Unretained(&callback)));
+  }
 }
 
 }  // namespace media_router
