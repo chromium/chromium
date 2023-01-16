@@ -187,8 +187,8 @@ bool CreateExtractionDirectory(const base::FilePath& destination_directory) {
     // Might not exist in tests.
     const absl::optional<gid_t> owner_gid = GetDirectoriesOwnerGid();
     if (created_ok && owner_gid.has_value()) {
-      created_ok = HANDLE_EINTR(
-          chown(destination_directory.value().c_str(), -1, owner_gid.value()));
+      created_ok = (HANDLE_EINTR(chown(destination_directory.value().c_str(),
+                                       -1, owner_gid.value())) == 0);
     }
   }
   return created_ok;
