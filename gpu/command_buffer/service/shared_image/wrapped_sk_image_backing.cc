@@ -81,10 +81,7 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
     return {promise_texture};
   }
 
-  void EndReadAccess() override {
-    DCHECK(!write_surface_);
-    // TODO(ericrk): Handle begin/end correctness checks.
-  }
+  void EndReadAccess() override { DCHECK(!write_surface_); }
 
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 

@@ -81,7 +81,6 @@ bool AndroidImageBacking::BeginRead(const SharedImageRepresentation* reader,
   if (write_sync_fd_.is_valid()) {
     (*fd_to_wait_on) = base::ScopedFD(HANDLE_EINTR(dup(write_sync_fd_.get())));
   } else {
-    // TODO(cblume): Clear the backing
     (*fd_to_wait_on) = base::ScopedFD{};
   }
 

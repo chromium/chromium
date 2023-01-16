@@ -37,8 +37,6 @@ class D3DImageBackingFactory;
 struct GpuFeatureInfo;
 struct GpuPreferences;
 
-// TODO(ericrk): Make this a very thin wrapper around SharedImageManager like
-// SharedImageRepresentationFactory.
 class GPU_GLES2_EXPORT SharedImageFactory {
  public:
   // All objects passed are expected to outlive this class.

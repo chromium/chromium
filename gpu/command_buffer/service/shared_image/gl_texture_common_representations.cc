@@ -194,7 +194,6 @@ void SkiaGLCommonRepresentation::EndWriteAccess() {
     }
     CheckContext();
 #endif
-    // TODO(ericrk): Keep the surfaces around for re-use.
     write_surfaces_.clear();
   }
 
