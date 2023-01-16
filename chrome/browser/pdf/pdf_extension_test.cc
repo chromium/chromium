@@ -4755,7 +4755,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfNavigationDuringProfileShutdown) {
   {
     content::TestNavigationManager manager(guest_view->web_contents(),
                                            stream_url);
-    manager.WaitForFirstYieldAfterDidStartNavigation();
+    ASSERT_TRUE(manager.WaitForFirstYieldAfterDidStartNavigation());
   }
 
   // Now, close Incognito and destroy its profile.  This is subtle: simply
