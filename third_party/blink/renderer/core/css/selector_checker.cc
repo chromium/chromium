@@ -2254,7 +2254,9 @@ const SelectorChecker::Activations* SelectorChecker::CalculateActivations(
 
   // Check if we need to add a new activation for this element.
   for (const StyleScopeActivation& activation : outer_activations) {
-    if (MatchesWithScope(element, style_scope.From(), activation.root)) {
+    if (style_scope.From()
+            ? MatchesWithScope(element, *style_scope.From(), activation.root)
+            : style_scope.HasImplicitRoot(&element)) {
       activations->push_back(StyleScopeActivation{&element, 0, false});
       break;
     }
@@ -2262,6 +2264,7 @@ const SelectorChecker::Activations* SelectorChecker::CalculateActivations(
   }
 
   if (style_scope.To()) {
+    DCHECK(style_scope.From());
     for (StyleScopeActivation& activation : *activations) {
       DCHECK(!activation.limit);
       if (MatchesWithScope(element, *style_scope.To(), activation.root.Get())) {

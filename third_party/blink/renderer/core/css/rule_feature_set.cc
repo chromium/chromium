@@ -581,7 +581,10 @@ void RuleFeatureSet::UpdateFeaturesFromStyleScope(
     const StyleScope& style_scope,
     InvalidationSetFeatures& descendant_features) {
   for (const StyleScope* scope = &style_scope; scope; scope = scope->Parent()) {
-    for (const CSSSelector* selector = scope->From().First(); selector;
+    if (!scope->From()) {
+      continue;
+    }
+    for (const CSSSelector* selector = scope->From()->First(); selector;
          selector = CSSSelectorList::Next(*selector)) {
       InvalidationSetFeatures scope_features;
       ExtractInvalidationSetFeaturesFromCompound(
@@ -1565,7 +1568,9 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForStyleScope(
   };
 
   for (const StyleScope* scope = &style_scope; scope; scope = scope->Parent()) {
-    add_features(scope->From(), descendant_features);
+    if (scope->From()) {
+      add_features(*scope->From(), descendant_features);
+    }
 
     if (scope->To()) {
       add_features(*scope->To(), descendant_features);

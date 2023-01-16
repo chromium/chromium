@@ -96,6 +96,10 @@ class CORE_EXPORT StyleSheetContents final
   // if there are none.
   Document* AnyOwnerDocument() const;
 
+  // True if any the StyleSheetContents's owner nodes have a *parent* that is
+  // equal to `candidate`.
+  bool HasOwnerParentNode(Node* candidate) const;
+
   const WTF::TextEncoding& Charset() const {
     return parser_context_->Charset();
   }

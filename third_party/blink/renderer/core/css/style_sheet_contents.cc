@@ -600,6 +600,16 @@ Document* StyleSheetContents::AnyOwnerDocument() const {
   return RootStyleSheet()->ClientAnyOwnerDocument();
 }
 
+bool StyleSheetContents::HasOwnerParentNode(Node* candidate) const {
+  for (const WeakMember<CSSStyleSheet>& sheet : completed_clients_) {
+    if (Node* node = sheet->ownerNode();
+        node && (node->parentNode() == candidate)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static bool ChildRulesHaveFailedOrCanceledSubresources(
     const HeapVector<Member<StyleRuleBase>>& rules) {
   for (unsigned i = 0; i < rules.size(); ++i) {
