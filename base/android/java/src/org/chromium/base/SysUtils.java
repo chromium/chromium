@@ -182,7 +182,7 @@ public class SysUtils {
         // For evaluation purposes check whether our computation agrees with Android API value.
         Context appContext = ContextUtils.getApplicationContext();
         boolean isLowRam = false;
-        if (appContext != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (appContext != null) {
             isLowRam = ((ActivityManager) ContextUtils.getApplicationContext().getSystemService(
                                 Context.ACTIVITY_SERVICE))
                                .isLowRamDevice();

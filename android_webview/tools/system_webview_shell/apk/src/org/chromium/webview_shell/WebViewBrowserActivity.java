@@ -5,7 +5,6 @@
 package org.chromium.webview_shell;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.UiModeManager;
@@ -155,7 +154,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     // Work around our wonky API by wrapping a geo permission prompt inside a regular
     // PermissionRequest.
-    @SuppressLint("NewApi") // GeoPermissionRequest class requires API level 21.
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP) // GeoPermissionRequest class requires API level 21.
     private static class GeoPermissionRequest extends PermissionRequest {
         private String mOrigin;
         private GeolocationPermissions.Callback mCallback;
@@ -190,7 +189,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     // For simplicity, also treat the read access needed for file:// URLs as a regular
     // PermissionRequest.
-    @SuppressLint("NewApi") // FilePermissionRequest class requires API level 21.
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP) // FilePermissionRequest class requires API level 21.
     private class FilePermissionRequest extends PermissionRequest {
         private String mOrigin;
 
@@ -581,7 +580,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         return PackageManager.PERMISSION_GRANTED == checkSelfPermission(androidPermission);
     }
 
-    @SuppressLint("NewApi") // PermissionRequest#deny requires API level 21.
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP) // PermissionRequest#deny requires API level 21.
     private void requestPermissionsForPage(PermissionRequest request) {
         // Deny any unrecognized permissions.
         for (String webkitPermission : request.getResources()) {
@@ -627,9 +626,10 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     }
 
     @Override
-    @SuppressLint("NewApi") // PermissionRequest#deny requires API level 21.
-    public void onRequestPermissionsResult(int requestCode,
-            String permissions[], int[] grantResults) {
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP) // PermissionRequest#deny requires API level 21.
+    public void onRequestPermissionsResult(
+            int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // Verify that we can now grant all the requested permissions. Note that although grant()
         // takes a list of permissions, grant() is actually all-or-nothing. If there are any
         // requested permissions not included in the granted permissions, all will be denied.

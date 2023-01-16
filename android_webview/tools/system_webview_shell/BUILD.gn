@@ -38,6 +38,7 @@ android_apk("system_webview_shell_apk") {
     ":system_webview_shell_apk_resources",
   ]
   enable_lint = true
+  min_sdk_version = 19
   lint_baseline_file = "lint-baseline.xml"
   lint_suppressions_file = "lint-suppressions.xml"
 }

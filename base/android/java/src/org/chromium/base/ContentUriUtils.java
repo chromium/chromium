@@ -248,7 +248,6 @@ public abstract class ContentUriUtils {
      * @return True for virtual file, false for any other file.
      */
     private static boolean isVirtualDocument(Uri uri) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) return false;
         if (uri == null) return false;
         if (!DocumentsContract.isDocumentUri(ContextUtils.getApplicationContext(), uri)) {
             return false;

@@ -494,7 +494,7 @@ public class TraceEvent implements AutoCloseable {
     private static final class IdleTracingLooperMonitor extends BasicLooperMonitor
             implements MessageQueue.IdleHandler {
         // Tags for dumping to logcat or TraceEvent
-        private static final String TAG = "TraceEvent_LooperMonitor";
+        private static final String TAG = "TraceEvt_LooperMonitor";
         private static final String IDLE_EVENT_NAME = "Looper.queueIdle";
 
         // Calculation constants
