@@ -456,8 +456,8 @@
   <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_TITLE" desc="The title of a dialog box that appears if the user chooses 'Don’t allow sites to save data on your device (not recommended)'. This dialog essentially serves as a 'are you sure?' reminder.">
     Sites you visit may stop working as designed
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_DESCRIPTION" desc="Most sites you visit probably save data to your device, often to improve your experience by saving your preferences or information you share with the site. We recommend keeping this setting on.">
-    Suspendisse vitae malesuada purus, ut molestie eros. Fusce malesuada ullamcorper sem a blandit.
+  <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_DESCRIPTION" desc="A paragraph beneath the 'Sites you visit may stop working as designed' title on a dialog box that appears when a user chooses 'Don’t allow sites to save data on your device (not recommended)'. We want to convey that sites are generally designed to rely on saving some information about the user. Usually this is benign, but sites can abuse this power, and so we qualify the statement with 'often'.">
+    Most sites you visit probably save data to your device, often to improve your experience by saving your preferences or information you share with the site. We recommend keeping this setting on.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CONFIRM_BUTTON" desc="A button label. The user chose 'Don’t allow sites to save data on your device (not recommended)'. As an 'are you sure' moment, we show the user a dialog box titled 'Sites you visit may stop working as designed.'. This string allows the user to confirm their intention to turn this setting off.">
     Turn off
