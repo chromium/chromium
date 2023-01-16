@@ -164,10 +164,10 @@ void CartDiscountLinkFetcher::OnLinkFetched(
   absl::optional<base::Value> value =
       base::JSONReader::Read(responses->response);
 
-  if (!value || !value->is_dict() || !value->FindKey("url")) {
+  if (!value || !value->is_dict() || !value->GetDict().FindString("url")) {
     NOTREACHED() << "empty response or wrong format";
     std::move(callback).Run(GURL());
     return;
   }
-  std::move(callback).Run(GURL(value->FindKey("url")->GetString()));
+  std::move(callback).Run(GURL(*value->GetDict().FindString("url")));
 }
