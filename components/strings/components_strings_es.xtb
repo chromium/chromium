@@ -1918,7 +1918,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5989320800837274978">No se han especificado servidores proxy fijos ni una URL de secuencia de comandos .pac.</translation>
 <translation id="5992691462791905444">Plegado en Z asimétrico</translation>
 <translation id="5995727681868049093">Gestiona tu información, privacidad y seguridad en tu cuenta de Google</translation>
-<translation id="5997247540087773573">La contraseña que acabas de usar se ha encontrado en una quiebra de seguridad de datos. Para proteger tus cuentas, el gestor de contraseñas de Google te recomienda que cambies esa contraseña ahora y que compruebes las contraseñas que tengas guardadas.</translation>
+<translation id="5997247540087773573">La contraseña que acabas de usar se ha encontrado en una quiebra de seguridad de datos. Para proteger tus cuentas, el Gestor de contraseñas de Google te recomienda que cambies esa contraseña ahora y que compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6006484371116297560">Clásico</translation>
 <translation id="6008122969617370890">Orden de N a 1</translation>
@@ -2546,7 +2546,7 @@ Más información:
 <translation id="7637586430889951925">{COUNT,plural, =0{Ninguna}=1{1 contraseña en tu cuenta (de <ph name="DOMAIN_LIST" />)}other{# contraseñas en tu cuenta (de <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Puertos serie</translation>
 <translation id="7639968568612851608">Gris oscuro</translation>
-<translation id="7646681339175747202">La contraseña que acabas de usar se ha encontrado en una quiebra de seguridad de datos. El gestor de contraseñas de Google te recomienda que cambies tu contraseña ahora.</translation>
+<translation id="7646681339175747202">La contraseña que acabas de usar se ha encontrado en una quiebra de seguridad de datos. El Gestor de contraseñas de Google te recomienda que cambies tu contraseña ahora.</translation>
 <translation id="7647206758853451655">Calidad de impresión</translation>
 <translation id="7648992873808071793">Almacenar archivos en este dispositivo</translation>
 <translation id="7653957176542370971">La hoja del controlador de pagos está cerrada</translation>
