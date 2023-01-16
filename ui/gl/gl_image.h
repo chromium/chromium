@@ -64,6 +64,7 @@ class VTVideoDecodeAccelerator;
 namespace ui {
 class NativePixmapGLBinding;
 class NativePixmapEGLBinding;
+class NativePixmapEGLX11Binding;
 class SurfacelessGlRenderer;
 class SurfacelessSkiaGlRenderer;
 }  // namespace ui
@@ -158,6 +159,7 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class media::VTVideoDecodeAccelerator;
   friend class ui::NativePixmapGLBinding;
   friend class ui::NativePixmapEGLBinding;
+  friend class ui::NativePixmapEGLX11Binding;
   friend class ui::SurfacelessGlRenderer;
   friend class ui::SurfacelessSkiaGlRenderer;
   friend class viz::ImageContextImpl;

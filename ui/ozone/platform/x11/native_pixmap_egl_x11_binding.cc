@@ -75,7 +75,9 @@ x11::Pixmap XPixmapFromNativePixmap(
 
 namespace ui {
 
-NativePixmapEGLX11Binding::NativePixmapEGLX11Binding() = default;
+NativePixmapEGLX11Binding::NativePixmapEGLX11Binding(
+    scoped_refptr<gl::GLImageEGLPixmap> gl_image)
+    : gl_image_(std::move(gl_image)) {}
 NativePixmapEGLX11Binding::~NativePixmapEGLX11Binding() = default;
 
 // static
@@ -97,12 +99,30 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     return nullptr;
   }
 
-  auto binding = std::make_unique<NativePixmapEGLX11Binding>();
-  if (!binding->BindTexture(std::move(gl_image), target, texture_id)) {
+  auto binding =
+      std::make_unique<NativePixmapEGLX11Binding>(std::move(gl_image));
+  if (!binding->BindTexture(target, texture_id)) {
     return nullptr;
   }
 
   return binding;
+}
+
+bool NativePixmapEGLX11Binding::BindTexture(GLenum target, GLuint texture_id) {
+  return NativePixmapGLBinding::BindTexture(gl_image_.get(), target,
+                                            texture_id);
+}
+
+GLuint NativePixmapEGLX11Binding::GetInternalFormat() {
+  return gl_image_->GetInternalFormat();
+}
+
+GLenum NativePixmapEGLX11Binding::GetDataFormat() {
+  return gl_image_->GetDataFormat();
+}
+
+GLenum NativePixmapEGLX11Binding::GetDataType() {
+  return gl_image_->GetDataType();
 }
 
 }  // namespace ui

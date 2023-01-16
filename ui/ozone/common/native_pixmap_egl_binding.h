@@ -5,10 +5,17 @@
 #ifndef UI_OZONE_COMMON_NATIVE_PIXMAP_EGL_BINDING_H_
 #define UI_OZONE_COMMON_NATIVE_PIXMAP_EGL_BINDING_H_
 
+#include <memory>
+
+#include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/public/native_pixmap_gl_binding.h"
 
 namespace gfx {
 class ColorSpace;
+}
+
+namespace gl {
+class GLImageNativePixmap;
 }
 
 namespace ui {
@@ -16,7 +23,8 @@ namespace ui {
 // A binding maintained between GLImageNativePixmap and GL Textures in Ozone.
 class NativePixmapEGLBinding : public NativePixmapGLBinding {
  public:
-  NativePixmapEGLBinding();
+  explicit NativePixmapEGLBinding(
+      scoped_refptr<gl::GLImageNativePixmap> gl_image);
   ~NativePixmapEGLBinding() override;
 
   static std::unique_ptr<NativePixmapGLBinding> Create(
@@ -27,6 +35,20 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id);
+
+  // NativePixmapGLBinding:
+  GLuint GetInternalFormat() override;
+  GLenum GetDataFormat() override;
+  GLenum GetDataType() override;
+
+ private:
+  // Invokes NativePixmapGLBinding::BindTexture, passing |gl_image_|.
+  bool BindTexture(GLenum target, GLuint texture_id);
+
+  // TODO(hitawala): Merge BindTexImage, Initialize from GLImage and its
+  // subclass NativePixmap to NativePixmapEGLBinding once we stop using them
+  // elsewhere eg. VDA decoders in media.
+  scoped_refptr<gl::GLImageNativePixmap> gl_image_;
 };
 
 }  // namespace ui

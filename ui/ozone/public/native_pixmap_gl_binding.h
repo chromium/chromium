@@ -6,10 +6,13 @@
 #define UI_OZONE_PUBLIC_NATIVE_PIXMAP_GL_BINDING_H_
 
 #include "base/component_export.h"
-#include "ui/gl/gl_image.h"
 
 typedef unsigned int GLuint;
 typedef unsigned int GLenum;
+
+namespace gl {
+class GLImage;
+}
 
 namespace ui {
 
@@ -19,20 +22,18 @@ class COMPONENT_EXPORT(OZONE_BASE) NativePixmapGLBinding {
   NativePixmapGLBinding();
   virtual ~NativePixmapGLBinding();
 
-  GLuint GetInternalFormat();
-  GLenum GetDataFormat();
-  GLenum GetDataType();
+  virtual GLuint GetInternalFormat() = 0;
+  virtual GLenum GetDataFormat() = 0;
+  virtual GLenum GetDataType() = 0;
 
  protected:
-  bool BindTexture(scoped_refptr<gl::GLImage>,
-                   GLenum target,
-                   GLuint texture_id);
-
- private:
-  // TODO(hitawala): Merge BindTexImage, Initialize from GLImage and its
-  // subclasses {NativePixmap, GLXNativePixmap} to NativePixmapGLBinding and its
-  // subclasses once we stop using them elsewhere eg. VDA decoders in media.
-  scoped_refptr<gl::GLImage> gl_image_;
+  // Helper method that first binds |texture_id| and subsequently |image| to
+  // |target|.
+  // NOTE: GLImageNativePixmap::BindTexImage and
+  // GLImageNativePixmap::Initialize will be merged to NativePixmapEGLBinding
+  // and corresponding code for GLImageEGLPixmap will move to
+  // NativePixmapEGLX11Binding leading to the deletion of BindTexture here.
+  static bool BindTexture(gl::GLImage* image, GLenum target, GLuint texture_id);
 };
 
 }  // namespace ui

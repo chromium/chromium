@@ -10,7 +10,9 @@
 
 namespace ui {
 
-NativePixmapEGLBinding::NativePixmapEGLBinding() = default;
+NativePixmapEGLBinding::NativePixmapEGLBinding(
+    scoped_refptr<gl::GLImageNativePixmap> gl_image)
+    : gl_image_(std::move(gl_image)) {}
 NativePixmapEGLBinding::~NativePixmapEGLBinding() = default;
 
 // static
@@ -29,12 +31,29 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     return nullptr;
   }
 
-  auto binding = std::make_unique<NativePixmapEGLBinding>();
-  if (!binding->BindTexture(std::move(gl_image), target, texture_id)) {
+  auto binding = std::make_unique<NativePixmapEGLBinding>(std::move(gl_image));
+  if (!binding->BindTexture(target, texture_id)) {
     return nullptr;
   }
 
   return binding;
+}
+
+bool NativePixmapEGLBinding::BindTexture(GLenum target, GLuint texture_id) {
+  return NativePixmapGLBinding::BindTexture(gl_image_.get(), target,
+                                            texture_id);
+}
+
+GLuint NativePixmapEGLBinding::GetInternalFormat() {
+  return gl_image_->GetInternalFormat();
+}
+
+GLenum NativePixmapEGLBinding::GetDataFormat() {
+  return gl_image_->GetDataFormat();
+}
+
+GLenum NativePixmapEGLBinding::GetDataType() {
+  return gl_image_->GetDataType();
 }
 
 }  // namespace ui

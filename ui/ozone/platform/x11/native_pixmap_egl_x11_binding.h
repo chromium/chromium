@@ -5,7 +5,14 @@
 #ifndef UI_OZONE_PLATFORM_X11_NATIVE_PIXMAP_EGL_X11_BINDING_H_
 #define UI_OZONE_PLATFORM_X11_NATIVE_PIXMAP_EGL_X11_BINDING_H_
 
+#include <memory>
+
+#include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/public/native_pixmap_gl_binding.h"
+
+namespace gl {
+class GLImageEGLPixmap;
+}
 
 namespace ui {
 
@@ -13,7 +20,8 @@ namespace ui {
 // is used on X11.
 class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
  public:
-  NativePixmapEGLX11Binding();
+  explicit NativePixmapEGLX11Binding(
+      scoped_refptr<gl::GLImageEGLPixmap> gl_image);
   ~NativePixmapEGLX11Binding() override;
 
   static std::unique_ptr<NativePixmapGLBinding> Create(
@@ -22,6 +30,20 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
       gfx::Size plane_size,
       GLenum target,
       GLuint texture_id);
+
+  // NativePixmapGLBinding:
+  GLuint GetInternalFormat() override;
+  GLenum GetDataFormat() override;
+  GLenum GetDataType() override;
+
+ private:
+  // Invokes NativePixmapGLBinding::BindTexture, passing |gl_image_|.
+  bool BindTexture(GLenum target, GLuint texture_id);
+
+  // TODO(hitawala): Merge BindTexImage, Initialize from GLImage and its
+  // subclass EGLPixmap to NativePixmapEGLX11Binding once we stop using them
+  // elsewhere eg. VDA decoders in media.
+  scoped_refptr<gl::GLImageEGLPixmap> gl_image_;
 };
 
 }  // namespace ui
