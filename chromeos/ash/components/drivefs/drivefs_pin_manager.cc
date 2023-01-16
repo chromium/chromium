@@ -308,24 +308,28 @@ std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
 // queue.
 constexpr base::TimeDelta kPeriodicRemovalInterval = base::Seconds(10);
 
-void DriveFsPinManager::Add(const StableId id,
+bool DriveFsPinManager::Add(const StableId id,
                             const std::string& path,
-                            const int64_t expected_size) {
+                            const int64_t size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Emplace an item with no progress (yet). The progress values will get
-  // updated in the `OnSyncingStatusUpdate`.
-  const auto [it, ok] = files_to_track_.try_emplace(
-      id, Progress{.path = path, .total = expected_size});
+  DCHECK_GE(size, 0) << " for " << id << " " << Quote(path);
+
+  const auto [it, ok] =
+      files_to_pin_.try_emplace(id, Progress{.path = path, .total = size});
   DCHECK_EQ(id, it->first);
-  if (ok) {
-    VLOG(3) << "Added " << id << " " << Quote(path) << " to the tracked files";
-    VLOG_IF(1, expected_size <= 0)
-        << "Tracked " << id << " " << Quote(path) << " has an expected size of "
-        << HumanReadableSize(expected_size);
-  } else {
-    LOG(ERROR) << "Cannot add " << id << " " << Quote(path)
-               << " to the tracked files: Conflicting entry " << it->second;
+  if (!ok) {
+    LOG_IF(ERROR, !ok) << "Cannot add " << id << " " << Quote(path)
+                       << " with size " << HumanReadableSize(size)
+                       << " to the files to pin: Conflicting entry "
+                       << it->second;
+    return false;
   }
+
+  VLOG(3) << "Added " << id << " " << Quote(path) << " with size "
+          << HumanReadableSize(size) << " to the files to pin";
+  progress_.total_bytes += size;
+  progress_.required_space += RoundToBlockSize(size);
+  return true;
 }
 
 bool DriveFsPinManager::Remove(const StableId id,
@@ -558,17 +562,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
         << "Not pinned yet but already available offline: " << id << " "
         << Quote(path) << ": " << Quote(md);
 
-    DCHECK_GE(md.size, 0) << " for " << id << " " << Quote(path);
-    const int64_t size = GetSize(md);
-    progress_.total_bytes += size;
-    progress_.required_space += RoundToBlockSize(size);
-
-    const auto [it, ok] = files_to_pin_.try_emplace(
-        id, Progress{.path = path.value(), .total = size});
-    LOG_IF(ERROR, !ok) << "Cannot add " << id << " " << Quote(path)
-                       << " with size " << HumanReadableSize(size)
-                       << " to the files to pin: Conflicting entry "
-                       << it->second;
+    Add(id, path.value(), GetSize(md));
   }
 
   NotifyProgress();

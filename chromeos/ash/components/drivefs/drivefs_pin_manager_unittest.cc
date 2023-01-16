@@ -30,7 +30,9 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::Return;
+using ::testing::SizeIs;
 
 // Shorthand way to represent drive files with the information that is relevant
 // for the pinning manager.
@@ -163,10 +165,11 @@ class MockFreeSpace {
               (const base::FilePath&, DriveFsPinManager::SpaceResult));
 };
 
+}  // namespace
+
 class DriveFsPinManagerTest : public testing::Test {
  public:
   DriveFsPinManagerTest() = default;
-
   DriveFsPinManagerTest(const DriveFsPinManagerTest&) = delete;
   DriveFsPinManagerTest& operator=(const DriveFsPinManagerTest&) = delete;
 
@@ -214,6 +217,88 @@ class DriveFsPinManagerTest : public testing::Test {
   MockFreeSpace mock_free_space_;
   MockDriveFs mock_drivefs_;
 };
+
+// Tests DriveFsPinManagerTest::Add().
+TEST_F(DriveFsPinManagerTest, Add) {
+  DriveFsPinManager manager(
+      temp_dir_.GetPath(), &mock_drivefs_,
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.transferred_bytes, 0);
+    EXPECT_EQ(progress.total_bytes, 0);
+    EXPECT_EQ(progress.required_space, 0);
+  }
+
+  const DriveFsPinManager::StableId id1 = DriveFsPinManager::StableId(549);
+  const std::string path1 = "Path 1";
+  const int64_t size1 = 698248964;
+
+  const DriveFsPinManager::StableId id2 = DriveFsPinManager::StableId(17);
+  const std::string path2 = "Path 2";
+  const int64_t size2 = 78964533;
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  // Add an item.
+  EXPECT_TRUE(manager.Add(id1, path1, size1));
+  EXPECT_THAT(manager.files_to_pin_, SizeIs(1));
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  // Try to add a conflicting item with the same ID, but different path and
+  // size.
+  EXPECT_FALSE(manager.Add(id1, path2, size2));
+  EXPECT_THAT(manager.files_to_pin_, SizeIs(1));
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  {
+    const auto it = manager.files_to_pin_.find(id1);
+    ASSERT_NE(it, manager.files_to_pin_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id1);
+    EXPECT_EQ(progress.path, path1);
+    EXPECT_EQ(progress.total, size1);
+    EXPECT_EQ(progress.transferred, 0);
+    EXPECT_FALSE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.transferred_bytes, 0);
+    EXPECT_EQ(progress.total_bytes, size1);
+    EXPECT_EQ(progress.required_space, 698249216);
+  }
+
+  // Add a second item.
+  EXPECT_TRUE(manager.Add(id2, path2, size2));
+  EXPECT_THAT(manager.files_to_pin_, SizeIs(2));
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  {
+    const auto it = manager.files_to_pin_.find(id2);
+    ASSERT_NE(it, manager.files_to_pin_.end());
+    const auto& [got_id, progress] = *it;
+    EXPECT_EQ(got_id, id2);
+    EXPECT_EQ(progress.path, path2);
+    EXPECT_EQ(progress.total, size2);
+    EXPECT_EQ(progress.transferred, 0);
+    EXPECT_FALSE(progress.in_progress);
+  }
+
+  {
+    const SetupProgress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.transferred_bytes, 0);
+    EXPECT_EQ(progress.total_bytes, size1 + size2);
+    EXPECT_EQ(progress.required_space, 777216000);
+  }
+}
 
 TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
@@ -669,7 +754,5 @@ TEST_F(DriveFsPinManagerTest,
   manager.OnSyncingStatusUpdate(*status);
   new_run_loop.Run();
 }
-
-}  // namespace
 
 }  // namespace drivefs::pinning

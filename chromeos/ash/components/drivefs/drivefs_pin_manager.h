@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -169,11 +170,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   enum class StableId : int64_t { kNone = 0 };
 
  private:
-  // Adds an item to the tracked files.
-  void Add(StableId id, const std::string& path, int64_t expected_size);
+  // Adds an item to the files to pin.  Does nothing if an item with the same ID
+  // already exists in files_to_pin_. Updates the total number of bytes to
+  // transfer and the required space. Returns whether an item was actually
+  // added.
+  bool Add(StableId id, const std::string& path, int64_t size);
 
   // Removes an item from the map. Does nothing if the item is not in the map.
   // Updates the total number of bytes transferred so far.
+  // If `bytes_transferred` is negative, use the total expected size.
   // Returns whether an item was actually removed.
   bool Remove(StableId id,
               const std::string& path,
@@ -284,8 +289,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   Files files_to_track_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
 };
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, DriveFsPinManager::StableId id);
 
 }  // namespace drivefs::pinning
