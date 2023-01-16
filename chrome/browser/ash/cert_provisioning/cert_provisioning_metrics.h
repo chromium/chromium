@@ -54,8 +54,10 @@ void RecordVerifiedAccessTime(ProtocolVersion protocol_version,
                               CertScope scope,
                               base::TimeDelta sample);
 
-// Records time of signing a CSR by certificate provisioning worker.
-void RecordCsrSignTime(CertScope scope, base::TimeDelta sample);
+// Records time of generating a signature by certificate provisioning worker.
+void RecordDataSignTime(ProtocolVersion protocol_version,
+                        CertScope scope,
+                        base::TimeDelta sample);
 
 }  // namespace cert_provisioning
 }  // namespace ash

@@ -632,15 +632,19 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <summary>Records the session duration in Chrome OS camera service.</summary>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.CsrSignTime.{CertProvisioningScope}"
+<histogram
+    name="ChromeOS.CertProvisioning.CsrSignTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
     units="ms" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
-    The amount of time it took the certificate provisioning worker with scope
-    {CertProvisioningScope} to sign a CSR. Emitted after the sign is complete.
+    The amount of time it took the {CertProvisioningProtocolVersion} certificate
+    provisioning worker with scope {CertProvisioningScope} to sign a CSR.
+    Emitted after the sign is complete.
   </summary>
   <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
+  <token key="CertProvisioningProtocolVersion"
+      variants="AllCertProvisioningProtocolVersions"/>
 </histogram>
 
 <histogram
