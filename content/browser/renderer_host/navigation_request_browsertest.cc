@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
             !is_test_feature_enabled);
 
   // Continue with the navigation until completion.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_TRUE(manager.was_successful());
 
   // Check that the changes were saved to the RenderFrameHost.
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
             is_test_feature_enabled);
 
   // Continue with the navigation until completion.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_TRUE(manager.was_successful());
 
   // Check that the changes were saved to the RenderFrameHost's feature
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_TRUE(new_context.GetFeatureOverrides().empty());
 
   // Continue with the navigation until completion.
-  redirect_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(redirect_manager.WaitForNavigationFinished());
   EXPECT_TRUE(redirect_manager.was_successful());
 
   // Ensure that the changes made to the features before redirect do not
@@ -1352,7 +1352,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
             installer.navigation_throttle()->request_context_type());
 
   // Ditto for frame b navigation.
-  main_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(main_manager.WaitForNavigationFinished());
   EXPECT_TRUE(b_manager.WaitForRequestStart());
   EXPECT_EQ(2, installer.install_count());
   EXPECT_EQ(b_url, url_recorder.urls().back());
@@ -1361,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
             installer.navigation_throttle()->request_context_type());
 
   // Ditto for frame c navigation.
-  b_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(b_manager.WaitForNavigationFinished());
   EXPECT_TRUE(c_manager.WaitForRequestStart());
   EXPECT_EQ(3, installer.install_count());
   EXPECT_EQ(c_url, url_recorder.urls().back());
@@ -1371,7 +1371,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
   // Lets the final navigation finish so that we conclude running the
   // RequestContextType checks that happen in TestNavigationThrottle.
-  c_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(c_manager.WaitForNavigationFinished());
   // Confirms the last navigation did finish.
   EXPECT_FALSE(installer.navigation_throttle());
 }
@@ -1404,7 +1404,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
             installer.navigation_throttle()->request_context_type());
 
   // Finishes the last navigation.
-  link_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(link_manager.WaitForNavigationFinished());
   EXPECT_FALSE(installer.navigation_throttle());
 }
 
@@ -1438,7 +1438,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
             installer.navigation_throttle()->request_context_type());
 
   // Finishes the last navigation.
-  post_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(post_manager.WaitForNavigationFinished());
   EXPECT_FALSE(installer.navigation_throttle());
 }
 
@@ -1604,7 +1604,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   RenderProcessHost* rph_2 = site_instance_a->GetProcess();
   RenderProcessHostWatcher process_exit_observer_2(
       rph_2, content::RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
-  navigation_b.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_b.WaitForNavigationFinished());
 
   // Ensure RPH 1 is destroyed, which happens at commit time even before the fix
   // for the bug.
@@ -2192,7 +2192,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_TRUE(observer.ReadyToCommitNavigationWasCalled());
   EXPECT_TRUE(manager.GetNavigationHandle()->IsWaitingToCommit());
 
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 }
 
 // Ensure asynchronously deferring conditions block the navigation when it's
@@ -2240,7 +2240,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_TRUE(observer.ReadyToCommitNavigationWasCalled());
   EXPECT_EQ(request->state(), NavigationRequest::READY_TO_COMMIT);
   EXPECT_FALSE(request->IsCommitDeferringConditionDeferredForTesting());
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 }
 
 // Ensure a navigation can be cancelled while an asynchronously deferring
@@ -2277,7 +2277,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // the navigation request.
   EXPECT_FALSE(installer1.condition().IsDestroyed());
   web_contents->Stop();
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(manager.GetNavigationHandle(), nullptr);
   EXPECT_TRUE(installer1.condition().IsDestroyed());
   EXPECT_TRUE(installer2.condition().IsDestroyed());
@@ -2349,7 +2349,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
   // Finish the navigation.
   test_throttle_installer.navigation_throttle()->ResumeNavigation();
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 }
 
 // Tests the case where a browser-initiated navigation to a normal webpage is
@@ -3001,7 +3001,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
                   .download_policy.IsDownloadAllowed());
 
   // The response is not handled as a download.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_FALSE(handle_observer.is_download());
 }
 
@@ -3025,7 +3025,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
                   .download_policy.IsDownloadAllowed());
 
   // The response is handled as a download.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_TRUE(handle_observer.is_download());
 }
 
@@ -3055,7 +3055,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest, Disallowed) {
                    .download_policy.IsDownloadAllowed());
 
   // The response is not handled as a download.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_FALSE(handle_observer.is_download());
 }
 
@@ -3354,7 +3354,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
         }));
     EXPECT_TRUE(ExecJs(web_contents, "location.href = '#foo';"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   }
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
@@ -3379,7 +3379,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationManager navigation_manager(popup, GURL("about:blank#foo"));
     EXPECT_TRUE(
         ExecJs(web_contents, "w.history.replaceState({}, '', '#foo');"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   }
 }
 
@@ -3704,7 +3704,7 @@ IN_PROC_BROWSER_TEST_F(CSPEmbeddedEnforcementBrowserTest,
     )",
                                  test.required_csp, frame_url)));
 
-    observer.WaitForNavigationFinished();
+    ASSERT_TRUE(observer.WaitForNavigationFinished());
     EXPECT_EQ(test.expect_allow, observer.was_successful());
   }
 }

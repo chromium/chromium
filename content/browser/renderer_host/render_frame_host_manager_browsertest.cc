@@ -1746,7 +1746,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   GURL second_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   TestNavigationManager second_navigation(shell()->web_contents(), second_url);
   shell()->LoadURL(second_url);
-  second_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(second_navigation.WaitForNavigationFinished());
   const char kDiscardedStateJS[] =
       "window.domAutomationController.send(window.document.wasDiscarded);";
   bool discarded_result;
@@ -1842,7 +1842,7 @@ IN_PROC_BROWSER_TEST_P(
       "HTTP/1.1 204 OK\r\n"
       "Connection: close\r\n"
       "\r\n");
-  attack_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(attack_navigation.WaitForNavigationFinished());
   speculative_rfh = static_cast<WebContentsImpl*>(shell()->web_contents())
                         ->GetPrimaryFrameTree()
                         .root()
@@ -1971,7 +1971,7 @@ IN_PROC_BROWSER_TEST_P(
       "HTTP/1.1 204 OK\r\n"
       "Connection: close\r\n"
       "\r\n");
-  second_reload.WaitForNavigationFinished();
+  ASSERT_TRUE(second_reload.WaitForNavigationFinished());
   speculative_rfh = static_cast<WebContentsImpl*>(shell()->web_contents())
                         ->GetPrimaryFrameTree()
                         .root()
@@ -6267,7 +6267,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // The process should be foreground priority before commit because it is
   // pending, and foreground after commit because it has a visible widget.
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_NE(start_rph, web_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_EQ(speculative_rph, web_contents->GetPrimaryMainFrame()->GetProcess());
 }
@@ -6353,7 +6353,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // The process should be foreground priority before commit because it is
   // pending, and foreground after commit because it has a visible widget.
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_NE(start_rph, web_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_EQ(speculative_rph, web_contents->GetPrimaryMainFrame()->GetProcess());
 }

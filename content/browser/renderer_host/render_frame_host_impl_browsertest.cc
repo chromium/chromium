@@ -298,7 +298,7 @@ std::string ExecuteJavaScriptMethodAndGetResult(
 bool NavigateToURLAndDoNotWaitForLoadStop(Shell* window, const GURL& url) {
   TestNavigationManager observer(window->web_contents(), url);
   window->LoadURL(url);
-  observer.WaitForNavigationFinished();
+  EXPECT_TRUE(observer.WaitForNavigationFinished());
   return url ==
          window->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
 }
@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   CloseDialogAndProceed();
 
   // Wait for navigation to end.
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_EQ(new_url, web_contents()->GetLastCommittedURL());
 
   // We should have received two pings from two a.com frames.  If we receive
@@ -1142,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   // execution completion notification and confuse our expectations.
   ExecuteScriptAsync(root->child_at(0),
                      "location.href = '" + new_url.spec() + "';");
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_EQ(new_url,
             root->child_at(0)->current_frame_host()->GetLastCommittedURL());
 
@@ -1691,7 +1691,7 @@ IN_PROC_BROWSER_TEST_F(
                                  GURL("customprotocol:aborted"));
   EXPECT_TRUE(ExecJs(shell(), "window.location = 'customprotocol:aborted'"));
   EXPECT_FALSE(observer.WaitForResponse());
-  observer.WaitForNavigationFinished();
+  ASSERT_TRUE(observer.WaitForNavigationFinished());
 
   // 3) Send the response for the XHR requests.
   xhr_response.Send(
@@ -1820,7 +1820,7 @@ IN_PROC_BROWSER_TEST_F(
   TestNavigationManager observer_same_document(shell()->web_contents(),
                                                anchor_url);
   shell()->LoadURL(anchor_url);
-  observer_same_document.WaitForNavigationFinished();
+  ASSERT_TRUE(observer_same_document.WaitForNavigationFinished());
 
   // 3) The last part of the response is received.
   response.Send(
@@ -2011,7 +2011,7 @@ IN_PROC_BROWSER_TEST_F(
       }));
 
   // Finish the navigation.
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_EQ(second_url, injector.url_of_last_commit());
   EXPECT_TRUE(injector.original_receiver_of_last_commit().is_valid());
 
@@ -4497,7 +4497,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_FALSE(pending_rfh->IsInPrimaryMainFrame());
 
   // 5) Let the navigation finish and make sure it is succeeded.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(url_b,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
   RenderFrameHostImpl* rfh_b = root_frame_host();
@@ -4616,7 +4616,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   CheckLifecycleStateImpl check_pending_commit(web_contents());
 
   // 5) Let the navigation finish and make sure it is succeeded.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(url_b,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
   RenderFrameHostImpl* rfh_b = root_frame_host();
@@ -4686,7 +4686,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(LifecycleStateImpl::kActive, current_rfh->lifecycle_state());
 
   // 5) Let the navigation finish and make sure it is succeeded.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(url_b,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
   // The RenderFrameHost has been replaced after the crash, so get it again.
@@ -4901,7 +4901,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
       "HTTP/1.1 204 No Content\r\n"
       "Content-Type: text/html; charset=utf-8\r\n"
       "\r\n");
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_TRUE(rfhi->IsDOMContentLoaded());
   EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
@@ -5775,7 +5775,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   ReadyToCommitObserver ready_to_commit_observer(web_contents(),
                                                  test_expectations);
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
 }
 
 // Like ForEachRenderFrameHostSpeculative, but for a speculative RFH for a
@@ -6582,7 +6582,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, ErrorDocuments) {
             main_url, net::ERR_BLOCKED_BY_CLIENT);
     TestNavigationManager manager(web_contents(), main_url);
     shell()->LoadURL(main_url);
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
   }
 
   EXPECT_TRUE(web_contents()->GetPrimaryMainFrame()->IsErrorDocument());

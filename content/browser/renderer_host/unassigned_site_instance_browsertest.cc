@@ -1095,7 +1095,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(process1_lock.allows_any_site());
 
   // Now wait for second navigation to finish and ensure it also succeeds.
-  regular_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(regular_manager.WaitForNavigationFinished());
   EXPECT_TRUE(regular_manager.was_successful());
   EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_EQ(regular_url(),

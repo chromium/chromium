@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   EXPECT_TRUE(data);
 
   // 6) Let the navigation finish and make sure it has succeeded.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(url_b,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   EXPECT_TRUE(data);
 
   // 5) Let the navigation finish and make sure it has succeeded.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(url_b,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(DocumentUserDataTest,
   EXPECT_TRUE(data_before_commit);
 
   // 4) Let the navigation finish and make sure it is succeeded.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(url_b,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 

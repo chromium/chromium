@@ -1890,7 +1890,7 @@ bool RendererLocationReplace(Shell* shell, const GURL& url) {
             ->common_params()
             .should_replace_current_entry);
   }
-  navigation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
   if (!IsLastCommittedEntryOfPageType(web_contents, PAGE_TYPE_NORMAL))
     return false;
   return web_contents->GetLastCommittedURL() == url;
@@ -8529,7 +8529,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(new_entry1->IsRestored());
 
   // Allow the back navigation to complete, clearing the restore status.
-  back_navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(back_navigation_manager.WaitForNavigationFinished());
   EXPECT_FALSE(new_entry1->IsRestored());
   EXPECT_EQ(new_entry1, new_controller.GetLastCommittedEntry());
   EXPECT_EQ(2, new_controller.GetEntryCount());
@@ -8649,8 +8649,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     shell()->LoadURL(url1);
 
-    navigation_manager_1.WaitForNavigationFinished();  // Initial navigation.
-    navigation_manager_2.WaitForNavigationFinished();  // Client-side redirect.
+    ASSERT_TRUE(navigation_manager_1
+                    .WaitForNavigationFinished());  // Initial navigation.
+    ASSERT_TRUE(navigation_manager_2
+                    .WaitForNavigationFinished());  // Client-side redirect.
 
     ASSERT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry1 = controller.GetEntryAtIndex(0);
@@ -9476,7 +9478,7 @@ IN_PROC_BROWSER_TEST_P(
     // be treated as a client-side redirect.
     TestNavigationManager navigation_manager(contents(), fragment_url);
     EXPECT_TRUE(ExecJs(contents(), "location.replace('#foo')"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -9508,7 +9510,7 @@ IN_PROC_BROWSER_TEST_P(
     TestNavigationManager navigation_manager(contents(), replace_state_url);
     EXPECT_TRUE(
         ExecJs(shell(), "history.replaceState({}, '', '/title1.html#bar')"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -9577,7 +9579,7 @@ IN_PROC_BROWSER_TEST_P(
                        "a.href = 'title1.html#click';"
                        "document.body.appendChild(a);"
                        "a.click();"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(3, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -9651,7 +9653,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(ExecJs(
         contents(), JsReplace("document.getElementById('test_iframe').src = $1",
                               fragment_url)));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(2, controller.GetEntryCount());
     scoped_refptr<FrameNavigationEntry> frame_entry =
@@ -9683,7 +9685,7 @@ IN_PROC_BROWSER_TEST_P(
                        "a.target = 'test_iframe';"
                        "document.body.appendChild(a);"
                        "a.click();"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(3, controller.GetEntryCount());
     scoped_refptr<FrameNavigationEntry> frame_entry =
@@ -9712,7 +9714,7 @@ IN_PROC_BROWSER_TEST_P(
                        "a.target = 'test_iframe';"
                        "document.body.appendChild(a);"
                        "a.click();"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(4, controller.GetEntryCount());
     scoped_refptr<FrameNavigationEntry> frame_entry =
@@ -9901,7 +9903,7 @@ IN_PROC_BROWSER_TEST_P(
                                      "document.body.appendChild(a);"
                                      "a.click();",
                                      url_3)));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(2, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -9972,7 +9974,7 @@ IN_PROC_BROWSER_TEST_P(
   TestNavigationManager navigation_manager(contents(), target_url);
   EXPECT_TRUE(
       ExecJs(contents(), JsReplace("location.replace($1);", target_url)));
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // The last committed NavigationEntry's redirect chain will contain the
   // client-side redirector URL, then the target URL.
@@ -10019,7 +10021,7 @@ IN_PROC_BROWSER_TEST_P(
   TestNavigationManager navigation_manager(contents(), redirecting_url);
   EXPECT_TRUE(
       ExecJs(contents(), JsReplace("location.replace($1);", redirecting_url)));
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // The last committed NavigationEntry's redirect chain will contain the
   // client-side redirector URL, server-side redirecting URL, then the final
@@ -10071,7 +10073,7 @@ IN_PROC_BROWSER_TEST_P(
                                    "document.body.appendChild(a);"
                                    "a.click();",
                                    redirecting_url)));
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // The last committed NavigationEntry's redirect chain will contain the
   // server-side redirecting URL and the final URL.
@@ -10122,7 +10124,7 @@ IN_PROC_BROWSER_TEST_P(
                                    "document.body.appendChild(a);"
                                    "a.click();",
                                    redirecting_url)));
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // The last committed NavigationEntry's redirect chain will contain the
   // server-side redirecting URL and the final URL.
@@ -10176,7 +10178,7 @@ IN_PROC_BROWSER_TEST_P(
     // Browser-initiated tab reload.
     TestNavigationManager navigation_manager(contents(), start_url);
     shell()->Reload();
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -10206,7 +10208,7 @@ IN_PROC_BROWSER_TEST_P(
     // Renderer-initiated reload.
     TestNavigationManager navigation_manager(contents(), start_url);
     EXPECT_TRUE(ExecJs(contents(), "location.reload();"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -10236,7 +10238,7 @@ IN_PROC_BROWSER_TEST_P(
     // Browser-initiated tab reload after a renderer-initiated reload.
     TestNavigationManager navigation_manager(contents(), start_url);
     shell()->Reload();
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -10269,7 +10271,7 @@ IN_PROC_BROWSER_TEST_P(
     // instead of NavigationControllerImpl::Reload().
     TestNavigationManager navigation_manager(contents(), start_url);
     contents()->GetPrimaryMainFrame()->Reload();
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -10352,7 +10354,7 @@ IN_PROC_BROWSER_TEST_P(
     // Browser-initiated reload.
     TestNavigationManager navigation_manager(contents(), iframe_url);
     root->child_at(0)->current_frame_host()->Reload();
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     scoped_refptr<FrameNavigationEntry> frame_entry =
@@ -10376,7 +10378,7 @@ IN_PROC_BROWSER_TEST_P(
     // Renderer-initiated reload on the iframe.
     TestNavigationManager navigation_manager(contents(), iframe_url);
     EXPECT_TRUE(ExecJs(iframe, "location.reload();"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     scoped_refptr<FrameNavigationEntry> frame_entry =
@@ -10397,7 +10399,7 @@ IN_PROC_BROWSER_TEST_P(
     // Browser-initiated reload after a renderer-initiated reload.
     TestNavigationManager navigation_manager(contents(), iframe_url);
     root->child_at(0)->current_frame_host()->Reload();
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     scoped_refptr<FrameNavigationEntry> frame_entry =
@@ -10662,8 +10664,10 @@ IN_PROC_BROWSER_TEST_P(
     TestNavigationManager navigation_manager_2(contents(),
                                                client_redirect_target_url);
     shell()->LoadURL(client_redirecting_url);
-    navigation_manager_1.WaitForNavigationFinished();  // Initial navigation.
-    navigation_manager_2.WaitForNavigationFinished();  // Client-side redirect.
+    ASSERT_TRUE(navigation_manager_1
+                    .WaitForNavigationFinished());  // Initial navigation.
+    ASSERT_TRUE(navigation_manager_2
+                    .WaitForNavigationFinished());  // Client-side redirect.
 
     ASSERT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetEntryAtIndex(0);
@@ -10695,7 +10699,7 @@ IN_PROC_BROWSER_TEST_P(
         "/navigation_controller/simple_page_1.html#foo"));
     TestNavigationManager navigation_manager(contents(), fragment_url);
     EXPECT_TRUE(ExecJs(contents(), "location.replace('#foo');"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -10753,8 +10757,10 @@ IN_PROC_BROWSER_TEST_P(
     TestNavigationManager navigation_manager_2(contents(),
                                                client_redirect_target_url);
     shell()->LoadURL(client_redirecting_url);
-    navigation_manager_1.WaitForNavigationFinished();  // Initial navigation.
-    navigation_manager_2.WaitForNavigationFinished();  // Client-side redirect.
+    ASSERT_TRUE(navigation_manager_1
+                    .WaitForNavigationFinished());  // Initial navigation.
+    ASSERT_TRUE(navigation_manager_2
+                    .WaitForNavigationFinished());  // Client-side redirect.
 
     ASSERT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetEntryAtIndex(0);
@@ -10788,7 +10794,7 @@ IN_PROC_BROWSER_TEST_P(
         "/navigation_controller/client_redirect_fragment.html#bar"));
     TestNavigationManager navigation_manager(contents(), fragment_url);
     EXPECT_TRUE(ExecJs(contents(), "location.replace('#bar');"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -10843,8 +10849,10 @@ IN_PROC_BROWSER_TEST_P(
 
     shell()->LoadURL(server_redirecting_url);
 
-    navigation_manager_1.WaitForNavigationFinished();  // Initial navigation.
-    navigation_manager_2.WaitForNavigationFinished();  // Client-side redirect.
+    ASSERT_TRUE(navigation_manager_1
+                    .WaitForNavigationFinished());  // Initial navigation.
+    ASSERT_TRUE(navigation_manager_2
+                    .WaitForNavigationFinished());  // Client-side redirect.
 
     ASSERT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetEntryAtIndex(0);
@@ -10894,9 +10902,11 @@ IN_PROC_BROWSER_TEST_P(
 
     shell()->LoadURL(client_redirecting_url);
 
-    navigation_manager_1.WaitForNavigationFinished();  // Initial navigation +
-                                                       // client-side redirect.
-    navigation_manager_2.WaitForNavigationFinished();  // Server-side redirect.
+    ASSERT_TRUE(navigation_manager_1
+                    .WaitForNavigationFinished());  // Initial navigation +
+                                                    // client-side redirect.
+    ASSERT_TRUE(navigation_manager_2
+                    .WaitForNavigationFinished());  // Server-side redirect.
 
     ASSERT_EQ(1, controller.GetEntryCount());
     NavigationEntry* entry = controller.GetEntryAtIndex(0);
@@ -12477,13 +12487,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(2, controller.GetPendingEntryIndex());
 
   // Let the subframe commit.
-  subframe_delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(subframe_delayer.WaitForNavigationFinished());
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(url_a, root->current_url());
   EXPECT_EQ(frame_url_a2, root->child_at(0)->current_url());
 
   // Let the main frame commit.
-  mainframe_delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(mainframe_delayer.WaitForNavigationFinished());
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(url_b, root->current_url());
@@ -13949,7 +13959,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(request, root->navigation_request());
 
   // Let the navigation finish. It should commit successfully.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   last_committed =
       shell()->web_contents()->GetController().GetLastCommittedEntry();
   ASSERT_TRUE(last_committed);
@@ -18478,7 +18488,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
       "window.location.replace('#a');"
       "window.location='/title3.html';"
       "</script></html>");
-  observer.WaitForNavigationFinished();
+  ASSERT_TRUE(observer.WaitForNavigationFinished());
 
   EXPECT_EQ(last_url, controller.GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -20319,7 +20329,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_TRUE(navigation_1->IsPost());
 
   // Check the FrameNavigationEntry (initial navigation).
-  observer_1.WaitForNavigationFinished();
+  ASSERT_TRUE(observer_1.WaitForNavigationFinished());
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   NavigationEntryImpl* entry_1 = controller.GetLastCommittedEntry();
   ASSERT_EQ(1U, entry_1->root_node()->children.size());
@@ -20353,7 +20363,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_TRUE(navigation_2->IsPost());
 
   // Check the FrameNavigationEntry (reload).
-  observer_2.WaitForNavigationFinished();
+  ASSERT_TRUE(observer_2.WaitForNavigationFinished());
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   NavigationEntryImpl* entry_2 = controller.GetLastCommittedEntry();
   ASSERT_EQ(1U, entry_1->root_node()->children.size());
@@ -20526,7 +20536,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Commit navigation and ensure that the weak ptr to NavigationHandle was
   // invalidated.
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_FALSE(navigation);
 }
 
@@ -21122,8 +21132,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   FrameTestNavigationManager c_delayer(ftn_c->frame_tree_node_id(),
                                        shell()->web_contents(), url_c);
   controller.GoToOffset(-3);
-  b_delayer.WaitForNavigationFinished();
-  c_delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(b_delayer.WaitForNavigationFinished());
+  ASSERT_TRUE(c_delayer.WaitForNavigationFinished());
 
   EXPECT_TRUE(WaitForLoadStop(contents()));
   EXPECT_EQ(4, controller.GetEntryCount());
@@ -21291,7 +21301,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   fetch_response.Done();
 
   // The navigation got canceled without committing.
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   EXPECT_FALSE(nav_manager.was_successful());
   EXPECT_EQ(child_url, child->current_url());
   EXPECT_EQ(true, EvalJs(child, "fetch_success"));
@@ -21360,7 +21370,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   crash_observer.Wait();
 
   // The navigation got canceled without committing.
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   EXPECT_FALSE(nav_manager.was_successful());
   // If the process is not shared with the main frame, the current URL of the
   // child frame is empty after the process crashed. If the process is shared,
@@ -21863,7 +21873,7 @@ IN_PROC_BROWSER_TEST_P(
     // Close the window. This should trigger the deletion of the
     // speculative RenderFrameHost.
     EXPECT_TRUE(ExecJs(original_root, "w.close()"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
     EXPECT_FALSE(navigation_manager.was_committed());
   }
 
@@ -21894,7 +21904,7 @@ IN_PROC_BROWSER_TEST_P(
     // Close the window. This should trigger the deletion of the
     // speculative RenderFrameHost.
     EXPECT_TRUE(ExecJs(original_root, "w.close()"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
     EXPECT_FALSE(navigation_manager.was_committed());
   }
 }
@@ -21933,7 +21943,7 @@ IN_PROC_BROWSER_TEST_P(
     // speculative RenderFrameHost.
     EXPECT_TRUE(
         ExecJs(root, "document.getElementsByTagName('iframe')[0].remove()"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
     EXPECT_FALSE(navigation_manager.was_committed());
   }
 
@@ -21961,7 +21971,7 @@ IN_PROC_BROWSER_TEST_P(
     // speculative RenderFrameHost.
     EXPECT_TRUE(
         ExecJs(root, "document.getElementsByTagName('iframe')[0].remove()"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
     EXPECT_FALSE(navigation_manager.was_committed());
   }
 }
@@ -22006,7 +22016,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(root->navigation_request(), b1_navigation.GetNavigationHandle());
 
   // Assert that the navigation to A2 gets cancelled.
-  a2_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(a2_navigation.WaitForNavigationFinished());
   EXPECT_FALSE(a2_navigation.was_committed());
 
   // 4) Start another same-RFH navigation to A3, which will cancel the
@@ -22018,7 +22028,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(root->navigation_request(), a3_navigation.GetNavigationHandle());
 
   // Assert that the navigation to B1 gets cancelled.
-  b1_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
   EXPECT_FALSE(b1_navigation.was_committed());
 }
 
@@ -22079,11 +22089,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(root->navigation_request(), a1_navigation.GetNavigationHandle());
 
   // Assert that the navigation to B1 gets cancelled.
-  b1_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
   EXPECT_FALSE(b1_navigation.was_committed());
 
   // Assert that the navigation to A1 succesfully commits.
-  a1_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(a1_navigation.WaitForNavigationFinished());
   EXPECT_TRUE(a1_navigation.was_successful());
   // Assert that the correct NavigationEntry is used, and no entry gets
   // corrupted.
@@ -22154,7 +22164,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Assert that the navigation to A2 didn't get cancelled, and finish
   // committing A2. This shouldn't cancel the navigation to B1.
-  a2_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(a2_navigation.WaitForNavigationFinished());
   EXPECT_TRUE(a2_navigation.was_successful());
 
   // A2's navigation commit didn't cancel B1's navigation.
@@ -22169,13 +22179,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Assert that the navigation to B1 didn't get cancelled, and finish
   // committing B1. This shouldn't cancel the navigation to A3.
-  b1_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
   EXPECT_TRUE(b1_navigation.was_successful());
 
   // B1's navigation commit didn't cancel A3's navigation.
   EXPECT_TRUE(a3_navigation.WaitForResponse());
   EXPECT_TRUE(a3_navigation.GetNavigationHandle());
-  a3_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(a3_navigation.WaitForNavigationFinished());
   EXPECT_TRUE(a3_navigation.was_successful());
 }
 
@@ -22224,7 +22234,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Cancel the navigation to `url_b2` by calling ResetNavigationRequest().
   // This shouldn't cancel the navigation to `url_b1`.
   root->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
-  b2_nav.WaitForNavigationFinished();
+  ASSERT_TRUE(b2_nav.WaitForNavigationFinished());
   EXPECT_FALSE(b2_nav.was_committed());
   EXPECT_FALSE(b2_nav.GetNavigationHandle());
 
@@ -22274,7 +22284,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(b2_nav.GetNavigationHandle(), root->navigation_request());
 
   // Wait for the `url_b1` navigation to finish.
-  b1_nav.WaitForNavigationFinished();
+  ASSERT_TRUE(b1_nav.WaitForNavigationFinished());
   EXPECT_TRUE(b1_nav.was_successful());
 
   // The RenderFrameHost had changed, which means we have started to unload the
@@ -22305,7 +22315,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 
   // Assert that the `url_b2` navigation committed successfully.
-  b2_nav.WaitForNavigationFinished();
+  ASSERT_TRUE(b2_nav.WaitForNavigationFinished());
   EXPECT_TRUE(b2_nav.was_successful());
 }
 

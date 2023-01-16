@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
   }
 
   // Let the navigation finish.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   EXPECT_EQ(url_b,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());

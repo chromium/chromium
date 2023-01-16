@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
   EXPECT_NE(data_before_commit.get()->unique_id(), data_a.get()->unique_id());
 
   // 4) Let the navigation finish and make sure it has succeeded.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(url_b,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 

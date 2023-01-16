@@ -140,7 +140,7 @@ class DocumentTokenBrowserTest : public ContentBrowserTest {
 
     // Once a cross-document navigation completes, the document token should be
     // updated though.
-    nav_manager.WaitForNavigationFinished();
+    EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
     // The RenderFrameHost may have changed; use the FrameTreeNode captured
     // above instead.
     RenderFrameHostImpl* const new_render_frame_host =
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, NewWindowBasic) {
 
     // Once a cross-document navigation completes, the document token should be
     // updated though.
-    nav_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
     // The RenderFrameHost may have changed; use the FrameTreeNode captured
     // above instead.
     RenderFrameHostImpl* const new_render_frame_host =
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, CrashThenReload) {
   // DocumentToken, since no new DocumentAssociatedData was created. The latter
   // is indirectly tested by checking if the WeakDocumentPtr is still valid
   // after the navigation commits.
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
   const blink::DocumentToken token_after_navigation_finished =
       GetBrowserSideToken(web_contents());

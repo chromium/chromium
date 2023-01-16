@@ -1476,7 +1476,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ForEachRenderFrameHost) {
   EXPECT_EQ(same_process_rfhs.size(), 0u);
 
   // 7. Resume the blocked navigation.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   // 8. Check that `RenderProcessHost::ForEachRenderFrameHost` does not filter
   // `rfh_b` out, because its lifecycle has changed to kActive.
