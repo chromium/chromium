@@ -13,12 +13,14 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -202,13 +204,51 @@ TEST_F(HttpAuthManagerTest, HttpAuthSaving) {
     httpauth_manager()->OnPasswordFormDismissed();
 
     // Expect save prompt on successful submission.
-    std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr())
         .Times(filling_and_saving_enabled ? 1 : 0);
     httpauth_manager()->OnDidFinishMainFrameNavigation();
     testing::Mock::VerifyAndClearExpectations(&client_);
     httpauth_manager()->DetachObserver(&observer);
   }
+}
+
+TEST_F(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  PasswordForm observed_form;
+  observed_form.scheme = PasswordForm::Scheme::kBasic;
+  observed_form.url = GURL("http://proxy.com/");
+  observed_form.signon_realm = "proxy.com/realm";
+
+  PasswordForm stored_form = observed_form;
+  stored_form.username_value = u"user";
+  stored_form.password_value = u"1234";
+  stored_form.in_store = PasswordForm::Store::kProfileStore;
+  stored_form.date_last_used = base::Time::Now() - base::Days(1);
+
+  MockHttpAuthObserver observer;
+
+  base::WeakPtr<PasswordStoreConsumer> consumer;
+  EXPECT_CALL(*store_, GetLogins).WillOnce(SaveArg<1>(&consumer));
+  httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
+                                                       observed_form);
+  ASSERT_TRUE(consumer);
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  result.push_back(std::make_unique<PasswordForm>(stored_form));
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
+                                                 std::move(result));
+
+  // Emulate that http auth credentials submitted.
+  httpauth_manager()->OnPasswordFormSubmitted(stored_form);
+  httpauth_manager()->OnPasswordFormDismissed();
+  PasswordForm expected_updated_form;
+  EXPECT_CALL(*store_, UpdateLogin)
+      .WillOnce(SaveArg<0>(&expected_updated_form));
+  httpauth_manager()->OnDidFinishMainFrameNavigation();
+  // `date_last_used` should have been updated to a more recent value.
+  EXPECT_GT(expected_updated_form.date_last_used, stored_form.date_last_used);
+  testing::Mock::VerifyAndClearExpectations(&store_);
+  httpauth_manager()->DetachObserver(&observer);
 }
 
 TEST_F(HttpAuthManagerTest, DontSaveEmptyPasswords) {
@@ -233,7 +273,6 @@ TEST_F(HttpAuthManagerTest, DontSaveEmptyPasswords) {
   httpauth_manager()->OnPasswordFormDismissed();
 
   // Expect no save prompt on successful submission.
-  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr()).Times(0);
   httpauth_manager()->OnDidFinishMainFrameNavigation();
   testing::Mock::VerifyAndClearExpectations(&client_);
