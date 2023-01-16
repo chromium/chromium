@@ -432,6 +432,8 @@ src/webgpu/shader/validation/parse/identifiers.spec.ts
 src/webgpu/shader/validation/parse/literal.spec.ts
 src/webgpu/shader/validation/parse/source.spec.ts
 src/webgpu/shader/validation/parse/var_and_let.spec.ts
+src/webgpu/shader/validation/resource_interface/util.ts
+src/webgpu/shader/validation/resource_interface/bindings.spec.ts
 src/webgpu/shader/validation/shader_io/util.ts
 src/webgpu/shader/validation/shader_io/builtins.spec.ts
 src/webgpu/shader/validation/shader_io/entry_point.spec.ts
