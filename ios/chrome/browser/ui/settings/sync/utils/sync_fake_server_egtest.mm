@@ -40,6 +40,18 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
              @"Expected %d entities of the specified type", entity_count);
 }
 
+void WaitForAutofillProfileLocallyPresent(const std::string& guid,
+                                          const std::string& full_name) {
+  GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
+                     kSyncOperationTimeout,
+                     ^{
+                       return [ChromeEarlGrey
+                           isAutofillProfilePresentWithGUID:guid
+                                        autofillProfileName:full_name];
+                     }),
+                 @"Expected Autofill profile to be present");
+}
+
 }  // namespace
 
 // Hermetic sync tests, which use the fake sync server.
@@ -229,16 +241,12 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   // Verify that the autofill profile has been downloaded.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  WaitForNumberOfEntities(1, syncer::AUTOFILL_PROFILE);
-  GREYAssertTrue([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
-                                              autofillProfileName:kFullName],
-                 @"autofill profile should exist");
+  WaitForAutofillProfileLocallyPresent(kGuid, kFullName);
 }
 
 // Test that update to autofill profile injected in FakeServer gets synced to
 // client.
-// TODO(crbug.com/1407620): Reenable the test
-- (void)DISABLED_testSyncUpdateAutofillProfile {
+- (void)testSyncUpdateAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   const std::string kUpdatedFullName = "Roger Rabbit";
@@ -260,10 +268,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   // Verify that the autofill profile has been downloaded.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  WaitForNumberOfEntities(1, syncer::AUTOFILL_PROFILE);
-  GREYAssertTrue([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
-                                              autofillProfileName:kFullName],
-                 @"autofill profile should exist");
+  WaitForAutofillProfileLocallyPresent(kGuid, kFullName);
 
   // Update autofill profile.
   [ChromeEarlGrey addAutofillProfileToFakeSyncServerWithGUID:kGuid
@@ -271,24 +276,12 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
   // Trigger sync cycle and wait for update.
   [ChromeEarlGrey triggerSyncCycleForType:syncer::AUTOFILL_PROFILE];
-  NSString* errorMessage =
-      [NSString stringWithFormat:
-                    @"Did not find autofill profile for guid: %@, and name: %@",
-                    base::SysUTF8ToNSString(kGuid),
-                    base::SysUTF8ToNSString(kUpdatedFullName)];
-  ConditionBlock condition = ^{
-    return [ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
-                                        autofillProfileName:kUpdatedFullName];
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(kSyncOperationTimeout,
-                                                          condition),
-             errorMessage);
+  WaitForAutofillProfileLocallyPresent(kGuid, kUpdatedFullName);
 }
 
 // Test that autofill profile deleted from FakeServer gets deleted from client
 // as well.
-// TODO(crbug.com/1407620): Reenable the test
-- (void)DISABLED_testSyncDeleteAutofillProfile {
+- (void)testSyncDeleteAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   GREYAssertFalse([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
@@ -308,10 +301,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   // Verify that the autofill profile has been downloaded
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  WaitForNumberOfEntities(1, syncer::AUTOFILL_PROFILE);
-  GREYAssertTrue([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
-                                              autofillProfileName:kFullName],
-                 @"autofill profile should exist");
+  WaitForAutofillProfileLocallyPresent(kGuid, kFullName);
 
   // Delete autofill profile from server, and verify it is removed.
   [ChromeEarlGrey deleteAutofillProfileFromFakeSyncServerWithGUID:kGuid];
