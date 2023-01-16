@@ -1315,7 +1315,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
-        TestCase("driveOfflineInfoBannerWithoutFlag")
+        TestCase("driveOfflineInfoBannerWithoutFlag"),
+        TestCase("driveDeleteDialogDoesntMentionPermanentDelete")
         // TODO(b/258987225): Enable
         // TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
         // TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync()

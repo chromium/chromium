@@ -50,7 +50,7 @@ async function clickDeleteButtonAndConfirmDeletion(appId) {
   // Click the delete confirm dialog 'Delete' button.
   const dialogDeleteButton =
       await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');
-  chrome.test.assertEq('Delete', dialogDeleteButton.text);
+  chrome.test.assertEq('Delete forever', dialogDeleteButton.text);
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(

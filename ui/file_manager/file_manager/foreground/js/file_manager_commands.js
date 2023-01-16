@@ -1211,10 +1211,6 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
       return;
     }
 
-    const message = entries.length === 1 ?
-        strf('CONFIRM_DELETE_ONE', entries[0].name) :
-        strf('CONFIRM_DELETE_SOME', entries.length);
-
     if (!dialog) {
       dialog = fileManager.ui.deleteConfirmDialog;
     } else if (dialog.showModalElement) {
@@ -1237,7 +1233,28 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
       dialogDoneCallback();
     };
 
-    dialog.show(message, deleteAction, cancelAction, null);
+    // When a user deletes a file from Drive, it gets moved to the Google Drive
+    // trash. This means the file is not technically permanently removed.
+    // Fallback to the delete text that doesn't specify permanent delete in this
+    // case.
+    if (fileManager.directoryModel.isOnDrive()) {
+      const deleteMessage = entries.length === 1 ?
+          strf('CONFIRM_DELETE_ONE', entries[0].name) :
+          strf('CONFIRM_DELETE_SOME', entries.length);
+      dialog.setOkLabel(str('DELETE_BUTTON_LABEL'));
+      dialog.show(deleteMessage, deleteAction, cancelAction, null);
+      return;
+    }
+
+    const title = entries.length === 1 ?
+        strf('CONFIRM_PERMANENTLY_DELETE_ONE_TITLE') :
+        strf('CONFIRM_PERMANENTLY_DELETE_SOME_TITLE');
+
+    const message = entries.length === 1 ?
+        strf('CONFIRM_PERMANENTLY_DELETE_ONE_DESC', entries[0].name) :
+        strf('CONFIRM_PERMANENTLY_DELETE_SOME_DESC', entries.length);
+
+    dialog.showWithTitle(title, message, deleteAction, cancelAction, null);
   }
 
   /**
