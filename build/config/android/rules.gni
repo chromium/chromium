@@ -3102,6 +3102,10 @@ if (enable_java_templates && is_android) {
         final_dex_path = _final_dex_path
       }
 
+      if (defined(invoker.assert_no_native_deps)) {
+        assert_no_deps = invoker.assert_no_native_deps
+      }
+
       if (_is_bundle_module) {
         proto_resources_path = _proto_resources_path
         if (_optimize_resources) {
@@ -3553,6 +3557,7 @@ if (enable_java_templates && is_android) {
                                "apk_under_test",
                                "app_as_shared_lib",
                                "assert_no_deps",
+                               "assert_no_native_deps",
                                "build_config_include_product_version_resource",
                                "bundles_supported",
                                "chromium_code",
@@ -3691,6 +3696,7 @@ if (enable_java_templates && is_android) {
                                "annotation_processor_deps",
                                "app_as_shared_lib",
                                "assert_no_deps",
+                               "assert_no_native_deps",
                                "base_module_target",
                                "build_config_include_product_version_resource",
                                "bundle_target",

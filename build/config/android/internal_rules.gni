@@ -2915,6 +2915,7 @@ if (enable_java_templates) {
 
       if (target_name == "chrome_java__header") {
         # Regression test for: https://crbug.com/1154302
+        # Ensures that header jars never depend on non-header jars.
         assert_no_deps = [ "//base:base_java__compile_java" ]
       }
 

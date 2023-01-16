@@ -8,6 +8,7 @@ import("//base/android/resource_exclusions.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/locales.gni")
+import("//build/toolchain/gcc_toolchain.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/common/features.gni")
@@ -88,6 +89,16 @@ template("chrome_public_common_apk_or_module_tmpl") {
       min_sdk_version = 24
     } else {
       min_sdk_version = default_min_sdk_version
+    }
+
+    # Resource allowlist creates a dep from .pak files onto native files.
+    if (!enable_resource_allowlist_generation) {
+      # Ensure builds are not slowed down by having any java targets depend
+      # on native targets.
+      assert_no_native_deps = [
+        "//base",
+        "//v8",
+      ]
     }
 
     resource_exclusion_regex = common_resource_exclusion_regex
