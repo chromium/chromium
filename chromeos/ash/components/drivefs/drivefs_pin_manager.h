@@ -144,10 +144,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   using CompletionCallback = base::OnceCallback<void(SetupStage)>;
   void Start(CompletionCallback complete_callback, bool should_pin = true);
 
-  void GetFeatureAvailability(base::OnceCallback<void(SetupStage)> callback) {
-    Start(std::move(callback), false);
-  }
-
   // Stop the syncing setup.
   void Stop();
 
