@@ -1552,23 +1552,19 @@ body.files-ng #default-tasks-list {
 }
 
 #default-task-dialog.bottom-shadow::after {
-  background: linear-gradient(180deg,
-                              var(--cros-bg-color) 0,
-                              var(--cros-bg-color) 100%);
+  background: linear-gradient(transparent 0, var(--cros-bg-color) 100%);
   bottom: 24px;
   content: '';
   height: 40px;
   left: 0;
   pointer-events: none;
   position: absolute;
-  transform: rotate(-180deg);
   width: 100%
 }
 
 @media (prefers-color-scheme: dark) {
   #default-task-dialog.bottom-shadow::after {
-    background: linear-gradient(180deg,
-                                var(--cros-bg-color-elevation-2) 0,
+    background: linear-gradient(transparent 0,
                                 var(--cros-bg-color-elevation-2) 100%);
   }
 }
