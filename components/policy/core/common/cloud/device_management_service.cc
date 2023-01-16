@@ -418,8 +418,6 @@ class DeviceManagementService::JobImpl : public Job {
   // Network error code passed of last call to HandleResponseData().
   int last_error_ = 0;
 
-  int retry_delay_ = 0;
-
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
@@ -478,16 +476,17 @@ DeviceManagementService::JobImpl::OnURLLoaderCompleteInternal(
   }
 
   config_->OnBeforeRetry(response_code, response_body);
+  int retry_delay = GetRetryDelay(retry_method);
   LOG(WARNING) << "Request of type "
                << JobConfiguration::GetJobTypeAsString(config_->GetType())
                << " failed (net_error = " << net_error
                << ", response_code = " << response_code << "), retrying in "
-               << retry_delay_ << "ms.";
+               << retry_delay << "ms.";
   if (!is_test) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DeviceManagementService::JobImpl::Start, GetWeakPtr()),
-        base::Milliseconds(GetRetryDelay(retry_method)));
+        base::Milliseconds(retry_delay));
   }
   return retry_method;
 }
