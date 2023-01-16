@@ -40,6 +40,23 @@ V8RTCDecodeTargetIndicationFromDecodeTargetIndication(
   }
 }
 
+webrtc::DecodeTargetIndication
+DecodeTargetIndicationFromV8RTCDecodeTargetIndication(
+    V8RTCDecodeTargetIndication decode_target_indication) {
+  switch (decode_target_indication.AsEnum()) {
+    case V8RTCDecodeTargetIndication::Enum::kNotPresent:
+      return webrtc::DecodeTargetIndication::kNotPresent;
+    case V8RTCDecodeTargetIndication::Enum::kDiscardable:
+      return webrtc::DecodeTargetIndication::kDiscardable;
+    case V8RTCDecodeTargetIndication::Enum::kSwitch:
+      return webrtc::DecodeTargetIndication::kSwitch;
+    case V8RTCDecodeTargetIndication::Enum::kRequired:
+      return webrtc::DecodeTargetIndication::kRequired;
+    default:
+      NOTREACHED();
+  }
+}
+
 String RTCVideoCodecTypeFromVideoCodecType(
     webrtc::VideoCodecType video_codec_type) {
   switch (video_codec_type) {
@@ -51,6 +68,20 @@ String RTCVideoCodecTypeFromVideoCodecType(
       return "h264";
     default:
       return "";
+  }
+}
+
+webrtc::VideoCodecType VideoCodecTypeFromRTCVideoCodecType(
+    String video_codec_type) {
+  if (video_codec_type == "vp8") {
+    return webrtc::VideoCodecType::kVideoCodecVP8;
+  } else if (video_codec_type == "vp9") {
+    return webrtc::VideoCodecType::kVideoCodecVP9;
+  } else if (video_codec_type == "h264") {
+    return webrtc::VideoCodecType::kVideoCodecH264;
+  } else {
+    NOTREACHED();
+    return webrtc::VideoCodecType::kVideoCodecGeneric;
   }
 }
 
@@ -147,6 +178,74 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
     }
   }
   return metadata;
+}
+
+void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
+                                       ExceptionState& exception_state) {
+  if (!metadata->hasFrameId() || !metadata->hasDependencies() ||
+      !metadata->hasWidth() || !metadata->hasHeight() ||
+      !metadata->hasSpatialIndex() || !metadata->hasTemporalIndex() ||
+      !metadata->hasDecodeTargetIndications() ||
+      !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
+      !metadata->hasCodec() || !metadata->hasCodecSpecifics()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Member(s) missing in RTCEncodedVideoFrameMetadata.");
+    return;
+  }
+  // TODO(https://crbug.com/webrtc/14709): Also set RTP related metadata.
+  webrtc::VideoFrameMetadata webrtc_metadata;
+  webrtc_metadata.SetFrameId(metadata->frameId());
+  webrtc_metadata.SetFrameDependencies(metadata->dependencies());
+  webrtc_metadata.SetWidth(metadata->width());
+  webrtc_metadata.SetHeight(metadata->height());
+  webrtc_metadata.SetSpatialIndex(metadata->spatialIndex());
+  webrtc_metadata.SetTemporalIndex(metadata->temporalIndex());
+  std::vector<webrtc::DecodeTargetIndication> decode_target_indications;
+  for (const auto& decode_target_indication :
+       metadata->decodeTargetIndications()) {
+    decode_target_indications.push_back(
+        DecodeTargetIndicationFromV8RTCDecodeTargetIndication(
+            decode_target_indication));
+  }
+  webrtc_metadata.SetDecodeTargetIndications(decode_target_indications);
+  webrtc_metadata.SetIsLastFrameInPicture(metadata->isLastFrameInPicture());
+  webrtc_metadata.SetSimulcastIdx(metadata->simulcastIdx());
+  webrtc::VideoCodecType codec =
+      VideoCodecTypeFromRTCVideoCodecType(metadata->codec());
+  webrtc_metadata.SetCodec(codec);
+  switch (codec) {
+    case webrtc::VideoCodecType::kVideoCodecVP8: {
+      RTCCodecSpecificsVP8* vp8_specifics = metadata->codecSpecifics();
+      if (!vp8_specifics->hasNonReference() || !vp8_specifics->hasPictureId() ||
+          !vp8_specifics->hasTl0PicIdx() || !vp8_specifics->hasTemporalIdx() ||
+          !vp8_specifics->hasLayerSync() || !vp8_specifics->hasKeyIdx() ||
+          !vp8_specifics->hasPartitionId() ||
+          !vp8_specifics->hasBeginningOfPartition()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kInvalidModificationError,
+            "Member(s) missing in RTCCodecSpecificsVP8.");
+      }
+      webrtc::RTPVideoHeaderVP8 webrtc_vp8_specifics;
+      webrtc_vp8_specifics.nonReference = vp8_specifics->nonReference();
+      webrtc_vp8_specifics.pictureId = vp8_specifics->pictureId();
+      webrtc_vp8_specifics.tl0PicIdx = vp8_specifics->tl0PicIdx();
+      webrtc_vp8_specifics.temporalIdx = vp8_specifics->temporalIdx();
+      webrtc_vp8_specifics.layerSync = vp8_specifics->layerSync();
+      webrtc_vp8_specifics.keyIdx = vp8_specifics->keyIdx();
+      webrtc_vp8_specifics.partitionId = vp8_specifics->partitionId();
+      webrtc_vp8_specifics.beginningOfPartition =
+          vp8_specifics->beginningOfPartition();
+      webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp8_specifics);
+      break;
+    }
+    default:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidModificationError,
+          "setMetadata() does not support this codec.");
+      return;
+  }
+  delegate_->SetMetadata(webrtc_metadata);
 }
 
 void RTCEncodedVideoFrame::setData(DOMArrayBuffer* data) {

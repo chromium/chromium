@@ -1384,6 +1384,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method clone
 [Worker]     method constructor
 [Worker]     method getMetadata
+[Worker]     method setMetadata
 [Worker]     method toString
 [Worker]     setter data
 [Worker] interface ReadableByteStreamController

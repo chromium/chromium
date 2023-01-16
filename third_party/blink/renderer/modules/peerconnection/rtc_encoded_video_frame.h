@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -40,6 +41,8 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   uint32_t timestamp() const;
   DOMArrayBuffer* data() const;
   RTCEncodedVideoFrameMetadata* getMetadata() const;
+  void setMetadata(RTCEncodedVideoFrameMetadata* metadata,
+                   ExceptionState& exception_state);
   void setData(DOMArrayBuffer*);
   String toString() const;
   RTCEncodedVideoFrame* clone() const;

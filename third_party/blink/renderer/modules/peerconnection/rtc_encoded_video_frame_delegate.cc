@@ -94,6 +94,15 @@ const webrtc::VideoFrameMetadata* RTCEncodedVideoFrameDelegate::GetMetadata()
   return webrtc_frame_ ? &webrtc_frame_->GetMetadata() : nullptr;
 }
 
+void RTCEncodedVideoFrameDelegate::SetMetadata(
+    const webrtc::VideoFrameMetadata& metadata) {
+  base::AutoLock lock(lock_);
+  if (!webrtc_frame_) {
+    return;
+  }
+  webrtc_frame_->SetMetadata(metadata);
+}
+
 std::unique_ptr<webrtc::TransformableVideoFrameInterface>
 RTCEncodedVideoFrameDelegate::PassWebRtcFrame() {
   base::AutoLock lock(lock_);

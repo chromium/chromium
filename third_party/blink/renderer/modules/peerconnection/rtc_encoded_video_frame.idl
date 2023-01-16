@@ -18,6 +18,8 @@ enum RTCEncodedVideoFrameType {
     readonly attribute unsigned long timestamp;  // RTP timestamp.
     attribute ArrayBuffer data;
     RTCEncodedVideoFrameMetadata getMetadata();
-  [RuntimeEnabled=RTCEncodedVideoFrameClone] RTCEncodedVideoFrame clone();
+    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata, RaisesException]
+    void setMetadata(RTCEncodedVideoFrameMetadata metadata);
+    [RuntimeEnabled=RTCEncodedVideoFrameClone] RTCEncodedVideoFrame clone();
     stringifier;
 };

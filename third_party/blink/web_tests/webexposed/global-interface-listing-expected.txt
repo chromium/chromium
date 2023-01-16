@@ -7016,6 +7016,7 @@ interface RTCEncodedVideoFrame
     method clone
     method constructor
     method getMetadata
+    method setMetadata
     method toString
     setter data
 interface RTCError : DOMException
