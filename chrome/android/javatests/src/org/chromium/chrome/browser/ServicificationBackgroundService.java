@@ -10,6 +10,7 @@ import com.google.android.gms.gcm.TaskParams;
 
 import org.junit.Assert;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -97,13 +98,17 @@ public class ServicificationBackgroundService extends ChromeBackgroundServiceImp
     }
 
     public void assertPersistentHistogramsOnDiskSystemProfile() {
-        Assert.assertTrue(nativeTestPersistentHistogramsOnDiskSystemProfile());
+        Assert.assertTrue(ServicificationBackgroundServiceJni.get()
+                                  .testPersistentHistogramsOnDiskSystemProfile());
     }
 
     public void assertBackgroundSessionStart() {
-        Assert.assertTrue(nativeIsBackgroundSessionStart());
+        Assert.assertTrue(ServicificationBackgroundServiceJni.get().isBackgroundSessionStart());
     }
 
-    private static native boolean nativeTestPersistentHistogramsOnDiskSystemProfile();
-    private static native boolean nativeIsBackgroundSessionStart();
+    @NativeMethods
+    interface Natives {
+        boolean testPersistentHistogramsOnDiskSystemProfile();
+        boolean isBackgroundSessionStart();
+    }
 }

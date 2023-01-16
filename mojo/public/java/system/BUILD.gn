@@ -71,6 +71,7 @@ android_library("system_impl_java") {
 android_library("test_support_java") {
   testonly = true
   sources = [ "javatests/src/org/chromium/mojo/MojoTestRule.java" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     "//base:base_java",
     "//base:jni_java",
@@ -116,6 +117,7 @@ android_library("mojo_javatests") {
     "javatests/src/org/chromium/mojo/system/impl/CoreImplTest.java",
     "javatests/src/org/chromium/mojo/system/impl/WatcherImplTest.java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   deps = [
     ":system_impl_java",

@@ -39,6 +39,7 @@ android_library("content_java_test_support") {
     "//url:gurl_java",
     "//url:origin_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "javatests/src/org/chromium/content_public/browser/test/ChildProcessAllocatorSettings.java",
     "javatests/src/org/chromium/content_public/browser/test/ChildProcessAllocatorSettingsHook.java",

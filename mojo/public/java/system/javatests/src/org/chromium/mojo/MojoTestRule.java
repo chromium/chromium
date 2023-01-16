@@ -9,6 +9,7 @@ import androidx.annotation.IntDef;
 import org.junit.rules.ExternalResource;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 
@@ -44,7 +45,7 @@ public class MojoTestRule extends ExternalResource {
     protected void before() {
         LibraryLoader.getInstance().ensureInitialized();
         if (mShouldInitCore && !sIsCoreInitialized) {
-            nativeInitCore();
+            MojoTestRuleJni.get().initCore();
             sIsCoreInitialized = true;
         }
         nativeInit();
@@ -70,8 +71,6 @@ public class MojoTestRule extends ExternalResource {
         nativeRunLoop(0);
     }
 
-    private static native void nativeInitCore();
-
     private native void nativeInit();
 
     private native long nativeSetupTestEnvironment();
@@ -79,4 +78,9 @@ public class MojoTestRule extends ExternalResource {
     private native void nativeTearDownTestEnvironment(long testEnvironment);
 
     private native void nativeRunLoop(long timeoutMS);
+
+    @NativeMethods
+    interface Natives {
+        void initCore();
+    }
 }

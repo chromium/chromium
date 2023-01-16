@@ -6,6 +6,7 @@ package org.chromium.mojo.bindings;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -48,10 +49,8 @@ public class ValidationTestUtil {
      * Parse a '.data' file.
      */
     public static Data parseData(String dataAsString) {
-        return nativeParseData(dataAsString);
+        return ValidationTestUtilJni.get().parseData(dataAsString);
     }
-
-    private static native Data nativeParseData(String dataAsString);
 
     @CalledByNative
     private static Data buildData(ByteBuffer data, int handlesCount, String errorMessage) {
@@ -63,5 +62,10 @@ public class ValidationTestUtil {
             copiedData.flip();
         }
         return new Data(copiedData, handlesCount, errorMessage);
+    }
+
+    @NativeMethods
+    interface Natives {
+        Data parseData(String dataAsString);
     }
 }

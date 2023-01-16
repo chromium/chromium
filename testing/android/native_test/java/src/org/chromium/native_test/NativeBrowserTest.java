@@ -7,6 +7,7 @@ package org.chromium.native_test;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.io.File;
 
@@ -63,8 +64,11 @@ public class NativeBrowserTest {
      * initialization and is ready for the test to run. This informs C++ to run the test.
      */
     public static void javaStartupTasksComplete() {
-        nativeJavaStartupTasksCompleteForBrowserTests();
+        NativeBrowserTestJni.get().javaStartupTasksCompleteForBrowserTests();
     }
 
-    private static native void nativeJavaStartupTasksCompleteForBrowserTests();
+    @NativeMethods
+    interface Natives {
+        void javaStartupTasksCompleteForBrowserTests();
+    }
 }

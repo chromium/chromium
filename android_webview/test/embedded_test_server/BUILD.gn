@@ -20,6 +20,7 @@ android_library("aw_net_java_test_support") {
     "//net/android:net_java_test_support",
     "//net/android:net_java_test_support_provider",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("aw_net_jni_headers") {

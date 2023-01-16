@@ -7,6 +7,7 @@ package org.chromium.content_public.browser.test.util;
 import org.junit.Assert;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -29,13 +30,13 @@ public class FencedFrameUtils {
 
     private static int getCount(final RenderFrameHost frame) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return nativeGetCount(frame); });
+                () -> { return FencedFrameUtilsJni.get().getCount(frame); });
     }
 
     private static RenderFrameHost getLastFencedFrame(
             final RenderFrameHost frame, final String url) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return nativeGetLastFencedFrame(frame, url); });
+                () -> { return FencedFrameUtilsJni.get().getLastFencedFrame(frame, url); });
     }
 
     public static RenderFrameHost createFencedFrame(final WebContents webContents,
@@ -74,7 +75,9 @@ public class FencedFrameUtils {
         return fencedFrame;
     }
 
-    private static native int nativeGetCount(RenderFrameHost frame);
-    private static native RenderFrameHost nativeGetLastFencedFrame(
-            RenderFrameHost frame, String url);
+    @NativeMethods
+    interface Natives {
+        int getCount(RenderFrameHost frame);
+        RenderFrameHost getLastFencedFrame(RenderFrameHost frame, String url);
+    }
 }

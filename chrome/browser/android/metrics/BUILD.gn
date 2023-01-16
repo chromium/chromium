@@ -33,6 +33,8 @@ if (is_android) {
   android_library("ukm_java_test_support") {
     testonly = true
     sources = _test_jni_sources
+    deps = [ "//base:jni_java" ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("ukm_javatests") {

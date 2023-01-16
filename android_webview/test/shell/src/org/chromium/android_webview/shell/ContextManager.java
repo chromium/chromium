@@ -7,6 +7,7 @@ package org.chromium.android_webview.shell;
 import android.view.Surface;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /** draw_fn framework side implementation for tests. */
 @JNINamespace("draw_fn")
@@ -16,47 +17,49 @@ public class ContextManager {
 
     public static long getDrawFnFunctionTable(boolean useVulkan) {
         sUseVulkan = useVulkan;
-        return nativeGetDrawFnFunctionTable(useVulkan);
+        return ContextManagerJni.get().getDrawFnFunctionTable(useVulkan);
     }
 
     private final long mNativeContextManager;
 
     public ContextManager() {
-        mNativeContextManager = nativeInit(sUseVulkan);
+        mNativeContextManager = ContextManagerJni.get().init(sUseVulkan);
     }
 
     public void setSurface(Surface surface, int width, int height) {
         if (mCurrentSurface == surface) {
-            if (surface != null) nativeResizeSurface(mNativeContextManager, width, height);
+            if (surface != null) {
+                ContextManagerJni.get().resizeSurface(mNativeContextManager, width, height);
+            }
             return;
         }
         mCurrentSurface = surface;
-        nativeSetSurface(mNativeContextManager, surface, width, height);
+        ContextManagerJni.get().setSurface(mNativeContextManager, surface, width, height);
     }
 
     public void setOverlaysSurface(Surface surface) {
-        nativeSetOverlaysSurface(mNativeContextManager, surface);
+        ContextManagerJni.get().setOverlaysSurface(mNativeContextManager, surface);
     }
 
     public void sync(int functor, boolean applyForceDark) {
-        nativeSync(mNativeContextManager, functor, applyForceDark);
+        ContextManagerJni.get().sync(mNativeContextManager, functor, applyForceDark);
     }
 
     // Uses functor from last sync.
     public int[] draw(int width, int height, int scrollX, int scrollY, boolean readbackQuadrants) {
-        return nativeDraw(
+        return ContextManagerJni.get().draw(
                 mNativeContextManager, width, height, scrollX, scrollY, readbackQuadrants);
     }
 
-    private static native long nativeGetDrawFnFunctionTable(boolean useVulkan);
-    private static native long nativeInit(boolean useVulkan);
-    private static native void nativeSetSurface(
-            long nativeContextManager, Surface surface, int width, int height);
-    private static native void nativeResizeSurface(
-            long nativeContextManager, int width, int height);
-    private static native void nativeSetOverlaysSurface(long nativeContextManager, Surface surface);
-    private static native void nativeSync(
-            long nativeContextManager, int functor, boolean applyForceDark);
-    private static native int[] nativeDraw(long nativeContextManager, int width, int height,
-            int scrollX, int scrollY, boolean readbackQuadrants);
+    @NativeMethods
+    interface Natives {
+        long getDrawFnFunctionTable(boolean useVulkan);
+        long init(boolean useVulkan);
+        void setSurface(long nativeContextManager, Surface surface, int width, int height);
+        void resizeSurface(long nativeContextManager, int width, int height);
+        void setOverlaysSurface(long nativeContextManager, Surface surface);
+        void sync(long nativeContextManager, int functor, boolean applyForceDark);
+        int[] draw(long nativeContextManager, int width, int height, int scrollX, int scrollY,
+                boolean readbackQuadrants);
+    }
 }

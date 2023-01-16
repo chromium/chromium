@@ -99,6 +99,7 @@ android_apk("webview_instrumentation_apk") {
   # TODO(crbug.com/1099536): Fix tests that break when this is increased.
   target_sdk_version = 24
   deps = [
+    ":draw_fn_impl_java",
     ":webview_instrumentation_apk_assets",
     ":webview_instrumentation_apk_resources",
     ":webview_instrumentation_test_mock_services_java",
@@ -132,7 +133,6 @@ android_apk("webview_instrumentation_apk") {
     "shell/src/org/chromium/android_webview/shell/AwShellApplication.java",
     "shell/src/org/chromium/android_webview/shell/AwShellResourceProvider.java",
     "shell/src/org/chromium/android_webview/shell/AwShellSwitches.java",
-    "shell/src/org/chromium/android_webview/shell/ContextManager.java",
     "shell/src/org/chromium/android_webview/test/AwJUnit4ClassRunner.java",
     "shell/src/org/chromium/android_webview/test/AwTestContainerView.java",
     "shell/src/org/chromium/android_webview/test/AwTestRunnerActivity.java",
@@ -189,6 +189,13 @@ android_assets("webview_instrumentation_apk_assets") {
 generate_jni("draw_fn_impl_jni_headers") {
   sources =
       [ "shell/src/org/chromium/android_webview/shell/ContextManager.java" ]
+}
+
+android_library("draw_fn_impl_java") {
+  sources =
+      [ "shell/src/org/chromium/android_webview/shell/ContextManager.java" ]
+  deps = [ "//base:jni_java" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 shared_library("libstandalonelibwebviewchromium") {
