@@ -67,7 +67,7 @@ bool JingleSocketOptionToP2PSocketOption(rtc::Socket::Option option,
   return true;
 }
 
-const size_t kMaximumInFlightBytes = 64 * 1024;  // 64 KB
+const size_t kDefaultMaximumInFlightBytes = 64 * 1024;  // 64 KB
 
 // IpcPacketSocket implements rtc::AsyncPacketSocket interface
 // using P2PSocketClient that works over IPC-channel. It must be used
@@ -179,6 +179,9 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   // quickly restricts the client to a sustainable steady-state rate.
   size_t send_bytes_available_;
 
+  // The current limit for maximum bytes in flight.
+  size_t max_in_flight_bytes_;
+
   // Used to detect when browser doesn't send SendComplete message for some
   // packets. In normal case, the first packet should be the one that we're
   // going to receive the next completion signal.
@@ -231,12 +234,13 @@ class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
 IpcPacketSocket::IpcPacketSocket()
     : type_(network::P2P_SOCKET_UDP),
       state_(kIsUninitialized),
-      send_bytes_available_(kMaximumInFlightBytes),
+      send_bytes_available_(kDefaultMaximumInFlightBytes),
+      max_in_flight_bytes_(kDefaultMaximumInFlightBytes),
       writable_signal_expected_(false),
       error_(0),
       max_discard_bytes_sequence_(0),
       current_discard_bytes_sequence_(0) {
-  static_assert(kMaximumInFlightBytes > 0, "would send at zero rate");
+  static_assert(kDefaultMaximumInFlightBytes > 0, "would send at zero rate");
   std::fill_n(options_, static_cast<int>(network::P2P_SOCKET_OPT_MAX),
               kDefaultNonSetOptionValue);
 }
@@ -405,6 +409,7 @@ int IpcPacketSocket::SendTo(const void* data,
     }
   }
 
+  DCHECK_GE(send_bytes_available_, data_size);
   send_bytes_available_ -= data_size;
 
   uint64_t packet_id = client_->Send(
@@ -494,6 +499,24 @@ int IpcPacketSocket::DoSetOption(network::P2PSocketOption option, int value) {
   DCHECK_EQ(state_, kIsOpen);
 
   client_->SetOption(option, value);
+  if (option == network::P2PSocketOption::P2P_SOCKET_OPT_SNDBUF && value > 0) {
+    LOG(INFO) << "Setting new p2p socket buffer limit to " << value;
+
+    // Allow socket option to increase in-flight limit above default, but not
+    // reduce it.
+    size_t new_limit =
+        std::max(static_cast<size_t>(value), kDefaultMaximumInFlightBytes);
+    size_t in_flight_bytes = max_in_flight_bytes_ - send_bytes_available_;
+    if (in_flight_bytes > new_limit) {
+      // New limit is lower than the current number of in flight bytes - just
+      // set availability to 0 but allow the current excess to still be sent.
+      send_bytes_available_ = 0;
+    } else {
+      send_bytes_available_ = new_limit - in_flight_bytes;
+    }
+    max_in_flight_bytes_ = new_limit;
+  }
+
   return 0;
 }
 
@@ -563,9 +586,8 @@ void IpcPacketSocket::OnSendComplete(
   CHECK(send_metrics.packet_id == 0 ||
         record.packet_id == send_metrics.packet_id);
 
-  send_bytes_available_ += record.packet_size;
-
-  DCHECK_LE(send_bytes_available_, kMaximumInFlightBytes);
+  send_bytes_available_ = std::min(send_bytes_available_ + record.packet_size,
+                                   max_in_flight_bytes_);
 
   in_flight_packet_records_.pop_front();
   TraceSendThrottlingState();
