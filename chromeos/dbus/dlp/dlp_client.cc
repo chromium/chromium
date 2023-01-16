@@ -252,6 +252,10 @@ class DlpClientImpl : public DlpClient {
   void NameOwnerChangedReceived(const std::string& old_owner,
                                 const std::string& new_owner) {
     is_alive_ = false;
+    // Do not notify if the service was shut down, only if a new one is started.
+    if (new_owner.empty()) {
+      return;
+    }
     for (auto& observer : observers_) {
       observer.DlpDaemonRestarted();
     }
