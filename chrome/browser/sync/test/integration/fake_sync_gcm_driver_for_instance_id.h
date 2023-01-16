@@ -33,10 +33,6 @@ class FakeSyncGCMDriver : public instance_id::FakeGCMDriverForInstanceID {
 
  protected:
   // FakeGCMDriverForInstanceID overrides:
-  std::string GenerateTokenImpl(const std::string& app_id,
-                                const std::string& authorized_entity,
-                                const std::string& scope) override;
-
   void EncryptMessage(const std::string& app_id,
                       const std::string& authorized_entity,
                       const std::string& p256dh,

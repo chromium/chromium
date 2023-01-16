@@ -4,17 +4,24 @@
 
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 
-#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/gcm_driver/gcm_client.h"
 
 namespace instance_id {
+
+const base::FilePath::CharType kStoredTokensFileName[] =
+    FILE_PATH_LITERAL("StoredTokensTest");
 
 FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID()
     : gcm::FakeGCMDriver(base::FilePath(),
@@ -23,7 +30,28 @@ FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID()
 FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID(
     const base::FilePath& store_path,
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
-    : FakeGCMDriver(store_path, blocking_task_runner) {}
+    : FakeGCMDriver(store_path, blocking_task_runner), store_path_(store_path) {
+  if (store_path_.empty()) {
+    return;
+  }
+
+  std::string encoded_data;
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  if (!base::ReadFileToString(store_path_.Append(kStoredTokensFileName),
+                              &encoded_data)) {
+    return;
+  }
+
+  absl::optional<base::Value> data = base::JSONReader::Read(encoded_data);
+  DCHECK(data.has_value() && data->is_dict())
+      << "Failed to read data from stored FCM tokens file";
+
+  for (const auto [key, value] : data.value().GetDict()) {
+    tokens_[key] = value.GetString();
+  }
+
+  DVLOG(1) << "Loaded tokens from file: " << tokens_.size();
+}
 
 FakeGCMDriverForInstanceID::~FakeGCMDriverForInstanceID() = default;
 
@@ -72,6 +100,8 @@ void FakeGCMDriverForInstanceID::GetToken(
   } else {
     token = GenerateTokenImpl(app_id, authorized_entity, scope);
     tokens_[key] = token;
+
+    StoreTokensIfNeeded();
   }
 
   last_gettoken_app_id_ = app_id;
@@ -125,6 +155,26 @@ std::string FakeGCMDriverForInstanceID::GenerateTokenImpl(
     const std::string& authorized_entity,
     const std::string& scope) {
   return base::NumberToString(base::RandUint64());
+}
+
+void FakeGCMDriverForInstanceID::StoreTokensIfNeeded() {
+  if (store_path_.empty()) {
+    return;
+  }
+
+  base::Value::Dict value;
+  for (const auto& key_and_token : tokens_) {
+    value.Set(key_and_token.first, key_and_token.second);
+  }
+
+  std::string encoded_data;
+  bool success = base::JSONWriter::Write(value, &encoded_data);
+  DCHECK(success) << "Failed to encode FCM tokens";
+
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  success =
+      base::WriteFile(store_path_.Append(kStoredTokensFileName), encoded_data);
+  DCHECK(success) << "Failed to store FCM tokens";
 }
 
 }  // namespace instance_id

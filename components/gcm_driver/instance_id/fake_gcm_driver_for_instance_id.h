@@ -9,11 +9,10 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 
 namespace base {
-class FilePath;
 class SequencedTaskRunner;
 }
 
@@ -69,11 +68,16 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   void GetInstanceIDData(const std::string& app_id,
                          GetInstanceIDDataCallback callback) override;
 
-  virtual std::string GenerateTokenImpl(const std::string& app_id,
-                                        const std::string& authorized_entity,
-                                        const std::string& scope);
-
  private:
+  void StoreTokensIfNeeded();
+
+  std::string GenerateTokenImpl(const std::string& app_id,
+                                const std::string& authorized_entity,
+                                const std::string& scope);
+
+  // Used to store FCM registration tokens across browser restarts in tests.
+  const base::FilePath store_path_;
+
   std::map<std::string, std::pair<std::string, std::string>> instance_id_data_;
   std::map<std::string, std::string> tokens_;
   std::string last_gettoken_app_id_;

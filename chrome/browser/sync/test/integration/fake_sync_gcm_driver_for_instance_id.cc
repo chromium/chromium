@@ -38,16 +38,6 @@ FakeSyncGCMDriver::FakeSyncGCMDriver(
           blocking_task_runner),
       profile_(profile) {}
 
-std::string FakeSyncGCMDriver::GenerateTokenImpl(
-    const std::string& app_id,
-    const std::string& authorized_entity,
-    const std::string& scope) {
-  // TODO(crbug.com/1331206): Implement deleting token and generating a new one
-  // for the same profile.
-  return app_id + "_" + authorized_entity + "_" + scope + "_" +
-         profile_->GetDebugName();
-}
-
 void FakeSyncGCMDriver::EncryptMessage(const std::string& app_id,
                                        const std::string& authorized_entity,
                                        const std::string& p256dh,
