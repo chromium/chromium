@@ -672,6 +672,8 @@ static_library("test_support") {
       "../browser/ui/views/media_router/app_menu_test_api_views.cc",
       "../browser/ui/views/profiles/profile_picker_view_test_utils.cc",
       "../browser/ui/views/profiles/profile_picker_view_test_utils.h",
+      "../browser/ui/views/profiles/profiles_pixel_test_utils.cc",
+      "../browser/ui/views/profiles/profiles_pixel_test_utils.h",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h",
       "base/test_theme_provider.cc",
@@ -2830,6 +2832,7 @@ if (!is_android) {
       # TODO(crbug.com/1052397): Update guard when pixel tests support widens.
       if (is_win || is_linux || is_chromeos_lacros) {
         sources += [
+          "../browser/ui/views/profiles/enterprise_profile_welcome_ui_browsertest.cc",
           "../browser/ui/views/profiles/first_run_intro_browsertest.cc",
           "../browser/ui/views/profiles/sync_confirmation_ui_browsertest.cc",
         ]
