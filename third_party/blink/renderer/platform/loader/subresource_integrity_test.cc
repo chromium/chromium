@@ -132,10 +132,8 @@ class SubresourceIntegrityTest : public testing::Test {
                    const char* expected_digest,
                    IntegrityAlgorithm expected_algorithm) {
     IntegrityMetadataSet metadata_set;
-
-    EXPECT_EQ(SubresourceIntegrity::kIntegrityParseValidResult,
-              SubresourceIntegrity::ParseIntegrityAttribute(
-                  integrity_attribute, Features(), metadata_set));
+    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
+                                                  Features(), metadata_set);
     EXPECT_EQ(1u, metadata_set.size());
     if (metadata_set.size() > 0) {
       IntegrityMetadata metadata = *metadata_set.begin();
@@ -153,27 +151,24 @@ class SubresourceIntegrityTest : public testing::Test {
       expected_metadata_set.insert(expected_metadata_array[i].ToPair());
     }
     IntegrityMetadataSet metadata_set;
-    EXPECT_EQ(SubresourceIntegrity::kIntegrityParseValidResult,
-              SubresourceIntegrity::ParseIntegrityAttribute(
-                  integrity_attribute, Features(), metadata_set));
+    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
+                                                  Features(), metadata_set);
     EXPECT_TRUE(
         IntegrityMetadata::SetsEqual(expected_metadata_set, metadata_set));
   }
 
   void ExpectParseFailure(const char* integrity_attribute) {
     IntegrityMetadataSet metadata_set;
-
-    EXPECT_EQ(SubresourceIntegrity::kIntegrityParseNoValidResult,
-              SubresourceIntegrity::ParseIntegrityAttribute(
-                  integrity_attribute, Features(), metadata_set));
+    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
+                                                  Features(), metadata_set);
+    EXPECT_EQ(metadata_set.size(), 0u);
   }
 
   void ExpectEmptyParseResult(const char* integrity_attribute) {
     IntegrityMetadataSet metadata_set;
 
-    EXPECT_EQ(SubresourceIntegrity::kIntegrityParseValidResult,
-              SubresourceIntegrity::ParseIntegrityAttribute(
-                  integrity_attribute, Features(), metadata_set));
+    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
+                                                  Features(), metadata_set);
     EXPECT_EQ(0u, metadata_set.size());
   }
 
@@ -202,9 +197,8 @@ class SubresourceIntegrityTest : public testing::Test {
                               const TestCase& test,
                               Expectation expectation) {
     IntegrityMetadataSet metadata_set;
-    EXPECT_EQ(SubresourceIntegrity::kIntegrityParseValidResult,
-              SubresourceIntegrity::ParseIntegrityAttribute(
-                  String(integrity), Features(), metadata_set));
+    SubresourceIntegrity::ParseIntegrityAttribute(String(integrity), Features(),
+                                                  metadata_set);
 
     SubresourceIntegrity::ReportInfo report_info;
     EXPECT_EQ(expectation == kIntegritySuccess,

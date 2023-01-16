@@ -89,10 +89,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     return true;
 
   IntegrityMetadataSet metadata_set;
-  IntegrityParseResult integrity_parse_result = ParseIntegrityAttribute(
-      integrity_metadata, features, metadata_set, &report_info);
-  if (integrity_parse_result != kIntegrityParseValidResult)
-    return true;
+  ParseIntegrityAttribute(integrity_metadata, features, metadata_set,
+                          &report_info);
   return CheckSubresourceIntegrityImpl(metadata_set, content, size,
                                        resource_url, report_info);
 }
@@ -282,16 +280,14 @@ bool SubresourceIntegrity::ParseDigest(const UChar*& position,
   return true;
 }
 
-SubresourceIntegrity::IntegrityParseResult
-SubresourceIntegrity::ParseIntegrityAttribute(
+void SubresourceIntegrity::ParseIntegrityAttribute(
     const WTF::String& attribute,
     IntegrityFeatures features,
     IntegrityMetadataSet& metadata_set) {
   return ParseIntegrityAttribute(attribute, features, metadata_set, nullptr);
 }
 
-SubresourceIntegrity::IntegrityParseResult
-SubresourceIntegrity::ParseIntegrityAttribute(
+void SubresourceIntegrity::ParseIntegrityAttribute(
     const WTF::String& attribute,
     IntegrityFeatures features,
     IntegrityMetadataSet& metadata_set,
@@ -305,8 +301,6 @@ SubresourceIntegrity::ParseIntegrityAttribute(
   const UChar* position = characters.data();
   const UChar* end = characters.end();
   const UChar* current_integrity_end;
-
-  bool error = false;
 
   // The integrity attribute takes the form:
   //    *WSP hash-with-options *( 1*WSP hash-with-options ) *WSP / *WSP
@@ -343,7 +337,6 @@ SubresourceIntegrity::ParseIntegrityAttribute(
     }
 
     if (parse_result == kAlgorithmUnparsable) {
-      error = true;
       SkipUntil<UChar, IsASCIISpace>(position, end);
       if (report_info) {
         report_info->AddConsoleErrorMessage(
@@ -361,7 +354,6 @@ SubresourceIntegrity::ParseIntegrityAttribute(
     DCHECK_EQ(parse_result, kAlgorithmValid);
 
     if (!ParseDigest(position, current_integrity_end, digest)) {
-      error = true;
       SkipUntil<UChar, IsASCIISpace>(position, end);
       if (report_info) {
         report_info->AddConsoleErrorMessage(
@@ -391,10 +383,6 @@ SubresourceIntegrity::ParseIntegrityAttribute(
     IntegrityMetadata integrity_metadata(digest, algorithm);
     metadata_set.insert(integrity_metadata.ToPair());
   }
-  if (metadata_set.size() == 0 && error)
-    return kIntegrityParseNoValidResult;
-
-  return kIntegrityParseValidResult;
 }
 
 }  // namespace blink

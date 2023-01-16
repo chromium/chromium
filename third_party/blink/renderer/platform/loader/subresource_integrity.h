@@ -48,11 +48,6 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
     Vector<String> console_error_messages_;
   };
 
-  enum IntegrityParseResult {
-    kIntegrityParseValidResult,
-    kIntegrityParseNoValidResult
-  };
-
   // Determine which SRI features to support when parsing integrity attributes.
   enum class IntegrityFeatures {
     kDefault,    // Default: All sha* hash codes.
@@ -77,15 +72,13 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
 
   // The IntegrityMetadataSet arguments are out parameters which contain the
   // set of all valid, parsed metadata from |attribute|.
-  static IntegrityParseResult ParseIntegrityAttribute(
-      const WTF::String& attribute,
-      IntegrityFeatures,
-      IntegrityMetadataSet&);
-  static IntegrityParseResult ParseIntegrityAttribute(
-      const WTF::String& attribute,
-      IntegrityFeatures,
-      IntegrityMetadataSet&,
-      ReportInfo*);
+  static void ParseIntegrityAttribute(const WTF::String& attribute,
+                                      IntegrityFeatures,
+                                      IntegrityMetadataSet&);
+  static void ParseIntegrityAttribute(const WTF::String& attribute,
+                                      IntegrityFeatures,
+                                      IntegrityMetadataSet&,
+                                      ReportInfo*);
 
  private:
   friend class SubresourceIntegrityTest;
