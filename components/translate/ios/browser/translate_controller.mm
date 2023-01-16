@@ -338,7 +338,7 @@ void TranslateController::WebFrameBecameUnavailable(
     web::WebFramesManager* web_frames_manager,
     const std::string frame_id) {
   DCHECK_EQ(web_state_->GetWebFramesManager(), web_frames_manager);
-  if (web_frames_manager->GetMainWebFrame() == main_web_frame_) {
+  if (web_frames_manager->GetFrameWithId(frame_id) == main_web_frame_) {
     main_web_frame_ = nullptr;
   }
 }
