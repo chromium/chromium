@@ -3763,6 +3763,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "files-conflict-dialog",
+    "owners": [ "noel", "//ui/file_manager/OWNERS" ],
+    "expiry_milestone": 117
+  },
+  {
     "name": "files-inline-sync-status",
     "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "msalomao" ],
     "expiry_milestone": 111

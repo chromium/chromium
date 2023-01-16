@@ -5385,6 +5385,11 @@ const char kFilesAppExperimentalDescription[] =
     "Enable experimental UI features for Files app. Experimental features are "
     "expected to be non functional to end users.";
 
+const char kFilesConflictDialogName[] = "Files app conflict dialog";
+const char kFilesConflictDialogDescription[] =
+    "When enabled, the conflict dialog will be shown during file transfers "
+    "if a file entry in the transfer exists at the destination.";
+
 const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
     "Enable the simplified archive extraction feature in Files app";

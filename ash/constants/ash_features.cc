@@ -942,6 +942,11 @@ BASE_FEATURE(kFilesAppExperimental,
              "FilesAppExperimental",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the files transfer conflict dialog in Files app.
+BASE_FEATURE(kFilesConflictDialog,
+             "FilesConflictDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable inline sync status in Files app.
 BASE_FEATURE(kFilesInlineSyncStatus,
              "FilesInlineSyncStatus",
@@ -2573,6 +2578,10 @@ bool IsFileManagerFuseBoxDebugEnabled() {
 
 bool IsFileManagerSearchV2Enabled() {
   return base::FeatureList::IsEnabled(kFilesSearchV2);
+}
+
+bool IsFilesConflictDialogEnabled() {
+  return base::FeatureList::IsEnabled(kFilesConflictDialog);
 }
 
 bool IsFloatingWorkspaceEnabled() {

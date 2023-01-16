@@ -59809,6 +59809,7 @@ from previous Chrome versions.
   <int value="-686788480" label="OsSettingsAppNotificationsPage:enabled"/>
   <int value="-686761381" label="UseHDRTransferFunction:enabled"/>
   <int value="-686617279" label="WebAppEnableLaunchHandler:enabled"/>
+  <int value="-685107150" label="FilesConflictDialog:enabled"/>
   <int value="-684900739" label="disable-merge-key-char-events"/>
   <int value="-684503292"
       label="OmniboxTabSwitchSuggestionsDedicatedRow:enabled"/>
@@ -59982,6 +59983,7 @@ from previous Chrome versions.
       label="history-clusters-should-show-all-clusters-on-prominent-ui-surfaces"/>
   <int value="-588163454"
       label="AccessibilitySelectToSpeakHoverTextImprovements:enabled"/>
+  <int value="-587318376" label="FilesConflictDialog:disabled"/>
   <int value="-585508682" label="DownloadRange:enabled"/>
   <int value="-584866456" label="LacrosProfileMigrationForceOff:disabled"/>
   <int value="-583842972"

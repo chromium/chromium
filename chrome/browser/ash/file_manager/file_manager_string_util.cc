@@ -1127,6 +1127,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("FILES_APP_EXPERIMENTAL",
             base::FeatureList::IsEnabled(ash::features::kFilesAppExperimental));
 
+  dict->Set("FILES_CONFLICT_DIALOG",
+            base::FeatureList::IsEnabled(ash::features::kFilesConflictDialog));
+
   dict->Set("FUSEBOX_DEBUG",
             base::FeatureList::IsEnabled(ash::features::kFuseBoxDebug));
 

@@ -3087,6 +3087,9 @@ extern const char kFileTransferEnterpriseConnectorDescription[];
 extern const char kFilesAppExperimentalName[];
 extern const char kFilesAppExperimentalDescription[];
 
+extern const char kFilesConflictDialogName[];
+extern const char kFilesConflictDialogDescription[];
+
 extern const char kFilesExtractArchiveName[];
 extern const char kFilesExtractArchiveDescription[];
 
