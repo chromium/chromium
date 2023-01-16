@@ -45,6 +45,7 @@ src/common/tools/dev_server.ts
 src/common/tools/gen_cache.ts
 src/common/tools/gen_listings.ts
 src/common/tools/gen_wpt_cts_html.ts
+src/common/tools/image_utils.ts
 src/common/tools/presubmit.ts
 src/common/tools/run_wpt_ref_tests.ts
 src/common/tools/version.ts
