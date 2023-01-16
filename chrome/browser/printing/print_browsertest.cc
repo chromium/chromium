@@ -2171,7 +2171,7 @@ class PrintFencedFrameBrowserTest : public PrintBrowserTest {
     })";
     EXPECT_TRUE(ExecJs(fenced_frame_parent,
                        content::JsReplace(kAddFencedFrameScript, url)));
-    navigation.WaitForNavigationFinished();
+    EXPECT_TRUE(navigation.WaitForNavigationFinished());
 
     content::RenderFrameHost* new_frame = ChildFrameAt(fenced_frame_parent, 0);
 
