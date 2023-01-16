@@ -15,6 +15,6 @@
 [
   RuntimeEnabled=MachineLearningCommon,
   SecureContext,
-  Exposed=Window
+  Exposed=(Window, DedicatedWorker)
 ] interface MLContext {
 };

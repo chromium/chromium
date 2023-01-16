@@ -6,5 +6,5 @@
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
-  Exposed=Window
+  Exposed=(Window, DedicatedWorker)
 ] interface MLOperator {};

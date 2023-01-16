@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -48,6 +47,9 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   ScriptPromise createContext(ScriptState* state,
                               MLContextOptions* option,
                               ExceptionState& exception_state);
+  MLContext* createContextSync(ScriptState* script_state,
+                               MLContextOptions* options,
+                               ExceptionState& exception_state);
 
  private:
   // Binds the Mojo connection to browser process if needed.

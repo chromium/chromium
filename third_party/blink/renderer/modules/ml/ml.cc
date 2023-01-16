@@ -66,6 +66,22 @@ ScriptPromise ML::createContext(ScriptState* script_state,
   return promise;
 }
 
+MLContext* ML::createContextSync(ScriptState* script_state,
+                                 MLContextOptions* options,
+                                 ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return nullptr;
+  }
+
+  // TODO(crbug/1405354): Query browser about whether the given context is
+  // supported.
+  return MakeGarbageCollected<MLContext>(
+      options->devicePreference(), options->powerPreference(),
+      options->modelFormat(), options->numThreads(), this);
+}
+
 bool ML::BootstrapMojoConnectionIfNeeded(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   // We need to do the following check because the execution context of this

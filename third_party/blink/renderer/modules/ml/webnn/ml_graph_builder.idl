@@ -64,7 +64,7 @@ dictionary MLResample2dOptions {
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
-  Exposed=Window
+  Exposed=(Window, DedicatedWorker)
 ] interface MLGraphBuilder {
   constructor(MLContext context);
 

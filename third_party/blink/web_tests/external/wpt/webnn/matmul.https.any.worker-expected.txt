@@ -1,4 +1,56 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = TypeError: Cannot read properties of undefined (reading 'createContextSync')
+Found 52 tests; 0 PASS, 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL matmul float32 1D and 1D tensors produces a scalar / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 1D and 2D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 1D and 4D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 2D and 1D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 2D and 2D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 3D and 3D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 3D and 3D (broadcast) tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 3D and 2D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 3D and 1D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 4D and 4D (broadcast) tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 4D and 3D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 5D and 5D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 5D and 2D tensors / cpu / sync builder[operationName] is not a function
+FAIL matmul float32 1D and 1D tensors produces a scalar / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 1D and 2D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 1D and 4D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 2D and 1D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 2D and 2D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 3D and 3D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 3D and 3D (broadcast) tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 3D and 2D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 3D and 1D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 4D and 4D (broadcast) tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 4D and 3D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 5D and 5D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 5D and 2D tensors / gpu / sync builder[operationName] is not a function
+FAIL matmul float32 1D and 1D tensors produces a scalar / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 1D and 2D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 1D and 4D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 2D and 1D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 2D and 2D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 3D and 3D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 3D and 3D (broadcast) tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 3D and 2D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 3D and 1D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 4D and 4D (broadcast) tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 4D and 3D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 5D and 5D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 5D and 2D tensors / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 1D and 1D tensors produces a scalar / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 1D and 2D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 1D and 4D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 2D and 1D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 2D and 2D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 3D and 3D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 3D and 3D (broadcast) tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 3D and 2D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 3D and 1D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 4D and 4D (broadcast) tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 4D and 3D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 5D and 5D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL matmul float32 5D and 2D tensors / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 Harness: the test ran to completion.
 
