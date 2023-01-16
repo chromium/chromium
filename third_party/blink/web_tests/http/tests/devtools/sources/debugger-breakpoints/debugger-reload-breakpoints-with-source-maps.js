@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 (async function() {
+  // This test is testing the old breakpoint sidebar pane. Make sure to
+  // turn off the new breakpoint pane experiment.
+  Root.Runtime.experiments.setEnabled('breakpointView', false);
   TestRunner.addResult(
       `Tests "reload" from within inspector window while on pause.`);
   await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
