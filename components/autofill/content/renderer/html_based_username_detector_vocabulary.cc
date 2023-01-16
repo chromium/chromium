@@ -22,7 +22,8 @@ const char* const kNegativeLatin[] = {
     "hidden", "password", "loluszais",  "tenimiafina",
     "second", "passwort", "middlename", "paroladordine",
     "codice", "pasvorto", "familyname", "inomboloyokuvula",
-    "modpas", "salasana", "motdepasse", "numeraeleiloaesesi"};
+    "modpas", "salasana", "motdepasse", "numeraeleiloaesesi",
+    "captcha"};
 const size_t kNegativeLatinSize = std::size(kNegativeLatin);
 
 const char* const kNegativeNonLatin[] = {"fjalëkalim",
