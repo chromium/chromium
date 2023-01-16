@@ -87,6 +87,8 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       {"noticeOpenSettingsButton",
        IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_OPEN_SETTINGS_BUTTON},
 
+      {"adPrivacyPageTitle", IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE},
+
       // Strings for the consent step of the combined dialog (kM1Consent).
       {"m1ConsentTitle", IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE},
       {"m1ConsentDescription1", IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1},
@@ -106,8 +108,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3},
       {"m1ConsentLearnMoreLink",
        IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK},
-      {"m1ConsentBannerImageA11yDescription",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_BANNER_IMAGE_A11Y_DESCRIPTION},
 
       // Strings for the notice step of the combined dialog (kM1NoticeEEA).
       {"m1NoticeEeaTitle", IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_TITLE},
@@ -168,8 +168,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_4},
       {"m1NoticeRowLearnMoreDescription5",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5},
-      {"m1NoticeRowBannerImageA11yDescription",
-       IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_BANNER_IMAGE_A11Y_DESCRIPTION},
       // Shared for all dialogs.
       {"m1DialogMoreButton", IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON}};
 

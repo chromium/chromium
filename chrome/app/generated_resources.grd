@@ -14172,16 +14172,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Settings
     </message>
 
-    <!-- Privacy Sandbox Consent Dialog M1 strings -->
-    <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_BANNER_IMAGE_A11Y_DESCRIPTION" translateable="false" desc="A11y  description for the banner image in privacy sandbox consent dialog">
-      Sed ullamcorper, ligula ac tempus venenatis
-    </message>
-
-    <!-- Privacy Sandbox Notice Dialog M1 strings -->
-    <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_BANNER_IMAGE_A11Y_DESCRIPTION" translateable="false" desc="A11y description for the banner image in privacy sandbox notice ROW dialog">
-      Ut venenatis magna nec lacus facilisis
-    </message>
-
     <!-- Battery Saver Toolbar strings  -->
     <if expr="not is_android">
       <message name="IDS_BATTERY_SAVER_BUTTON_TOOLTIP" desc="The tooltip for the battery saver toolbar button">

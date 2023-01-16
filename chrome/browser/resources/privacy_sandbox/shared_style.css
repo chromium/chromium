@@ -38,7 +38,8 @@
   text-align: center;
 }
 
-.header h2 {
+.header h1 {
+  font-size: 18px;
   font-weight: 500;
   line-height: 22px;
   margin: 0;
@@ -111,13 +112,21 @@ li:not(:last-child) {
   padding-bottom: 8px;
 }
 
+.learn-more-section h2 {
+  color: initial;
+  font-size: inherit;
+  font-weight: 400;
+  margin: 0;
+  margin-bottom: 8px;
+}
+
 .learn-more-section b {
   color: initial;
   font-weight: 400;
 }
 
 .learn-more-section .paragraph {
-  padding: 8px 0;
+  padding-bottom: 12px;
 }
 
 .learn-more-section > ul.cr-secondary-text {
