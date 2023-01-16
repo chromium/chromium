@@ -1,5 +1,6 @@
 package com.ark.browser.tab.core;
 
+import androidx.annotation.NonNull;
 import androidx.core.util.AtomicFile;
 
 import com.ark.browser.core.ArkWebManager;

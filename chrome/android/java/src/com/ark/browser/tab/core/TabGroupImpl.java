@@ -6,6 +6,7 @@ import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.AsyncTask;
@@ -17,6 +18,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TabGroupImpl implements ITabGroup {
@@ -28,16 +30,18 @@ public class TabGroupImpl implements ITabGroup {
     private final ObserverList<TabInfoObserver> mObservers;
 
     private final String mId;
-    private final boolean incognito;
+    private final boolean mIncognito;
 
-    protected int index = ITab.INVALID_TAB_INDEX;
+    private final Runnable mSaveRunnable = this::saveGroupFile;
+
+    protected int mIndex = ITab.INVALID_TAB_INDEX;
 
     private AsyncTask<DataInputStream> mPrefetchTabGroupTask;
 
     public TabGroupImpl(String id, boolean incognito) {
         mId = id;
         this.mObservers = new ObserverList<>();
-        this.incognito = incognito;
+        this.mIncognito = incognito;
         File groupFile = ArkTabDao.getGroupFile(id);
         if (groupFile.exists()) {
             mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
@@ -116,7 +120,7 @@ public class TabGroupImpl implements ITabGroup {
         try {
             final int version = stream.readInt();
 
-            index = stream.readInt();
+            mIndex = stream.readInt();
             final boolean isIncognito = stream.readBoolean();
 
             final int count = stream.readInt();
@@ -125,8 +129,8 @@ public class TabGroupImpl implements ITabGroup {
             for (int i = 0; i < count; i++) {
                 int tabId = stream.readInt();
                 tabIds[i] = tabId;
-//            if (tabIds != null) tabIds.append(tabId, true);
             }
+            ArkLogger.e(TAG, "readGroupFile count=" + count + " tabIds=" + Arrays.toString(tabIds));
             return tabIds;
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,7 +142,7 @@ public class TabGroupImpl implements ITabGroup {
     @Override
     public void init() {
         long start = System.currentTimeMillis();
-        this.index = ITab.INVALID_TAB_INDEX;
+        this.mIndex = ITab.INVALID_TAB_INDEX;
         this.mTabList.clear();
 //        this.mObservers.clear();
 
@@ -146,9 +150,10 @@ public class TabGroupImpl implements ITabGroup {
         if (mPrefetchTabGroupTask != null) {
             try (DataInputStream stream = mPrefetchTabGroupTask.get()) {
                 int[] tabIds = readGroupFile(stream);
-
+                ArkLogger.e(TAG, "from tabInfo tabIds=" + Arrays.toString(tabIds));
                 for (int id : tabIds) {
                     File tabFile = ArkTabDao.getTabFile(id);
+                    ArkLogger.e(TAG, "from tabInfo tabFile=" + tabFile);
                     TabInfo tabInfo = TabInfo.from(tabFile);
                     ArkLogger.e(TAG, "from tabInfo=" + tabInfo);
 
@@ -161,8 +166,6 @@ public class TabGroupImpl implements ITabGroup {
 
                     mTabList.add(new TabImpl(tabInfo));
                 }
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -214,12 +217,12 @@ public class TabGroupImpl implements ITabGroup {
 
     @Override
     public boolean isIncognito() {
-        return incognito;
+        return mIncognito;
     }
 
     @Override
     public int getIndex() {
-        return index;
+        return mIndex;
     }
 
     @Override
@@ -251,11 +254,8 @@ public class TabGroupImpl implements ITabGroup {
             mTabList.add(index, cloneTab);
             cloneTab.getTabInfo().setPosition(position);
             cloneTab.saveTabInfo();
-
-            saveTabPosition(index, position);
-
             selectTab(tab, tab.getCurrentPage());
-
+            saveTabPosition(index, position);
             return cloneTab;
         }
         return null;
@@ -368,6 +368,9 @@ public class TabGroupImpl implements ITabGroup {
         ArkLogger.d(TAG, "moveToNewTab");
         ITab tab = getTabById(page.getPageInfo().getTabId());
         if (tab != null && tab.removePage(page)) {
+
+//            selectTab(tab, tab.getCurrentPage());
+
             TabInfo newTabInfo = TabInfo.create();
             ITab newTab = new TabImpl(newTabInfo);
             page.getPageInfo().setTabId(newTabInfo.getId());
@@ -378,10 +381,9 @@ public class TabGroupImpl implements ITabGroup {
             getTabList().add(index, newTab);
             newTabInfo.setPosition(position);
             newTab.saveTabInfo();
-
-            saveTabPosition(index, position);
-
             selectTab(newTab, page);
+            saveTabPosition(index, position);
+            page.savePageInfo();
             return true;
         }
         return false;
@@ -412,17 +414,22 @@ public class TabGroupImpl implements ITabGroup {
             info.destroy();
         }
         this.mTabList.clear();
-        this.index = ITab.INVALID_TAB_INDEX;
+        this.mIndex = ITab.INVALID_TAB_INDEX;
     }
 
     @Override
     public void onIndexChanged(int index) {
         ArkLogger.e(TAG, "onIndexChanged index=" + index);
-        if (this.index == index) {
+        if (this.mIndex == index) {
             return;
         }
-        this.index = index;
-        saveGroupFile();
+        this.mIndex = index;
+        save();
+    }
+
+    private void save() {
+        ThreadPool.removeCallbacks(mSaveRunnable);
+        ThreadPool.postOnUIThread(mSaveRunnable);
     }
 
     private static final int MAX_CHANGE_COUNT = 10;
@@ -459,7 +466,7 @@ public class TabGroupImpl implements ITabGroup {
         }
         ArkLogger.d(TAG, "saveTabPosition dt=" + (System.currentTimeMillis() - start) + " size=" + changes.size());
 
-        saveGroupFile();
+        save();
 
         if (changes.isEmpty()) {
             return;

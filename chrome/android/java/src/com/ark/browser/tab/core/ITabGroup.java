@@ -244,8 +244,6 @@ public interface ITabGroup {
             }
         }
 
-
-
 //        TabState state = null;
 //        if (ArkWebContents.get(page.getId()) == null) {
 //            state = ArkTabDao.restorePageState(page.getId());
@@ -257,10 +255,10 @@ public interface ITabGroup {
             tab = ArkTabImpl.create(iTab, null);
         }
 
-        onIndexChanged(indexOf(iTab));
         iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
 //        iTab.selectPage(page);
 
+        onIndexChanged(indexOf(iTab));
         tab.selectPage(page);
 //        if (state == null) {
 //            tab.selectPage(page);
@@ -268,12 +266,12 @@ public interface ITabGroup {
 //            iTab.selectPage(page);
 //        }
 
-
-
         for (TabInfoObserver obs : getObservers()) {
             ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
             obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastId);
         }
+
+
 
 
 //        int finalLastId = lastId;
@@ -499,8 +497,7 @@ public interface ITabGroup {
     void onIndexChanged(int index);
 
     default void saveGroupFile() {
-
-
+        ArkLogger.e(this, "saveGroupFile");
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream os = new DataOutputStream(stream);
@@ -514,6 +511,9 @@ public interface ITabGroup {
             }
             os.close();
 
+            ArkLogger.e(this, "saveGroupFile index=" + getIndex()
+                    + " count=" + getCount() + " tabList=" + getTabList());
+
             byte[] bytes = stream.toByteArray();
 
             ThreadPool.executeIO(new Runnable() {
@@ -526,9 +526,10 @@ public interface ITabGroup {
                         fos = file.startWrite();
                         fos.write(bytes, 0, bytes.length);
                         file.finishWrite(fos);
+                        ArkLogger.e(this, "saveGroupFile success!");
                     } catch (IOException e) {
                         if (fos != null) file.failWrite(fos);
-                        ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+                        ArkLogger.e(this, "saveGroupFile Failed to write file: " + file.getBaseFile().getAbsolutePath());
                     }
                 }
             });

@@ -172,6 +172,9 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                         && current == BrowserControlsState.HIDDEN)) {
             return;
         }
+        if (mTab.getWebContents() == null) {
+            return;
+        }
         if (mNativeTabBrowserControlsConstraintsHelper == 0) {
             mNativeTabBrowserControlsConstraintsHelper =
                     TabBrowserControlsConstraintsHelperJni.get().init(

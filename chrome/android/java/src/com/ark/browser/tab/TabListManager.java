@@ -62,7 +62,7 @@ public class TabListManager {
     }
 
     public void onDestroy() {
-        this.mObservers.clear();
+        mObservers.clear();
         for (ITabGroup tabGroup : mTabGroups.values()) {
             tabGroup.destroy();
         }

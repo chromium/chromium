@@ -110,8 +110,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private static boolean sMustUseWebContentsContext;
 
     private static final class UserDataFactoryLazyHolder {
-        private static final UserDataFactory<SelectionPopupControllerImpl> INSTANCE =
-                SelectionPopupControllerImpl::new;
+        private static final UserDataFactory<SelectionPopupControllerImpl> INSTANCE = webContents -> {
+            if (webContents.getViewAndroidDelegate() == null
+                    || webContents.getViewAndroidDelegate().getContainerView() == null) {
+                return null;
+            }
+            return new SelectionPopupControllerImpl(webContents);
+        };
     }
 
     private final Handler mHandler;

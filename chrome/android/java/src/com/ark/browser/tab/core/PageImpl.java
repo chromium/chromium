@@ -35,4 +35,10 @@ public class PageImpl implements IPage {
         return TabCacheManager.getInstance().findTab(getId());
     }
 
+    @Override
+    public String toString() {
+        return "PageImpl{" +
+                "pageInfo=" + pageInfo +
+                '}';
+    }
 }

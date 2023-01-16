@@ -19,8 +19,8 @@ import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.core.ArkNavigationHandler;
-import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
@@ -51,10 +51,8 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
-import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.messages.DismissReason;
@@ -323,16 +321,6 @@ public class ArkMainFragment extends BaseFragment implements
         if (mViewHolder != null) {
             mViewHolder.onStart();
         }
-        Tab tab = getActivityTab();
-        if (tab != null) {
-            if (tab.isHidden()) {
-                tab.show(TabSelectionType.FROM_USER);
-            } else {
-                // The visible Tab's renderer process may have died after the activity was
-                // paused. Ensure that it's restored appropriately.
-                tab.loadIfNeeded();
-            }
-        }
     }
 
     @Override
@@ -340,10 +328,6 @@ public class ArkMainFragment extends BaseFragment implements
         super.onStop();
         if (mViewHolder != null) {
             mViewHolder.onStop();
-        }
-        Tab tab = getActivityTab();
-        if (tab != null) {
-            tab.hide(TabHidingType.ACTIVITY_HIDDEN);
         }
     }
 

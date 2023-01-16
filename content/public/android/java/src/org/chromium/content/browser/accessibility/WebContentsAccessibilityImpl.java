@@ -310,6 +310,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         WebContentsAccessibilityImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
+    public static WebContentsAccessibilityImpl get(WebContents webContents) {
+        return ((WebContentsImpl) webContents)
+                .getOrSetUserData(WebContentsAccessibilityImpl.class, null);
+    }
+
     public static WebContentsAccessibilityImpl fromDelegate(AccessibilityDelegate delegate) {
         // If WebContents exists, {@link #fromWebContents} should be used.
         assert delegate.getWebContents() == null;

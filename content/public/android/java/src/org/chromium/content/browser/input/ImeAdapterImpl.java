@@ -173,7 +173,13 @@ public class ImeAdapterImpl
     }
 
     private static final class UserDataFactoryLazyHolder {
-        private static final UserDataFactory<ImeAdapterImpl> INSTANCE = ImeAdapterImpl::new;
+        private static final UserDataFactory<ImeAdapterImpl> INSTANCE = webContents -> {
+            if (webContents.getViewAndroidDelegate() == null
+                    || webContents.getViewAndroidDelegate().getContainerView() == null) {
+                return null;
+            }
+            return new ImeAdapterImpl(webContents);
+        };
     }
 
     /**

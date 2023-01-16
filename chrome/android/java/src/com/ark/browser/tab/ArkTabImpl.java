@@ -19,9 +19,9 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.ArkBrowserActivity;
-import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.tab.core.IPage;
@@ -70,6 +70,7 @@ import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -487,8 +488,15 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * Sets a custom {@link View} for this {@link Tab} that replaces Content view.
      */
     void setCustomView(@Nullable View view) {
+        if (mCustomView != null) {
+            UiUtils.removeViewFromParent(mCustomView);
+        }
         mCustomView = view;
         notifyContentChanged();
+    }
+
+    public View getCustomView() {
+        return mCustomView;
     }
 
     @Override
@@ -497,7 +505,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             return null;
         }
         return mWindowAndroid.getCompositorViewHolder().getContentView();
-//        return mArkWeb == null ? null : mArkWeb.getContentView();
     }
 
     @Override
@@ -867,14 +874,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void destroy() {
-
-        if (mWindowAndroid != null) {
-            TabContentManager manager = mWindowAndroid.getTabContentManager();
-            if (manager != null) {
-                manager.detachTab(this);
-            }
-        }
-
         // Set at the start since destroying the WebContents can lead to calling back into
         // this class.
         mIsDestroyed = true;
@@ -884,6 +883,13 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
         for (TabObserver observer : mObservers) observer.onDestroyed(this);
         mObservers.clear();
+
+        if (mWindowAndroid != null) {
+            TabContentManager manager = mWindowAndroid.getTabContentManager();
+            if (manager != null) {
+                manager.detachTab(this);
+            }
+        }
 
         mUserDataHost.destroy();
         mTabViewManager.destroy();
@@ -1233,9 +1239,13 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             return;
         }
         boolean hasWebContents = mArkWeb != null && !mArkWeb.getWebContents().isDestroyed();
-        Rect original = hasWebContents
-                ? new Rect(0, 0, mArkWeb.getWebContents().getWidth(), mArkWeb.getWebContents().getHeight())
-                : new Rect();
+        View contentView = getContentView();
+        Rect original;
+        if (contentView == null) {
+            original = new Rect();
+        } else {
+            original = new Rect(0, 0, contentView.getWidth(), contentView.getHeight());
+        }
         for (TabObserver observer : mObservers) {
             observer.webContentsWillSwap(this);
         }
@@ -1261,7 +1271,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                     mNativeTabAndroid, arkWeb.getWebContents(), bounds.right, bounds.bottom);
         }
         initWebContents(arkWeb, mWindowAndroid);
-//        arkWeb.getWebContents().onShow();
 
         if (didStartLoad) {
             // Simulate the PAGE_LOAD_STARTED notification that we did not get.
@@ -1274,6 +1283,28 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         for (TabObserver observer : mObservers) {
             observer.onWebContentsSwapped(this, didStartLoad, didFinishLoad);
         }
+    }
+
+    public void removePage(IPage page) {
+
+        if (mArkWeb == null) {
+            return;
+        }
+        if (mArkWeb.getId() == page.getId()) {
+            boolean hasWebContents = mArkWeb != null && !mArkWeb.getWebContents().isDestroyed();
+            for (TabObserver observer : mObservers) {
+                observer.webContentsWillSwap(this);
+            }
+            if (hasWebContents) {
+                mArkWeb.getWebContents().onHide();
+                mArkWeb.getWebContents().setFocus(false);
+            }
+            destroyWebContents(false /* do not delete native web contents */);
+            for (TabObserver observer : mObservers) {
+                observer.onWebContentsSwapped(this, false, false);
+            }
+        }
+
     }
 
     /**

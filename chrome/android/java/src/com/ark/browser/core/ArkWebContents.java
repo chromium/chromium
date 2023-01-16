@@ -273,7 +273,10 @@ public class ArkWebContents {
 
     public void detach(ArkTabImpl tab) {
         setImportance(ChildProcessImportance.NORMAL);
-        WebContentsAccessibility.fromWebContents(mWebContents).setObscuredByAnotherView(false);
+        WebContentsAccessibility accessibility = WebContentsAccessibility.get(mWebContents);
+        if (accessibility != null) {
+            accessibility.setObscuredByAnotherView(false);
+        }
         mWebContents.setOverscrollRefreshHandler(null);
     }
 

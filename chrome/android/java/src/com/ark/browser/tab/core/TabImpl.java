@@ -93,4 +93,10 @@ public class TabImpl implements ITab {
         return ITab.super.cloneTab();
     }
 
+    @Override
+    public String toString() {
+        return "TabImpl{" +
+                "tabInfo=" + tabInfo +
+                '}';
+    }
 }

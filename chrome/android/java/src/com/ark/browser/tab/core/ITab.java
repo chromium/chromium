@@ -1,6 +1,7 @@
 package com.ark.browser.tab.core;
 
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabCacheManager;
@@ -143,6 +144,8 @@ public interface ITab {
 
         TabInfo newTabInfo = TabInfo.create();
         newTabInfo.setPageIndex(tabInfo.getPageIndex());
+        
+        
         newTabInfo.setCurrentPageId(Tab.INVALID_PAGE_ID);
         newTabInfo.setLocked(tabInfo.isLocked());
         newTabInfo.setIncognito(tabInfo.isIncognito());
@@ -269,9 +272,15 @@ public interface ITab {
         } else {
             return false;
         }
-        saveTabInfo();
+
         getPages().remove(i);
+
+        ArkTabImpl tab = (ArkTabImpl) TabCacheManager.getInstance().findTab(getId());
+        if (tab != null) {
+            tab.removePage(page);
+        }
         page.deletePageInfo();
+        saveTabInfo();
         return true;
     }
 

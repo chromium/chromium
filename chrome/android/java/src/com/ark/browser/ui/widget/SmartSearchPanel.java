@@ -641,7 +641,7 @@ public class SmartSearchPanel extends FrameLayout {
 
                 @Override
                 public void onIndexChanged(int index) {
-                    this.index = index;
+                    this.mIndex = index;
                 }
 
             };

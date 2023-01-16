@@ -92,6 +92,7 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.OverscrollRefreshHandler;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
@@ -401,7 +402,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         initContentView();
 
         SwipeRefreshLayout swipeRefreshLayout = new SwipeRefreshLayout(c);
-        addView(swipeRefreshLayout, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mContentView.addView(swipeRefreshLayout, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mSwipeRefreshHandler = new ArkSwipeRefreshHandler(swipeRefreshLayout);
     }
 
@@ -424,7 +425,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     private void initContentView() {
-        addView(mContentView, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        addView(mContentView, 1, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mContentView.addOnHierarchyChangeListener(this);
         mContentView.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
             @Override
@@ -1010,12 +1011,24 @@ public class ArkCompositorViewHolder extends FrameLayout
      */
     public void onStart() {
         requestRender();
+        if (mTabVisible != null) {
+            if (mTabVisible.isHidden()) {
+                mTabVisible.show(TabSelectionType.FROM_USER);
+            } else {
+                // The visible Tab's renderer process may have died after the activity was
+                // paused. Ensure that it's restored appropriately.
+                mTabVisible.loadIfNeeded();
+            }
+        }
     }
 
     /**
      * Called whenever the host activity is stopped.
      */
     public void onStop() {
+        if (mTabVisible != null) {
+            mTabVisible.hide(TabHidingType.ACTIVITY_HIDDEN);
+        }
     }
 
     @Override
@@ -1598,35 +1611,16 @@ public class ArkCompositorViewHolder extends FrameLayout
         });
     };
 
+    public Tab getTab() {
+        return mTabVisible;
+    }
+
     public void setTab(Tab tab) {
 
-        // The StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup() is only true when
-        // the Start surface is showing in the startup and there isn't any Tab opened. Thus, no
-        // Tab needs to be loaded. Once a new Tab is opening and Start surface is hiding, this flag
-        // will be reset.
-//        if (tab != null) {
-//            tab.loadIfNeeded();
-//        }
-
+        ArkLogger.e(TAG, "setTab tab=" + tab + " mTabVisible=" + mTabVisible);
         if (mTabVisible == null && tab == null) {
             return;
         }
-
-//        View newView = tab != null ? tab.getView() : null;
-//        ArkLogger.d(TAG, "setTab tab=" + tab + " view=" + newView + " mContentOverlayVisiblity=" + mContentOverlayVisiblity);
-//        if (newView != null && mView == newView) {
-//            if (mCallback != null) {
-//                ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
-//                onBackPressedCallback.setEnabled(tabGroup.canGoBack());
-//            } else {
-//                setEnabled(false);
-//            }
-//            return;
-//        }
-
-        // TODO(dtrainor): Look into changing this only if the views differ, but still parse the
-        // WebContents list even if they're the same.
-//        updateContentOverlayVisibility(false);
 
         if (mTabVisible != tab) {
             // Reset the geometrychange event flag so it can fire on the current active tab.
@@ -1636,6 +1630,10 @@ public class ArkCompositorViewHolder extends FrameLayout
                     ArkTabWebContentsObserver.from(mTabVisible)
                             .removeInitWebContentsObserver(mInitWebContentsObserver);
                 }
+                View customView = ((ArkTabImpl) mTabVisible).getCustomView();
+                if (customView != null) {
+                    removeView(customView);
+                }
                 mTabVisible.hide(TabHidingType.CHANGED_TABS);
                 mTabContentManager.detachTab(mTabVisible);
                 mTabVisible.removeObserver(mTabObserver);
@@ -1643,7 +1641,6 @@ public class ArkCompositorViewHolder extends FrameLayout
                     mCallback.onPageDetached(mTabVisible);
                 }
                 ((ArkTabImpl) mTabVisible).updateWindowAndroid(null);
-//                mView = null;
             }
 
             mTabVisible = tab;
@@ -1661,16 +1658,28 @@ public class ArkCompositorViewHolder extends FrameLayout
         mSwipeRefreshHandler.setTab((ArkTabImpl) mTabVisible);
         if (mTabVisible != null) {
             mContentView.setWebContents(mTabVisible.getWebContents());
-            mTabVisible.loadIfNeeded();
             initializeTab(mTabVisible);
             mLayoutManager.onPageSelected(mTabVisible);
+
+            View customView = ((ArkTabImpl) mTabVisible).getCustomView();
+            if (customView != null && customView.getParent() != this) {
+                UiUtils.removeViewFromParent(customView);
+                mContentView.setVisibility(INVISIBLE);
+                addView(customView, 2);
+                customView.requestFocus();
+            } else if (mContentView.getVisibility() != VISIBLE) {
+                mContentView.setVisibility(VISIBLE);
+            }
+
             mTabVisible.show(TabSelectionType.FROM_USER);
+            WebContents webContents = mTabVisible.getWebContents();
+            if (webContents != null) {
+                webContents.onShow();
+            }
             if (mCallback != null) {
                 mCallback.onPageAttached(mTabVisible);
             }
-//            mView = mTabVisible.getView();
         }
-//        updateContentOverlayVisibility(mContentOverlayVisiblity);
 
         setFocusable(false);
         setFocusableInTouchMode(false);

@@ -35,13 +35,14 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
     jint constraints,
     jint current,
     jboolean animate) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return;
+  }
   cc::BrowserControlsState constraints_state =
       static_cast<cc::BrowserControlsState>(constraints);
   cc::BrowserControlsState current_state =
       static_cast<cc::BrowserControlsState>(current);
-
-  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
   web_contents->UpdateBrowserControlsState(constraints_state, current_state,
                                            animate);
 }

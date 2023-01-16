@@ -46,20 +46,6 @@ public class ArkTabDao {
         }
     }
 
-    public static ITabGroup loadTabGroup(String id, boolean incognito) {
-        File groupFile = new File(getGroupsDir(), "group_" + (incognito ? 1 : 0));
-        File newGroupFile = new File(getGroupsDir(), id);
-        if (groupFile.exists()) {
-            groupFile.renameTo(newGroupFile);
-        }
-        groupFile = newGroupFile;
-        if (groupFile.exists()) {
-            return new TabGroupImpl(id, incognito, groupFile);
-        } else {
-            return new TabGroupImpl(id, incognito);
-        }
-    }
-
     public static File getGroupsDir() {
         File groupsDir = new File(StateDirHolder.sDirectory, DIR_GROUPS);
         if (!groupsDir.exists()) {
@@ -80,9 +66,9 @@ public class ArkTabDao {
         return new File(tabsDir, "tab" + id);
     }
 
-    public static File getPagesDir(int tabInfoId) {
+    public static File getPagesDir(int tabId) {
         File tabsDir = new File(StateDirHolder.sDirectory, DIR_PAGES);
-        File dir = new File(tabsDir, String.valueOf(tabInfoId));
+        File dir = new File(tabsDir, String.valueOf(tabId));
         if (!dir.exists()) {
             dir.mkdirs();
         }

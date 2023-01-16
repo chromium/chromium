@@ -207,6 +207,7 @@ public class TabInfo {
         newTabInfo.setPosition(is.readInt());
         newTabInfo.setAccessTime(is.readLong());
         int count = is.readInt();
+        ArkLogger.e(TabInfo.class, "TabInfo.from id=" + newTabInfo.getId() + " count=" + count);
         File pagesDir = ArkTabDao.getPagesDir(newTabInfo.getId());
         for (int i = 0; i < count; i++) {
             int pageId = is.readInt();
@@ -221,14 +222,17 @@ public class TabInfo {
     @Override
     public String toString() {
         return "TabInfo{" +
-                ", tabId=" + tabId +
+                "tabId=" + tabId +
                 ", createTime=" + createTime +
                 ", pageIndex=" + pageIndex +
                 ", currentPageId=" + currentPageId +
                 ", position=" + position +
                 ", isLocked=" + isLocked +
                 ", incognito=" + incognito +
-                ", pages=" + mPages +
+                ", accessTime=" + accessTime +
+                ", parentId=" + parentId +
+                ", mLaunchType=" + mLaunchType +
+                ", mPages=" + mPages +
                 '}';
     }
 
@@ -251,7 +255,7 @@ public class TabInfo {
             os.writeLong(accessTime);
             os.writeInt(mPages.size());
             ArkLogger.e(this, "saveTabInfo info=" + this
-                    + " pageSize=" + mPages.size());
+                    + " mPages=" + mPages);
             for (IPage page : mPages) {
                 os.writeInt(page.getId());
             }

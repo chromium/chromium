@@ -93,6 +93,9 @@ public class ThreadPool {
     }
 
     public static void removeCallbacks(Runnable r) {
+        if (r == null) {
+            return;
+        }
         Holder.HANDLER.removeCallbacks(r);
     }
 

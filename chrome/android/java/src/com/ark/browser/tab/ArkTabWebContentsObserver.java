@@ -192,7 +192,7 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
             // a new renderer for the shared RenderProcessHost and the new renderer crashes
             // again, all tabs sharing this renderer will be notified about the crash (including
             // potential background tabs that did not reload yet).
-            if (mTab.needsReload() || SadTab.isShowing(mTab)) return;
+            if (mTab.isDestroyed() || mTab.needsReload() || SadTab.isShowing(mTab)) return;
 
             int activityState = ApplicationStatus.getStateForActivity(mTab.getActivity2());
             if (mTab.isHidden() || activityState == ActivityState.PAUSED

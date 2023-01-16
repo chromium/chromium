@@ -30,6 +30,10 @@ public interface WebContentsAccessibility {
         return WebContentsAccessibilityImpl.fromWebContents(webContents);
     }
 
+    static WebContentsAccessibility get(WebContents webContents) {
+        return WebContentsAccessibilityImpl.get(webContents);
+    }
+
     /**
      * Determines whether or not the given accessibility action can be handled.
      * @param action The action to perform.
