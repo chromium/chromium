@@ -163,11 +163,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
     }
   }
 
-  const ImageOrientation origin = image_->IsOriginTopLeft()
-                                      ? ImageOrientationEnum::kOriginTopLeft
-                                      : ImageOrientationEnum::kOriginBottomLeft;
-  const bool image_flipped = image_->CurrentFrameOrientation() != origin;
-  layer_->SetFlipped(image_flipped);
+  layer_->SetFlipped(!image_->IsOriginTopLeft());
 
   if (gpu_compositing) {
     scoped_refptr<StaticBitmapImage> image_for_compositor =
