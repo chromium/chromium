@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/base_paths.h"
-#include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path_watcher.h"
@@ -30,16 +29,27 @@
 
 namespace crosapi {
 
-namespace {
+AshCrosapiTestCommandLineModifierDelegate::
+    AshCrosapiTestCommandLineModifierDelegate() = default;
 
-AshCrosapiTestEnv* g_instance = nullptr;
+AshCrosapiTestCommandLineModifierDelegate::
+    ~AshCrosapiTestCommandLineModifierDelegate() = default;
 
-}  // namespace
+AshCrosapiTestEnv::AshCrosapiTestEnv() : AshCrosapiTestEnv(nullptr) {}
 
-AshCrosapiTestEnv::AshCrosapiTestEnv() {
-  CHECK(!g_instance) << "AshCrosapiTestEnv is already created.";
-  g_instance = this;
+AshCrosapiTestEnv::AshCrosapiTestEnv(
+    std::unique_ptr<AshCrosapiTestCommandLineModifierDelegate> delegate)
+    : delegate_(std::move(delegate)) {
+  Initialize();
+}
 
+AshCrosapiTestEnv::~AshCrosapiTestEnv() {
+  if (process_.IsValid()) {
+    process_.Terminate(/*exit_code=*/0, /*wait=*/true);
+  }
+}
+
+void AshCrosapiTestEnv::Initialize() {
   // If the user has specified a path for the ash-chrome binary, use the path.
   // Note that both absolute and relative paths are accepted, and the last path
   // component should be 'chrome', 'test_ash_chrome' or equivalent.
@@ -61,6 +71,21 @@ AshCrosapiTestEnv::AshCrosapiTestEnv() {
   // Sets chrome binary file to run ash process.
   base::CommandLine command_line(ash_chrome_path);
 
+  // Sets a user data dir path.
+  CHECK(user_data_dir_.CreateUniqueTempDir());
+  command_line.AppendSwitchPath(switches::kUserDataDir,
+                                user_data_dir_.GetPath());
+  command_line.AppendSwitch(ash::switches::kUseMyFilesInUserDataDirForTesting);
+
+#if defined(MEMORY_SANITIZER)
+  // MSAN is incompatible with GL acceleration.
+  command_line.AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
+#endif
+
+  if (delegate_) {
+    delegate_->AddExtraCommandLine(&command_line);
+  }
+
   // Sets a socket path.
   base::ScopedTempDir temp_dir;
   CHECK(temp_dir.CreateUniqueTempDir());
@@ -68,21 +93,6 @@ AshCrosapiTestEnv::AshCrosapiTestEnv() {
       temp_dir.GetPath().AppendASCII("lacros.socket").MaybeAsASCII();
   command_line.AppendSwitchASCII(ash::switches::kLacrosMojoSocketForTesting,
                                  socket_path);
-
-  // Sets a user data dir path.
-  CHECK(user_data_dir_.CreateUniqueTempDir());
-  command_line.AppendSwitchPath(switches::kUserDataDir,
-                                user_data_dir_.GetPath());
-  command_line.AppendSwitch(ash::switches::kUseMyFilesInUserDataDirForTesting);
-
-  // This switch is for filemanger test to install an app.
-  // TODO(crbug.com/1376891): Remove settings for a specific test.
-  command_line.AppendSwitchASCII(switches::kEnableFeatures, "WebAppsCrosapi");
-
-#if defined(MEMORY_SANITIZER)
-  // MSAN is incompatible with GL acceleration.
-  command_line.AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
-#endif
 
   // Waits for socket connection to establish.
   // TODO(crbug.com/1368029): Separate logs generated during setup from those
@@ -125,19 +135,6 @@ AshCrosapiTestEnv::AshCrosapiTestEnv() {
   crosapi_remote_ =
       mojo::Remote<mojom::Crosapi>(mojo::PendingRemote<mojom::Crosapi>(
           invitation.ExtractMessagePipe(0), 0u));
-}
-
-AshCrosapiTestEnv::~AshCrosapiTestEnv() {
-  CHECK_EQ(g_instance, this);
-  if (process_.IsValid())
-    process_.Terminate(/*exit_code=*/0, /*wait=*/true);
-  g_instance = nullptr;
-}
-
-// static
-AshCrosapiTestEnv* AshCrosapiTestEnv::GetInstance() {
-  CHECK(g_instance) << "AshCrosapiTestEnv is not created.";
-  return g_instance;
 }
 
 bool AshCrosapiTestEnv::IsValid() {

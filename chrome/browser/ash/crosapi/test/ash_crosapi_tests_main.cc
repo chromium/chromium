@@ -10,7 +10,6 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/threading/thread.h"
-#include "chrome/browser/ash/crosapi/test/ash_crosapi_tests_env.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 
@@ -41,13 +40,9 @@ class CrosapiTestSuite : public base::TestSuite {
 
     executor_ = std::make_unique<base::SingleThreadTaskExecutor>(
         base::MessagePumpType::IO);
-
-    // Construct AshCrosapiTestEnv.
-    env_ = std::make_unique<crosapi::AshCrosapiTestEnv>();
   }
 
   void Shutdown() override {
-    env_.reset();
     executor_.reset();
     ipc_support_.reset();
     io_thread_.Stop();
@@ -59,7 +54,6 @@ class CrosapiTestSuite : public base::TestSuite {
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
 
   std::unique_ptr<base::SingleThreadTaskExecutor> executor_;
-  std::unique_ptr<crosapi::AshCrosapiTestEnv> env_;
 };
 
 }  // namespace

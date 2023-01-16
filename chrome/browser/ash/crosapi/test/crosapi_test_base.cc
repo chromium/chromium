@@ -4,18 +4,17 @@
 
 #include "chrome/browser/ash/crosapi/test/crosapi_test_base.h"
 
-#include "chrome/browser/ash/crosapi/test/ash_crosapi_tests_env.h"
-
 namespace crosapi {
 
-CrosapiTestBase::CrosapiTestBase() = default;
+CrosapiTestBase::CrosapiTestBase() : CrosapiTestBase(nullptr) {}
+
+CrosapiTestBase::CrosapiTestBase(
+    std::unique_ptr<AshCrosapiTestCommandLineModifierDelegate> delegate)
+    : env_(std::make_unique<AshCrosapiTestEnv>(std::move(delegate))) {}
+
 CrosapiTestBase::~CrosapiTestBase() = default;
 
-void CrosapiTestBase::SetUp() {
-  ASSERT_TRUE(AshCrosapiTestEnv::GetInstance()->IsValid());
-}
-
 const base::FilePath& CrosapiTestBase::GetUserDataDir() {
-  return AshCrosapiTestEnv::GetInstance()->GetUserDataDir();
+  return env_->GetUserDataDir();
 }
 }  // namespace crosapi

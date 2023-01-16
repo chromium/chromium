@@ -38,8 +38,6 @@ class MockNetworkChangeObserver : public mojom::NetworkChangeObserver {
 class NetworkChangeCrosapiTest : public CrosapiTestBase {
  protected:
   void SetUp() override {
-    CrosapiTestBase::SetUp();
-
     network_change_ = BindCrosapiInterface(&mojom::Crosapi::BindNetworkChange);
     test_controller_ =
         BindCrosapiInterface(&mojom::Crosapi::BindTestController);
