@@ -7,7 +7,7 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {AsyncQueue} from '../common/js/async_util.js';
-import {strf} from '../common/js/util.js';
+import {str, strf} from '../common/js/util.js';
 
 import {getTemplate} from './xf_conflict_dialog.html.js';
 
@@ -67,8 +67,9 @@ export class XfConflictDialog extends HTMLElement {
    * DOM connected callback.
    */
   connectedCallback() {
-    this.dialog_.addEventListener('close', this.onClose_.bind(this));
+    this.dialog_.addEventListener('close', this.closed_.bind(this));
 
+    this.getCheckboxElement().onchange = this.checked_.bind(this);
     this.getCancelButton().onclick = this.cancel_.bind(this);
     this.getKeepbothButton().onclick = this.keepboth_.bind(this);
     this.getReplaceButton().onclick = this.replace_.bind(this);
@@ -101,8 +102,8 @@ export class XfConflictDialog extends HTMLElement {
   }
 
   /**
-   * Resets the dialog message content for the given |filename| |checkbox| and
-   * |folder| display state, and then shows the modal dialog.
+   * Resets the dialog for the given |filename| |checkbox| and |folder| values
+   * and then shows the modal dialog.
    */
   private showModal_(filename: string, checkbox: boolean, folder: boolean) {
     const message =  // 'A folder named ...' or 'A file named ...'
@@ -114,6 +115,7 @@ export class XfConflictDialog extends HTMLElement {
     applyToAll.checked = false;
 
     this.action_ = '';
+    this.checked_();
     this.dialog_.showModal();
   }
 
@@ -136,6 +138,23 @@ export class XfConflictDialog extends HTMLElement {
    */
   getCheckboxElement(): CrCheckboxElement {
     return this.shadowRoot!.querySelector('#checkbox')!;
+  }
+
+  /**
+   * 'Apply to all' checkbox value changed.
+   */
+  private checked_() {
+    const checked = this.getCheckboxElement().checked;
+
+    if (checked) {
+      this.getKeepbothButton().innerText = str('CONFLICT_DIALOG_KEEP_ALL');
+      this.getReplaceButton().innerText = str('CONFLICT_DIALOG_REPLACE_ALL');
+    } else {
+      this.getKeepbothButton().innerText = str('CONFLICT_DIALOG_KEEP_BOTH');
+      this.getReplaceButton().innerText = str('CONFLICT_DIALOG_REPLACE');
+    }
+
+    this.toggleAttribute('checked', checked);
   }
 
   /**
@@ -184,10 +203,10 @@ export class XfConflictDialog extends HTMLElement {
   }
 
   /*
-   * Triggered by <cr-dialog>.close(): reject the Promise if the dialog was
-   * cancelled, or resolve the Promise with the dialog result.
+   * Triggered by the modal dialog close(): rejects the Promise if the dialog
+   * was cancelled or resolves it with the dialog result.
    */
-  private onClose_() {
+  private closed_() {
     if (!this.action_) {
       this.reject_(new Error('dialog cancelled'));
       return;

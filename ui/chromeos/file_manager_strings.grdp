@@ -441,11 +441,17 @@
   <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_KEEP_BOTH" desc="Label of a button to keep both entries after the file transfer operation.">
     Keep both
   </message>
-  <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_REPLACE" desc="Label of a button to replace the old entry with the new entry.">
+  <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_REPLACE" desc="Label of a button to replace an entry with the source entry.">
     Replace
   </message>
   <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_APPLY_TO_ALL" desc="Label of checkbox in the conflict dialog box to apply the user selection to all entries.">
     Apply to all
+  </message>
+  <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_KEEP_ALL" desc="Label of a button to keep all entries after the file transfer operation. The 'Apply to all' checkbox is selected.">
+    Keep all
+  </message>
+  <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_REPLACE_ALL" desc="Label of a button to replace all entries with the source entries. The 'Apply to all' checkbox is selected.">
+    Replace all
   </message>
 
   <message name="IDS_FILE_BROWSER_CONFIRM_OVERWRITE_FILE" desc="Asks the user if they are sure they want to overwrite an existing file with another one.">
