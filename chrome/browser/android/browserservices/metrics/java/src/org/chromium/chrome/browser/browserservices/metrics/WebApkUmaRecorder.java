@@ -96,8 +96,6 @@ public class WebApkUmaRecorder {
             "WebApk.Startup.Cold.ShellLaunchToSplashscreenVisible";
     private static final String HISTOGRAM_NEW_STYLE_LAUNCH_TO_SPLASHSCREEN_VISIBLE =
             "WebApk.Startup.Cold.NewStyle.ShellLaunchToSplashscreenVisible";
-    private static final String HISTOGRAM_LAUNCH_TO_SPLASHSCREEN_HIDDEN =
-            "WebApk.Startup.Cold.ShellLaunchToSplashscreenHidden";
 
     private static final int WEBAPK_OPEN_MAX = 3;
     public static final int WEBAPK_OPEN_LAUNCH_SUCCESS = 0;
@@ -142,15 +140,6 @@ public class WebApkUmaRecorder {
     public static void recordNewStyleShellApkLaunchToSplashVisible(long durationMs) {
         RecordHistogram.recordMediumTimesHistogram(
                 HISTOGRAM_NEW_STYLE_LAUNCH_TO_SPLASHSCREEN_VISIBLE, durationMs);
-    }
-
-    /**
-     * Records duration between starting of the WebAPK shell until the splashscreen is hidden.
-     * @param durationMs duration in milliseconds
-     */
-    public static void recordShellApkLaunchToSplashHidden(long durationMs) {
-        RecordHistogram.recordMediumTimesHistogram(
-                HISTOGRAM_LAUNCH_TO_SPLASHSCREEN_HIDDEN, durationMs);
     }
 
     /** Records the notification permission status for a WebAPK. */

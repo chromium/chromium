@@ -256,22 +256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Startup.Cold.ShellLaunchToSplashscreenHidden"
-    units="ms" expires_after="2020-08-31">
-  <owner>mheikal@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Tracks the time to splashscreen hidden starting from the launch of the
-    WebAPK shell (rather than from the launch of Chrome). The splashscreen is
-    hidden after the first visually non-empty paint.
-
-    This is recorded iff: - This is a cold startup of Chrome. - Chrome has not
-    been sent to the background since launch. - There was no recents entry for
-    Chrome (android replays intents if a recents entry exists), which otherwise
-    adds noise/long-tail to this histogram.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Startup.Cold.ShellLaunchToSplashscreenVisible"
     units="ms" expires_after="2023-06-11">
   <owner>mheikal@chromium.org</owner>
