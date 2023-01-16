@@ -93,11 +93,14 @@
       <template is="dom-if" if="[[isFledgeEnabledAndLoaded_(
           prefs.privacy_sandbox.m1.fledge_enabled.value, isSitesListLoaded_)]]"
           restamp>
-        <template is="dom-repeat" items="[[mainSitesList_]]">
-          <privacy-sandbox-interest-item interest="[[item]]"
-              on-interest-changed="onInterestChanged_">
-          </privacy-sandbox-interest-item>
-        </template>
+        <div role="region"
+            aria-label="$i18n{fledgePageCurrentSitesRegionA11yDescription}">
+          <template is="dom-repeat" items="[[mainSitesList_]]">
+            <privacy-sandbox-interest-item interest="[[item]]"
+                on-interest-changed="onInterestChanged_">
+            </privacy-sandbox-interest-item>
+          </template>
+        </div>
         <template is="dom-if" if="[[!isRemainingSitesListEmpty_(
             remainingSitesList_.length)]]" restamp>
           <cr-expand-button id="seeAllSites"
@@ -105,11 +108,14 @@
             $i18n{fledgePageSeeAllSitesLabel}
           </cr-expand-button>
           <iron-collapse opened="[[seeAllSitesExpanded_]]">
-            <template is="dom-repeat" items="[[remainingSitesList_]]">
-              <privacy-sandbox-interest-item interest="[[item]]"
-                  on-interest-changed="onInterestChanged_">
-              </privacy-sandbox-interest-item>
-            </template>
+            <div role="region"
+                aria-label="$i18n{fledgePageCurrentSitesRegionA11yDescription}">
+              <template is="dom-repeat" items="[[remainingSitesList_]]">
+                <privacy-sandbox-interest-item interest="[[item]]"
+                    on-interest-changed="onInterestChanged_">
+                </privacy-sandbox-interest-item>
+              </template>
+            </div>
           </iron-collapse>
         </template>
         <div id="currentSitesDescriptionEmpty"
@@ -135,7 +141,8 @@
       class="cr-row continuation cr-secondary-text">
     [[computeBlockedSitesDescription_(blockedSitesList_.length)]]
   </div>
-  <div id="blockedSitesList">
+  <div id="blockedSitesList" role="region"
+      aria-label="$i18n{fledgePageBlockedSitesRegionA11yDescription}">
     <template is="dom-repeat" items="[[blockedSitesList_]]">
       <privacy-sandbox-interest-item interest="[[item]]"
           on-interest-changed="onInterestChanged_">

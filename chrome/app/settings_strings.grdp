@@ -1875,6 +1875,12 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_LINK" desc="Text read by screen readers to help users distinguish this 'Learn more' link from others that might get added to this page.">
     Learn more
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_REGION_A11Y_DESCRIPTION" desc="An explanation read by screen readers that describes the list of topics.">
+    List of topics estimated by Chrome based on your recent browsing history
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_REGION_A11Y_DESCRIPTION" desc="Read by screen readers to describe the list of blocked topics.">
+    List of topics you blocked that you don't want shared with sites
+  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
     As you browse, whether an ad you see is personalized depends on this setting, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>Site-suggested ads<ph name="LINK_END1">&lt;/a&gt;</ph>, your <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>cookie settings<ph name="LINK_END2">&lt;/a&gt;</ph>, and if the site you’re viewing personalizes ads
   </message>
@@ -1904,6 +1910,9 @@
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_EMPTY" desc="1 of 2 descriptions that appear if there are no sites in the list. This string is for the case that the Site-suggested ads setting IS on, but the user hasn't browsed any sites that have called the Site-suggested ads API.">
     It can take up to a week for a list of sites to appear here based on your browsing history
   </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_REGION_A11Y_DESCRIPTION" desc="Read by screen readers to describe a list of sites that appear on the page.">
+    List of recent sites you visited that can suggest ads to other sites as you keep browsing
+  </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_SEE_ALL_SITES_LABEL" desc="Text that serves as a button. Because the list of sites might be long, we only show the most recent sites. This button allows the user to browse all sites (because sites are auto-deleted every 4 weeks, the list is never older than 4 weeks).">
     See all sites
   </message>
@@ -1921,6 +1930,9 @@
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION_EMPTY" desc="2 of 2 possible descriptions beneath the 'Sites you blocked' title. In this case, the list is empty (the user hasn't blocked any sites).">
     Blocked sites appear here
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_REGION_A11Y_DESCRIPTION" desc="Read by screen readers to describe what this list of sites is.">
+    List of sites you blocked that you don't want suggesting ads to other sites
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_ALLOW_SITE" desc="A button associated with each of the user's blocked sites. When the user clicks 'Add', it makes that site eligible. Clicking 'Add' doesn't automatically put the added site back onto the list of 'Sites'. For that to happen, a user would have to browse to that site again and the site would have to use the Site-suggested ads to save interests for this user.">
     Add

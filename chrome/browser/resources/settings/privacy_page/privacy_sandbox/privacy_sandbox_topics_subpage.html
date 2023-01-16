@@ -88,11 +88,14 @@
       <template is="dom-if" if="[[isTopicsEnabledAndLoaded_(
           prefs.privacy_sandbox.m1.topics_enabled.value, isTopicsListLoaded_)]]"
           restamp>
-          <template is="dom-repeat" items="[[topicsList_]]">
-            <privacy-sandbox-interest-item interest="[[item]]"
-                on-interest-changed="onInterestChanged_">
-            </privacy-sandbox-interest-item>
-          </template>
+          <div role="region"
+              aria-label="$i18n{topicsPageCurrentTopicsRegionA11yDescription}">
+            <template is="dom-repeat" items="[[topicsList_]]">
+              <privacy-sandbox-interest-item interest="[[item]]"
+                  on-interest-changed="onInterestChanged_">
+              </privacy-sandbox-interest-item>
+            </template>
+          </div>
           <div id="currentTopicsDescriptionEmpty"
               class="no-topics cr-secondary-text"
               hidden="[[!isTopicsListEmpty_(topicsList_.length)]]">
@@ -116,7 +119,8 @@
       class="cr-row continuation cr-secondary-text">
     [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
   </div>
-  <div id="blockedTopicsList">
+  <div id="blockedTopicsList" role="region"
+      aria-label="$i18n{topicsPageBlockedTopicsRegionA11yDescription}">
     <template is="dom-repeat" items="[[blockedTopicsList_]]">
       <privacy-sandbox-interest-item interest="[[item]]"
           on-interest-changed="onInterestChanged_">
