@@ -1411,11 +1411,7 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
 // Enables omnibox trigger prerendering.
 BASE_FEATURE(kOmniboxTriggerForPrerender2,
              "OmniboxTriggerForPrerender2",
-#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
              "SupportSearchSuggestionForPrerender2",
@@ -1438,7 +1434,7 @@ const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
 // TODO(crbug.com/1267731): Remove this flag once the experiments are completed.
 BASE_FEATURE(kOmniboxTriggerForNoStatePrefetch,
              "OmniboxTriggerForNoStatePrefetch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A feature to indicate whether setting wake time >24hours away is supported by

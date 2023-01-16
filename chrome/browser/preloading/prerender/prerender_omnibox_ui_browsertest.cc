@@ -107,10 +107,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
   PrerenderOmniboxUIBrowserTest()
       : prerender_helper_(base::BindRepeating(
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
-            base::Unretained(this))) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kOmniboxTriggerForPrerender2);
-  }
+            base::Unretained(this))) {}
 
   void SetUp() override {
     prerender_helper_.SetUp(embedded_test_server());
@@ -247,7 +244,6 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
   }
 
   content::test::PrerenderTestHelper prerender_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::PageTransition last_finished_page_transition_type_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
@@ -501,8 +497,7 @@ class PrerenderPreloaderHoldbackBrowserTest
  public:
   PrerenderPreloaderHoldbackBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOmniboxTriggerForPrerender2,
-                              features::kPrerender2Holdback},
+        /*enabled_features=*/{features::kPrerender2Holdback},
         /* disabled_features=*/{});
   }
   ~PrerenderPreloaderHoldbackBrowserTest() override = default;
