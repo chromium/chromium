@@ -219,6 +219,7 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;కు అంశాలు సరిపోలలేదు</translation>
 <translation id="2894654529758326923">సమాచారం</translation>
 <translation id="2902734494705624966">యుఎస్ విస్తారితం</translation>
+<translation id="2904378509913846215">"<ph name="FILENAME" />" పేరు గల ఫోల్డర్ ఇప్పటికే వినియోగంలో ఉంది. మీరు తరలిస్తున్న దానితో దీన్ని రీప్లేస్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="290843123675549676">మరాఠీ</translation>
 <translation id="2923240520113693977">ఈస్టోనియన్</translation>
 <translation id="2938685643439809023">మంగోలియన్</translation>
@@ -639,6 +640,7 @@
 <translation id="6241349547798190358">డచ్ (బెల్జియం)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
 <translation id="6269630227984243955">మలయ్</translation>
+<translation id="6271903698064569429">ఫైల్స్‌ను అప్‌లోడ్ చేయడం సాధ్యం కాదు ఎందుకంటే "<ph name="SHARED_DRIVE_NAME" />"‌లో తగినంత స్టోరేజ్ లేదు.</translation>
 <translation id="6287852322318138013">ఈ ఫైల్‌ను తెరవడానికి యాప్‌ను ఎంచుకోండి</translation>
 <translation id="6295542640242147836">లాక్ SIM</translation>
 <translation id="6296410173147755564">చెల్లని PUK</translation>

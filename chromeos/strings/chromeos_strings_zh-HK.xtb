@@ -318,6 +318,7 @@
 <translation id="4060260348856573701">新增 APN</translation>
 <translation id="4093865285251893588">個人檔案圖片</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
+<translation id="4095829376260267438">WPA2 和 WPA3</translation>
 <translation id="4110686435123617899">揀相簿 <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB 觸控板</translation>
 <translation id="4117637339509843559">暗光模式</translation>
@@ -719,6 +720,7 @@
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">週期數</translation>
 <translation id="7747039790905080783">預先共用密鑰</translation>
 <translation id="7762130827864645708">已成功變更您的密碼。請從現在開始改用新的密碼。</translation>
@@ -802,6 +804,7 @@
 <translation id="8503836310948963452">只需多幾分鐘…</translation>
 <translation id="8508640263392900755">APN 詳情</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>

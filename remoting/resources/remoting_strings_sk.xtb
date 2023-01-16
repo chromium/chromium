@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Bola zistená nekompatibilná verzia protokolu. Uistite sa, že máte na oboch počítačoch nainštalovanú najnovšiu verziu príslušného softvéru a skúste to znova.</translation>
 <translation id="1008557486741366299">Teraz nie</translation>
 <translation id="1201402288615127009">Ďalej</translation>
+<translation id="1296511125400541222">Copyright 2023 Autori prehliadača Chromium. Všetky práva vyhradené.</translation>
 <translation id="1297009705180977556">Pri pripájaní k zariadeniu <ph name="HOSTNAME" /> sa vyskytla chyba</translation>
 <translation id="1450760146488584666">Požadovaný objekt neexistuje</translation>
 <translation id="1480046233931937785">Poďakovanie</translation>
@@ -88,6 +89,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="4808503597364150972">Zadajte kód PIN pre počítač <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Hostiteľ</translation>
 <translation id="4867841927763172006">Odoslať akciu PrtScn</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Všetky práva vyhradené.</translation>
 <translation id="4974476491460646149">Pripojenie k zariadeniu <ph name="HOSTNAME" /> bolo ukončené</translation>
 <translation id="4985296110227979402">Najprv musíte v počítači nastaviť vzdialený prístup</translation>
 <translation id="4987330545941822761">Vzdialená plocha Chrome nedokáže určiť prehliadač, v ktorom sa majú miestne otvárať webové adresy. Vyberte ho v zozname nižšie.</translation>

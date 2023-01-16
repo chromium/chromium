@@ -219,6 +219,7 @@
 <translation id="2888807692577297075">Ingen filer matcher &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Oplysninger</translation>
 <translation id="2902734494705624966">Amerikansk (udvidet)</translation>
+<translation id="2904378509913846215">Der findes allerede en mappe ved navn "<ph name="FILENAME" />". Vil du erstatte den med den, du er ved at flytte?</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estisk</translation>
 <translation id="2938685643439809023">Mongolsk</translation>
@@ -639,6 +640,7 @@
 <translation id="6241349547798190358">Hollandsk (Belgien)</translation>
 <translation id="6267547857941397424">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
 <translation id="6269630227984243955">Malajisk</translation>
+<translation id="6271903698064569429">Der kan ikke uploades filer, fordi "<ph name="SHARED_DRIVE_NAME" />" ikke har nok lagerplads.</translation>
 <translation id="6287852322318138013">Vælg en app, der skal åbne denne fil</translation>
 <translation id="6295542640242147836">Lås SIM-kort</translation>
 <translation id="6296410173147755564">PUK-koden er ugyldig</translation>
