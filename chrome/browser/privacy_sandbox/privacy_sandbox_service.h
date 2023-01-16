@@ -114,6 +114,7 @@ class PrivacySandboxService : public KeyedService {
     kTrialsDisabledAfterNotice = 4,
     // A policy is suppressing any prompt
     kPolicy = 5,
+    kMaxValue = kPolicy,
   };
 
   PrivacySandboxService(
@@ -171,6 +172,10 @@ class PrivacySandboxService : public KeyedService {
   // prompt for those tests. If you set this outside of that context, you should
   // ensure it is reset at the end of your test.
   static void SetPromptDisabledForTests(bool disabled);
+
+  // If set to true, this treats the testing environment as that of a branded
+  // Chrome build.
+  void ForceChromeBuildForTests(bool force_chrome_build);
 
   // Disables the Privacy Sandbox completely if |enabled| is false. If |enabled|
   // is true, context specific as well as restriction checks will still be
@@ -454,6 +459,15 @@ class PrivacySandboxService : public KeyedService {
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       bool third_party_cookies_blocked);
 
+  // Equivalent of PrivacySandboxService::GetRequiredPromptTypeInternal, but for
+  // PrivacySandboxSettings4.
+  static PrivacySandboxService::PromptType GetRequiredPromptTypeInternalM1(
+      PrefService* pref_service,
+      profile_metrics::BrowserProfileType profile_type,
+      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+      bool third_party_cookies_blocked,
+      bool is_chrome_build);
+
   // Checks to see if initialization of the user's FPS pref is required, and if
   // so, sets the default value based on the user's current cookie settings.
   void MaybeInitializeFirstPartySetsPref();
@@ -510,6 +524,8 @@ class PrivacySandboxService : public KeyedService {
 
   // Called when the Ad measurement preference is changed.
   void OnAdMeasurementPrefChanged();
+
+  bool force_chrome_build_for_tests_ = false;
 
   base::WeakPtrFactory<PrivacySandboxService> weak_factory_{this};
 };

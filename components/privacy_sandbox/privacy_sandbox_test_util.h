@@ -37,6 +37,8 @@ class PrivacySandboxServiceTestInterface {
   TopicsConsentLastUpdateSource() const = 0;
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
+  virtual void ForceChromeBuildForTests(bool force_chrome_build) const = 0;
+  virtual int GetRequiredPromptType() const = 0;
 };
 
 class MockPrivacySandboxObserver
@@ -87,6 +89,13 @@ enum class StateKey {
   kHasBlockedTopics = 10,
   kAdvanceClockBy = 11,
   kActiveTopicsConsent = 12,
+  kApisEnabledV2 = 13,
+  kTrialsConsentDecisionMade = 14,
+  kTrialsNoticeDisplayed = 15,
+  kM1ConsentDecisionMade = 16,
+  kM1EEANoticeAcknowledged = 17,
+  kM1RowNoticeAcknowledged = 18,
+  kM1PromptSuppressedReason = 19,
 };
 
 // Defines the input to the functions under test.
@@ -100,6 +109,7 @@ enum class InputKey {
   kAccessingOrigin = 7,
   kTopicsToggleNewValue = 8,
   kTopicsConfirmationDecisionConfirmed = 9,
+  kForceChromeBuild = 10,
 };
 
 // Defines the expected output of the functions under test, when the profile is
@@ -125,6 +135,8 @@ enum class OutputKey {
   kTopicsConsentLastUpdateReason = 18,
   kTopicsConsentLastUpdateTime = 19,
   kTopicsConsentStringIdentifiers = 20,
+  kPromptType = 21,
+  kM1PromptSuppressedReason = 22,
 };
 
 // To allow multiple input keys to map to the same value, without having to

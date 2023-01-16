@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
@@ -71,6 +72,8 @@ namespace {
 using browsing_topics::Topic;
 using privacy_sandbox::CanonicalTopic;
 using testing::ElementsAre;
+using PromptSuppressedReason = PrivacySandboxService::PromptSuppressedReason;
+using PromptType = PrivacySandboxService::PromptType;
 
 // C++20 introduces the "using enum" construct, which significantly reduces the
 // required verbosity here. C++20 is support is coming to Chromium
@@ -146,6 +149,12 @@ class TestPrivacySandboxService
   }
   std::string TopicsConsentLastUpdateText() const override {
     return service_->TopicsConsentLastUpdateText();
+  }
+  void ForceChromeBuildForTests(bool force_chrome_build) const override {
+    service_->ForceChromeBuildForTests(force_chrome_build);
+  }
+  int GetRequiredPromptType() const override {
+    return static_cast<int>(service_->GetRequiredPromptType());
   }
 
  private:
@@ -1046,8 +1055,9 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
         [&](std::vector<std::string> items_for_display) {
           ASSERT_EQ(items_for_display.size(),
                     origins_to_expected.second.size());
-          for (size_t i = 0; i < items_for_display.size(); i++)
+          for (size_t i = 0; i < items_for_display.size(); i++) {
             EXPECT_EQ(origins_to_expected.second[i], items_for_display[i]);
+          }
           callback_called = true;
         });
 
@@ -1061,8 +1071,9 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
   // for display.
   const std::vector<std::string> sites = {"google.com", "example.com",
                                           "google.com.au"};
-  for (const auto& site : sites)
+  for (const auto& site : sites) {
     privacy_sandbox_settings()->SetFledgeJoiningAllowed(site, false);
+  }
 
   // Sites should be returned in lexographical order.
   auto returned_sites =
@@ -3071,10 +3082,6 @@ class PrivacySandboxServiceM1Test : public PrivacySandboxServiceTest {
   void RunTestCase(const TestState& test_state,
                    const TestInput& test_input,
                    const TestOutput& test_output) {
-    ASSERT_FALSE(test_case_run_)
-        << "Each test fixture should run a single test, to ensure the test "
-           "profile is in a known state.";
-    test_case_run_ = true;
     auto user_provider = std::make_unique<content_settings::MockProvider>();
     auto* user_provider_raw = user_provider.get();
     auto managed_provider = std::make_unique<content_settings::MockProvider>();
@@ -3093,9 +3100,6 @@ class PrivacySandboxServiceM1Test : public PrivacySandboxServiceTest {
         privacy_sandbox_settings(), &service_wrapper, user_provider_raw,
         managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
-
- private:
-  bool test_case_run_ = false;
 };
 
 TEST_F(PrivacySandboxServiceM1Test, TopicsConsentDefault) {
@@ -3270,4 +3274,245 @@ TEST_F(PrivacySandboxServiceM1Test, TopicsConsentConfirmation_Declined) {
           {kTopicsConsentStringIdentifiers,
            GetTopicsConfirmationStringIdentifiers()},
       });
+}
+
+class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceM1Test {
+ public:
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {{"consent-required", "true"}, {"notice-required", "false"}});
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1PromptTest, PrivacySandboxCorrectPromptVersion) {
+  // Depending on the feature enabled, a different prompt type may occur.
+
+  // Trials
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      {{privacy_sandbox::kPrivacySandboxSettings3,
+        {{"force-show-consent-for-testing", "true"}}}},
+      {privacy_sandbox::kPrivacySandboxSettings4});
+  RunTestCase(TestState({}), TestInput{{InputKey::kForceChromeBuild, true}},
+              TestOutput{{OutputKey::kPromptType,
+                          static_cast<int>(PromptType::kConsent)},
+                         {OutputKey::kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+
+  // M1
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      {{privacy_sandbox::kPrivacySandboxSettings4,
+        {{"force-show-consent-for-testing", "true"}}}},
+      {privacy_sandbox::kPrivacySandboxSettings3});
+  RunTestCase(TestState({}), TestInput{{InputKey::kForceChromeBuild, true}},
+              TestOutput{{OutputKey::kPromptType,
+                          static_cast<int>(PromptType::kM1Consent)},
+                         {OutputKey::kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(PrivacySandboxServiceM1PromptTest, NonChromeBuildPrompt) {
+  // A case that will normally show a prompt will not if is a non-Chrome build.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)}},
+      TestInput{{InputKey::kForceChromeBuild, false}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+#endif
+
+TEST_F(PrivacySandboxServiceM1PromptTest, ThirdPartyCookiesBlocked) {
+  // If third party cookies are blocked, set the suppressed reason as
+  // kThirdPartyCookiesBlocked and return kNone.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kCookieControlsModeUserPrefValue,
+                 content_settings::CookieControlsMode::kBlockThirdParty}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(
+                      PromptSuppressedReason::kThirdPartyCookiesBlocked)}});
+}
+
+TEST_F(PrivacySandboxServiceM1PromptTest, RestrictedPrompt) {
+  // If the Privacy Sandbox is restricted, no prompt is shown.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kIsRestrictedAccount, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType,
+                  static_cast<int>(PrivacySandboxService::PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kRestricted)}});
+
+  // After being restricted, even if the restriction is removed, no prompt
+  // should be shown. No call should even need to be made to see if the
+  // sandbox is still restricted.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kRestricted)},
+                {StateKey::kIsRestrictedAccount, false}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType,
+                  static_cast<int>(PrivacySandboxService::PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kRestricted)}});
+}
+
+class PrivacySandboxServiceM1ConsentPromptTest
+    : public PrivacySandboxServiceM1PromptTest {};
+
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest, SuppressedConsent) {
+  // A case that will normally show a consent will not if there is any
+  // suppression reason.
+  for (int suppressed_reason = static_cast<int>(PromptSuppressedReason::kNone);
+       suppressed_reason <= static_cast<int>(PromptSuppressedReason::kMaxValue);
+       ++suppressed_reason) {
+    bool suppressed =
+        suppressed_reason != static_cast<int>(PromptSuppressedReason::kNone);
+    auto expected_prompt =
+        suppressed ? PromptType::kNone : PromptType::kM1Consent;
+    RunTestCase(
+        TestState{{StateKey::kM1PromptSuppressedReason, suppressed_reason},
+                  {StateKey::kIsRestrictedAccount, false}},
+        TestInput{{InputKey::kForceChromeBuild, true}},
+        TestOutput{{OutputKey::kPromptType, static_cast<int>(expected_prompt)},
+                   {OutputKey::kM1PromptSuppressedReason, suppressed_reason}});
+  }
+}
+
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest, TrialsConsentDeclined) {
+  // If a previous consent decision was made to decline the privacy sandbox
+  // (privacy_sandbox.apis_enabled_v2 is false), set kTrialsConsentDeclined
+  // as suppressed reason and return kNone.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kTrialsConsentDecisionMade, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{
+          {OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+          {OutputKey::kM1PromptSuppressedReason,
+           static_cast<int>(PromptSuppressedReason::kTrialsConsentDeclined)}});
+}
+
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest, M1ConsentDecisionNotMade) {
+  // If m1 consent required, and decision has not been made, return
+  // kM1Consent.
+  RunTestCase(TestState{{StateKey::kM1PromptSuppressedReason,
+                         static_cast<int>(PromptSuppressedReason::kNone)},
+                        {StateKey::kM1ConsentDecisionMade, false}},
+              TestInput{{InputKey::kForceChromeBuild, true}},
+              TestOutput{{OutputKey::kPromptType,
+                          static_cast<int>(PromptType::kM1Consent)},
+                         {OutputKey::kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
+       M1ConsentDecisionMadeAndEEANoticeNotAcknowledged) {
+  // If m1 consent decision has been made and the eea notice has not been
+  // acknowledged, return kM1NoticeEEA.
+  RunTestCase(TestState{{StateKey::kM1PromptSuppressedReason,
+                         static_cast<int>(PromptSuppressedReason::kNone)},
+                        {StateKey::kM1ConsentDecisionMade, true}},
+              TestInput{{InputKey::kForceChromeBuild, true}},
+              TestOutput{{OutputKey::kPromptType,
+                          static_cast<int>(PromptType::kM1NoticeEEA)},
+                         {OutputKey::kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
+       M1ConsentDecisionMadeAndEEANoticeAcknowledged) {
+  // If m1 consent decision has been made and the eea notice has been
+  // acknowledged, return kNone.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kM1ConsentDecisionMade, true},
+                {StateKey::kM1EEANoticeAcknowledged, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+class PrivacySandboxServiceM1NoticePromptTest
+    : public PrivacySandboxServiceM1PromptTest {
+ public:
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxSettings4,
+        {{"consent-required", "false"}, {"notice-required", "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxServiceM1NoticePromptTest, SuppressedNotice) {
+  // A case that will normally show a notice will not if there is any
+  // suppression reason.
+  for (int suppressed_reason = static_cast<int>(PromptSuppressedReason::kNone);
+       suppressed_reason <= static_cast<int>(PromptSuppressedReason::kMaxValue);
+       ++suppressed_reason) {
+    bool suppressed =
+        suppressed_reason != static_cast<int>(PromptSuppressedReason::kNone);
+    auto expected_prompt =
+        suppressed ? PromptType::kNone : PromptType::kM1NoticeROW;
+    RunTestCase(
+        TestState{{StateKey::kM1PromptSuppressedReason, suppressed_reason}},
+        TestInput{{InputKey::kForceChromeBuild, true}},
+        TestOutput{{OutputKey::kPromptType, static_cast<int>(expected_prompt)},
+                   {OutputKey::kM1PromptSuppressedReason, suppressed_reason}});
+  }
+}
+
+TEST_F(PrivacySandboxServiceM1NoticePromptTest, TrialsDisabledAfterNotice) {
+  // If a previous notice was shown and then the privacy sandbox was disabled
+  // after (privacy_sandbox.apis_enabled_v2 is false), set
+  // kTrialsDisabledAfterNotice as suppressed reason and return kNone.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kTrialsNoticeDisplayed, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(
+                      PromptSuppressedReason::kTrialsDisabledAfterNotice)}});
+}
+
+TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1NoticeNotAcknowledged) {
+  // If m1 notice required, and the row notice has not been acknowledged,
+  return
+      // kM1NoticeROW.
+      RunTestCase(
+          TestState{{StateKey::kM1PromptSuppressedReason,
+                     static_cast<int>(PromptSuppressedReason::kNone)},
+                    {StateKey::kM1RowNoticeAcknowledged, false}},
+          TestInput{{InputKey::kForceChromeBuild, true}},
+          TestOutput{{OutputKey::kPromptType,
+                      static_cast<int>(PromptType::kM1NoticeROW)},
+                     {OutputKey::kM1PromptSuppressedReason,
+                      static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1NoticeAcknowledged) {
+  // If m1 notice required, and the row notice has been acknowledged, return
+  // kNone.
+  RunTestCase(
+      TestState{{StateKey::kM1PromptSuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {StateKey::kM1RowNoticeAcknowledged, true}},
+      TestInput{{InputKey::kForceChromeBuild, true}},
+      TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
+                 {OutputKey::kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
 }
