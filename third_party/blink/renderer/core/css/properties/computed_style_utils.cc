@@ -1919,18 +1919,8 @@ CSSValue* CreateAnimationValueList(const Vector<T>& values,
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDelayStart(
     const Timing::Delay& delay) {
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (delay.IsTimelineOffset()) {
-    list->Append(*MakeGarbageCollected<CSSIdentifierValue>(delay.phase));
-    list->Append(*CSSNumericLiteralValue::Create(
-        delay.relative_offset * 100.0,
-        CSSPrimitiveValue::UnitType::kPercentage));
-  } else {
-    return CSSNumericLiteralValue::Create(
-        delay.AsTimeValue().InSecondsF(),
-        CSSPrimitiveValue::UnitType::kSeconds);
-  }
-  return list;
+  return CSSNumericLiteralValue::Create(delay.AsTimeValue().InSecondsF(),
+                                        CSSPrimitiveValue::UnitType::kSeconds);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDelayStartList(

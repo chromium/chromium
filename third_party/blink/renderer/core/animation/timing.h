@@ -36,10 +36,13 @@
 #include "base/memory/values_equivalent.h"
 #include "cc/animation/keyframe_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_timelineoffset.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -81,49 +84,66 @@ struct CORE_EXPORT Timing {
     kOverrideIterationStart = 1 << 5,
     kOverrideStartDelay = 1 << 6,
     kOverrideTimingFunction = 1 << 7,
-    kOverrideAll = (1 << 8) - 1
+    kOverrideRangeStart = 1 << 8,
+    kOverrideRangeEnd = 1 << 9,
+    kOverrideAll = (1 << 10) - 1
   };
 
-  // TODO: Rename to TimelineRangeName
-  // https://github.com/w3c/csswg-drafts/issues/7589
-  enum class TimelineNamedPhase { kNone, kCover, kContain, kEnter, kExit };
+  using V8Delay = V8UnionCSSNumericValueOrDouble;
+  using V8TimelineRangeOffset = V8UnionStringOrTimelineRangeOffset;
+  using TimelineNamedRange = V8TimelineRange::Enum;
+
+  struct TimelineOffset {
+    TimelineOffset() = default;
+    explicit TimelineOffset(double relative_offset)
+        : relative_offset(relative_offset) {}
+
+    V8TimelineRangeOffset* ToV8TimelineRangeOffset() const;
+
+    void UpdateOffset();
+
+    TimelineNamedRange name = TimelineNamedRange::kNone;
+    // TODO(https://github.com/w3c/csswg-drafts/issues/7575):
+    // Add support for fixed as well as relative offsets. Consider storing as a
+    // length similar to ViewTimeline insets.
+    double relative_offset = 0;
+
+    bool operator==(const TimelineOffset& other) const {
+      return name == other.name && relative_offset == other.relative_offset;
+    }
+
+    bool operator!=(const TimelineOffset& other) const {
+      return !(*this == other);
+    }
+  };
 
   // Delay can be directly expressed as time delays or calculated based on a
   // position on a view timeline. As part of the normalization process, a
   // timeline offsets are converted to time-based delays.
   struct Delay {
-    TimelineNamedPhase phase = TimelineNamedPhase::kNone;
-    double relative_offset = 0;
+    // TODO(crbug.com/7575): Support percent delays in addition to time-based
+    // delays.
     AnimationTimeDelta time_delay;
 
     Delay() = default;
 
-    Delay(TimelineNamedPhase phase, double relative_offset)
-        : phase(phase), relative_offset(relative_offset) {}
     explicit Delay(AnimationTimeDelta time) : time_delay(time) {}
 
-    bool IsInfinite() const {
-      return phase == TimelineNamedPhase::kNone && time_delay.is_inf();
-    }
+    bool IsInfinite() const { return time_delay.is_inf(); }
 
     bool operator==(const Delay& other) const {
-      return phase == other.phase && relative_offset == other.relative_offset &&
-             time_delay == other.time_delay;
+      return time_delay == other.time_delay;
     }
 
     bool operator!=(const Delay& other) const { return !(*this == other); }
 
-    bool IsNonzeroTimeBasedDelay() const {
-      return phase == TimelineNamedPhase::kNone && !time_delay.is_zero();
-    }
-
-    bool IsTimelineOffset() const { return phase != TimelineNamedPhase::kNone; }
+    bool IsNonzeroTimeBasedDelay() const { return !time_delay.is_zero(); }
 
     void Scale(double scale_factor) { time_delay *= scale_factor; }
 
     AnimationTimeDelta AsTimeValue() const { return time_delay; }
 
-    V8UnionDoubleOrTimelineOffset* ToV8UnionDoubleOrTimelineOffset() const;
+    V8Delay* ToV8Delay() const;
   };
 
   using FillMode = cc::KeyframeModel::FillMode;
@@ -134,7 +154,6 @@ struct CORE_EXPORT Timing {
   static String FillModeString(FillMode);
   static FillMode StringToFillMode(const String&);
   static String PlaybackDirectionString(PlaybackDirection);
-  static String TimelineRangeNameToString(Timing::TimelineNamedPhase);
 
   Timing() = default;
 
@@ -154,6 +173,7 @@ struct CORE_EXPORT Timing {
 
   bool operator==(const Timing& other) const {
     return start_delay == other.start_delay && end_delay == other.end_delay &&
+           range_start == other.range_start && range_end == other.range_end &&
            fill_mode == other.fill_mode &&
            iteration_start == other.iteration_start &&
            iteration_count == other.iteration_count &&
@@ -178,9 +198,13 @@ struct CORE_EXPORT Timing {
   V8CSSNumberish* ToComputedValue(absl::optional<AnimationTimeDelta>,
                                   absl::optional<AnimationTimeDelta>) const;
 
+  static String TimelineRangeNameToString(TimelineNamedRange range_name);
+
   // TODO(crbug.com/1216527): Support CSSNumberish delays
   Delay start_delay;
   Delay end_delay;
+  absl::optional<TimelineOffset> range_start;
+  absl::optional<TimelineOffset> range_end;
   FillMode fill_mode = FillMode::AUTO;
   double iteration_start = 0;
   double iteration_count = 1;

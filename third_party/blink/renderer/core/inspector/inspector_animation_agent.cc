@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_timelineoffset.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
@@ -42,7 +41,7 @@ namespace blink {
 
 namespace {
 
-double AsDoubleOrZero(V8UnionDoubleOrTimelineOffset* value) {
+double AsDoubleOrZero(Timing::V8Delay* value) {
   if (!value->IsDouble())
     return 0;
 
@@ -405,7 +404,7 @@ Response InspectorAnimationAgent::setTiming(const String& animation_id,
   timing->setDuration(
       MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
           duration));
-  timing->setDelay(MakeGarbageCollected<V8UnionDoubleOrTimelineOffset>(delay));
+  timing->setDelay(MakeGarbageCollected<Timing::V8Delay>(delay));
   animation->effect()->updateTiming(timing, exception_state);
   return Response::Success();
 }

@@ -6,8 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_offset.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_offset_phase.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
@@ -16,40 +15,48 @@
 
 namespace blink {
 
-String Timing::TimelineRangeNameToString(Timing::TimelineNamedPhase phase) {
-  switch (phase) {
-    case Timing::TimelineNamedPhase::kNone:
+namespace {
+
+Timing::V8TimelineRangeOffset* DefaultBoundary() {
+  return MakeGarbageCollected<Timing::V8TimelineRangeOffset>("auto");
+}
+
+}  // namespace
+
+String Timing::TimelineRangeNameToString(
+    Timing::TimelineNamedRange range_name) {
+  switch (range_name) {
+    case Timing::TimelineNamedRange::kNone:
       return "none";
 
-    case Timing::TimelineNamedPhase::kCover:
+    case Timing::TimelineNamedRange::kCover:
       return "cover";
 
-    case Timing::TimelineNamedPhase::kContain:
+    case Timing::TimelineNamedRange::kContain:
       return "contain";
 
-    case Timing::TimelineNamedPhase::kEnter:
+    case Timing::TimelineNamedRange::kEnter:
       return "enter";
 
-    case Timing::TimelineNamedPhase::kExit:
+    case Timing::TimelineNamedRange::kExit:
       return "exit";
   }
 }
 
-V8UnionDoubleOrTimelineOffset* Timing::Delay::ToV8UnionDoubleOrTimelineOffset()
-    const {
-  if (phase == Timing::TimelineNamedPhase::kNone) {
-    return MakeGarbageCollected<V8UnionDoubleOrTimelineOffset>(
-        AsTimeValue().InMillisecondsF());
-  } else {
-    TimelineOffset* timeline_offset = TimelineOffset::Create();
-    absl::optional<V8TimelineOffsetPhase> timeline_offset_phase =
-        V8TimelineOffsetPhase::Create(TimelineRangeNameToString(phase));
-    if (timeline_offset_phase)
-      timeline_offset->setPhase(timeline_offset_phase.value());
-    timeline_offset->setPercent(CSSUnitValues::percent(100 * relative_offset));
+Timing::V8Delay* Timing::Delay::ToV8Delay() const {
+  // TODO(crbug.com/1216527) support delay as percentage.
+  return MakeGarbageCollected<V8Delay>(AsTimeValue().InMillisecondsF());
+}
 
-    return MakeGarbageCollected<V8UnionDoubleOrTimelineOffset>(timeline_offset);
-  }
+Timing::V8TimelineRangeOffset* Timing::TimelineOffset::ToV8TimelineRangeOffset()
+    const {
+  TimelineRangeOffset* timeline_range =
+      MakeGarbageCollected<TimelineRangeOffset>();
+  timeline_range->setRangeName(name);
+  // TODO(https://github.com/w3c/csswg-drafts/issues/7575):
+  // Support fixed offsets as well as percentage.
+  timeline_range->setOffset(CSSUnitValues::percent(100 * relative_offset));
+  return MakeGarbageCollected<V8TimelineRangeOffset>(timeline_range);
 }
 
 String Timing::FillModeString(FillMode fill_mode) {
@@ -111,8 +118,18 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
   EffectTiming* effect_timing = EffectTiming::Create();
 
   // Specified values used here so that inputs match outputs for JS API calls
-  effect_timing->setDelay(start_delay.ToV8UnionDoubleOrTimelineOffset());
-  effect_timing->setEndDelay(end_delay.ToV8UnionDoubleOrTimelineOffset());
+  effect_timing->setDelay(start_delay.ToV8Delay());
+  effect_timing->setEndDelay(end_delay.ToV8Delay());
+  if (range_start) {
+    effect_timing->setRangeStart(range_start->ToV8TimelineRangeOffset());
+  } else {
+    effect_timing->setRangeStart(DefaultBoundary());
+  }
+  if (range_end) {
+    effect_timing->setRangeEnd(range_end->ToV8TimelineRangeOffset());
+  } else {
+    effect_timing->setRangeEnd(DefaultBoundary());
+  }
   effect_timing->setFill(FillModeString(fill_mode));
   effect_timing->setIterationStart(iteration_start);
   effect_timing->setIterations(iteration_count);
@@ -183,8 +200,8 @@ ComputedEffectTiming* Timing::getComputedTiming(
 
   // TODO(crbug.com/1216527): Animation effect timing members start_delay and
   // end_delay should be CSSNumberish
-  computed_timing->setDelay(start_delay.ToV8UnionDoubleOrTimelineOffset());
-  computed_timing->setEndDelay(end_delay.ToV8UnionDoubleOrTimelineOffset());
+  computed_timing->setDelay(start_delay.ToV8Delay());
+  computed_timing->setEndDelay(end_delay.ToV8Delay());
   computed_timing->setFill(
       Timing::FillModeString(ResolvedFillMode(is_keyframe_effect)));
   computed_timing->setIterationStart(iteration_start);

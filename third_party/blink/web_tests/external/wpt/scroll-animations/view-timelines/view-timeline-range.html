@@ -52,51 +52,51 @@
       assert_px_equals(timeline.startOffset, 600, 'startOffset');
       assert_px_equals(timeline.endOffset, 900, 'endOffset');
     };
-    await runTimelineDelayTest(t, {
-      delay: { phase: 'cover', percent: CSS.percent(0) } ,
-      endDelay: { phase: 'cover', percent: CSS.percent(100) },
-      rangeStart: 600,
-      rangeEnd: 900
+    await runTimelineRangeTest(t, {
+      rangeStart: { rangeName: 'cover', offset: CSS.percent(0) } ,
+      rangeEnd: { rangeName: 'cover', offset: CSS.percent(100) },
+      startOffset: 600,
+      endOffset: 900
     }).then(anim => {
       verifyTimelineOffsets(anim);
     });
-    await runTimelineDelayTest(t, {
-      delay: { phase: 'contain', percent: CSS.percent(0) } ,
-      endDelay: { phase: 'contain', percent: CSS.percent(100) },
-      rangeStart: 700,
-      rangeEnd: 800
+    await runTimelineRangeTest(t, {
+      rangeStart: { rangeName: 'contain', offset: CSS.percent(0) } ,
+      rangeEnd: { rangeName: 'contain', offset: CSS.percent(100) },
+      startOffset: 700,
+      endOffset: 800
     }).then(anim => {
       verifyTimelineOffsets(anim);
     });
-    await runTimelineDelayTest(t, {
-      delay: { phase: 'enter', percent: CSS.percent(0) },
-      endDelay: { phase: 'enter', percent: CSS.percent(100) },
-      rangeStart: 600,
-      rangeEnd: 700
+    await runTimelineRangeTest(t, {
+      rangeStart: { rangeName: 'enter', offset: CSS.percent(0) },
+      rangeEnd: { rangeName: 'enter', offset: CSS.percent(100) },
+      startOffset: 600,
+      endOffset: 700
     });
-    await runTimelineDelayTest(t, {
-      delay:  { phase: 'exit', percent: CSS.percent(0) },
-      endDelay: { phase: 'exit', percent: CSS.percent(100) },
-      rangeStart: 800,
-      rangeEnd: 900
+    await runTimelineRangeTest(t, {
+      rangeStart:  { rangeName: 'exit', offset: CSS.percent(0) },
+      rangeEnd: { rangeName: 'exit', offset: CSS.percent(100) },
+      startOffset: 800,
+      endOffset: 900
     });
-    await runTimelineDelayTest(t, {
-      delay: { phase: 'contain', percent: CSS.percent(-50) },
-      endDelay: { phase: 'enter', percent: CSS.percent(200) },
-      rangeStart: 650,
-      rangeEnd: 800
+    await runTimelineRangeTest(t, {
+      rangeStart: { rangeName: 'contain', offset: CSS.percent(-50) },
+      rangeEnd: { rangeName: 'enter', offset: CSS.percent(200) },
+      startOffset: 650,
+      endOffset: 800
     });
-    await runTimelineDelayTest(t, {
-      delay: { phase: 'enter' },
-      endDelay: { phase: 'exit' },
-      rangeStart: 600,
-      rangeEnd: 900
+    await runTimelineRangeTest(t, {
+      rangeStart: { rangeName: 'enter' },
+      rangeEnd: { rangeName: 'exit' },
+      startOffset: 600,
+      endOffset: 900
     });
-    await runTimelineDelayTest(t, {
-      delay: { percent: CSS.percent(0) },
-      endDelay: { percent: CSS.percent(100) },
-      rangeStart: 600,
-      rangeEnd: 900
+    await runTimelineRangeTest(t, {
+      rangeStart: { offset: CSS.percent(0) },
+      rangeEnd: { offset: CSS.percent(100) },
+      startOffset: 600,
+      endOffset: 900
     });
 
   }, 'View timeline with range set via delays.' );
