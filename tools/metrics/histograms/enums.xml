@@ -51668,7 +51668,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="99" label="CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID"/>
   <int value="100" label="LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID"/>
   <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC (Obsolete)"/>
-  <int value="102" label="EXPERIMENTAL_INFOBAR_DELEGATE_LACROS"/>
+  <int value="102" label="EXPERIMENTAL_INFOBAR_DELEGATE_LACROS (Obsolete)"/>
   <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="104" label="WEBID_PERMISSION_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="105" label="AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE"/>

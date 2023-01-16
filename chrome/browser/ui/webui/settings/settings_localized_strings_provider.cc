@@ -320,14 +320,6 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
 
   std::u16string browser_version = VersionUI::GetAnnotatedVersionStringForUi();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros is in development so we don't worry about l10n for now. This message
-  // will not be shown for the full release.
-  browser_version += u". ";
-  browser_version +=
-      l10n_util::GetStringUTF16(IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE);
-#endif
-
   html_source->AddString("aboutBrowserVersion", browser_version);
   html_source->AddString(
       "aboutProductCopyright",
