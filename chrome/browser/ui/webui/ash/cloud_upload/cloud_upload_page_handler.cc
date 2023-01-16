@@ -33,12 +33,14 @@ CloudUploadPageHandler::CloudUploadPageHandler(
     Profile* profile,
     mojom::DialogArgsPtr args,
     mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
-    RespondAndCloseCallback callback)
+    RespondWithUserActionAndCloseCallback user_action_callback,
+    RespondWithLocalTaskAndCloseCallback local_task_callback)
     : profile_{profile},
       web_ui_{web_ui},
       dialog_args_{std::move(args)},
       receiver_{this, std::move(pending_page_handler)},
-      callback_{std::move(callback)} {}
+      user_action_callback_{std::move(user_action_callback)},
+      local_task_callback_{std::move(local_task_callback)} {}
 
 CloudUploadPageHandler::~CloudUploadPageHandler() = default;
 
@@ -125,9 +127,16 @@ void CloudUploadPageHandler::SignInToOneDrive(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CloudUploadPageHandler::RespondAndClose(mojom::UserAction action) {
-  if (callback_) {
-    std::move(callback_).Run(action);
+void CloudUploadPageHandler::RespondWithUserActionAndClose(
+    mojom::UserAction action) {
+  if (user_action_callback_) {
+    std::move(user_action_callback_).Run(action);
+  }
+}
+
+void CloudUploadPageHandler::RespondWithLocalTaskAndClose(int task_position) {
+  if (local_task_callback_) {
+    std::move(local_task_callback_).Run(task_position);
   }
 }
 

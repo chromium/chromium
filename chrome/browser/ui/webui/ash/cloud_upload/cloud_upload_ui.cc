@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -58,11 +59,14 @@ void CloudUploadUI::CreatePageHandler(
       web_ui(), Profile::FromWebUI(web_ui()), std::move(dialog_args_),
       std::move(receiver),
       // base::Unretained() because |page_handler_| will not out-live |this|.
-      base::BindOnce(&CloudUploadUI::RespondAndCloseDialog,
+      base::BindOnce(&CloudUploadUI::RespondWithUserActionAndCloseDialog,
+                     base::Unretained(this)),
+      base::BindOnce(&CloudUploadUI::RespondWithLocalTaskAndCloseDialog,
                      base::Unretained(this)));
 }
 
-void CloudUploadUI::RespondAndCloseDialog(mojom::UserAction action) {
+void CloudUploadUI::RespondWithUserActionAndCloseDialog(
+    mojom::UserAction action) {
   base::Value::List args;
   switch (action) {
     case mojom::UserAction::kCancel:
@@ -87,6 +91,12 @@ void CloudUploadUI::RespondAndCloseDialog(mojom::UserAction action) {
       args.Append(kUserActionConfirmOrUploadToOneDrive);
       break;
   }
+  ui::MojoWebDialogUI::CloseDialog(args);
+}
+
+void CloudUploadUI::RespondWithLocalTaskAndCloseDialog(int task_position) {
+  base::Value::List args;
+  args.Append(base::NumberToString(task_position));
   ui::MojoWebDialogUI::CloseDialog(args);
 }
 
