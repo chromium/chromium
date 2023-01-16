@@ -225,8 +225,11 @@ class FederatedAuthRequestImplMultipleFramesTest
   void DoRequestToken(
       mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
       RequestTokenCallback callback) {
+    blink::mojom::IdentityProviderLoginHintPtr login_hint_ptr =
+        blink::mojom::IdentityProviderLoginHint::New(/*email=*/"", /*id=*/"",
+                                                     /*login_hint=*/false);
     auto idp_ptr = blink::mojom::IdentityProviderConfig::New(
-        GURL(kProviderUrlFull), kClientId, kNonce, /*login_hint=*/"");
+        GURL(kProviderUrlFull), kClientId, kNonce, std::move(login_hint_ptr));
     std::vector<blink::mojom::IdentityProviderConfigPtr> idp_ptrs;
     idp_ptrs.push_back(std::move(idp_ptr));
     auto get_params = blink::mojom::IdentityProviderGetParameters::New(

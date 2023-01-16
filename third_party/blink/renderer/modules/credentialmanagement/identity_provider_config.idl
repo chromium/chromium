@@ -9,5 +9,5 @@ dictionary IdentityProviderConfig {
   required USVString configURL;
   required USVString clientId;
   USVString nonce;
-  [RuntimeEnabled=FedCmLoginHint] DOMString loginHint;
+  [RuntimeEnabled=FedCmLoginHint] LoginHint loginHint;
 };

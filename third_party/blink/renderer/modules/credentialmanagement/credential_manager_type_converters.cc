@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_login_hint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -56,6 +57,7 @@ using blink::mojom::blink::DevicePublicKeyRequest;
 using blink::mojom::blink::DevicePublicKeyRequestPtr;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
+using blink::mojom::blink::IdentityProviderLoginHint;
 using blink::mojom::blink::LargeBlobSupport;
 using blink::mojom::blink::LogoutRpsRequest;
 using blink::mojom::blink::LogoutRpsRequestPtr;
@@ -700,10 +702,18 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
   mojo_provider->config_url = blink::KURL(provider.configURL());
   mojo_provider->client_id = provider.clientId();
   mojo_provider->nonce = provider.getNonceOr("");
-  mojo_provider->login_hint =
-      blink::RuntimeEnabledFeatures::FedCmLoginHintEnabled()
-          ? provider.getLoginHintOr("")
-          : "";
+  auto login_hint = IdentityProviderLoginHint::New();
+  if (blink::RuntimeEnabledFeatures::FedCmLoginHintEnabled() &&
+      provider.hasLoginHint()) {
+    login_hint->email = provider.loginHint()->getEmailOr("");
+    login_hint->id = provider.loginHint()->getIdOr("");
+    login_hint->is_required = provider.loginHint()->getIsRequiredOr(false);
+  } else {
+    login_hint->email = "";
+    login_hint->id = "";
+    login_hint->is_required = false;
+  }
+  mojo_provider->login_hint = std::move(login_hint);
   return mojo_provider;
 }
 
