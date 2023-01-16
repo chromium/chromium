@@ -82,42 +82,48 @@ found in the LICENSE file.
                 android:visibility="gone"
                 app:tint="@macro/default_icon_color" />
 
-            <TextView
-                android:id="@+id/title"
+            <RelativeLayout
+                android:id="@+id/page_info"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_height="match_parent"
                 android:layout_toStartOf="@id/open_in_new_tab"
                 android:layout_toEndOf="@id/favicon"
-                android:textAlignment="viewStart"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                android:layout_marginBottom="6dp"
+                android:gravity="center">
 
-            <org.chromium.ui.widget.ChromeImageView
-                android:id="@+id/security_icon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_alignStart="@id/title"
-                android:layout_below="@id/title"
-                android:layout_marginTop="3dp"
-                app:tint="@macro/default_icon_color"
-                tools:ignore="ContentDescription" />
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textAlignment="viewStart"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
-            <TextView
-                android:id="@+id/origin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/open_in_new_tab"
-                android:layout_toEndOf="@id/security_icon"
-                android:layout_below="@id/title"
-                android:layout_marginStart="4dp"
-                android:textAlignment="viewStart"
-                android:ellipsize="start"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+                <org.chromium.ui.widget.ChromeImageView
+                    android:id="@+id/security_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_alignStart="@id/title"
+                    android:layout_below="@id/title"
+                    android:layout_marginTop="3dp"
+                    app:tint="@macro/default_icon_color"
+                    tools:ignore="ContentDescription" />
 
+                <TextView
+                    android:id="@+id/origin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/security_icon"
+                    android:layout_below="@id/title"
+                    android:layout_marginStart="4dp"
+                    android:textAlignment="viewStart"
+                    android:ellipsize="start"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <View

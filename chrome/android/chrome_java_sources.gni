@@ -317,6 +317,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/RelatedSearchesControl.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabCoordinator.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabMediator.java",
+  "java/src/org/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabObserver.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabSheetContent.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/Layout.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java",

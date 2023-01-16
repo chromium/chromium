@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.previewtab;
 
 import android.support.test.InstrumentationRegistry;
+import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
 
@@ -14,11 +15,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabObserver;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabSheetContent;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.firstrun.DisableFirstRun;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,6 +38,8 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.url.GURL;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests the Preview Tab, also known as the Ephemeral Tab.  Based on the
@@ -57,9 +63,34 @@ public class PreviewTabTest {
             "/chrome/test/data/android/previewtab/preview_tab.html";
     private static final String PREVIEW_TAB_DOM_ID = "previewTab";
     private static final String NEAR_BOTTOM_DOM_ID = "nearBottom";
+    private static final String ANOTHER_PAGE_DOM_ID = "anotherPage";
 
     private EphemeralTabCoordinator mEphemeralTabCoordinator;
     private BottomSheetTestSupport mSheetTestSupport;
+    private TestEphemeralTabObserver mEphemeralTabObserver;
+
+    private static class TestEphemeralTabObserver implements EphemeralTabObserver {
+        public final CallbackHelper onToolbarCreatedCallback = new CallbackHelper();
+        public final CallbackHelper onNavigationStartedCallback = new CallbackHelper();
+        public final CallbackHelper onTitleSetCallback = new CallbackHelper();
+
+        @Override
+        public void onToolbarCreated(ViewGroup toolbarView) {
+            onToolbarCreatedCallback.notifyCalled();
+        }
+
+        @Override
+        public void onNavigationStarted(GURL clickedUrl,
+                BottomSheetController bottomSheetController,
+                EphemeralTabSheetContent ephemeralTabSheetContent) {
+            onNavigationStartedCallback.notifyCalled();
+        }
+
+        @Override
+        public void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {
+            onTitleSetCallback.notifyCalled();
+        }
+    }
 
     @Before
     public void setUp() {
@@ -74,6 +105,7 @@ public class PreviewTabTest {
         mSheetTestSupport = new BottomSheetTestSupport(mActivityTestRule.getActivity()
                                                                .getRootUiCoordinatorForTesting()
                                                                .getBottomSheetController());
+        mEphemeralTabObserver = new TestEphemeralTabObserver();
     }
 
     /**
@@ -173,5 +205,39 @@ public class PreviewTabTest {
 
         closePreviewTab();
         Assert.assertFalse("Contextual Search should be active", csManager.isSuppressed());
+    }
+
+    /**
+     * Test that the observer methods are being notified on events.
+     */
+    @Test
+    @MediumTest
+    @Feature({"PreviewTab"})
+    public void testObserverMethods() throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver));
+
+        // Open Preview Tab.
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
+                                new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)), null,
+                                "PreviewTab", false));
+        endAnimations();
+
+        mEphemeralTabObserver.onToolbarCreatedCallback.waitForCallback(0, 1);
+        mEphemeralTabObserver.onNavigationStartedCallback.waitForCallback(0, 1);
+        mEphemeralTabObserver.onTitleSetCallback.waitForCallback(0, 1);
+
+        // Navigate to another page in preview tab.
+        DOMUtils.clickNode(
+                mEphemeralTabCoordinator.getWebContentsForTesting(), ANOTHER_PAGE_DOM_ID);
+        endAnimations();
+
+        mEphemeralTabObserver.onNavigationStartedCallback.waitForCallback(1, 1);
+        mEphemeralTabObserver.onTitleSetCallback.waitForCallback(1, 1);
+        Assert.assertEquals(1, mEphemeralTabObserver.onToolbarCreatedCallback.getCallCount());
+
+        closePreviewTab();
     }
 }

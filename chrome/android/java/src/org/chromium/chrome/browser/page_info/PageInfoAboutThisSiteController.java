@@ -8,6 +8,8 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -16,10 +18,13 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabObserver;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabSheetContent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
@@ -46,6 +51,8 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
+
+    private EphemeralTabObserver mEphemeralTabObserver;
 
     static boolean isFeatureEnabled() {
         return PageInfoAboutThisSiteControllerJni.get().isFeatureEnabled();
@@ -100,14 +107,55 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
             }
             GURL bottomSheetUrl = new GURL(builder.toString());
             GURL fullPageUrl = new GURL(url);
+
+            createEphemeralTabObserver(bottomSheetUrl);
+
+            mEphemeralTabCoordinatorSupplier.get().addObserver(mEphemeralTabObserver);
             mEphemeralTabCoordinatorSupplier.get().requestOpenSheetWithFullPageUrl(
                     bottomSheetUrl, fullPageUrl, getTitle(), /*isIncognito=*/false);
+
             mMainController.dismiss();
         } else {
-            new TabDelegate(/*incognito=*/false)
-                    .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI,
-                            TabUtils.fromWebContents(mWebContents));
+            openInNewTab(url);
         }
+    }
+
+    public void createEphemeralTabObserver(GURL originUrl) {
+        mEphemeralTabObserver = new EphemeralTabObserver() {
+            @Override
+            public void onToolbarCreated(ViewGroup toolbarView) {
+                TextView origin = toolbarView.findViewById(R.id.origin);
+                origin.setVisibility(View.GONE);
+
+                ImageView securityIcon = toolbarView.findViewById(R.id.security_icon);
+                securityIcon.setVisibility(View.GONE);
+
+                TextView title = toolbarView.findViewById(R.id.title);
+                title.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+            }
+
+            @Override
+            public void onNavigationStarted(GURL clickedUrl,
+                    BottomSheetController bottomSheetController,
+                    EphemeralTabSheetContent ephemeralTabSheetContent) {
+                if (!clickedUrl.equals(originUrl)) {
+                    bottomSheetController.hideContent(ephemeralTabSheetContent, /* animate= */ true,
+                            BottomSheetController.StateChangeReason.PROMOTE_TAB);
+                    openInNewTab(clickedUrl.getSpec());
+                }
+            }
+
+            @Override
+            public void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {
+                sheetContent.updateTitle(getTitle());
+            }
+        };
+    }
+
+    private void openInNewTab(String url) {
+        new TabDelegate(/*incognito=*/false)
+                .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI,
+                        TabUtils.fromWebContents(mWebContents));
     }
 
     @Override

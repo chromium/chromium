@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
@@ -64,6 +65,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
             new ShareDelegateSupplier();
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final Callback<ViewGroup> mOnToolbarCreatedCallback;
 
     private ViewGroup mToolbarView;
     private ViewGroup mSheetContentView;
@@ -83,16 +85,19 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
      * @param closeButtonCallback Callback invoked when user clicks on the close button.
      * @param maxViewHeight The height of the sheet in full height position.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param onToolbarCreatedCallback Callback invoked to notify observers on toolbar creation.
      */
     public EphemeralTabSheetContent(Context context, Runnable openNewTabCallback,
             Runnable toolbarClickCallback, Runnable closeButtonCallback, int maxViewHeight,
-            IntentRequestTracker intentRequestTracker) {
+            IntentRequestTracker intentRequestTracker,
+            Callback<ViewGroup> onToolbarCreatedCallback) {
         mContext = context;
         mOpenNewTabCallback = openNewTabCallback;
         mToolbarClickCallback = toolbarClickCallback;
         mCloseButtonCallback = closeButtonCallback;
         mToolbarHeightPx =
                 mContext.getResources().getDimensionPixelSize(R.dimen.sheet_tab_toolbar_height);
+        mOnToolbarCreatedCallback = onToolbarCreatedCallback;
 
         createThinWebView((int) (maxViewHeight * FULL_HEIGHT_RATIO), intentRequestTracker);
         createToolbarView();
@@ -155,6 +160,8 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
 
         mFaviconView = mToolbarView.findViewById(R.id.favicon);
         mCurrentFavicon = mFaviconView.getDrawable();
+
+        mOnToolbarCreatedCallback.onResult(mToolbarView);
     }
 
     /**

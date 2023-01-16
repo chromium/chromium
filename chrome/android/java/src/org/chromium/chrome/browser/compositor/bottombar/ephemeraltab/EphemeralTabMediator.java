@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.compositor.bottombar.ephemeraltab;
 
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
+import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -35,6 +38,7 @@ public class EphemeralTabMediator {
 
     private final BottomSheetController mBottomSheetController;
     private final EphemeralTabCoordinator.FaviconLoader mFaviconLoader;
+    private final ObserverList<EphemeralTabObserver> mObservers;
     private final int mTopControlsHeightDp;
 
     private WebContents mWebContents;
@@ -51,6 +55,7 @@ public class EphemeralTabMediator {
         mBottomSheetController = bottomSheetController;
         mFaviconLoader = faviconLoader;
         mTopControlsHeightDp = topControlsHeightDp;
+        mObservers = new ObserverList<EphemeralTabObserver>();
     }
 
     /**
@@ -67,6 +72,62 @@ public class EphemeralTabMediator {
         createWebContentsObserver();
         createWebContentsDelegate();
         mSheetContent.attachWebContents(mWebContents, contentView, mWebContentsDelegate);
+    }
+
+    /**
+     * Add observer to be notified of ephemeral tab events.
+     */
+    void addObserver(EphemeralTabObserver ephemeralTabObserver) {
+        mObservers.addObserver(ephemeralTabObserver);
+    }
+
+    /**
+     * Remove observer.
+     */
+    void removeObserver(EphemeralTabObserver ephemeralTabObserver) {
+        mObservers.removeObserver(ephemeralTabObserver);
+    }
+
+    /**
+     * Clear observers.
+     */
+    void clearObservers() {
+        mObservers.clear();
+    }
+
+    /**
+     * Notify observers on toolbar creation.
+     */
+    public void onToolbarCreated(ViewGroup toolbarView) {
+        RewindableIterator<EphemeralTabObserver> observersIterator =
+                mObservers.rewindableIterator();
+        while (observersIterator.hasNext()) {
+            observersIterator.next().onToolbarCreated(toolbarView);
+        }
+    }
+
+    /**
+     * Notify observers on navigation start.
+     */
+    public void onNavigationStarted(GURL clickedUrl, BottomSheetController bottomSheetController,
+            EphemeralTabSheetContent ephemeralTabSheetContent) {
+        RewindableIterator<EphemeralTabObserver> observersIterator =
+                mObservers.rewindableIterator();
+        while (observersIterator.hasNext()) {
+            observersIterator.next().onNavigationStarted(
+                    clickedUrl, bottomSheetController, ephemeralTabSheetContent);
+        }
+    }
+
+    /**
+     * Notify observers on title set.
+     */
+    public void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {
+        RewindableIterator<EphemeralTabObserver> observersIterator =
+                mObservers.rewindableIterator();
+        while (observersIterator.hasNext()) {
+            observersIterator.next().onTitleSet(sheetContent, title);
+        }
     }
 
     /**
@@ -110,6 +171,8 @@ public class EphemeralTabMediator {
                         return;
                     }
 
+                    onNavigationStarted(url, mBottomSheetController, mSheetContent);
+
                     mCurrentUrl = url;
                     mFaviconLoader.loadFavicon(
                             url, (drawable) -> onFaviconAvailable(drawable), mProfile);
@@ -124,6 +187,7 @@ public class EphemeralTabMediator {
             @Override
             public void titleWasSet(String title) {
                 mSheetContent.updateTitle(title);
+                onTitleSet(mSheetContent, title);
             }
 
             @Override
@@ -131,7 +195,7 @@ public class EphemeralTabMediator {
                 if (navigation.hasCommitted()) {
                     mIsOnErrorPage = navigation.isErrorPage();
                     mSheetContent.updateURL(mWebContents.get().getVisibleUrl());
-                } else {
+                } else if (navigation.isDownload()) {
                     // Not viewable contents such as download. Show a toast and close the tab.
                     Toast.makeText(ContextUtils.getApplicationContext(),
                                  R.string.ephemeral_tab_sheet_not_viewable, Toast.LENGTH_SHORT)
@@ -227,5 +291,6 @@ public class EphemeralTabMediator {
         mWebContents = null;
         mSheetContent = null;
         mProfile = null;
+        clearObservers();
     }
 }

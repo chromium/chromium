@@ -309,7 +309,8 @@ public class PageInfoAboutThisSiteTest {
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
         String moreAboutUrl = mTestServerRule.getServer().getURL(sAboutHtml);
         verify(mMockEphemeralTabCoordinator)
-                .requestOpenSheetWithFullPageUrl(/*url=*/new GURL(moreAboutUrl + "?ilrm=minimal"),
+                .requestOpenSheetWithFullPageUrl(
+                        /*url=*/new GURL(moreAboutUrl + "?ilrm=minimal"),
                         /*fullPageUrl=*/new GURL(moreAboutUrl), /*title=*/"About this page",
                         /*isIncognito=*/false);
         verify(mMockAboutThisSiteJni).onAboutThisSiteRowClicked(true);

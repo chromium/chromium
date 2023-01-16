@@ -12,6 +12,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.Supplier;
@@ -62,9 +64,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final ActivityTabProvider mTabProvider;
     private final Supplier<TabCreator> mTabCreator;
     private final BottomSheetController mBottomSheetController;
+    private final EphemeralTabMediator mMediator;
     private final boolean mCanPromoteToNewTab;
-
-    private EphemeralTabMediator mMediator;
 
     private WebContents mWebContents;
     private ContentView mContentView;
@@ -100,6 +101,12 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         mTabCreator = tabCreator;
         mBottomSheetController = bottomSheetController;
         mCanPromoteToNewTab = canPromoteToNewTab;
+
+        float topControlsHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                / mWindow.getDisplay().getDipScale();
+        mMediator = new EphemeralTabMediator(
+                mBottomSheetController, new FaviconLoader(mContext), (int) topControlsHeight);
     }
 
     /**
@@ -129,6 +136,20 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     }
 
     /**
+     * Add observer to be notified of ephemeral tab events.
+     */
+    public void addObserver(EphemeralTabObserver ephemeralTabObserver) {
+        mMediator.addObserver(ephemeralTabObserver);
+    }
+
+    /**
+     * Remove observer.
+     */
+    public void removeObserver(EphemeralTabObserver ephemeralTabObserver) {
+        mMediator.removeObserver(ephemeralTabObserver);
+    }
+
+    /**
      * Alternative entry point for ephemeral tab flow. This will create an ephemeral tab and show it
      * in the bottom sheet. When the tab is opened in a fullPage, an alternative URL is opened.
      *
@@ -143,13 +164,6 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         mUrl = url;
         mFullPageUrl = fullPageUrl;
         Profile profile = getProfile(isIncognito);
-        if (mMediator == null) {
-            float topControlsHeight =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                    / mWindow.getDisplay().getDipScale();
-            mMediator = new EphemeralTabMediator(
-                    mBottomSheetController, new FaviconLoader(mContext), (int) topControlsHeight);
-        }
         if (mWebContents == null) {
             assert mSheetContent == null;
             createWebContents(profile);
@@ -190,7 +204,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             assert intentRequestTracker
                     != null : "ActivityWindowAndroid must have a IntentRequestTracker.";
             mSheetContent = new EphemeralTabSheetContent(mContext, this::openInNewTab,
-                    this::onToolbarClick, this::close, getMaxViewHeight(), intentRequestTracker);
+                    this::onToolbarClick, this::close, getMaxViewHeight(), intentRequestTracker,
+                    (toolbarView) -> mMediator.onToolbarCreated(toolbarView));
             mMediator.init(mWebContents, mContentView, mSheetContent, profile);
             mLayoutView.addOnLayoutChangeListener(this);
         }
@@ -238,7 +253,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             mContentView = null;
         }
 
-        if (mMediator != null) mMediator.destroyContent();
+        mMediator.destroyContent();
 
         mLayoutView.removeOnLayoutChangeListener(this);
         if (mSheetObserver != null) mBottomSheetController.removeObserver(mSheetObserver);
@@ -261,6 +276,14 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         } else if (state == SheetState.FULL) {
             mBottomSheetController.collapseSheet(true);
         }
+    }
+
+    /**
+     * @return The WebContents that this Ephemeral tab currently holds.
+     */
+    @VisibleForTesting
+    public WebContents getWebContentsForTesting() {
+        return mWebContents;
     }
 
     /**
