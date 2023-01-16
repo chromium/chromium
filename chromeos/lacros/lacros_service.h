@@ -262,10 +262,19 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // function, and is robust against unavailability.
   SystemIdleCache* system_idle_cache() { return system_idle_cache_.get(); }
 
-  // Returns the version for an ash interface with a given UUID. Returns -1 if
-  // the interface is not found. This is a synchronous version of
-  // mojo::Remote::QueryVersion. It relies on Ash M88. Features that need to
-  // work on M87 or older should not use this.
+  // Returns the version for an ash interface with a given mojom interface,
+  // or -1 if not found.
+  // This is synchronous version of mojo::Remote::QueryVersion for crosapi
+  // interfaces.
+  //
+  // Example code:
+  //    LacrosService::Get()->GetInterfaceVersion<crosapi::mojom::Arc>();
+  template <typename T>
+  int GetInterfaceVersion() const {
+    return GetInterfaceVersion(T::Uuid_);
+  }
+
+  // Similar to Above, but taking UUID.
   int GetInterfaceVersion(base::Token interface_uuid) const;
 
   using Crosapi = crosapi::mojom::Crosapi;

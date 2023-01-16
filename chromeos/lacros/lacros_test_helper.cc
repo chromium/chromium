@@ -13,8 +13,9 @@ namespace {
 base::Version GetAshVersion() {
   constexpr int min_mojo_version =
       crosapi::mojom::TestController::kGetAshVersionMinVersion;
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::TestController::Uuid_) < min_mojo_version) {
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
+      min_mojo_version) {
     return base::Version({0, 0, 0, 0});
   }
 
