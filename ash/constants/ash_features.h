@@ -704,7 +704,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceScheduleTasksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFileManagerFuseBoxDebugEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFilesConflictDialogEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFilesWebDriveOfficeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
