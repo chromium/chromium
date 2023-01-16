@@ -130,7 +130,7 @@ public class AddToHomescreenDialogView
                         .with(ModalDialogProperties.CUSTOM_VIEW, mParentView)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .build();
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
     // @VisibleForTests implies that a method should only be accessed from tests or within private

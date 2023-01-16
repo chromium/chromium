@@ -478,6 +478,29 @@ public class AppBannerManagerTest {
         });
     }
 
+    private void dismissAmbientBadgeMessage(ChromeActivityTestRule<? extends ChromeActivity> rule)
+            throws Exception {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE)) {
+            WindowAndroid windowAndroid = rule.getActivity().getWindowAndroid();
+
+            MessageDispatcher dispatcher = TestThreadUtils.runOnUiThreadBlocking(
+                    () -> MessageDispatcherProvider.from(windowAndroid));
+            PropertyModel model = TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> MessagesTestHelper.getCurrentMessage(
+                                    MessagesTestHelper
+                                            .getEnqueuedMessages(dispatcher,
+                                                    MessageIdentifier.INSTALLABLE_AMBIENT_BADGE)
+                                            .get(0)));
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { dispatcher.dismissMessage(model, DismissReason.GESTURE); });
+            CriteriaHelper.pollUiThread(
+                    ()
+                            -> Criteria.checkThat(MessagesTestHelper.getMessageCount(windowAndroid),
+                                    Matchers.is(0)));
+        }
+    }
+
     @Test
     @SmallTest
     @Feature({"AppBanners"})
@@ -1127,6 +1150,8 @@ public class AppBannerManagerTest {
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
+        // Dismiss the message so it will not overlap with the IPH.
+        dismissAmbientBadgeMessage(mTabbedActivityTestRule);
 
         waitForHelpBubble(withText(R.string.iph_pwa_install_available_text)).perform(click());
         assertThat(mTracker.wasDismissed(), is(true));
@@ -1227,5 +1252,24 @@ public class AppBannerManagerTest {
         // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         tapAndWaitForModalBanner(tab);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    public void testAppBannerDismissedAfterNavigation() throws Exception {
+        String url = WebappTestPage.getServiceWorkerUrlWithAction(
+                mTestServer, "call_stashed_prompt_on_click");
+        resetEngagementForUrl(url, 10);
+
+        mTabbedActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
+        waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
+
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        tapAndWaitForModalBanner(tab);
+
+        mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        waitUntilNoDialogsShowing(tab);
     }
 }
