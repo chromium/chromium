@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
-#include "build/branding_buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -78,9 +77,8 @@ void SortTopicsForDisplay(
 // Returns whether |profile_type|, and the current browser session on CrOS,
 // represent a regular (e.g. non guest, non system, non kiosk) profile.
 bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
-  if (profile_type != profile_metrics::BrowserProfileType::kRegular) {
+  if (profile_type != profile_metrics::BrowserProfileType::kRegular)
     return false;
-  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Any Device Local account, which is a CrOS concept powering things like
@@ -174,14 +172,6 @@ std::string GetTopicsSettingsText(bool did_consent,
                          });
 }
 
-// Returns whether this is a Google Chrome-branded build.
-bool IsChromeBuild() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return true;
-#endif
-  return false;
-}
-
 }  // namespace
 
 PrivacySandboxService::PrivacySandboxService() = default;
@@ -235,9 +225,8 @@ PrivacySandboxService::PrivacySandboxService(
 
   // If the Sandbox is currently restricted, disable the V2 preference. The user
   // must manually enable the sandbox if they stop being restricted.
-  if (IsPrivacySandboxRestricted()) {
+  if (IsPrivacySandboxRestricted())
     pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
-  }
 
   // Check for FPS pref init at each startup.
   // TODO(crbug.com/1351327): Remove this logic when most users have run init.
@@ -253,12 +242,6 @@ PrivacySandboxService::PromptType
 PrivacySandboxService::GetRequiredPromptType() {
   const auto third_party_cookies_blocked =
       AreThirdPartyCookiesBlocked(cookie_settings_);
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
-    return GetRequiredPromptTypeInternalM1(
-        pref_service_, profile_type_, privacy_sandbox_settings_,
-        third_party_cookies_blocked,
-        force_chrome_build_for_tests_ || IsChromeBuild());
-  }
   return GetRequiredPromptTypeInternal(pref_service_, profile_type_,
                                        privacy_sandbox_settings_,
                                        third_party_cookies_blocked);
@@ -290,18 +273,15 @@ bool PrivacySandboxService::IsUrlSuitableForPrompt(const GURL& url) {
   // The prompt should be shown on a limited list of pages:
 
   // about:blank is valid.
-  if (url.IsAboutBlank()) {
+  if (url.IsAboutBlank())
     return true;
-  }
   // Chrome settings page is valid. The subpages aren't as most of them are not
   // related to the prompt.
-  if (url == GURL(chrome::kChromeUISettingsURL)) {
+  if (url == GURL(chrome::kChromeUISettingsURL))
     return true;
-  }
   // Chrome history is valid as the prompt mentions history.
-  if (url == GURL(chrome::kChromeUIHistoryURL)) {
+  if (url == GURL(chrome::kChromeUIHistoryURL))
     return true;
-  }
   // Only a Chrome controlled New Tab Page is valid. Third party NTP is still
   // Chrome controlled, but is without Google branding.
   if (url == GURL(chrome::kChromeUINewTabPageURL) ||
@@ -330,10 +310,6 @@ void PrivacySandboxService::SetPromptDisabledForTests(bool disabled) {
   g_prompt_disabled_for_tests = disabled;
 }
 
-void PrivacySandboxService::ForceChromeBuildForTests(bool force_chrome_build) {
-  force_chrome_build_for_tests_ = force_chrome_build;
-}
-
 bool PrivacySandboxService::IsPrivacySandboxEnabled() {
   return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
 }
@@ -355,9 +331,8 @@ void PrivacySandboxService::SetPrivacySandboxEnabled(bool enabled) {
 void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
   // If the user has disabled the Privacy Sandbox, any data stored should be
   // cleared.
-  if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)) {
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2))
     return;
-  }
 
   if (browsing_data_remover_) {
     browsing_data_remover_->Remove(
@@ -366,9 +341,8 @@ void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
   }
 
-  if (browsing_topics_service_) {
+  if (browsing_topics_service_)
     browsing_topics_service_->ClearAllTopicsData();
-  }
 }
 
 bool PrivacySandboxService::IsFirstPartySetsDataAccessEnabled() const {
@@ -404,9 +378,8 @@ PrivacySandboxService::GetBlockedFledgeJoiningTopFramesForDisplay() const {
 
   std::vector<std::string> blocked_top_frames;
 
-  for (auto entry : pref_value) {
+  for (auto entry : pref_value)
     blocked_top_frames.emplace_back(entry.first);
-  }
 
   // Apply a lexographic ordering to match other settings permission surfaces.
   std::sort(blocked_top_frames.begin(), blocked_top_frames.end());
@@ -523,9 +496,8 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
 
 void PrivacySandboxService::LogPrivacySandboxState() {
   // Do not record metrics for non-regular profiles.
-  if (!IsRegularProfile(profile_type_)) {
+  if (!IsRegularProfile(profile_type_))
     return;
-  }
 
   auto fps_status = FirstPartySetsState::kFpsNotRelevant;
   if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
@@ -648,9 +620,8 @@ PrivacySandboxService::GetCurrentTopTopics() const {
     return {fake_current_topics_.begin(), fake_current_topics_.end()};
   }
 
-  if (!browsing_topics_service_) {
+  if (!browsing_topics_service_)
     return {};
-  }
 
   auto topics = browsing_topics_service_->GetTopTopicsForDisplay();
 
@@ -676,9 +647,8 @@ PrivacySandboxService::GetBlockedTopics() const {
   for (const auto& entry : pref_value) {
     auto blocked_topic = privacy_sandbox::CanonicalTopic::FromValue(
         *entry.GetDict().Find(kBlockedTopicsTopicKey));
-    if (blocked_topic) {
+    if (blocked_topic)
       blocked_topics.emplace_back(*blocked_topic);
-    }
   }
 
   SortTopicsForDisplay(blocked_topics);
@@ -700,9 +670,8 @@ void PrivacySandboxService::SetTopicAllowed(
     return;
   }
 
-  if (!allowed && browsing_topics_service_) {
+  if (!allowed && browsing_topics_service_)
     browsing_topics_service_->ClearTopic(topic);
-  }
 
   privacy_sandbox_settings_->SetTopicAllowed(topic, allowed);
 }
@@ -748,18 +717,16 @@ absl::optional<net::SchemefulSite> PrivacySandboxService::GetFirstPartySetOwner(
 
     base::flat_map<net::SchemefulSite, net::SchemefulSite>::const_iterator
         site_entry = sets.find(schemeful_site);
-    if (site_entry == sets.end()) {
+    if (site_entry == sets.end())
       return absl::nullopt;
-    }
 
     return site_entry->second;
   }
 
   absl::optional<net::FirstPartySetEntry> site_entry =
       first_party_sets_policy_service_->FindEntry(net::SchemefulSite(site_url));
-  if (!site_entry.has_value()) {
+  if (!site_entry.has_value())
     return absl::nullopt;
-  }
 
   return site_entry->primary();
 }
@@ -832,18 +799,13 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
     profile_metrics::BrowserProfileType profile_type,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     bool third_party_cookies_blocked) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4));
-
   // If the prompt is disabled for testing, never show it.
-  if (g_prompt_disabled_for_tests) {
+  if (g_prompt_disabled_for_tests)
     return PromptType::kNone;
-  }
 
   // If the profile isn't a regular profile, no prompt should ever be shown.
-  if (!IsRegularProfile(profile_type)) {
+  if (!IsRegularProfile(profile_type))
     return PromptType::kNone;
-  }
 
   // Forced testing feature parameters override everything.
   if (base::FeatureList::IsEnabled(
@@ -851,19 +813,25 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
     return PromptType::kNone;
   }
 
-  if (privacy_sandbox::kPrivacySandboxSettings3DisablePromptForTesting.Get()) {
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting.Get())
+    return PromptType::kM1Consent;
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
+          .Get())
+    return PromptType::kM1NoticeROW;
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
+          .Get())
+    return PromptType::kM1NoticeEEA;
+
+  if (privacy_sandbox::kPrivacySandboxSettings3DisablePromptForTesting.Get())
     return PromptType::kNone;
-  }
 
-  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowConsentForTesting
-          .Get()) {
+  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowConsentForTesting.Get())
     return PromptType::kConsent;
-  }
 
-  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNoticeForTesting
-          .Get()) {
+  if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNoticeForTesting.Get())
     return PromptType::kNotice;
-  }
 
   // If neither consent or notice is required, no prompt is required.
   if (!privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get() &&
@@ -889,9 +857,8 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
   }
 
   // If a consent decision has already been made, no prompt is required.
-  if (pref_service->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade)) {
+  if (pref_service->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade))
     return PromptType::kNone;
-  }
 
   // If only a notice is required, and has been shown, no prompt is required.
   if (!privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get() &&
@@ -1015,132 +982,6 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
   return PromptType::kNotice;
 }
 
-/*static*/ PrivacySandboxService::PromptType
-PrivacySandboxService::GetRequiredPromptTypeInternalM1(
-    PrefService* pref_service,
-    profile_metrics::BrowserProfileType profile_type,
-    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-    bool third_party_cookies_blocked,
-    bool is_chrome_build) {
-  DCHECK(
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4));
-
-  // If the prompt is disabled for testing, never show it.
-  if (g_prompt_disabled_for_tests) {
-    return PromptType::kNone;
-  }
-
-  // If the profile isn't a regular profile, no prompt should ever be shown.
-  if (!IsRegularProfile(profile_type)) {
-    return PromptType::kNone;
-  }
-
-  // Forced testing feature parameters override everything.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kDisablePrivacySandboxPrompts)) {
-    return PromptType::kNone;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
-          .Get()) {
-    return PromptType::kM1Consent;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
-          .Get()) {
-    return PromptType::kM1NoticeROW;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
-          .Get()) {
-    return PromptType::kM1NoticeEEA;
-  }
-
-  // If this a non-Chrome build, do not show a prompt.
-  if (!is_chrome_build) {
-    return PromptType::kNone;
-  }
-
-  // If neither a notice nor a consent is required, do not show a prompt.
-  if (!privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get() &&
-      !privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
-    return PromptType::kNone;
-  }
-
-  // Only one of the consent or notice should be required by Finch parameters.
-  DCHECK(!privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get() ||
-         !privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get());
-
-  // If a prompt was suppressed once, for any reason, it will forever remain
-  // suppressed and a prompt will not be shown.
-  if (static_cast<PromptSuppressedReason>(
-          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed)) !=
-      PromptSuppressedReason::kNone) {
-    return PromptType::kNone;
-  }
-
-  if (pref_service->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade) ||
-      pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)) {
-    // If during the trials a previous consent decision was made, or the notice
-    // was already acknowledged, and the privacy sandbox is disabled, set the
-    // PromptSuppressedReason as appropriate and do not show a prompt.
-    if (!pref_service->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)) {
-      int suppresed_reason =
-          pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)
-              ? static_cast<int>(
-                    PromptSuppressedReason::kTrialsDisabledAfterNotice)
-              : static_cast<int>(
-                    PromptSuppressedReason::kTrialsConsentDeclined);
-      pref_service->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
-                               suppresed_reason);
-      return PromptType::kNone;
-    }
-  }
-
-  // If third party cookies are blocked, set the suppression reason as such, and
-  // do not show a prompt.
-  if (third_party_cookies_blocked) {
-    pref_service->SetInteger(
-        prefs::kPrivacySandboxM1PromptSuppressed,
-        static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
-    return PromptType::kNone;
-  }
-
-  // If the Privacy Sandbox is restricted, set the suppression reason as such,
-  // and do not show a prompt.
-  if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
-    pref_service->SetInteger(
-        prefs::kPrivacySandboxM1PromptSuppressed,
-        static_cast<int>(PromptSuppressedReason::kRestricted));
-    return PromptType::kNone;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
-    if (pref_service->GetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade)) {
-      // Since a consent decision has been made, if the eea notice has already
-      // been acknowledged, do not show a prompt; else, show the eea notice.
-      if (pref_service->GetBoolean(
-              prefs::kPrivacySandboxM1EEANoticeAcknowledged)) {
-        return PromptType::kNone;
-      } else {
-        return PromptType::kM1NoticeEEA;
-      }
-    } else {
-      // A consent decision has not yet been made, so show the consent prompt.
-      return PromptType::kM1Consent;
-    }
-  }
-
-  DCHECK(privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
-  // If the notice has already been acknowledged, do not show a prompt.
-  // Else, show the row notice prompt.
-  if (pref_service->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
-    return PromptType::kNone;
-  } else {
-    return PromptType::kM1NoticeROW;
-  }
-}
-
 void PrivacySandboxService::MaybeInitializeFirstPartySetsPref() {
   // If initialization has already run, it is not required.
   if (pref_service_->GetBoolean(
@@ -1206,9 +1047,8 @@ void PrivacySandboxService::RecordUpdatedTopicsConsent(
 void PrivacySandboxService::InformSentimentService(
     PrivacySandboxService::PromptAction action) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!sentiment_service_) {
+  if (!sentiment_service_)
     return;
-  }
 
   TrustSafetySentimentService::FeatureArea area;
   switch (action) {

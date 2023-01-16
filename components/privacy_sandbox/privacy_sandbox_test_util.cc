@@ -188,53 +188,6 @@ void ApplyTestState(
           prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "Foo Bar Baz");
       return;
     }
-    case (StateKey::kApisEnabledV2): {
-      SCOPED_TRACE("State Setup: Privacy Sandbox Apis enabled");
-      testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
-                                        base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kTrialsConsentDecisionMade): {
-      SCOPED_TRACE("State Setup: Trials consent decision made");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxConsentDecisionMade,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kTrialsNoticeDisplayed): {
-      SCOPED_TRACE("State Setup: Trials notice displayed");
-      testing_pref_service->SetUserPref(prefs::kPrivacySandboxNoticeDisplayed,
-                                        base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1ConsentDecisionMade): {
-      SCOPED_TRACE("State Setup: M1 consent decision made");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1ConsentDecisionMade,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1EEANoticeAcknowledged): {
-      SCOPED_TRACE("State Setup: M1 eea notice acknowledged");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1EEANoticeAcknowledged,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1RowNoticeAcknowledged): {
-      SCOPED_TRACE("State Setup: M1 row notice acknowledged");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1RowNoticeAcknowledged,
-          base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kM1PromptSuppressedReason): {
-      SCOPED_TRACE("State Setup: M1 prompt suppressed value");
-      testing_pref_service->SetUserPref(
-          prefs::kPrivacySandboxM1PromptSuppressed,
-          base::Value(GetItemValue<int>(value)));
-      return;
-    }
     default:
       NOTREACHED();
   }
@@ -267,8 +220,7 @@ void CheckOutput(
     const std::map<InputKey, TestCaseItemValue>& input,
     const std::pair<OutputKey, TestCaseItemValue>& output,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-    PrivacySandboxServiceTestInterface* privacy_sandbox_service,
-    sync_preferences::TestingPrefServiceSyncable* testing_pref_service) {
+    PrivacySandboxServiceTestInterface* privacy_sandbox_service) {
   auto [output_key, output_value] = output;
   switch (output_key) {
     case (OutputKey::kIsTopicsAllowed): {
@@ -540,26 +492,6 @@ void CheckOutput(
       }
       return;
     }
-    case (OutputKey::kPromptType): {
-      SCOPED_TRACE("Check Output: PrivacySandboxService.GetRequiredPromptType");
-      auto prompt_type = GetItemValue<int>(output_value);
-      auto force_chrome_build =
-          GetItemValueForKey<bool>(InputKey::kForceChromeBuild, input);
-      privacy_sandbox_service->ForceChromeBuildForTests(force_chrome_build);
-      EXPECT_EQ(prompt_type, privacy_sandbox_service->GetRequiredPromptType());
-      return;
-    }
-    case (OutputKey::kM1PromptSuppressedReason): {
-      SCOPED_TRACE("Check Output: Prompt suppressed reason");
-      auto prompt_suppressed_reason = GetItemValue<int>(output_value);
-      auto force_chrome_build =
-          GetItemValueForKey<bool>(InputKey::kForceChromeBuild, input);
-      privacy_sandbox_service->ForceChromeBuildForTests(force_chrome_build);
-      EXPECT_EQ(prompt_suppressed_reason,
-                testing_pref_service->GetInteger(
-                    prefs::kPrivacySandboxM1PromptSuppressed));
-      return;
-    }
   }
 }
 
@@ -667,7 +599,7 @@ void RunTestCase(
   // Check expected outputs for provided inputs matches actual output.
   for (const auto& output : UnpackKeys<OutputKey>(test_output)) {
     CheckOutput(inputs, output, privacy_sandbox_settings,
-                privacy_sandbox_service, testing_pref_service);
+                privacy_sandbox_service);
   }
 }
 
