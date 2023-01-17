@@ -62,15 +62,13 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
 
   template <typename T>
   void Resolve(T value, ResultEnumType result = ResultEnumType::kOk) {
-    RecordResult(result);
-    RecordLatency();
+    RecordResultAndLatency(result);
     resolver_->Resolve(value);
   }
 
   template <typename T>
   void Reject(T value, ResultEnumType result) {
-    RecordResult(result);
-    RecordLatency();
+    RecordResultAndLatency(result);
     resolver_->Reject(value);
   }
 
@@ -78,20 +76,23 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
                               DOMExceptionCode exception_code,
                               const String& message,
                               ResultEnumType result) {
-    RecordResult(result);
-    RecordLatency();
+    RecordResultAndLatency(result);
     exception_state.ThrowDOMException(exception_code, message);
   }
 
   void RejectWithTypeError(ExceptionState& exception_state,
                            const String& message,
                            ResultEnumType result) {
-    RecordResult(result);
-    RecordLatency();
+    RecordResultAndLatency(result);
     exception_state.ThrowTypeError(message);
   }
 
   void Resolve() { Resolve(ToV8UndefinedGenerator()); }
+
+  void RecordResultAndLatency(ResultEnumType result) {
+    RecordResult(result);
+    RecordLatency();
+  }
 
   void RecordResult(ResultEnumType result) {
     if (is_result_recorded_)

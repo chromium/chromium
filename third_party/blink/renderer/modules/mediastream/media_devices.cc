@@ -365,8 +365,8 @@ ScriptPromise MediaDevices::getUserMedia(
       ToMediaStreamConstraints(options, exception_state);
   if (!constraints) {
     DCHECK(exception_state.HadException());
-    // TODO(crbug.com/1373398): Change this to use
-    // ScriptPromiseResolverWithTracker.
+    resolver->RecordResultAndLatency(
+        UserMediaRequestResult::kInvalidConstraints);
     return ScriptPromise();
   }
 
@@ -410,8 +410,8 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   }
 
   if (exception_state.HadException()) {
-    // TODO(crbug.com/1373398): Change this to use
-    // ScriptPromiseResolverWithTracker.
+    resolver->RecordResultAndLatency(
+        UserMediaRequestResult::kInvalidConstraints);
     return ScriptPromise();
   }
 #endif
