@@ -35,7 +35,6 @@
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/accessibility/ax_mode.h"
-#include "url/url_constants.h"
 
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProviderConfig;
@@ -999,12 +998,13 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       if (IsFedCmLoginHintEnabled()) {
         FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
         if (accounts.empty()) {
-          // TODO(crbug.com/1407911): send the right errors here. Also determine
-          // the right behavior with respect to the IDP Sign-In status.
+          // If there are no accounts after filtering based on the login hint,
+          // treat this exactly the same as if we had received an empty accounts
+          // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
           HandleAccountsFetchFailure(
               std::move(idp_info),
-              FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
-              TokenStatus::kAccountsInvalidResponse);
+              FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+              TokenStatus::kAccountsListEmpty);
           return;
         }
       }

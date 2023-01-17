@@ -777,6 +777,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
              "Provider's token is invalid."},
             {FederatedAuthRequestResult::kErrorRpPageNotVisible,
              "RP page is not visible."},
+            {FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+             "Provider's accounts list is empty."},
         };
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
@@ -2527,7 +2529,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatchRequired) {
   parameters.identity_providers[0].login_hint.is_required = true;
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      /*devtools_issue_statuses=*/{},
+      {FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty},
       /*selected_idp_config_url=*/absl::nullopt};
 
   RunAuthTest(parameters, expectations, kConfigurationValid);
@@ -2588,7 +2590,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatchRequired) {
   parameters.identity_providers[0].login_hint.is_required = true;
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      /*devtools_issue_statuses=*/{},
+      {FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty},
       /*selected_idp_config_url=*/absl::nullopt};
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
