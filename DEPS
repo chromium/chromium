@@ -308,11 +308,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'refs/heads/chromium/5544',
+  'v8_revision': 'cb5724ecc09929b9c248b035481130dc30ccc7a4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'refs/heads/chromium/5544',
+  'angle_revision': '3f5fcf15e6e80c7c06e2b3d94f7b231d9995e9c9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -320,7 +320,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'refs/heads/chromium/5544',
+  'pdfium_revision': 'c363b521bcef5b96fc0397c0631b6dd18887b70c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -419,7 +419,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'refs/heads/chromium/5544',
+  'dawn_revision': '8b032edf0c5d618320d476f0b1c8b4b4eb935935',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -770,7 +770,7 @@ deps = {
 
   'src/clank': {
     'url': 'https://chrome-internal.googlesource.com/clank/internal/apps.git' + '@' +
-    'refs/heads/chromium/5544',
+    '11891bf12bc312ec7c446c368a395b5e67bea0a1',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1210,7 +1210,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + 'refs/heads/chromium/5544',
+      'url': 'https://chrome-internal.googlesource.com/devtools/devtools-internal.git' + '@' + '121c3a48fa3229193c38ab14eaa417edbef7795d',
     'condition': 'checkout_src_internal',
   },
 
@@ -1789,7 +1789,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@refs/heads/chromium/5544',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@dda150867e4a7978ed784593e884f811e59cec6e',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'ebe84bec02c041d28f902da0214bf442743fc907',
@@ -1829,7 +1829,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '92114826a5767a00b7c632f897925f91cec852f2',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'refs/branch-heads/5544',
+    Var('webrtc_git') + '/src.git' + '@' + 'a6b992498866c3378a79d43cc186acba38b2a41b',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -1899,7 +1899,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@refs/heads/chromium/5544',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@3460ed60a48f228aa202c6793cf59e5293274857',
     'condition': 'checkout_src_internal',
   },
 
