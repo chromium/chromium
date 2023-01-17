@@ -253,6 +253,7 @@ void FrameSizeButton::ToggleMultitaskMenu() {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   DCHECK(!chromeos::TabletState::Get()->InTabletMode());
   if (!IsMultitaskMenuShown()) {
+    RecordMultitaskMenuEntryType(MultitaskMenuEntryType::kAccel);
     multitask_menu_ = new MultitaskMenu(
         /*anchor=*/this, GetWidget(),
         base::BindOnce(&FrameSizeButton::OnMultitaskMenuClosed,

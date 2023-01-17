@@ -69116,6 +69116,7 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Frame size button long touch"/>
   <int value="3" label="Gesture fling"/>
   <int value="4" label="Gesture scroll"/>
+  <int value="5" label="Accelerator"/>
 </enum>
 
 <enum name="MultitouchEvent">

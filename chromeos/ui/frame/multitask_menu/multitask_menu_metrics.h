@@ -18,7 +18,8 @@ enum class MultitaskMenuEntryType {
   kFrameSizeButtonLongTouch = 2,
   kGestureFling = 3,
   kGestureScroll = 4,
-  kMaxValue = kGestureScroll,
+  kAccel = 5,
+  kMaxValue = kAccel,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

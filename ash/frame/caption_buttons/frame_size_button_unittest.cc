@@ -904,9 +904,16 @@ TEST_F(MultitaskMenuTest, EntryTypeHistogram) {
       chromeos::GetEntryTypeHistogramName(),
       MultitaskMenuEntryType::kFrameSizeButtonLongPress, 1);
 
+  // Check that the accelerator increments the correct bucket.
+  // Create an active window for the toggle menu to work.
+  auto window = CreateTestWindow();
+  PressAndReleaseKey(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
+  histogram_tester.ExpectBucketCount(chromeos::GetEntryTypeHistogramName(),
+                                     MultitaskMenuEntryType::kAccel, 1);
+
   // Check total counts for each histogram to ensure calls aren't counted in
   // multiple buckets.
-  histogram_tester.ExpectTotalCount(chromeos::GetEntryTypeHistogramName(), 2);
+  histogram_tester.ExpectTotalCount(chromeos::GetEntryTypeHistogramName(), 3);
 }
 
 }  // namespace ash
