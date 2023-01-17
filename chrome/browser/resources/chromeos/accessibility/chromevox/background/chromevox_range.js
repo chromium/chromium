@@ -5,6 +5,7 @@
 /**
  * @fileoverview Classes that handle the ChromeVox range.
  */
+import {AsyncUtil} from '../../common/async_util.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
@@ -139,6 +140,38 @@ export class ChromeVoxRange {
   static onCurrentRangeChanged(range, opt_fromEditing = undefined) {
     for (const observer of ChromeVoxRange.observers_) {
       observer.onCurrentRangeChanged(range, opt_fromEditing);
+    }
+  }
+
+  /**
+   * Check for loss of focus which results in us invalidating our current
+   * range. Note the getFocus() callback is synchronous, so the focus will be
+   * updated when this function returns (despite being technicallly a separate
+   * function call).
+   */
+  static async maybeResetFromFocus() {
+    const focus = await AsyncUtil.getFocus();
+    const cur = ChromeVoxRange.current;
+    // If the current node is not valid and there's a current focus:
+    if (cur && !cur.isValid() && focus) {
+      ChromeVoxRange.set(CursorRange.fromNode(focus));
+    }
+
+    // If there's no focused node:
+    if (!focus) {
+      ChromeVoxRange.set(null);
+      return;
+    }
+
+    // This case detects when TalkBack (in ARC++) is enabled (which also
+    // covers when the ARC++ window is active). Clear the ChromeVox range
+    // so keys get passed through for ChromeVox commands.
+    if (ChromeVoxState.instance.talkBackEnabled &&
+        // This additional check is not strictly necessary, but we use it to
+        // ensure we are never inadvertently losing focus. ARC++ windows set
+        // "focus" on a root view.
+        focus.role === RoleType.CLIENT) {
+      ChromeVoxRange.set(null);
     }
   }
 }

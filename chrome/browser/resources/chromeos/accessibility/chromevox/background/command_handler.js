@@ -106,9 +106,7 @@ export class CommandHandler extends CommandHandlerInterface {
       return true;
     }
 
-    // Check for loss of focus which results in us invalidating our current
-    // range. Note this call is synchronous.
-    chrome.automation.getFocus(focus => this.checkForLossOfFocus_(focus));
+    ChromeVoxRange.maybeResetFromFocus();
 
     // These commands don't require a current range.
     switch (command) {
@@ -1071,33 +1069,6 @@ export class CommandHandler extends CommandHandlerInterface {
         .withString(richTextDescription)
         .withQueueMode(QueueMode.CATEGORY_FLUSH)
         .go();
-  }
-
-  /**
-   * @param {AutomationNode} focusedNode
-   * @private
-   */
-  checkForLossOfFocus_(focusedNode) {
-    const cur = ChromeVoxRange.current;
-    if (cur && !cur.isValid() && focusedNode) {
-      ChromeVoxRange.set(CursorRange.fromNode(focusedNode));
-    }
-
-    if (!focusedNode) {
-      ChromeVoxRange.set(null);
-      return;
-    }
-
-    // This case detects when TalkBack (in ARC++) is enabled (which also
-    // covers when the ARC++ window is active). Clear the ChromeVox range
-    // so keys get passed through for ChromeVox commands.
-    if (ChromeVoxState.instance.talkBackEnabled &&
-        // This additional check is not strictly necessary, but we use it to
-        // ensure we are never inadvertently losing focus. ARC++ windows set
-        // "focus" on a root view.
-        focusedNode.role === RoleType.CLIENT) {
-      ChromeVoxRange.set(null);
-    }
   }
 
   /** @private */
