@@ -140,9 +140,7 @@ void SpellCheckLanguage::OnSimpleURLLoaderComplete(base::FilePath tmp_path) {
   }
 
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&base::ReplaceFile, tmp_path, dictionary_file_path_,
-                     nullptr),
+      FROM_HERE, base::BindOnce(&base::PathExists, dictionary_file_path_),
       base::BindOnce(&SpellCheckLanguage::OnSaveDictionaryDataComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -190,10 +188,11 @@ void SpellCheckLanguage::OnPathExistsComplete(bool path_exists) {
         network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
 
-    loader_->DownloadToTempFile(
+    loader_->DownloadToFile(
         url_loader_factory_.get(),
         base::BindOnce(&SpellCheckLanguage::OnSimpleURLLoaderComplete,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        dictionary_file_path_);
     return;
   }
 
