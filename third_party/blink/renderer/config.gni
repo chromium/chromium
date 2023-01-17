@@ -47,6 +47,10 @@ declare_args() {
 
   # If true, the experimental renderer extensions library will be used.
   use_blink_extensions_chromeos = is_chromeos
+
+  # TODO(https://crbug.com/1407201): temporarily disabled on platforms that
+  # are concerned about binary size. Figure out way to use everywhere.
+  use_inner_html_parser_fast_path = !is_android && !is_fuchsia
 }
 
 # feature_defines_list ---------------------------------------------------------
@@ -67,6 +71,10 @@ if (use_webaudio_ffmpeg) {
 
 if (use_webaudio_pffft) {
   feature_defines_list += [ "WTF_USE_WEBAUDIO_PFFFT=1" ]
+}
+
+if (use_inner_html_parser_fast_path) {
+  feature_defines_list += [ "USE_INNER_HTML_PARSER_FAST_PATH=1" ]
 }
 
 if (blink_symbol_level == 2) {

@@ -6910,6 +6910,11 @@ crbug.com/1404614 [ Mac ] external/wpt/url/url-setters-a-area.window.html?exclud
 # Sheriff 2023-01-04
 crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Pass Timeout ]
 
+# TODO(crbug.com/1407201): this test fails because of fast-path parser when dchecks are enabled.
+# It fails because this test expects certain console warnings. Those warnings are duplicated because
+# parsing (which generates the warnings) happens twice, once for fast-path and once for existing path.
+crbug.com/1407201 fast/css/pseudo-in-range-invalid-value.html [ Failure Pass ]
+
 # Sheriff 2023-01-05
 # fast/dom/Element/scrollTop-scrollLeft-body.html previously also linked with crbug.com/1249176
 crbug.com/1361956 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Failure Pass Timeout ]

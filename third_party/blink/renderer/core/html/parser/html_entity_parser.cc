@@ -52,7 +52,7 @@ static UChar AdjustEntity(UChar32 value) {
   return kWindowsLatin1ExtensionArray[value - 0x80];
 }
 
-static void AppendLegalEntityFor(UChar32 c, DecodedHTMLEntity& decoded_entity) {
+void AppendLegalEntityFor(UChar32 c, DecodedHTMLEntity& decoded_entity) {
   // FIXME: A number of specific entity values generate parse errors.
   if (c <= 0 || c > 0x10FFFF || (c >= 0xD800 && c <= 0xDFFF)) {
     decoded_entity.Append(0xFFFD);

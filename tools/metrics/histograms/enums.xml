@@ -51796,6 +51796,42 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="9" label="Canceled"/>
 </enum>
 
+<enum name="InnerHTMLFastPathParserParseResult">
+  <int value="0" label="Content was successfully parsed"/>
+  <int value="1" label="Could not use fast path because tracing is enabled"/>
+  <int value="2"
+      label="Could not use fast path because of ParserContentPolicy"/>
+  <int value="3" label="Could not use fast path because in form"/>
+  <int value="4"
+      label="Failed because context element tag type is unsupported"/>
+  <int value="5"
+      label="Failed because a child element was encountered in an option"/>
+  <int value="6" label="Failed because end of input was not reached"/>
+  <int value="7" label="Failed because a null character was encountered"/>
+  <int value="8" label="Failed parsing the tag name"/>
+  <int value="9" label="Failed parsing a quoted attributed value"/>
+  <int value="10" label="Failed parsing an unquoted attribute value"/>
+  <int value="11" label="Failed parsing a quoted escaped attribute value"/>
+  <int value="12" label="Failed parsing an unquoted escaped attribute value"/>
+  <int value="13" label="Failed parsing an character reference"/>
+  <int value="14" label="Filed because end of input reached prematurely"/>
+  <int value="15" label="Failed parsing attributes"/>
+  <int value="16" label="Failed parsing in ParseSpecificElements()"/>
+  <int value="17" label="Failed parsing the element name"/>
+  <int value="18" label="Failed because an unsupported tag was encountered"/>
+  <int value="19"
+      label="Failed because end of input reached prematurely for a container
+             element"/>
+  <int value="20"
+      label="Failed because '&gt;' was not matched for end tag name"/>
+  <int value="21"
+      label="Failed because end tag name did not not muatch start start name"/>
+  <int value="22" label="Could not use fast path because of shadow roots"/>
+  <int value="23"
+      label="Could not use fast path because Document::IsDirAttributeDirty()
+             is true"/>
+</enum>
+
 <enum name="InProductHelpDismissalReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Timed Out"/>

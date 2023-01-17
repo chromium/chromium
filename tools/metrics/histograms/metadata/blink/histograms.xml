@@ -1352,6 +1352,79 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLFastPathParser.AbortedParseSize" units="bytes"
+    expires_after="2023-12-07">
+  <owner>sky@chromium.org</owner>
+  <owner>tebbi@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    Number of bytes after which the html fast-path parser aborted. This does not
+    count the bytes the fast-path parser did not look at. We measure this since
+    aborting the fast-path and falling back to the normal parser is wasted
+    effort. This is recorded after every invocation of Element::setInnerHTML.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLFastPathParser.AbortedParseTime" units="ms"
+    expires_after="2023-12-07">
+  <owner>sky@chromium.org</owner>
+  <owner>tebbi@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    The amount of time the innerHTML fast-path parser took before reaching input
+    it could not handle. This is recorded when Element::setInnerHTML is called,
+    and at the moment when the input it can't handle is reached.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLFastPathParser.ParseResult"
+    enum="InnerHTMLFastPathParserParseResult" expires_after="2023-12-07">
+  <owner>sky@chromium.org</owner>
+  <owner>tebbi@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    Captures the result of the innerHTML fast-path parser. This is recorded
+    every time Element::setInnerHTML is called and only if the innerHTML
+    fast-path parser is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLFastPathParser.SuccessfulParseSize" units="bytes"
+    expires_after="2023-12-07">
+  <owner>sky@chromium.org</owner>
+  <owner>tebbi@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    Number of bytes successfully parsed by the innerHTML fast-path parser. This
+    is recorded if the innerHTML fast-path parser completes successfully and is
+    logged at the end of parsing the content supplied to Element::setInnerHTML.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLFastPathParser.SuccessfulParseTime" units="ms"
+    expires_after="2023-12-07">
+  <owner>sky@chromium.org</owner>
+  <owner>tebbi@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    The time it takes for the innerHTML fast-path parser to complete processing
+    text from Element::setInnerHTML. This is recorded if fast-path innerHTML is
+    enabled, and completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLFastPathParser.TotalParseTime" units="ms"
+    expires_after="2023-12-07">
+  <owner>sky@chromium.org</owner>
+  <owner>tebbi@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    The total time it takes to complete parsing of Element::setInnerHTML. This
+    includes the time taken by the fast-path parser (even if it failed). This is
+    recorded after every invocation of Element::setInnerHTML.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.ChunkCount4" units="chunks"
     expires_after="2023-06-30">
   <owner>masonf@chromium.org</owner>

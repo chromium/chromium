@@ -18,6 +18,13 @@ class QualifiedName;
 // called if `length` is > 0.
 CORE_EXPORT const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigned length);
 
+#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
+// Returns the QualifiedName for the attribute whose name matches `data`.
+// Returns `g_null_name` if there is no match. It is expected this is only
+// called if `length` is > 0.
+CORE_EXPORT const QualifiedName& Lookup{{namespace}}AttributeName(const LChar* data, unsigned length);
+#endif
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_{{namespace|upper}}_ELEMENT_ATTRIBUTE_NAME_LOOKUP_TRIE_H_

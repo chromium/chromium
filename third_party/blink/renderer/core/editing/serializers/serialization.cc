@@ -30,7 +30,9 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -84,6 +86,10 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
+#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
+#include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
+#endif
 
 namespace blink {
 
@@ -743,7 +749,38 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
   document.setAllowDeclarativeShadowRoots(include_shadow_roots);
 
   if (IsA<HTMLDocument>(document)) {
+#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
+    const bool fast_path_enabled =
+        RuntimeEnabledFeatures::InnerHTMLParserFastpathEnabled();
+    base::ElapsedTimer parse_timer;
+    if (fast_path_enabled) {
+      const bool parsed_fast_path =
+          TryParsingHTMLFragment(markup, document, *fragment, *context_element,
+                                 parser_content_policy, include_shadow_roots);
+      if (parsed_fast_path) {
+        base::UmaHistogramTimes("Blink.HTMLFastPathParser.TotalParseTime",
+                                parse_timer.Elapsed());
+#if DCHECK_IS_ON()
+        // As a sanity check for the fast-path, create another fragment using
+        // the full parser and compare the results.
+        // See https://bugs.chromium.org/p/chromium/issues/detail?id=1407201
+        // for details.
+        DocumentFragment* fragment2 = DocumentFragment::Create(document);
+        fragment2->ParseHTML(markup, context_element, parser_content_policy);
+        DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
+            << " supplied value " << markup;
+#endif
+        return fragment;
+      } else {
+        fragment = DocumentFragment::Create(document);
+      }
+    }
+#endif
     fragment->ParseHTML(markup, context_element, parser_content_policy);
+#if defined(USE_INNER_HTML_PARSER_FAST_PATH)
+    base::UmaHistogramTimes("Blink.HTMLFastPathParser.TotalParseTime",
+                            parse_timer.Elapsed());
+#endif
     return fragment;
   }
 

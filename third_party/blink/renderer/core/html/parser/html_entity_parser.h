@@ -63,6 +63,8 @@ class DecodedHTMLEntity {
   UChar data[kMaxLength];
 };
 
+void AppendLegalEntityFor(UChar32 c, DecodedHTMLEntity& decoded_entity);
+
 CORE_EXPORT bool ConsumeHTMLEntity(SegmentedString&,
                                    DecodedHTMLEntity& decoded_entity,
                                    bool& not_enough_characters,
