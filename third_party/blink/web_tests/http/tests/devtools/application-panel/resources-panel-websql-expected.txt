@@ -22,10 +22,9 @@ Storage
   Interest Groups
   Shared Storage
     http://127.0.0.1:8000
-Cache
   Cache Storage
-  Back/forward cache
 Background Services
+  Back/forward cache
   Background Fetch
   Background Sync
   Notifications
@@ -62,10 +61,9 @@ Storage
   Interest Groups
   Shared Storage
     http://127.0.0.1:8000
-Cache
   Cache Storage
-  Back/forward cache
 Background Services
+  Back/forward cache
   Background Fetch
   Background Sync
   Notifications
@@ -102,10 +100,9 @@ Storage
   Interest Groups
   Shared Storage
     http://127.0.0.1:8000
-Cache
   Cache Storage
-  Back/forward cache
 Background Services
+  Back/forward cache
   Background Fetch
   Background Sync
   Notifications
