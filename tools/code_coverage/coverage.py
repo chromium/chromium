@@ -70,6 +70,7 @@ from __future__ import print_function
 import sys
 
 import argparse
+import glob
 import json
 import logging
 import multiprocessing
@@ -460,7 +461,17 @@ def _SplitCommand(command):
   """Split a command string into parts in a platform-specific way."""
   if coverage_utils.GetHostPlatform() == 'win':
     return command.split()
-  return shlex.split(command)
+  split_command = shlex.split(command)
+  # Python's subprocess does not do glob expansion, so we expand it out here.
+  new_command = []
+  for item in split_command:
+    if '*' in item:
+      files = glob.glob(item)
+      for file in files:
+        new_command.append(file)
+    else:
+      new_command.append(item)
+  return new_command
 
 
 def _ExecuteCommand(target, command, output_file_path):
