@@ -217,11 +217,6 @@ JSON schema for the output of the simulator.
       // URL to which the report would have been sent.
       "report_url": "https://reporting.example/.well-known/attribution-reporting/report-event-attribution",
 
-      "test_info": {
-        // Whether fake reports were generated.
-        "randomized_trigger": false
-      },
-
       // The report itself. See
       // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#attribution-reports
       // for details about its fields.

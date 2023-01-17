@@ -12,10 +12,7 @@
          "trigger_debug_key": "333"
       },
       "intended_report_time": "1643235574000",
-      "report_url": "https://r.test/.well-known/attribution-reporting/debug/report-event-attribution",
-      "test_info": {
-         "randomized_trigger": false
-      }
+      "report_url": "https://r.test/.well-known/attribution-reporting/debug/report-event-attribution"
     }
   ],
   "event_level_reports": [
@@ -31,10 +28,7 @@
          "trigger_debug_key": "333"
       },
       "intended_report_time": "1643411973000",
-      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
-      "test_info": {
-         "randomized_trigger": false
-      }
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution"
     },
     {
      "report": {
@@ -47,10 +41,7 @@
          "trigger_data": "6"
       },
       "intended_report_time": "1643411973000",
-      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
-      "test_info": {
-         "randomized_trigger": false
-      }
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution"
     }
   ]
 }

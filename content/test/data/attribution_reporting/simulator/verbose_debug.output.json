@@ -29,10 +29,7 @@
          "trigger_data": "1"
       },
       "intended_report_time": "1643411972000",
-      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
-      "test_info": {
-         "randomized_trigger": false
-      }
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution"
     },
     {
      "report": {
@@ -44,10 +41,7 @@
          "trigger_data": "2"
       },
       "intended_report_time": "1643411972000",
-      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
-      "test_info": {
-         "randomized_trigger": false
-      }
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution"
     },
     {
      "report": {
@@ -59,10 +53,7 @@
          "trigger_data": "3"
       },
       "intended_report_time": "1643411972000",
-      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution",
-      "test_info": {
-         "randomized_trigger": false
-      }
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-event-attribution"
     }
   ]
 }

@@ -137,17 +137,9 @@ struct AttributionReportJsonConverter {
               FormatTime(is_debug_report ? report.attribution_info().time
                                          : report.report_time()));
 
-    base::Value::Dict test_info;
-    if (absl::holds_alternative<AttributionReport::EventLevelData>(
-            report.data())) {
-      test_info.Set("randomized_trigger",
-                    report.attribution_info().source.attribution_logic() ==
-                        StoredSource::AttributionLogic::kFalsely);
-    } else {
-      auto* aggregatable_data =
-          absl::get_if<AttributionReport::AggregatableAttributionData>(
-              &report.data());
-      DCHECK(aggregatable_data);
+    if (const auto* aggregatable_data =
+            absl::get_if<AttributionReport::AggregatableAttributionData>(
+                &report.data())) {
       base::Value::List list;
       for (const auto& contribution : aggregatable_data->contributions) {
         base::Value::Dict dict;
@@ -157,9 +149,10 @@ struct AttributionReportJsonConverter {
 
         list.Append(std::move(dict));
       }
+      base::Value::Dict test_info;
       test_info.Set("histograms", std::move(list));
+      value.Set("test_info", std::move(test_info));
     }
-    value.Set("test_info", std::move(test_info));
 
     return value;
   }
