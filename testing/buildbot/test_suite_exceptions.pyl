@@ -1103,6 +1103,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter',
         ],
+        'swarming': {
+          'shards': 20,  # crbug.com/1361887
+        },
       },
       'win-asan': {
         # These are very slow on the ASAN trybot for some reason.
