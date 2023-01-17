@@ -40,7 +40,7 @@ class ScreenshotDataCollectorBrowserTest : public InProcessBrowserTest {
   ScreenshotDataCollectorBrowserTest() = default;
 
  protected:
-  void OpenNewTab(const GURL& url, content::DesktopMediaID& id) {
+  content::DesktopMediaID OpenNewTab(const GURL& url) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     content::RenderFrameHost* host =
         ui_test_utils::NavigateToURLWithDisposition(
@@ -48,29 +48,33 @@ class ScreenshotDataCollectorBrowserTest : public InProcessBrowserTest {
             ui_test_utils::BrowserTestWaitFlags::
                 BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     EXPECT_TRUE(host);
-    id = content::DesktopMediaID(
+    return content::DesktopMediaID(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(host->GetProcess()->GetID(),
                                            host->GetRoutingID()));
   }
+
+  // Ensure that TestFlags outlive FakeDesktopMediaPickerFactory.
+  FakeDesktopMediaPickerFactory::TestFlags test_flags_ = base_flags;
 };
 
 IN_PROC_BROWSER_TEST_F(ScreenshotDataCollectorBrowserTest,
-                       DISABLED_TakeScreenshotOfTab) {
+                       TakeScreenshotOfTab) {
   ScreenshotDataCollector data_collector;
   FakeDesktopMediaPickerFactory picker_factory;
 
-  // Opens a new tab.
-  content::DesktopMediaID new_page_id;
-  OpenNewTab(GURL(chrome::kChromeUINewTabPageURL), new_page_id);
+  // Open a new tab.
+  content::DesktopMediaID new_page_id =
+      OpenNewTab(GURL(chrome::kChromeUINewTabPageURL));
 
-  // Takes a screenshot of the new tab.
-  base::test::TestFuture<absl::optional<SupportToolError>> test_future_new_page;
-  FakeDesktopMediaPickerFactory::TestFlags new_page_flags = base_flags;
-  new_page_flags.selected_source = new_page_id;
-  picker_factory.SetTestFlags(&new_page_flags, 1);
+  // Select `new_page_id` in FakeDesktopMediaPickerFactory.
+  test_flags_.selected_source = new_page_id;
+  picker_factory.SetTestFlags(&test_flags_, 1);
   data_collector.SetPickerFactoryForTesting(&picker_factory);
+
+  // Take a screenshot of the new tab.
+  base::test::TestFuture<absl::optional<SupportToolError>> test_future_new_page;
   data_collector.CollectDataAndDetectPII(
       test_future_new_page.GetCallback(),
       /*task_runner_for_redaction_tool=*/nullptr,
