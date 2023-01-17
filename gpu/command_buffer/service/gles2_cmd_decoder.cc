@@ -3218,15 +3218,14 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
       decoder_->CreateAnonymousImage(size, buffer_format, &is_cleared);
   if (!image)
     return false;
-  DCHECK_EQ(format, image->GetDataFormat());
   if (!image->BindTexImage(Target()))
     return false;
 
   image_ = image;
   decoder_->texture_manager()->SetLevelInfo(
       texture_ref_.get(), Target(), 0, image_->GetInternalFormat(),
-      size.width(), size.height(), 1, 0, image->GetDataFormat(),
-      image->GetDataType(), gfx::Rect(size));
+      size.width(), size.height(), 1, 0, format, image->GetDataType(),
+      gfx::Rect(size));
   decoder_->texture_manager()->SetLevelImage(texture_ref_.get(), Target(), 0,
                                              image_.get(), Texture::BOUND);
 
