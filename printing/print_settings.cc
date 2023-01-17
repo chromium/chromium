@@ -31,7 +31,6 @@ mojom::ColorModel ColorModeToColorModel(int color_mode) {
 void GetColorModelForModel(mojom::ColorModel color_model,
                            std::string* color_setting_name,
                            std::string* color_value) {
-#if BUILDFLAG(IS_MAC)
   constexpr char kCUPSColorMode[] = "ColorMode";
   constexpr char kCUPSColorModel[] = "ColorModel";
   constexpr char kCUPSPrintoutMode[] = "PrintoutMode";
@@ -41,17 +40,6 @@ void GetColorModelForModel(mojom::ColorModel color_model,
   constexpr char kCUPSEpsonInk[] = "Ink";
   constexpr char kCUPSSharpARCMode[] = "ARCMode";
   constexpr char kCUPSXeroxXRXColor[] = "XRXColor";
-#else
-  constexpr char kCUPSColorMode[] = "cups-ColorMode";
-  constexpr char kCUPSColorModel[] = "cups-ColorModel";
-  constexpr char kCUPSPrintoutMode[] = "cups-PrintoutMode";
-  constexpr char kCUPSProcessColorModel[] = "cups-ProcessColorModel";
-  constexpr char kCUPSBrotherMonoColor[] = "cups-BRMonoColor";
-  constexpr char kCUPSBrotherPrintQuality[] = "cups-BRPrintQuality";
-  constexpr char kCUPSEpsonInk[] = "cups-Ink";
-  constexpr char kCUPSSharpARCMode[] = "cups-ARCMode";
-  constexpr char kCUPSXeroxXRXColor[] = "cups-XRXColor";
-#endif  // BUILDFLAG(IS_MAC)
 
   *color_setting_name = kCUPSColorModel;
 

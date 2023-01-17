@@ -287,10 +287,10 @@ void PrintDialogGtk::UpdateSettings(
 #if BUILDFLAG(USE_CUPS)
   // Set advanced settings first so they can be overridden by user applied
   // settings.
+  static constexpr char kSettingNamePrefix[] = "cups-";
   for (const auto& pair : settings->advanced_settings()) {
     if (!pair.second.is_string())
       continue;
-    static constexpr char kSettingNamePrefix[] = "cups-";
     const std::string setting_name = kSettingNamePrefix + pair.first;
     gtk_print_settings_set(gtk_settings_, setting_name.c_str(),
                            pair.second.GetString().c_str());
@@ -300,6 +300,7 @@ void PrintDialogGtk::UpdateSettings(
   std::string color_setting_name;
   printing::GetColorModelForModel(settings->color(), &color_setting_name,
                                   &color_value);
+  color_setting_name.insert(0, kSettingNamePrefix);
   gtk_print_settings_set(gtk_settings_, color_setting_name.c_str(),
                          color_value.c_str());
 
