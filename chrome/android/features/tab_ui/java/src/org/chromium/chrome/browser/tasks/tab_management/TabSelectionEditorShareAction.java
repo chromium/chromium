@@ -18,12 +18,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -109,7 +108,8 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         List<Integer> sortedTabIndexList = filterTabs(tabs, tabList);
 
         if (sortedTabIndexList.size() == 0) {
-            logShareActionState(TabSelectionEditorShareActionState.ALL_TABS_FILTERED);
+            TabUiMetricsHelper.recordShareStateHistogram(
+                    TabSelectionEditorShareActionState.ALL_TABS_FILTERED);
             return false;
         }
 
@@ -120,8 +120,9 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                 isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getTitle() : "";
         String tabUrl =
                 isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getUrl().getSpec() : "";
-        String userAction = isOnlyOneTab ? "TabMultiSelectV2.SharedTabAsTextList"
-                                         : "TabMultiSelectV2.SharedTabsListAsTextList";
+        @TabSelectionEditorActionMetricGroups
+        int actionId = isOnlyOneTab ? TabSelectionEditorActionMetricGroups.SHARE_TAB
+                                    : TabSelectionEditorActionMetricGroups.SHARE_TABS;
 
         ShareParams shareParams =
                 new ShareParams
@@ -131,7 +132,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                         .setCallback(new ShareParams.TargetChosenCallback() {
                             @Override
                             public void onTargetChosen(ComponentName chosenComponent) {
-                                RecordUserAction.record(userAction);
+                                TabUiMetricsHelper.recordSelectionEditorActionMetrics(actionId);
                             }
 
                             @Override
@@ -179,7 +180,8 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
                             shareIntent.setClipData(ClipData.newRawUri("", uri));
                             mContext.startActivity(Intent.createChooser(shareIntent, null));
-                            logShareActionState(TabSelectionEditorShareActionState.SUCCESS);
+                            TabUiMetricsHelper.recordShareStateHistogram(
+                                    TabSelectionEditorShareActionState.SUCCESS);
                         });
 
                         if (sIntentCallbackForTesting != null) {
@@ -219,11 +221,6 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                     .append("\n");
         }
         return sb.toString();
-    }
-
-    private static void logShareActionState(@TabSelectionEditorShareActionState int action) {
-        RecordHistogram.recordEnumeratedHistogram("Android.TabMultiSelectV2.SharingState", action,
-                TabSelectionEditorShareActionState.NUM_ENTRIES);
     }
 
     private boolean shouldFilterUrl(GURL url) {

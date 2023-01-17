@@ -1363,6 +1363,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testToolbarActionButtonContentDescription() {
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();

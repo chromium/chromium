@@ -14,11 +14,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -259,7 +259,9 @@ public abstract class TabSelectionEditorAction {
         };
         if (shouldHideEditorAfterAction()) {
             mActionDelegate.hideByAction();
-            RecordUserAction.record("TabMultiSelectV2.ClosedAutomatically");
+            TabUiMetricsHelper.recordSelectionEditorExitMetrics(
+                    TabSelectionEditorExitMetricGroups.CLOSED_AUTOMATICALLY,
+                    tabs.get(0).getContext());
         }
         return true;
     }

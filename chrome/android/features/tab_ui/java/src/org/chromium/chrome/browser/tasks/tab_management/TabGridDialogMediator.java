@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorOpenMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -312,11 +313,8 @@ public class TabGridDialogMediator
                     mTabSelectionEditorControllerSupplier.get().show(tabs,
                             /*preSelectedTabCount=*/0,
                             v2Enabled ? mRecyclerViewPositionSupplier.get() : null);
-                    if (v2Enabled) {
-                        RecordUserAction.record("TabMultiSelectV2.OpenFromDialog");
-                    } else {
-                        RecordUserAction.record("TabMultiSelect.OpenFromDialog");
-                    }
+                    TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
+                            TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
                 }
             } else if (result == R.id.share_tab_group) {
                 Tab tab = mTabModelSelector.getTabById(mCurrentTabId);

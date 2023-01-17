@@ -9,8 +9,8 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
@@ -57,7 +57,8 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
         } else {
             getTabModelSelector().getCurrentModel().closeMultipleTabs(tabs, true);
         }
-        RecordUserAction.record("TabMultiSelectV2.CloseTabs");
+        TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                TabSelectionEditorActionMetricGroups.CLOSE);
         return true;
     }
 

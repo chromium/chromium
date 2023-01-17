@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.PriceWelcomeMessageController;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -438,9 +439,11 @@ class TabListMediator {
             if (index == TabModel.INVALID_TAB_INDEX) return;
             boolean selected = mModel.get(index).model.get(TabProperties.IS_SELECTED);
             if (selected) {
-                RecordUserAction.record("TabMultiSelect.TabUnselected");
+                TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                        TabSelectionEditorActionMetricGroups.UNSELECTED);
             } else {
-                RecordUserAction.record("TabMultiSelect.TabSelected");
+                TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                        TabSelectionEditorActionMetricGroups.SELECTED);
             }
             mModel.get(index).model.set(TabProperties.IS_SELECTED, !selected);
             // Reset thumbnail to ensure the color of the blank tab slots is correct.

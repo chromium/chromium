@@ -9,9 +9,9 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
@@ -63,8 +63,8 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
         for (Tab tab : tabs) {
             filter.moveTabOutOfGroup(tab.getId());
         }
-        RecordUserAction.record("TabMultiSelectV2.UngroupTabs");
-        RecordUserAction.record("TabGridDialog.RemoveFromGroup.TabMultiSelect");
+        TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                TabSelectionEditorActionMetricGroups.UNGROUP);
         return true;
     }
 

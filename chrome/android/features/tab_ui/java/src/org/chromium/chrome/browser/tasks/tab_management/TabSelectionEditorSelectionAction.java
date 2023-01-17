@@ -11,8 +11,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 
 import java.lang.annotation.Retention;
@@ -85,10 +85,12 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
     public boolean performAction(List<Tab> tabs) {
         if (mActionState == ActionState.SELECT_ALL) {
             getActionDelegate().selectAll();
-            RecordUserAction.record("TabMultiSelectV2.SelectAll");
+            TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                    TabSelectionEditorActionMetricGroups.SELECT_ALL);
         } else if (mActionState == ActionState.DESELECT_ALL) {
             getActionDelegate().deselectAll();
-            RecordUserAction.record("TabMultiSelectV2.DeselectAll");
+            TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                    TabSelectionEditorActionMetricGroups.DESELECT_ALL);
         } else {
             assert false : "Invalid selection state";
         }

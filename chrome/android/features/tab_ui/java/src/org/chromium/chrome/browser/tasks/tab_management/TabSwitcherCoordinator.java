@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorOpenMetricGroups;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -534,7 +535,8 @@ public class TabSwitcherCoordinator
         }
         mTabSelectionEditorCoordinator.getController().show(
                 tabs, /*preSelectedTabCount=*/0, mTabListCoordinator.getRecyclerViewPosition());
-        RecordUserAction.record("TabMultiSelectV2.OpenFromGrid");
+        TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
+                TabSelectionEditorOpenMetricGroups.OPEN_FROM_GRID, mActivity);
     }
 
     private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {

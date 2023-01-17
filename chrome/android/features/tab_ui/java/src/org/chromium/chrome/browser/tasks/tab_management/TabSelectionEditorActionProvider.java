@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -85,8 +85,8 @@ class TabSelectionEditorActionProvider {
                         selectedTabs, destinationTab, false, true);
                 mTabSelectionEditorController.hide();
 
-                RecordUserAction.record("TabMultiSelect.Done");
-                RecordUserAction.record("TabGroup.Created.TabMultiSelect");
+                TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                        TabSelectionEditorActionMetricGroups.PROVIDER_GROUP);
                 break;
             case TabSelectionEditorAction.UNGROUP:
                 TabGroupModelFilter filter =
@@ -96,7 +96,8 @@ class TabSelectionEditorActionProvider {
                     filter.moveTabOutOfGroup(tab.getId());
                 }
                 mTabSelectionEditorController.hide();
-                RecordUserAction.record("TabGridDialog.RemoveFromGroup.TabMultiSelect");
+                TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                        TabSelectionEditorActionMetricGroups.PROVIDER_UNGROUP);
                 break;
             case TabSelectionEditorAction.CLOSE:
                 tabModelSelector.getCurrentModel().closeMultipleTabs(selectedTabs, true);

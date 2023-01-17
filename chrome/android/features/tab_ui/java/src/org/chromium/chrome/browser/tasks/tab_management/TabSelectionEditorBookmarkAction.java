@@ -10,11 +10,11 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 
@@ -98,7 +98,8 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
             assert snackbarManager != null;
             mDelegate.bookmarkTabsAndShowSnackbar(mActivity, tabs, snackbarManager);
         }
-        RecordUserAction.record("TabMultiSelectV2.BookmarkTabs");
+        TabUiMetricsHelper.recordSelectionEditorActionMetrics(
+                TabSelectionEditorActionMetricGroups.BOOKMARK);
         return true;
     }
 

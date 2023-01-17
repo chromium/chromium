@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -148,11 +148,8 @@ class TabSelectionEditorCoordinator {
          * Defines what to do when the navigation button is clicked.
          */
         public void goBack() {
-            if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
-                RecordUserAction.record("TabMultiSelectV2.ClosedByUser");
-            } else {
-                RecordUserAction.record("TabMultiSelect.Cancelled");
-            }
+            TabUiMetricsHelper.recordSelectionEditorExitMetrics(
+                    TabSelectionEditorExitMetricGroups.CLOSED_BY_USER, mContext);
             mTabSelectionEditorController.hide();
         }
     }

@@ -11,8 +11,6 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -26,6 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -67,12 +66,6 @@ class TabSelectionEditorMediator
     private TabSelectionEditorMenu mTabSelectionEditorMenu;
     private SnackbarManager mSnackbarManager;
     private TabSelectionEditorLayout mTabSelectionEditorLayout;
-
-    /**
-     * The last time the Tab Selection Editor was shown across all instances, null if never shown
-     * before within an activity lifespan.
-     */
-    private static Long sLastShownTimestampMillis;
 
     private final View.OnClickListener mNavigationClickListener = new View.OnClickListener() {
         @Override
@@ -202,7 +195,9 @@ class TabSelectionEditorMediator
             @Nullable RecyclerViewPosition recyclerViewPosition) {
         // Reparent the snackbarManager to use the selection editor layout to avoid layering issues.
         mSnackbarManager.setParentView(mTabSelectionEditorLayout);
-        recordTimeSinceLastShown();
+        // Records to a histogram the time since an instance of TabSelectionEditor was last opened
+        // within an activity lifespan.
+        TabUiMetricsHelper.recordEditorTimeSinceLastShownHistogram();
         // We don't call TabListCoordinator#prepareTabSwitcherView, since not all the logic (e.g.
         // requiring one tab to be selected) is applicable here.
         mTabListCoordinator.prepareTabGridView();
@@ -322,10 +317,8 @@ class TabSelectionEditorMediator
     private void hideInternal(boolean hiddenByAction) {
         if (!isEditorVisible()) return;
         mSnackbarManager.setParentView(null);
-
-        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
-            RecordUserAction.record("TabMultiSelectV2.Closed");
-        }
+        TabUiMetricsHelper.recordSelectionEditorExitMetrics(
+                TabSelectionEditorExitMetricGroups.CLOSED, mContext);
 
         // When hiding by action it is expected that syncRecyclerViewPosition() is called before the
         // action occurs. This is because an action may remove tabs so sync position must happen
@@ -387,18 +380,5 @@ class TabSelectionEditorMediator
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         }
-    }
-
-    /**
-     * Records to a historgam the time since an instance of TabSelectionEditor was last opened
-     * within an activity lifespan.
-     */
-    private void recordTimeSinceLastShown() {
-        long timestampMillis = System.currentTimeMillis();
-        if (sLastShownTimestampMillis != null) {
-            RecordHistogram.recordTimesHistogram("Android.TabMultiSelectV2.TimeSinceLastShown",
-                    timestampMillis - sLastShownTimestampMillis);
-        }
-        sLastShownTimestampMillis = timestampMillis;
     }
 }

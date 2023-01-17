@@ -72,6 +72,7 @@ tab_management_junit_java_sources = [
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherCustomViewManagerUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherMediatorUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabUiFeatureUtilitiesUnitTest.java",
+  "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabUiMetricsHelperUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabUiUnitTestUtils.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/StaleTabSuggestionProviderTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabContextObserverTest.java",
