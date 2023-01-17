@@ -160,7 +160,10 @@ if (!is_android && !is_mac) {
     data_deps = []
 
     if (is_chromeos_ash) {
-      data_deps += [ "//sandbox/linux:chrome_sandbox" ]
+      data_deps += [
+        "//components/variations/cros:evaluate_seed",
+        "//sandbox/linux:chrome_sandbox",
+      ]
       deps += [
         "//components/exo/wayland:ui_controls_protocol_stub",
         "//components/exo/wayland:weston_test_stub",

@@ -581,6 +581,7 @@ test("components_unittests") {
       "//components/metrics/structured/mojom:unit_tests",
       "//components/ownership:unit_tests",
       "//components/user_manager:unit_tests",
+      "//components/variations/cros:unit_tests",
     ]
   }
 
