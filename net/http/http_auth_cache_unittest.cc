@@ -1135,6 +1135,8 @@ TEST_F(HttpAuthCacheEvictionTest, RealmEntryEviction) {
     CheckRealmExistence(i + 3, true);
     test_clock.Advance(base::Seconds(1));
   }
+
+  cache_.set_tick_clock_for_testing(nullptr);
 }
 
 // Add the maximum number of paths to a single realm entry. Each of these
