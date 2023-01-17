@@ -2581,12 +2581,12 @@ bool IsFileManagerFuseBoxDebugEnabled() {
   return base::FeatureList::IsEnabled(kFuseBoxDebug);
 }
 
-bool IsFileManagerSearchV2Enabled() {
-  return base::FeatureList::IsEnabled(kFilesSearchV2);
-}
-
 bool IsFilesConflictDialogEnabled() {
   return base::FeatureList::IsEnabled(kFilesConflictDialog);
+}
+
+bool IsFilesSearchV2Enabled() {
+  return base::FeatureList::IsEnabled(kFilesSearchV2);
 }
 
 bool IsFloatingWorkspaceEnabled() {
