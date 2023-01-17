@@ -5070,7 +5070,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TabDrag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2023-02-22">
+    expires_after="2024-01-12">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 

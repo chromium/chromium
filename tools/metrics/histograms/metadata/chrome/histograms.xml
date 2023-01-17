@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.TabLoading" units="%"
-    expires_after="2022-04-24">
+    expires_after="2024-01-12">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
