@@ -849,11 +849,6 @@ drivefs::DriveFsHost* DriveIntegrationService::GetDriveFsHost() const {
   return drivefs_holder_->drivefs_host();
 }
 
-drivefs::pinning::DriveFsPinManager*
-DriveIntegrationService::GetDriveFsPinManager() const {
-  return pin_manager_.get();
-}
-
 drivefs::mojom::DriveFs* DriveIntegrationService::GetDriveFsInterface() const {
   return GetDriveFsHost()->GetDriveFsInterface();
 }

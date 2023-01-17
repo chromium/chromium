@@ -248,13 +248,17 @@ class DriveInternalsWebUIHandler
     : public content::WebUIMessageHandler,
       public drivefs::pinning::DriveFsBulkPinObserver {
  public:
-  DriveInternalsWebUIHandler() : last_sent_event_id_(-1) {}
+  ~DriveInternalsWebUIHandler() override {
+    if (pin_manager_) {
+      pin_manager_->RemoveObserver(this);
+      VLOG(1) << "Removed Pin manager observer";
+    }
+  }
 
+  DriveInternalsWebUIHandler() = default;
   DriveInternalsWebUIHandler(const DriveInternalsWebUIHandler&) = delete;
   DriveInternalsWebUIHandler& operator=(const DriveInternalsWebUIHandler&) =
       delete;
-
-  ~DriveInternalsWebUIHandler() override {}
 
   void DownloadLogsZip(const base::FilePath& path) {
     web_ui()->GetWebContents()->GetController().LoadURL(
@@ -370,10 +374,11 @@ class DriveInternalsWebUIHandler
   void OnPageLoaded(const base::Value::List& args) {
     AllowJavascript();
 
-    drive::DriveIntegrationService* integration_service =
+    drive::DriveIntegrationService* const integration_service =
         GetIntegrationService();
     // |integration_service| may be NULL in the guest/incognito mode.
     if (!integration_service) {
+      LOG(ERROR) << "No DriveFS integration service";
       return;
     }
 
@@ -496,8 +501,7 @@ class DriveInternalsWebUIHandler
         prefs::kDownloadDefaultDirectory,
     };
     for (const char* key : kPathPreferences) {
-      AppendKeyValue(paths, key,
-                     profile()->GetPrefs()->GetFilePath(key).AsUTF8Unsafe());
+      AppendKeyValue(paths, key, GetPrefs()->GetFilePath(key).AsUTF8Unsafe());
     }
 
     MaybeCallJavascript("updatePathConfigurations",
@@ -507,8 +511,8 @@ class DriveInternalsWebUIHandler
   void UpdateDriveDebugSection() {
     SetSectionEnabled("drive-debug", true);
 
-    bool verbose_logging_enabled = profile()->GetPrefs()->GetBoolean(
-        drive::prefs::kDriveFsEnableVerboseLogging);
+    bool verbose_logging_enabled =
+        GetPrefs()->GetBoolean(drive::prefs::kDriveFsEnableVerboseLogging);
     MaybeCallJavascript("updateVerboseLogging",
                         base::Value(verbose_logging_enabled));
 
@@ -539,8 +543,8 @@ class DriveInternalsWebUIHandler
 
     SetSectionEnabled("mirror-sync-section", true);
 
-    bool mirroring_enabled = profile()->GetPrefs()->GetBoolean(
-        drive::prefs::kDriveFsEnableMirrorSync);
+    bool mirroring_enabled =
+        GetPrefs()->GetBoolean(drive::prefs::kDriveFsEnableMirrorSync);
     MaybeCallJavascript("updateMirroring", base::Value(mirroring_enabled));
     SetSectionEnabled("mirror-sync-paths", mirroring_enabled);
     SetSectionEnabled("mirror-path-form", mirroring_enabled);
@@ -608,15 +612,27 @@ class DriveInternalsWebUIHandler
   }
 
   void UpdateBulkPinningSection() {
-    if (!features::IsDriveFsBulkPinningEnabled()) {
-      SetSectionEnabled("bulk-pinning-section", false);
-      return;
+    drive::DriveIntegrationService* const integration_service =
+        GetIntegrationService();
+    DCHECK(integration_service);
+    if (!pin_manager_) {
+      pin_manager_ = integration_service->GetPinManager();
+      if (!pin_manager_) {
+        LOG(ERROR) << "No DriveFS pin manager";
+        SetSectionEnabled("bulk-pinning-section", false);
+        return;
+      }
+
+      pin_manager_->AddObserver(this);
+      VLOG(1) << "Added Pin manager observer";
+
+      OnSetupProgress(pin_manager_->GetProgress());
     }
 
     SetSectionEnabled("bulk-pinning-section", true);
 
-    bool bulk_pinning_enabled = profile()->GetPrefs()->GetBoolean(
-        drive::prefs::kDriveFsBulkPinningEnabled);
+    const bool bulk_pinning_enabled =
+        GetPrefs()->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
     MaybeCallJavascript("updateBulkPinning", base::Value(bulk_pinning_enabled));
   }
 
@@ -624,16 +640,15 @@ class DriveInternalsWebUIHandler
       const drivefs::pinning::SetupProgress& progress) override {
     using drivefs::pinning::HumanReadableSize;
 
-    base::Value::Dict setup_progress;
-    setup_progress.Set("stage", ToString(progress.stage));
-    setup_progress.Set("availableDiskSpace",
-                       ToString(HumanReadableSize(progress.free_space)));
-    setup_progress.Set("requiredDiskSpace",
-                       ToString(HumanReadableSize(progress.total_bytes)));
-    setup_progress.Set("pinnedDiskSpace",
-                       ToString(HumanReadableSize(progress.transferred_bytes)));
-    MaybeCallJavascript("onBulkPinningProgress",
-                        base::Value(std::move(setup_progress)));
+    base::Value::Dict d;
+    d.Set("stage", ToString(progress.stage));
+    d.Set("availableDiskSpace",
+          ToString(HumanReadableSize(progress.free_space)));
+    d.Set("requiredDiskSpace",
+          ToString(HumanReadableSize(progress.total_bytes)));
+    d.Set("pinnedDiskSpace",
+          ToString(HumanReadableSize(progress.transferred_bytes)));
+    MaybeCallJavascript("onBulkPinningProgress", base::Value(std::move(d)));
   }
 
   // Called when GetDeveloperMode() is complete.
@@ -684,14 +699,12 @@ class DriveInternalsWebUIHandler
         drive::prefs::kDriveFsEnableMirrorSync,
     };
 
-    PrefService* pref_service = profile()->GetPrefs();
-
+    PrefService* const prefs = GetPrefs();
     base::Value::List preferences;
     for (const char* key : kDriveRelatedPreferences) {
       // As of now, all preferences are boolean.
-      const std::string value =
-          (pref_service->GetBoolean(key) ? "true" : "false");
-      AppendKeyValue(preferences, key, value);
+      AppendKeyValue(preferences, key,
+                     prefs->GetBoolean(key) ? "true" : "false");
     }
 
     MaybeCallJavascript("updateDriveRelatedPreferences",
@@ -811,8 +824,8 @@ class DriveInternalsWebUIHandler
 
     if (args.size() == 1 && args[0].is_bool()) {
       bool enabled = args[0].GetBool();
-      profile()->GetPrefs()->SetBoolean(
-          drive::prefs::kDriveFsEnableVerboseLogging, enabled);
+      GetPrefs()->SetBoolean(drive::prefs::kDriveFsEnableVerboseLogging,
+                             enabled);
       RestartDrive(base::Value::List());
     }
   }
@@ -827,8 +840,7 @@ class DriveInternalsWebUIHandler
 
     if (args.size() == 1 && args[0].is_bool()) {
       bool enabled = args[0].GetBool();
-      profile()->GetPrefs()->SetBoolean(drive::prefs::kDriveFsEnableMirrorSync,
-                                        enabled);
+      GetPrefs()->SetBoolean(drive::prefs::kDriveFsEnableMirrorSync, enabled);
       SetSectionEnabled("mirror-sync-paths", enabled);
       SetSectionEnabled("mirror-path-form", enabled);
     }
@@ -836,26 +848,14 @@ class DriveInternalsWebUIHandler
 
   void SetBulkPinningEnabled(const base::Value::List& args) {
     AllowJavascript();
-    drive::DriveIntegrationService* integration_service =
-        GetIntegrationService();
-    if (!integration_service) {
+
+    if (args.size() != 1 || !args[0].is_bool()) {
+      LOG(ERROR) << "args in not a bool";
       return;
     }
 
-    if (args.size() == 1 && args[0].is_bool()) {
-      bool enabled = args[0].GetBool();
-      profile()->GetPrefs()->SetBoolean(
-          drive::prefs::kDriveFsBulkPinningEnabled, enabled);
-      auto* pin_manager = integration_service->GetDriveFsPinManager();
-      if (!pin_manager) {
-        return;
-      }
-      if (enabled) {
-        pin_manager->AddObserver(this);
-      } else {
-        pin_manager->RemoveObserver(this);
-      }
-    }
+    const bool enabled = args[0].GetBool();
+    GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled, enabled);
   }
 
   // Called when the "Startup Arguments" field on the page is submitted.
@@ -984,20 +984,21 @@ class DriveInternalsWebUIHandler
   }
 
   Profile* profile() { return Profile::FromWebUI(web_ui()); }
+  PrefService* GetPrefs() { return profile()->GetPrefs(); }
 
   // Returns a DriveIntegrationService.
   drive::DriveIntegrationService* GetIntegrationService() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    drive::DriveIntegrationService* service =
+    drive::DriveIntegrationService* const service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
-    if (!service || !service->is_enabled()) {
-      return nullptr;
-    }
-    return service;
+    return service && service->is_enabled() ? service : nullptr;
   }
 
+  // DriveFS bulk-pinning manager.
+  drivefs::pinning::DriveFsPinManager* pin_manager_ = nullptr;
+
   // The last event sent to the JavaScript side.
-  int last_sent_event_id_;
+  int last_sent_event_id_ = -1;
 
   // The last line of service log sent to the JS side.
   int last_sent_line_number_;
