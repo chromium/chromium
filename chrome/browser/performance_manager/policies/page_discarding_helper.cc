@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -197,7 +198,7 @@ void PageDiscardingHelper::UrgentlyDiscardMultiplePages(
   LOG(WARNING) << "Discarding " << discard_attempts.size() << " pages";
 
   page_discarder_->DiscardPageNodes(
-      discard_attempts,
+      discard_attempts, ::mojom::LifecycleUnitDiscardReason::URGENT,
       base::BindOnce(&PageDiscardingHelper::PostDiscardAttemptCallback,
                      weak_factory_.GetWeakPtr(), reclaim_target_kb,
                      discard_protected_tabs, std::move(split_callback.second)));
@@ -208,7 +209,9 @@ void PageDiscardingHelper::ImmediatelyDiscardSpecificPage(
   if (CanUrgentlyDiscard(page_node,
                          /* consider_minimum_protection_time */ false) ==
       CanUrgentlyDiscardResult::kEligible) {
-    page_discarder_->DiscardPageNodes({page_node}, base::DoNothing());
+    page_discarder_->DiscardPageNodes(
+        {page_node}, ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
+        base::DoNothing());
   }
 }
 

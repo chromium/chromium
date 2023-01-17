@@ -181,6 +181,8 @@ class DiscardsTabElement extends DiscardsTabElementBase {
         return 'external';
       case LifecycleUnitDiscardReason.URGENT:
         return 'urgent';
+      case LifecycleUnitDiscardReason.PROACTIVE:
+        return 'proactive';
     }
   }
 

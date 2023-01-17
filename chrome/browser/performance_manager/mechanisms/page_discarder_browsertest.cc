@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodes) {
 
             mechanism::PageDiscarder discarder;
             discarder.DiscardPageNodes(
-                {page_node.get()},
+                {page_node.get()}, ::mojom::LifecycleUnitDiscardReason::URGENT,
                 base::BindOnce(
                     [](base::OnceClosure quit_closure, bool success) {
                       EXPECT_TRUE(success);

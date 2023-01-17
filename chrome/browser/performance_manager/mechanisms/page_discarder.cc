@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -31,7 +30,8 @@ bool disabled_for_testing = false;
 // UrgentlyDiscardMultiplePages can keep reclaiming until the reclaim target is
 // met or there is no discardable page.
 bool DiscardPagesOnUIThread(
-    const std::vector<std::pair<WebContentsProxy, uint64_t>>& proxies_and_pmf) {
+    const std::vector<std::pair<WebContentsProxy, uint64_t>>& proxies_and_pmf,
+    resource_coordinator::LifecycleUnitDiscardReason discard_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (disabled_for_testing)
@@ -49,7 +49,7 @@ bool DiscardPagesOnUIThread(
       continue;
 
     if (lifecycle_unit->DiscardTab(
-            resource_coordinator::LifecycleUnitDiscardReason::URGENT,
+            discard_reason,
             /*memory_footprint_estimate=*/proxy.second)) {
       result = true;
     }
@@ -67,6 +67,7 @@ void PageDiscarder::DisableForTesting() {
 
 void PageDiscarder::DiscardPageNodes(
     const std::vector<const PageNode*>& page_nodes,
+    resource_coordinator::LifecycleUnitDiscardReason discard_reason,
     base::OnceCallback<void(bool)> post_discard_cb) {
   std::vector<std::pair<WebContentsProxy, uint64_t>> proxies_and_pmf;
   proxies_and_pmf.reserve(page_nodes.size());
@@ -76,7 +77,8 @@ void PageDiscarder::DiscardPageNodes(
   }
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DiscardPagesOnUIThread, std::move(proxies_and_pmf)),
+      base::BindOnce(&DiscardPagesOnUIThread, std::move(proxies_and_pmf),
+                     discard_reason),
       std::move(post_discard_cb));
 }
 

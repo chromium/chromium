@@ -1128,8 +1128,10 @@ extern const char kTabStatsWindowCountMax[];
 extern const char kTabStatsDailySample[];
 extern const char kTabStatsDiscardsExternal[];
 extern const char kTabStatsDiscardsUrgent[];
+extern const char kTabStatsDiscardsProactive[];
 extern const char kTabStatsReloadsExternal[];
 extern const char kTabStatsReloadsUrgent[];
+extern const char kTabStatsReloadsProactive[];
 
 extern const char kUnsafelyTreatInsecureOriginAsSecure[];
 

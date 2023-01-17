@@ -255,8 +255,10 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // by external/urgent event.
   static const char kDailyDiscardsExternalHistogramName[];
   static const char kDailyDiscardsUrgentHistogramName[];
+  static const char kDailyDiscardsProactiveHistogramName[];
   static const char kDailyReloadsExternalHistogramName[];
   static const char kDailyReloadsUrgentHistogramName[];
+  static const char kDailyReloadsProactiveHistogramName[];
 
   UmaStatsReportingDelegate() = default;
 

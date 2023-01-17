@@ -59,4 +59,8 @@ enum LifecycleUnitDiscardReason {
   // The discard is requested urgently by TabManager when the system is in a
   // critical condition.
   URGENT = 1,
+  // The discard is requested proactively by PerformanceManager to free up
+  // memory before the system is under memory pressure, such as when Memory
+  // Saver Mode initiates a discard.
+  PROACTIVE = 2,
 };
