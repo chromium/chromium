@@ -10218,6 +10218,7 @@ if (is_android) {
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
       "//components/signin/public/android:java",
       "//components/sync/android:sync_java",
       "//content/public/test/android:content_java_test_support",
@@ -10259,10 +10260,6 @@ source_set("sync_integration_test_support") {
     "../browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.h",
     "../browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.cc",
     "../browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h",
-    "../browser/sync/test/integration/invalidations/fake_sync_instance_id.cc",
-    "../browser/sync/test/integration/invalidations/fake_sync_instance_id.h",
-    "../browser/sync/test/integration/invalidations/fake_sync_instance_id_driver.cc",
-    "../browser/sync/test/integration/invalidations/fake_sync_instance_id_driver.h",
     "../browser/sync/test/integration/invalidations/invalidations_status_checker.cc",
     "../browser/sync/test/integration/invalidations/invalidations_status_checker.h",
     "../browser/sync/test/integration/multi_client_status_change_checker.cc",
@@ -10408,7 +10405,10 @@ source_set("sync_integration_test_support") {
     ]
   }
   if (is_android) {
-    deps += [ ":sync_integration_test_support_jni_headers" ]
+    deps += [
+      ":sync_integration_test_support_jni_headers",
+      ":test_support_jni_headers",
+    ]
   } else {
     deps += [
       "//chrome/browser/apps/app_service",

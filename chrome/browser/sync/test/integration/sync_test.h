@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 #else
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -474,6 +475,11 @@ class SyncTest : public PlatformBrowserTest {
   std::unique_ptr<
       app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>
       model_updater_factory_;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  instance_id::ScopedUseFakeInstanceIDAndroid
+      scoped_use_fake_instance_id_android_;
 #endif
 
   std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>

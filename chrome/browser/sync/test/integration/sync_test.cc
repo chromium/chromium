@@ -41,7 +41,6 @@
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.h"
-#include "chrome/browser/sync/test/integration/invalidations/fake_sync_instance_id_driver.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
@@ -207,14 +206,6 @@ invalidation::FCMNetworkHandler* GetFCMNetworkHandler(
 
   auto it = profile_to_fcm_network_handler_map->find(profile);
   return it != profile_to_fcm_network_handler_map->end() ? it->second : nullptr;
-}
-
-std::unique_ptr<KeyedService> CreateInstanceIDProfileService(
-    content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  return instance_id::InstanceIDProfileService::CreateForTests(
-      std::make_unique<FakeSyncInstanceIDDriver>(
-          gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver()));
 }
 
 }  // namespace
@@ -982,13 +973,6 @@ void SyncTest::OnWillCreateBrowserContextServices(
                               &profile_to_fcm_network_handler_map_));
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&FakeSyncGCMDriver::Build));
-
-  // Used by SharingService, real InstanceIDProfileService returns a real
-  // InstanceIDDriver. This factory prevents network requests when obtaining FCM
-  // registration tokens from real InstanceID.
-  instance_id::InstanceIDProfileServiceFactory::GetInstance()
-      ->SetTestingFactory(context,
-                          base::BindRepeating(&CreateInstanceIDProfileService));
 }
 
 // static
