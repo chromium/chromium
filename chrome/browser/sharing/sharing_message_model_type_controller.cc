@@ -6,40 +6,33 @@
 
 #include <utility>
 
-#include "components/sync/driver/sync_service.h"
-#include "google_apis/gaia/google_service_auth_error.h"
-
 SharingMessageModelTypeController::SharingMessageModelTypeController(
-    syncer::SyncService* sync_service,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_transport_mode)
     : syncer::ModelTypeController(syncer::SHARING_MESSAGE,
                                   std::move(delegate_for_full_sync_mode),
-                                  std::move(delegate_for_transport_mode)),
-      sync_service_(sync_service) {
-  sync_service_->AddObserver(this);
-}
+                                  std::move(delegate_for_transport_mode)) {}
 
-SharingMessageModelTypeController::~SharingMessageModelTypeController() {
-  sync_service_->RemoveObserver(this);
-}
+SharingMessageModelTypeController::~SharingMessageModelTypeController() =
+    default;
 
-syncer::DataTypeController::PreconditionState
-SharingMessageModelTypeController::GetPreconditionState() const {
+void SharingMessageModelTypeController::Stop(
+    syncer::ShutdownReason shutdown_reason,
+    StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  // TODO(crbug.com/1156584): No need to handle IsPersistentError() once the
-  // feature toggle is cleaned up and sync gets paused for all persistent auth
-  // errors. Instead, consider forcing DISABLE_SYNC_AND_CLEAR_DATA in Stop().
-  return sync_service_->GetAuthError().IsPersistentError()
-             ? PreconditionState::kMustStopAndClearData
-             : PreconditionState::kPreconditionsMet;
-}
-
-void SharingMessageModelTypeController::OnStateChanged(
-    syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
-  // Most of these calls will be no-ops but SyncService handles that just fine.
-  sync_service_->DataTypePreconditionChanged(type());
+  switch (shutdown_reason) {
+    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+      // Clear sync metadata even when sync gets paused (e.g. persistent auth
+      // error). This is needed because SharingMessageBridgeImpl uses the
+      // processor's IsTrackingMetadata() bit to determine whether sharing
+      // messages can be sent (they can't if sync is paused).
+      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
+      break;
+    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
+      break;
+  }
+  ModelTypeController::Stop(shutdown_reason, std::move(callback));
 }

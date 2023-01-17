@@ -405,7 +405,6 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     syncer::ModelTypeControllerDelegate* sharing_message_delegate =
         GetControllerDelegateForModelType(syncer::SHARING_MESSAGE).get();
     controllers.push_back(std::make_unique<SharingMessageModelTypeController>(
-        sync_service,
         /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
             sharing_message_delegate),

@@ -7,23 +7,14 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/model_type_controller.h"
-#include "components/sync/driver/sync_service_observer.h"
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 // Controls syncing of SHARING_MESSAGE.
-class SharingMessageModelTypeController : public syncer::ModelTypeController,
-                                          public syncer::SyncServiceObserver {
+class SharingMessageModelTypeController : public syncer::ModelTypeController {
  public:
-  // The |delegate_for_full_sync_mode|, |delegate_for_transport_mode| and
-  // |sync_service| must not be null. Furthermore, |sync_service| must outlive
-  // this object.
+  // |delegate_for_full_sync_mode| and |delegate_for_transport_mode| must not be
+  // null.
   SharingMessageModelTypeController(
-      syncer::SyncService* sync_service,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
@@ -35,13 +26,8 @@ class SharingMessageModelTypeController : public syncer::ModelTypeController,
       const SharingMessageModelTypeController&) = delete;
 
   // DataTypeController overrides.
-  PreconditionState GetPreconditionState() const override;
-
-  // SyncServiceObserver implementation.
-  void OnStateChanged(syncer::SyncService* sync) override;
-
- private:
-  const raw_ptr<syncer::SyncService> sync_service_;
+  void Stop(syncer::ShutdownReason shutdown_reason,
+            StopCallback callback) override;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_MESSAGE_MODEL_TYPE_CONTROLLER_H_
