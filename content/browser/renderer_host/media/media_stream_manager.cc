@@ -1629,7 +1629,7 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
           security_origin, true /* has_focus */, false /* is_background */});
 
   request->media_access_request_cb = std::move(callback);
-  const std::string label = AddRequest(std::move(request));
+  const std::string& label = AddRequest(std::move(request))->first;
 
   // Post a task and handle the request asynchronously. The reason is that the
   // requester won't have a label for the request until this function returns
@@ -1668,17 +1668,18 @@ void MediaStreamManager::GenerateStreams(
           std::move(device_request_state_change_cb),
           std::move(device_capture_handle_change_cb),
           std::move(generate_streams_cb));
-  DeviceRequest* const request_ptr = request.get();
-  const std::string label = AddRequest(std::move(request));
+  DeviceRequests::const_iterator request_it = AddRequest(std::move(request));
+  const std::string& label = request_it->first;
 
   if (generate_stream_test_callback_) {
     // The test callback is responsible to verify whether the |controls| is
     // as expected. Then we need to finish getUserMedia and let Javascript
     // access the result.
     if (std::move(generate_stream_test_callback_).Run(controls)) {
-      FinalizeGenerateStreams(label, request_ptr);
+      FinalizeGenerateStreams(label, request_it->second.get());
     } else {
-      FinalizeRequestFailed(label, request_ptr,
+      // This will invalidate both |label| and |request_it|.
+      FinalizeRequestFailed(request_it,
                             MediaStreamRequestResult::INVALID_STATE);
     }
     return;
@@ -1719,15 +1720,16 @@ void MediaStreamManager::GetOpenDevice(
           std::move(device_capture_handle_change_cb),
           std::move(get_open_device_cb));
 
-  DeviceRequest* const request_ptr = request.get();
-  const std::string new_label = AddRequest(std::move(request));
+  DeviceRequests::const_iterator request_it = AddRequest(std::move(request));
+  const std::string& new_label = request_it->first;
+  DeviceRequest* const request_ptr = request_it->second.get();
 
   const absl::optional<MediaStreamDevice> new_device =
       CloneExistingOpenDevice(device_session_id, transfer_id, new_label);
   if (!new_device.has_value()) {
     // No existing device with matching session id is found.
-    FinalizeRequestFailed(new_label, request_ptr,
-                          MediaStreamRequestResult::INVALID_STATE);
+    // This invalidates |request_it|.
+    FinalizeRequestFailed(request_it, MediaStreamRequestResult::INVALID_STATE);
     return;
   }
 
@@ -1770,14 +1772,16 @@ void MediaStreamManager::CancelRequest(int render_process_id,
 
 void MediaStreamManager::CancelRequest(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   SendLogMessage(
       base::StringPrintf("CancelRequest({label=%s})", label.c_str()));
-  DeviceRequest* request = FindRequest(label);
-  if (!request) {
+  const DeviceRequests::const_iterator request_it = FindRequestIterator(label);
+  if (request_it == requests_.end()) {
     // The request does not exist.
     LOG(ERROR) << "The request with label = " << label << " does not exist.";
     return;
   }
+  DeviceRequest* const request = request_it->second.get();
 
   // This is a request for closing one or more devices.
   for (const blink::mojom::StreamDevicesPtr& stream_devices_ptr :
@@ -1805,7 +1809,7 @@ void MediaStreamManager::CancelRequest(const std::string& label) {
   // Cancel the request if still pending at UI side.
   request->SetState(MediaStreamType::NUM_MEDIA_TYPES,
                     MEDIA_REQUEST_STATE_CLOSING);
-  DeleteRequest(label);
+  DeleteRequest(request_it);
 }
 
 void MediaStreamManager::CancelAllRequests(int render_process_id,
@@ -1935,7 +1939,7 @@ void MediaStreamManager::StopDevice(MediaStreamType type,
   SendLogMessage(base::StringPrintf("StopDevice({type=%s}, {session_id=%s})",
                                     StreamTypeToString(type),
                                     session_id.ToString().c_str()));
-  auto request_it = requests_.begin();
+  DeviceRequests::const_iterator request_it = requests_.begin();
   while (request_it != requests_.end()) {
     DeviceRequest* request = request_it->second.get();
 
@@ -1981,9 +1985,9 @@ void MediaStreamManager::StopDevice(MediaStreamType type,
     // has been stopped above, remove the request. Note that the request is
     // only deleted if a device has been removed from |devices|.
     if (request->stream_devices_set.stream_devices.empty()) {
-      const std::string& label = request_it->first;
-      ++request_it;
-      DeleteRequest(label);
+      const DeviceRequests::const_iterator next = std::next(request_it);
+      DeleteRequest(request_it);
+      request_it = next;
     } else {
       ++request_it;
     }
@@ -2072,7 +2076,7 @@ void MediaStreamManager::OpenDevice(int render_process_id,
       std::move(audio_stream_selection_info_ptr), controls,
       std::move(salt_and_origin), std::move(device_stopped_cb),
       std::move(open_device_cb));
-  const std::string label = AddRequest(std::move(request));
+  const std::string& label = AddRequest(std::move(request))->first;
 
   // Post a task and handle the request asynchronously. The reason is that the
   // requester won't have a label for the request until this function returns
@@ -2240,8 +2244,8 @@ void MediaStreamManager::StartEnumeration(DeviceRequest* request,
                      request_video_input, label));
 }
 
-std::string MediaStreamManager::AddRequest(
-    std::unique_ptr<DeviceRequest> request) {
+MediaStreamManager::DeviceRequests::const_iterator
+MediaStreamManager::AddRequest(std::unique_ptr<DeviceRequest> request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // Create a label for this request and verify it is unique.
@@ -2256,7 +2260,7 @@ std::string MediaStreamManager::AddRequest(
   request->SetLabel(unique_label);
   requests_.push_back(std::make_pair(unique_label, std::move(request)));
 
-  return unique_label;
+  return std::prev(requests_.end());
 }
 
 MediaStreamManager::DeviceRequests::const_iterator
@@ -2359,16 +2363,13 @@ void MediaStreamManager::UpdateDeviceTransferStatus(
   }
 }
 
-void MediaStreamManager::DeleteRequest(const std::string& label) {
+void MediaStreamManager::DeleteRequest(
+    DeviceRequests::const_iterator request_it) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(request_it != requests_.end());
 
-  SendLogMessage(
-      base::StringPrintf("DeleteRequest([label=%s])", label.c_str()));
-
-  DeviceRequests::const_iterator request_it = FindRequestIterator(label);
-  if (request_it == requests_.end()) {
-    return;
-  }
+  SendLogMessage(base::StringPrintf("DeleteRequest([label=%s])",
+                                    request_it->first.c_str()));
 
   // Clean up permission controller subscription.
   GetUIThreadTaskRunner({})->PostTask(
@@ -2443,11 +2444,14 @@ void MediaStreamManager::PostRequestToUI(
 
 void MediaStreamManager::SetUpRequest(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DeviceRequest* request = FindRequest(label);
-  if (!request) {
+
+  const DeviceRequests::const_iterator request_it = FindRequestIterator(label);
+  if (request_it == requests_.end()) {
     DVLOG(1) << "SetUpRequest label " << label << " doesn't exist!!";
     return;  // This can happen if the request has been canceled.
   }
+  DeviceRequest* const request = request_it->second.get();
+
   SendLogMessage(
       base::StringPrintf("SetUpRequest([requester_id=%d] {label=%s})",
                          request->requester_id, label.c_str()));
@@ -2461,7 +2465,7 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
           MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
       request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
   if (is_display_capture && !SetUpDisplayCaptureRequest(request)) {
-    FinalizeRequestFailed(label, request,
+    FinalizeRequestFailed(request_it,
                           MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE);
     return;
   }
@@ -2471,7 +2475,7 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
       request->video_type() == MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
   if (is_tab_capture) {
     if (!SetUpTabCaptureRequest(request, label)) {
-      FinalizeRequestFailed(label, request,
+      FinalizeRequestFailed(request_it,
                             MediaStreamRequestResult::TAB_CAPTURE_FAILURE);
     }
     return;
@@ -2480,7 +2484,7 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
   const bool is_screen_capture =
       request->video_type() == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
   if (is_screen_capture && !SetUpScreenCaptureRequest(request)) {
-    FinalizeRequestFailed(label, request,
+    FinalizeRequestFailed(request_it,
                           MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE);
     return;
   }
@@ -2494,8 +2498,7 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
     // If no actual device capture is requested, set up the request with an
     // empty device list.
     if (!SetUpDeviceCaptureRequest(request, MediaDeviceEnumeration())) {
-      FinalizeRequestFailed(label, request,
-                            MediaStreamRequestResult::NO_HARDWARE);
+      FinalizeRequestFailed(request_it, MediaStreamRequestResult::NO_HARDWARE);
       return;
     }
   }
@@ -2634,15 +2637,16 @@ void MediaStreamManager::FinishTabCaptureRequestSetupWithDeviceId(
     const DesktopMediaID& device_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  DeviceRequest* request = FindRequest(label);
-  if (!request) {
+  const DeviceRequests::const_iterator request_it = FindRequestIterator(label);
+  if (request_it == requests_.end()) {
     DVLOG(1) << "SetUpRequest label " << label << " doesn't exist!!";
     return;  // This can happen if the request has been canceled.
   }
+  DeviceRequest* const request = request_it->second.get();
 
   // Received invalid device id.
   if (device_id.type != content::DesktopMediaID::TYPE_WEB_CONTENTS) {
-    FinalizeRequestFailed(label, request,
+    FinalizeRequestFailed(request_it,
                           MediaStreamRequestResult::TAB_CAPTURE_FAILURE);
     return;
   }
@@ -2934,13 +2938,17 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
 }
 
 void MediaStreamManager::FinalizeRequestFailed(
-    const std::string& label,
-    DeviceRequest* request,
+    DeviceRequests::const_iterator request_it,
     MediaStreamRequestResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(request_it != requests_.end());
+
+  DeviceRequest* const request = request_it->second.get();
+
   SendLogMessage(base::StringPrintf(
       "FinalizeRequestFailed({label=%s}, {requester_id=%d}, {result=%s})",
-      label.c_str(), request->requester_id, RequestResultToString(result)));
+      request_it->first.c_str(), request->requester_id,
+      RequestResultToString(result)));
 
   switch (request->request_type()) {
     case blink::MEDIA_GENERATE_STREAM:
@@ -2984,7 +2992,7 @@ void MediaStreamManager::FinalizeRequestFailed(
       break;
   }
 
-  DeleteRequest(label);
+  DeleteRequest(request_it);
 }
 
 void MediaStreamManager::FinalizeChangeDevice(const std::string& label,
@@ -3000,21 +3008,25 @@ void MediaStreamManager::FinalizeChangeDevice(const std::string& label,
 }
 
 void MediaStreamManager::FinalizeMediaAccessRequest(
-    const std::string& label,
-    DeviceRequest* request,
+    DeviceRequests::const_iterator request_it,
     const blink::mojom::StreamDevicesSet& stream_devices_set) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(request_it != requests_.end());
+
+  DeviceRequest* const request = request_it->second.get();
   DCHECK(request->media_access_request_cb);
+
   SendLogMessage(
       base::StringPrintf("FinalizeMediaAccessRequest({label=%s}, {requester_id="
                          "%d}, {request_type=%s})",
-                         label.c_str(), request->requester_id,
+                         request_it->first.c_str(), request->requester_id,
                          RequestTypeToString(request->request_type())));
+
   std::move(request->media_access_request_cb)
       .Run(stream_devices_set, std::move(request->ui_proxy));
 
   // Delete the request since it is done.
-  DeleteRequest(label);
+  DeleteRequest(request_it);
 }
 
 void MediaStreamManager::SetRequestDevice(
@@ -3201,9 +3213,11 @@ void MediaStreamManager::DevicesEnumerated(
     const MediaDeviceEnumeration& enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  DeviceRequest* request = FindRequest(label);
-  if (!request)
+  const DeviceRequests::const_iterator request_it = FindRequestIterator(label);
+  if (request_it == requests_.end()) {
     return;
+  }
+  DeviceRequest* const request = request_it->second.get();
 
   SendLogMessage(base::StringPrintf(
       "DevicesEnumerated({label=%s}, {requester_id=%d}, {request_type=%s})",
@@ -3225,8 +3239,7 @@ void MediaStreamManager::DevicesEnumerated(
   }
 
   if (!SetUpDeviceCaptureRequest(request, enumeration))
-    FinalizeRequestFailed(label, request,
-                          MediaStreamRequestResult::NO_HARDWARE);
+    FinalizeRequestFailed(request_it, MediaStreamRequestResult::NO_HARDWARE);
   else
     ReadOutputParamsAndPostRequestToUI(label, request, enumeration);
 }
@@ -3293,11 +3306,13 @@ void MediaStreamManager::HandleAccessRequestResponse(
          (result != MediaStreamRequestResult::OK &&
           stream_devices_set.stream_devices.empty()));
 
-  DeviceRequest* request = FindRequest(label);
-  if (!request) {
+  const DeviceRequests::const_iterator request_it = FindRequestIterator(label);
+  if (request_it == requests_.end()) {
     // The request has been canceled before the UI returned.
     return;
   }
+  DeviceRequest* const request = request_it->second.get();
+
   SendLogMessage(base::StringPrintf(
       "HandleAccessRequestResponse({label=%s}, {request=%s}, {result=%s})",
       label.c_str(), RequestTypeToString(request->request_type()),
@@ -3307,13 +3322,13 @@ void MediaStreamManager::HandleAccessRequestResponse(
                                          request->request_type(), result);
 
   if (request->request_type() == blink::MEDIA_DEVICE_ACCESS) {
-    FinalizeMediaAccessRequest(label, request, stream_devices_set);
+    FinalizeMediaAccessRequest(request_it, stream_devices_set);
     return;
   }
 
   // Handle the case when the request was denied.
   if (result != MediaStreamRequestResult::OK) {
-    FinalizeRequestFailed(label, request, result);
+    FinalizeRequestFailed(request_it, result);
     return;
   }
 
