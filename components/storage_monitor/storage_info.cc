@@ -110,17 +110,8 @@ bool StorageInfo::CrackDeviceId(const std::string& device_id,
   } else if (prefix == kMacImageCapturePrefix) {
     found_type = MAC_IMAGE_CAPTURE;
   } else {
-#if DCHECK_IS_ON()
-    // Users may have legacy device IDs in their profiles.
-    static const char kLegacyIPhotoPrefix[] = "iphoto:";
-    static const char kLegacyITunesPrefix[] = "itunes:";
-    static const char kLegacyPicasaPrefix[] = "picasa:";
-    if (prefix == kLegacyIPhotoPrefix || prefix == kLegacyITunesPrefix ||
-        prefix == kLegacyPicasaPrefix) {
-      return false;
-    }
-#endif
-    NOTREACHED();
+    // Users may have legacy device IDs in their profiles, like iPhoto, iTunes,
+    // or Picasa. Just reject them as invalid devices here.
     return false;
   }
   if (type)
