@@ -115,7 +115,7 @@ js_type_check("closure_compile_module") {
 js_library("nearby_contact_manager") {
   deps = [
     "//ash/webui/common/resources:cr.m",
-    "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js_library_for_compile",
   ]
 }
 
@@ -136,7 +136,7 @@ js_library("nearby_device_icon") {
   deps = [
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -178,7 +178,7 @@ js_library("nearby_preview") {
     "//ash/webui/common/resources:i18n_behavior",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -200,7 +200,7 @@ js_library("nearby_share_settings_behavior") {
 js_library("nearby_share_settings") {
   deps = [
     "//ash/webui/common/resources:cr.m",
-    "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js_library_for_compile",
     "//url/mojom:url_mojom_gurl_js_library_for_compile",
   ]
 }

@@ -7,8 +7,19 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash)
 
-mojom("nearby_share_target_types") {
-  sources = [ "nearby_share_target_types.mojom" ]
+mojom("nearby_share_settings") {
+  sources = [
+    "nearby_share_settings.mojom",
+    "nearby_share_target_types.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom"
 }
 
 mojom("mojom") {
@@ -28,7 +39,7 @@ mojom("mojom") {
   ]
 
   public_deps = [
-    ":nearby_share_target_types",
+    ":nearby_share_settings",
     "//chromeos/services/network_config/public/mojom",
     "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",
     "//mojo/public/mojom/base",

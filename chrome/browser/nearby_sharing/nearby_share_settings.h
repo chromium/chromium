@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

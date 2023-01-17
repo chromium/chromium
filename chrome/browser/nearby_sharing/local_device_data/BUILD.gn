@@ -16,7 +16,7 @@ source_set("local_device_data") {
     "nearby_share_local_device_data_manager_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser/ui/webui/nearby_share/public/mojom" ]
+  public_deps = [ "//chromeos/ash/services/nearby/public/mojom" ]
 
   deps = [
     "//base",

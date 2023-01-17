@@ -22,7 +22,7 @@ source_set("share_target") {
     "//base",
     "//chrome/browser/ui/webui/nearby_share:share_type",
     "//chromeos/ash/services/nearby/public/mojom",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_target_types",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings",
     "//components/drive",
     "//net",
     "//url",

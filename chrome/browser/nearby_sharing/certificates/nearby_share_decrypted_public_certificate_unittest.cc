@@ -7,7 +7,7 @@
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

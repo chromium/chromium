@@ -12,7 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The maximum length in bytes allowed for a device name, as encoded in UTF-8 in

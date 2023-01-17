@@ -17,7 +17,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {

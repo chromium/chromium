@@ -16,7 +16,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"

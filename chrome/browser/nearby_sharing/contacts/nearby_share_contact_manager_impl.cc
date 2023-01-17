@@ -22,8 +22,8 @@
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-shared.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-shared.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/secure_hash.h"
 
