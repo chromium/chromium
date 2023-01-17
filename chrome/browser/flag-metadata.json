@@ -1570,11 +1570,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "drive-fs-bidirectional-native-messaging",
-    "owners": [ "austinct@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "drive-fs-chrome-networking",
     "owners": [ "travislane@google.com" ],
     "expiry_milestone": 112

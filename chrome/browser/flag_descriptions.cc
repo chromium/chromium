@@ -5068,11 +5068,6 @@ const char kQuickSettingsPWANotificationsDescription[] =
     "permissions in the quick settings menu. Website notification permissions "
     "settings will be migrated to the lacros - chrome browser.";
 
-const char kDriveFsBidirectionalNativeMessagingName[] =
-    "Enable bidirectional native messaging for DriveFS";
-const char kDriveFsBidirectionalNativeMessagingDescription[] =
-    "Enable enhanced native messaging host to communicate with DriveFS.";
-
 const char kDriveFsChromeNetworkingName[] =
     "Enable the DriveFS / Chrome Network Service bridge";
 const char kDriveFsChromeNetworkingDescription[] =
