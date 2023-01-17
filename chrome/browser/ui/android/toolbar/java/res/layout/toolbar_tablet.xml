@@ -24,17 +24,6 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:orientation="horizontal" >
 
-        <org.chromium.chrome.browser.toolbar.HomeButton
-            android:id="@+id/home_button"
-            style="@style/ToolbarButton"
-            android:src="@drawable/btn_toolbar_home"
-            android:contentDescription="@string/accessibility_toolbar_btn_home"
-            android:visibility="gone"
-            app:menuMaxWidth="@dimen/home_button_list_menu_width"
-            app:menuPositionedAtEnd="false"
-            app:menuVerticalOverlapAnchor="false"
-            app:tint="@color/default_icon_color_tint_list" />
-
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/back_button"
             style="@style/ToolbarButton"
@@ -56,6 +45,17 @@ found in the LICENSE file.
             android:contentDescription="@string/accessibility_btn_refresh"
             app:tint="@color/default_icon_color_tint_list"
             style="@style/ToolbarButton" />
+
+        <org.chromium.chrome.browser.toolbar.HomeButton
+            android:id="@+id/home_button"
+            style="@style/ToolbarButton"
+            android:src="@drawable/btn_toolbar_home"
+            android:contentDescription="@string/accessibility_toolbar_btn_home"
+            android:visibility="gone"
+            app:menuMaxWidth="@dimen/home_button_list_menu_width"
+            app:menuPositionedAtEnd="false"
+            app:menuVerticalOverlapAnchor="false"
+            app:tint="@color/default_icon_color_tint_list" />
 
         <org.chromium.chrome.browser.omnibox.LocationBarTablet
             android:id="@+id/location_bar"

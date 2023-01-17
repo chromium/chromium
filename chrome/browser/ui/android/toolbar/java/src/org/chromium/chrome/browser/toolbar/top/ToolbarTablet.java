@@ -136,6 +136,13 @@ public class ToolbarTablet
         mBackButton = findViewById(R.id.back_button);
         mForwardButton = findViewById(R.id.forward_button);
         mReloadButton = findViewById(R.id.refresh_button);
+
+        // Disable home button reposition that aligns with desktop ordering when TSR disabled.
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            // Bring home button to the top when TSR is disabled.
+            mHomeButton.bringToFront();
+        }
+
         // ImageView tinting doesn't work with LevelListDrawable, use Drawable tinting instead.
         // See https://crbug.com/891593 for details.
         // Also, using Drawable tinting doesn't work correctly with LevelListDrawable on Android L
@@ -188,18 +195,26 @@ public class ToolbarTablet
         mHomeButton.setOnKeyListener(new KeyboardNavigationListener() {
             @Override
             public View getNextFocusForward() {
-                if (mBackButton.isFocusable()) {
-                    return findViewById(R.id.back_button);
-                } else if (mForwardButton.isFocusable()) {
-                    return findViewById(R.id.forward_button);
+                if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                    return findViewById(R.id.url_bar);
                 } else {
-                    return findViewById(R.id.refresh_button);
+                    if (mBackButton.isFocusable()) {
+                        return findViewById(R.id.back_button);
+                    } else if (mForwardButton.isFocusable()) {
+                        return findViewById(R.id.forward_button);
+                    } else {
+                        return findViewById(R.id.refresh_button);
+                    }
                 }
             }
 
             @Override
             public View getNextFocusBackward() {
-                return findViewById(R.id.menu_button);
+                if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                    return findViewById(R.id.refresh_button);
+                } else {
+                    return findViewById(R.id.menu_button);
+                }
             }
         });
 
@@ -217,10 +232,14 @@ public class ToolbarTablet
 
             @Override
             public View getNextFocusBackward() {
-                if (mHomeButton.getVisibility() == VISIBLE) {
-                    return findViewById(R.id.home_button);
-                } else {
+                if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
                     return findViewById(R.id.menu_button);
+                } else {
+                    if (mHomeButton.getVisibility() == VISIBLE) {
+                        return findViewById(R.id.home_button);
+                    } else {
+                        return findViewById(R.id.menu_button);
+                    }
                 }
             }
         });
@@ -237,7 +256,8 @@ public class ToolbarTablet
             public View getNextFocusBackward() {
                 if (mBackButton.isFocusable()) {
                     return mBackButton;
-                } else if (mHomeButton.getVisibility() == VISIBLE) {
+                } else if (!ChromeFeatureList.sTabStripRedesign.isEnabled()
+                        && mHomeButton.getVisibility() == VISIBLE) {
                     return findViewById(R.id.home_button);
                 } else {
                     return findViewById(R.id.menu_button);
@@ -250,7 +270,12 @@ public class ToolbarTablet
         mReloadButton.setOnKeyListener(new KeyboardNavigationListener() {
             @Override
             public View getNextFocusForward() {
-                return findViewById(R.id.url_bar);
+                if (ChromeFeatureList.sTabStripRedesign.isEnabled()
+                        && mHomeButton.getVisibility() == VISIBLE) {
+                    return findViewById(R.id.home_button);
+                } else {
+                    return findViewById(R.id.url_bar);
+                }
             }
 
             @Override
@@ -259,7 +284,8 @@ public class ToolbarTablet
                     return mForwardButton;
                 } else if (mBackButton.isFocusable()) {
                     return mBackButton;
-                } else if (mHomeButton.getVisibility() == VISIBLE) {
+                } else if (!ChromeFeatureList.sTabStripRedesign.isEnabled()
+                        && mHomeButton.getVisibility() == VISIBLE) {
                     return findViewById(R.id.home_button);
                 } else {
                     return findViewById(R.id.menu_button);
