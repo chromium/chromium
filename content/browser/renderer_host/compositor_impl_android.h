@@ -143,7 +143,7 @@ class CONTENT_EXPORT CompositorImpl
   void OnCommitRequested() override {}
   void BeginMainFrameNotExpectedSoon() override {}
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
-  void UpdateLayerTreeHost() override;
+  void UpdateLayerTreeHost() override {}
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override {
   }
   void UpdateCompositorScrollState(
@@ -300,8 +300,6 @@ class CONTENT_EXPORT CompositorImpl
       swap_completed_with_size_for_testing_;
 
   size_t num_of_consecutive_surface_failures_ = 0u;
-
-  base::TimeTicks latest_frame_time_;
 
   uint32_t pending_readbacks_ = 0u;
 
