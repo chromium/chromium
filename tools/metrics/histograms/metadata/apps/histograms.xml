@@ -738,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
-    enum="OsSettingsProviderIconLoadStatus" expires_after="2023-02-24">
+    enum="OsSettingsProviderIconLoadStatus" expires_after="2023-06-25">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>chenjih@chromium.org</owner>
