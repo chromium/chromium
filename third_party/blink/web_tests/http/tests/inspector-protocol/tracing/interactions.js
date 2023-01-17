@@ -20,8 +20,14 @@
   await dp.Input.dispatchKeyEvent({type: 'keyDown', key: 'A'});
   await dp.Input.dispatchKeyEvent({type: 'keyUp', key: 'A'});
 
+  await dp.Input.dispatchKeyEvent({type: 'keyDown', key: 'B'});
+  await dp.Input.dispatchKeyEvent({type: 'keyUp', key: 'B'});
+
+  await dp.Input.dispatchKeyEvent({type: 'keyDown', key: 'C'});
+  await dp.Input.dispatchKeyEvent({type: 'keyUp', key: 'C'});
+
   // Wait for trace events and stop tracing.
-  await session.evaluateAsync(`window.__interactionPromise`);
+  await session.evaluateAsync(`window.__interactionPromise`)
   const devtoolsEvents = await tracingHelper.stopTracing(/devtools\.timeline/);
 
   const eventTimingTraces =
@@ -38,4 +44,4 @@
       keyEndEvent.ph}:`);
   tracingHelper.logEventShape(keyEndEvent);
   testRunner.completeTest();
-})
+});
