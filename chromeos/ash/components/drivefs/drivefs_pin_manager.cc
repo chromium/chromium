@@ -229,6 +229,9 @@ bool CanPinItem(const mojom::FileMetadata& metadata,
 
   if (metadata.pinned) {
     VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Already pinned";
+    VLOG_IF(3, !metadata.available_offline)
+        << "Already pinned but not available offline yet: " << id << " "
+        << Quote(path);
     return false;
   }
 
@@ -513,7 +516,9 @@ void DriveFsPinManager::Enable(bool enabled) {
   }
 
   if (enabled) {
+    VLOG(1) << "Starting";
     Start();
+    VLOG(1) << "Started";
   } else {
     Stop();
   }
@@ -633,6 +638,7 @@ void DriveFsPinManager::StartPinning() {
   VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
   VLOG(1) << "To download: " << HumanReadableSize(progress_.total_bytes);
   VLOG(1) << "To pin: " << files_to_pin_.size() << " files";
+  VLOG(1) << "To track: " << files_to_track_.size() << " files";
 
   // The free space should not go below this limit.
   const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
@@ -647,11 +653,18 @@ void DriveFsPinManager::StartPinning() {
     return Complete(SetupStage::kNotEnoughSpace);
   }
 
-  if (!should_pin_ || files_to_pin_.empty()) {
+  if (!should_pin_) {
+    VLOG(1) << "Should not pin files";
     return Complete(SetupStage::kSuccess);
   }
 
-  VLOG(1) << "Pinning " << files_to_pin_.size() << " files...";
+  if (files_to_track_.empty() && files_to_pin_.empty()) {
+    VLOG(1) << "Nothing to pin or track";
+    return Complete(SetupStage::kSuccess);
+  }
+
+  VLOG(1) << "Pinning and tracking "
+          << (files_to_pin_.size() + files_to_track_.size()) << " files...";
   timer_ = base::ElapsedTimer();
   progress_.stage = SetupStage::kSyncing;
   NotifyProgress();
@@ -671,6 +684,7 @@ void DriveFsPinManager::PinSomeFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (files_to_track_.empty() && files_to_pin_.empty()) {
+    VLOG(1) << "Nothing left to pin or track";
     return Complete(SetupStage::kSuccess);
   }
 
@@ -722,7 +736,7 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
     const mojom::SyncingStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!InProgress(progress_.stage)) {
+  if (progress_.stage != SetupStage::kSyncing) {
     VLOG(2) << "Ignored syncing status update";
     return;
   }
@@ -803,6 +817,13 @@ void DriveFsPinManager::OnFilesChanged(
     const std::vector<mojom::FileChange>& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (progress_.stage != SetupStage::kSyncing) {
+    for (const mojom::FileChange& change : changes) {
+      VLOG(1) << "Ignored FileChange " << Quote(change);
+    }
+    return;
+  }
+
   for (const mojom::FileChange& change : changes) {
     VLOG(1) << "Got FileChange " << Quote(change);
 
@@ -844,12 +865,14 @@ void DriveFsPinManager::NotifyProgress() {
   VLOG(3) << "Notified observers";
 }
 
-void DriveFsPinManager::AddObserver(DriveFsBulkPinObserver* observer) {
+void DriveFsPinManager::AddObserver(DriveFsBulkPinObserver* const observer) {
   observers_.AddObserver(observer);
+  VLOG(3) << "Added observer " << observer;
 }
 
 void DriveFsPinManager::RemoveObserver(DriveFsBulkPinObserver* observer) {
   observers_.RemoveObserver(observer);
+  VLOG(3) << "Removed observer " << observer;
 }
 
 void DriveFsPinManager::CheckUnstartedFiles() {
@@ -881,6 +904,11 @@ void DriveFsPinManager::OnMetadataRetrieved(
     const drive::FileError error,
     const mojom::FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (progress_.stage != SetupStage::kSyncing) {
+    VLOG(1) << "Ignored metadata of " << id << " " << Quote(path);
+    return;
+  }
 
   if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot get metadata of " << id << " " << Quote(path) << ": "
