@@ -15,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 
@@ -29,10 +28,6 @@ class TaskRunner;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
 
 // This class manages the filtering behavior for URLs, i.e. it tells callers
 // if a URL should be allowed or blocked. It uses information
@@ -214,8 +209,7 @@ class SupervisedUserURLFilter {
   void SetManualURLs(std::map<GURL, bool> url_map);
 
   // Initializes the experimental asynchronous checker.
-  void InitAsyncURLChecker(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  void InitAsyncURLChecker();
 
   // Clears any asynchronous checker.
   void ClearAsyncURLChecker();

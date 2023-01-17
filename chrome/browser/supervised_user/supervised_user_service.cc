@@ -49,7 +49,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -543,9 +542,7 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
 
   if (use_online_check != url_filter_.HasAsyncURLChecker()) {
     if (use_online_check) {
-      url_filter_.InitAsyncURLChecker(
-          profile_->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess());
+      url_filter_.InitAsyncURLChecker();
     } else {
       url_filter_.ClearAsyncURLChecker();
     }
