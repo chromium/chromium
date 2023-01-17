@@ -39,13 +39,6 @@ int Percentage(const int64_t a, const int64_t b) {
 mojom::QueryParametersPtr CreateMyDriveQuery() {
   mojom::QueryParametersPtr query = mojom::QueryParameters::New();
   query->page_size = 1000;
-  query->query_kind = mojom::QueryKind::kRegular;
-  query->query_source = mojom::QueryParameters::QuerySource::kCloudOnly;
-  // TODO(b/259454320): The query.proto for this says the C++ clients don't
-  // handle `false` for this boolean, need to investigate if that is true or
-  // not.
-  query->available_offline = false;
-  query->shared_with_me = false;
   return query;
 }
 
