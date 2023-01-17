@@ -1898,10 +1898,6 @@
       },
     },
     {
-      name: "NeverSlowMode",
-      public: true,
-    },
-    {
       name: "NewFlexboxSizing",
     },
     {

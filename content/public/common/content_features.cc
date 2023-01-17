@@ -734,10 +734,6 @@ BASE_FEATURE(kNetworkServiceInProcess,
 #endif
 );
 
-BASE_FEATURE(kNeverSlowMode,
-             "NeverSlowMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for Web Notification content images.
 BASE_FEATURE(kNotificationContentImage,
              "NotificationContentImage",

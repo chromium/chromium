@@ -249,7 +249,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      media::kMediaEngagementBypassAutoplayPolicies},
     {wf::EnableMouseSubframeNoImplicitCapture,
      features::kMouseSubframeNoImplicitCapture},
-    {wf::EnableNeverSlowMode, features::kNeverSlowMode},
     {wf::EnableNotificationContentImage, features::kNotificationContentImage,
      kSetOnlyIfOverridden},
     {wf::EnablePaymentApp, features::kServiceWorkerPaymentApps},
