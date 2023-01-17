@@ -93,7 +93,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     return PhysicalBoxFragment().HasDescendantsForTablePart();
   }
 
-  bool HasBlockLayoutOverflow() const;
+  LayoutUnit BlockEndLayoutOverflow() const;
 };
 
 }  // namespace blink

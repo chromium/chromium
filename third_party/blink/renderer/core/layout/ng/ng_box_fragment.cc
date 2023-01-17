@@ -64,11 +64,11 @@ FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
   return FontHeight(block_size - block_size / 2, block_size / 2);
 }
 
-bool NGBoxFragment::HasBlockLayoutOverflow() const {
+LayoutUnit NGBoxFragment::BlockEndLayoutOverflow() const {
   WritingModeConverter converter(writing_direction_, physical_fragment_.Size());
   LogicalRect overflow =
       converter.ToLogical(PhysicalBoxFragment().LayoutOverflow());
-  return overflow.BlockEndOffset() > BlockSize();
+  return overflow.BlockEndOffset();
 }
 
 }  // namespace blink
