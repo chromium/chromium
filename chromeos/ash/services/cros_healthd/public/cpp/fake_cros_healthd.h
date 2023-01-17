@@ -6,9 +6,9 @@
 #define CHROMEOS_ASH_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_CROS_HEALTHD_H_
 
 #include <cstdint>
+#include <map>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
@@ -204,7 +204,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // Calls the `OnEvent` method with `info` on all observers registered for
   // `category`.
   void EmitEventForCategory(mojom::EventCategoryEnum category,
-                            mojom::EventInfo info);
+                            mojom::EventInfoPtr info);
 
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
@@ -456,8 +456,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // Collection of registered USB observers.
   mojo::RemoteSet<mojom::CrosHealthdUsbObserver> usb_observers_;
   // Collection of registered general observers grouped by category.
-  base::flat_map<mojom::EventCategoryEnum,
-                 std::unique_ptr<mojo::RemoteSet<mojom::EventObserver>>>
+  std::map<mojom::EventCategoryEnum, mojo::RemoteSet<mojom::EventObserver>>
       event_observers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has

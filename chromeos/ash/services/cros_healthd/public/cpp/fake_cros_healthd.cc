@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -375,12 +376,12 @@ void FakeCrosHealthd::EmitUsbAddEventForTesting() {
 }
 
 void FakeCrosHealthd::EmitEventForCategory(mojom::EventCategoryEnum category,
-                                           mojom::EventInfo info) {
-  if (!event_observers_.contains(category)) {
+                                           mojom::EventInfoPtr info) {
+  if (event_observers_.find(category) == event_observers_.end()) {
     return;
   }
 
-  for (const auto& observer : *event_observers_.at(category)) {
+  for (const auto& observer : event_observers_.at(category)) {
     observer->OnEvent(info.Clone());
   }
 }
@@ -1013,12 +1014,14 @@ void FakeCrosHealthd::AddUsbObserver(
 void FakeCrosHealthd::AddEventObserver(
     mojom::EventCategoryEnum category,
     mojo::PendingRemote<mojom::EventObserver> observer) {
-  if (!event_observers_.contains(category)) {
-    event_observers_.try_emplace(
-        category, std::make_unique<mojo::RemoteSet<mojom::EventObserver>>());
+  auto it = event_observers_.find(category);
+  if (it == event_observers_.end()) {
+    it = event_observers_.emplace_hint(it, std::piecewise_construct,
+                                       std::forward_as_tuple(category),
+                                       std::forward_as_tuple());
   }
 
-  event_observers_.at(category)->Add(std::move(observer));
+  it->second.Add(std::move(observer));
 }
 
 void FakeCrosHealthd::ProbeTelemetryInfo(
