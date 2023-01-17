@@ -254,7 +254,7 @@ std::vector<CreditCard*> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
 
 // static
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIBANs(
-    const std::vector<IBAN*>& ibans) {
+    const std::vector<const IBAN*>& ibans) {
   std::vector<Suggestion> suggestions;
   for (const IBAN* iban : ibans) {
     Suggestion& suggestion = suggestions.emplace_back(iban->value());

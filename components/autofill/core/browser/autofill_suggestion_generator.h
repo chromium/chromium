@@ -81,7 +81,7 @@ class AutofillSuggestionGenerator {
 
   // Generates suggestions for all available IBANs.
   static std::vector<Suggestion> GetSuggestionsForIBANs(
-      const std::vector<IBAN*>& ibans);
+      const std::vector<const IBAN*>& ibans);
 
   // Converts the vector of promo code offers that is passed in to a vector of
   // suggestions that can be displayed to the user for a promo code field.

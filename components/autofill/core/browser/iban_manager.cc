@@ -70,10 +70,19 @@ void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
     return;
   }
 
+  // Only return IBAN-based suggestions whose prefix match `prefix_`.
+  std::vector<const IBAN*> suggested_ibans;
+  suggested_ibans.reserve(ibans.size());
+  for (const auto* iban : ibans) {
+    if (base::StartsWith(iban->value(), query_handler.prefix_)) {
+      suggested_ibans.push_back(iban);
+    }
+  }
+
   // Return suggestions to query handler.
   query_handler.handler_->OnSuggestionsReturned(
       query_handler.field_id_, query_handler.autoselect_first_suggestion_,
-      AutofillSuggestionGenerator::GetSuggestionsForIBANs(ibans));
+      AutofillSuggestionGenerator::GetSuggestionsForIBANs(suggested_ibans));
 }
 
 }  // namespace autofill
