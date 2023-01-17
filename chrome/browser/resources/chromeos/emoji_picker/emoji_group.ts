@@ -10,6 +10,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {VISUAL_CONTENT_WIDTH} from './constants.js';
 import {getTemplate} from './emoji_group.html.js';
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
@@ -32,10 +33,6 @@ const DEFAULT_CATEGORY_LAYOUTS = {
   [CategoryEnum.SYMBOL]: EmojiGroupLayoutType.GRID_LAYOUT,
   [CategoryEnum.GIF]: EmojiGroupLayoutType.TWO_COLUMN_LAYOUT,
 };
-
-// TODO(b/264337053) Pass in the calculated value from .two-column-layout
-// .emoji-button max-width instead of hardcoding it as a constant value of 186px
-const DEFAULT_VISUAL_CONTENT_WIDTH = 186;
 
 export interface EmojiGroupComponent {
   $: {
@@ -337,8 +334,7 @@ export class EmojiGroupComponent extends PolymerElement {
     const colData = data.filter((item) => {
       if (item.base.visualContent) {
         const contentHeight = item.base.visualContent.previewSize.height *
-            DEFAULT_VISUAL_CONTENT_WIDTH /
-            item.base.visualContent.previewSize.width;
+            VISUAL_CONTENT_WIDTH / item.base.visualContent.previewSize.width;
 
         // Filter visual content to be displayed in the given column if it's
         // currently the shortest

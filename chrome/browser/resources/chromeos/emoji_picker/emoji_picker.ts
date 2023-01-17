@@ -196,6 +196,8 @@ export class EmojiPicker extends PolymerElement {
       '--emoji-picker-top-padding': constants.EMOJI_PICKER_TOP_PADDING_PX,
       '--emoji-spacing': constants.EMOJI_SPACING_PX,
       '--emoji-group-spacing': constants.EMOJI_GROUP_SPACING_PX,
+      '--visual-content-padding': constants.VISUAL_CONTENT_PADDING_PX,
+      '--visual-content-width': constants.VISUAL_CONTENT_WIDTH_PX,
       '--tab-button-margin': constants.TAB_BUTTON_MARGIN_PX,
       '--text-group-button-padding': constants.TEXT_GROUP_BUTTON_PADDING_PX,
     });
