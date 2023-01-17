@@ -65,15 +65,6 @@ void FidoDeviceDiscovery::NotifyAuthenticatorRemoved(
   observer()->AuthenticatorRemoved(this, authenticator);
 }
 
-std::vector<FidoDeviceAuthenticator*>
-FidoDeviceDiscovery::GetAuthenticatorsForTesting() {
-  std::vector<FidoDeviceAuthenticator*> authenticators;
-  authenticators.reserve(authenticators_.size());
-  for (const auto& authenticator : authenticators_)
-    authenticators.push_back(authenticator.second.get());
-  return authenticators;
-}
-
 std::vector<const FidoDeviceAuthenticator*>
 FidoDeviceDiscovery::GetAuthenticatorsForTesting() const {
   std::vector<const FidoDeviceAuthenticator*> authenticators;
@@ -84,11 +75,6 @@ FidoDeviceDiscovery::GetAuthenticatorsForTesting() const {
 }
 
 FidoDeviceAuthenticator* FidoDeviceDiscovery::GetAuthenticatorForTesting(
-    base::StringPiece authenticator_id) {
-  return GetAuthenticator(authenticator_id);
-}
-
-FidoDeviceAuthenticator* FidoDeviceDiscovery::GetAuthenticator(
     base::StringPiece authenticator_id) {
   auto found = authenticators_.find(authenticator_id);
   return found != authenticators_.end() ? found->second.get() : nullptr;

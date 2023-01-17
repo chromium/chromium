@@ -74,7 +74,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
   bool is_start_requested() const { return state_ != State::kIdle; }
   bool is_running() const { return state_ == State::kRunning; }
 
-  std::vector<FidoDeviceAuthenticator*> GetAuthenticatorsForTesting();
   std::vector<const FidoDeviceAuthenticator*> GetAuthenticatorsForTesting()
       const;
   FidoDeviceAuthenticator* GetAuthenticatorForTesting(
@@ -95,13 +94,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
   bool AddAuthenticator(std::unique_ptr<FidoDeviceAuthenticator> authenticator);
   bool RemoveDevice(base::StringPiece device_id);
 
-  FidoDeviceAuthenticator* GetAuthenticator(base::StringPiece authenticator_id);
-
   // Subclasses should implement this to actually start the discovery when it is
   // requested.
   //
   // The implementation should asynchronously invoke NotifyDiscoveryStarted when
-  // the discovery is s tarted.
+  // the discovery is started.
   virtual void StartInternal() = 0;
 
   // Map of ID to authenticator. It is a guarantee to subclasses that the ID of
