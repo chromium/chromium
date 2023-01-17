@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="AppManagement.AppDetailViews" enum="AppManagementUserAction"
-    expires_after="2023-07-02">
+    expires_after="2024-03-01">
 <!-- Name completed by histogram_suffixes name="AppType" -->
 
   <owner>jshikaram@chromium.org</owner>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppManagement.EntryPoints" enum="AppManagementEntryPoint"
-    expires_after="2023-03-01">
+    expires_after="2024-03-01">
   <owner>jshikaram@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>The ways the user opens up the App Management interface.</summary>
