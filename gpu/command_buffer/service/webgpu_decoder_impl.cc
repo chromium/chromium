@@ -385,6 +385,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   int32_t GetPreferredAdapterIndex(WGPUPowerPreference power_preference,
                                    bool force_fallback) const;
 
+  // Decide if a device feature is exposed to render process.
   bool IsFeatureExposed(WGPUFeatureName feature) const;
 
   // Dawn wire uses procs which forward their calls to these methods.
@@ -1199,10 +1200,14 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUFeatureName feature) const {
     case WGPUFeatureName_TimestampQueryInsidePasses:
     case WGPUFeatureName_PipelineStatisticsQuery:
     case WGPUFeatureName_ChromiumExperimentalDp4a:
+    // TODO(crbug.com/1258986): DawnMultiPlanarFormats is a stable feature in
+    // Dawn, but currently we hide it from Render process as unsafe apis, so
+    // that 0-copy code path, which explicitly checks this feature, is protected
+    // under unsafe apis as well.
     case WGPUFeatureName_DawnMultiPlanarFormats:
-    case WGPUFeatureName_DepthClipControl:
       return allow_unsafe_apis_;
     case WGPUFeatureName_Depth32FloatStencil8:
+    case WGPUFeatureName_DepthClipControl:
     case WGPUFeatureName_TextureCompressionBC:
     case WGPUFeatureName_TextureCompressionETC2:
     case WGPUFeatureName_TextureCompressionASTC:
@@ -1344,7 +1349,9 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   // SharedImage / interop methods that would need specific usages.
   required_features.push_back(WGPUFeatureName_DawnInternalUsages);
 
-  // Always enable "multi-planar-formats" as long as available.
+  // Always require "multi-planar-formats" as long as supported, although
+  // currently this feature is not exposed to render process if unsafe apis
+  // disallowed.
   if (dawn::native::GetProcs().adapterHasFeature(
           adapter, WGPUFeatureName_DawnMultiPlanarFormats)) {
     required_features.push_back(WGPUFeatureName_DawnMultiPlanarFormats);
