@@ -1168,6 +1168,10 @@
   [self.regularTabsMediator setPinState:YES forItemWithIdentifier:identifier];
 }
 
+- (void)unpinTabWithIdentifier:(NSString*)identifier {
+  [self.pinnedTabsMediator setPinState:NO forItemWithIdentifier:identifier];
+}
+
 - (void)closeTabWithIdentifier:(NSString*)identifier
                      incognito:(BOOL)incognito
                         pinned:(BOOL)pinned {

@@ -675,6 +675,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_PINTAB" desc="The iOS context menu item for pinning a tab.[iOS only]">
         Pin Tab
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_UNPINTAB" desc="The iOS context menu item for unpinning a tab.[iOS only]">
+        Unpin Tab
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_ACCESSIBILITY_LABEL_SUGGESTION" desc="The accessibility label of a suggestion. Summarizes fields in the reading list entry (title, publisher informations, status and informations). Read by Text-to-Speech.">
         <ph name="TITLE"><ex>Learn about the new Chromium Projects</ex>$1</ph>, <ph name="PUBLISHER_INFORMATION"><ex>The Chromium organization</ex>$2</ph>, <ph name="PUBLICATION_DATE"><ex>January 1 2017</ex>$3</ph>
       </message>

@@ -51,6 +51,9 @@ class DistantSession;
 // Tells the delegate to pin a tab with the item identifier `identifier`.
 - (void)pinTabWithIdentifier:(NSString*)identifier;
 
+// Tells the delegate to unpin a tab with the item identifier `identifier`.
+- (void)unpinTabWithIdentifier:(NSString*)identifier;
+
 // Tells the delegate to close the tab with the item identifier `identifier`.
 // `incognito`tracks the incognito state of the tab.
 // `pinned` tracks the pinned state of the tab.

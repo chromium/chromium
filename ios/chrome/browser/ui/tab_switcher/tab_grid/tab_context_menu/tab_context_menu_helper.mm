@@ -120,7 +120,13 @@
 
     if (IsPinnedTabsEnabled()) {
       if (pinned) {
-        // TODO(crbug.com/1382015): Implement this.
+        if ([self.contextMenuDelegate
+                respondsToSelector:@selector(unpinTabWithIdentifier:)]) {
+          [menuElements addObject:[actionFactory actionToUnpinTabWithBlock:^{
+                          [self.contextMenuDelegate
+                              unpinTabWithIdentifier:cell.itemIdentifier];
+                        }]];
+        }
       } else {
         if ([self.contextMenuDelegate
                 respondsToSelector:@selector(pinTabWithIdentifier:)]) {

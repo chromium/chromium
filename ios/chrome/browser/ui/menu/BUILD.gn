@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "resources:search_image",
     "resources:select",
     "resources:share",
+    "resources:unpin",
     "//base",
     "//base/test:test_support",
     "//components/sync_preferences:test_support",

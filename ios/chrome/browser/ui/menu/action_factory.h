@@ -35,6 +35,10 @@ class GURL;
 // the given `block` upon execution.
 - (UIAction*)actionToPinTabWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance configured for unpinning a tab which will invoke
+// the given `block` upon execution.
+- (UIAction*)actionToUnpinTabWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance configured for deletion which will invoke
 // the given delete `block` when executed.
 - (UIAction*)actionToDeleteWithBlock:(ProceduralBlock)block;
