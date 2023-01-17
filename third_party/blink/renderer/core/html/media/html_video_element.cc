@@ -601,7 +601,7 @@ ScriptPromise HTMLVideoElement::CreateImageBitmap(
 
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),
-      exception_state);
+      options, exception_state);
 }
 
 void HTMLVideoElement::MediaRemotingStarted(

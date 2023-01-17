@@ -547,6 +547,10 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           NotificationPermissionRequestedIframe;
       break;
+    case DeprecationIssueType::kObsoleteCreateImageBitmapImageOrientationNone:
+      type = protocol::Audits::DeprecationIssueTypeEnum::
+          ObsoleteCreateImageBitmapImageOrientationNone;
+      break;
     case DeprecationIssueType::kObsoleteWebRtcCipherSuite:
       type =
           protocol::Audits::DeprecationIssueTypeEnum::ObsoleteWebRtcCipherSuite;

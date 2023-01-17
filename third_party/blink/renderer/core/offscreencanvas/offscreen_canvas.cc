@@ -286,7 +286,7 @@ ScriptPromise OffscreenCanvas::CreateImageBitmap(
       IsPaintable()
           ? MakeGarbageCollected<ImageBitmap>(this, crop_rect, options)
           : nullptr,
-      exception_state);
+      options, exception_state);
 }
 
 bool OffscreenCanvas::IsOpaque() const {

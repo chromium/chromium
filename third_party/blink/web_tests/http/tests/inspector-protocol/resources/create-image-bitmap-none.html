@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<title>Webpage for testing Content-Security-Policy in PaymentRequest</title>
+<!-- Deny connections to all payment method identifiers. -->
+<meta http-equiv="Content-Security-Policy" content="connect-src 'none'">
+</head>
+<body>
+<script>
+
+async function runTest() {
+  const ctx_temp = document.createElement('canvas').getContext('2d');
+  ctx_temp.fillRect(0, 0, 100, 100);
+  const imageSource = ctx_temp.getImageData(0, 0, 100, 100);
+  await createImageBitmap(imageSource, 0, 0, 100, 100, { imageOrientation: 'none' });
+}
+
+runTest();
+</script>
+</body>
+</html>

@@ -1298,7 +1298,7 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                                orientation_enum),
         crop_rect, options);
     return ImageBitmapSource::FulfillImageBitmap(script_state, image_bitmap,
-                                                 exception_state);
+                                                 options, exception_state);
   }
 
   auto* execution_context =
@@ -1335,7 +1335,7 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
   auto* image_bitmap =
       MakeGarbageCollected<ImageBitmap>(image, crop_rect, options);
   return ImageBitmapSource::FulfillImageBitmap(script_state, image_bitmap,
-                                               exception_state);
+                                               options, exception_state);
 }
 
 void VideoFrame::Trace(Visitor* visitor) const {

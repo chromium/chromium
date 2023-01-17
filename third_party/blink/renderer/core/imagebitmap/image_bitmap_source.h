@@ -30,8 +30,13 @@ class CORE_EXPORT ImageBitmapSource {
 
   virtual bool IsBlob() const { return false; }
 
+  // TODO(crbug.com/1342260): Option imageOrientation: 'none' will be
+  // deprecated. A deprecation warning will be shown to developers when it is
+  // used. Adding |options| temporarily here to verify if 'none' is used, which
+  // will be removed in the next milestone.
   static ScriptPromise FulfillImageBitmap(ScriptState*,
                                           ImageBitmap*,
+                                          const ImageBitmapOptions* options,
                                           ExceptionState&);
 
  protected:

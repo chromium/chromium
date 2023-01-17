@@ -153,6 +153,10 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kObsoleteWebrtcTlsVersion:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kObsoleteWebRtcCipherSuite);
+    case WebFeature::kObsoleteCreateImageBitmapImageOrientationNone:
+      return DeprecationInfo::WithTranslation(
+          feature,
+          DeprecationIssueType::kObsoleteCreateImageBitmapImageOrientationNone);
     case WebFeature::kOpenWebDatabaseInsecureContext:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kOpenWebDatabaseInsecureContext);

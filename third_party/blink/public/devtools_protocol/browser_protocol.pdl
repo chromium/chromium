@@ -783,6 +783,7 @@ experimental domain Audits
       NoSysexWebMIDIWithoutPermission
       NotificationInsecureOrigin
       NotificationPermissionRequestedIframe
+      ObsoleteCreateImageBitmapImageOrientationNone
       ObsoleteWebRtcCipherSuite
       OpenWebDatabaseInsecureContext
       OverflowVisibleOnReplacedElement
