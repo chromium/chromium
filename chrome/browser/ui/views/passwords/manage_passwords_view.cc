@@ -161,7 +161,7 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
                 base::Unretained(this), password_form),
             /*main_image_icon=*/GetFaviconImageModel(),
             /*title_text=*/GetDisplayUsername(password_form),
-            /*secondary_text=*/GetDisplayPassword(password_form),
+            /*secondary_text=*/std::u16string(),
             /*tooltip_text=*/std::u16string(),
             /*subtitle_text=*/std::u16string(),
             /*action_image_icon=*/
