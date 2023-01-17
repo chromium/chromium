@@ -73,6 +73,8 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
                                               bool show) override;
   void OnAppRegistrarDestroyed() override;
 
+  gfx::Insets GetCaptionButtonInsets() const;
+
  protected:
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -86,21 +88,18 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
                            GetCaptionButtonPlaceholderBounds);
 
-  static gfx::Rect GetCenteredTitleBounds(int frame_width,
-                                          int frame_height,
-                                          int left_inset_x,
-                                          int right_inset_x,
-                                          int title_width);
+  static gfx::Rect GetCenteredTitleBounds(gfx::Rect frame,
+                                          gfx::Rect available_space,
+                                          int preferred_title_width);
 
   static gfx::Rect GetWebAppFrameToolbarAvailableBounds(
       bool is_rtl,
       const gfx::Size& frame,
       int y,
       int caption_button_container_width);
-  static gfx::Rect GetCaptionButtonPlaceholderBounds(bool is_rtl,
-                                                     const gfx::Size& frame,
-                                                     int y,
-                                                     int width);
+  static gfx::Rect GetCaptionButtonPlaceholderBounds(
+      const gfx::Rect& frame,
+      const gfx::Insets& caption_button_insets);
 
   void PaintThemedFrame(gfx::Canvas* canvas);
 

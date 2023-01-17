@@ -136,31 +136,33 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
     int trailing_x,
     int y,
     int available_height) {
+  gfx::Rect center_bounds = LayoutInContainer(gfx::Rect(
+      leading_x, y, base::ClampSub(trailing_x, leading_x), available_height));
+  return std::pair<int, int>(center_bounds.x(), center_bounds.right());
+}
+
+gfx::Rect WebAppFrameToolbarView::LayoutInContainer(gfx::Rect available_space) {
   DCHECK(!browser_view_->IsWindowControlsOverlayEnabled());
 
-  SetVisible(available_height > 0);
-
-  if (available_height == 0) {
+  SetVisible(!available_space.IsEmpty());
+  if (available_space.IsEmpty()) {
     SetSize(gfx::Size());
-    return std::pair<int, int>(0, 0);
+    return gfx::Rect();
   }
 
-  gfx::Size preferred_size = GetPreferredSize();
-  const int width = std::max(trailing_x - leading_x, 0);
-  const int height = preferred_size.height();
-  DCHECK_LE(height, available_height);
-  SetBounds(leading_x, y, width, available_height);
+  DCHECK_LE(GetPreferredSize().height(), available_space.height());
+  SetBoundsRect(available_space);
   Layout();
 
-  if (!center_container_->GetVisible())
-    return std::pair<int, int>(0, 0);
+  if (!center_container_->GetVisible()) {
+    return gfx::Rect();
+  }
 
   // Bounds for remaining inner space, in parent container coordinates.
   gfx::Rect center_bounds = center_container_->bounds();
   DCHECK(center_bounds.x() == 0 || left_container_);
   center_bounds.Offset(bounds().OffsetFromOrigin());
-
-  return std::pair<int, int>(center_bounds.x(), center_bounds.right());
+  return center_bounds;
 }
 
 void WebAppFrameToolbarView::LayoutForWindowControlsOverlay(

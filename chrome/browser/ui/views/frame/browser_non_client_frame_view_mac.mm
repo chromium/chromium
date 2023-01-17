@@ -44,8 +44,6 @@
 
 namespace {
 
-constexpr int kFrameExtraPaddingForWindowControlsOverlay = 10;
-constexpr int kFramePaddingLeft = 75;
 // Keep in sync with web_app_frame_toolbar_browsertest.cc
 constexpr double kTitlePaddingWidthFraction = 0.1;
 
@@ -143,6 +141,9 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
 }
 
 bool BrowserNonClientFrameViewMac::CaptionButtonsOnLeadingEdge() const {
+  // TODO(https://crbug.com/860627): In "partial" RTL mode (where the OS is in
+  // LTR mode while Chrome is in RTL mode, or vice versa) this should return
+  // false rather than true.
   return true;
 }
 
@@ -158,11 +159,7 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
 
   // Do not draw caption buttons on fullscreen.
   if (!frame()->IsFullscreen()) {
-    const int kCaptionWidth = base::mac::IsAtMostOS10_15() ? 70 : 85;
-    if (CaptionButtonsOnLeadingEdge())
-      bounds.Inset(gfx::Insets::TLBR(0, kCaptionWidth, 0, 0));
-    else
-      bounds.Inset(gfx::Insets::TLBR(0, 0, 0, kCaptionWidth));
+    bounds.Inset(GetCaptionButtonInsets());
   }
 
   return bounds;
@@ -449,6 +446,15 @@ void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
     BrowserNonClientFrameView::PaintChildren(info);
 }
 
+gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets() const {
+  const int kCaptionWidth = base::mac::IsAtMostOS10_15() ? 70 : 85;
+  if (CaptionButtonsOnLeadingEdge()) {
+    return gfx::Insets::TLBR(0, kCaptionWidth, 0, 0);
+  } else {
+    return gfx::Insets::TLBR(0, 0, 0, kCaptionWidth);
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, protected:
 
@@ -487,24 +493,16 @@ void BrowserNonClientFrameViewMac::Layout() {
 // BrowserNonClientFrameViewMac, private:
 
 gfx::Rect BrowserNonClientFrameViewMac::GetCenteredTitleBounds(
-    int frame_width,
-    int frame_height,
-    int left_inset_x,
-    int right_inset_x,
-    int title_width) {
+    gfx::Rect frame,
+    gfx::Rect available_space,
+    int preferred_title_width) {
   // Center in container.
-  int title_x = (frame_width - title_width) / 2;
+  frame.ClampToCenteredSize(gfx::Size(preferred_title_width, frame.height()));
 
-  // Align right side to right inset if overlapping.
-  title_x = std::min(title_x, right_inset_x - title_width);
+  // Make it fit in available space.
+  frame.AdjustToFit(available_space);
 
-  // Align left side to left inset if overlapping.
-  title_x = std::max(title_x, left_inset_x);
-
-  // Clip width to right inset if overlapping.
-  title_width = std::min(title_width, right_inset_x - title_x);
-
-  return gfx::Rect(title_x, 0, title_width, frame_height);
+  return frame;
 }
 
 void BrowserNonClientFrameViewMac::PaintThemedFrame(gfx::Canvas* canvas) {
@@ -556,27 +554,18 @@ void BrowserNonClientFrameViewMac::LayoutTitleBarForWebApp() {
   if (!web_app_frame_toolbar())
     return;
 
-  const int available_height = GetTopInset(true);
-  int leading_x = kFramePaddingLeft;
-  int trailing_x = width();
-
-  if (CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL()) {
-    leading_x = 0;
-    trailing_x = width() - kFramePaddingLeft;
-  }
-
-  std::pair<int, int> remaining_bounds =
-      web_app_frame_toolbar()->LayoutInContainer(leading_x, trailing_x, 0,
-                                                 available_height);
-  leading_x = remaining_bounds.first;
-  trailing_x = remaining_bounds.second;
+  gfx::Rect title_bar_bounds(0, 0, width(), GetTopInset(true));
+  gfx::Rect available_space = title_bar_bounds;
+  available_space.Inset(GetCaptionButtonInsets());
+  available_space = web_app_frame_toolbar()->LayoutInContainer(available_space);
 
   const int title_padding =
       base::checked_cast<int>(std::round(width() * kTitlePaddingWidthFraction));
-  window_title_->SetBoundsRect(GetCenteredTitleBounds(
-      width(), available_height, leading_x + title_padding,
-      trailing_x - title_padding,
-      window_title_->CalculatePreferredSize().width()));
+  available_space.Inset(gfx::Insets::TLBR(0, title_padding, 0, title_padding));
+
+  window_title_->SetBoundsRect(
+      GetCenteredTitleBounds(title_bar_bounds, available_space,
+                             window_title_->CalculatePreferredSize().width()));
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetWebAppFrameToolbarAvailableBounds(
@@ -595,67 +584,51 @@ gfx::Rect BrowserNonClientFrameViewMac::GetWebAppFrameToolbarAvailableBounds(
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
-    bool is_rtl,
-    const gfx::Size& frame,
-    int y,
-    int width) {
-  gfx::Rect bounds(0, y, width, frame.height());
-  if (is_rtl)
-    bounds.set_x(frame.width() - bounds.width());
-
+    const gfx::Rect& frame,
+    const gfx::Insets& caption_button_insets) {
+  DCHECK(caption_button_insets.left() == 0 ||
+         caption_button_insets.right() == 0);
+  gfx::Rect non_caption_bounds = frame;
+  non_caption_bounds.Inset(caption_button_insets);
+  gfx::Rect bounds = frame;
+  bounds.Subtract(non_caption_bounds);
   return bounds;
 }
 
 void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
-  const bool is_rtl = CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL();
-  const gfx::Size frame(width(), GetTopInset(false));
+  gfx::Rect frame_available_bounds(0, 0, width(), GetTopInset(false));
 
   // Pad the width of caption_button_placeholder_container so the button on the
   // inner edge doesn't look like it's touching the overlay, but rather has a
   // little bit of space between them.
+  gfx::Insets caption_button_insets = GetCaptionButtonInsets();
   gfx::Rect caption_button_container_bounds = GetCaptionButtonPlaceholderBounds(
-      is_rtl, frame, 0,
-      kFramePaddingLeft + kFrameExtraPaddingForWindowControlsOverlay);
-
-  gfx::Rect web_app_frame_toolbar_available_bounds =
-      GetWebAppFrameToolbarAvailableBounds(
-          is_rtl, frame, 0, caption_button_container_bounds.width());
+      frame_available_bounds, caption_button_insets);
 
   // Layout CaptionButtonPlaceholderContainer which would have the traffic
   // lights.
   caption_button_placeholder_container_->SetBoundsRect(
       caption_button_container_bounds);
 
-  // Layout WebAppFrameToolbarView.
+  // Remove caption buttons from remaining available bounds, and layout
+  // WebAppFrameToolbarView.
+  frame_available_bounds.Inset(caption_button_insets);
   web_app_frame_toolbar()->LayoutForWindowControlsOverlay(
-      web_app_frame_toolbar_available_bounds);
+      frame_available_bounds);
 
   content::WebContents* web_contents = browser_view()->GetActiveWebContents();
   // WebContents can be null when an app window is first launched.
   if (web_contents) {
-    const int overlay_width =
-        width() - (caption_button_placeholder_container_->size().width() +
-                   web_app_frame_toolbar()->size().width());
-    const int overlay_height = GetTopInset(false);
-    gfx::Rect bounding_rect;
+    // Subtract WebAppFrameToolbarView from remaining available bounds to
+    // determine space available for web contents.
+    frame_available_bounds.Subtract(web_app_frame_toolbar()->bounds());
 
-    if (is_rtl) {
-      bounding_rect =
-          gfx::Rect(caption_button_placeholder_container_->size().width() +
-                        web_app_frame_toolbar()->size().width(),
-                    0, overlay_width, overlay_height);
+    if (frame_available_bounds.IsEmpty()) {
+      web_contents->UpdateWindowControlsOverlay(gfx::Rect());
     } else {
-      bounding_rect = GetMirroredRect(
-          gfx::Rect(caption_button_placeholder_container_->size().width(), 0,
-                    overlay_width, overlay_height));
+      web_contents->UpdateWindowControlsOverlay(
+          GetMirroredRect(frame_available_bounds));
     }
-
-    // In the case where ShouldHideTopUIForFullscreen() returns true, height
-    // goes to 0 so the rest of bounding_rect values need to be reset as well.
-    if (bounding_rect.height() == 0)
-      bounding_rect = gfx::Rect();
-
-    web_contents->UpdateWindowControlsOverlay(bounding_rect);
   }
 
   // WebAppFrameToolbarView visible property needs to be explicitly shown based

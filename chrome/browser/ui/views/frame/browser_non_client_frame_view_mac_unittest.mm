@@ -28,11 +28,13 @@ TEST(BrowserNonClientFrameViewMacTest, GetCenteredTitleBounds) {
   int index = 0;
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("\nTest case index: %d", index));
+    gfx::Rect frame(0, 0, test_case.frame_width, test_case.frame_height);
+    gfx::Rect available_space(test_case.left_inset_x, 0,
+                              test_case.right_inset_x - test_case.left_inset_x,
+                              test_case.frame_height);
     gfx::Rect title_bounds =
         BrowserNonClientFrameViewMac::GetCenteredTitleBounds(
-            test_case.frame_width, test_case.frame_height,
-            test_case.left_inset_x, test_case.right_inset_x,
-            test_case.title_width);
+            frame, available_space, test_case.title_width);
     gfx::Rect expected_title_bounds =
         gfx::Rect(test_case.expected_title_x, 0, test_case.expected_title_width,
                   test_case.frame_height);
@@ -42,23 +44,20 @@ TEST(BrowserNonClientFrameViewMacTest, GetCenteredTitleBounds) {
 }
 
 TEST(BrowserNonClientFrameViewMacTest, GetCaptionButtonPlaceholderBounds) {
-  const gfx::Size frame(800, 40);
+  const gfx::Rect frame(0, 0, 800, 40);
   const int width = 85;  // 75 + 10 (padding)
-  const int y = 0;
 
-  const gfx::Rect ltr_bounds =
+  const gfx::Rect leading_bounds =
       BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
-          false /* is_rtl */, frame, y, width);
-  const gfx::Rect expected_ltr_bounds = gfx::Rect(0, 0, 85, 40);
+          frame, gfx::Insets::TLBR(0, width, 0, 0));
+  const gfx::Rect expected_leading_bounds = gfx::Rect(0, 0, 85, 40);
+  EXPECT_EQ(leading_bounds, expected_leading_bounds);
 
-  EXPECT_EQ(ltr_bounds, expected_ltr_bounds);
-
-  const gfx::Rect rtl_bounds =
+  const gfx::Rect trailing_bounds =
       BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
-          true /* is_rtl */, frame, y, width);
-  const gfx::Rect expected_rtl_bounds = gfx::Rect(715, 0, 85, 40);
-
-  EXPECT_EQ(rtl_bounds, expected_rtl_bounds);
+          frame, gfx::Insets::TLBR(0, 0, 0, width));
+  const gfx::Rect expected_trailing_bounds = gfx::Rect(715, 0, 85, 40);
+  EXPECT_EQ(trailing_bounds, expected_trailing_bounds);
 }
 
 TEST(BrowserNonClientFrameViewMacTest, GetWebAppFrameToolbarAvailableBounds) {

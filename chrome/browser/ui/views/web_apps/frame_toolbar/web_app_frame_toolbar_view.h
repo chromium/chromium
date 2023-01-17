@@ -55,6 +55,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
                                         int trailing_x,
                                         int y,
                                         int available_height);
+  gfx::Rect LayoutInContainer(gfx::Rect available_space);
 
   // Sets own bounds within the available_space.
   void LayoutForWindowControlsOverlay(gfx::Rect available_space);
