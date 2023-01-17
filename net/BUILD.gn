@@ -1457,6 +1457,8 @@ component("net") {
     public_deps +=
         [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces" ]
     sources += [
+      "base/fuchsia/network_interface_cache.cc",
+      "base/fuchsia/network_interface_cache.h",
       "base/network_change_notifier_fuchsia.cc",
       "base/network_change_notifier_fuchsia.h",
       "base/network_interfaces_fuchsia.cc",
@@ -4890,7 +4892,10 @@ test("net_unittests") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
     ]
-    sources += [ "base/network_change_notifier_fuchsia_unittest.cc" ]
+    sources += [
+      "base/fuchsia/network_interface_cache_unittest.cc",
+      "base/network_change_notifier_fuchsia_unittest.cc",
+    ]
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/network.shard.test-cml" ]
   }

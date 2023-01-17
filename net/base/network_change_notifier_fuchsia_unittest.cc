@@ -5,6 +5,8 @@
 #include "net/base/network_change_notifier_fuchsia.h"
 
 #include <fuchsia/net/interfaces/cpp/fidl_test_base.h>
+#include <lib/fidl/cpp/binding.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,6 +20,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "net/base/ip_address.h"
+#include "net/base/network_change_notifier.h"
 #include "net/dns/dns_config_service.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,6 +43,9 @@ constexpr IPv6Octets kDefaultIPv6Address = {0x20, 0x01, 0x01};
 constexpr uint8_t kDefaultIPv6Prefix = 16;
 constexpr IPv6Octets kSecondaryIPv6Address = {0x20, 0x01, 0x02};
 constexpr uint8_t kSecondaryIPv6Prefix = 16;
+
+constexpr const char kDefaultInterfaceName[] = "net1";
+constexpr const char kSecondaryInterfaceName[] = "net2";
 
 fuchsia::net::IpAddress IpAddressFrom(IPv4Octets octets) {
   fuchsia::net::IpAddress output;
@@ -83,6 +89,7 @@ fuchsia::net::interfaces::Properties DefaultInterfaceProperties(
   // sufficient.
   fuchsia::net::interfaces::Properties interface;
   interface.set_id(kDefaultInterfaceId);
+  interface.set_name(kDefaultInterfaceName);
   interface.set_online(true);
   interface.set_has_default_ipv4_route(true);
   interface.set_has_default_ipv6_route(true);
@@ -98,6 +105,7 @@ fuchsia::net::interfaces::Properties SecondaryInterfaceProperties() {
   // sufficient.
   fuchsia::net::interfaces::Properties interface;
   interface.set_id(kSecondaryInterfaceId);
+  interface.set_name(kSecondaryInterfaceName);
   interface.set_online(true);
   interface.set_has_default_ipv4_route(false);
   interface.set_has_default_ipv6_route(false);
@@ -119,7 +127,7 @@ fuchsia::net::interfaces::Event MakeChangeEvent(uint64_t interface_id, F fn) {
 // Partial fake implementation of a fuchsia.net.interfaces/Watcher.
 class FakeWatcher : public fuchsia::net::interfaces::testing::Watcher_TestBase {
  public:
-  explicit FakeWatcher() : binding_(this) {
+  FakeWatcher() : binding_(this) {
     // Always create the watcher with an empty set of interfaces.
     // Callers can override the initial set of events with SetInitial.
     pending_.push(fuchsia::net::interfaces::Event::WithIdle(
@@ -177,7 +185,7 @@ class FakeWatcher : public fuchsia::net::interfaces::testing::Watcher_TestBase {
 
 class FakeWatcherAsync {
  public:
-  explicit FakeWatcherAsync() {
+  FakeWatcherAsync() {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     CHECK(thread_.StartWithOptions(std::move(options)));
     watcher_ = base::SequenceBound<FakeWatcher>(thread_.task_runner());
@@ -339,7 +347,7 @@ class NetworkChangeNotifierFuchsiaTest : public testing::Test {
   // Creates a NetworkChangeNotifier that binds to |watcher_|.
   // |observer_| is registered last, so that tests need only express
   // expectations on changes they make themselves.
-  void CreateNotifier(bool requires_wlan = false) {
+  void CreateNotifier(bool require_wlan = false) {
     // Ensure that internal state is up-to-date before the
     // notifier queries it.
     watcher_.FlushThread();
@@ -351,7 +359,7 @@ class NetworkChangeNotifierFuchsiaTest : public testing::Test {
     dns_config_notifier_ = std::make_unique<SystemDnsConfigChangeNotifier>(
         nullptr /* task_runner */, nullptr /* dns_config_service */);
     notifier_ = base::WrapUnique(new NetworkChangeNotifierFuchsia(
-        std::move(watcher_handle_), requires_wlan, dns_config_notifier_.get()));
+        std::move(watcher_handle_), require_wlan, dns_config_notifier_.get()));
 
     type_observer_ = std::make_unique<FakeConnectionTypeObserver>();
     ip_observer_ = std::make_unique<FakeIPAddressObserver>();
