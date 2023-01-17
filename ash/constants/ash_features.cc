@@ -1234,6 +1234,9 @@ BASE_FEATURE(kInternalServerSideSpeechRecognition,
              "InternalServerSideSpeechRecognition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sending `client-info` values to IPP printers on ChromeOS.
+BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables Jelly features.
 BASE_FEATURE(kJelly, "Jelly", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2720,6 +2723,10 @@ bool IsInternalServerSideSpeechRecognitionEnabled() {
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+bool IsIppClientInfoEnabled() {
+  return base::FeatureList::IsEnabled(kIppClientInfo);
 }
 
 bool IsJellyEnabled() {

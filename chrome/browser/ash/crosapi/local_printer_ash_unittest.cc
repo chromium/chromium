@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/ipp_client_info_calculator.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
@@ -40,6 +41,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -47,6 +50,8 @@
 #include "printing/backend/printing_restrictions.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom-forward.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,12 +68,19 @@
 
 using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
+using testing::ByMove;
+using testing::NiceMock;
+using testing::Return;
 
 namespace printing {
 
 namespace {
 
 constexpr char kPrinterUri[] = "http://localhost:80";
+const AccountId kAffiliatedUserAccountId =
+    AccountId::FromUserEmail("user@example.com");
+const AccountId kUnaffiliatedUserAccountId =
+    AccountId::FromUserEmail("user@gmail.com");
 
 // Used as a callback to `GetPrinters()` in tests.
 // Records list returned by `GetPrinters()`.
@@ -92,6 +104,13 @@ void RecordOAuthAccessToken(
     crosapi::mojom::GetOAuthAccessTokenResultPtr& out,
     base::OnceClosure closure,
     crosapi::mojom::GetOAuthAccessTokenResultPtr param) {
+  out = std::move(param);
+  std::move(closure).Run();
+}
+
+void RecordIppClientInfo(std::vector<printing::mojom::IppClientInfoPtr>& out,
+                         base::OnceClosure closure,
+                         std::vector<printing::mojom::IppClientInfoPtr> param) {
   out = std::move(param);
   std::move(closure).Run();
 }
@@ -1175,6 +1194,222 @@ TEST_F(LocalPrinterAshWithOAuth2Test, GetOAuthAccessTokenSuccess) {
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_token());
   EXPECT_EQ(result->get_token()->token, "access_token");
+}
+
+// LocalPrinterAsh implementation that overrides `GetIppClientInfoCalculator()`
+// for testing.
+class TestLocalPrinterAshWithClientInfoCalculator : public TestLocalPrinterAsh {
+ public:
+  TestLocalPrinterAshWithClientInfoCalculator(
+      Profile* profile,
+      scoped_refptr<chromeos::PpdProvider> ppd_provider,
+      ash::printing::IppClientInfoCalculator* client_info_calculator)
+      : TestLocalPrinterAsh(profile, ppd_provider),
+        client_info_calculator_(client_info_calculator) {}
+  TestLocalPrinterAshWithClientInfoCalculator(
+      const TestLocalPrinterAshWithClientInfoCalculator&) = delete;
+  TestLocalPrinterAshWithClientInfoCalculator& operator=(
+      const TestLocalPrinterAshWithClientInfoCalculator&) = delete;
+  ~TestLocalPrinterAshWithClientInfoCalculator() override = default;
+
+  ash::printing::IppClientInfoCalculator* GetIppClientInfoCalculator()
+      override {
+    return client_info_calculator_;
+  }
+
+ private:
+  ash::printing::IppClientInfoCalculator* client_info_calculator_;
+};
+
+struct MockIppClientInfoCalculator : ash::printing::IppClientInfoCalculator {
+  MOCK_METHOD(printing::mojom::IppClientInfoPtr, GetOsInfo, (), (const));
+  MOCK_METHOD(printing::mojom::IppClientInfoPtr, GetDeviceInfo, (), (const));
+};
+
+//
+class LocalPrinterAshWithIppClientInfoTest : public LocalPrinterAshTest {
+ public:
+  LocalPrinterAshWithIppClientInfoTest() = default;
+  LocalPrinterAshWithIppClientInfoTest(
+      const LocalPrinterAshWithIppClientInfoTest&) = delete;
+  LocalPrinterAshWithIppClientInfoTest& operator=(
+      const LocalPrinterAshWithIppClientInfoTest&) = delete;
+  ~LocalPrinterAshWithIppClientInfoTest() override = default;
+
+  void SetUp() override {
+    user_manager_ = new user_manager::FakeUserManager();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        base::WrapUnique(user_manager_));
+    user_manager_->AddUserWithAffiliation(kAffiliatedUserAccountId,
+                                          /*is_affiliated*/ true);
+    user_manager_->AddUserWithAffiliation(kUnaffiliatedUserAccountId,
+                                          /*is_affiliated*/ false);
+    SetActiveUser(kUnaffiliatedUserAccountId);
+    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
+        &primary_user_);
+    auto ppd_provider = base::MakeRefCounted<FakePpdProvider>();
+    ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+        &profile_,
+        base::BindLambdaForTesting([this](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          auto printers_manager =
+              std::make_unique<ash::TestCupsPrintersManager>();
+          printers_manager_ = printers_manager.get();
+          return printers_manager;
+        }));
+    local_printer_ash_ =
+        std::make_unique<TestLocalPrinterAshWithClientInfoCalculator>(
+            &profile_, ppd_provider, &client_info_calculator_);
+  }
+
+  void SetActiveUser(AccountId account_id) {
+    user_manager_->SwitchActiveUser(account_id);
+  }
+
+ protected:
+  ash::TestCupsPrintersManager& printers_manager() {
+    DCHECK(printers_manager_);
+    return *printers_manager_;
+  }
+
+  crosapi::LocalPrinterAsh* local_printer_ash() {
+    return local_printer_ash_.get();
+  }
+
+  MockIppClientInfoCalculator& client_info_calculator() {
+    return client_info_calculator_;
+  }
+
+ private:
+  user_manager::FakeUserManager* user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  // Must outlive `printers_manager_`.
+  TestingProfile profile_;
+  FakeUser primary_user_;
+  ash::TestCupsPrintersManager* printers_manager_ = nullptr;
+  NiceMock<MockIppClientInfoCalculator> client_info_calculator_;
+  std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
+};
+
+// Checks that `GetIppClientInfo()` returns an empty result if called with a
+// `printer_id` that has no associated printer.
+TEST_F(LocalPrinterAshWithIppClientInfoTest, GetIppClientInfoMissingPrinter) {
+  std::vector<printing::mojom::IppClientInfoPtr> result;
+  base::RunLoop loop;
+  local_printer_ash()->GetIppClientInfo(
+      "id", base::BindOnce(&RecordIppClientInfo, std::ref(result),
+                           loop.QuitClosure()));
+  loop.Run();
+
+  ASSERT_TRUE(result.empty());
+}
+
+// Checks that `GetIppClientInfo()` returns only OS info for a printer that uses
+// an insecure protocol.
+TEST_F(LocalPrinterAshWithIppClientInfoTest, GetIppClientInfoInsecurePrinter) {
+  SetActiveUser(kAffiliatedUserAccountId);
+  Printer printer = CreateTestPrinter("id", "name", "description");
+  printer.SetUri("ipp://localhost");
+  printer.set_source(Printer::Source::SRC_POLICY);
+  printers_manager().AddPrinter(printer, PrinterClass::kSaved);
+
+  std::vector<printing::mojom::IppClientInfoPtr> result;
+  base::RunLoop loop;
+  const mojom::IppClientInfoPtr expected = mojom::IppClientInfo::New(
+      mojom::IppClientInfo::ClientType::kOperatingSystem, "ChromeOS",
+      absl::nullopt, "1.2.3", absl::nullopt);
+  EXPECT_CALL(client_info_calculator(), GetOsInfo)
+      .WillOnce(Return(ByMove(expected.Clone())));
+  local_printer_ash()->GetIppClientInfo(
+      "id", base::BindOnce(&RecordIppClientInfo, std::ref(result),
+                           loop.QuitClosure()));
+  loop.Run();
+
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0], expected);
+}
+
+// Checks that `GetIppClientInfo()` returns only OS info if the current user is
+// unaffiliated.
+TEST_F(LocalPrinterAshWithIppClientInfoTest, GetIppClientInfoUnaffiliatedUser) {
+  SetActiveUser(kUnaffiliatedUserAccountId);
+  Printer printer = CreateTestPrinter("id", "name", "description");
+  printer.SetUri("ipps://localhost");
+  printer.set_source(Printer::Source::SRC_POLICY);
+  printers_manager().AddPrinter(printer, PrinterClass::kSaved);
+
+  std::vector<printing::mojom::IppClientInfoPtr> result;
+  base::RunLoop loop;
+  const mojom::IppClientInfoPtr expected = mojom::IppClientInfo::New(
+      mojom::IppClientInfo::ClientType::kOperatingSystem, "ChromeOS",
+      absl::nullopt, "1.2.3", absl::nullopt);
+  EXPECT_CALL(client_info_calculator(), GetOsInfo)
+      .WillOnce(Return(ByMove(expected.Clone())));
+  local_printer_ash()->GetIppClientInfo(
+      "id", base::BindOnce(&RecordIppClientInfo, std::ref(result),
+                           loop.QuitClosure()));
+  loop.Run();
+
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0], expected);
+}
+
+// Checks that `GetIppClientInfo()` returns only OS info for an unmanaged
+// printer.
+TEST_F(LocalPrinterAshWithIppClientInfoTest, GetIppClientInfoUnmanagedPrinter) {
+  SetActiveUser(kAffiliatedUserAccountId);
+  Printer printer = CreateTestPrinter("id", "name", "description");
+  printer.SetUri("ipps://localhost");
+  printer.set_source(Printer::Source::SRC_USER_PREFS);
+  printers_manager().AddPrinter(printer, PrinterClass::kSaved);
+
+  std::vector<printing::mojom::IppClientInfoPtr> result;
+  base::RunLoop loop;
+  const mojom::IppClientInfoPtr expected = mojom::IppClientInfo::New(
+      mojom::IppClientInfo::ClientType::kOperatingSystem, "ChromeOS",
+      absl::nullopt, "1.2.3", absl::nullopt);
+  EXPECT_CALL(client_info_calculator(), GetOsInfo)
+      .WillOnce(Return(ByMove(expected.Clone())));
+  local_printer_ash()->GetIppClientInfo(
+      "id", base::BindOnce(&RecordIppClientInfo, std::ref(result),
+                           loop.QuitClosure()));
+  loop.Run();
+
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0], expected);
+}
+
+// Checks that `GetIppClientInfo()` returns both OS info and device info for a
+// managed printer that uses a secure protocol if the current user is
+// affiliated.
+TEST_F(LocalPrinterAshWithIppClientInfoTest,
+       GetIppClientInfoSecureManagedPrinterAffiliatedUser) {
+  SetActiveUser(kAffiliatedUserAccountId);
+  Printer printer = CreateTestPrinter("id", "name", "description");
+  printer.SetUri("ipps://localhost");
+  printer.set_source(Printer::Source::SRC_POLICY);
+  printers_manager().AddPrinter(printer, PrinterClass::kSaved);
+
+  std::vector<printing::mojom::IppClientInfoPtr> result;
+  base::RunLoop loop;
+  const mojom::IppClientInfo expected_os_info =
+      mojom::IppClientInfo(mojom::IppClientInfo::ClientType::kOperatingSystem,
+                           "ChromeOS", absl::nullopt, "1.2.3", absl::nullopt);
+  const mojom::IppClientInfo expected_device_info =
+      mojom::IppClientInfo(mojom::IppClientInfo::ClientType::kOther, "abc",
+                           absl::nullopt, "", absl::nullopt);
+  EXPECT_CALL(client_info_calculator(), GetOsInfo)
+      .WillOnce(Return(ByMove(expected_os_info.Clone())));
+  EXPECT_CALL(client_info_calculator(), GetDeviceInfo)
+      .WillOnce(Return(ByMove(expected_device_info.Clone())));
+  local_printer_ash()->GetIppClientInfo(
+      "id", base::BindOnce(&RecordIppClientInfo, std::ref(result),
+                           loop.QuitClosure()));
+  loop.Run();
+
+  EXPECT_THAT(result, testing::UnorderedElementsAre(
+                          testing::Pointee(expected_os_info),
+                          testing::Pointee(expected_device_info)));
 }
 
 }  // namespace printing
