@@ -93,11 +93,6 @@ public interface WebContentsAccessibility {
     void setObscuredByAnotherView(boolean isObscured);
 
     /**
-     * Returns true if accessibility is on and touch exploration is enabled.
-     */
-    boolean isTouchExplorationEnabled();
-
-    /**
      * Turns browser accessibility on or off.
      * If |state| is |false|, this turns off both native and injected accessibility.
      * Otherwise, if accessibility script injection is enabled, this will enable the injected

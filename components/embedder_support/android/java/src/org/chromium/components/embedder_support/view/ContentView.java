@@ -34,6 +34,7 @@ import org.chromium.content_public.browser.SmartClipProvider;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
 
@@ -424,8 +425,7 @@ public class ContentView extends FrameLayout
     public boolean onHoverEvent(MotionEvent event) {
         EventForwarder forwarder = getEventForwarder();
         boolean consumed = forwarder != null ? forwarder.onHoverEvent(event) : false;
-        WebContentsAccessibility wcax = getWebContentsAccessibility();
-        if (wcax != null && !wcax.isTouchExplorationEnabled()) super.onHoverEvent(event);
+        if (!AccessibilityState.hasTouchExplorationEnabled()) super.onHoverEvent(event);
         return consumed;
     }
 

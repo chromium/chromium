@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.WebContentsAccessibility;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.List;
 
@@ -134,8 +135,7 @@ public class PlayerFrameView extends FrameLayout {
 
     @Override
     public boolean onHoverEvent(MotionEvent event) {
-        if (mWebContentsAccessibility != null
-                && mWebContentsAccessibility.isTouchExplorationEnabled()) {
+        if (mWebContentsAccessibility != null && AccessibilityState.hasTouchExplorationEnabled()) {
             return mWebContentsAccessibility.onHoverEventNoRenderer(event);
         }
         return super.onHoverEvent(event);

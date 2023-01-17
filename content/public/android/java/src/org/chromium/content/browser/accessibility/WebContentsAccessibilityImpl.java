@@ -237,9 +237,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // return an AccessibilityNodeProvider or process touch exploration events.
     private boolean mIsObscuredByAnotherView;
 
-    // Accessibility touch exploration state.
-    private boolean mTouchExplorationEnabled;
-
     // This array maps a given virtualViewId to an |AccessibilityNodeInfoCompat| for that view. We
     // use this to update a node quickly rather than building from one scratch each time.
     private SparseArray<AccessibilityNodeInfoCompat> mNodeInfoCache = new SparseArray<>();
@@ -861,18 +858,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @Override
-    public boolean isTouchExplorationEnabled() {
-        return mTouchExplorationEnabled;
-    }
-
-    @Override
     public void setState(boolean state) {
         if (!state) {
             mNativeAccessibilityAllowed = false;
-            mTouchExplorationEnabled = false;
         } else {
             mNativeAccessibilityAllowed = true;
-            mTouchExplorationEnabled = mAccessibilityManager.isTouchExplorationEnabled();
         }
     }
 

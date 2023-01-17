@@ -18,10 +18,10 @@ import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.PopupController.HideablePopup;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
-import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -150,9 +150,8 @@ public class SelectPopup implements HideablePopup, ViewAndroidDelegate.Container
         for (int i = 0; i < items.length; i++) {
             popupItems.add(new SelectPopupItem(items[i], enabled[i]));
         }
-        WebContentsAccessibilityImpl wcax =
-                WebContentsAccessibilityImpl.fromWebContents(mWebContents);
-        if (DeviceFormFactor.isTablet() && !multiple && !wcax.isTouchExplorationEnabled()) {
+        if (DeviceFormFactor.isTablet() && !multiple
+                && !AccessibilityState.hasTouchExplorationEnabled()) {
             mPopupView = new SelectPopupDropdown(context, this::selectMenuItems, anchorView,
                     popupItems, selectedIndices, rightAligned, mWebContents);
         } else {

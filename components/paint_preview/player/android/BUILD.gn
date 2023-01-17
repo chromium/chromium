@@ -97,6 +97,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_swipe_refresh:android_swipe_refresh_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_resources",
     "//url:gurl_java",
