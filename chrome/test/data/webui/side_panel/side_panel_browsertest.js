@@ -8,6 +8,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/accessibility/accessibility_features.h"');
+GEN('#include "components/user_notes/user_notes_features.h"');
+GEN('#include "components/power_bookmarks/core/power_bookmark_features.h"');
 
 class SidePanelBrowserTest extends PolymerTest {
   /** @override */
@@ -103,5 +105,24 @@ var ReadAnythingAppTest = class extends SidePanelBrowserTest {
 };
 
 TEST_F('ReadAnythingAppTest', 'All', function() {
+  mocha.run();
+});
+
+var UserNotesAppTest = class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://user-notes-side-panel.top-chrome/test_loader.html?module=side_panel/user_notes/app_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled:
+          ['user_notes::kUserNotes', 'power_bookmarks::kPowerBookmarkBackend']
+    };
+  }
+};
+
+TEST_F('UserNotesAppTest', 'All', function() {
   mocha.run();
 });

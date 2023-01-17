@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_page_handler.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
@@ -102,6 +106,11 @@ UserNotesPageHandler::UserNotesPageHandler(
   DCHECK(browser_);
   browser_->tab_strip_model()->AddObserver(this);
   Observe(browser_->tab_strip_model()->GetActiveWebContents());
+  if (browser_->tab_strip_model()->GetActiveWebContents()) {
+    current_tab_url_ = browser_->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL();
+  }
 }
 
 UserNotesPageHandler::~UserNotesPageHandler() {

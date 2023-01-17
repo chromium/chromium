@@ -1,0 +1,11 @@
+<style>
+  user-note {
+    margin: 12px 0;
+  }
+</style>
+
+<template id="notesList" is="dom-repeat" items="[[notes_]]"
+    sort="sortByModificationTime_">
+  <user-note note="[[item]]"></user-note>
+</template>
+<user-note id="entryNote"></user-note>

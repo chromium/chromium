@@ -40,6 +40,8 @@ class UserNotesSidePanelUI
       page_factory_receiver_{this};
 
   std::unique_ptr<UserNotesPageHandler> user_notes_page_handler_;
+  mojo::Receiver<side_panel::mojom::UserNotesPageHandlerFactory>
+      user_notes_page_factory_receiver_{this};
 
   raw_ptr<Browser> browser_ = nullptr;
 

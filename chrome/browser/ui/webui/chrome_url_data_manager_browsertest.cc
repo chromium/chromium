@@ -23,6 +23,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/search/ntp_features.h"
+#include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_registrar.h"
@@ -166,6 +167,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(
         password_manager::features::kPasswordManagerRedesign);
     enabled_features.push_back(features::kReadAnything);
+    enabled_features.push_back(user_notes::kUserNotes);
 
 #if !BUILDFLAG(IS_CHROMEOS)
     if (GetParam() == std::string("chrome://welcome"))

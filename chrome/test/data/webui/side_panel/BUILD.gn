@@ -20,6 +20,9 @@ ts_library("build_ts") {
     "chrome://read-anything-side-panel.top-chrome/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/read_anything/tsc/*",
             target_gen_dir),
+    "chrome://user-notes-side-panel.top-chrome/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/user_notes/tsc/*",
+            target_gen_dir),
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
@@ -36,6 +39,8 @@ ts_library("build_ts") {
     "reading_list/reading_list_app_test.ts",
     "reading_list/test_reading_list_api_proxy.ts",
     "read_anything/read_anything_app_test.ts",
+    "user_notes/app_test.ts",
+    "user_notes/test_user_notes_api_proxy.ts",
   ]
   definitions = [
     "//chrome/browser/resources/side_panel/read_anything/read_anything.d.ts",
@@ -48,6 +53,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
     "//chrome/browser/resources/side_panel/read_anything:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
+    "//chrome/browser/resources/side_panel/user_notes:build_ts",
   ]
 }
 

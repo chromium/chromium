@@ -11,8 +11,10 @@
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_user_notes_resources.h"
 #include "chrome/grit/side_panel_user_notes_resources_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -21,6 +23,14 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUserNotesSidePanelHost);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"add", IDS_ADD},
+      {"addANote", IDS_ADD_NEW_USER_NOTE_PLACEHOLDER_TEXT},
+      {"cancel", IDS_CANCEL},
+      {"title", IDS_USER_NOTE_TITLE},
+      {"tooltipClose", IDS_CLOSE},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSidePanelUserNotesResources,

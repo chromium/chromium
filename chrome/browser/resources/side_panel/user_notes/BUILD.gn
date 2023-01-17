@@ -11,6 +11,11 @@ build_webui("build") {
 
   static_files = [ "user_notes.html" ]
 
+  web_component_files = [
+    "app.ts",
+    "user_note.ts",
+  ]
+
   non_web_component_files = [ "user_notes_api_proxy.ts" ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings_js__generator" ]
