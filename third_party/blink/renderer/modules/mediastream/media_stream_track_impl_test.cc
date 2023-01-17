@@ -65,6 +65,30 @@ MakeLocalMediaStreamAudioSource() {
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
 }
 
+MediaStreamComponent* MakeMockVideoComponent() {
+  std::unique_ptr<MockMediaStreamVideoSource> platform_source =
+      MakeMockMediaStreamVideoSource();
+  MockMediaStreamVideoSource* platform_source_ptr = platform_source.get();
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::StreamType::kTypeVideo, "name",
+      /*remote=*/false, std::move(platform_source));
+  return MakeGarbageCollected<MediaStreamComponentImpl>(
+      source, std::make_unique<MediaStreamVideoTrack>(
+                  platform_source_ptr,
+                  MediaStreamVideoSource::ConstraintsOnceCallback(),
+                  /*enabled=*/true));
+}
+
+MediaStreamComponent* MakeMockAudioComponent() {
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "id", MediaStreamSource::StreamType::kTypeAudio, "name",
+      /*remote=*/false, MakeLocalMediaStreamAudioSource());
+  auto platform_track =
+      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
+  return MakeGarbageCollected<MediaStreamComponentImpl>(
+      source, std::move(platform_track));
+}
+
 }  // namespace
 
 class MediaStreamTrackImplTest : public testing::Test {
@@ -78,12 +102,18 @@ class MediaStreamTrackImplTest : public testing::Test {
 
 TEST_F(MediaStreamTrackImplTest, StopTrackTriggersObservers) {
   V8TestingScope v8_scope;
-
+  std::unique_ptr<MockMediaStreamVideoSource> platform_source =
+      MakeMockMediaStreamVideoSource();
+  MockMediaStreamVideoSource* platform_source_ptr = platform_source.get();
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
-      false /* remote */, MakeMockMediaStreamVideoSource());
+      /*remote=*/false, std::move(platform_source));
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>(source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(
+          source, std::make_unique<MediaStreamVideoTrack>(
+                      platform_source_ptr,
+                      MediaStreamVideoSource::ConstraintsOnceCallback(),
+                      /*enabled=*/true));
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
 
@@ -102,7 +132,7 @@ TEST_F(MediaStreamTrackImplTest, StopTrackSynchronouslyDisablesMedia) {
 
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeAudio, "name",
-      false /* remote */, MakeMockMediaStreamVideoSource());
+      /*remote=*/false, MakeMockMediaStreamVideoSource());
   auto platform_track =
       std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
   MediaStreamAudioTrack* platform_track_ptr = platform_track.get();
@@ -120,11 +150,18 @@ TEST_F(MediaStreamTrackImplTest, StopTrackSynchronouslyDisablesMedia) {
 TEST_F(MediaStreamTrackImplTest, MutedStateUpdates) {
   V8TestingScope v8_scope;
 
+  std::unique_ptr<MockMediaStreamVideoSource> platform_source =
+      MakeMockMediaStreamVideoSource();
+  MockMediaStreamVideoSource* platform_source_ptr = platform_source.get();
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
-      /*remote=*/false, /*platform_source=*/nullptr);
+      /*remote=*/false, std::move(platform_source));
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>(source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(
+          source, std::make_unique<MediaStreamVideoTrack>(
+                      platform_source_ptr,
+                      MediaStreamVideoSource::ConstraintsOnceCallback(),
+                      /*enabled=*/true));
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
 
@@ -139,12 +176,18 @@ TEST_F(MediaStreamTrackImplTest, MutedStateUpdates) {
 
 TEST_F(MediaStreamTrackImplTest, MutedDoesntUpdateAfterEnding) {
   V8TestingScope v8_scope;
-
+  std::unique_ptr<MockMediaStreamVideoSource> platform_source =
+      MakeMockMediaStreamVideoSource();
+  MockMediaStreamVideoSource* platform_source_ptr = platform_source.get();
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
-      false /* remote */, MakeMockMediaStreamVideoSource());
+      false /* remote */, std::move(platform_source));
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>(source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(
+          source, std::make_unique<MediaStreamVideoTrack>(
+                      platform_source_ptr,
+                      MediaStreamVideoSource::ConstraintsOnceCallback(),
+                      /*enabled=*/true));
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
 
@@ -159,22 +202,8 @@ TEST_F(MediaStreamTrackImplTest, MutedDoesntUpdateAfterEnding) {
 
 TEST_F(MediaStreamTrackImplTest, CloneVideoTrack) {
   V8TestingScope v8_scope;
-
-  std::unique_ptr<MediaStreamVideoSource> platform_source =
-      MakeMockMediaStreamVideoSource();
-  MediaStreamVideoSource* platform_source_ptr = platform_source.get();
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "id", MediaStreamSource::StreamType::kTypeVideo, "name",
-      false /* remote */, std::move(platform_source));
-  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
-      platform_source_ptr,
-      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
-      true /* enabled */);
-  MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>(source,
-                                                     std::move(platform_track));
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
-      v8_scope.GetExecutionContext(), component);
+      v8_scope.GetExecutionContext(), MakeMockVideoComponent());
 
   MediaStreamTrack* clone = track->clone(v8_scope.GetExecutionContext());
 
@@ -184,17 +213,13 @@ TEST_F(MediaStreamTrackImplTest, CloneVideoTrack) {
   EXPECT_TRUE(MediaStreamVideoTrack::From(clone->Component()));
 
   // Clones should share the same source object.
-  EXPECT_EQ(clone->Component()->Source(), source);
+  EXPECT_EQ(clone->Component()->Source(), track->Component()->Source());
 }
 
 TEST_F(MediaStreamTrackImplTest, CloneAudioTrack) {
   V8TestingScope v8_scope;
 
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "id", MediaStreamSource::StreamType::kTypeAudio, "name",
-      false /* remote */, MakeLocalMediaStreamAudioSource());
-  MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>(source);
+  MediaStreamComponent* component = MakeMockAudioComponent();
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       v8_scope.GetExecutionContext(), component);
 
@@ -206,7 +231,7 @@ TEST_F(MediaStreamTrackImplTest, CloneAudioTrack) {
   EXPECT_TRUE(MediaStreamAudioTrack::From(clone->Component()));
 
   // Clones should share the same source object.
-  EXPECT_EQ(clone->Component()->Source(), source);
+  EXPECT_EQ(clone->Component()->Source(), component->Source());
 }
 
 TEST_F(MediaStreamTrackImplTest, CloningPreservesConstraints) {

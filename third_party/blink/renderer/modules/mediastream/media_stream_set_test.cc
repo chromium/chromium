@@ -13,6 +13,8 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/test/fake_image_capturer.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -55,21 +57,34 @@ class MediaStreamSetTest : public testing::Test {
   // Required as persistent member to prevent the garbage collector from
   // removing the object before the test ended.
   Persistent<MediaStreamSet> media_stream_set_;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 };
+
+MediaStreamComponent* MakeMockVideoComponent() {
+  auto platform_video_source =
+      std::make_unique<MockLocalMediaStreamVideoSource>();
+  auto* platform_video_source_ptr = platform_video_source.get();
+  MediaStreamSource* const test_video_source =
+      MakeGarbageCollected<MediaStreamSource>(
+          /*id=*/"test_source_1_id", MediaStreamSource::StreamType::kTypeVideo,
+          /*name=*/"test_source_1_name", /*remote=*/false,
+          std::move(platform_video_source));
+
+  return MakeGarbageCollected<MediaStreamComponentImpl>(
+      test_video_source, std::make_unique<MediaStreamVideoTrack>(
+                             platform_video_source_ptr,
+                             MediaStreamVideoSource::ConstraintsOnceCallback(),
+                             /*enabled=*/true));
+}
 
 // This test checks if |MediaStreamSet| calls the initialized callback if used
 // for getDisplayMediaSet with a single stream requested, i.e. one descriptor
 // with one video source passed in the constructor.
 TEST_F(MediaStreamSetTest, GetDisplayMediaSetSingleMediaStreamInitialized) {
   V8TestingScope v8_scope;
-  MediaStreamSource* const test_video_source =
-      MakeGarbageCollected<MediaStreamSource>(
-          /*id=*/"test_source_1_id", MediaStreamSource::StreamType::kTypeVideo,
-          /*name=*/"test_source_1_name", /*remote=*/false,
-          std::make_unique<MockLocalMediaStreamVideoSource>());
   MediaStreamComponentVector audio_component_vector;
   MediaStreamComponentVector video_component_vector = {
-      MakeGarbageCollected<MediaStreamComponentImpl>(test_video_source)};
+      MakeMockVideoComponent()};
   MediaStreamDescriptor* const descriptor =
       MakeGarbageCollected<MediaStreamDescriptor>(audio_component_vector,
                                                   video_component_vector);
@@ -90,14 +105,9 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaSetSingleMediaStreamInitialized) {
 // multiple descriptors with one video source each passed in the constructor.
 TEST_F(MediaStreamSetTest, GetDisplayMediaSetMultipleMediaStreamsInitialized) {
   V8TestingScope v8_scope;
-  MediaStreamSource* const test_video_source =
-      MakeGarbageCollected<MediaStreamSource>(
-          /*id=*/"test_source_1_id", MediaStreamSource::StreamType::kTypeVideo,
-          /*name=*/"test_source_1_name", /*remote=*/false,
-          std::make_unique<MockLocalMediaStreamVideoSource>());
   MediaStreamComponentVector audio_component_vector;
   MediaStreamComponentVector video_component_vector = {
-      MakeGarbageCollected<MediaStreamComponentImpl>(test_video_source)};
+      MakeMockVideoComponent()};
   MediaStreamDescriptor* const descriptor =
       MakeGarbageCollected<MediaStreamDescriptor>(audio_component_vector,
                                                   video_component_vector);
@@ -136,14 +146,15 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaSetNoMediaStreamInitialized) {
 // with one video source passed in the constructor.
 TEST_F(MediaStreamSetTest, GetDisplayMediaSingleMediaStreamInitialized) {
   V8TestingScope v8_scope;
-  MediaStreamSource* const test_video_source =
-      MakeGarbageCollected<MediaStreamSource>(
-          /*id=*/"test_source_1_id", MediaStreamSource::StreamType::kTypeVideo,
-          /*name=*/"test_source_1_name", /*remote=*/false,
-          std::make_unique<MockLocalMediaStreamVideoSource>());
+
+  // A fake image capturer is required for a video track to finish
+  // initialization.
+  FakeImageCapture fake_image_capturer;
+  fake_image_capturer.RegisterBinding(v8_scope.GetExecutionContext());
+
   MediaStreamComponentVector audio_component_vector;
   MediaStreamComponentVector video_component_vector = {
-      MakeGarbageCollected<MediaStreamComponentImpl>(test_video_source)};
+      MakeMockVideoComponent()};
   MediaStreamDescriptor* const descriptor =
       MakeGarbageCollected<MediaStreamDescriptor>(audio_component_vector,
                                                   video_component_vector);

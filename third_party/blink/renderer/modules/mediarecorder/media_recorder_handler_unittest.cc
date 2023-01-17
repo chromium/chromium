@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -87,8 +88,9 @@ MediaStream* CreateMediaStream(V8TestingScope& scope) {
   auto* source = MakeGarbageCollected<MediaStreamSource>(
       "sourceId", MediaStreamSource::kTypeAudio, "sourceName", false,
       /*platform_source=*/nullptr);
-  auto* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>("audioTrack", source);
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
+      "audioTrack", source,
+      std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true));
 
   auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component);

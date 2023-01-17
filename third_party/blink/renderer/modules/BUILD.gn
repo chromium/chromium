@@ -645,6 +645,7 @@ source_set("unit_tests") {
     "//components/schema_org/common:mojom_blink",
     "//components/ukm:test_support",
     "//media:test_support",
+    "//media/capture/mojom:image_capture_blink",
     "//media/gpu:gpu",
     "//media/mojo:buildflags",
     "//media/mojo/mojom",

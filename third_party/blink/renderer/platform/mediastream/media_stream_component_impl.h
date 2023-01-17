@@ -60,8 +60,6 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   static int GenerateUniqueId();
 
  public:
-  MediaStreamComponentImpl(MediaStreamSource*);
-  MediaStreamComponentImpl(const String& id, MediaStreamSource*);
   MediaStreamComponentImpl(const String& id,
                            MediaStreamSource*,
                            std::unique_ptr<MediaStreamTrackPlatform>);

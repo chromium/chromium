@@ -8,6 +8,9 @@
 #include <utility>
 
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
@@ -109,17 +112,24 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
           MediaStreamSource::StreamType::kTypeAudio,
           String::FromUTF8("remoteAudioName"), /*remote=*/true,
           /*platform_source=*/nullptr);
-      component_ =
-          MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source);
+      component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
+          source->Id(), source,
+          std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/false));
     } else {
       DCHECK_EQ(type, MediaStreamSource::StreamType::kTypeVideo);
+      auto platform_source = std::make_unique<MockMediaStreamVideoSource>();
+      auto* platform_source_ptr = platform_source.get();
       auto* source = MakeGarbageCollected<MediaStreamSource>(
           String::FromUTF8("remoteVideoId"),
           MediaStreamSource::StreamType::kTypeVideo,
           String::FromUTF8("remoteVideoName"), /*remote=*/true,
-          /*platform_source=*/nullptr);
-      component_ =
-          MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source);
+          std::move(platform_source));
+      component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
+          source->Id(), source,
+          std::make_unique<MediaStreamVideoTrack>(
+              platform_source_ptr,
+              MediaStreamVideoSource::ConstraintsOnceCallback(),
+              /*enabled=*/true));
     }
   }
   DummyRTCRtpReceiverPlatform(const DummyRTCRtpReceiverPlatform& other)
