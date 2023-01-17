@@ -697,9 +697,13 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
   nway_canvas_.emplace(characterization_.width(), characterization_.height());
   nway_canvas_->addCanvas(current_paint_->recorder()->getCanvas());
 
+  // Overdraw feedback uses |SkOverdrawCanvas|, which relies on a buffer with an
+  // 8-bit unorm alpha channel to work. RGBA8 is always supported, so we use it.
+  SkColorType color_type_with_alpha = SkColorType::kRGBA_8888_SkColorType;
+
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       gfx::Size(characterization_.width(), characterization_.height()),
-      characterization_.colorType(), characterization_.imageInfo().alphaType(),
+      color_type_with_alpha, characterization_.imageInfo().alphaType(),
       /*mipmap=*/false, characterization_.refColorSpace(),
       /*is_root_render_pass=*/false,
       /*is_overlay=*/false);
