@@ -242,7 +242,8 @@ enum class ToastCatalogName {
   kEcheTrayTabletModeNotSupported = 38,
   kNotificationCenterTrayNoNotifications = 39,
   kCopyToClipboardAction = 40,
-  kMaxValue = kCopyToClipboardAction,
+  kVideoConferenceTraySpeakOnMuteDetected = 41,
+  kMaxValue = kVideoConferenceTraySpeakOnMuteDetected,
 };
 
 }  // namespace ash

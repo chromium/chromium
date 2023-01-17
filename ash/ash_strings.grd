@@ -1487,6 +1487,9 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME" desc="Text for name of the portrait relight effect in the VC bubble.">
         Portrait Relighting
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED" desc="A toast message that we show when user tries to speak while muted on system-level.">
+        Are you speaking? You are on mute. Learn more
+      </message>
 
       <!-- Phone Hub tray-->
       <message name="IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME" desc="The accessible name of the Phone Hub tray bubble for screen readers.">
