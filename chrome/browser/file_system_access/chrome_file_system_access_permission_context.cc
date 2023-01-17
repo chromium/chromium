@@ -1354,7 +1354,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
 
   std::vector<std::pair<base::Time, std::string>> entries;
   entries.reserve(value.DictSize());
-  for (auto entry : value.DictItems()) {
+  for (auto entry : value.GetDict()) {
     // Don't evict the default ID.
     if (entry.first == kDefaultLastPickedDirectoryKey)
       continue;
