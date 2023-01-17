@@ -13,7 +13,6 @@ source_set("cpp") {
   ]
 
   deps = [
-    "//ash/constants",
     "//chromeos/services/network_config/public/mojom",
     "//components/onc",
     "//services/network/public/cpp:ip_address_mojom_support",

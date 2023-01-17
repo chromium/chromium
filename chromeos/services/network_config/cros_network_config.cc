@@ -1292,11 +1292,12 @@ mojom::ManagedApnPropertiesPtr GetManagedApnProperties(const base::Value* dict,
 mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
   if (!value)
     return nullptr;
+  bool is_apn_revamp_enabled = ash::features::IsApnRevampEnabled();
   if (value->is_list()) {
     auto result = mojom::ManagedApnList::New();
     std::vector<mojom::ApnPropertiesPtr> active;
     for (const base::Value& e : value->GetList())
-      active.push_back(GetApnProperties(e.GetDict()));
+      active.push_back(GetApnProperties(e.GetDict(), is_apn_revamp_enabled));
     result->active_value = std::move(active);
     return result;
   } else if (value->is_dict()) {
@@ -1307,12 +1308,14 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
     }
     auto result = mojom::ManagedApnList::New();
     for (const base::Value& e : managed_dict.active_value.GetList())
-      result->active_value.push_back(GetApnProperties(e.GetDict()));
+      result->active_value.push_back(
+          GetApnProperties(e.GetDict(), is_apn_revamp_enabled));
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::ApnPropertiesPtr>();
       for (const base::Value& e : managed_dict.policy_value.GetList())
-        result->policy_value->push_back(GetApnProperties(e.GetDict()));
+        result->policy_value->push_back(
+            GetApnProperties(e.GetDict(), is_apn_revamp_enabled));
     }
     return result;
   }
@@ -1322,7 +1325,8 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
 
 bool DoesDefaultApnExist(const base::Value::List& apns) {
   for (const base::Value& apn : apns) {
-    mojom::ApnPropertiesPtr apn_ptr = GetApnProperties(apn.GetDict());
+    mojom::ApnPropertiesPtr apn_ptr =
+        GetApnProperties(apn.GetDict(), ash::features::IsApnRevampEnabled());
     for (const mojom::ApnType& type : apn_ptr->apn_types) {
       if (type == mojom::ApnType::kDefault) {
         return true;
@@ -1799,8 +1803,10 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       const base::Value* apn_dict =
           GetDictionary(cellular_dict, ::onc::cellular::kLastGoodAPN);
       if (apn_dict) {
-        cellular->last_good_apn = GetApnProperties(apn_dict->GetDict());
-        if (ash::features::IsApnRevampEnabled()) {
+        bool is_apn_revamp_enabled = ash::features::IsApnRevampEnabled();
+        cellular->last_good_apn =
+            GetApnProperties(apn_dict->GetDict(), is_apn_revamp_enabled);
+        if (is_apn_revamp_enabled) {
           const absl::optional<std::string> connection_state =
               GetString(properties, ::onc::network_config::kConnectionState);
 
@@ -1810,7 +1816,8 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           // present when the network is not connected.
           if (connection_state &&
               *connection_state == ::onc::connection_state::kConnected) {
-            cellular->connected_apn = GetApnProperties(apn_dict->GetDict());
+            cellular->connected_apn =
+                GetApnProperties(apn_dict->GetDict(), true);
           }
         }
       }
@@ -3104,8 +3111,10 @@ std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomApnList(
   for (const auto& apn : *custom_apn_list) {
     DCHECK(apn.is_dict());
 
-    mojom::ApnPropertiesPtr mojo_apn = GetApnProperties(apn.GetDict());
-    if (ash::features::IsApnRevampEnabled()) {
+    bool is_apn_revamp_enabled = ash::features::IsApnRevampEnabled();
+    mojom::ApnPropertiesPtr mojo_apn =
+        GetApnProperties(apn.GetDict(), is_apn_revamp_enabled);
+    if (is_apn_revamp_enabled) {
       mojo_apn->state = OncApnStateTypeToMojo(
           base::OptionalToPtr(GetString(&apn, ::onc::cellular_apn::kState)));
     }

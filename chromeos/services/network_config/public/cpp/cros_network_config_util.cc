@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
-#include "ash/constants/ash_features.h"
 #include "components/onc/onc_constants.h"
 
 namespace chromeos::network_config {
@@ -60,7 +59,6 @@ std::vector<std::string> GetRequiredStringList(const base::Value::Dict& dict,
 
 mojom::ApnAuthenticationType OncApnAuthenticationTypeToMojo(
     const std::string& authentication_type) {
-  DCHECK(ash::features::IsApnRevampEnabled());
   if (authentication_type.empty() ||
       authentication_type ==
           ::onc::cellular_apn::kAuthenticationTypeAutomatic) {
@@ -79,7 +77,6 @@ mojom::ApnAuthenticationType OncApnAuthenticationTypeToMojo(
 }
 
 mojom::ApnIpType OncApnIpTypeToMojo(const std::string& ip_type) {
-  DCHECK(ash::features::IsApnRevampEnabled());
   if (ip_type.empty() || ip_type == ::onc::cellular_apn::kIpTypeAutomatic) {
     return mojom::ApnIpType::kAutomatic;
   }
@@ -184,7 +181,6 @@ base::Value::Dict UserApnListToOnc(const std::string& network_guid,
 
 std::vector<mojom::ApnType> OncApnTypesToMojo(
     const std::vector<std::string>& apn_types) {
-  DCHECK(ash::features::IsApnRevampEnabled());
   DCHECK(!apn_types.empty());
   std::vector<mojom::ApnType> apn_types_result;
   apn_types_result.reserve(apn_types.size());
@@ -204,7 +200,8 @@ std::vector<mojom::ApnType> OncApnTypesToMojo(
   return apn_types_result;
 }
 
-mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn) {
+mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
+                                         bool is_apn_revamp_enabled) {
   auto apn = mojom::ApnProperties::New();
   apn->access_point_name =
       GetRequiredString(onc_apn, ::onc::cellular_apn::kAccessPointName);
@@ -217,7 +214,7 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn) {
   apn->username = GetString(onc_apn, ::onc::cellular_apn::kUsername);
   apn->attach = GetString(onc_apn, ::onc::cellular_apn::kAttach);
 
-  if (ash::features::IsApnRevampEnabled()) {
+  if (is_apn_revamp_enabled) {
     apn->id = GetString(onc_apn, ::onc::cellular_apn::kId);
     // TODO(b/162365553) Remove missing value checking after Shill implements
     // the interface.

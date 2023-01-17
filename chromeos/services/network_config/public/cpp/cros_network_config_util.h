@@ -40,7 +40,8 @@ std::vector<mojom::ApnType> OncApnTypesToMojo(
     const std::vector<std::string>& apn_types);
 
 // Creates a Mojo APN from a ONC dictionary.
-mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn);
+mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
+                                         bool is_apn_revamp_enabled);
 
 }  // namespace network_config
 }  // namespace chromeos
