@@ -88,7 +88,10 @@ content::WebContents* WebAppLaunchProcess::Run() {
   }
 
   // Place new windows on the specified display.
-  display::ScopedDisplayForNewWindows scoped_display(params_->display_id);
+  absl::optional<display::ScopedDisplayForNewWindows> scoped_display;
+  if (params_->display_id != display::kInvalidDisplayId) {
+    scoped_display.emplace(params_->display_id);
+  }
 
   const apps::ShareTarget* share_target = MaybeGetShareTarget();
   auto [launch_url, is_file_handling] = GetLaunchUrl(share_target);
@@ -252,14 +255,21 @@ WebAppLaunchProcess::EnsureBrowser() {
 
 Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
   if (params_->container == apps::LaunchContainer::kLaunchContainerTab) {
-    // If launching the app in the current tab, find the most recently used
-    // browser for the current profile, rather than limiting the search to
-    // windows on whatever screen we would want to open new windows.
+    // In general, when opening a web application in a tab, we want to open the
+    // application in a tab in the most recently used browser window.
+    // Chrome OS however prefers opening new tabs in windows on a specific
+    // display, specifically the one returned by GetDisplayForNewWindows(), even
+    // if no browser windows are currently open on that display (except when
+    // we're specifically opening the app in the current tab, rather than a new
+    // tab).
+    int64_t display_id = display::kInvalidDisplayId;
+#if BUILDFLAG(IS_CHROMEOS)
+    if (params_->disposition != WindowOpenDisposition::CURRENT_TAB) {
+      display_id = display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+    }
+#endif
     return chrome::FindTabbedBrowser(
-        &profile_.get(), /*match_original_profiles=*/false,
-        params_->disposition == WindowOpenDisposition::CURRENT_TAB
-            ? display::kInvalidDisplayId
-            : display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+        &profile_.get(), /*match_original_profiles=*/false, display_id);
   }
 
   if (!registrar_->IsTabbedWindowModeEnabled(params_->app_id) &&
