@@ -341,11 +341,9 @@ CursorDirective LayoutEmbeddedContent::GetCursor(const PhysicalOffset& point,
   return LayoutReplaced::GetCursor(point, cursor);
 }
 
-PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
-    const LayoutSize size,
-    const NGPhysicalBoxStrut& border_padding) const {
+PhysicalRect LayoutEmbeddedContent::ReplacedContentRect() const {
   NOT_DESTROYED();
-  PhysicalRect content_rect = PhysicalContentBoxRectFrom(size, border_padding);
+  PhysicalRect content_rect = PhysicalContentBoxRect();
 
   // IFrames set as the root scroller should get their size from their parent.
   // When scrolling starts so as to hide the URL bar, IFRAME wouldn't resize to
@@ -364,8 +362,7 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
     // outside of the child frame. Revisit this when the input system supports
     // different |ReplacedContentRect| from |PhysicalContentBoxRect|.
     LayoutSize frozen_layout_size = frozen_size->ToLayoutSize();
-    content_rect =
-        ComputeReplacedContentRect(size, border_padding, &frozen_layout_size);
+    content_rect = ComputeReplacedContentRect(&frozen_layout_size);
   }
 
   // We don't propagate sub-pixel into sub-frame layout, in other words, the

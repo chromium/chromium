@@ -898,7 +898,8 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
       box_->ForceLayout();
 
 #if DCHECK_IS_ON()
-    if (!RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled()) {
+    if (!RuntimeEnabledFeatures::LayoutNGReplacedNoBoxSettersEnabled() ||
+        !box_->IsSVGRoot()) {
       // Assert that legacy uses the size NG forces above. But legacy sends
       // LayoutUnit to float and back, which can slightly change the result. So
       // give a 1px cushion.
