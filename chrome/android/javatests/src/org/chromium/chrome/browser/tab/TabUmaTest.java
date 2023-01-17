@@ -193,36 +193,21 @@ public class TabUmaTest {
     public void testTabStateTransition() throws Exception {
         String transitionToInactive = "Tabs.StateTransfer.Time_Active_Inactive";
         String transitionToClosed = "Tabs.StateTransfer.Time_Active_Closed";
-        String transitionTargetInitial = "Tabs.StateTransfer.Target_Initial";
-        String transitionTargetActive = "Tabs.StateTransfer.Target_Active";
-        String transitionTargetInactive = "Tabs.StateTransfer.Target_Inactive";
 
-        Assert.assertEquals(1, getHistogram(transitionTargetInitial));
-        Assert.assertEquals(0, getHistogram(transitionTargetInactive));
-        Assert.assertEquals(0, getHistogram(transitionTargetActive));
         Assert.assertEquals(0, getHistogram(transitionToInactive));
         Assert.assertEquals(0, getHistogram(transitionToClosed));
 
         createLiveTab(/* foreground= */ false, /* kill= */ false);
-        Assert.assertEquals(2, getHistogram(transitionTargetInitial));
-        Assert.assertEquals(1, getHistogram(transitionTargetInactive));
-        Assert.assertEquals(0, getHistogram(transitionTargetActive));
         Assert.assertEquals(0, getHistogram(transitionToInactive));
         Assert.assertEquals(0, getHistogram(transitionToClosed));
 
         // Test a live tab killed in background before shown.
         createLiveTab(/* foreground= */ false, /* kill= */ true);
-        Assert.assertEquals(3, getHistogram(transitionTargetInitial));
-        Assert.assertEquals(2, getHistogram(transitionTargetInactive));
-        Assert.assertEquals(0, getHistogram(transitionTargetActive));
         Assert.assertEquals(0, getHistogram(transitionToInactive));
         Assert.assertEquals(0, getHistogram(transitionToClosed));
 
         // Test a tab created in background but not loaded eagerly.
         final Tab frozenBgTab = createLazilyLoadedTab(/* show= */ true);
-        Assert.assertEquals(4, getHistogram(transitionTargetInitial));
-        Assert.assertEquals(3, getHistogram(transitionTargetInactive));
-        Assert.assertEquals(0, getHistogram(transitionTargetActive));
         Assert.assertEquals(0, getHistogram(transitionToInactive));
         Assert.assertEquals(0, getHistogram(transitionToClosed));
 
@@ -238,17 +223,11 @@ public class TabUmaTest {
             return tab;
         });
 
-        Assert.assertEquals(5, getHistogram(transitionTargetInitial));
-        Assert.assertEquals(4, getHistogram(transitionTargetInactive));
-        Assert.assertEquals(0, getHistogram(transitionTargetActive));
         Assert.assertEquals(0, getHistogram(transitionToInactive));
         Assert.assertEquals(0, getHistogram(transitionToClosed));
 
         // Test a foreground tab.
         createLiveTab(/* foreground= */ true, /* kill= */ false);
-        Assert.assertEquals(6, getHistogram(transitionTargetInitial));
-        Assert.assertEquals(4, getHistogram(transitionTargetInactive));
-        Assert.assertEquals(0, getHistogram(transitionTargetActive));
         Assert.assertEquals(0, getHistogram(transitionToInactive));
         Assert.assertEquals(0, getHistogram(transitionToClosed));
     }

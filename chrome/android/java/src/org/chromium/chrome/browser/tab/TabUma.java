@@ -129,26 +129,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
     }
 
     /**
-     * Record the tab state transition into histograms.
-     * @param prevState Previous state of the tab.
-     * @param newState New state of the tab.
-     * @param delta Time elapsed from the last state transition in milliseconds.
-     */
-    private void recordTabStateTransition(int prevState, int newState, long delta) {
-        if (prevState == TAB_STATE_INITIAL) {
-            RecordHistogram.recordEnumeratedHistogram("Tabs.StateTransfer.Target_Initial", newState,
-                    TAB_STATE_MAX);
-        } else if (prevState == TAB_STATE_ACTIVE) {
-            RecordHistogram.recordEnumeratedHistogram("Tabs.StateTransfer.Target_Active", newState,
-                    TAB_STATE_MAX);
-        } else if (prevState == TAB_STATE_INACTIVE) {
-            RecordHistogram.recordEnumeratedHistogram("Tabs.StateTransfer.Target_Inactive",
-                    newState, TAB_STATE_MAX);
-        }
-    }
-
-    /**
-     * Updates saved TabState and its timestamp. Records the state transition into the histogram.
+     * Updates saved TabState and its timestamp.
      * @param newState New state of the tab.
      */
     private void updateTabState(int newState) {
@@ -156,7 +137,6 @@ public class TabUma extends EmptyTabObserver implements UserData {
             return;
         }
         long now = System.currentTimeMillis();
-        recordTabStateTransition(mLastTabState, newState, now - mLastTabStateChangeMillis);
         mLastTabStateChangeMillis = now;
         mLastTabState = newState;
     }

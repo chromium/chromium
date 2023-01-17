@@ -1866,18 +1866,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.StateTransfer.Target" enum="TabStripState"
-    expires_after="M85">
-  <owner>kouhei@chromium.org</owner>
-  <owner>tzik@chromium.org</owner>
-  <summary>
-    The state to which a tab transitioned. Recorded when a tab transitions from
-    the state in the histogram name to a new state.
-
-    kouhei@ and tzik@ will remove some variation of these once M46 hits stable.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.Suggestions.NumSuggestionsChanged{TabSuggestionType}"
     units="count" expires_after="2023-10-16">
   <owner>yusufo@chromium.org</owner>

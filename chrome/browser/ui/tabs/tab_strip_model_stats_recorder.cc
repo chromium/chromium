@@ -66,16 +66,8 @@ void TabStripModelStatsRecorder::TabInfo::UpdateState(TabState new_state) {
 
   switch (current_state_) {
     case TabState::INITIAL:
-      break;
     case TabState::ACTIVE:
-      UMA_HISTOGRAM_ENUMERATION("Tabs.StateTransfer.Target_Active",
-                                static_cast<int>(new_state),
-                                static_cast<int>(TabState::MAX));
-      break;
     case TabState::INACTIVE:
-      UMA_HISTOGRAM_ENUMERATION("Tabs.StateTransfer.Target_Inactive",
-                                static_cast<int>(new_state),
-                                static_cast<int>(TabState::MAX));
       break;
     case TabState::CLOSED:
     case TabState::MAX:

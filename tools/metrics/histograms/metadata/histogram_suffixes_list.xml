@@ -1426,18 +1426,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="CryptohomeClient"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CurrentTabState" separator="_">
-  <suffix name="Active"
-      label="For an active tab which is shown foreground in a browser window."/>
-  <suffix name="Detached"
-      label="For a tab that is being dragged by user to outside of the
-             browser window."/>
-  <suffix name="Inactive"
-      label="For tabs in background and not shown to user."/>
-  <suffix name="Initial" label="For a tab that is just being created."/>
-  <affected-histogram name="Tabs.StateTransfer.Target"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CustomTabOpenSource" separator=".">
   <suffix name="MediaLauncherActivity"
       label="CustomTab opened by MediaLauncherActivity."/>
