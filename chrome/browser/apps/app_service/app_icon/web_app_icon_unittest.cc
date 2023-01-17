@@ -1046,6 +1046,16 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
     return result.Take();
   }
 
+  void UpdateIcon(const std::string& app_id, const IconKey& icon_key) {
+    std::vector<AppPtr> apps;
+    AppPtr app = std::make_unique<App>(AppType::kWeb, app_id);
+    app->icon_key = std::move(*icon_key.Clone());
+    app->icon_key->raw_icon_updated = true;
+    apps.push_back(std::move(app));
+    app_service_proxy().OnApps(std::move(apps), AppType::kWeb,
+                               /*should_notify_initialized=*/false);
+  }
+
   void ReinstallApps(const std::vector<std::string>& app_ids) {
     std::vector<AppPtr> uninstall_apps;
     for (const auto& app_id : app_ids) {
@@ -1483,6 +1493,58 @@ TEST_F(AppServiceWebAppIconTest, GetMaskableStandardIcon) {
   VerifyIcon(src_image_skia, ret[0]->uncompressed);
   ASSERT_EQ(apps::IconType::kStandard, ret[1]->icon_type);
   VerifyIcon(src_image_skia, ret[1]->uncompressed);
+}
+
+// Verify we can get the new icon after the app icon is updated.
+TEST_F(AppServiceWebAppIconTest, IconUpdate) {
+  auto web_app = web_app::test::CreateWebApp();
+  const std::string app_id = web_app->app_id();
+
+  const float scale1 = 1.0;
+  const float scale2 = 2.0;
+  const int kIconSize1 = kSizeInDip * scale1;
+  const int kIconSize2 = kSizeInDip * scale2;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors1{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors1);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  RegisterApp(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
+
+  apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
+                                           {2.0, kIconSize2}};
+  gfx::ImageSkia src_image_skia1;
+  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+                     src_image_skia1);
+
+  // Load the kStandard icon to generate the icon file in the AppService
+  // directory.
+  IconKey icon_key;
+  icon_key.icon_effects =
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardIcon;
+  apps::IconValuePtr iv1 =
+      LoadIconFromIconKey(app_id, icon_key, IconType::kStandard);
+
+  ASSERT_EQ(apps::IconType::kStandard, iv1->icon_type);
+  VerifyIcon(src_image_skia1, iv1->uncompressed);
+
+  // Update the icon
+  const std::vector<SkColor> colors2{SK_ColorRED, SK_ColorBLUE};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors2);
+  gfx::ImageSkia src_image_skia2;
+  GenerateWebAppIcon(app_id, IconPurpose::ANY, sizes_px, scale_to_size_in_px,
+                     src_image_skia2);
+
+  UpdateIcon(app_id, icon_key);
+
+  // Load the kStandard icon again after updating the icon.
+  apps::IconValuePtr iv2 =
+      LoadIconFromIconKey(app_id, icon_key, IconType::kStandard);
+
+  ASSERT_EQ(apps::IconType::kStandard, iv2->icon_type);
+  VerifyIcon(src_image_skia2, iv2->uncompressed);
 }
 
 // Verify we can get the new app icons after the apps are uninstalled and

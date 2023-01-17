@@ -25,7 +25,10 @@ bool IconKey::operator!=(const IconKey& other) const {
 }
 
 IconKeyPtr IconKey::Clone() const {
-  return std::make_unique<IconKey>(timeline, resource_id, icon_effects);
+  auto icon_key =
+      std::make_unique<IconKey>(timeline, resource_id, icon_effects);
+  icon_key->raw_icon_updated = raw_icon_updated;
+  return icon_key;
 }
 
 constexpr uint64_t IconKey::kDoesNotChangeOverTime = 0;

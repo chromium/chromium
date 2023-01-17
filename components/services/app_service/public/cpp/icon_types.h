@@ -51,6 +51,14 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
   // app's version is unchanged.
   uint64_t timeline = 0;
 
+  // True when the raw icon is updated. After an icon update, a new IconKey can
+  // be broadcast by a Publisher. Then the AppService icon directory should be
+  // removed to fetch the new raw icon from the app.
+  //
+  // When the raw icon is updated, `timeline` should be updated, so we don't
+  // need to check `raw_icon_updated` for `operator==` and `operator!=`.
+  bool raw_icon_updated = false;
+
   // If non-zero (or equivalently, not equal to kInvalidResourceId), the
   // compressed icon is compiled into the Chromium binary as a statically
   // available, int-keyed resource.

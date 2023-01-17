@@ -70,8 +70,7 @@ AppPtr App::Clone() const {
   app->additional_search_terms = additional_search_terms;
 
   if (icon_key.has_value()) {
-    app->icon_key = apps::IconKey(icon_key->timeline, icon_key->resource_id,
-                                  icon_key->icon_effects);
+    app->icon_key = std::move(*icon_key->Clone());
   }
 
   app->last_launch_time = last_launch_time;

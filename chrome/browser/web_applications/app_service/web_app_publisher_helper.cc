@@ -1333,7 +1333,13 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
     base::StringPiece old_name) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
-    delegate_->PublishWebApp(CreateWebApp(web_app));
+    auto app = CreateWebApp(web_app);
+    // The manifest updated might cause the app raw icon updated. So set
+    // a new `raw_icon_data_version`, to remove the icon files saved in the
+    // AppService icon directory, to get the new raw icon files of the web app
+    // for AppService.
+    app->icon_key->raw_icon_updated = true;
+    delegate_->PublishWebApp(std::move(app));
   }
 }
 
