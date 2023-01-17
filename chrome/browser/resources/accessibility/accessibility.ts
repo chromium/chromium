@@ -37,7 +37,7 @@ type PageData = Data&{
   pid: number,
   processId: number,
   routingId: number,
-  url: string,
+  url?: string,
 
   // Used for GlobalStateName.
   // Note: Does 'metadata' actually exist? Does not appear anywhere in

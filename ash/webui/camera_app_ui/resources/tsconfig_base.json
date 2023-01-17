@@ -6,7 +6,6 @@
     "target": "esnext",
     "typeRoots": ["../../../../third_party/node/node_modules/@types"],
     "types": [
-      "dom-mediacapture-record",
       "google.analytics",
       "offscreencanvas",
       "trusted-types",

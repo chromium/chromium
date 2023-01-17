@@ -48,7 +48,8 @@ const mojoResponseHandler: ProxyHandler<MojoEndpoint> = {
           // would be uncaught exception if we try to call the mojo function.
           return NEVER_SETTLED_PROMISE;
         }
-        return wrapMojoResponse(Reflect.apply(val, target, args));
+        return wrapMojoResponse(
+            Reflect.apply(val, target, args) as Promise<unknown>| undefined);
       };
     }
     return val;

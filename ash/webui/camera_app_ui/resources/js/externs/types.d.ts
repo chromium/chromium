@@ -131,9 +131,6 @@ interface VideoFrameMetadata {
   rtpTimestamp?: number;
 }
 
-type VideoFrameRequestCallback =
-    (now: DOMHighResTimeStamp, metadata: VideoFrameMetadata) => void;
-
 interface HTMLVideoElement {
   requestVideoFrameCallback(callback: VideoFrameRequestCallback): number;
   cancelVideoFrameCallback(handle: number): undefined;

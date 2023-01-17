@@ -477,7 +477,7 @@ export function transfer<T>(obj: T, transfers: Transferable[]): T {
   return obj;
 }
 
-export function proxy<T>(obj: T): T&ProxyMarked {
+export function proxy<T extends {}>(obj: T): T&ProxyMarked {
   return Object.assign(obj, {[proxyMarker]: true}) as any;
 }
 

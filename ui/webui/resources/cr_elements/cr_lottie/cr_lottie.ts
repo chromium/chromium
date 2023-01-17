@@ -48,11 +48,6 @@ function getLottieWorkerURL(): TrustedScriptURL {
   return workerLoaderPolicy.createScriptURL('');
 }
 
-interface OffscreenCanvas {
-  width: number;
-  height: number;
-}
-
 interface MessageData {
   animationData: object|null|string;
   drawSize: {width: number, height: number};

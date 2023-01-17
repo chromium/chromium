@@ -175,7 +175,8 @@ export class TestBrowserProxy<T = any> {
     // Tip: check that the |methodName| is being passed to |this.constructor|.
     const methodData = this.resolverMap_.get(methodName);
     assert(
-        methodData, `Method '${methodName}' not found in TestBrowserProxy.`);
+        methodData,
+        `Method '${String(methodName)}' not found in TestBrowserProxy.`);
     return methodData;
   }
 

@@ -11,7 +11,6 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {findDifference} from './cups_printer_dialog_util.js';
-import {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
 
 /** @polymerBehavior */

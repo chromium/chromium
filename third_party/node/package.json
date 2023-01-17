@@ -5,7 +5,6 @@
   "dependencies": {
     "@types/chai": "4.2.22",
     "@types/d3": "5.16.0",
-    "@types/dom-mediacapture-record": "1.0.11",
     "@types/dom-speech-recognition": "0.0.1",
     "@types/filesystem": "0.0.32",
     "@types/filewriter": "0.0.29",
@@ -15,7 +14,7 @@
     "@types/trusted-types": "1.0.6",
     "@types/w3c-css-typed-object-model-level-1": "20180410.0.4",
     "@types/w3c-image-capture": "1.0.4",
-    "@types/webrtc": "0.0.31",
+    "@types/webrtc": "0.0.33",
     "@types/wicg-file-system-access": "2020.09.05",
     "@typescript-eslint/eslint-plugin": "5.12.0",
     "@typescript-eslint/parser": "5.12.0",
@@ -26,6 +25,6 @@
     "rollup": "2.58.0",
     "svgo": "2.8.0",
     "terser": "5.3.3",
-    "typescript": "4.6.3"
+    "typescript": "4.9.4"
   }
 }

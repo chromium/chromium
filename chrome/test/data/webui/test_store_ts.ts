@@ -21,7 +21,7 @@ export class TestStore<T> extends Store<T> {
       storeImplReducer: (state: T, action: Action) => T) {
     super(storeImplEmptyState, storeImplReducer);
 
-    this.data = Object.assign(this.data, initialData);
+    this.data = Object.assign(this.data as object, initialData);
     this.initialized_ = true;
   }
 

@@ -746,7 +746,8 @@ export class DeviceOperator {
         const val = Reflect.get(target, property);
         if (val instanceof Function) {
           return (...args: unknown[]) => operationQueue.push(
-                     () => Reflect.apply(val, target, args));
+                     () =>
+                         Reflect.apply(val, target, args) as Promise<unknown>);
         }
         return val;
       },

@@ -146,8 +146,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     // Arrange.
     windowProxy.setResultFor('random', 0.5);
     const result = createResults(2);
-    Object.assign(result.results[0]![0], {transcript: 'hello'});
-    Object.assign(result.results[1]![0], {confidence: 0, transcript: 'world'});
+    Object.assign(result.results[0]![0]!, {transcript: 'hello'});
+    Object.assign(result.results[1]![0]!, {confidence: 0, transcript: 'world'});
 
     // Act.
     mockSpeechRecognition.onresult!(result);
@@ -171,8 +171,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     loadTimeData.overrideValues({googleBaseUrl: googleBaseUrl});
     windowProxy.setResultFor('random', 0);
     const result = createResults(1);
-    Object.assign(result.results[0], {isFinal: true});
-    Object.assign(result.results[0]![0], {transcript: 'hello world'});
+    Object.assign(result.results[0]!, {isFinal: true});
+    Object.assign(result.results[0]![0]!, {transcript: 'hello world'});
 
     // Act.
     mockSpeechRecognition.onresult!(result);
@@ -256,7 +256,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
   test('on end received shows result text if final result', () => {
     // Arrange.
     const result = createResults(1);
-    Object.assign(result.results[0], {isFinal: true});
+    Object.assign(result.results[0]!, {isFinal: true});
 
     // Act.
     mockSpeechRecognition.onresult!(result);

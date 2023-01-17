@@ -31,8 +31,9 @@ export type ReducerFunction<State> =
  * Combines reducers into a single top level reducer. Inspired by Redux's
  * |combineReducers| functions.
  */
-function combineReducers<T>(mapping: {[K in keyof T]: ReducerFunction<T[K]>}): (
-    state: T, action: Actions, globalState: PersonalizationState) => T {
+function combineReducers<T extends {}>(
+    mapping: {[K in keyof T]: ReducerFunction<T[K]>}):
+    (state: T, action: Actions, globalState: PersonalizationState) => T {
   function reduce(
       state: T, action: Actions, globalState: PersonalizationState): T {
     const newState: T =

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
+import {DragWrapper} from 'chrome://resources/js/drag_wrapper.js';
 
 import {getCardSlider, saveAppPageName} from './new_tab.js';
 import {getCurrentlyDraggingTile, setCurrentDropEffect, TilePage} from './tile_page.js';

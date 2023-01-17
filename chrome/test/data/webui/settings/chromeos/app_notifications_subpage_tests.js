@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 import {appNotificationHandlerMojomWebui, createBoolPermission, getBoolPermissionValue, isBoolValue, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
-import {Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 const {App, AppNotificationsObserverRemote, Readiness} =
     appNotificationHandlerMojomWebui;
