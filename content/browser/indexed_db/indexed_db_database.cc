@@ -238,13 +238,8 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
       BuildLockRequestsFromTransaction(transaction);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAllowPageWithIDBTransactionInBFCache)) {
-    CHECK(base::FeatureList::IsEnabled(
-        blink::features::kAllowPageWithIDBConnectionInBFCache))
-        << "kAllowPageWithIDBTransactionInBFCache should only be turned on "
-           "when kAllowPageWithIDBConnectionInBFCache is on.";
-
+  if (blink::features::
+          IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
     RequireBlockingTransactionClientsToBeActive(transaction, lock_requests);
   }
 
