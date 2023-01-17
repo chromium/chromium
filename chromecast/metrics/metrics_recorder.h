@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "chromecast/metrics/cast_event_builder.h"
 
 namespace base {
@@ -137,6 +138,9 @@ class MetricsRecorder {
   // methods can be called from any thread.
   virtual void MeasureTimeUntilEvent(const std::string& event_name,
                                      const std::string& measurement_name) {}
+  virtual void MeasureTimeUntilEvent(const std::string& event_name,
+                                     const std::string& measurement_name,
+                                     base::TimeTicks start_time) {}
   virtual void RecordTimelineEvent(const std::string& event_name) {}
 
   void AddObserver(Observer* o);

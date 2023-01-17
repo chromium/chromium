@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_METRICS_METRICS_RECORDER_BASE_H_
 #define CHROMECAST_METRICS_METRICS_RECORDER_BASE_H_
 
-#include <memory>
 #include <string>
 
 #include "base/time/tick_clock.h"
@@ -21,6 +20,9 @@ class MetricsRecorderBase : public MetricsRecorder {
   // MetricsRecorder implementation (partial):
   void MeasureTimeUntilEvent(const std::string& event_name,
                              const std::string& measurement_name) override;
+  void MeasureTimeUntilEvent(const std::string& event_name,
+                             const std::string& measurement_name,
+                             base::TimeTicks start_time) override;
   void RecordTimelineEvent(const std::string& event_name) override;
 
  protected:
