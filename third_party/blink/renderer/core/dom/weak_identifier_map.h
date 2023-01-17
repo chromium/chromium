@@ -43,8 +43,12 @@ class WeakIdentifierMap final
     return result;
   }
 
+  // If the object is not found, returns 0 which is not a valid identifier.
   static IdentifierType ExistingIdentifier(T* object) {
-    return Instance().object_to_identifier_.at(object);
+    auto it_result = Instance().object_to_identifier_.find(object);
+    return it_result != Instance().object_to_identifier_.end()
+               ? it_result->value
+               : 0;
   }
 
   static T* Lookup(IdentifierType identifier) {

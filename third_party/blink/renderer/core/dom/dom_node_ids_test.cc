@@ -58,4 +58,20 @@ TEST_F(DOMNodeIdsTest, Null) {
   EXPECT_EQ(nullptr, DOMNodeIds::NodeForId(kInvalidDOMNodeId));
 }
 
+TEST_F(DOMNodeIdsTest, ExistingIdForNode) {
+  SetBodyContent("<div id='a'></div>");
+  Node* a = GetDocument().getElementById("a");
+
+  // Node a does not yet have an ID.
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(a));
+
+  // IdForNode() forces node a to have an ID.
+  DOMNodeId id_a = DOMNodeIds::IdForNode(a);
+  EXPECT_NE(kInvalidDOMNodeId, id_a);
+
+  // Both ExistingIdForNode() and IdForNode() still return the same ID.
+  EXPECT_EQ(id_a, DOMNodeIds::ExistingIdForNode(a));
+  EXPECT_EQ(id_a, DOMNodeIds::IdForNode(a));
+}
+
 }  // namespace blink
