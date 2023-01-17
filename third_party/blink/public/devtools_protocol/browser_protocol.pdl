@@ -3681,7 +3681,9 @@ domain Emulation
   # Missing optional values will be filled in by the target with what it would normally use.
   experimental type UserAgentMetadata extends object
     properties
+      # Brands appearing in Sec-CH-UA.
       optional array of UserAgentBrandVersion brands
+      # Brands appearing in Sec-CH-UA-Full-Version-List.
       optional array of UserAgentBrandVersion fullVersionList
       deprecated optional string fullVersion
       string platform
