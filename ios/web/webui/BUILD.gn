@@ -9,6 +9,7 @@ source_set("webui") {
     "//base",
     "//ios/web:resources",
     "//ios/web:resources_grit",
+    "//ios/web/js_messaging",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
@@ -44,6 +45,8 @@ source_set("webui") {
     "web_ui_ios_data_source_impl.mm",
     "web_ui_ios_impl.h",
     "web_ui_ios_impl.mm",
+    "web_ui_messaging_java_script_feature.h",
+    "web_ui_messaging_java_script_feature.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

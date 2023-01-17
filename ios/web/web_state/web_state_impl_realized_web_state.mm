@@ -326,6 +326,16 @@ bool WebStateImpl::RealizedWebState::HasWebUI() const {
   return !!web_ui_;
 }
 
+void WebStateImpl::RealizedWebState::HandleWebUIMessage(
+    const GURL& source_url,
+    base::StringPiece message,
+    const base::Value::List& args) {
+  if (!HasWebUI()) {
+    return;
+  }
+  web_ui_->ProcessWebUIIOSMessage(source_url, message, args);
+}
+
 void WebStateImpl::RealizedWebState::SetContentsMimeType(
     const std::string& mime_type) {
   mime_type_ = mime_type;

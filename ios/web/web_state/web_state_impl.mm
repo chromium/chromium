@@ -213,6 +213,12 @@ bool WebStateImpl::HasWebUI() const {
   return LIKELY(pimpl_) ? pimpl_->HasWebUI() : false;
 }
 
+void WebStateImpl::HandleWebUIMessage(const GURL& source_url,
+                                      base::StringPiece message,
+                                      const base::Value::List& args) {
+  RealizedState()->HandleWebUIMessage(source_url, message, args);
+}
+
 void WebStateImpl::SetContentsMimeType(const std::string& mime_type) {
   RealizedState()->SetContentsMimeType(mime_type);
 }

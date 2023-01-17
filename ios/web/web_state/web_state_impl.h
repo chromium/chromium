@@ -145,6 +145,12 @@ class WebStateImpl final : public WebState {
   // Returns true if there is a WebUI active.
   bool HasWebUI() const;
 
+  // Forwards the parameters to the current web ui page controller. Called when
+  // a message is received from the web ui JavaScript via `chrome.send` API.
+  void HandleWebUIMessage(const GURL& source_url,
+                          base::StringPiece message,
+                          const base::Value::List& args);
+
   // Explicitly sets the MIME type, overwriting any MIME type that was set by
   // headers. Note that this should be called after OnNavigationCommitted, as
   // that is the point where MIME type is set from HTTP headers.
