@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/gl/init/gl_display_initializer.h"
 
 namespace {
 
@@ -19,8 +20,8 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
   // using --disable-d3d11 with the default --use-angle should never return
   // D3D11.
   command_line->AppendSwitch(switches::kDisableD3D11);
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_FALSE(base::Contains(displays, gl::ANGLE_D3D11));
 
   // Specifically requesting D3D11 should always return it if the extension is
@@ -28,16 +29,16 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationD3D11Name);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_D3D11));
   EXPECT_EQ(displays.size(), 1u);
 
   // Specifically requesting D3D11 should not return D3D11 if the extension is
   // not available
   displays.clear();
-  GetEGLInitDisplaysForTesting(false, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(false, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_FALSE(base::Contains(displays, gl::ANGLE_D3D11));
 }
 
@@ -47,16 +48,18 @@ TEST(EGLInitializationDisplaysTest, DefaultRenderers) {
 
   // Default without --use-angle flag
   std::vector<gl::DisplayType> default_no_flag_displays;
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &default_no_flag_displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(),
+                                         &default_no_flag_displays);
   EXPECT_FALSE(default_no_flag_displays.empty());
 
   // Default with --use-angle flag
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationDefaultName);
   std::vector<gl::DisplayType> default_with_flag_displays;
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &default_with_flag_displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(),
+                                         &default_with_flag_displays);
   EXPECT_FALSE(default_with_flag_displays.empty());
 
   // Make sure the same results are returned
@@ -73,8 +76,8 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationOpenGLName);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_OPENGL));
   EXPECT_EQ(displays.size(), 1u);
 
@@ -82,8 +85,8 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationOpenGLESName);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_OPENGLES));
   EXPECT_EQ(displays.size(), 1u);
 
@@ -91,8 +94,8 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationNullName);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_NULL));
   EXPECT_EQ(displays.size(), 1u);
 
@@ -100,8 +103,8 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationVulkanName);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_VULKAN));
   EXPECT_EQ(displays.size(), 1u);
 
@@ -109,8 +112,8 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationSwiftShaderName);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_SWIFTSHADER));
   EXPECT_EQ(displays.size(), 1u);
 
@@ -118,8 +121,8 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationOpenGLEGLName);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_OPENGL_EGL));
   EXPECT_EQ(displays.size(), 1u);
 
@@ -127,8 +130,8 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationOpenGLESEGLName);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_OPENGLES_EGL));
   EXPECT_EQ(displays.size(), 1u);
 
@@ -136,8 +139,8 @@ TEST(EGLInitializationDisplaysTest, NonDefaultRenderers) {
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   gl::kANGLEImplementationMetalName);
   displays.clear();
-  GetEGLInitDisplaysForTesting(true, true, true, true, true, true, true,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
+                                         true, command_line.get(), &displays);
   EXPECT_TRUE(base::Contains(displays, gl::ANGLE_METAL));
   EXPECT_EQ(displays.size(), 1u);
 }
@@ -148,8 +151,9 @@ TEST(EGLInitializationDisplaysTest, NoExtensions) {
 
   // With no angle platform extensions, only DEFAULT should be available
   std::vector<gl::DisplayType> displays;
-  GetEGLInitDisplaysForTesting(false, false, false, false, false, false, false,
-                               command_line.get(), &displays);
+  gl::init::GetEGLInitDisplaysForTesting(false, false, false, false, false,
+                                         false, false, command_line.get(),
+                                         &displays);
   EXPECT_TRUE(base::Contains(displays, gl::DEFAULT));
   EXPECT_EQ(displays.size(), 1u);
 }

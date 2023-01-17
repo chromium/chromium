@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
 
   // Performs any one off initialization for GL implementation.
   virtual gl::GLDisplay* InitializeGLOneOffPlatform(
+      bool supports_angle,
+      std::vector<gl::DisplayType> init_displays,
       gl::GpuPreference gpu_preference) = 0;
 
   // Disables the specified extensions in the window system bindings,

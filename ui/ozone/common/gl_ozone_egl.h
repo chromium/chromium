@@ -25,6 +25,8 @@ class GLOzoneEGL : public GLOzone {
 
   // GLOzone:
   gl::GLDisplay* InitializeGLOneOffPlatform(
+      bool supports_angle,
+      std::vector<gl::DisplayType> init_displays,
       gl::GpuPreference gpu_preference) override;
   bool InitializeStaticGLBindings(
       const gl::GLImplementationParts& implementation) override;

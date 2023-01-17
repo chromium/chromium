@@ -22,10 +22,6 @@
 #include "components/metal_util/types.h"
 #endif
 
-namespace base {
-class CommandLine;
-}  // namespace base
-
 namespace gl {
 struct DisplayExtensionsEGL;
 template <typename GLDisplayPlatform>
@@ -80,17 +76,6 @@ enum DisplayPlatform {
   EGL = 1,
 };
 
-GL_EXPORT void GetEGLInitDisplaysForTesting(
-    bool supports_angle_d3d,
-    bool supports_angle_opengl,
-    bool supports_angle_null,
-    bool supports_angle_vulkan,
-    bool supports_angle_swiftshader,
-    bool supports_angle_egl,
-    bool supports_angle_metal,
-    const base::CommandLine* command_line,
-    std::vector<DisplayType>* init_displays);
-
 class GL_EXPORT GLDisplay {
  public:
   GLDisplay(const GLDisplay&) = delete;
@@ -137,7 +122,9 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   bool IsAndroidNativeFenceSyncSupported();
   bool IsANGLEExternalContextAndSurfaceSupported();
 
-  bool Initialize(EGLDisplayPlatform native_display);
+  bool Initialize(bool supports_angle,
+                  std::vector<DisplayType> init_displays,
+                  EGLDisplayPlatform native_display);
   void InitializeForTesting();
   bool InitializeExtensionSettings();
 
@@ -173,7 +160,9 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   explicit GLDisplayEGL(uint64_t system_device_id);
 
-  bool InitializeDisplay(EGLDisplayPlatform native_display);
+  bool InitializeDisplay(bool supports_angle,
+                         std::vector<DisplayType> init_displays,
+                         EGLDisplayPlatform native_display);
   void InitializeCommon();
 
   EGLDisplay display_ = EGL_NO_DISPLAY;

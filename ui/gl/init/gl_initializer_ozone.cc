@@ -11,6 +11,7 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_display_egl_util_ozone.h"
+#include "ui/gl/init/gl_display_initializer.h"
 #include "ui/gl/init/ozone_util.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -20,7 +21,11 @@ namespace init {
 GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference) {
   if (HasGLOzone()) {
     gl::GLDisplayEglUtil::SetInstance(gl::GLDisplayEglUtilOzone::GetInstance());
-    return GetGLOzone()->InitializeGLOneOffPlatform(gpu_preference);
+    bool supports_angle = false;
+    std::vector<gl::DisplayType> init_displays;
+    GetDisplayInitializationParams(&supports_angle, &init_displays);
+    return GetGLOzone()->InitializeGLOneOffPlatform(
+        supports_angle, init_displays, gpu_preference);
   }
 
   switch (GetGLImplementation()) {

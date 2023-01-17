@@ -39,12 +39,17 @@ bool GLImplementationParts::IsValid() const {
 bool GLImplementationParts::IsAllowed(
     const std::vector<GLImplementationParts>& allowed_impls) const {
   // Given a vector of GLImplementationParts, this function checks if "this"
-  // GLImplementation is found in the list, with a special case where if the
-  // list contains ANGLE/kDefault, "this" may be any ANGLE implementation.
+  // GLImplementation is found in the list, with a special case where if "this"
+  // implementation is kDefault, and we see any ANGLE implementation in the
+  // list, then we allow "this" implementation, or vice versa, if "this" is
+  // any ANGLE implementation, and we see kDefault in the list, "this" is
+  // allowed.
   for (const GLImplementationParts& impl_iter : allowed_impls) {
     if (gl == kGLImplementationEGLANGLE &&
         impl_iter.gl == kGLImplementationEGLANGLE) {
       if (impl_iter.angle == ANGLEImplementation::kDefault) {
+        return true;
+      } else if (angle == ANGLEImplementation::kDefault) {
         return true;
       } else if (angle == impl_iter.angle) {
         return true;

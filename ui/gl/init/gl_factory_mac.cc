@@ -26,16 +26,9 @@ namespace init {
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(GLImplementationParts(gl::ANGLEImplementation::kDefault));
-  impls.emplace_back(GLImplementationParts(gl::ANGLEImplementation::kOpenGL));
-  impls.emplace_back(GLImplementationParts(gl::ANGLEImplementation::kMetal));
-  // crbug.com/1378476: LLVM 10 is used as the JIT compiler for SwiftShader,
-  // which doesn't properly support ARM. Disable Swiftshader on ARM CPUs until
-  // LLVM is upgraded.
-  if (base::mac::GetCPUType() != base::mac::CPUType::kArm) {
-    impls.emplace_back(
-        GLImplementationParts(gl::ANGLEImplementation::kSwiftShader));
-  }
+  impls.emplace_back(gl::ANGLEImplementation::kOpenGL);
+  impls.emplace_back(gl::ANGLEImplementation::kMetal);
+  impls.emplace_back(gl::ANGLEImplementation::kSwiftShader);
   return impls;
 }
 
