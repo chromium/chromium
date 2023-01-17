@@ -131,10 +131,10 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
 
   // Bind the image.
   EXPECT_TRUE(image->BindTexImage(GL_TEXTURE_2D));
-  gl_.decoder()->SetLevelInfo(
-      texture_id, 0 /* level */, image->GetInternalFormat(), size.width(),
-      size.height(), 1 /* depth */, image->GetDataFormat(),
-      image->GetDataType(), gfx::Rect(size));
+  gl_.decoder()->SetLevelInfo(texture_id, 0 /* level */,
+                              image->GetInternalFormat(), size.width(),
+                              size.height(), 1 /* depth */, GL_RGB,
+                              image->GetDataType(), gfx::Rect(size));
 
   // TODO(crbug.com/1323341): This call is likely unnecessary, but it's not
   // currently possible to actually run the test to completion to verify. See
