@@ -229,7 +229,6 @@ source_set("eg2_tests") {
     "enterprise_loading_screen_egtest.mm",
     "first_run_egtest.mm",
     "first_run_two_steps_egtest.mm",
-    "first_run_uma_dialog_egtest.mm",
   ]
   deps = [
     ":constants",
