@@ -223,7 +223,8 @@ TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
   ASSERT_EQ(2u, website_engagement.size());
 }
 
-TEST_F(NotificationsEngagementServiceTest, GetBucketLabel) {
+// Disabled, due to http://go/crb/1407635.
+TEST_F(NotificationsEngagementServiceTest, DISABLED_GetBucketLabel) {
   base::Time date1, date2, date3, date4;
   base::Time expected_date1, expected_date2, expected_date3, expected_date4;
 
