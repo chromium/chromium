@@ -4,14 +4,9 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
-#import "base/notreached.h"
-#import "base/strings/sys_string_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 
 namespace overflow_menu {
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
@@ -43,12 +38,6 @@ Destination DestinationForStringName(std::string destination) {
   }
 }
 
-Destination DestinationForNSStringName(NSString* destination) {
-  std::string name = base::SysNSStringToUTF8(destination);
-
-  return DestinationForStringName(name);
-}
-
 std::string StringNameForDestination(Destination destination) {
   switch (destination) {
     case overflow_menu::Destination::Bookmarks:
@@ -72,12 +61,6 @@ std::string StringNameForDestination(Destination destination) {
     case overflow_menu::Destination::SpotlightDebugger:
       return "overflow_menu::Destination::SpotlightDebugger";
   }
-}
-
-NSString* NSStringNameForDestination(Destination destination) {
-  std::string name = StringNameForDestination(destination);
-
-  return base::SysUTF8ToNSString(name);
 }
 
 void RecordUmaActionForDestination(Destination destination) {
