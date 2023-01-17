@@ -3528,6 +3528,15 @@
           'isolated_scripts': 'wpt_web_tests_content_shell_multiple_flags',
         },
       },
+      'linux-wpt-content-shell-leak-detection': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_enable_leak_detection',
+        },
+      },
       'linux-wpt-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',

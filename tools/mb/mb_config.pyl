@@ -442,6 +442,7 @@
       'linux-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
       'linux-wpt-content-shell-asan-fyi-rel': 'asan_lsan_release_trybot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
+      'linux-wpt-content-shell-leak-detection': 'release_trybot_minimal_symbols_reclient',
       'linux-wpt-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols_reclient',
       'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols_reclient',
