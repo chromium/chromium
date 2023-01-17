@@ -1024,7 +1024,10 @@ void CSSAnimations::CalculateAnimationUpdate(
   for (bool& flag : cancel_running_animation_flags)
     flag = true;
 
-  if (animation_data && style_builder.Display() != EDisplay::kNone) {
+  if (animation_data &&
+      (style_builder.Display() != EDisplay::kNone ||
+       (RuntimeEnabledFeatures::CSSDisplayAnimationEnabled() && old_style &&
+        old_style->Display() != EDisplay::kNone))) {
     const Vector<AtomicString>& name_list = animation_data->NameList();
     for (wtf_size_t i = 0; i < name_list.size(); ++i) {
       AtomicString name = name_list[i];
@@ -2464,7 +2467,6 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kContainerName:
     case CSSPropertyID::kContainerType:
     case CSSPropertyID::kDirection:
-    case CSSPropertyID::kDisplay:
     case CSSPropertyID::kTextCombineUpright:
     case CSSPropertyID::kTextOrientation:
     case CSSPropertyID::kToggleGroup:
@@ -2480,6 +2482,8 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kWillChange:
     case CSSPropertyID::kWritingMode:
       return true;
+    case CSSPropertyID::kDisplay:
+      return !RuntimeEnabledFeatures::CSSDisplayAnimationEnabled();
     default:
       return false;
   }

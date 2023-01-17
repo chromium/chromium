@@ -657,7 +657,11 @@
     },
     {
       name: "CSSColorTypedOM",
-      status:  "experimental",
+      status: "experimental",
+    },
+    {
+      name: "CSSDisplayAnimation",
+      status: "test"
     },
     {
       // Include custom properties in CSSComputedStyleDeclaration::item/length.
