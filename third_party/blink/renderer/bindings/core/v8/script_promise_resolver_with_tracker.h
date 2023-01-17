@@ -14,7 +14,7 @@ namespace blink {
 // which simplifies recording UMA metric and latency for APIs.
 
 // Callers should ensure that the ResultEnumType has kOk and kTimedOut as
-// values.
+// values. This is a sample usage CL: http://crrev.com/c/4053546.
 template <typename ResultEnumType>
 class CORE_EXPORT ScriptPromiseResolverWithTracker
     : public GarbageCollected<
