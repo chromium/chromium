@@ -66,16 +66,27 @@
   E_CPONLY(kColorRefError99) \
   E_CPONLY(kColorRefError100) \
   E_CPONLY(kColorRefNeutral0) \
+  E_CPONLY(kColorRefNeutral4) \
+  E_CPONLY(kColorRefNeutral6) \
   E_CPONLY(kColorRefNeutral10) \
+  E_CPONLY(kColorRefNeutral12) \
+  E_CPONLY(kColorRefNeutral17) \
   E_CPONLY(kColorRefNeutral20) \
+  E_CPONLY(kColorRefNeutral22) \
+  E_CPONLY(kColorRefNeutral24) \
   E_CPONLY(kColorRefNeutral30) \
   E_CPONLY(kColorRefNeutral40) \
   E_CPONLY(kColorRefNeutral50) \
   E_CPONLY(kColorRefNeutral60) \
   E_CPONLY(kColorRefNeutral70) \
   E_CPONLY(kColorRefNeutral80) \
+  E_CPONLY(kColorRefNeutral87) \
   E_CPONLY(kColorRefNeutral90) \
+  E_CPONLY(kColorRefNeutral92) \
+  E_CPONLY(kColorRefNeutral94) \
   E_CPONLY(kColorRefNeutral95) \
+  E_CPONLY(kColorRefNeutral96) \
+  E_CPONLY(kColorRefNeutral98) \
   E_CPONLY(kColorRefNeutral99) \
   E_CPONLY(kColorRefNeutral100) \
   E_CPONLY(kColorRefNeutralVariant0) \

@@ -85,16 +85,27 @@ void AddRefColorMixer(ColorProvider* provider,
   mixer[kColorRefError100] = {palette.error().get(100)};
 
   mixer[kColorRefNeutral0] = {palette.neutral().get(0)};
+  mixer[kColorRefNeutral4] = {palette.neutral().get(4)};
+  mixer[kColorRefNeutral6] = {palette.neutral().get(6)};
   mixer[kColorRefNeutral10] = {palette.neutral().get(10)};
+  mixer[kColorRefNeutral12] = {palette.neutral().get(12)};
+  mixer[kColorRefNeutral17] = {palette.neutral().get(17)};
   mixer[kColorRefNeutral20] = {palette.neutral().get(20)};
+  mixer[kColorRefNeutral22] = {palette.neutral().get(22)};
+  mixer[kColorRefNeutral24] = {palette.neutral().get(24)};
   mixer[kColorRefNeutral30] = {palette.neutral().get(30)};
   mixer[kColorRefNeutral40] = {palette.neutral().get(40)};
   mixer[kColorRefNeutral50] = {palette.neutral().get(50)};
   mixer[kColorRefNeutral60] = {palette.neutral().get(60)};
   mixer[kColorRefNeutral70] = {palette.neutral().get(70)};
   mixer[kColorRefNeutral80] = {palette.neutral().get(80)};
+  mixer[kColorRefNeutral87] = {palette.neutral().get(87)};
   mixer[kColorRefNeutral90] = {palette.neutral().get(90)};
+  mixer[kColorRefNeutral92] = {palette.neutral().get(92)};
+  mixer[kColorRefNeutral94] = {palette.neutral().get(94)};
   mixer[kColorRefNeutral95] = {palette.neutral().get(95)};
+  mixer[kColorRefNeutral96] = {palette.neutral().get(96)};
+  mixer[kColorRefNeutral98] = {palette.neutral().get(98)};
   mixer[kColorRefNeutral99] = {palette.neutral().get(99)};
   mixer[kColorRefNeutral100] = {palette.neutral().get(100)};
 
