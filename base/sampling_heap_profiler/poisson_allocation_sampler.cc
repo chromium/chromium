@@ -45,15 +45,6 @@ std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{nullptr};
 // Sampling interval parameter, the mean value for intervals between samples.
 std::atomic_size_t g_sampling_interval{kDefaultSamplingIntervalBytes};
 
-void (*g_hooks_install_callback)() = nullptr;
-
-// This will be true if *either* InstallAllocatorHooksOnce or
-// SetHooksInstallerCallback has run. `g_hooks_install_callback` should be
-// invoked when *both* have run, so each of them checks the value and, if it is
-// true, knows that the other function has already run so it's time to invoke
-// the callback.
-std::atomic_bool g_hooks_installed{false};
-
 struct ThreadLocalData {
   // Accumulated bytes towards sample.
   intptr_t accumulated_bytes = 0;
@@ -172,10 +163,6 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   DCHECK(!g_mute_hooked_samples);
   g_mute_hooked_samples = true;
 
-  // `g_hooks_install_callback` can't be used with
-  // ScopedMuteHookedSamplesForTesting because there's no way to remove it.
-  DCHECK(!g_hooks_install_callback);
-
   // Make sure hooks have been installed, so that the only order of operations
   // that needs to be handled is Install Hooks -> Remove Hooks For Testing ->
   // Reinstall Hooks.
@@ -226,33 +213,11 @@ void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
   [[maybe_unused]] static bool hook_installed = [] {
     allocator::dispatcher::InstallStandardAllocatorHooks();
 
-    bool expected = false;
-    if (!g_hooks_installed.compare_exchange_strong(expected, true)) {
-      // SetHooksInstallCallback already ran, so run the callback now.
-      g_hooks_install_callback();
-    }
     // The allocator hooks use `g_sampled_address_set` so it had better be
     // initialized.
     DCHECK(g_sampled_addresses_set.load(std::memory_order_acquire));
     return true;
   }();
-}
-
-// static
-void PoissonAllocationSampler::SetHooksInstallCallback(
-    void (*hooks_install_callback)()) {
-  // `g_hooks_install_callback` can't be used with
-  // ScopedMuteHookedSamplesForTesting because there's no way to remove it.
-  DCHECK(!g_mute_hooked_samples);
-
-  CHECK(!g_hooks_install_callback && hooks_install_callback);
-  g_hooks_install_callback = hooks_install_callback;
-
-  bool expected = false;
-  if (!g_hooks_installed.compare_exchange_strong(expected, true)) {
-    // InstallAllocatorHooksOnce already ran, so run the callback now.
-    g_hooks_install_callback();
-  }
 }
 
 // static

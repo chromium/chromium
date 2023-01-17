@@ -26,7 +26,6 @@ class SamplingHeapProfilerTest;
 
 // This singleton class implements Poisson sampling of the incoming allocations
 // stream. It hooks onto base::allocator and base::PartitionAlloc.
-// An extra custom allocator can be hooked via SetHooksInstallCallback method.
 // The only control parameter is sampling interval that controls average value
 // of the sampling intervals. The actual intervals between samples are
 // randomized using Poisson distribution to mitigate patterns in the allocation
@@ -84,16 +83,6 @@ class BASE_EXPORT PoissonAllocationSampler {
   // Must be called early during the process initialization. It creates and
   // reserves a TLS slot.
   static void Init();
-
-  // This is an entry point for plugging in an external allocator.
-  // Profiler will invoke the provided callback upon initialization.
-  // The callback should install hooks onto the corresponding memory allocator
-  // and make them invoke PoissonAllocationSampler::RecordAlloc and
-  // PoissonAllocationSampler::RecordFree upon corresponding allocation events.
-  //
-  // If the method is called after profiler is initialized, the callback
-  // is invoked right away.
-  static void SetHooksInstallCallback(void (*hooks_install_callback)());
 
   void AddSamplesObserver(SamplesObserver*);
 
