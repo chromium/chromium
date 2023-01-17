@@ -765,7 +765,7 @@ class WaylandDesktop(Desktop):
   """Manage a single virtual wayland based desktop"""
 
   WL_SOCKET_CHECK_DELAY_SECONDS = 1
-  WL_SOCKET_CHECK_TIMEOUT_SECONDS = 30
+  WL_SOCKET_CHECK_TIMEOUT_SECONDS = 5
   WL_SERVER_REPLY_TIMEOUT_SECONDS = 1
   # We scan for the unused socket starting from number 1. If we are not able to
   # find anything between 1 and 100 then we error out since there could be a
@@ -875,11 +875,15 @@ class WaylandDesktop(Desktop):
     """
     full_socket_path = os.path.join(self.runtime_dir, self._wayland_socket)
     start_time = time.time()
-    while not (os.path.exists(full_socket_path) and
-               time.time() - start_time < self.WL_SOCKET_CHECK_TIMEOUT_SECONDS):
+    while not os.path.exists(full_socket_path):
+      time_passed = time.time() - start_time
+      if time_passed >= self.WL_SOCKET_CHECK_TIMEOUT_SECONDS:
+        break
       logging.info("Wayland socket not yet present. Will wait for %s seconds "
-                   "for compositor to create it" %
-                   self.WL_SOCKET_CHECK_DELAY_SECONDS)
+                   "for compositor to create it (remaining wait time: %s "
+                   "seconds)" %
+                   (self.WL_SOCKET_CHECK_DELAY_SECONDS,
+                    int(self.WL_SOCKET_CHECK_TIMEOUT_SECONDS - time_passed)))
       time.sleep(self.WL_SOCKET_CHECK_DELAY_SECONDS)
     if not os.path.exists(full_socket_path):
       logging.error("Waited for wayland compositor to create wayland "
@@ -898,7 +902,7 @@ class WaylandDesktop(Desktop):
     """
     if not self._wait_for_wayland_compositor_running():
       logging.error("Aborting wayland session since compositor isn't running")
-      return
+      sys.exit(1)
     logging.info("Wayland compositor is running, restarting the portal "
                  "services now")
     try:
