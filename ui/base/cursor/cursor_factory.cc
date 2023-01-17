@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/platform_cursor.h"
 
@@ -66,6 +67,11 @@ scoped_refptr<PlatformCursor> CursorFactory::CreateImageCursor(
     const gfx::Point& hotspot) {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+absl::optional<CursorData> CursorFactory::GetCursorData(
+    mojom::CursorType type) {
+  return absl::nullopt;
 }
 
 scoped_refptr<PlatformCursor> CursorFactory::CreateAnimatedCursor(

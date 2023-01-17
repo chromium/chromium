@@ -5,9 +5,9 @@
 #ifndef UI_WM_CORE_CURSOR_UTIL_H_
 #define UI_WM_CORE_CURSOR_UTIL_H_
 
-#include <vector>
-
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
 
 class SkBitmap;
@@ -16,7 +16,19 @@ namespace gfx {
 class Point;
 }
 
+namespace ui {
+enum class CursorSize;
+struct CursorData;
+}  // namespace ui
+
 namespace wm {
+
+COMPONENT_EXPORT(UI_WM)
+absl::optional<ui::CursorData> GetCursorData(
+    ui::mojom::CursorType id,
+    ui::CursorSize size,
+    float scale,
+    display::Display::Rotation rotation);
 
 // Scale and rotate the cursor's bitmap and hotpoint.
 // |bitmap_in_out| and |hotpoint_in_out| are used as
@@ -26,18 +38,6 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
                                            display::Display::Rotation rotation,
                                            SkBitmap* bitmap_in_out,
                                            gfx::Point* hotpoint_in_out);
-
-// Helpers for CursorLoader.
-void GetImageCursorBitmap(int resource_id,
-                          float scale,
-                          display::Display::Rotation rotation,
-                          gfx::Point* hotspot,
-                          SkBitmap* bitmap);
-void GetAnimatedCursorBitmaps(int resource_id,
-                              float scale,
-                              display::Display::Rotation rotation,
-                              gfx::Point* hotspot,
-                              std::vector<SkBitmap>* bitmaps);
 
 }  // namespace wm
 

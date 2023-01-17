@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 
 class SkBitmap;
@@ -28,6 +29,7 @@ class Point;
 
 namespace ui {
 class PlatformCursor;
+struct CursorData;
 
 class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorFactoryObserver {
  public:
@@ -53,6 +55,11 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorFactory {
   // not available, nullptr is returned.
   virtual scoped_refptr<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type);
+
+  // Return the {bitmaps, hotspot} for the default cursor of the specified
+  // `type`. If that cursor is not available or the extraction of the data
+  // fails, return `absl::nullopt`.
+  virtual absl::optional<CursorData> GetCursorData(mojom::CursorType type);
 
   // Return an image cursor for the specified `type` with a `bitmap` and
   // `hotspot`.

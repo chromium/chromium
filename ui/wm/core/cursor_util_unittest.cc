@@ -5,11 +5,18 @@
 #include "ui/wm/core/cursor_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/cursor_size.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace wm {
 namespace {
+
+using ::ui::mojom::CursorType;
 
 // Parameterized test for cursor bitmaps with premultiplied and unpremultiplied
 // alpha.
@@ -65,6 +72,24 @@ TEST_P(CursorUtilTest, ScaleAndRotate) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, CursorUtilTest, testing::Bool());
+
+TEST(CursorUtil, GetCursorData) {
+  const auto kDefaultSize = ui::CursorSize::kNormal;
+  const float kDefaultScale = 1.0f;
+  const auto kDefaultRotation = display::Display::ROTATE_0;
+
+  const auto pointer_cursor_data = GetCursorData(
+      CursorType::kPointer, kDefaultSize, kDefaultScale, kDefaultRotation);
+  ASSERT_TRUE(pointer_cursor_data);
+  EXPECT_EQ(pointer_cursor_data->bitmaps.size(), 1u);
+  EXPECT_FALSE(pointer_cursor_data->hotspot.IsOrigin());
+
+  const auto wait_cursor_data = GetCursorData(CursorType::kWait, kDefaultSize,
+                                              kDefaultScale, kDefaultRotation);
+  ASSERT_TRUE(wait_cursor_data);
+  EXPECT_GT(wait_cursor_data->bitmaps.size(), 1u);
+  EXPECT_FALSE(wait_cursor_data->hotspot.IsOrigin());
+}
 
 }  // namespace
 }  // namespace wm

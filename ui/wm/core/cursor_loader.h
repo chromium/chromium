@@ -18,10 +18,6 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/display/display.h"
 
-namespace gfx {
-class Point;
-}
-
 namespace ui {
 class PlatformCursor;
 }
@@ -64,9 +60,6 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
  private:
   // Resets the cursor cache.
   void UnloadCursors();
-  void LoadImageCursor(ui::mojom::CursorType id,
-                       int resource_id,
-                       const gfx::Point& hot);
   scoped_refptr<ui::PlatformCursor> CursorFromType(ui::mojom::CursorType type);
   scoped_refptr<ui::PlatformCursor> LoadCursorFromAsset(
       ui::mojom::CursorType type);

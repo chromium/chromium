@@ -8,16 +8,13 @@
 #include "base/component_export.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 
-class SkBitmap;
-
 namespace gfx {
 class Point;
 }
 
 namespace ui {
-class Cursor;
 enum class CursorSize;
-}  // namespace ui
+}
 
 namespace wm {
 
@@ -31,12 +28,6 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
                       float scale_factor,
                       int* resource_id,
                       gfx::Point* point);
-
-COMPONENT_EXPORT(UI_WM)
-SkBitmap GetDefaultBitmap(const ui::Cursor& cursor);
-
-COMPONENT_EXPORT(UI_WM)
-gfx::Point GetDefaultHotspot(const ui::Cursor& cursor);
 
 }  // namespace wm
 

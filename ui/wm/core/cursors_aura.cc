@@ -4,24 +4,11 @@
 
 #include "ui/wm/core/cursors_aura.h"
 
-#include <stddef.h>
-
-#include "build/build_config.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/resources/grit/ui_resources.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "ui/base/win/win_cursor.h"
-#include "ui/gfx/icon_util.h"
-#include "ui/wm/core/cursor_loader.h"
-#endif
 
 namespace wm {
 
@@ -282,7 +269,7 @@ const CursorSizeData* GetCursorSizeByType(ui::CursorSize cursor_size) {
       return &kCursorSizes[i];
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool SearchTable(const CursorData* table,
@@ -327,45 +314,6 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
   DCHECK(cursor_set);
   return SearchTable(cursor_set->cursors, cursor_set->length, id, scale_factor,
                      resource_id, point);
-}
-
-SkBitmap GetDefaultBitmap(const ui::Cursor& cursor) {
-#if BUILDFLAG(IS_WIN)
-  ui::Cursor cursor_copy = cursor;
-  CursorLoader cursor_loader;
-  cursor_loader.SetPlatformCursor(&cursor_copy);
-  return IconUtil::CreateSkBitmapFromHICON(
-      ui::WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
-#else
-  int resource_id;
-  gfx::Point hotspot;
-  if (!GetCursorDataFor(ui::CursorSize::kNormal, cursor.type(),
-                        cursor.image_scale_factor(), &resource_id, &hotspot)) {
-    return SkBitmap();
-  }
-  return ui::ResourceBundle::GetSharedInstance()
-      .GetImageSkiaNamed(resource_id)
-      ->GetRepresentation(cursor.image_scale_factor())
-      .GetBitmap();
-#endif
-}
-
-gfx::Point GetDefaultHotspot(const ui::Cursor& cursor) {
-#if BUILDFLAG(IS_WIN)
-  ui::Cursor cursor_copy = cursor;
-  CursorLoader cursor_loader;
-  cursor_loader.SetPlatformCursor(&cursor_copy);
-  return IconUtil::GetHotSpotFromHICON(
-      ui::WinCursor::FromPlatformCursor(cursor_copy.platform())->hcursor());
-#else
-  int resource_id;
-  gfx::Point hotspot;
-  if (!GetCursorDataFor(ui::CursorSize::kNormal, cursor.type(),
-                        cursor.image_scale_factor(), &resource_id, &hotspot)) {
-    return gfx::Point();
-  }
-  return hotspot;
-#endif
 }
 
 }  // namespace wm
