@@ -26,6 +26,7 @@ import org.chromium.webengine.interfaces.IWebFragmentEventsDelegate;
  */
 public class WebEngine {
     private WebSandbox mWebSandbox;
+    private String mTag;
 
     private IWebEngineDelegate mDelegate;
 
@@ -36,9 +37,11 @@ public class WebEngine {
 
     private WebEngine(WebSandbox webSandbox, IWebEngineDelegate delegate,
             IWebFragmentEventsDelegate fragmentEventsDelegate,
-            ITabManagerDelegate tabManagerDelegate, ICookieManagerDelegate cookieManagerDelegate) {
+            ITabManagerDelegate tabManagerDelegate, ICookieManagerDelegate cookieManagerDelegate,
+            String tag) {
         ThreadCheck.ensureOnUiThread();
         mWebSandbox = webSandbox;
+        mTag = tag;
 
         mDelegate = delegate;
         mFragment = new WebFragment();
@@ -52,9 +55,10 @@ public class WebEngine {
 
     static WebEngine create(WebSandbox webSandbox, IWebEngineDelegate delegate,
             IWebFragmentEventsDelegate fragmentEventsDelegate,
-            ITabManagerDelegate tabManagerDelegate, ICookieManagerDelegate cookieManagerDelegate) {
+            ITabManagerDelegate tabManagerDelegate, ICookieManagerDelegate cookieManagerDelegate,
+            String tag) {
         return new WebEngine(webSandbox, delegate, fragmentEventsDelegate, tabManagerDelegate,
-                cookieManagerDelegate);
+                cookieManagerDelegate, tag);
     }
 
     void initializeTabManager(Callback<Void> initializationFinishedCallback) {
@@ -135,6 +139,10 @@ public class WebEngine {
         return mFragment;
     }
 
+    public String getTag() {
+        return mTag;
+    }
+
     void invalidate() {
         ThreadCheck.ensureOnUiThread();
         if (mTabManager != null) {
@@ -160,7 +168,7 @@ public class WebEngine {
         }
 
         if (mWebSandbox != null && !mWebSandbox.isShutdown()) {
-            mWebSandbox.removeWebEngine(this);
+            mWebSandbox.removeWebEngine(mTag, this);
         }
         mWebSandbox = null;
     }

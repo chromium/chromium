@@ -33,7 +33,6 @@ import org.chromium.webengine.WebMessageReplyProxy;
 import org.chromium.webengine.WebSandbox;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Activity for managing the Demo Shell.
@@ -102,15 +101,15 @@ public class WebEngineShellActivity extends AppCompatActivity {
         mWebSandbox = webSandbox;
         webSandbox.setRemoteDebuggingEnabled(true);
 
-        List<WebEngine> webEngines = webSandbox.getWebEngines();
-        if (webEngines.size() > 0) {
-            assert webEngines.size() == 1;
+        WebEngine webEngine = webSandbox.getWebEngine("shell-engine");
+        if (webEngine != null) {
+            assert webSandbox.getWebEngines().size() == 1;
 
-            mTabManager = webEngines.get(0).getTabManager();
+            mTabManager = webEngine.getTabManager();
             return;
         }
 
-        ListenableFuture<WebEngine> webEngineFuture = webSandbox.createWebEngine();
+        ListenableFuture<WebEngine> webEngineFuture = webSandbox.createWebEngine("shell-engine");
         Futures.addCallback(webEngineFuture, new FutureCallback<WebEngine>() {
             @Override
             public void onSuccess(WebEngine webEngine) {

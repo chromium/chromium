@@ -27,6 +27,7 @@ import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebSandbox;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Tests functions called on the WebEngine object.
@@ -176,5 +177,38 @@ public class WebEngineTest {
             return mSandbox.getWebEngines().size();
         });
         Assert.assertEquals(0, numWebEngines);
+    }
+
+    @Test
+    @SmallTest
+    public void createWebEngineWithTag() throws Exception {
+        String tag = "web-engine-tag";
+        WebEngine webEngineWithTag =
+                runOnUiThreadBlocking(() -> mSandbox.createWebEngine(tag)).get();
+
+        Assert.assertEquals(webEngineWithTag, mSandbox.getWebEngine(tag));
+        Assert.assertEquals(tag, webEngineWithTag.getTag());
+    }
+
+    @Test
+    @SmallTest
+    public void createWebEngineWithoutTag() throws Exception {
+        WebEngine webEngineWithoutGivenTag =
+                runOnUiThreadBlocking(() -> mSandbox.createWebEngine()).get();
+
+        Assert.assertTrue(mSandbox.getWebEngines().contains(webEngineWithoutGivenTag));
+        // Check that a tag was given to the web-engine
+        Assert.assertEquals("webengine_1", webEngineWithoutGivenTag.getTag());
+    }
+
+    @Test
+    @SmallTest
+    public void cannotCreateWebEngineWithIdenticalTags() throws Exception {
+        String tag = "web-engine-tag";
+        WebEngine webEngineWithTag =
+                runOnUiThreadBlocking(() -> mSandbox.createWebEngine(tag)).get();
+
+        Assert.assertThrows(ExecutionException.class,
+                () -> runOnUiThreadBlocking(() -> mSandbox.createWebEngine(tag)));
     }
 }

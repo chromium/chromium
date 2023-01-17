@@ -33,8 +33,9 @@ import org.chromium.webengine.interfaces.IWebFragmentEventsDelegate;
 import org.chromium.webengine.interfaces.IWebSandboxCallback;
 import org.chromium.webengine.interfaces.IWebSandboxService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Handle to the browsing Sandbox. Must be created asynchronously.
@@ -62,7 +63,7 @@ public class WebSandbox {
 
     private SandboxConnection mConnection;
 
-    private List<WebEngine> mActiveWebEngines = new ArrayList<>();
+    private Map<String, WebEngine> mActiveWebEngines = new HashMap<String, WebEngine>();
 
     private static class SandboxConnection implements ServiceConnection {
         private static ListenableFuture<SandboxConnection> sSandboxConnectionFuture;
@@ -291,9 +292,12 @@ public class WebSandbox {
 
     private class WebEngineDelegateClient extends IWebEngineDelegateClient.Stub {
         private CallbackToFutureAdapter.Completer<WebEngine> mWebEngineCompleter;
+        private String mTag;
 
-        WebEngineDelegateClient(CallbackToFutureAdapter.Completer<WebEngine> completer) {
+        WebEngineDelegateClient(
+                CallbackToFutureAdapter.Completer<WebEngine> completer, String tag) {
             mWebEngineCompleter = completer;
+            mTag = tag;
         }
 
         @Override
@@ -303,13 +307,24 @@ public class WebSandbox {
                 ICookieManagerDelegate cookieManagerDelegate) {
             mHandler.post(() -> {
                 WebEngine engine = WebEngine.create(WebSandbox.this, delegate,
-                        fragmentEventsDelegate, tabManagerDelegate, cookieManagerDelegate);
+                        fragmentEventsDelegate, tabManagerDelegate, cookieManagerDelegate, mTag);
                 engine.initializeTabManager((v) -> {
-                    addWebEngine(engine);
+                    addWebEngine(mTag, engine);
                     mWebEngineCompleter.set(engine);
                 });
             });
         }
+    }
+
+    private String createNewTag() {
+        int webEngineIndex = mActiveWebEngines.size();
+        String tag = String.format("webengine_%d", webEngineIndex);
+
+        while (mActiveWebEngines.containsKey(tag)) {
+            ++webEngineIndex;
+            tag = String.format("webengine_%d", webEngineIndex);
+        }
+        return tag;
     }
 
     /**
@@ -318,27 +333,49 @@ public class WebSandbox {
     @Nullable
     public ListenableFuture<WebEngine> createWebEngine() {
         ThreadCheck.ensureOnUiThread();
+        return createWebEngine(createNewTag());
+    }
+
+    /**
+     * Asynchronously creates a new WebEngine with default Profile and gives it a {@code tag}.
+     */
+    @Nullable
+    public ListenableFuture<WebEngine> createWebEngine(String tag) {
+        ThreadCheck.ensureOnUiThread();
+        if (mActiveWebEngines.containsKey(tag)) {
+            throw new IllegalArgumentException("Tag already associated with a WebEngine");
+        }
         if (mWebSandboxService == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
         FragmentParams params =
                 (new FragmentParams.Builder()).setProfileName(DEFAULT_PROFILE_NAME).build();
-        return createWebEngine(params);
+        return createWebEngine(params, tag);
     }
 
     /**
-     * Asynchronously creates a new WebEngine.
+     * Asynchronously creates a new WebEngine based on {@code params}.
      */
     @Nullable
     public ListenableFuture<WebEngine> createWebEngine(FragmentParams params) {
         ThreadCheck.ensureOnUiThread();
+        return createWebEngine(params, createNewTag());
+    }
+
+    /**
+     * Asynchronously creates a new WebEngine based on {@code params} and gives it a {@code tag}.
+     */
+    public ListenableFuture<WebEngine> createWebEngine(FragmentParams params, String tag) {
+        if (mActiveWebEngines.containsKey(tag)) {
+            throw new IllegalArgumentException("Tag already associated with a WebEngine");
+        }
         if (mWebSandboxService == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
         ListenableFuture<WebEngine> futureWebEngine =
                 CallbackToFutureAdapter.getFuture(completer -> {
                     mWebSandboxService.createWebEngineDelegate(
-                            params.getParcelable(), new WebEngineDelegateClient(completer));
+                            params.getParcelable(), new WebEngineDelegateClient(completer, tag));
 
                     return "WebEngineClient Future";
                 });
@@ -372,19 +409,34 @@ public class WebSandbox {
         return false;
     }
 
-    void addWebEngine(WebEngine webEngine) {
-        mActiveWebEngines.add(webEngine);
+    void addWebEngine(String tag, WebEngine webEngine) {
+        assert !mActiveWebEngines.containsKey(tag) : "Key already associated with a WebEngine";
+        mActiveWebEngines.put(tag, webEngine);
     }
 
-    void removeWebEngine(WebEngine webEngine) {
-        mActiveWebEngines.remove(webEngine);
+    void removeWebEngine(String tag, WebEngine webEngine) {
+        assert webEngine == mActiveWebEngines.get(tag);
+        mActiveWebEngines.remove(tag);
+    }
+
+    /**
+     * Returns the WebEngine with the given tag, or null if no WebEngine exists with this tag.
+     *
+     * @param tag the name of the WebEngine.
+     *
+     * @return WebEgine with the given tag.
+     *
+     */
+    @Nullable
+    public WebEngine getWebEngine(String tag) {
+        return mActiveWebEngines.get(tag);
     }
 
     /**
      * Returns all active {@link WebEngine}.
      */
-    public List<WebEngine> getWebEngines() {
-        return mActiveWebEngines;
+    public Collection<WebEngine> getWebEngines() {
+        return mActiveWebEngines.values();
     }
 
     boolean isShutdown() {
@@ -398,7 +450,7 @@ public class WebSandbox {
         }
         mWebSandboxService = null;
 
-        for (WebEngine engine : mActiveWebEngines) {
+        for (WebEngine engine : mActiveWebEngines.values()) {
             // This will shut down the WebEngine, its fragment, and remove {@code engine} from
             // {@code mActiveWebEngines}.
             engine.invalidate();

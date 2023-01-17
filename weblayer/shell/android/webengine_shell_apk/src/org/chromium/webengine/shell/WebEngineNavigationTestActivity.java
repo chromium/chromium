@@ -27,15 +27,13 @@ import org.chromium.webengine.TabManager;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebSandbox;
 
-import java.util.List;
-
 /**
  * Activity for testing navigations and state resumption.
  */
 public class WebEngineNavigationTestActivity extends AppCompatActivity {
     private static final String TAG = "WebEngineShell";
 
-    private static final String WEB_FRAGMENT_TAG = "WEB_FRAGMENT_TAG";
+    private static final String WEB_ENGINE_TAG = "WEB_ENGINE_TAG";
 
     private Context mContext;
 
@@ -90,14 +88,14 @@ public class WebEngineNavigationTestActivity extends AppCompatActivity {
         mWebSandbox = webSandbox;
         webSandbox.setRemoteDebuggingEnabled(true);
 
-        List<WebEngine> webEngines = webSandbox.getWebEngines();
-        if (webEngines.size() > 0) {
-            assert webEngines.size() == 1;
+        WebEngine webEngine = webSandbox.getWebEngine(WEB_ENGINE_TAG);
+        if (webEngine != null) {
+            assert webSandbox.getWebEngines().size() == 1;
 
             return;
         }
 
-        ListenableFuture<WebEngine> webEngineFuture = webSandbox.createWebEngine();
+        ListenableFuture<WebEngine> webEngineFuture = webSandbox.createWebEngine(WEB_ENGINE_TAG);
         Futures.addCallback(webEngineFuture, new FutureCallback<WebEngine>() {
             @Override
             public void onSuccess(WebEngine webEngine) {
@@ -124,7 +122,7 @@ public class WebEngineNavigationTestActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.fragment_container_view, webEngine.getFragment(), WEB_FRAGMENT_TAG)
+                .add(R.id.fragment_container_view, webEngine.getFragment())
                 .commit();
     }
 

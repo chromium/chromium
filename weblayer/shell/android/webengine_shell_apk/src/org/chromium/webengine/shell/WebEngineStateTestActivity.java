@@ -36,7 +36,7 @@ import java.util.Set;
 public class WebEngineStateTestActivity extends AppCompatActivity {
     private static final String TAG = "WebEngineShell";
 
-    private static final String WEB_FRAGMENT_TAG = "WEB_FRAGMENT_TAG";
+    private static final String WEB_ENGINE_TAG = "WEB_ENGINE_TAG";
 
     private Context mContext;
 
@@ -148,9 +148,8 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
         mWebSandbox = webSandbox;
         webSandbox.setRemoteDebuggingEnabled(true);
 
-        List<WebEngine> webEngines = webSandbox.getWebEngines();
-        if (webEngines.size() > 0) {
-            assert webEngines.size() == 1;
+        WebEngine currentWebEngine = getCurrentWebEngine();
+        if (currentWebEngine != null) {
             Log.i(TAG, "Sandbox and WebEngine already created");
             return;
         }
@@ -168,7 +167,7 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
             Log.w(TAG, "WebEngine already created");
             return;
         }
-        ListenableFuture<WebEngine> webEngineFuture = mWebSandbox.createWebEngine();
+        ListenableFuture<WebEngine> webEngineFuture = mWebSandbox.createWebEngine(WEB_ENGINE_TAG);
         Futures.addCallback(webEngineFuture, new FutureCallback<WebEngine>() {
             @Override
             public void onSuccess(WebEngine webEngine) {
@@ -288,10 +287,10 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
     private WebEngine getCurrentWebEngine() {
         if (mWebSandbox == null) return null;
 
-        List<WebEngine> webEngines = mWebSandbox.getWebEngines();
-        if (webEngines.size() > 0) {
-            assert webEngines.size() == 1;
-            return webEngines.get(0);
+        WebEngine webEngine = mWebSandbox.getWebEngine(WEB_ENGINE_TAG);
+        if (webEngine != null) {
+            assert mWebSandbox.getWebEngines().size() == 1;
+            return webEngine;
         }
         return null;
     }
@@ -319,7 +318,7 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.fragment_container_view, webEngine.getFragment(), WEB_FRAGMENT_TAG)
+                .add(R.id.fragment_container_view, webEngine.getFragment())
                 .commit();
         return true;
     }
