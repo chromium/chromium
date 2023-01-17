@@ -191,6 +191,11 @@ void FakeCrasAudioClient::GetDeprioritizeBtWbsMic(
   std::move(callback).Run(false);
 }
 
+void FakeCrasAudioClient::GetSpeakOnMuteDetectionEnabled(
+    chromeos::DBusMethodCallback<bool> callback) {
+  std::move(callback).Run(false);
+}
+
 void FakeCrasAudioClient::SetOutputNodeVolume(uint64_t node_id,
                                               int32_t volume) {
   if (!notify_volume_change_with_delay_)
@@ -274,6 +279,8 @@ void FakeCrasAudioClient::SetHotwordModel(
 void FakeCrasAudioClient::SetFixA2dpPacketSize(bool enabled) {}
 
 void FakeCrasAudioClient::SetFlossEnabled(bool enabled) {}
+
+void FakeCrasAudioClient::SetSpeakOnMuteDetection(bool enabled) {}
 
 void FakeCrasAudioClient::AddActiveInputNode(uint64_t node_id) {
   for (size_t i = 0; i < node_list_.size(); ++i) {

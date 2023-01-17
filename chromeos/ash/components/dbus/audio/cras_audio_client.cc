@@ -145,6 +145,14 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    // Monitor the D-Bus signal for new speak-on-mute detection.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface, cras::kSpeakOnMuteDetected,
+        base::BindRepeating(&CrasAudioClientImpl::SpeakOnMuteDetectedReceived,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   CrasAudioClientImpl(const CrasAudioClientImpl&) = delete;
@@ -266,6 +274,16 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetSpeakOnMuteDetectionEnabled(
+      chromeos::DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSpeakOnMuteDetectionEnabled);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetSpeakOnMuteDetectionEnabled,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void SetOutputNodeVolume(uint64_t node_id, int32_t volume) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetOutputNodeVolume);
@@ -378,6 +396,16 @@ class CrasAudioClientImpl : public CrasAudioClient {
   void SetFlossEnabled(bool enabled) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetFlossEnabled);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetSpeakOnMuteDetection(bool enabled) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetSpeakOnMuteDetection);
     dbus::MessageWriter writer(&method_call);
     writer.AppendBool(enabled);
     cras_proxy_->CallMethod(&method_call,
@@ -781,6 +809,12 @@ class CrasAudioClientImpl : public CrasAudioClient {
       observer.SurveyTriggered(res);
   }
 
+  void SpeakOnMuteDetectedReceived(dbus::Signal* signal) {
+    for (auto& observer : observers_) {
+      observer.SpeakOnMuteDetected();
+    }
+  }
+
   void OnGetDefaultOutputBufferSize(chromeos::DBusMethodCallback<int> callback,
                                     dbus::Response* response) {
     if (!response) {
@@ -1111,6 +1145,26 @@ class CrasAudioClientImpl : public CrasAudioClient {
     return true;
   }
 
+  void OnGetSpeakOnMuteDetectionEnabled(
+      chromeos::DBusMethodCallback<bool> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling "
+                 << "GetSpeakOnMuteDetectionEnabled";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    bool speak_on_mute_detection_enabled = false;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&speak_on_mute_detection_enabled)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    std::move(callback).Run(speak_on_mute_detection_enabled);
+  }
+
   dbus::ObjectProxy* cras_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -1155,6 +1209,8 @@ void CrasAudioClient::Observer::NumberOfInputStreamsWithPermissionChanged(
 
 void CrasAudioClient::Observer::SurveyTriggered(
     const base::flat_map<std::string, std::string>& survey_specific_data) {}
+
+void CrasAudioClient::Observer::SpeakOnMuteDetected() {}
 
 CrasAudioClient::CrasAudioClient() {
   DCHECK(!g_instance);

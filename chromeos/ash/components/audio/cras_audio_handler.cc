@@ -120,6 +120,8 @@ void CrasAudioHandler::AudioObserver::OnOutputStopped() {}
 void CrasAudioHandler::AudioObserver::OnSurveyTriggered(
     const AudioSurveyData& /*survey_specific_data */) {}
 
+void CrasAudioHandler::AudioObserver::OnSpeakOnMuteDetected() {}
+
 // static
 void CrasAudioHandler::Initialize(
     mojo::PendingRemote<media_session::mojom::MediaControllerManager>
@@ -1132,6 +1134,12 @@ void CrasAudioHandler::SurveyTriggered(
     observer.OnSurveyTriggered(survey_specific_data);
 }
 
+void CrasAudioHandler::SpeakOnMuteDetected() {
+  for (auto& observer : observers_) {
+    observer.OnSpeakOnMuteDetected();
+  }
+}
+
 void CrasAudioHandler::ResendBluetoothBattery() {
   CrasAudioClient::Get()->ResendBluetoothBattery();
 }
@@ -1311,6 +1319,10 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   input_muted_by_microphone_mute_switch_ = IsMicrophoneMuteSwitchOn();
   if (input_muted_by_microphone_mute_switch_)
     SetInputMute(true, InputMuteChangeMethod::kPhysicalShutter);
+
+  // Sets speak-on-mute detection enabled based on feature flag.
+  CrasAudioClient::Get()->SetSpeakOnMuteDetection(
+      features::IsSpeakOnMuteEnabled());
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {

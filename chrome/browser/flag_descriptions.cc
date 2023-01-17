@@ -2783,6 +2783,11 @@ const char kSmoothScrollingName[] = "Smooth Scrolling";
 const char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";
 
+const char kSpeakOnMuteName[] = "Enable Speak On Mute Detection";
+const char kSpeakOnMuteDescription[] =
+    "Enable the speak-on-mute detector in CRAS. Reboot is required to let the "
+    "flag take effect";
+
 const char kSplitCacheByNetworkIsolationKeyName[] = "HTTP Cache Partitioning";
 const char kSplitCacheByNetworkIsolationKeyDescription[] =
     "Partitions the HTTP Cache by (top-level site, current-frame site) to "

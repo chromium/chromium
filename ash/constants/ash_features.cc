@@ -1935,6 +1935,11 @@ BASE_FEATURE(kSmartLockUIRevamp,
 // Controls whether the snap group feature is enabled or not.
 BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the speak-on-mute detection feature is enabled or not.
+BASE_FEATURE(kSpeakOnMuteEnabled,
+             "SpeakOnMuteEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables battery indicator for styluses in the palette tray
 BASE_FEATURE(kStylusBatteryStatus,
              "StylusBatteryStatus",
@@ -3104,6 +3109,10 @@ bool IsSimLockPolicyEnabled() {
 
 bool IsSnapGroupEnabled() {
   return base::FeatureList::IsEnabled(kSnapGroup);
+}
+
+bool IsSpeakOnMuteEnabled() {
+  return base::FeatureList::IsEnabled(kSpeakOnMuteEnabled);
 }
 
 bool IsSystemTrayShadowEnabled() {

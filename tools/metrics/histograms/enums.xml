@@ -57490,6 +57490,7 @@ from previous Chrome versions.
   <int value="-2004882388" label="AutofillPruneSuggestions:enabled"/>
   <int value="-2004862295" label="FedCmUserInfo:disabled"/>
   <int value="-2004231189" label="AppNotificationStatusMessaging:disabled"/>
+  <int value="-2003893779" label="SpeakOnMuteEnabled:enabled"/>
   <int value="-2003354337"
       label="enable-search-button-in-omnibox-for-str-or-iip"/>
   <int value="-2003097010" label="TerminalSftp:enabled"/>
@@ -61034,6 +61035,7 @@ from previous Chrome versions.
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
   <int value="14817184" label="FilesSearchV2:enabled"/>
   <int value="15614295" label="Portals:enabled"/>
+  <int value="16804822" label="SpeakOnMuteEnabled:disabled"/>
   <int value="18571458" label="VmPerBootShaderCache:disabled"/>
   <int value="19629326" label="OmniboxExperimentalKeywordMode:enabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>

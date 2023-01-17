@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     virtual void SurveyTriggered(
         const base::flat_map<std::string, std::string>& survey_specific_data);
 
+    // Called when a new speak-on-mute signal is detected.
+    virtual void SpeakOnMuteDetected();
+
    protected:
     virtual ~Observer();
   };
@@ -142,6 +145,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void GetDeprioritizeBtWbsMic(
       chromeos::DBusMethodCallback<bool> callback) = 0;
 
+  // Gets if speak-on-mute detection is enabled.
+  virtual void GetSpeakOnMuteDetectionEnabled(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
+
   // Sets output volume of the given |node_id| to |volume|, in the rage of
   // [0, 100].
   virtual void SetOutputNodeVolume(uint64_t node_id, int32_t volume) = 0;
@@ -183,6 +190,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   // Enables or disables CRAS to use Floss as the Bluetooth stack.
   virtual void SetFlossEnabled(bool enabled) = 0;
+
+  // Enables or disables CRAS to use speak-on-mute detection.
+  virtual void SetSpeakOnMuteDetection(bool enabled) = 0;
 
   // Adds input node |node_id| to the active input list. This is used to add
   // an additional active input node besides the one set by SetActiveInputNode.

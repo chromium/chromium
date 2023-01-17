@@ -124,6 +124,7 @@ class MockObserver : public CrasAudioClient::Observer {
   MOCK_METHOD1(SurveyTriggered,
                void(const base::flat_map<std::string, std::string>&
                         survey_specific_data));
+  MOCK_METHOD0(SpeakOnMuteDetected, void());
 };
 
 // Expect the reader to be empty.
@@ -484,6 +485,15 @@ class CrasAudioClientTest : public testing::Test {
                 DoConnectToSignal(interface_name_, cras::kSurveyTrigger, _, _))
         .WillRepeatedly(Invoke(this, &CrasAudioClientTest::OnSurveyTriggered));
 
+    // Set an expectation so mock_cras_proxy's monitoring
+    // SurveyTrigger ConnectToSignal will use
+    // OnSpeakOnMuteDetected() to run the callback.
+    EXPECT_CALL(
+        *mock_cras_proxy_.get(),
+        DoConnectToSignal(interface_name_, cras::kSpeakOnMuteDetected, _, _))
+        .WillRepeatedly(
+            Invoke(this, &CrasAudioClientTest::OnSpeakOnMuteDetected));
+
     // Set an expectation so mock_bus's GetObjectProxy() for the given
     // service name and the object path will return mock_cras_proxy_.
     EXPECT_CALL(*mock_bus_.get(),
@@ -594,6 +604,12 @@ class CrasAudioClientTest : public testing::Test {
     survey_trigger_handler_.Run(signal);
   }
 
+  // Send speak-on-mute detected signal to the tested client.
+  void SendSpeakOnMuteDetectedSignal(dbus::Signal* signal) {
+    ASSERT_FALSE(speak_on_mute_detected_handler_.is_null());
+    speak_on_mute_detected_handler_.Run(signal);
+  }
+
   CrasAudioClient* client() { return CrasAudioClient::Get(); }
 
   // The interface name.
@@ -631,6 +647,8 @@ class CrasAudioClientTest : public testing::Test {
   dbus::ObjectProxy::SignalCallback bluetooth_battery_changed_handler_;
   // The SurveyTrigger signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback survey_trigger_handler_;
+  // The SpeakOnMuteDetected signal handler given by the tested client.
+  dbus::ObjectProxy::SignalCallback speak_on_mute_detected_handler_;
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock cras proxy returns.
@@ -799,6 +817,20 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     survey_trigger_handler_ = signal_callback;
+    constexpr bool success = true;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
+                                  interface_name, signal_name, success));
+  }
+
+  // Checks the requested interface name and signal name.
+  // Used to implement the mock cras proxy.
+  void OnSpeakOnMuteDetected(
+      const std::string& interface_name,
+      const std::string& signal_name,
+      const dbus::ObjectProxy::SignalCallback& signal_callback,
+      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+    speak_on_mute_detected_handler_ = signal_callback;
     constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
@@ -1034,6 +1066,25 @@ TEST_F(CrasAudioClientTest, SurveyTrigger) {
 
   // Run the signal callback again and make sure the observer isn't called.
   SendSurveyTriggerSignal(&signal);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, SpeakOnMuteDetected) {
+  dbus::Signal signal(cras::kCrasControlInterface, cras::kSpeakOnMuteDetected);
+  MockObserver observer;
+  EXPECT_CALL(observer, SpeakOnMuteDetected()).Times(1);
+
+  client()->AddObserver(&observer);
+
+  SendSpeakOnMuteDetectedSignal(&signal);
+
+  client()->RemoveObserver(&observer);
+
+  EXPECT_CALL(observer, SpeakOnMuteDetected()).Times(0);
+
+  // Run the signal callback again and make sure the observer isn't called.
+  SendSpeakOnMuteDetectedSignal(&signal);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -1525,6 +1576,22 @@ TEST_F(CrasAudioClientTest, ResendBluetoothBattery) {
 
   // Call method.
   client()->ResendBluetoothBattery();
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, SetSpeakOnMuteDetection) {
+  const bool kSpeakOnMuteDetectionOn = true;
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(
+      cras::kSetSpeakOnMuteDetection,
+      base::BindRepeating(&ExpectBoolArgument, kSpeakOnMuteDetectionOn),
+      response.get());
+  // Call method.
+  client()->SetSpeakOnMuteDetection(kSpeakOnMuteDetectionOn);
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }
