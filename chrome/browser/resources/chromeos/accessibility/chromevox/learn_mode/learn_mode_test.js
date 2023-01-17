@@ -34,13 +34,14 @@ ChromeVoxLearnModeTest = class extends ChromeVoxE2ETest {
         ['BrailleKeyEvent', 'BrailleKeyCommand'],
         '/chromevox/common/braille/braille_key_types.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
+    await importModule('AsyncUtil', '/common/async_util.js');
     await importModule('KeyCode', '/common/key_code.js');
   }
 
   async runOnLearnModePage() {
     return new Promise(async resolve => {
       const mockFeedback = this.createMockFeedback();
-      const desktop = await new Promise(r => chrome.automation.getDesktop(r));
+      const desktop = await AsyncUtil.getDesktop();
       function listener(evt) {
         if (evt.target.docUrl.indexOf('learn_mode/learn_mode.html') === -1 ||
             !evt.target.docLoaded) {

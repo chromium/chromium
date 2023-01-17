@@ -16,6 +16,8 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
 
     // Alphabetical based on file path.
     await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
         'DesktopAutomationHandler',
         '/chromevox/background/desktop_automation_handler.js');
     await importModule(
@@ -27,12 +29,8 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
 
-    await new Promise(r => {
-      chrome.automation.getDesktop(desktop => {
-        this.handler_ = DesktopAutomationInterface.instance;
-        r();
-      });
-    });
+    await ChromeVoxState.ready();
+    this.handler_ = DesktopAutomationInterface.instance;
 
     globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;

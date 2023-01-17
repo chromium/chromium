@@ -722,13 +722,11 @@ AX_TEST_F(
       };
 
       const rootNode = await this.runWithLoadedTree(this.iframesDoc);
-      chrome.automation.getDesktop(function(desktopNode) {
-        runTestIfIframeIsLoaded(rootNode);
+      runTestIfIframeIsLoaded(rootNode);
 
-        desktopNode.addEventListener('loadComplete', function(evt) {
-          runTestIfIframeIsLoaded(rootNode);
-        }, true);
-      });
+      this.desktop_.addEventListener('loadComplete', function(evt) {
+        runTestIfIframeIsLoaded(rootNode);
+      }, true);
     });
 
 /** Tests navigating into and out of iframes using nextObject */
@@ -774,13 +772,11 @@ AX_TEST_F(
       };
 
       const rootNode = await this.runWithLoadedTree(this.iframesDoc);
-      chrome.automation.getDesktop(function(desktopNode) {
-        runTestIfIframeIsLoaded(rootNode);
+      runTestIfIframeIsLoaded(rootNode);
 
-        desktopNode.addEventListener('loadComplete', function(evt) {
-          runTestIfIframeIsLoaded(rootNode);
-        }, true);
-      });
+      this.desktop_.addEventListener('loadComplete', function(evt) {
+        runTestIfIframeIsLoaded(rootNode);
+      }, true);
     });
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', async function() {

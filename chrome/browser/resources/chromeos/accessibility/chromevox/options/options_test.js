@@ -27,6 +27,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxE2ETest {
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
     await importModule('TtsSettings', '/chromevox/common/tts_types.js');
+    await importModule('AsyncUtil', '/common/async_util.js');
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
     await importModule('LocalStorage', '/common/local_storage.js');
@@ -35,8 +36,7 @@ ChromeVoxOptionsTest = class extends ChromeVoxE2ETest {
   async loadOptionsPage() {
     return new Promise(async resolve => {
       const mockFeedback = this.createMockFeedback();
-      const desktop =
-          await new Promise(resolve => chrome.automation.getDesktop(resolve));
+      const desktop = await AsyncUtil.getDesktop();
       desktop.addEventListener(
           EventType.LOAD_COMPLETE, evt => {
             if (evt.target.docUrl.indexOf('options/options.html') === -1 ||
