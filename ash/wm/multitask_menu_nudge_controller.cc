@@ -300,13 +300,10 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
   const gfx::Rect anchor_bounds_in_screen = anchor_view_->GetBoundsInScreen();
 
   // Reparent the nudge and pulse if necessary.
-  aura::Window* new_root =
-      window_util::GetRootWindowMatching(anchor_bounds_in_screen);
+  aura::Window* new_parent = window_->parent();
   aura::Window* nudge_window = nudge_widget_->GetNativeWindow();
 
-  if (new_root != nudge_window->GetRootWindow()) {
-    const int parent_id = nudge_window->parent()->GetId();
-    aura::Window* new_parent = new_root->GetChildById(parent_id);
+  if (new_parent != nudge_window->parent()) {
     new_parent->AddChild(nudge_window);
     new_parent->layer()->Add(pulse_layer_.get());
   }

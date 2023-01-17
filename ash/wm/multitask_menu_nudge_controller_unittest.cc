@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_move_window_util.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -13,9 +14,15 @@
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_button.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -106,6 +113,48 @@ TEST_F(MultitaskMenuNudgeControllerTest, NoCrashAfterFullscreening) {
 
   WindowState::Get(window.get())->OnWMEvent(&event);
   EXPECT_FALSE(GetWidget());
+}
+
+// Tests that there is no crash after floating a window via the multitask menu.
+// Regression test for b/265189622.
+TEST_F(MultitaskMenuNudgeControllerTest,
+       NoCrashAfterFloatingFromMultitaskMenu) {
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  ASSERT_FALSE(GetWidget());
+
+  // Maximize the window to show the nudge.
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  WindowState::Get(window.get())->OnWMEvent(&maximize_event);
+  ASSERT_TRUE(GetWidget());
+
+  // Float the window from the multitask menu. Floating the window using the
+  // accelerator does not cause the crash mentioned in the bug because the
+  // presence of the multitask menu causes an activation change which leads to
+  // restacking that does not happen otherwise.
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string("MultitaskMenuBubbleWidget"));
+  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
+      NonClientFrameViewAsh::Get(window.get())
+          ->GetHeaderView()
+          ->caption_button_container()
+          ->size_button());
+  size_button->ShowMultitaskMenu(
+      chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
+  views::WidgetDelegate* delegate =
+      waiter.WaitIfNeededAndGet()->widget_delegate();
+  auto* multitask_menu =
+      static_cast<chromeos::MultitaskMenu*>(delegate->AsDialogDelegate());
+
+  // After floating the window from the multitask menu, there is no crash.
+  GetEventGenerator()->MoveMouseTo(
+      multitask_menu->multitask_menu_view_for_testing()
+          ->float_button_for_testing()
+          ->GetBoundsInScreen()
+          .CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  EXPECT_TRUE(GetWidget());
 }
 
 TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
