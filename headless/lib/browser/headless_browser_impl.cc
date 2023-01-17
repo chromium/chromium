@@ -14,12 +14,121 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/common/user_agent.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_devtools_agent_host_client.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/public/version.h"
 
 namespace headless {
+
+namespace {
+// Product name for building the default user agent string.
+const char kHeadlessProductName[] = "HeadlessChrome";
+constexpr gfx::Size kDefaultWindowSize(800, 600);
+
+constexpr gfx::FontRenderParams::Hinting kDefaultFontRenderHinting =
+    gfx::FontRenderParams::Hinting::HINTING_FULL;
+
+}  // namespace
+
+using Options = HeadlessBrowser::Options;
+using Builder = HeadlessBrowser::Options::Builder;
+
+Options::Options()
+    : user_agent(content::BuildUserAgentFromProduct(
+          HeadlessBrowser::GetProductNameAndVersion())),
+      window_size(kDefaultWindowSize),
+      font_render_hinting(kDefaultFontRenderHinting) {}
+
+Options::Options(Options&& options) = default;
+
+Options::~Options() = default;
+
+Options& Options::operator=(Options&& options) = default;
+
+bool Options::DevtoolsServerEnabled() {
+  return (devtools_pipe_enabled || !devtools_endpoint.IsEmpty());
+}
+
+Builder::Builder() = default;
+
+Builder::~Builder() = default;
+
+Builder& Builder::SetUserAgent(const std::string& agent) {
+  options_.user_agent = agent;
+  return *this;
+}
+
+Builder& Builder::SetAcceptLanguage(const std::string& language) {
+  options_.accept_language = language;
+  return *this;
+}
+
+Builder& Builder::SetEnableBeginFrameControl(bool enable) {
+  options_.enable_begin_frame_control = enable;
+  return *this;
+}
+
+Builder& Builder::EnableDevToolsServer(const net::HostPortPair& endpoint) {
+  options_.devtools_endpoint = endpoint;
+  return *this;
+}
+
+Builder& Builder::EnableDevToolsPipe() {
+  options_.devtools_pipe_enabled = true;
+  return *this;
+}
+
+Builder& Builder::SetProxyConfig(std::unique_ptr<net::ProxyConfig> config) {
+  options_.proxy_config = std::move(config);
+  return *this;
+}
+
+Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
+  options_.user_data_dir = dir;
+  return *this;
+}
+
+Builder& Builder::SetWindowSize(const gfx::Size& size) {
+  options_.window_size = size;
+  return *this;
+}
+
+Builder& Builder::SetIncognitoMode(bool incognito) {
+  options_.incognito_mode = incognito;
+  return *this;
+}
+
+Builder& Builder::SetBlockNewWebContents(bool block) {
+  options_.block_new_web_contents = block;
+  return *this;
+}
+
+Builder& Builder::SetCrashReporterEnabled(bool enabled) {
+  options_.enable_crash_reporter = enabled;
+  return *this;
+}
+
+Builder& Builder::SetCrashDumpsDir(const base::FilePath& dir) {
+  options_.crash_dumps_dir = dir;
+  return *this;
+}
+
+Builder& Builder::SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting) {
+  options_.font_render_hinting = hinting;
+  return *this;
+}
+
+Options Builder::Build() {
+  return std::move(options_);
+}
+
+/// static
+std::string HeadlessBrowser::GetProductNameAndVersion() {
+  return std::string(kHeadlessProductName) + "/" + PRODUCT_VERSION;
+}
 
 HeadlessBrowserImpl::HeadlessBrowserImpl(
     base::OnceCallback<void(HeadlessBrowser*)> on_start_callback,

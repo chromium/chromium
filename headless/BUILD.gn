@@ -352,7 +352,6 @@ component("headless_non_renderer") {
     "lib/switches.cc",
     "lib/utility/headless_content_utility_client.cc",
     "lib/utility/headless_content_utility_client.h",
-    "public/headless_browser.cc",
     "public/headless_browser.h",
     "public/headless_browser_context.h",
     "public/headless_devtools_channel.h",

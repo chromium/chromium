@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -18,10 +17,6 @@
 #include "net/base/host_port_pair.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "sandbox/win/src/sandbox_types.h"
-#endif
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -174,8 +169,6 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
 
   Builder& EnableDevToolsServer(const net::HostPortPair& endpoint);
   Builder& EnableDevToolsPipe();
-  Builder& SetGLImplementation(const std::string& implementation);
-  Builder& SetANGLEImplementation(const std::string& implementation);
 
   // Per-context settings.
 
