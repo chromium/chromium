@@ -99,6 +99,32 @@ void SyncArcPackageHelper::ClearPackages(Profile* profile) {
   }
 }
 
+bool SyncArcPackageHelper::HasOnlyTestPackages(Profile* profile,
+                                               const std::vector<size_t>& ids) {
+  const ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
+  DCHECK(prefs);
+  if (prefs->GetPackagesFromPrefs().size() != ids.size()) {
+    return false;
+  }
+
+  for (const size_t id : ids) {
+    std::unique_ptr<ArcAppListPrefs::PackageInfo> package_info =
+        prefs->GetPackage(GetTestPackageName(id));
+    if (!package_info) {
+      return false;
+    }
+    // See InstallPackageWithIndex().
+    if (package_info->package_version != static_cast<int32_t>(id) ||
+        package_info->last_backup_android_id != static_cast<int64_t>(id) ||
+        package_info->last_backup_time != static_cast<int64_t>(id) ||
+        !package_info->should_sync) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool SyncArcPackageHelper::AllProfilesHaveSamePackages() {
   const std::vector<Profile*>& profiles = test_->GetAllProfiles();
   for (Profile* profile : profiles) {

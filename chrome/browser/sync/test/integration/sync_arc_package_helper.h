@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/singleton.h"
@@ -41,6 +42,8 @@ class SyncArcPackageHelper {
   void UninstallPackageWithIndex(Profile* profile, size_t id);
 
   void ClearPackages(Profile* profile);
+
+  bool HasOnlyTestPackages(Profile* profile, const std::vector<size_t>& ids);
 
   bool AllProfilesHaveSamePackages();
 
