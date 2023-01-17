@@ -9,7 +9,7 @@
 
 namespace content {
 
-Preconnector::Preconnector(content::RenderFrameHost& render_frame_host) {
+Preconnector::Preconnector(RenderFrameHost& render_frame_host) {
   preconnect_delegate_ =
       GetContentClient()->browser()->CreateAnchorElementPreconnectDelegate(
           render_frame_host);

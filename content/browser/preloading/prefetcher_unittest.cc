@@ -24,8 +24,7 @@ namespace {
 
 class MockSpeculationHostDelegate : public SpeculationHostDelegate {
  public:
-  explicit MockSpeculationHostDelegate(
-      content::RenderFrameHost& render_frame_host) {}
+  explicit MockSpeculationHostDelegate(RenderFrameHost& render_frame_host) {}
   ~MockSpeculationHostDelegate() override = default;
 
   void ProcessCandidates(
@@ -151,7 +150,7 @@ class PrefetcherTest : public RenderViewHostTestHarness {
 TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      content::features::kPrefetchUseContentRefactor,
+      features::kPrefetchUseContentRefactor,
       {{"proxy_host", "https://testproxyhost.com"}});
 
   MockContentBrowserClient browser_client;
@@ -183,7 +182,7 @@ TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
 
 class MockPrefetcher : public Prefetcher {
  public:
-  explicit MockPrefetcher(content::RenderFrameHost& render_frame_host)
+  explicit MockPrefetcher(RenderFrameHost& render_frame_host)
       : Prefetcher(render_frame_host) {}
 
   void OnStartSinglePrefetch(const std::string& request_id,
@@ -219,7 +218,7 @@ class MockPrefetcher : public Prefetcher {
 TEST_F(PrefetcherTest, MockPrefetcher) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      content::features::kPrefetchUseContentRefactor,
+      features::kPrefetchUseContentRefactor,
       {{"proxy_host", "https://testproxyhost.com"}});
 
   MockContentBrowserClient browser_client;

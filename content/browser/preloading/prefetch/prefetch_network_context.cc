@@ -103,10 +103,10 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
       prefetch_service_->GetPrefetchServiceDelegate();
 
   auto context_params = network::mojom::NetworkContextParams::New();
-  context_params->user_agent = content::GetReducedUserAgent(
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMobileUserAgent),
-      delegate ? delegate->GetMajorVersionNumber() : "");
+  context_params->user_agent =
+      GetReducedUserAgent(base::CommandLine::ForCurrentProcess()->HasSwitch(
+                              switches::kUseMobileUserAgent),
+                          delegate ? delegate->GetMajorVersionNumber() : "");
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->cors_exempt_header_list = {kCorsExemptPurposeHeaderName};

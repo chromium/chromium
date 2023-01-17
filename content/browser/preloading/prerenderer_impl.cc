@@ -54,15 +54,15 @@ struct PrerendererImpl::PrerenderInfo {
   int prerender_host_id;
 };
 
-PrerendererImpl::PrerendererImpl(content::RenderFrameHost& render_frame_host)
+PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
     : WebContentsObserver(WebContents::FromRenderFrameHost(&render_frame_host)),
       render_frame_host_(render_frame_host) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host);
   registry_ = rfhi.delegate()->GetPrerenderHostRegistry()->GetWeakPtr();
 }
 PrerendererImpl::~PrerendererImpl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CancelStartedPrerenders();
 }
 
@@ -75,7 +75,7 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
   // deleted asynchronously, but we want to make sure to cancel prerendering
   // before the next primary page swaps in so that the next page can trigger a
   // new prerender without hitting the max number of running prerenders.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CancelStartedPrerenders();
 }
 

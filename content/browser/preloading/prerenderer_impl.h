@@ -16,7 +16,7 @@ class Page;
 // Handles speculation-rules based prerenders.
 class CONTENT_EXPORT PrerendererImpl : public Prerenderer, WebContentsObserver {
  public:
-  explicit PrerendererImpl(content::RenderFrameHost& render_frame_host);
+  explicit PrerendererImpl(RenderFrameHost& render_frame_host);
   ~PrerendererImpl() override;
 
   // WebContentsObserver implementation:
@@ -57,7 +57,7 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer, WebContentsObserver {
 
   // content::PreloadingDecider, which inherits content::DocumentUserData, owns
   // `this`, so `this` can access `render_frame_host_` safely.
-  const raw_ref<content::RenderFrameHost> render_frame_host_;
+  const raw_ref<RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace content

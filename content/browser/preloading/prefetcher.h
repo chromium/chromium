@@ -25,7 +25,7 @@ class RenderFrameHostImpl;
 class CONTENT_EXPORT Prefetcher : public SpeculationHostDevToolsObserver {
  public:
   Prefetcher() = delete;
-  explicit Prefetcher(content::RenderFrameHost& render_frame_host);
+  explicit Prefetcher(RenderFrameHost& render_frame_host);
   ~Prefetcher();
 
   // SpeculationHostDevToolsObserver implementation:

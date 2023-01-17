@@ -196,7 +196,7 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
-        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+        std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
             ToPreloadingPredictor(
                 ContentPreloadingPredictor::kSpeculationRules));
   }

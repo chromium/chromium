@@ -55,7 +55,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
  public:
   PrefetchDocumentManagerTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::features::kPrefetchUseContentRefactor,
+        features::kPrefetchUseContentRefactor,
         {{"proxy_host", "https://testproxyhost.com"}});
   }
 
@@ -95,8 +95,8 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
 
   void NavigateMainframeRendererTo(const GURL& url) {
     std::unique_ptr<NavigationSimulator> simulator =
-        content::NavigationSimulator::CreateRendererInitiated(
-            url, &GetPrimaryMainFrame());
+        NavigationSimulator::CreateRendererInitiated(url,
+                                                     &GetPrimaryMainFrame());
     simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
     simulator->Start();
   }

@@ -19,7 +19,7 @@ class RenderFrameHost;
 class CONTENT_EXPORT Preconnector {
  public:
   Preconnector() = delete;
-  explicit Preconnector(content::RenderFrameHost& render_frame_host);
+  explicit Preconnector(RenderFrameHost& render_frame_host);
   ~Preconnector();
 
   void MaybePreconnect(const GURL& url);

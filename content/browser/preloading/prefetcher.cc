@@ -11,11 +11,11 @@
 
 namespace content {
 
-Prefetcher::Prefetcher(content::RenderFrameHost& render_frame_host)
+Prefetcher::Prefetcher(RenderFrameHost& render_frame_host)
     : render_frame_host_(render_frame_host),
       render_frame_host_impl_(
           static_cast<RenderFrameHostImpl*>(&render_frame_host)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   delegate_ = GetContentClient()->browser()->CreateSpeculationHostDelegate(
       render_frame_host);
 }

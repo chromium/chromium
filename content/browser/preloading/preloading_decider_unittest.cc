@@ -26,8 +26,7 @@ namespace {
 
 class MockAnchorElementPreconnector : public AnchorElementPreconnectDelegate {
  public:
-  explicit MockAnchorElementPreconnector(
-      content::RenderFrameHost& render_frame_host) {}
+  explicit MockAnchorElementPreconnector(RenderFrameHost& render_frame_host) {}
   ~MockAnchorElementPreconnector() override = default;
 
   void MaybePreconnect(const GURL& target) override { target_ = target; }
@@ -125,7 +124,7 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
  public:
   PreloadingDeciderTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::features::kPrefetchUseContentRefactor,
+        features::kPrefetchUseContentRefactor,
         {{"proxy_host", "https://testproxyhost.com"}});
   }
   void SetUp() override {

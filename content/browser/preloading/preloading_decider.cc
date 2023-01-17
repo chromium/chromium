@@ -12,7 +12,7 @@
 namespace content {
 DOCUMENT_USER_DATA_KEY_IMPL(PreloadingDecider);
 
-PreloadingDecider::PreloadingDecider(content::RenderFrameHost* rfh)
+PreloadingDecider::PreloadingDecider(RenderFrameHost* rfh)
     : DocumentUserData<PreloadingDecider>(rfh),
       observer_for_testing_(nullptr),
       preconnector_(render_frame_host()),
@@ -29,7 +29,7 @@ void PreloadingDecider::AddPreloadingPrediction(const GURL& url,
       PreloadingData::GetOrCreateForWebContents(web_contents);
   preloading_data->AddPreloadingPrediction(
       predictor,
-      /*confidence=*/100, content::PreloadingData::GetSameURLMatcher(url));
+      /*confidence=*/100, PreloadingData::GetSameURLMatcher(url));
 }
 
 void PreloadingDecider::OnPointerDown(const GURL& url) {
@@ -101,7 +101,7 @@ void PreloadingDecider::OnPointerHover(const GURL& url) {
 
 void PreloadingDecider::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_for_testing_) {
     observer_for_testing_->UpdateSpeculationCandidates(candidates);
   }

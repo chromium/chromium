@@ -216,8 +216,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Sets DevTools observer
   void SetDevToolsObserver(
-      base::WeakPtr<content::SpeculationHostDevToolsObserver>
-          devtools_observer) {
+      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
     devtools_observer_ = std::move(devtools_observer);
   }
 

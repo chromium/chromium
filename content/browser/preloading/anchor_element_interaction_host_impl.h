@@ -15,18 +15,17 @@ namespace content {
 // forward the events to PreloadingDecider to be processed to trigger a
 // preloading action if required.
 class CONTENT_EXPORT AnchorElementInteractionHostImpl
-    : public content::DocumentService<
-          blink::mojom::AnchorElementInteractionHost> {
+    : public DocumentService<blink::mojom::AnchorElementInteractionHost> {
  public:
   // Creates and binds an instance of this class per-frame
   static void Create(
-      content::RenderFrameHost* render_frame_host,
+      RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost>
           receiver);
 
  private:
   AnchorElementInteractionHostImpl(
-      content::RenderFrameHost& render_frame_host,
+      RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::AnchorElementInteractionHost>
           receiver);
   // blink::mojom::AnchorElementInteractionHost:
