@@ -299,7 +299,12 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
         log_manager_.get());
     logger.LogBoolean(Logger::STRING_SSL_ERRORS_PRESENT, ssl_errors);
   }
-  return !ssl_errors && IsPasswordManagementEnabledForCurrentPage(url);
+  const Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  // Guest profiles don't have PasswordStore at all, so filling should be
+  // disabled for them.
+  return !profile->IsGuestSession() && !ssl_errors &&
+         IsPasswordManagementEnabledForCurrentPage(url);
 }
 
 bool ChromePasswordManagerClient::IsFillingFallbackEnabled(
