@@ -329,30 +329,6 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
   std::map<GURL, base::OnceClosure> done_callbacks_;
 };
 
-// Used for testing the kRestrictGoogleWebVisibility feature.
-class VariationsHttpHeadersBrowserTestWithRestrictedVisibility
-    : public VariationsHttpHeadersBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  VariationsHttpHeadersBrowserTestWithRestrictedVisibility() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          variations::internal::kRestrictGoogleWebVisibility);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          variations::internal::kRestrictGoogleWebVisibility);
-    }
-  }
-
-  VariationsHttpHeadersBrowserTestWithRestrictedVisibility(
-      const VariationsHttpHeadersBrowserTestWithRestrictedVisibility&) = delete;
-  VariationsHttpHeadersBrowserTestWithRestrictedVisibility& operator=(
-      const VariationsHttpHeadersBrowserTestWithRestrictedVisibility&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 std::unique_ptr<net::test_server::HttpResponse>
 VariationsHttpHeadersBrowserTest::RequestHandler(
     const net::test_server::HttpRequest& request) {
@@ -424,54 +400,6 @@ void CreateGoogleSignedInFieldTrial(variations::VariationID id) {
                 variations::mojom::GoogleWebVisibility::FIRST_PARTY),
             signed_out_headers->headers_map.at(
                 variations::mojom::GoogleWebVisibility::FIRST_PARTY));
-}
-
-// Creates FieldTrials associated with the FIRST_PARTY IDCollectionKeys and
-// their corresponding ANY_CONTEXT keys.
-void CreateFieldTrialsWithDifferentVisibilities() {
-  scoped_refptr<base::FieldTrial> trial_1(variations::CreateTrialAndAssociateId(
-      "t1", "g1", variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 11));
-  scoped_refptr<base::FieldTrial> trial_2(variations::CreateTrialAndAssociateId(
-      "t2", "g2", variations::GOOGLE_WEB_PROPERTIES_FIRST_PARTY, 22));
-  scoped_refptr<base::FieldTrial> trial_3(variations::CreateTrialAndAssociateId(
-      "t3", "g3", variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT, 33));
-  scoped_refptr<base::FieldTrial> trial_4(variations::CreateTrialAndAssociateId(
-      "t4", "g4", variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY, 44));
-
-  auto* provider = variations::VariationsIdsProvider::GetInstance();
-  variations::mojom::VariationsHeadersPtr signed_in_headers =
-      provider->GetClientDataHeaders(/*is_signed_in=*/true);
-  variations::mojom::VariationsHeadersPtr signed_out_headers =
-      provider->GetClientDataHeaders(/*is_signed_in=*/false);
-
-  if (base::FeatureList::IsEnabled(
-          variations::internal::kRestrictGoogleWebVisibility)) {
-    EXPECT_NE(signed_in_headers->headers_map.at(
-                  variations::mojom::GoogleWebVisibility::ANY),
-              signed_in_headers->headers_map.at(
-                  variations::mojom::GoogleWebVisibility::FIRST_PARTY));
-    EXPECT_NE(signed_out_headers->headers_map.at(
-                  variations::mojom::GoogleWebVisibility::ANY),
-              signed_out_headers->headers_map.at(
-                  variations::mojom::GoogleWebVisibility::FIRST_PARTY));
-  } else {
-    // When kRestrictGoogleWebVisibility is disabled, the transmission of
-    // VariationIDs is not restricted. This is the status quo implementation.
-    //
-    // This means that IDs associated with the FIRST_PARTY IDCollectionKeys are
-    // treated as if they were associated with their corresponding ANY_CONTEXT
-    // IDCollectionKeys. For example, when the feature is disabled, IDs
-    // associated with GOOGLE_WEB_PROPERTIES_FIRST_PARTY are transmitted when
-    // IDs associated with GOOGLE_WEB_PROPERTIES_ANY_CONTEXT are.
-    EXPECT_EQ(signed_in_headers->headers_map.at(
-                  variations::mojom::GoogleWebVisibility::ANY),
-              signed_in_headers->headers_map.at(
-                  variations::mojom::GoogleWebVisibility::FIRST_PARTY));
-    EXPECT_EQ(signed_out_headers->headers_map.at(
-                  variations::mojom::GoogleWebVisibility::ANY),
-              signed_out_headers->headers_map.at(
-                  variations::mojom::GoogleWebVisibility::FIRST_PARTY));
-  }
 }
 
 }  // namespace
@@ -664,33 +592,44 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   EXPECT_TRUE(base::Contains(variation_ids, 33));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    VariationsHttpHeadersBrowserTest,
-    VariationsHttpHeadersBrowserTestWithRestrictedVisibility,
-    testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTestWithRestrictedVisibility,
+IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        TestRestrictGoogleWebVisibilityInThirdPartyContexts) {
-  // Ensure GetClientDataHeader() returns different values when
-  // kRestrictGoogleWebVisibility is enabled and the same values otherwise.
-  CreateFieldTrialsWithDifferentVisibilities();
+  scoped_refptr<base::FieldTrial> trial_1(variations::CreateTrialAndAssociateId(
+      "t1", "g1", variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 11));
+  scoped_refptr<base::FieldTrial> trial_2(variations::CreateTrialAndAssociateId(
+      "t2", "g2", variations::GOOGLE_WEB_PROPERTIES_FIRST_PARTY, 22));
+  scoped_refptr<base::FieldTrial> trial_3(variations::CreateTrialAndAssociateId(
+      "t3", "g3", variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT, 33));
+  scoped_refptr<base::FieldTrial> trial_4(variations::CreateTrialAndAssociateId(
+      "t4", "g4", variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY, 44));
+
+  auto* provider = variations::VariationsIdsProvider::GetInstance();
+  variations::mojom::VariationsHeadersPtr signed_in_headers =
+      provider->GetClientDataHeaders(/*is_signed_in=*/true);
+  variations::mojom::VariationsHeadersPtr signed_out_headers =
+      provider->GetClientDataHeaders(/*is_signed_in=*/false);
+
+  EXPECT_NE(signed_in_headers->headers_map.at(
+                variations::mojom::GoogleWebVisibility::ANY),
+            signed_in_headers->headers_map.at(
+                variations::mojom::GoogleWebVisibility::FIRST_PARTY));
+
+  EXPECT_NE(signed_out_headers->headers_map.at(
+                variations::mojom::GoogleWebVisibility::ANY),
+            signed_out_headers->headers_map.at(
+                variations::mojom::GoogleWebVisibility::FIRST_PARTY));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
 
-  variations::mojom::GoogleWebVisibility web_visibility =
-      base::FeatureList::IsEnabled(
-          variations::internal::kRestrictGoogleWebVisibility)
-          ? variations::mojom::GoogleWebVisibility::FIRST_PARTY
-          : variations::mojom::GoogleWebVisibility::ANY;
-
-  variations::mojom::VariationsHeadersPtr headers =
+  variations::mojom::VariationsHeadersPtr signed_out_headers_2 =
       variations::VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
           /*is_signed_in=*/false);
 
-  EXPECT_EQ(*header, headers->headers_map.at(web_visibility));
+  EXPECT_EQ(*header, signed_out_headers_2->headers_map.at(
+                         variations::mojom::GoogleWebVisibility::FIRST_PARTY));
 }
 
 IN_PROC_BROWSER_TEST_F(

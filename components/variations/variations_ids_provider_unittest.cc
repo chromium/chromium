@@ -8,17 +8,13 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/client_variations.pb.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
-#include "components/variations/variations_features.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,25 +28,6 @@ class VariationsIdsProviderTest : public ::testing::Test {
   void TearDown() override { testing::ClearAllVariationIDs(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-};
-
-// Used for testing the kRestrictGoogleWebVisibility feature.
-class VariationsIdsProviderTestWithRestrictedVisibility
-    : public VariationsIdsProviderTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  VariationsIdsProviderTestWithRestrictedVisibility() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          internal::kRestrictGoogleWebVisibility);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          internal::kRestrictGoogleWebVisibility);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
@@ -178,12 +155,7 @@ TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_Invalid) {
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         VariationsIdsProviderTestWithRestrictedVisibility,
-                         ::testing::Bool());
-
-TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
-       LowEntropySourceValue_Valid) {
+TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Valid) {
   VariationsIdsProvider provider(
       VariationsIdsProvider::Mode::kUseSignedInState);
 
@@ -215,8 +187,7 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
   EXPECT_TRUE(base::Contains(variation_ids_any_context, 3320983));
 }
 
-TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
-       LowEntropySourceValue_Null) {
+TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Null) {
   VariationsIdsProvider provider(
       VariationsIdsProvider::Mode::kUseSignedInState);
 
@@ -261,8 +232,7 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
   EXPECT_EQ(2U, variation_ids_any_context.size());
 }
 
-TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
-       OnFieldTrialGroupFinalized) {
+TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
   VariationsIdsProvider provider(
       VariationsIdsProvider::Mode::kUseSignedInState);
   provider.InitVariationIDsCacheIfNeeded();
@@ -319,25 +289,14 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
     EXPECT_TRUE(base::Contains(trigger_ids_first_party, 33));
     EXPECT_TRUE(base::Contains(trigger_ids_first_party, 44));
 
-    if (base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility)) {
-      // When the feature is enabled, IDs associated with FIRST_PARTY
-      // IDCollectionKeys should be excluded from the variations header that may
-      // be sent in third-party contexts.
-      EXPECT_EQ(1U, ids_any_context.size());
-      EXPECT_TRUE(base::Contains(ids_any_context, 11));
-      EXPECT_EQ(1U, trigger_ids_any_context.size());
-      EXPECT_TRUE(base::Contains(trigger_ids_any_context, 33));
-    } else {
-      // When the feature is disabled, IDs associated with FIRST_PARTY
-      // IDCollectionKeys should be included in the variations header that may
-      // be sent in third-party contexts.
-      EXPECT_EQ(2U, ids_any_context.size());
-      EXPECT_TRUE(base::Contains(ids_any_context, 11));
-      EXPECT_TRUE(base::Contains(ids_any_context, 22));
-      EXPECT_EQ(2U, trigger_ids_any_context.size());
-      EXPECT_TRUE(base::Contains(trigger_ids_any_context, 33));
-      EXPECT_TRUE(base::Contains(trigger_ids_any_context, 44));
-    }
+    // IDs associated with FIRST_PARTY ID CollectionKeys should be excluded from
+    // the variations header that may be sent in third-party contexts.
+    EXPECT_EQ(1U, ids_any_context.size());
+    EXPECT_TRUE(base::Contains(ids_any_context, 11));
+    // Note '22' is omitted.
+    EXPECT_EQ(1U, trigger_ids_any_context.size());
+    EXPECT_TRUE(base::Contains(trigger_ids_any_context, 33));
+    // Note '44' is omitted.
   }
 
   // Now, get signed-in ids.
@@ -368,27 +327,15 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
     EXPECT_TRUE(base::Contains(trigger_ids_first_party, 33));
     EXPECT_TRUE(base::Contains(trigger_ids_first_party, 44));
 
-    if (base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility)) {
-      // When the feature is enabled, IDs associated with FIRST_PARTY
-      // IDCollectionKeys should be excluded from the variations header that may
-      // be sent in third-party contexts.
-      EXPECT_EQ(2U, ids_any_context.size());
-      EXPECT_TRUE(base::Contains(ids_any_context, 11));
-      EXPECT_TRUE(base::Contains(ids_any_context, 55));
-      EXPECT_EQ(1U, trigger_ids_any_context.size());
-      EXPECT_TRUE(base::Contains(trigger_ids_any_context, 33));
-    } else {
-      // When the feature is disabled, IDs associated with FIRST_PARTY
-      // IDCollectionKeys should be included in the variations header that may
-      // be sent in third-party contexts.
-      EXPECT_EQ(3U, ids_any_context.size());
-      EXPECT_TRUE(base::Contains(ids_any_context, 11));
-      EXPECT_TRUE(base::Contains(ids_any_context, 22));
-      EXPECT_TRUE(base::Contains(ids_any_context, 55));
-      EXPECT_EQ(2U, trigger_ids_any_context.size());
-      EXPECT_TRUE(base::Contains(trigger_ids_any_context, 33));
-      EXPECT_TRUE(base::Contains(trigger_ids_any_context, 44));
-    }
+    // IDs associated with FIRST_PARTY ID CollectionKeys should be excluded from
+    // the variations header that may be sent in third-party contexts.
+    EXPECT_EQ(2U, ids_any_context.size());
+    EXPECT_TRUE(base::Contains(ids_any_context, 11));
+    // Note '22' is omitted.
+    EXPECT_TRUE(base::Contains(ids_any_context, 55));
+    EXPECT_EQ(1U, trigger_ids_any_context.size());
+    EXPECT_TRUE(base::Contains(trigger_ids_any_context, 33));
+    // Note '44' is omitted.
   }
 }
 

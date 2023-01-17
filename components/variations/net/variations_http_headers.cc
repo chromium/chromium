@@ -206,24 +206,17 @@ bool IsFirstPartyContext(Owner owner,
   return false;
 }
 
-// Returns GoogleWebVisibility::FIRST_PARTY if kRestrictGoogleWebVisibility is
-// enabled and the request is from a first-party context; otherwise, returns
-// GoogleWebVisibility::ANY.
+// Returns GoogleWebVisibility::FIRST_PARTY if the request is from a first-party
+// context; otherwise, returns GoogleWebVisibility::ANY.
 variations::mojom::GoogleWebVisibility GetVisibilityKey(
     Owner owner,
     const network::ResourceRequest& resource_request) {
-  bool use_first_party_visibility =
-      IsFirstPartyContext(owner, resource_request) &&
-      base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility);
-
-  return use_first_party_visibility
+  return IsFirstPartyContext(owner, resource_request)
              ? variations::mojom::GoogleWebVisibility::FIRST_PARTY
              : variations::mojom::GoogleWebVisibility::ANY;
 }
 
-// Returns a variations header from |variations_headers|. When
-// kRestrictGoogleWebVisibility is enabled, the request context is considered
-// and may be used to select a header with a more limited set of IDs.
+// Returns a variations header from |variations_headers|.
 std::string SelectVariationsHeader(
     variations::mojom::VariationsHeadersPtr variations_headers,
     Owner owner,
@@ -285,9 +278,6 @@ class VariationsHeaderHelper {
 
  private:
   // Returns a variations header containing IDs appropriate for |signed_in|.
-  // When kRestrictGoogleWebVisibility is enabled, the request context is
-  // considered and may be used to select a header with a more limited set of
-  // IDs.
   //
   // Can be used only by code running in the browser process, which is where
   // the populated VariationsIdsProvider exists.

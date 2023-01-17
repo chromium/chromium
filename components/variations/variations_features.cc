@@ -8,9 +8,5 @@ namespace variations {
 
 namespace internal {
 
-BASE_FEATURE(kRestrictGoogleWebVisibility,
-             "RestrictGoogleWebVisibility",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace internal
 }  // namespace variations

@@ -56,9 +56,8 @@ enum IDCollectionKey {
   // first- and third-party contexts.
   GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
   // The IDs in this collection are used by Google web properties and are
-  // transmitted via the X-Client-Data header. When kRestrictGoogleWebVisibility
-  // is enabled, these IDs are transmitted in only first-party contexts;
-  // otherwise, these IDs are transmitted in first- and third-party contexts.
+  // transmitted via the X-Client-Data header. Transmitted in only first-party
+  // contexts.
   GOOGLE_WEB_PROPERTIES_FIRST_PARTY,
   // This collection is used by Google web properties for signed in users only,
   // transmitted through the X-Client-Data header.
@@ -69,9 +68,7 @@ enum IDCollectionKey {
   GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
   // The IDs in this collection are used by Google web properties to trigger
   // server-side experimental behavior and are transmitted via the X-Client-Data
-  // header. When kRestrictGoogleWebVisibility is enabled, these IDs are
-  // transmitted in only first-party contexts; otherwise, these IDs are
-  // transmitted in first- and third-party contexts.
+  // header. Transmitted in only first-party contexts.
   GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY,
   // This collection is used by the Google App and is passed at the time
   // the cross-app communication is triggered.

@@ -11,12 +11,7 @@
 namespace variations {
 namespace internal {
 
-// A feature that supports more finely-grained control over the transmission of
-// VariationIDs to Google web properties by allowing some VariationIDs to not be
-// transmitted in all contexts. See IsFirstPartyContext() in
-// variations_http_headers.cc for more details.
-COMPONENT_EXPORT(VARIATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kRestrictGoogleWebVisibility);
+// Add Variations Features here...
 
 }  // namespace internal
 }  // namespace variations

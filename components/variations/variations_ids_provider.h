@@ -171,11 +171,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
                            ForceDisableVariationIds_ValidCommandLine);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            ForceDisableVariationIds_Invalid);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTestWithRestrictedVisibility,
+  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            OnFieldTrialGroupFinalized);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTestWithRestrictedVisibility,
+  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            LowEntropySourceValue_Valid);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTestWithRestrictedVisibility,
+  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            LowEntropySourceValue_Null);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            GetGoogleAppVariationsString);
