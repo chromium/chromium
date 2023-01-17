@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -40,10 +41,12 @@ NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
     size_t size,
     V8MLOperandType::Enum type);
 
-MLOperand* BuildConstant(V8TestingScope& scope,
-                         MLGraphBuilder* builder,
-                         const Vector<uint32_t>& dimensions,
-                         V8MLOperandType::Enum type);
+MLOperand* BuildConstant(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const Vector<uint32_t>& dimensions,
+    V8MLOperandType::Enum type,
+    absl::optional<NotShared<DOMArrayBufferView>> buffer_view = absl::nullopt);
 
 NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand);

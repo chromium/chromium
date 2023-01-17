@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/numerics/checked_math.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -131,53 +130,6 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
   }
   binary->Connect({a, b}, {output});
   return output;
-}
-
-struct PaddingSizes {
-  uint32_t begin;
-  uint32_t end;
-};
-
-// Calculate the padding given auto pad, input size, filter size, stride and
-// dilation. Return the calculated padding sizes if no error.
-absl::optional<PaddingSizes> CalculatePaddingForAutoPad(
-    V8MLAutoPad::Enum auto_pad,
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t stride,
-    const uint32_t dilation) {
-  auto checked_output_size =
-      (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
-  auto checked_dilated_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  auto checked_needed_input_size =
-      (checked_output_size - 1) * stride + checked_dilated_filter_size;
-  if (!checked_needed_input_size.IsValid()) {
-    return absl::nullopt;
-  }
-  auto checked_total_padding =
-      checked_needed_input_size.ValueOrDie() > input_size
-          ? checked_needed_input_size - input_size
-          : base::MakeCheckedNum<uint32_t>(0);
-  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
-  switch (auto_pad) {
-    case V8MLAutoPad::Enum::kSameUpper:
-      checked_padding_begin = checked_total_padding / 2;
-      checked_padding_end = (checked_total_padding + 1) / 2;
-      break;
-    case V8MLAutoPad::Enum::kSameLower:
-      checked_padding_begin = (checked_total_padding + 1) / 2;
-      checked_padding_end = checked_total_padding / 2;
-      break;
-    default:
-      NOTREACHED();
-  }
-  uint32_t padding_begin, padding_end;
-  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
-      !checked_padding_end.AssignIfValid(&padding_end)) {
-    return absl::nullopt;
-  }
-  return PaddingSizes({.begin = padding_begin, .end = padding_end});
 }
 
 // Calculate the output size for conv2d based on WebNN spec:
@@ -315,7 +267,7 @@ absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
   // options.padding array are ignored and the explicit padding values need to
   // be calculated.
   if (auto_pad != V8MLAutoPad::Enum::kExplicit) {
-    auto padding_sizes_height = CalculatePaddingForAutoPad(
+    auto padding_sizes_height = MLGraphBuilder::CalculatePaddingForAutoPad(
         auto_pad.AsEnum(), input_height, filter_height, stride_height,
         dilation_height);
     if (!padding_sizes_height) {
@@ -327,9 +279,9 @@ absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
     }
     padding_beginning_height = padding_sizes_height.value().begin;
     padding_ending_height = padding_sizes_height.value().end;
-    auto padding_sizes_width =
-        CalculatePaddingForAutoPad(auto_pad.AsEnum(), input_width, filter_width,
-                                   stride_width, dilation_width);
+    auto padding_sizes_width = MLGraphBuilder::CalculatePaddingForAutoPad(
+        auto_pad.AsEnum(), input_width, filter_width, stride_width,
+        dilation_width);
     if (!padding_sizes_width) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
@@ -559,6 +511,47 @@ void MLGraphBuilder::Trace(Visitor* visitor) const {
 
 MLContext* MLGraphBuilder::GetContext() const {
   return ml_context_;
+}
+
+// static
+absl::optional<MLGraphBuilder::PaddingSizes>
+MLGraphBuilder::CalculatePaddingForAutoPad(V8MLAutoPad::Enum auto_pad,
+                                           const uint32_t input_size,
+                                           const uint32_t filter_size,
+                                           const uint32_t stride,
+                                           const uint32_t dilation) {
+  auto checked_output_size =
+      (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
+  auto checked_dilated_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  auto checked_needed_input_size =
+      (checked_output_size - 1) * stride + checked_dilated_filter_size;
+  if (!checked_needed_input_size.IsValid()) {
+    return absl::nullopt;
+  }
+  auto checked_total_padding =
+      checked_needed_input_size.ValueOrDie() > input_size
+          ? checked_needed_input_size - input_size
+          : base::MakeCheckedNum<uint32_t>(0);
+  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
+  switch (auto_pad) {
+    case V8MLAutoPad::Enum::kSameUpper:
+      checked_padding_begin = checked_total_padding / 2;
+      checked_padding_end = (checked_total_padding + 1) / 2;
+      break;
+    case V8MLAutoPad::Enum::kSameLower:
+      checked_padding_begin = (checked_total_padding + 1) / 2;
+      checked_padding_end = checked_total_padding / 2;
+      break;
+    default:
+      NOTREACHED();
+  }
+  uint32_t padding_begin, padding_end;
+  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
+      !checked_padding_end.AssignIfValid(&padding_end)) {
+    return absl::nullopt;
+  }
+  return PaddingSizes({.begin = padding_begin, .end = padding_end});
 }
 
 MLOperand* MLGraphBuilder::input(String name,

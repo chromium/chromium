@@ -105,17 +105,20 @@ NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
   return buffer_view;
 }
 
-MLOperand* BuildConstant(V8TestingScope& scope,
-                         MLGraphBuilder* builder,
-                         const Vector<uint32_t>& dimensions,
-                         V8MLOperandType::Enum type) {
+MLOperand* BuildConstant(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const Vector<uint32_t>& dimensions,
+    V8MLOperandType::Enum type,
+    absl::optional<NotShared<DOMArrayBufferView>> user_buffer_view) {
   auto* desc = MLOperandDescriptor::Create();
   desc->setDimensions(dimensions);
   desc->setType(type);
   size_t size = std::accumulate(dimensions.begin(), dimensions.end(), size_t(1),
                                 std::multiplies<uint32_t>());
   NotShared<DOMArrayBufferView> buffer_view =
-      CreateDOMArrayBufferView(size, type);
+      user_buffer_view ? std::move(user_buffer_view.value())
+                       : CreateDOMArrayBufferView(size, type);
   auto* constant =
       builder->constant(desc, buffer_view, scope.GetExceptionState());
   EXPECT_NE(constant, nullptr);

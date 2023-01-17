@@ -15,6 +15,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/buildflag.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
@@ -342,6 +343,195 @@ uint32_t GetOperatorOutputValueId(const MLOperator* op,
   return operand_value_id_map.at(output);
 }
 
+struct XnnOutputRange {
+  float min;
+  float max;
+};
+
+// Helper to get XNNPACK Node output value range for WebNN activation operators.
+XnnOutputRange GetXnnOutputRangeForActivation(const MLOperator* ml_operator) {
+  DCHECK(ml_operator);
+  XnnOutputRange output_range;
+  switch (ml_operator->Kind()) {
+    // TODO(crbug.com/1273291): Support clamp.
+    case MLOperator::OperatorKind::kRelu:
+      // Set the minimum value to 0 according to the rectified linear function,
+      // y = max(0, x).
+      output_range.min = 0.0f;
+      output_range.max = +std::numeric_limits<float>::infinity();
+      break;
+    default:
+      // Only clamp and relu are supported.
+      NOTREACHED();
+  }
+  return output_range;
+}
+
+xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
+                                  const MLOperator* conv2d,
+                                  const OperandValueIdMap& operand_value_id_map,
+                                  String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(conv2d, operand_value_id_map, 0);
+  const uint32_t filter_id =
+      GetOperatorInputValueId(conv2d, operand_value_id_map, 1);
+  // If there is no bias operand, set the XNNPACK Value ID of bias tensor to
+  // XNN_INVALID_VALUE_ID.
+  const uint32_t bias_id =
+      conv2d->Inputs().size() == 3
+          ? GetOperatorInputValueId(conv2d, operand_value_id_map, 2)
+          : XNN_INVALID_VALUE_ID;
+  const uint32_t output_id =
+      GetOperatorOutputValueId(conv2d, operand_value_id_map);
+
+  const MLConv2dOptions* options =
+      static_cast<const MLConv2dOptions*>(conv2d->Options());
+
+  // Set strides of XNNPACK conv2d, default to 1.
+  const Vector<int32_t> default_strides({1, 1});
+  const uint32_t stride_height =
+      base::checked_cast<uint32_t>(options->getStridesOr(default_strides)[0]);
+  const uint32_t stride_width =
+      base::checked_cast<uint32_t>(options->getStridesOr(default_strides)[1]);
+
+  // Set dilations of XNNPACK conv2d, default to 1.
+  const Vector<int32_t> default_dilations({1, 1});
+  const uint32_t dilation_height = base::checked_cast<uint32_t>(
+      options->getDilationsOr(default_dilations)[0]);
+  const uint32_t dilation_width = base::checked_cast<uint32_t>(
+      options->getDilationsOr(default_dilations)[1]);
+
+  // Set input and filter sizes of XNNPACK conv2d.
+  uint32_t input_height, input_width;
+  uint32_t filter_height, filter_width;
+  uint32_t input_channels, output_channels;
+  const uint32_t groups = base::checked_cast<uint32_t>(options->groups());
+  bool depthwise = false;
+  if (options->inputLayout().AsEnum() == V8MLInputOperandLayout::Enum::kNhwc) {
+    const auto* input = conv2d->Inputs()[0].Get();
+    DCHECK(input);
+    input_height = input->Dimensions()[1];
+    input_width = input->Dimensions()[2];
+    input_channels = input->Dimensions()[3];
+    const auto* output = conv2d->Outputs()[0].Get();
+    DCHECK(output);
+    output_channels = output->Dimensions()[3];
+
+    // According to WebNN conv2d spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d, A depthwise
+    // conv2d operation is a variant of grouped convolution where the
+    // options.groups == input_channels == output_channels.
+    depthwise =
+        (groups == input_channels && groups == output_channels && groups != 1);
+    if (!depthwise) {
+      // For regular conv2d, XNNPACK expects weights layout in ohwi that is
+      // [groups * group_output_channels, kernel_height, kernel_width,
+      //  group_input_channels].
+      //
+      // TODO(crbug.com/1273291): support other layouts by transposing the
+      // filter operand.
+      if (options->filterLayout().AsEnum() !=
+          V8MLConv2dFilterOperandLayout::Enum::kOhwi) {
+        error_message = String::Format("The filter layout %s is not supported.",
+                                       options->filterLayout().AsCStr());
+        return xnn_status_unsupported_parameter;
+      }
+    } else {
+      // For depthwise conv2d, XNNPACK expects weights layout in ihwo that is
+      // [1, kernel_height, kernel_width, input_channels * depth_multiplier].
+      //
+      // TODO(crbug.com/1273291): support other layouts by transposing the
+      // filter operand.
+      if (options->filterLayout().AsEnum() !=
+          V8MLConv2dFilterOperandLayout::Enum::kIhwo) {
+        error_message = String::Format("The filter layout %s is not supported.",
+                                       options->filterLayout().AsCStr());
+        return xnn_status_unsupported_parameter;
+      }
+    }
+    const auto* filter = conv2d->Inputs()[1].Get();
+    DCHECK(filter);
+    filter_height = filter->Dimensions()[1];
+    filter_width = filter->Dimensions()[2];
+  } else {
+    // TODO(crbug.com/1273291): support other layouts by transposing the input
+    // operand.
+    error_message = String::Format("The input layout %s is not supported.",
+                                   options->inputLayout().AsCStr());
+    return xnn_status_unsupported_parameter;
+  }
+
+  // Set or calculate padding sizes of XNNPACK conv2d.
+  uint32_t pad_top, pad_bottom, pad_left, pad_right;
+  if (options->autoPad().AsEnum() == V8MLAutoPad::Enum::kExplicit) {
+    // WebNN padding sizes are in [beginning_height, ending_height,
+    // beginning_width, ending_width], default to 0.
+    const Vector<int32_t> default_pads({0, 0, 0, 0});
+    pad_top =
+        base::checked_cast<uint32_t>(options->getPaddingOr(default_pads)[0]);
+    pad_bottom =
+        base::checked_cast<uint32_t>(options->getPaddingOr(default_pads)[1]);
+    pad_left =
+        base::checked_cast<uint32_t>(options->getPaddingOr(default_pads)[2]);
+    pad_right =
+        base::checked_cast<uint32_t>(options->getPaddingOr(default_pads)[3]);
+  } else {
+    auto padding_sizes_height = MLGraphBuilder::CalculatePaddingForAutoPad(
+        options->autoPad().AsEnum(), input_height, filter_height, stride_height,
+        dilation_height);
+    DCHECK(padding_sizes_height);
+    pad_top = padding_sizes_height.value().begin;
+    pad_bottom = padding_sizes_height.value().end;
+    auto padding_sizes_width = MLGraphBuilder::CalculatePaddingForAutoPad(
+        options->autoPad().AsEnum(), input_width, filter_width, stride_width,
+        dilation_width);
+    pad_left = padding_sizes_width.value().begin;
+    pad_right = padding_sizes_width.value().end;
+  }
+
+  // Set the minimum and maximum output values for XNNPACK conv2d based on the
+  // fused activation function. If no fused activation function is set, there
+  // are no limits for output values.
+  XnnOutputRange output_range{.min = -std::numeric_limits<float>::infinity(),
+                              .max = +std::numeric_limits<float>::infinity()};
+  if (options->hasActivation()) {
+    switch (options->activation()->Kind()) {
+      case MLOperator::OperatorKind::kRelu:
+        output_range = GetXnnOutputRangeForActivation(options->activation());
+        break;
+      default:
+        error_message =
+            "The fused operator (" +
+            MLOperator::OperatorKindToString(options->activation()->Kind()) +
+            ") is not supported by conv2d.";
+        return xnn_status_unsupported_parameter;
+    }
+  }
+
+  // Set group input and output channels of XNNPACK conv2d.
+  const size_t group_input_channels = input_channels / groups;
+  const size_t group_output_channels = output_channels / groups;
+
+  // Define XNNPACK conv2d or depthwise conv2d Node for the Subgraph object.
+  const uint32_t flags = 0;
+  if (depthwise) {
+    const uint32_t depth_multiplier = 1;
+    XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_depthwise_convolution_2d(
+        subgraph, pad_top, pad_right, pad_bottom, pad_left, filter_height,
+        filter_width, stride_height, stride_width, dilation_height,
+        dilation_width, depth_multiplier, input_channels, output_range.min,
+        output_range.max, input_id, filter_id, bias_id, output_id, flags));
+  } else {
+    XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_convolution_2d(
+        subgraph, pad_top, pad_right, pad_bottom, pad_left, filter_height,
+        filter_width, stride_height, stride_width, dilation_height,
+        dilation_width, groups, group_input_channels, group_output_channels,
+        output_range.min, output_range.max, input_id, filter_id, bias_id,
+        output_id, flags));
+  }
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForElementWiseBinary(
     xnn_subgraph_t subgraph,
     const MLOperator* binary,
@@ -400,11 +590,11 @@ xnn_status DefineXnnNodeForRelu(xnn_subgraph_t subgraph,
   const uint32_t input_id = GetOperatorInputValueId(relu, operand_value_id_map);
   const uint32_t output_id =
       GetOperatorOutputValueId(relu, operand_value_id_map);
-  const float output_min = 0.0f;
-  const float output_max = std::numeric_limits<float>::infinity();
+  const auto output_range = GetXnnOutputRangeForActivation(relu);
   const uint32_t flags = 0;
-  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_clamp(
-      subgraph, output_min, output_max, input_id, output_id, flags));
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_clamp(subgraph, output_range.min, output_range.max, input_id,
+                       output_id, flags));
   return xnn_status_success;
 }
 
@@ -418,6 +608,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
                          const OperandValueIdMap& operand_value_id_map,
                          String& error_message) {
   switch (ml_operator->Kind()) {
+    case MLOperator::OperatorKind::kConv2d:
+      XNN_CHECK_STATUS(DefineXnnNodeForConv2d(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    // Define XNNPACK Node for element-wise binary operators.
     case MLOperator::OperatorKind::kAdd:
     case MLOperator::OperatorKind::kSub:
     case MLOperator::OperatorKind::kMul:
@@ -428,11 +623,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
-    case MLOperator::OperatorKind::kRelu: {
+    case MLOperator::OperatorKind::kRelu:
       XNN_CHECK_STATUS(DefineXnnNodeForRelu(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
-    }
     default: {
       error_message = "The operator (" +
                       MLOperator::OperatorKindToString(ml_operator->Kind()) +

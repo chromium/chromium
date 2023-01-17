@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 
+#include <numeric>
+
 #include "base/system/sys_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -773,6 +776,147 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
     CheckExternalValues(xnnpack_graph, inputs, outputs);
     auto results = GetArrayBufferViewValues<float>(output_buffer);
     EXPECT_EQ(results, Vector<float>({6.0, 8.0, 10.0, 12.0}));
+  }
+}
+
+template <typename T>
+MLOperand* BuildConstant(V8TestingScope& scope,
+                         MLGraphBuilder* builder,
+                         const Vector<uint32_t>& dimensions,
+                         V8MLOperandType::Enum type,
+                         const Vector<T>& values) {
+  size_t buffer_size = std::accumulate(dimensions.begin(), dimensions.end(),
+                                       size_t(1), std::multiplies<uint32_t>());
+  auto buffer = CreateDOMArrayBufferView(buffer_size, type);
+  DCHECK_EQ(buffer->byteLength(), values.size() * sizeof(T));
+  memcpy(buffer->BaseAddress(), values.data(), buffer->byteLength());
+  return BuildConstant(scope, builder, dimensions, type, buffer);
+}
+
+template <typename T>
+struct Conv2dTester {
+  MLGraphXnnpackTest* helper;
+  OperandInfo<T> input;
+  OperandInfo<T> filter;
+  absl::optional<OperandInfo<T>> bias = absl::nullopt;
+  Vector<T> expected;
+
+  void Test(V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            MLConv2dOptions* options = MLConv2dOptions::Create()) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
+    auto* filter_operand = BuildConstant(scope, builder, filter.dimensions,
+                                         filter.type, filter.values);
+    if (bias) {
+      options->setBias(BuildConstant(scope, builder, bias.value().dimensions,
+                                     bias.value().type, bias.value().values));
+    }
+    auto* output_operand =
+        BuildConv2d(scope, builder, input_operand, filter_operand, options);
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    auto input_buffer =
+        CreateArrayBufferViewForOperand(input_operand, input.values);
+    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
+    auto* compute_exception = helper->ComputeGraph(
+        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    EXPECT_EQ(compute_exception, nullptr);
+    Vector<float> results = GetArrayBufferViewValues<T>(output_buffer);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, Conv2dTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope);
+  {
+    // Test conv2d operator for nhwc input layout and ohwi filter layout.
+    auto* options = MLConv2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
+    Conv2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 3},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                             11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {3, 1, 1, 3},
+                   .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0}},
+        .expected = {30.0, 36.0, 42.0, 66.0, 81.0, 96.0, 102.0, 126.0, 150.0,
+                     138.0, 171.0, 204.0, 174.0, 216.0, 258.0, 210.0, 261.0,
+                     312.0}}
+        .Test(scope, builder, options);
+  }
+  {
+    // Test fused conv2d operator for nhwc input layout and ohwi filter layout,
+    // fusing with bias operand and relu activation.
+    auto* options = MLConv2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
+    options->setActivation(builder->relu(scope.GetExceptionState()));
+    Conv2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 3},
+                  .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                             11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {3, 1, 1, 3},
+                   .values = {1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0}},
+        .bias = OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
+                                   .dimensions = {3},
+                                   .values = {-6000.0, -7000.0, 8000.0}},
+        .expected = {0.0, 0.0, 8042.0, 0.0, 0.0, 8096.0, 0.0, 0.0, 8150.0, 0.0,
+                     0.0, 8204.0, 0.0, 0.0, 8258.0, 0.0, 0.0, 8312.0}}
+        .Test(scope, builder, options);
+  }
+  {
+    // Test depthwise conv2d operator by setting groups to input channels,
+    // nhwc input layout, ihwo filter layout.
+    auto* options = MLConv2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kIhwo);
+    options->setGroups(4);
+    Conv2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 4},
+                  .values = {10.0, 21.0, 10.0, 0.0, 10.0, 22.0, 20.0, 0.0, 10.0,
+                             23.0, 30.0, 0.0, 10.0, 24.0, 40.0, 0.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {1, 2, 2, 4},
+                   .values = {0.25, 0.0, 10.0, 50.0, 0.25, 1.0, 20.0, 50.0,
+                              0.25, 0.0, 30.0, 50.0, 0.25, 1.0, 40.0, 50.0}},
+        .expected = {10.0, 46.0, 3000.0, 0.0}}
+        .Test(scope, builder, options);
+  }
+  {
+    // Test fused depthwise conv2d operator by setting groups to input channels,
+    // nhwc input layout, ihwo filter layout, fusing with bias operand and relu
+    // activation.
+    auto* options = MLConv2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kIhwo);
+    options->setGroups(4);
+    options->setActivation(builder->relu(scope.GetExceptionState()));
+    Conv2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 4},
+                  .values = {10.0, 21.0, 10.0, 0.0, 10.0, 22.0, 20.0, 0.0, 10.0,
+                             23.0, 30.0, 0.0, 10.0, 24.0, 40.0, 0.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {1, 2, 2, 4},
+                   .values = {0.25, 0.0, 10.0, 50.0, 0.25, 1.0, 20.0, 50.0,
+                              0.25, 0.0, 30.0, 50.0, 0.25, 1.0, 40.0, 50.0}},
+        .bias =
+            OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
+                               .dimensions = {4},
+                               .values = {-6000.0, -7000.0, 8000.0, 9000.0}},
+        .expected = {0.0, 0.0, 11000.0, 9000.0}}
+        .Test(scope, builder, options);
   }
 }
 
