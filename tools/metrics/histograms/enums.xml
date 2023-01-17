@@ -41666,6 +41666,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4424" label="DialogCloseWatcherCloseSignalClosedMultiple"/>
   <int value="4425" label="NoVarySearch"/>
   <int value="4426" label="FedCmUserInfo"/>
+  <int value="4440" label="CSSPseudoHasContainsMixOfValidAndInvalid"/>
+  <int value="4441" label="CSSPseudoIsWhereContainsMixOfValidAndInvalid"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

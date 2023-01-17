@@ -1304,7 +1304,6 @@ void RuleFeatureSet::UpdateFeaturesFromCombinatorForLogicalCombinationInHas(
 
 void RuleFeatureSet::AddValuesInComplexSelectorInsideIsWhereNot(
     const CSSSelector* selector_first) {
-  DCHECK(selector_first);
   for (const CSSSelector* complex = selector_first; complex;
        complex = CSSSelectorList::Next(*complex)) {
     DCHECK(complex);
