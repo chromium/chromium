@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -39,6 +38,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -160,8 +160,13 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     if (layout_block_)
       layout_block_->SetShouldCheckForPaintInvalidation();
     layout_block_ = new_layout_block;
-    if (new_layout_block)
+
+    if (new_layout_block) {
       needs_paint_invalidation_ = true;
+      // The caret property tree space may have changed.
+      layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
+          PaintArtifactCompositorUpdateReason::kFrameCaretPaint);
+    }
   }
 
   if (!new_layout_block) {
@@ -173,6 +178,10 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   const NGPhysicalBoxFragment* const new_box_fragment =
       rect_and_block.box_fragment;
   if (new_box_fragment != box_fragment_) {
+    // The caret property tree space may have changed.
+    layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
+        PaintArtifactCompositorUpdateReason::kFrameCaretPaint);
+
     if (new_box_fragment)
       needs_paint_invalidation_ = true;
     box_fragment_ = new_box_fragment;
