@@ -77,9 +77,6 @@ export class Background extends ChromeVoxState {
     /** @private {CursorRange} */
     this.pageSel_ = null;
 
-    /** @private {CursorRange} */
-    this.previousRange_ = null;
-
     /** @private {boolean} */
     this.talkBackEnabled_ = false;
 
@@ -117,6 +114,7 @@ export class Background extends ChromeVoxState {
     await LocalStorage.init();
     BrailleBackground.init();
     ChromeVoxPrefs.init();
+    ChromeVoxRange.init();
     TtsBackground.init();
     ChromeVoxBackground.init();
 
@@ -185,7 +183,7 @@ export class Background extends ChromeVoxState {
    * @override
    */
   setCurrentRange(newRange) {
-    this.previousRange_ = this.currentRange_;
+    ChromeVoxRange.previous = this.currentRange_;
     this.currentRange_ = newRange;
   }
 
@@ -314,7 +312,7 @@ export class Background extends ChromeVoxState {
     }
 
     if (!this.currentRange_ || !this.currentRange_.isValid()) {
-      ChromeVoxRange.set(this.previousRange_);
+      ChromeVoxRange.set(ChromeVoxRange.previous);
     }
   }
 

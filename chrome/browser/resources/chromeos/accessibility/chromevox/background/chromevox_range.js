@@ -40,6 +40,22 @@ export class ChromeVoxRangeObserver {
  * split between those two locations.
  */
 export class ChromeVoxRange {
+  /** @private */
+  constructor() {
+    /** @private {?CursorRange} */
+    this.previous_ = null;
+  }
+
+  static init() {
+    if (ChromeVoxRange.instance) {
+      throw new Error('Cannot create more than one ChromeVoxRange');
+    }
+    ChromeVoxRange.instance = new ChromeVoxRange();
+
+    BridgeHelper.registerHandler(
+        TARGET, Action.CLEAR_CURRENT_RANGE, () => ChromeVoxRange.set(null));
+  }
+
   /** @param {ChromeVoxRangeObserver} observer */
   static addObserver(observer) {
     ChromeVoxRange.observers_.push(observer);
@@ -57,6 +73,16 @@ export class ChromeVoxRange {
   static get current() {
     // TODO(anastasi): Move ownership of currentRange to ChromeVoxRange.
     return ChromeVoxState.instance.currentRange;
+  }
+
+  /** @return {?CursorRange} */
+  static get previous() {
+    return ChromeVoxRange.instance.previous_;
+  }
+
+  /** @param {?CursorRange} oldRange */
+  static set previous(oldRange) {
+    ChromeVoxRange.instance.previous_ = oldRange;
   }
 
   /**
@@ -119,6 +145,3 @@ export class ChromeVoxRange {
 
 /** @private {!Array<ChromeVoxRangeObserver>} */
 ChromeVoxRange.observers_ = [];
-
-BridgeHelper.registerHandler(
-    TARGET, Action.CLEAR_CURRENT_RANGE, () => ChromeVoxRange.set(null));
