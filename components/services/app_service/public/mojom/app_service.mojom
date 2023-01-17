@@ -3,5 +3,3 @@
 // found in the LICENSE file.
 
 module apps.mojom;
-
-import "components/services/app_service/public/mojom/types.mojom";

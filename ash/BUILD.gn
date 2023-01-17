@@ -3466,7 +3466,6 @@ test("ash_unittests") {
     "//components/prefs:test_support",
     "//components/quirks",
     "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/mojom",
     "//components/session_manager/core",
     "//components/soda",
     "//components/sync_preferences:test_support",

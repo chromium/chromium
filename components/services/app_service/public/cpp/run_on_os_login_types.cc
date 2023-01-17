@@ -23,26 +23,4 @@ bool RunOnOsLogin::operator!=(const RunOnOsLogin& other) const {
   return !(*this == other);
 }
 
-apps::mojom::RunOnOsLoginPtr ConvertRunOnOsLoginToMojomRunOnOsLogin(
-    const RunOnOsLogin& run_on_os_login) {
-  auto run_on_os_login_mojom = apps::mojom::RunOnOsLogin::New();
-  run_on_os_login_mojom->login_mode =
-      ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(
-          run_on_os_login.login_mode);
-  run_on_os_login_mojom->is_managed = run_on_os_login.is_managed;
-  return run_on_os_login_mojom;
-}
-
-apps::mojom::RunOnOsLoginMode ConvertRunOnOsLoginModeToMojomRunOnOsLoginMode(
-    RunOnOsLoginMode login_mode) {
-  switch (login_mode) {
-    case RunOnOsLoginMode::kUnknown:
-      return apps::mojom::RunOnOsLoginMode::kUnknown;
-    case RunOnOsLoginMode::kNotRun:
-      return apps::mojom::RunOnOsLoginMode::kNotRun;
-    case RunOnOsLoginMode::kWindowed:
-      return apps::mojom::RunOnOsLoginMode::kWindowed;
-  }
-}
-
 }  // namespace apps

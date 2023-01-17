@@ -294,7 +294,6 @@ include_rules = [
   "+components/segmentation_platform/public",
   "+components/send_tab_to_self",
   "+components/services/app_service/public",
-  "+components/services/app_service/public/mojom",
   "+components/services/filesystem/public/mojom",
   "+components/services/heap_profiling",
   "+components/services/language_detection/public/cpp",

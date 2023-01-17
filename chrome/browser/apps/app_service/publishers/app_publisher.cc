@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/services/app_service/public/cpp/capability_access.h"

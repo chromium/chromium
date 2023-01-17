@@ -76,6 +76,9 @@ component("app_types") {
   deps = [
     ":icon_types",
     ":run_on_os_login",
+    "//ui/gfx:gfx",
+    "//ui/gfx/geometry:geometry",
+    "//url:url",
   ]
 }
 
@@ -170,6 +173,7 @@ source_set("icon_loader") {
   deps = [
     ":app_types",
     ":icon_types",
+    "//ui/gfx:gfx",
   ]
 }
 
@@ -179,7 +183,11 @@ source_set("icon_loader_test_support") {
     "stub_icon_loader.h",
   ]
 
-  deps = [ ":icon_loader" ]
+  deps = [
+    ":icon_loader",
+    "//skia",
+    "//ui/gfx:gfx",
+  ]
 }
 
 component("icon_types") {
