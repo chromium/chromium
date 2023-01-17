@@ -95,7 +95,8 @@ void ManagedOncCollapseToActive(base::Value* network) {
     return;
   }
 
-  base::Value* active = network->FindKey(onc::kAugmentationActiveSetting);
+  base::Value* active =
+      network->GetDict().Find(onc::kAugmentationActiveSetting);
   if (active) {
     *network = active->Clone();
     return;
@@ -120,7 +121,8 @@ void ManagedOncCollapseToUiData(base::Value* network) {
   DCHECK(network);
   DCHECK(network->is_dict());
 
-  base::Value* shared = network->FindKey(onc::kAugmentationSharedSetting);
+  base::Value* shared =
+      network->GetDict().Find(onc::kAugmentationSharedSetting);
   if (shared) {
     *network = shared->Clone();
     return;
