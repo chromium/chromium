@@ -1451,6 +1451,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mAutofillPopupView.requestFocus();
         }
 
+        // Android has a bug that can lead to the a11y focus not being rendered: b/264356970
+        // The reason is that this event alone is not enough to rerender, this line works it
+        // around by adding the rerender trigger via the underlying view.
+        // TODO(b/264356970): Remove when all supported platforms have this bug fixed.
+        mView.invalidate();
+
         sendAccessibilityEvent(
                 mAccessibilityFocusId, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
         return true;
