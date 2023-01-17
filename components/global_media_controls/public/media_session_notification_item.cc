@@ -15,6 +15,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
+#include "media/remoting/remoting_constants.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -282,11 +283,20 @@ void MediaSessionNotificationItem::Freeze(base::OnceClosure unfrozen_callback) {
 }
 
 media_session::mojom::RemotePlaybackMetadataPtr
-MediaSessionNotificationItem::GetRemotePlaybackMetadata() {
+MediaSessionNotificationItem::GetRemotePlaybackMetadata() const {
+  // Return nullptr if Remote Playback is disabled.
   if (!session_info_ || !session_info_->remote_playback_metadata ||
       session_info_->remote_playback_metadata->remote_playback_disabled) {
     return nullptr;
   }
+
+  // Return nullptr if the media is too short.
+  if (session_position_.has_value() &&
+      session_position_.value().duration() <=
+          base::Seconds(media::remoting::kMinRemotingMediaDurationInSec)) {
+    return nullptr;
+  }
+
   return session_info_->remote_playback_metadata.Clone();
 }
 

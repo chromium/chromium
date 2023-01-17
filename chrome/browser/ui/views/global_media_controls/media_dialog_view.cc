@@ -87,10 +87,14 @@ const std::string GetRemotePlaybackRouteId(
   if (!base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen) ||
       !item ||
       item->SourceType() !=
-          media_message_center::SourceType::kLocalMediaSession ||
-      !static_cast<global_media_controls::MediaSessionNotificationItem*>(
-           item.get())
-           ->GetRemotePlaybackMetadata()
+          media_message_center::SourceType::kLocalMediaSession) {
+    return "";
+  }
+  const auto* media_session_item =
+      static_cast<global_media_controls::MediaSessionNotificationItem*>(
+          item.get());
+  if (!media_session_item->GetRemotePlaybackMetadata() ||
+      !media_session_item->GetRemotePlaybackMetadata()
            ->remote_playback_started) {
     return "";
   }
@@ -535,7 +539,7 @@ MediaDialogView::BuildFooterView(
     return footer_view;
   }
 
-  // Show a footerview for a Cast item.
+  // Show a footer view for a Cast item.
   if (item->SourceType() == media_message_center::SourceType::kCast &&
       media_router::GlobalMediaControlsCastStartStopEnabled(profile_)) {
     return std::make_unique<MediaItemUILegacyCastFooterView>(

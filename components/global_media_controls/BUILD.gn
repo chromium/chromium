@@ -28,6 +28,7 @@ component("global_media_controls") {
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
     "//media",
+    "//media/remoting:remoting_constants",
     "//skia",
     "//ui/color",
     "//ui/message_center/public/cpp",

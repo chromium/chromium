@@ -17,6 +17,7 @@ source_set("remoting_sender") {
   ]
 
   deps = [
+    ":remoting_constants",
     "//base",
     "//media",
     "//media/mojo/common",
