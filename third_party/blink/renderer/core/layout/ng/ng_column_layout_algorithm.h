@@ -74,17 +74,24 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   void PropagateBaselineFromChild(const NGPhysicalBoxFragment& child,
                                   LayoutUnit block_offset);
 
-  // Calculate the smallest possible block-size for balanced columns. This will
-  // be the initial size we'll try with when actually lay out the columns.
-  LayoutUnit CalculateBalancedColumnBlockSize(
+  // Calculate the smallest possible block-size for columns, based on the
+  // content. For column balancing this will be the initial size we'll try with
+  // when actually lay out the columns (and then stretch the columns and re-lay
+  // out until the desired result is achieved). For column-fill:auto and
+  // unconstrained block-size, we also need to go through this, since we need to
+  // know the column block-size before performing "real" layout, since all
+  // columns in a row need to have the same block-size.
+  LayoutUnit ResolveColumnAutoBlockSize(
       const LogicalSize& column_size,
       LayoutUnit row_offset,
-      const NGBlockBreakToken* child_break_token);
+      const NGBlockBreakToken* child_break_token,
+      bool balance_columns);
 
-  LayoutUnit CalculateBalancedColumnBlockSizeInternal(
+  LayoutUnit ResolveColumnAutoBlockSizeInternal(
       const LogicalSize& column_size,
       LayoutUnit row_offset,
-      const NGBlockBreakToken* child_break_token);
+      const NGBlockBreakToken* child_break_token,
+      bool balance_columns);
 
   LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
                                       LayoutUnit row_offset) const;
