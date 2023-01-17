@@ -5016,16 +5016,16 @@
             ]
         }
     ],
-    "GaiaIdInAMF": [
+    "GaiaIdCacheInAccountManagerFacade": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230112",
                     "enable_features": [
-                        "GaiaIdInAMF"
+                        "GaiaIdCacheInAccountManagerFacade"
                     ]
                 }
             ]
