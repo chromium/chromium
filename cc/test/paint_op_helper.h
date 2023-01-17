@@ -226,6 +226,10 @@ class PaintOpHelper {
     return str.str();
   }
 
+  static std::string ToString(uint8_t value) {
+    return base::StringPrintf("%d", value);
+  }
+
   static std::string ToString(const SkScalar& scalar) {
     return base::StringPrintf("%.3f", scalar);
   }
@@ -248,6 +252,10 @@ class PaintOpHelper {
     return base::StringPrintf("[bounded by %.3f,%.3f %.3fx%.3f]",
                               rect.rect().x(), rect.rect().y(),
                               rect.rect().width(), rect.rect().height());
+  }
+
+  static std::string ToString(const SkRegion& rect) {
+    return ToString(rect.getBounds());
   }
 
   static std::string ToString(const SkM44& matrix) {
@@ -277,6 +285,35 @@ class PaintOpHelper {
   static std::string ToString(const SkColor4f& color) {
     return base::StringPrintf("rgba(%f, %f, %f, %f)", color.fR, color.fG,
                               color.fB, color.fA);
+  }
+
+  static std::string ToString(const SkISize& size) {
+    return base::StringPrintf("SkISize(%d, %d)", size.width(), size.height());
+  }
+
+  static std::string ToString(const SkIPoint& point) {
+    return base::StringPrintf("SkIPoint(%d, %d)", point.x(), point.y());
+  }
+
+  static std::string ToString(const SkPoint3& point) {
+    return base::StringPrintf(
+        "SkPoint3(%s, %s, %s)", ToString(point.x()).c_str(),
+        ToString(point.y()).c_str(), ToString(point.z()).c_str());
+  }
+
+  static std::string ToString(SkColorChannel channel) {
+    switch (channel) {
+      case SkColorChannel::kR:
+        return "kR";
+      case SkColorChannel::kG:
+        return "kG";
+      case SkColorChannel::kB:
+        return "kB";
+      case SkColorChannel::kA:
+        return "kA";
+    }
+    NOTREACHED();
+    return "unknown";
   }
 
   static std::string ToString(const SkBlendMode& mode) {
@@ -406,6 +443,56 @@ class PaintOpHelper {
     return "<unknown PaintFlags::Join>";
   }
 
+  static std::string ToString(TurbulencePaintFilter::TurbulenceType type) {
+    switch (type) {
+      case TurbulencePaintFilter::TurbulenceType::kTurbulence:
+        return "kTurbulence";
+      case TurbulencePaintFilter::TurbulenceType::kFractalNoise:
+        return "kFractalNoise";
+    }
+    return "<unknown TurbulencePaintFilter::TurbulenceType>";
+  }
+
+  static std::string ToString(MorphologyPaintFilter::MorphType type) {
+    switch (type) {
+      case MorphologyPaintFilter::MorphType::kDilate:
+        return "kDilate";
+      case MorphologyPaintFilter::MorphType::kErode:
+        return "kErode";
+    }
+    return "<unknown MorphologyPaintFilter::MorphType>";
+  }
+
+  static std::string ToString(PaintFilter::LightingType type) {
+    switch (type) {
+      case PaintFilter::LightingType::kDiffuse:
+        return "kDiffuse";
+      case PaintFilter::LightingType::kSpecular:
+        return "kSpecular";
+    }
+    return "<unknown PaintFilter::LightingType>";
+  }
+
+  static std::string ToString(DropShadowPaintFilter::ShadowMode shadow_mode) {
+    switch (shadow_mode) {
+      case DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground:
+        return "kDrawShadowAndForeground";
+      case DropShadowPaintFilter::ShadowMode::kDrawShadowOnly:
+        return "kDrawShadowOnly";
+    }
+    return "<unknown DropShadowPaintFilter::ShadowMode>";
+  }
+
+  static std::string ToString(const SkImageFilters::Dither dither) {
+    switch (dither) {
+      case SkImageFilters::Dither::kNo:
+        return "kNo";
+      case SkImageFilters::Dither::kYes:
+        return "kYes";
+    }
+    return "<unknown SkImageFilters::Dither>";
+  }
+
   static std::string ToString(const SkColorFilter& filter) {
     return "SkColorFilter";
   }
@@ -504,6 +591,20 @@ class PaintOpHelper {
     return "<sk text blob>";
   }
 
+  static std::string ToString(SkTileMode tile_mode) {
+    switch (tile_mode) {
+      case SkTileMode::kClamp:
+        return "kClamp";
+      case SkTileMode::kRepeat:
+        return "kRepeat";
+      case SkTileMode::kMirror:
+        return "kMirror";
+      case SkTileMode::kDecal:
+        return "kDecal";
+    }
+    return "<unknown SkTileMode>";
+  }
+
   static std::string ToString(const gfx::SizeF& size) {
     return base::StringPrintf("[%s]", size.ToString().c_str());
   }
@@ -556,8 +657,266 @@ class PaintOpHelper {
     return str.str();
   }
 
-  static std::string ToString(const PaintFilter& filter) {
-    return "<PaintFilter>";
+  static std::string ToString(const PaintFilter& base_filter) {
+    std::ostringstream str;
+    str << std::boolalpha;
+    switch (base_filter.type()) {
+      case PaintFilter::Type::kNullFilter:
+        str << "NullFilter()";
+        break;
+      case PaintFilter::Type::kColorFilter: {
+        const auto& filter =
+            static_cast<const ColorFilterPaintFilter&>(base_filter);
+        str << "ColorFilterPaintFilter("
+            << "color_filter=" << ToString(filter.color_filter())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kBlur: {
+        const auto& filter = static_cast<const BlurPaintFilter&>(base_filter);
+
+        str << "BlurPaintFilter("
+            << "sigma_x=" << ToString(filter.sigma_x())
+            << ", sigma_y=" << ToString(filter.sigma_y())
+            << ", tile_mode=" << ToString(filter.tile_mode())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kDropShadow: {
+        const auto& filter =
+            static_cast<const DropShadowPaintFilter&>(base_filter);
+        str << "DropShadowPaintFilter("
+            << "dx=" << ToString(filter.dx())
+            << ", dy=" << ToString(filter.dy())
+            << ", sigma_x=" << ToString(filter.sigma_x())
+            << ", sigma_y=" << ToString(filter.sigma_y())
+            << ", color=" << ToString(filter.color())
+            << ", shadow_mode=" << ToString(filter.shadow_mode())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kMagnifier: {
+        const auto& filter =
+            static_cast<const MagnifierPaintFilter&>(base_filter);
+        str << "MagnifierPaintFilter("
+            << "src_rect=" << ToString(filter.src_rect())
+            << ", inset=" << ToString(filter.inset())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kCompose: {
+        const auto& filter =
+            static_cast<const ComposePaintFilter&>(base_filter);
+        str << "ComposePaintFilter("
+            << "outer=" << ToString(filter.outer())
+            << ", inner=" << ToString(filter.inner())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kAlphaThreshold: {
+        const auto& filter =
+            static_cast<const AlphaThresholdPaintFilter&>(base_filter);
+        str << "AlphaThresholdPaintFilter("
+            << "region=" << ToString(filter.region())
+            << ", inner_min=" << ToString(filter.inner_min())
+            << ", outer_max=" << ToString(filter.outer_max())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kXfermode: {
+        const auto& filter =
+            static_cast<const XfermodePaintFilter&>(base_filter);
+        str << "XfermodePaintFilter("
+            << "blend_mode=" << ToString(filter.blend_mode())
+            << ", background=" << ToString(filter.background())
+            << ", foreground=" << ToString(filter.foreground())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kArithmetic: {
+        const auto& filter =
+            static_cast<const ArithmeticPaintFilter&>(base_filter);
+        str << "ArithmeticPaintFilter("
+            << "k1=" << filter.k1() << ", k2=" << filter.k2()
+            << ", k3=" << filter.k3() << ", k4=" << filter.k4()
+            << ", enfore_pm_color=" << filter.enforce_pm_color()
+            << ", background=" << ToString(filter.background())
+            << ", foreground=" << ToString(filter.foreground())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kMatrixConvolution: {
+        const auto& filter =
+            static_cast<const MatrixConvolutionPaintFilter&>(base_filter);
+        const SkISize& kernel_size = filter.kernel_size();
+        str << "MatrixConvolutionPaintFilter("
+            << "kernel_size=" << ToString(kernel_size) << ", kernel=[";
+        for (int32_t i = 0; i < kernel_size.width() * kernel_size.height();
+             ++i) {
+          str << (i != 0 ? ", " : "") << ToString(filter.kernel_at(i));
+        }
+        str << "], gain=" << ToString(filter.gain())
+            << ", bias=" << ToString(filter.bias())
+            << ", kernel_offset=" << ToString(filter.kernel_offset())
+            << ", tile_mode=" << ToString(filter.tile_mode())
+            << ", convolve_alpha=" << filter.convolve_alpha()
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kDisplacementMapEffect: {
+        const auto& filter =
+            static_cast<const DisplacementMapEffectPaintFilter&>(base_filter);
+        str << "DisplacementMapEffectPaintFilter("
+            << "channel_x=" << ToString(filter.channel_x())
+            << ", channel_y=" << ToString(filter.channel_y())
+            << ", scale=" << ToString(filter.scale())
+            << ", displacement=" << ToString(filter.displacement())
+            << ", color=" << ToString(filter.color())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kImage: {
+        const auto& filter = static_cast<const ImagePaintFilter&>(base_filter);
+        str << "ImagePaintFilter("
+            << "image=" << ToString(filter.image())
+            << ", src_rect=" << ToString(filter.src_rect())
+            << ", dst_rect=" << ToString(filter.dst_rect())
+            << ", filter_quality=" << ToString(filter.filter_quality())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kPaintRecord: {
+        const auto& filter = static_cast<const RecordPaintFilter&>(base_filter);
+        str << "RecordPaintFilter("
+            << "record=" << ToString(filter.record())
+            << ", record_bounds=" << ToString(filter.record_bounds())
+            << ", raster_scale=" << ToString(filter.raster_scale())
+            << ", scaling_behavior=" << ToString(filter.scaling_behavior())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kMerge: {
+        const auto& filter = static_cast<const MergePaintFilter&>(base_filter);
+        str << "MergePaintFilter("
+            << "input_count=" << filter.input_count() << ", input=[";
+        for (size_t i = 0; i < filter.input_count(); ++i) {
+          str << (i != 0 ? ", " : "") << ToString(filter.input_at(i));
+        }
+        str << "], crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kMorphology: {
+        const auto& filter =
+            static_cast<const MorphologyPaintFilter&>(base_filter);
+        str << "MorphologyPaintFilter("
+            << "morph_type=" << ToString(filter.morph_type())
+            << ", radius_x=" << filter.radius_x()
+            << ", radius_y=" << filter.radius_y()
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kOffset: {
+        const auto& filter = static_cast<const OffsetPaintFilter&>(base_filter);
+        str << "OffsetPaintFilter("
+            << "dx=" << filter.dx() << ", dy=" << filter.dy()
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kTile: {
+        const auto& filter = static_cast<const TilePaintFilter&>(base_filter);
+        str << "TilePaintFilter("
+            << "src=" << ToString(filter.src())
+            << ", dst=" << ToString(filter.dst())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kTurbulence: {
+        const auto& filter =
+            static_cast<const TurbulencePaintFilter&>(base_filter);
+        str << "TurbulencePaintFilter("
+            << "turbulence_type=" << ToString(filter.turbulence_type())
+            << ", base_frequency_x=" << ToString(filter.base_frequency_x())
+            << ", base_frequency_y=" << ToString(filter.base_frequency_y())
+            << ", num_octaves=" << filter.num_octaves()
+            << ", seed=" << ToString(filter.seed())
+            << ", tile_size=" << ToString(filter.tile_size())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kShader: {
+        const auto& filter = static_cast<const ShaderPaintFilter&>(base_filter);
+        str << "ShaderPaintFilter("
+            << "shader=" << ToString(filter.shader())
+            << ", alpha=" << ToString(filter.alpha())
+            << ", filter_quality=" << ToString(filter.filter_quality())
+            << ", dither=" << ToString(filter.dither())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kMatrix: {
+        const auto& filter = static_cast<const MatrixPaintFilter&>(base_filter);
+        str << "MatrixPaintFilter("
+            << "matrix=" << ToString(filter.matrix())
+            << ", filter_quality=" << ToString(filter.filter_quality())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kLightingDistant: {
+        const auto& filter =
+            static_cast<const LightingDistantPaintFilter&>(base_filter);
+        str << "LightingDistantPaintFilter("
+            << "lighting_type=" << ToString(filter.lighting_type())
+            << ", direction=" << ToString(filter.direction())
+            << ", light_color=" << ToString(filter.light_color())
+            << ", surface_scale=" << ToString(filter.surface_scale())
+            << ", kconstant=" << ToString(filter.kconstant())
+            << ", shininess=" << ToString(filter.shininess())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kLightingPoint: {
+        const auto& filter =
+            static_cast<const LightingPointPaintFilter&>(base_filter);
+        str << "LightingPointPaintFilter("
+            << "lighting_type=" << ToString(filter.lighting_type())
+            << ", location=" << ToString(filter.location())
+            << ", light_color=" << ToString(filter.light_color())
+            << ", surface_scale=" << ToString(filter.surface_scale())
+            << ", kconstant=" << ToString(filter.kconstant())
+            << ", shininess=" << ToString(filter.shininess())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+        break;
+      }
+      case PaintFilter::Type::kLightingSpot: {
+        const auto& filter =
+            static_cast<const LightingSpotPaintFilter&>(base_filter);
+        str << "LightingSpotPaintFilter("
+            << "lighting_type=" << ToString(filter.lighting_type())
+            << ", location=" << ToString(filter.location())
+            << ", target=" << ToString(filter.target())
+            << ", specular_exponent=" << ToString(filter.specular_exponent())
+            << ", cutoff_angle=" << ToString(filter.cutoff_angle())
+            << ", light_color=" << ToString(filter.light_color())
+            << ", surface_scale=" << ToString(filter.surface_scale())
+            << ", kconstant=" << ToString(filter.kconstant())
+            << ", shininess=" << ToString(filter.shininess())
+            << ", input=" << ToString(filter.input())
+            << ", crop_rect=" << ToString(filter.GetCropRect()) << ")";
+      }
+    }
+    return str.str();
   }
 
   static std::string ToString(const PaintFlags& flags) {
