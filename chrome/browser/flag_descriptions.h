@@ -2882,6 +2882,9 @@ extern const char kDisplayAlignmentAssistanceDescription[];
 extern const char kFastPairName[];
 extern const char kFastPairDescription[];
 
+extern const char kFastPairHandshakeRefactorName[];
+extern const char kFastPairHandshakeRefactorDescription[];
+
 extern const char kFastPairLowPowerName[];
 extern const char kFastPairLowPowerDescription[];
 

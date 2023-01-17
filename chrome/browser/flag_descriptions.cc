@@ -5020,6 +5020,11 @@ const char kFastPairDescription[] =
     "Enables Google Fast Pair service which uses BLE to discover supported "
     "nearby Bluetooth devices and surfaces a notification for quick pairing.";
 
+const char kFastPairHandshakeRefactorName[] =
+    "Enable Fast Pair Handshake Refactor";
+const char kFastPairHandshakeRefactorDescription[] =
+    "Enables refactored handshake logic for Google Fast Pair service.";
+
 const char kFastPairLowPowerName[] = "Enable Fast Pair Low Power mode";
 const char kFastPairLowPowerDescription[] =
     "Enables Fast Pair Low Power mode, which doesn't scan for devices "

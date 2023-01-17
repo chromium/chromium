@@ -877,6 +877,11 @@ BASE_FEATURE(kFamilyLinkOnSchoolDevice,
 // Enables the Fast Pair feature.
 BASE_FEATURE(kFastPair, "FastPair", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using new Handshake retry logic for Fast Pair.
+BASE_FEATURE(kFastPairHandshakeRefactor,
+             "FastPairHandshakeRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The amount of minutes we should wait before allowing notifications for a
 // recently lost device.
 const base::FeatureParam<double> kFastPairDeviceLostNotificationTimeoutMinutes{
@@ -2546,6 +2551,10 @@ bool IsFamilyLinkOnSchoolDeviceEnabled() {
 
 bool IsFastPairEnabled() {
   return base::FeatureList::IsEnabled(kFastPair);
+}
+
+bool IsFastPairHandshakeRefactorEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairHandshakeRefactor);
 }
 
 bool IsFastPairLowPowerEnabled() {

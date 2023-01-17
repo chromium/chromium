@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
@@ -32,6 +33,10 @@ constexpr int kMaxNumHandshakeAttempts = 3;
 // 1s delay after cancelling pairing was chosen to align with Android's Fast
 // Pair implementation.
 constexpr base::TimeDelta kCancelPairingRetryDelay = base::Seconds(1);
+
+// 1s delay after handshake failure to allow failed handshake to tear down.
+// TODO(b/265311455): implement handshake factory to handle retry logic.
+constexpr base::TimeDelta kRetryHandshakeDelay = base::Seconds(1);
 
 }  // namespace
 
@@ -187,7 +192,17 @@ void PairerBrokerImpl::OnHandshakeFailure(scoped_refptr<Device> device,
                                           PairFailure failure) {
   if (num_handshake_attempts_[device->ble_address()] <
       kMaxNumHandshakeAttempts) {
-    CreateHandshake(device);
+    if (ash::features::IsFastPairHandshakeRefactorEnabled()) {
+      // Directly calling CreateHandshake() from here will cause the new
+      // handshake to be nested inside the failed handshake. Use a timer to give
+      // the failed handshake time to cleanup and avoid nesting.
+      retry_handshake_timer_.Start(
+          FROM_HERE, kRetryHandshakeDelay,
+          base::BindOnce(&PairerBrokerImpl::CreateHandshake,
+                         weak_pointer_factory_.GetWeakPtr(), device));
+    } else {
+      CreateHandshake(device);
+    }
     return;
   }
 
@@ -287,7 +302,7 @@ void PairerBrokerImpl::OnFastPairBondingFailure(scoped_refptr<Device> device,
     cancel_pairing_timer_.Start(
         FROM_HERE, kCancelPairingRetryDelay,
         base::BindOnce(&PairerBrokerImpl::PairFastPairDevice,
-                       base::Unretained(this), device));
+                       weak_pointer_factory_.GetWeakPtr(), device));
 
     return;
   }

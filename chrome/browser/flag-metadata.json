@@ -3615,6 +3615,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "fast-pair-handshake-refactor",
+    "owners": [ "//ash/quick_pair/OWNERS", "akingsb@google.com" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "fast-pair-low-power",
     "owners": [
       "//ash/quick_pair/OWNERS",

@@ -82,6 +82,8 @@ class PairerBrokerImpl final : public PairerBroker {
   // Timer to provide a delay after cancelling pairing.
   base::OneShotTimer cancel_pairing_timer_;
 
+  base::OneShotTimer retry_handshake_timer_;
+
   base::WeakPtrFactory<PairerBrokerImpl> weak_pointer_factory_{this};
 };
 

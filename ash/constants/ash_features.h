@@ -260,6 +260,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFaceMLApp);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFamilyLinkOnSchoolDevice);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPair);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kFastPairHandshakeRefactor);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairPreventNotificationsForRecentlyLostDevice);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double>
@@ -696,6 +698,7 @@ bool IsExternalKeyboardInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFaceMLSwaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairHandshakeRefactorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairLowPowerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled();

@@ -59955,6 +59955,7 @@ from previous Chrome versions.
   <int value="-641777884" label="SharedHighlightingManager:enabled"/>
   <int value="-641719457" label="disable-compositor-touch-hit-testing"/>
   <int value="-641423897" label="CompositeAfterPaint:disabled"/>
+  <int value="-640915559" label="FastPairHandshakeRefactor:enabled"/>
   <int value="-640191786" label="DesktopPWAsWithoutExtensions:enabled"/>
   <int value="-639070391" label="FreezeUserAgent:disabled"/>
   <int value="-639026783" label="disable-gpu-appcontainer"/>
@@ -60369,6 +60370,7 @@ from previous Chrome versions.
   <int value="-395259448" label="VideoPlayerJsModules:disabled"/>
   <int value="-394734604" label="FillingPasswordsFromAnyOrigin:disabled"/>
   <int value="-392813122" label="LibinputHandleTouchpad"/>
+  <int value="-390984438" label="FastPairHandshakeRefactor:disabled"/>
   <int value="-390798267" label="DynamicColorButtonsAndroid:disabled"/>
   <int value="-390734327" label="WallpaperGooglePhotosIntegration:disabled"/>
   <int value="-390624541" label="RestrictedApiOrigins:disabled"/>
