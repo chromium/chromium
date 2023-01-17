@@ -68,25 +68,37 @@ ui::ColorId GetHintColorId(int context) {
 }
 
 ui::ColorId GetColorId(int context, int style) {
-  if (style == style::STYLE_DIALOG_BUTTON_DEFAULT)
+  if (style == style::STYLE_DIALOG_BUTTON_DEFAULT) {
     return ui::kColorButtonForegroundProminent;
-  if (style == style::STYLE_DISABLED)
+  }
+  if (style == style::STYLE_DIALOG_BUTTON_TONAL) {
+    return ui::kColorButtonForegroundTonal;
+  }
+  if (style == style::STYLE_DISABLED) {
     return GetDisabledColorId(context);
-  if (style == style::STYLE_LINK)
+  }
+  if (style == style::STYLE_LINK) {
     return ui::kColorLinkForeground;
-  if (style == style::STYLE_HINT)
+  }
+  if (style == style::STYLE_HINT) {
     return GetHintColorId(context);
-  if (context == style::CONTEXT_BUTTON_MD)
+  }
+  if (context == style::CONTEXT_BUTTON_MD) {
     return ui::kColorButtonForeground;
-  if (context == style::CONTEXT_LABEL && style == style::STYLE_SECONDARY)
+  }
+  if (context == style::CONTEXT_LABEL && style == style::STYLE_SECONDARY) {
     return ui::kColorLabelForegroundSecondary;
+  }
   if (context == style::CONTEXT_DIALOG_BODY_TEXT &&
-      (style == style::STYLE_PRIMARY || style == style::STYLE_SECONDARY))
+      (style == style::STYLE_PRIMARY || style == style::STYLE_SECONDARY)) {
     return ui::kColorDialogForeground;
-  if (context == style::CONTEXT_TEXTFIELD)
+  }
+  if (context == style::CONTEXT_TEXTFIELD) {
     return ui::kColorTextfieldForeground;
-  if (context == style::CONTEXT_MENU || context == style::CONTEXT_TOUCH_MENU)
+  }
+  if (context == style::CONTEXT_MENU || context == style::CONTEXT_TOUCH_MENU) {
     return GetMenuColorId(style);
+  }
   return ui::kColorLabelForeground;
 }
 

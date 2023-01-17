@@ -40,6 +40,12 @@ void AddUiColorMixer(ColorProvider* provider,
       kColorSubtleEmphasisBackground};
   mixer[kColorButtonBackgroundProminentFocused] = {
       kColorButtonBackgroundProminent};
+  // TODO(crbug.com/1406633): Finalize button colors.
+  mixer[kColorButtonBackgroundTonal] = {dark_mode
+                                            ? SkColorSetRGB(0x00, 0x4A, 0x77)
+                                            : SkColorSetRGB(0xC2, 0xE7, 0xFF)};
+  mixer[kColorButtonBackgroundTonalDisabled] = {kColorSubtleEmphasisBackground};
+  mixer[kColorButtonBackgroundTonalFocused] = {kColorButtonBackgroundTonal};
   mixer[kColorButtonBorder] = {kColorMidground};
   mixer[kColorButtonBorderDisabled] = {kColorSubtleEmphasisBackground};
   mixer[kColorButtonForeground] =
@@ -49,6 +55,10 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonForegroundDisabled] = {kColorDisabledForeground};
   mixer[kColorButtonForegroundProminent] =
       GetColorWithMaxContrast(kColorButtonBackgroundProminent);
+  // TODO(crbug.com/1406633): Finalize button colors.
+  mixer[kColorButtonForegroundTonal] = {dark_mode
+                                            ? SkColorSetRGB(0xC2, 0xE7, 0xFF)
+                                            : SkColorSetRGB(0x00, 0x1D, 0x35)};
   mixer[kColorButtonForegroundUnchecked] = {kColorSecondaryForeground};
   mixer[kColorCustomFrameCaptionForeground] = {SK_ColorWHITE};
   mixer[kColorDebugBoundsOutline] = SetAlpha(SK_ColorRED, 0x30);

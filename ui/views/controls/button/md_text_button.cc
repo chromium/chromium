@@ -76,18 +76,27 @@ MdTextButton::MdTextButton(PressedCallback callback,
 MdTextButton::~MdTextButton() = default;
 
 void MdTextButton::SetProminent(bool is_prominent) {
-  if (is_prominent_ == is_prominent)
-    return;
-
-  is_prominent_ = is_prominent;
-  SetProperty(kDrawFocusRingBackgroundOutline, is_prominent);
-
+  SetStyle(is_prominent ? Style::kProminent : Style::kDefault);
   UpdateColors();
-  OnPropertyChanged(&is_prominent_, kPropertyEffectsNone);
 }
 
 bool MdTextButton::GetProminent() const {
-  return is_prominent_;
+  return style_ == Style::kProminent;
+}
+
+void MdTextButton::SetStyle(views::MdTextButton::Style button_style) {
+  if (style_ == button_style) {
+    return;
+  }
+
+  style_ = button_style;
+  SetProperty(kDrawFocusRingBackgroundOutline,
+              button_style == Style::kProminent);
+  UpdateColors();
+}
+
+views::MdTextButton::Style MdTextButton::GetStyle() const {
+  return style_;
 }
 
 void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
@@ -166,8 +175,7 @@ void MdTextButton::SetText(const std::u16string& text) {
 }
 
 PropertyEffects MdTextButton::UpdateStyleToIndicateDefaultStatus() {
-  is_prominent_ = is_prominent_ || GetIsDefault();
-  UpdateColors();
+  SetProminent(style_ == Style::kProminent || GetIsDefault());
   return kPropertyEffectsNone;
 }
 
@@ -204,11 +212,15 @@ void MdTextButton::UpdateTextColor() {
   if (explicitly_set_normal_color())
     return;
 
-  SkColor enabled_text_color =
-      style::GetColor(*this, label()->GetTextContext(),
-                      is_prominent_ ? style::STYLE_DIALOG_BUTTON_DEFAULT
-                                    : style::STYLE_PRIMARY);
+  style::TextStyle text_style = style::STYLE_PRIMARY;
+  if (style_ == Style::kProminent) {
+    text_style = style::STYLE_DIALOG_BUTTON_DEFAULT;
+  } else if (style_ == Style::kTonal) {
+    text_style = style::STYLE_DIALOG_BUTTON_TONAL;
+  }
 
+  SkColor enabled_text_color =
+      style::GetColor(*this, label()->GetTextContext(), text_style);
   const auto colors = explicitly_set_colors();
   LabelButton::SetEnabledTextColors(enabled_text_color);
   // Disabled buttons need the disabled color explicitly set.
@@ -230,7 +242,7 @@ void MdTextButton::UpdateBackgroundColor() {
 
   if (bg_color_override_) {
     bg_color = *bg_color_override_;
-  } else if (is_prominent_) {
+  } else if (style_ == Style::kProminent) {
     bg_color = color_provider->GetColor(
         HasFocus() ? ui::kColorButtonBackgroundProminentFocused
                    : ui::kColorButtonBackgroundProminent);
@@ -238,18 +250,24 @@ void MdTextButton::UpdateBackgroundColor() {
       bg_color =
           color_provider->GetColor(ui::kColorButtonBackgroundProminentDisabled);
     }
+  } else if (style_ == Style::kTonal) {
+    bg_color = color_provider->GetColor(
+        HasFocus() ? ui::kColorButtonBackgroundTonalFocused
+                   : ui::kColorButtonBackgroundTonal);
+    if (is_disabled) {
+      bg_color =
+          color_provider->GetColor(ui::kColorButtonBackgroundTonalDisabled);
+    }
   }
 
   if (GetState() == STATE_PRESSED) {
     bg_color = GetNativeTheme()->GetSystemButtonPressedColor(bg_color);
   }
 
-  SkColor stroke_color;
-  if (is_prominent_) {
+  SkColor stroke_color = color_provider->GetColor(
+      is_disabled ? ui::kColorButtonBorderDisabled : ui::kColorButtonBorder);
+  if (style_ == Style::kProminent) {
     stroke_color = SK_ColorTRANSPARENT;
-  } else {
-    stroke_color = color_provider->GetColor(
-        is_disabled ? ui::kColorButtonBorderDisabled : ui::kColorButtonBorder);
   }
 
   SetBackground(

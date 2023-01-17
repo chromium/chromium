@@ -90,6 +90,9 @@ enum TextStyle {
   // Style for the default button on a dialog.
   STYLE_DIALOG_BUTTON_DEFAULT,
 
+  // Style for the tonal button on a dialog.
+  STYLE_DIALOG_BUTTON_TONAL,
+
   // Disabled "greyed out" text.
   STYLE_DISABLED,
 

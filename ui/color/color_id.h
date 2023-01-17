@@ -159,12 +159,16 @@
   E_CPONLY(kColorButtonBackgroundProminent) \
   E_CPONLY(kColorButtonBackgroundProminentDisabled) \
   E_CPONLY(kColorButtonBackgroundProminentFocused) \
+  E_CPONLY(kColorButtonBackgroundTonal) \
+  E_CPONLY(kColorButtonBackgroundTonalDisabled) \
+  E_CPONLY(kColorButtonBackgroundTonalFocused) \
   E_CPONLY(kColorButtonBorder) \
   E_CPONLY(kColorButtonBorderDisabled) \
   E_CPONLY(kColorButtonForeground) \
   E_CPONLY(kColorButtonForegroundChecked) \
   E_CPONLY(kColorButtonForegroundDisabled) \
   E_CPONLY(kColorButtonForegroundProminent) \
+  E_CPONLY(kColorButtonForegroundTonal) \
   E_CPONLY(kColorButtonForegroundUnchecked) \
   E_CPONLY(kColorCustomFrameCaptionForeground) \
   E_CPONLY(kColorDebugBoundsOutline) \

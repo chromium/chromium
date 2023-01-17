@@ -17,6 +17,17 @@ namespace views {
 // A button class that implements the Material Design text button spec.
 class VIEWS_EXPORT MdTextButton : public LabelButton {
  public:
+  // MdTextButton has various button styles that can change the button's
+  // background and text color.
+  // kDefault: white background with a blue text and a solid outline.
+  // kProminent: blue background with white text.
+  // kTonal: Cyan background with black text.
+  enum class Style {
+    kDefault = 0,
+    kProminent = 1,
+    kTonal = 2,
+  };
+
   METADATA_HEADER(MdTextButton);
 
   explicit MdTextButton(PressedCallback callback = PressedCallback(),
@@ -28,9 +39,13 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   ~MdTextButton() override;
 
-  // See |is_prominent_|.
+  // TODO(crbug.com/1406008): Remove the use of Prominent state and use button
+  // style state instead.
   void SetProminent(bool is_prominent);
   bool GetProminent() const;
+
+  void SetStyle(views::MdTextButton::Style button_style);
+  Style GetStyle() const;
 
   // See |bg_color_override_|.
   void SetBgColorOverride(const absl::optional<SkColor>& color);
@@ -66,8 +81,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void UpdateBackgroundColor() override;
   void UpdateColors();
 
-  // True if this button uses prominent styling (blue fill, etc.).
-  bool is_prominent_ = false;
+  Style style_ = Style::kDefault;
 
   // When set, this provides the background color.
   absl::optional<SkColor> bg_color_override_;
@@ -80,9 +94,10 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
 VIEW_BUILDER_PROPERTY(bool, Prominent)
-VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BgColorOverride)
 VIEW_BUILDER_PROPERTY(float, CornerRadius)
+VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BgColorOverride)
 VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, CustomPadding)
+VIEW_BUILDER_PROPERTY(MdTextButton::Style, Style)
 END_VIEW_BUILDER
 
 }  // namespace views
