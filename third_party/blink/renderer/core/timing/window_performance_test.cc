@@ -792,6 +792,9 @@ TEST_F(WindowPerformanceTest, TapOrClick) {
 }
 
 TEST_F(WindowPerformanceTest, PageVisibilityChanged) {
+  // The page visibility gets changed.
+  PageVisibilityChanged(GetTimeStamp(18));
+
   // Pointerdown
   base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
@@ -803,9 +806,6 @@ TEST_F(WindowPerformanceTest, PageVisibilityChanged) {
                        pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
 
-  // The page visibility gets changed.
-  PageVisibilityChanged(GetTimeStamp(18));
-
   // Pointerup
   base::TimeTicks pointerup_timestamp = GetTimeStamp(3);
   base::TimeTicks processing_start_pointerup = GetTimeStamp(5);
@@ -815,6 +815,7 @@ TEST_F(WindowPerformanceTest, PageVisibilityChanged) {
                        processing_start_pointerup, processing_end_pointerup,
                        pointer_id);
   SimulateSwapPromise(swap_time_pointerup);
+
   // Click
   base::TimeTicks click_timestamp = GetTimeStamp(13);
   base::TimeTicks processing_start_click = GetTimeStamp(15);
@@ -832,13 +833,16 @@ TEST_F(WindowPerformanceTest, PageVisibilityChanged) {
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(1u, entries.size());
   const ukm::mojom::UkmEntry* ukm_entry = entries[0];
-  // The event duration of pointerdown is 5ms. Because the page visibility was
-  // changed after the pointerup, click were created, the event durations of
-  // them are 3ms, 3ms. The maximum event duration is 5ms. The total event
-  // duration is 9ms.
+  // The event duration of pointerdown is 5ms, all the way to presentation.
+  // Because the page visibility was changed after pointerup & click were
+  // created, the event durations fall back to processingEnd.  That means
+  // they are become 3ms duration each. So the max duration is 5ms.
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 5);
+  // Because there is overlap with pointerdown and pointerup, the
+  // the non overlapping event duration for pointerup is only 1ms (not 3ms),
+  // So the total non-overlapping total is 5 + 1 + 3 = 9ms.
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,

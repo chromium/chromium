@@ -484,15 +484,35 @@ void WindowPerformance::ReportEventTimings(
 
     events_data_.pop_front();
 
-    int duration_in_ms = std::round((end_time - entry->startTime()) / 8) * 8;
+    base::TimeTicks entry_presentation_timestamp = presentation_timestamp;
+    DOMHighResTimeStamp entry_end_time = end_time;
+
     base::TimeDelta input_delay =
         base::Milliseconds(entry->processingStart() - entry->startTime());
     base::TimeDelta processing_time =
         base::Milliseconds(entry->processingEnd() - entry->processingStart());
     base::TimeDelta time_to_next_paint =
-        base::Milliseconds(end_time - entry->processingEnd());
-    entry->SetDuration(duration_in_ms);
-    entry->SetUnsafePresentationTimestamp(presentation_timestamp);
+        base::Milliseconds(entry_end_time - entry->processingEnd());
+
+    if (last_visibility_change_timestamp_ > event_timestamp &&
+        last_visibility_change_timestamp_ < presentation_timestamp) {
+      // The page visibility was changed. Ignore the presentation_timestamp and
+      // fallback to processingEnd (as if there was no next paint needed).
+      entry_end_time = entry->processingEnd();
+      // Adjust the entry_presentation_timestamp to also be == processingEnd.
+      // Ideally we could just assign the processingEnd value, except that
+      // processingEnd is already a DOMHighResTimeStamp and we cannot convert
+      // back to TimeTicks.  Subtracting the time_to_next_paint
+      entry_presentation_timestamp -= time_to_next_paint;
+      // Set time_to_next_paint = 0
+      time_to_next_paint = base::TimeDelta();
+    }
+
+    int rounded_duration =
+        std::round((entry_end_time - entry->startTime()) / 8) * 8;
+    entry->SetDuration(rounded_duration);
+    entry->SetUnsafePresentationTimestamp(entry_presentation_timestamp);
+
     if (entry->name() == "pointerdown") {
       pending_pointer_down_input_delay_ = input_delay;
       pending_pointer_down_processing_time_ = processing_time;
@@ -514,17 +534,11 @@ void WindowPerformance::ReportEventTimings(
 
     // Event Timing
     ResponsivenessMetrics::EventTimestamps event_timestamps = {
-        event_timestamp, presentation_timestamp};
-    // The page visibility was changed. In this case, we don't care about
-    // the time to next paint.
-    if (last_visibility_change_timestamp_ > event_timestamp &&
-        last_visibility_change_timestamp_ <= presentation_timestamp) {
-      event_timestamps.end_time -= time_to_next_paint;
-    }
+        event_timestamp, entry_presentation_timestamp};
     if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
                                          event_timestamps)) {
       NotifyAndAddEventTimingBuffer(entry);
-    };
+    }
 
     // First Input
     //
