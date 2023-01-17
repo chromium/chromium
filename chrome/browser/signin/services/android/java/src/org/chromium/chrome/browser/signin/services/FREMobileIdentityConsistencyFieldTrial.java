@@ -37,12 +37,12 @@ import java.util.Random;
  */
 public class FREMobileIdentityConsistencyFieldTrial {
     private static final Object LOCK = new Object();
-    private static final String ENABLED_GROUP = "Enabled9";
+    private static final String ENABLED_GROUP = "Enabled10";
     @VisibleForTesting
-    public static final String DISABLED_GROUP = "Disabled9";
+    public static final String DISABLED_GROUP = "Disabled10";
     private static final String DEFAULT_GROUP = "Default";
     @VisibleForTesting
-    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog9";
+    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog10";
 
     /**
      * Shows the new flow with separate sign-in and sync pages. Uses the new initialization logic
@@ -50,20 +50,20 @@ public class FREMobileIdentityConsistencyFieldTrial {
      * buttons on the welcome screen.
      */
     @VisibleForTesting
-    public static final String INITIALIZATION_FLOW_NEW_GROUP = "InitializationFlowNew9";
+    public static final String INITIALIZATION_FLOW_NEW_GROUP = "InitializationFlowNew10";
     /**
      * Shows the new flow with separate sign-in and sync pages. Uses the old initialization logic
      * in which continue/dismiss buttons on the welcome screen are shown after native is
      * initialized. This group is used to check the effect of the delay introduced by the native
      * initialization.
      */
-    public static final String INITIALIZATION_FLOW_OLD_GROUP = "InitializationFlowOld9";
+    public static final String INITIALIZATION_FLOW_OLD_GROUP = "InitializationFlowOld10";
     /**
      * Shows the flow without the sign-in page but with UMA controls in a dialog.
      * This group is used as control for {@link #INITIALIZATION_FLOW_NEW_GROUP} and
      * {@link #INITIALIZATION_FLOW_OLD_GROUP}.
      */
-    private static final String INITIALIZATION_FLOW_CONTROL_GROUP = "InitializationFlowControl9";
+    private static final String INITIALIZATION_FLOW_CONTROL_GROUP = "InitializationFlowControl10";
     /**
      * Used as a seed while selecting the group for the trial.
      */
@@ -326,29 +326,14 @@ public class FREMobileIdentityConsistencyFieldTrial {
             case Channel.DEFAULT:
             case Channel.CANARY:
             case Channel.DEV:
-                enabledPercent = 16;
-                disabledPercent = 16;
-                oldFreWithUmaDialogPercent = 16;
-                initializationFlowNewPercent = 16;
-                initializationFlowOldPercent = 16;
-                initializationFlowControlPercent = 16;
-                break;
             case Channel.BETA:
-                enabledPercent = 10;
-                disabledPercent = 10;
-                oldFreWithUmaDialogPercent = 10;
-                initializationFlowNewPercent = 10;
-                initializationFlowOldPercent = 10;
-                initializationFlowControlPercent = 10;
-                break;
             case Channel.STABLE:
-                enabledPercent = 30;
-                disabledPercent = 30;
-                oldFreWithUmaDialogPercent = 30;
-                initializationFlowNewPercent = 1;
-                initializationFlowOldPercent = 1;
-                initializationFlowControlPercent = 1;
-                break;
+                enabledPercent = 100;
+                disabledPercent = 0;
+                oldFreWithUmaDialogPercent = 0;
+                initializationFlowNewPercent = 0;
+                initializationFlowOldPercent = 0;
+                initializationFlowControlPercent = 0;
         }
         assert enabledPercent + disabledPercent + oldFreWithUmaDialogPercent
                         + initializationFlowNewPercent + initializationFlowOldPercent
