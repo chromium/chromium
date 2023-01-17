@@ -29,8 +29,8 @@ size_t GetUnderestimatedStackSize() {
 // FIXME: On Mac OSX and Linux, this method cannot estimate stack size
 // correctly for the main thread.
 
-#elif defined(__GLIBC__) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FREEBSD) || \
-    BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FREEBSD) || BUILDFLAG(IS_FUCHSIA)
   // pthread_getattr_np() can fail if the thread is not invoked by
   // pthread_create() (e.g., the main thread of blink_unittests).
   // If so, a conservative size estimate is returned.
@@ -97,8 +97,8 @@ size_t GetUnderestimatedStackSize() {
 }
 
 void* GetStackStart() {
-#if defined(__GLIBC__) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FREEBSD) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FREEBSD) || BUILDFLAG(IS_FUCHSIA)
   pthread_attr_t attr;
   int error;
 #if BUILDFLAG(IS_FREEBSD)
@@ -125,7 +125,8 @@ void* GetStackStart() {
   // See https://code.google.com/p/nativeclient/issues/detail?id=3431.
   return __libc_stack_end;
 #else
-  NOTREACHED();
+  NOTREACHED() << "pthread_getattr_np() failed for stack end and no "
+                  "glibc __libc_stack_end is present.";
   return nullptr;
 #endif
 #elif BUILDFLAG(IS_MAC)
