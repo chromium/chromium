@@ -12,14 +12,12 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -890,15 +888,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-class AuthenticatorRequestDialogModelPreselectCredentialTest
-    : public AuthenticatorRequestDialogModelTest {
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnNewDiscoverableCredentialsUi};
-};
-
-TEST_F(AuthenticatorRequestDialogModelPreselectCredentialTest,
-       PreSelectWithEmptyAllowList) {
+TEST_F(AuthenticatorRequestDialogModelTest, PreSelectWithEmptyAllowList) {
   AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   int preselect_num_called = 0;
   model.SetAccountPreselectedCallback(base::BindLambdaForTesting(

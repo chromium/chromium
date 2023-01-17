@@ -9136,10 +9136,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "BindingManagerConnectionLimit")},
 #endif
 
-    {"webauthn-new-desktop-ui", flag_descriptions::kWebAuthnNewDesktopUIName,
-     flag_descriptions::kWebAuthnNewDesktopUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(device::kWebAuthnNewDiscoverableCredentialsUi)},
-
     {"webui-omnibox-popup", flag_descriptions::kWebUIOmniboxPopupName,
      flag_descriptions::kWebUIOmniboxPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},

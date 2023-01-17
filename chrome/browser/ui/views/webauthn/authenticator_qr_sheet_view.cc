@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
-#include "device/fido/features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -52,20 +50,12 @@ class AuthenticatorQRViewCentered : public views::View {
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
     request->data = qr_string;
     request->should_render = true;
-    request->center_image =
-        base::FeatureList::IsEnabled(
-            device::kWebAuthnNewDiscoverableCredentialsUi) ||
-                base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)
-            ? qrcode_generator::mojom::CenterImage::PASSKEY_ICON
-            : qrcode_generator::mojom::CenterImage::CHROME_DINO;
+    request->center_image = qrcode_generator::mojom::CenterImage::PASSKEY_ICON;
 
     request->render_module_style =
         qrcode_generator::mojom::ModuleStyle::CIRCLES;
     request->render_locator_style =
-        base::FeatureList::IsEnabled(
-            device::kWebAuthnNewDiscoverableCredentialsUi)
-            ? qrcode_generator::mojom::LocatorStyle::ROUNDED
-            : qrcode_generator::mojom::LocatorStyle::DEFAULT_SQUARE;
+        qrcode_generator::mojom::LocatorStyle::ROUNDED;
 
     // Deleting the view will close the channel so base::Unretained is safe
     // here.
@@ -87,15 +77,9 @@ class AuthenticatorQRViewCentered : public views::View {
     const int border_radius =
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kHigh);
-    const auto* color_provider = GetColorProvider();
-    if (!base::FeatureList::IsEnabled(
-            device::kWebAuthnNewDiscoverableCredentialsUi)) {
-      qr_code_image_->SetBorder(views::CreateRoundedRectBorder(
-          /*thickness=*/2, border_radius,
-          color_provider->GetColor(kColorQrCodeBorder)));
-    }
     qr_code_image_->SetBackground(views::CreateRoundedRectBackground(
-        color_provider->GetColor(kColorQrCodeBackground), border_radius, 2));
+        GetColorProvider()->GetColor(kColorQrCodeBackground), border_radius,
+        2));
   }
 
  private:

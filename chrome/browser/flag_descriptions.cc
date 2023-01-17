@@ -3232,10 +3232,6 @@ const char kAppStoreBillingDebugDescription[] =
     "requested using the Payment Request API. This flag removes the "
     "restriction that the TWA has to be installed from the app-store.";
 
-const char kWebAuthnNewDesktopUIName[] = "Web Authentication new desktop UI";
-const char kWebAuthnNewDesktopUIDescription[] =
-    "Enable updated UI dialog for WebAuthn requests.";
-
 const char kWebrtcHideLocalIpsWithMdnsName[] =
     "Anonymize local IPs exposed by WebRTC.";
 const char kWebrtcHideLocalIpsWithMdnsDecription[] =

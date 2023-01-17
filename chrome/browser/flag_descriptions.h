@@ -1840,9 +1840,6 @@ extern const char kAddIdentityInCanMakePaymentEventDescription[];
 extern const char kAppStoreBillingDebugName[];
 extern const char kAppStoreBillingDebugDescription[];
 
-extern const char kWebAuthnNewDesktopUIName[];
-extern const char kWebAuthnNewDesktopUIDescription[];
-
 extern const char kWebrtcHideLocalIpsWithMdnsName[];
 extern const char kWebrtcHideLocalIpsWithMdnsDecription[];
 

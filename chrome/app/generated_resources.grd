@@ -350,10 +350,6 @@ are declared in tools/grit/grit_rule.gni.
       change nontranslateable parts of the messages into placeholders (using the
       <ph> element).  You can also use the 'grit add' tool to help you identify
       nontranslateable parts and create placeholders for them. -->
-      <message name="IDS_BACK_BUTTON_AUTHENTICATOR_REQUEST_DIALOG" desc="A back button for authenticator request dialog.">
-        Go back
-      </message>
-
       <if expr="is_win">
         <message name="IDS_BACKGROUND_APP_INSTALLED_BALLOON_TITLE" desc="The title of the balloon that is displayed when a background app is installed">
           New background app added
@@ -13098,12 +13094,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CONTINUE" desc="Label of a button to continue in the dialog shown when using a security key.">
         Continue
       </message>
-      <message name="IDS_WEBAUTHN_TRANSPORT_SELECTION_TITLE" desc="Title of the dialog instructing the user to choose how they want to connect their security key with their computer, e.g. USB or Bluetooth.">
-        Verify your identity with <ph name="APP_NAME">$1<ex>google.com</ex></ph>
-      </message>
-      <message name="IDS_WEBAUTHN_TRANSPORT_SELECTION_DESCRIPTION" desc="Description in the dialog instructing the user to choose how they want to connect their security key with their computer, e.g. USB or Bluetooth.">
-        Pick an option
-      </message>
       <message name="IDS_WEBAUTHN_TRANSPORT_USB" desc="Menu item text. The user selects this to use a security key (an external physical device for user authentication) plugged in to the USB port of the computer.">
         USB security key
       </message>
@@ -13127,9 +13117,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_ERROR_WRONG_KEY_TITLE" desc="Title of the dialog informing the user that they are trying to register a security key (an external physical device for user authentication) that they have already registered with the given web site before or they are trying to sign in to a given web site with a key they have not previously registered on that site.">
         Try a different security key
-      </message>
-      <message name="IDS_WEBAUTHN_ERROR_WRONG_KEY_REGISTER_DESCRIPTION" desc="Description in the dialog informing the user that they are trying to register a security key (an external physical device for user authentication) that they have already registered with the given web site before.">
-        You already registered this security key. You don't have to register it again.
       </message>
       <message name="IDS_WEBAUTHN_ERROR_WRONG_DEVICE_TITLE" desc="Title of the dialog informing the user that they are trying to register a passkey on a device that they have already registered with the given web site before.">
         Try a different device
@@ -13186,9 +13173,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL" desc="Menu item text. The user selects this to verify their identity on a web site (i.e. sign in) using a different hardware-based authentication mechanism from what they have selected previously.">
-        Choose another option
-      </message>
       <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_USB" desc="Menu item text. The user selects this to verify their identity on a web site (i.e. sign in) using a security key (an external physical device for user authentication) plugged in to the USB port of the computer.">
         Verify via USB
       </message>
@@ -13210,9 +13194,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_DEVICE" desc="Title of the dialog shown when the user tries to sign-in using a phone as a security key.">
         Check your device
       </message>
-      <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_ALT" desc="Title of the dialog shown when the user tries to sign-in using a phone as a security key. The word 'unlock' refers to using a PIN, pattern, or biometric to unlock the phone.">
-        Unlock your phone
-      </message>
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key.">
         A notification was sent to your phone to confirm it's you.
       </message>
@@ -13220,14 +13201,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
         A notification was sent to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 6 Pro</ex></ph>
       </message>
 
-      <message name="IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key.">
-        <ph name="WEBSITE"><ex>accounts.google.com</ex>$1</ph> sent a notification to your phone. To confirm it's you, follow the steps there.
-      </message>
       <message name="IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE" desc="This message is shown as a link below IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION. The 'it' referenced here is the notification mentioned in that message.">
         Didn't get it?
-      </message>
-      <message name="IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE_ALT" desc="This message is shown as a link below IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION. The translation of this string should match TC 8961468651054969074.">
-        Try another way
       </message>
       <message name="IDS_WEBAUTHN_CABLEV2_AOA_TITLE" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key. The 'cable' is a physical USB cable.">
         Connect your phone with a cable
@@ -13237,12 +13212,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION" desc="Potentially displayed in a permissions dialog on Android to describe the type of request that a computer, that is connected over USB, is making. In this context the request from the computer is to use the Android device as a security key. A 'security key' is typically a physical USB token used for authentication (e.g. a gNubby) but in this case the phone is acting as one. The translation of 'security key' should match the phrase used in TC IDs such as 1685482178220389035 and 7775033610159191691">
         Security key request
-      </message>
-      <message name="IDS_WEBAUTHN_CABLEV2_2ND_FACTOR_DESCRIPTION" desc="The contents of a dialog shown when the user tries to sign-in using a phone as a security key, or tries to register their phone as a security key for a future sign-in. A security key is traditionally a small USB device that is touched to confirm a sign-in (e.g. a gNubby) and, in this context, the phone is replacing the need for a separate device. The placeholder for the notification title will be replaced with the string that will appear in the notification on the phone. These messages are 4300134428943426639 and 581442427601260656.">
-        <ph name="WEBSITE"><ex>accounts.google.com</ex>$1</ph> sent a notification to your phone. To confirm it's you, tap the “<ph name="NOTIFICATIONTITLE"><ex>Verify with this phone</ex>$2</ph>” notification and follow the steps.
-      </message>
-      <message name="IDS_WEBAUTHN_CABLEV2_ADD_PHONE" desc="The label on a button-like element in a list of options. Clicking this causes Chrome to show a QR code that the user can scan with their phone to use that phone for signing into a website. Here 'phone' is used as a short hand for smartphone.">
-        Use phone with a QR code
       </message>
       <message name="IDS_WEBAUTHN_PASSKEY_DIFFERENT_DEVICE_LABEL" desc="The label on a button-like element in a list of options. Clicking this causes Chrome to show a QR code that the user can scan with their phone to use that phone for signing into a website. Here 'phone' is used as a short hand for smartphone.">
         A different device
@@ -13338,9 +13307,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- WebAuthn account selection for resident keys -->
-      <message name="IDS_WEBAUTHN_SELECT_ACCOUNT" desc="The title on a dialog where the user is expected to select an account from a list. For example, the list may include several identities, e.g. joe@gmail.com, mary@gmail.com, and the user has to select one to login as.">
-        Select an account to sign in
-      </message>
       <message name="IDS_WEBAUTHN_UNKNOWN_ACCOUNT" desc="Label shown to the user on the list of account names if the account stored does not have a name associated to it.">
         Unknown account
       </message>
@@ -13480,7 +13446,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
    </if>
 
-   <!-- WebAuthn strings that are used on both Android and Desktop -->
    <message name="IDS_CABLEV2_MAKE_CREDENTIAL_NOTIFICATION_TITLE" desc="The title of a notification shown on Android that informs the user that a website wishes to register their phone for signing into that website." formatter_data="android_java">
      Verify with this phone
    </message>

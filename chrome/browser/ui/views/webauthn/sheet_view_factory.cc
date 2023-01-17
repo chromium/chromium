@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "device/fido/features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
@@ -265,8 +263,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               AuthenticatorSelectAccountSheetModel::kMultipleAccounts));
       break;
     case Step::kSelectSingleAccount:
-      DCHECK(base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi));
       sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
           std::make_unique<AuthenticatorSelectAccountSheetModel>(
               dialog_model,
@@ -274,8 +270,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               AuthenticatorSelectAccountSheetModel::kSingleAccount));
       break;
     case Step::kPreSelectAccount:
-      DCHECK(base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi));
       sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
           std::make_unique<AuthenticatorSelectAccountSheetModel>(
               dialog_model,
@@ -283,8 +277,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               AuthenticatorSelectAccountSheetModel::kMultipleAccounts));
       break;
     case Step::kPreSelectSingleAccount:
-      DCHECK(base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi));
       sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
           std::make_unique<AuthenticatorSelectAccountSheetModel>(
               dialog_model,

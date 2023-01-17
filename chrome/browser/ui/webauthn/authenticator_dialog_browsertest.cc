@@ -7,8 +7,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -19,12 +17,10 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/cbor/values.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -32,28 +28,18 @@
 // Run with:
 //
 //   --gtest_filter=BrowserUiTest.Invoke --test-launcher-interactive \
-//   --ui=All/AuthenticatorDialogTest.InvokeUi_${test_name}/${param_state}
+//   --ui=All/AuthenticatorDialogTest.InvokeUi_${test_name}
 //
-// where test_name is the second arg to IN_PROC_BROWSER_TEST_P(), and
-// param_state is 0 or 1 and indicates the `base::test::WithFeatureOverride`
-// state.
+// where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
 
-class AuthenticatorDialogTest : public DialogBrowserTest,
-                                public base::test::WithFeatureOverride {
+class AuthenticatorDialogTest : public DialogBrowserTest {
  public:
-  AuthenticatorDialogTest()
-      : DialogBrowserTest(),
-        base::test::WithFeatureOverride(
-            device::kWebAuthnNewDiscoverableCredentialsUi) {}
-
+  AuthenticatorDialogTest() = default;
   AuthenticatorDialogTest(const AuthenticatorDialogTest&) = delete;
   AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
 
   // DialogBrowserTest:
-  void ShowUi(const std::string& test_name) override {
-    // Strip trailing feature param state.
-    std::string name = test_name.substr(0, test_name.find('/'));
-
+  void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
@@ -175,8 +161,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest,
               return;
             }
             weak_model->OnSampleCollected(--bio_samples_remaining_);
-            if (bio_samples_remaining_ <= 0)
+            if (bio_samples_remaining_ <= 0) {
               timer_.Stop();
+            }
           }));
     } else if (name == "retry_uv") {
       model_->OnRetryUserVerification(5);
@@ -355,184 +342,182 @@ class AuthenticatorDialogTest : public DialogBrowserTest,
   int bio_samples_remaining_ = 5;
 };
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AuthenticatorDialogTest);
-
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_force_pin_change) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_force_pin_change) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_force_pin_change_same_as_current) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_mechanisms) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_mechanisms) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_activate_usb) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_activate_usb) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_timeout) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_timeout) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_no_available_transports) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_key_not_registered) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_key_not_registered) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_key_already_registered) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_internal_unrecognized_error) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_ble_power_on_manual) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_power_on_manual) {
   ShowAndVerifyUi();
 }
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_touchid) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_touchid) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_touchid_incognito) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_touchid_incognito) {
   ShowAndVerifyUi();
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_cable_activate) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_activate) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_cable_server_link_activate) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_cable_v2_activate) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_activate) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_cable_v2_pair) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_pair) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_phone_aoa) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_aoa) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_set_pin) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_set_pin) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_get_pin) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_get_pin) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_get_pin_two_tries_remaining) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_get_pin_one_try_remaining) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_get_pin_fallback) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_get_pin_fallback) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_inline_bio_enrollment) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_retry_uv) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_retry_uv) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_retry_uv_two_tries_remaining) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_retry_uv_one_try_remaining) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_second_tap) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_second_tap) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_soft_block) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_soft_block) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_hard_block) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_hard_block) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_authenticator_removed) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_missing_capability) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_missing_capability) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_storage_full) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_storage_full) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_resident_credential_confirm) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_single_account_select) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_account_select) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_account_select) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_request_attestation_permission) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_request_enterprise_attestation_permission) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_server_link_title_UNLOCK_YOUR_PHONE) {
   ShowAndVerifyUi();
 }
 
 #define EXP_SHEET(x)                                       \
-  IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest,          \
+  IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,          \
                          InvokeUi_server_link_sheet_##x) { \
     ShowAndVerifyUi();                                     \
   }
@@ -546,11 +531,11 @@ EXP_SHEET(ARM_6)
 #undef EXP_SHEET
 
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_ble_permission_mac) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_permission_mac) {
   ShowAndVerifyUi();
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_create_passkey) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_create_passkey) {
   ShowAndVerifyUi();
 }

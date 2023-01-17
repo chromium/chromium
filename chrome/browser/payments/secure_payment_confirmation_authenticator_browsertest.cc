@@ -14,7 +14,6 @@
 #include "content/public/browser/authenticator_environment.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "device/fido/features.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +22,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #error "These tests are unsupported on Android"
 #endif
+
+// TODO(crbug.com/1372198): Temporarily disable the tests on macOS since they do
+// not yet work with current WebAuthn UI.
+#if !BUILDFLAG(IS_MAC)
 
 namespace payments {
 namespace {
@@ -45,13 +48,6 @@ class SecurePaymentConfirmationAuthenticatorTestBase
     AUTHENTICATOR_REQUEST,
     WEB_CONTENTS_DESTROYED,
   };
-
-  SecurePaymentConfirmationAuthenticatorTestBase() {
-    // TODO(crbug.com/1372198): Temporarily disable the new passkey UI, as it
-    // causes these tests to hang.
-    scoped_feature_list_.InitAndDisableFeature(
-        device::kWebAuthnNewDiscoverableCredentialsUi);
-  }
 
   // Installs a virtual FIDO authenticator device for the tests.
   void ReplaceFidoDiscoveryFactory(bool should_succeed,
@@ -114,8 +110,9 @@ class SecurePaymentConfirmationAuthenticatorTestBase
     std::string* id = value->FindStringKey("id");
     ASSERT_NE(nullptr, id) << response;
 
-    if (out_info)
+    if (out_info) {
       *out_info = {*webidl_type, *type, *id};
+    }
   }
 
   void ExpectEnrollSystemPromptResult(
@@ -160,7 +157,6 @@ class SecurePaymentConfirmationAuthenticatorTestBase
   }
 
   std::unique_ptr<autofill::EventWaiter<Event>> event_waiter_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using SecurePaymentConfirmationAuthenticatorCreateTest =
@@ -629,3 +625,5 @@ INSTANTIATE_TEST_SUITE_P(
 
 }  // namespace
 }  // namespace payments
+
+#endif  // !BUILDFLAG(IS_MAC)

@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -20,7 +19,6 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 
@@ -403,9 +401,7 @@ void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
     bool have_credential) {
   DCHECK_EQ(transport_availability_info_.has_platform_authenticator_credential,
             RecognizedCredential::kUnknown);
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi) &&
-      !have_credential) {
+  if (!have_credential) {
     transport_availability_info_.has_platform_authenticator_credential =
         RecognizedCredential::kNoRecognizedCredential;
     transport_availability_info_.available_transports.erase(

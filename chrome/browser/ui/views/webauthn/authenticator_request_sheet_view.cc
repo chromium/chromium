@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -17,7 +16,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "device/fido/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -86,25 +84,18 @@ AuthenticatorRequestSheetView::BuildStepSpecificContent() {
 
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi)) {
-    // Some sheets do not have an illustration.
-    const gfx::VectorIcon& illustration =
-        model()->GetStepIllustration(ImageColorScheme::kLight);
-    if (&illustration == &gfx::kNoneIcon) {
-      return std::make_unique<views::View>();
-    }
+  // Some sheets do not have an illustration.
+  const gfx::VectorIcon& illustration =
+      model()->GetStepIllustration(ImageColorScheme::kLight);
+  if (&illustration == &gfx::kNoneIcon) {
+    return std::make_unique<views::View>();
   }
 
   const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   constexpr int kImageHeight = 112, kImageMarginTop = 22,
                 kImageMarginBottom = 2;
-  const int header_height =
-      base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi)
-          ? (kImageHeight + kImageMarginTop + kImageMarginBottom)
-          : 148;
+  const int header_height = kImageHeight + kImageMarginTop + kImageMarginBottom;
   const gfx::Size image_view_size(dialog_width, header_height);
 
   // The container view has no layout, so its preferred size is hardcoded to
@@ -114,11 +105,8 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
 
   auto image_view = std::make_unique<NonAccessibleImageView>();
   step_illustration_ = image_view.get();
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi)) {
-    image_view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginTop, 0)));
-  }
+  image_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginTop, 0)));
   image_view->SetSize(image_view_size);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   header_view->AddChildView(image_view.release());
@@ -132,44 +120,6 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
         gfx::Size(dialog_width, kActivityIndicatorHeight));
     activity_indicator->SizeToPreferredSize();
     header_view->AddChildView(activity_indicator.release());
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi) &&
-      model()->IsBackButtonVisible()) {
-    auto back_arrow = views::CreateVectorImageButton(base::BindRepeating(
-        &AuthenticatorRequestSheetModel::OnBack, base::Unretained(model())));
-    back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(
-        IDS_BACK_BUTTON_AUTHENTICATOR_REQUEST_DIALOG));
-
-    // Position the back button so that there is the standard amount of padding
-    // between the top/left side of the back button and the dialog borders.
-    const gfx::Insets dialog_insets =
-        views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-            views::DialogContentType::kControl,
-            views::DialogContentType::kControl);
-    auto color_reference = std::make_unique<views::Label>(
-        std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
-        views::style::STYLE_PRIMARY);
-    back_arrow->SizeToPreferredSize();
-    back_arrow->SetX(dialog_insets.left());
-    back_arrow->SetY(dialog_insets.top());
-    back_arrow_ = back_arrow.get();
-    back_arrow_button_ = header_view->AddChildView(std::move(back_arrow));
-  }
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi) &&
-      model()->IsCloseButtonVisible()) {
-    auto close = views::CreateVectorImageButton(base::BindRepeating(
-        &AuthenticatorRequestSheetModel::OnCancel, base::Unretained(model())));
-    close->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP));
-    close->SizeToPreferredSize();
-    close->SetX(dialog_width - close->GetPreferredSize().width() -
-                kActivityIndicatorHeight);
-    close->SetY(kActivityIndicatorHeight);
-    close_button_ = close.get();
-    header_view->AddChildView(std::move(close));
   }
 
   if (GetWidget()) {
@@ -263,8 +213,9 @@ void AuthenticatorRequestSheetView::OnThemeChanged() {
 }
 
 void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
-  if (!step_illustration_)
+  if (!step_illustration_) {
     return;
+  }
 
   gfx::IconDescription icon_description(model()->GetStepIllustration(
       GetNativeTheme()->ShouldUseDarkColors() ? ImageColorScheme::kDark

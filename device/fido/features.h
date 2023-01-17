@@ -36,11 +36,6 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 // Enable some experimental UI changes
 COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
 
-// Reshuffle WebAuthn request UI to put account selection for discoverable
-// credentials on platform authenticators first, where applicable.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNewDiscoverableCredentialsUi);
-
 // Don't send empty displayName values to security keys when creating
 // credentials.
 BASE_DECLARE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR);

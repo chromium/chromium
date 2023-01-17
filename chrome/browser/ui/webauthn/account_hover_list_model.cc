@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -14,7 +13,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -24,8 +22,9 @@ constexpr size_t kIconSize = 20;
 
 namespace {
 std::u16string NameTokenForDisplay(base::StringPiece name_token) {
-  if (name_token.empty())
+  if (name_token.empty()) {
     return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
+  }
   return base::UTF8ToUTF16(name_token);
 }
 }  // namespace
@@ -34,21 +33,11 @@ AccountHoverListModel::AccountHoverListModel(
     base::span<const device::DiscoverableCredentialMetadata> creds,
     Delegate* delegate)
     : delegate_(delegate) {
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi)) {
-    for (const device::DiscoverableCredentialMetadata& cred : creds) {
-      items_.emplace_back(
-          NameTokenForDisplay(cred.user.name.value_or("")), u"",
-          ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
-                                         ui::kColorAccent, kIconSize));
-    }
-    return;
-  }
-
   for (const device::DiscoverableCredentialMetadata& cred : creds) {
     items_.emplace_back(
-        NameTokenForDisplay(cred.user.display_name.value_or("")),
-        NameTokenForDisplay(cred.user.name.value_or("")), ui::ImageModel());
+        NameTokenForDisplay(cred.user.name.value_or("")), u"",
+        ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
+                                       ui::kColorAccent, kIconSize));
   }
 }
 
@@ -83,9 +72,7 @@ size_t AccountHoverListModel::GetPreferredItemCount() const {
 }
 
 bool AccountHoverListModel::StyleForTwoLines() const {
-  // With `kWebAuthnNewDiscoverableCredentialsUi`, we don't show a display name.
-  return !base::FeatureList::IsEnabled(
-      device::kWebAuthnNewDiscoverableCredentialsUi);
+  return false;
 }
 
 AccountHoverListModel::Item::Item(std::u16string text,
