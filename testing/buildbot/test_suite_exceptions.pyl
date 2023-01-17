@@ -506,6 +506,12 @@
           'hard_timeout': 2400,
         },
       },
+      'win-rel-cft': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+      },
       'win10-rel-no-external-ip': {
         'args': [
           '--target',
@@ -809,6 +815,12 @@
           'hard_timeout': 2400,
         },
       },
+      'win-rel-cft': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+      },
       'win10-rel-no-external-ip': {
         'args': [
           '--target',
@@ -832,7 +844,7 @@
           '--target',
           'Release_x64',
         ],
-      }
+      },
     },
   },
   'browser_tests': {
@@ -1106,6 +1118,8 @@
       },
       'win-rel-cft': {
         'args': [
+          # crbug.com/868082
+          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
           '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter',
         ],
       },
@@ -3416,6 +3430,7 @@
       'Win10 Tests x64 (dbg)',
       'Win11 Tests x64',
       'win10-rel-no-external-ip',
+      'win-rel-cft',
     ],
   },
   'telemetry_unittests': {
@@ -3437,6 +3452,7 @@
       'Win10 Tests x64',
       'Win11 Tests x64',
       'win10-rel-no-external-ip',
+      'win-rel-cft',
 
       # TODO(https://crbug.com/1267161): Re-enable when platform is supported.
       'mac11-arm64-rel-tests',
