@@ -29,6 +29,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1267,6 +1268,26 @@ public class TabGridDialogMediatorUnitTest {
 
         verify(mTabModel).commitTabClosure(eq(TAB1_ID));
         verify(mTabModel).commitTabClosure(eq(TAB2_ID));
+    }
+
+    @Test
+    public void testScrollToTab() {
+        // Mock that tab1, tab2 and newTab are in the same group and newTab is the root tab.
+        TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE);
+        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
+        createTabGroup(tabgroup, TAB2_ID);
+
+        // Mock that mTab2 is the current tab for the dialog.
+        doReturn(0).when(mTabGroupModelFilter).indexOf(mTab1);
+        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(0);
+        doReturn(TAB2_ID).when(mTabModelSelector).getCurrentTabId();
+        doReturn(mTab2).when(mTabModelSelector).getTabById(TAB2_ID);
+        doReturn(tabgroup).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
+
+        // Reset and confirm scroll index.
+        mMediator.onReset(tabgroup);
+
+        Assert.assertEquals(1, mModel.get(TabGridPanelProperties.INITIAL_SCROLL_INDEX).intValue());
     }
 
     @Test

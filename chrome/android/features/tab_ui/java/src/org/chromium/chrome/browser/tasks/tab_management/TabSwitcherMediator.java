@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SHADOW_TOP_OFFSET;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.VISIBILITY_LISTENER;
@@ -80,11 +81,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                                      PriceMessageService.PriceWelcomeMessageReviewActionProvider,
                                      TabSwitcherCustomViewManager.Delegate, BackPressHandler {
     private static final String TAG = "TabSwitcherMediator";
-
-    // This should be the same as TabListCoordinator.GRID_LAYOUT_SPAN_COUNT for the selected tab
-    // to be on the 2nd row.
-    static final int INITIAL_SCROLL_INDEX_OFFSET_GTS = 2;
-    static final int INITIAL_SCROLL_INDEX_OFFSET_CAROUSEL = 1;
 
     private static final int DEFAULT_TOP_PADDING = 0;
 
@@ -294,6 +290,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mMode = mode;
+        mContainerViewModel.set(MODE, mode);
         mContext = context;
 
         if (incognitoReauthControllerSupplier != null) {
@@ -761,12 +758,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     private void setInitialScrollIndexOffset() {
-        int offset = mMode == TabListMode.CAROUSEL ? INITIAL_SCROLL_INDEX_OFFSET_CAROUSEL
-                                                   : INITIAL_SCROLL_INDEX_OFFSET_GTS;
-        int initialPosition = Math.max(
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index()
-                        - offset,
-                0);
+        int initialPosition =
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index();
+
         // In MRU order, selected Tab is always at the first position.
         if (mShowTabsInMruOrder) initialPosition = 0;
         mContainerViewModel.set(INITIAL_SCROLL_INDEX, initialPosition);

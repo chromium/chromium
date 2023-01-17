@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.INSTANT_START_TEST_BASE_PARAMS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -367,7 +368,7 @@ public class InstantStartTabSwitcherTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS,
         FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
-    public void testScrollToSelectedTab() throws IOException {
+    public void testScrollToSelectedTab() throws Exception {
         // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 5);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -388,6 +389,9 @@ public class InstantStartTabSwitcherTest {
                     Assert.assertTrue(v instanceof RecyclerView);
                     LinearLayoutManager layoutManager =
                             (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
+                    assertEquals(2, layoutManager.findFirstVisibleItemPosition());
+                    assertTrue(layoutManager.isViewPartiallyVisible(
+                            layoutManager.getChildAt(5), false, false));
                     assertEquals(7, layoutManager.findLastVisibleItemPosition());
                 });
 
