@@ -5388,7 +5388,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Eche.AppStream.LaunchAttempt" enum="AppStreamLaunchEntryPoint"
     expires_after="2023-05-18">
   <owner>crisrael@google.com</owner>
-  <owner>jonmann@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     This metric logs where the Eche app was launched from. The metric is emmited
@@ -5399,7 +5399,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Eche.CompleteAppList.Available.Latency" units="ms"
     expires_after="2023-05-18">
   <owner>crisrael@google.com</owner>
-  <owner>jonmann@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     This metric tracks the time it takes from the phone becoming connected to
@@ -5509,6 +5509,18 @@ chromium-metrics-reviews@google.com.
     stream is closed before the stream doesn't started. Fires during the process
     of closing Eche streaming when the stream doesn't start. It is not sent on a
     successful connection attempt.
+  </summary>
+</histogram>
+
+<histogram name="Eche.UniqueAppsStreamed.PerDay" units="count"
+    expires_after="2023-05-18">
+  <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    This metric tracks the number of unique apps the user attempts to launch an
+    app stream. Emitted when the app stream is launched and the app has not been
+    launched in the current session.
   </summary>
 </histogram>
 

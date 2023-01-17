@@ -11,8 +11,10 @@
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
@@ -23,6 +25,13 @@
 
 namespace ash {
 namespace eche_app {
+
+namespace {
+
+constexpr auto kOneDay = base::Days(1u);
+constexpr char kUniqueAppsMetricName[] = "Eche.UniqueAppsStreamed.PerDay";
+
+}  // namespace
 
 class Callback {
  public:
@@ -63,7 +72,8 @@ bool ash::eche_app::Callback::launchEcheApp_ = false;
 
 class LaunchAppHelperTest : public ash::AshTestBase {
  protected:
-  LaunchAppHelperTest() = default;
+  LaunchAppHelperTest()
+      : ash::AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   LaunchAppHelperTest(const LaunchAppHelperTest&) = delete;
   LaunchAppHelperTest& operator=(const LaunchAppHelperTest&) = delete;
   ~LaunchAppHelperTest() override = default;
@@ -127,6 +137,10 @@ class LaunchAppHelperTest : public ash::AshTestBase {
 
   void CloseNotification(const std::string& notification_id) {
     launch_app_helper_->CloseNotification(notification_id);
+  }
+
+  const base::flat_set<std::string> GetLaunchAppHelperPackageSet() {
+    return launch_app_helper_->GetSessionPackagesLaunchedForTest();
   }
 
  private:
@@ -202,6 +216,78 @@ TEST_F(LaunchAppHelperTest, CloseNotification) {
   CloseNotification(notification_id);
 
   EXPECT_TRUE(Callback::getCloseNotification());
+}
+
+TEST_F(LaunchAppHelperTest, UniqueAppPackages) {
+  base::HistogramTester histogram_tester;
+
+  const absl::optional<int64_t> notification_id = 0;
+  const std::string package_name = "package_name";
+  const std::u16string visible_name = u"visible_name";
+  const absl::optional<int64_t> user_id = 0;
+  const std::u16string phone_name = u"your phone";
+
+  const absl::optional<int64_t> notification_id2 = 1;
+  const std::string package_name2 = "package_name2";
+  const std::u16string visible_name2 = u"visible_name2";
+
+  LaunchEcheApp(notification_id, package_name, visible_name, user_id,
+                gfx::Image(), phone_name);
+
+  histogram_tester.ExpectTotalCount(kUniqueAppsMetricName, 1);
+  EXPECT_EQ(1u, GetLaunchAppHelperPackageSet().size());
+
+  LaunchEcheApp(notification_id, package_name, visible_name, user_id,
+                gfx::Image(), phone_name);
+
+  histogram_tester.ExpectTotalCount(kUniqueAppsMetricName, 1);
+  EXPECT_EQ(1u, GetLaunchAppHelperPackageSet().size());
+
+  LaunchEcheApp(notification_id2, package_name2, visible_name2, user_id,
+                gfx::Image(), phone_name);
+
+  histogram_tester.ExpectTotalCount(kUniqueAppsMetricName, 2);
+  EXPECT_EQ(2u, GetLaunchAppHelperPackageSet().size());
+}
+
+TEST_F(LaunchAppHelperTest, SessionPackagesResetsAfterOneDay) {
+  base::HistogramTester histogram_tester;
+
+  const absl::optional<int64_t> notification_id = 0;
+  const std::string package_name = "package_name";
+  const std::u16string visible_name = u"visible_name";
+  const absl::optional<int64_t> user_id = 0;
+  const std::u16string phone_name = u"your phone";
+
+  const absl::optional<int64_t> notification_id2 = 1;
+  const std::string package_name2 = "package_name2";
+  const std::u16string visible_name2 = u"visible_name2";
+
+  LaunchEcheApp(notification_id, package_name, visible_name, user_id,
+                gfx::Image(), phone_name);
+
+  histogram_tester.ExpectTotalCount(kUniqueAppsMetricName, 1);
+  EXPECT_EQ(1u, GetLaunchAppHelperPackageSet().size());
+
+  LaunchEcheApp(notification_id2, package_name2, visible_name2, user_id,
+                gfx::Image(), phone_name);
+
+  histogram_tester.ExpectTotalCount(kUniqueAppsMetricName, 2);
+  EXPECT_EQ(2u, GetLaunchAppHelperPackageSet().size());
+
+  task_environment()->FastForwardBy(kOneDay);
+
+  LaunchEcheApp(notification_id, package_name, visible_name, user_id,
+                gfx::Image(), phone_name);
+
+  histogram_tester.ExpectTotalCount(kUniqueAppsMetricName, 3);
+  EXPECT_EQ(1u, GetLaunchAppHelperPackageSet().size());
+
+  LaunchEcheApp(notification_id, package_name, visible_name, user_id,
+                gfx::Image(), phone_name);
+
+  histogram_tester.ExpectTotalCount(kUniqueAppsMetricName, 3);
+  EXPECT_EQ(1u, GetLaunchAppHelperPackageSet().size());
 }
 
 }  // namespace eche_app

@@ -11,12 +11,21 @@
 #include "ash/shell.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
 namespace eche_app {
+
+namespace {
+
+// TODO(b/265173006): Create an AppMetricsRecorder class to abstract metrics
+// logging from implementation classes.
+constexpr base::TimeDelta kPackageSetResetFrequency = base::Days(1);
+
+}  // namespace
 
 LaunchAppHelper::NotificationInfo::NotificationInfo(
     Category category,
@@ -88,9 +97,25 @@ void LaunchAppHelper::LaunchEcheApp(absl::optional<int64_t> notification_id,
                                     const std::u16string& visible_name,
                                     const absl::optional<int64_t>& user_id,
                                     const gfx::Image& icon,
-                                    const std::u16string& phone_name) const {
+                                    const std::u16string& phone_name) {
   launch_eche_app_function_.Run(notification_id, package_name, visible_name,
                                 user_id, icon, phone_name);
+
+  // Sessions can last for well over a day, so this check exists to cover that
+  // corner case and clears the |session_packages_launched_| set so we can
+  // start tracking unique packages again.
+  // TODO(b/265172591): Optimize the reset to align with histogram uploads.
+  if (session_packages_last_reset_ == base::TimeTicks() ||
+      base::TimeTicks::Now() - session_packages_last_reset_ >=
+          kPackageSetResetFrequency) {
+    session_packages_launched_.clear();
+    session_packages_last_reset_ = base::TimeTicks::Now();
+  }
+
+  if (!session_packages_launched_.contains(package_name)) {
+    base::UmaHistogramCounts1000("Eche.UniqueAppsStreamed.PerDay", 1);
+    session_packages_launched_.insert(package_name);
+  }
 }
 
 }  // namespace eche_app

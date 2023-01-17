@@ -7,7 +7,9 @@
 
 #include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -114,10 +116,18 @@ class LaunchAppHelper {
                      const std::u16string& visible_name,
                      const absl::optional<int64_t>& user_id,
                      const gfx::Image& icon,
-                     const std::u16string& phone_name) const;
+                     const std::u16string& phone_name);
+
+  const base::flat_set<std::string> GetSessionPackagesLaunchedForTest() const {
+    return session_packages_launched_;
+  }
 
  private:
   bool IsScreenLockRequired() const;
+
+  base::flat_set<std::string> session_packages_launched_;
+  base::TimeTicks session_packages_last_reset_ = base::TimeTicks();
+
   phonehub::PhoneHubManager* phone_hub_manager_;
   LaunchEcheAppFunction launch_eche_app_function_;
   LaunchNotificationFunction launch_notification_function_;
