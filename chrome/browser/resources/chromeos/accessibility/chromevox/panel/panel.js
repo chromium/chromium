@@ -31,6 +31,8 @@ import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
 import {PanelMode, PanelModeInfo} from './panel_mode.js';
 
+const $ = (id) => document.getElementById(id);
+
 /** Class to manage the panel. */
 export class Panel extends PanelInterface {
   /** @private */
@@ -308,7 +310,7 @@ export class Panel extends PanelInterface {
     const onFocusDo = async () => {
       window.removeEventListener('focus', onFocusDo);
       // Clear any existing menus and clear the callback.
-      this.clearMenus_();
+      this.menuManager_.clearMenus();
       this.pendingCallback_ = null;
 
       const eventSource = await BackgroundBridge.EventSource.get();
@@ -528,27 +530,10 @@ export class Panel extends PanelInterface {
    */
   async onSearch_() {
     this.setMode_(PanelMode.SEARCH);
-    this.clearMenus_();
+    this.menuManager_.clearMenus();
     this.pendingCallback_ = null;
     this.updateFromPrefs_();
     await ISearchUI.init(this.searchInput_);
-  }
-
-  /**
-   * Clear any previous menus. The menus are all regenerated each time the
-   * menus are opened.
-   * @private
-   */
-  clearMenus_() {
-    while (this.menuManager_.menus.length) {
-      const menu = this.menuManager_.menus.pop();
-      $('menu-bar').removeChild(menu.menuBarItemElement);
-      $('menus_background').removeChild(menu.menuContainerElement);
-    }
-    if (this.menuManager_.activeMenu) {
-      this.menuManager_.lastMenu = this.menuManager_.activeMenu.menuMsg;
-    }
-    this.menuManager_.activeMenu = null;
   }
 
   /**
@@ -1051,7 +1036,7 @@ export class Panel extends PanelInterface {
     await BackgroundBridge.PanelBackground.setPanelCollapseWatcher;
 
     // Make sure all menus are cleared to avoid bogus output when we re-open.
-    this.clearMenus_();
+    this.menuManager_.clearMenus();
 
     // Make sure we're not in full-screen mode.
     this.setMode_(PanelMode.COLLAPSED);
@@ -1319,15 +1304,6 @@ Panel.ACTION_TO_MSG_ID = {
   showContextMenu: 'show_context_menu',
   longClick: 'force_long_click_on_current_item',
 };
-
-/**
- * Shortcut for document.getElementById.
- * @param {string} id of the element.
- * @return {Element} with the id.
- */
-function $(id) {
-  return document.getElementById(id);
-}
 
 window.addEventListener('load', async () => await Panel.init(), false);
 

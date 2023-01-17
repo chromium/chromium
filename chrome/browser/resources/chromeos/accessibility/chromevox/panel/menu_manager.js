@@ -9,6 +9,8 @@ import {Command, CommandStore} from '../common/command_store.js';
 
 import {PanelMenu, PanelSearchMenu} from './panel_menu.js';
 
+const $ = (id) => document.getElementById(id);
+
 export class MenuManager {
   constructor() {
     /**
@@ -28,6 +30,22 @@ export class MenuManager {
 
     /** @private {?PanelSearchMenu} */
     this.searchMenu_ = null;
+  }
+
+  /**
+   * Clear any previous menus. The menus are all regenerated each time the
+   * menus are opened.
+   */
+  clearMenus() {
+    while (this.menus_.length) {
+      const menu = this.menus_.pop();
+      $('menu-bar').removeChild(menu.menuBarItemElement);
+      $('menus_background').removeChild(menu.menuContainerElement);
+    }
+    if (this.activeMenu_) {
+      this.lastMenu_ = this.activeMenu_.menuMsg;
+    }
+    this.activeMenu_ = null;
   }
 
   /** Disables menu items that are prohibited without a signed-in user. */
