@@ -22,7 +22,7 @@ WebStateWrapper::WebStateWrapper(web::WebState* web_state)
 
 const GURL& WebStateWrapper::GetLastCommittedURL() {
   if (!web_state_)
-    return std::move(GURL());
+    return GURL::EmptyGURL();
 
   return web_state_->GetLastCommittedURL();
 }

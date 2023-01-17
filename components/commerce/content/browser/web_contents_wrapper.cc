@@ -16,7 +16,7 @@ WebContentsWrapper::WebContentsWrapper(content::WebContents* web_contents,
 
 const GURL& WebContentsWrapper::GetLastCommittedURL() {
   if (!web_contents_)
-    return std::move(GURL());
+    return GURL::EmptyGURL();
 
   return web_contents_->GetLastCommittedURL();
 }
