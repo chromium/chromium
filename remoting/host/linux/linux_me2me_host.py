@@ -30,6 +30,7 @@ import psutil
 import pwd
 import re
 import shlex
+import shutil
 import signal
 import socket
 import struct
@@ -157,6 +158,9 @@ COMMAND_NOT_EXECUTABLE_EXIT_CODE = 126
 # User runtime directory. This is where the wayland socket is created by the
 # wayland compositor/server for clients to connect to.
 RUNTIME_DIR_TEMPLATE = "/run/user/%s"
+
+# Binary name for the gnome-session.
+GNOME_SESSION = "gnome-session"
 
 # Globals needed by the atexit cleanup() handler.
 g_desktop = None
@@ -813,7 +817,7 @@ class WaylandDesktop(Desktop):
       self.child_env["G_MESSAGES_DEBUG"] = "all"
       self.child_env["GDK_DEBUG"]  = "all"
       self.child_env["G_DEBUG"] = "fatal-criticals"
-      self.child_env["WAYLAND_DEBUG"] = 1
+      self.child_env["WAYLAND_DEBUG"] = "1"
 
   def _get_unused_wayland_socket(self):
     """
@@ -835,25 +839,14 @@ class WaylandDesktop(Desktop):
     return "wayland-%s" % socket_num
 
   @staticmethod
-  def _is_gnome_shell_present():
-    try:
-      subprocess.check_output(["gnome-shell", "--help"],
-                              stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as err:
-      logging.warning("Unable to find 'gnome-shell' on the host, "
-                      "returncode: %s, output: %s" % (err.returncode,
-                                                      err.output))
+  def _is_gnome_session_present():
+    if not shutil.which(GNOME_SESSION):
+      logging.warning("Unable to find '%s' on the host" % GNOME_SESSION)
       return False
     return True
 
-  def _gnome_shell_cmd(self):
-    gnome_shell_cmd = [
-      "gnome-shell", "--wayland", "--headless", "--wayland-display",
-      self._wayland_socket, "--replace"]
-    return gnome_shell_cmd
-
   def _launch_server(self, *args, **kwargs):
-    if not self._is_gnome_shell_present():
+    if not self._is_gnome_session_present():
       logging.error("Only GNOME based wayland hosts are supported currently. "
                     "If the host is a GNOME host, please ensure that "
                     "'gnome-shell' is installed on it")
@@ -863,10 +856,10 @@ class WaylandDesktop(Desktop):
     logging.info("Launching wayland server.")
     if self.ssh_auth_sockname:
       self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
-    self.server_proc = subprocess.Popen(self._gnome_shell_cmd(),
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.STDOUT,
-                                         env=self.child_env)
+    self.server_proc = subprocess.Popen([GNOME_SESSION],
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT,
+                                        env=self.child_env)
 
     if not self.server_proc.pid:
       raise Exception("Could not start wayland session")
