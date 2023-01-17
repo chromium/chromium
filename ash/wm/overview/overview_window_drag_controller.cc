@@ -323,17 +323,6 @@ void OverviewWindowDragController::Drag(const gfx::PointF& location_in_screen) {
       StartNormalDragMode(location_in_screen);
     else
       return;
-
-    if (chromeos::wm::features::IsFloatWindowEnabled()) {
-      if (auto* float_window =
-              Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
-                  DesksController::Get()->active_desk())) {
-        // If the float window is dragged, it will be on top of everything as
-        // expected.
-        if (item_->GetWindow() != float_window)
-          float_drag_helper_ = std::make_unique<ScopedFloatDragHelper>(this);
-      }
-    }
   }
 
   if (current_drag_behavior_ == DragBehavior::kDragToClose)
@@ -458,6 +447,8 @@ void OverviewWindowDragController::StartNormalDragMode(
           grid_desks_bar_data.shrink_bounds.origin();
     }
   }
+
+  MaybeCreateFloatDragHelper();
 }
 
 OverviewWindowDragController::DragResult OverviewWindowDragController::Fling(
@@ -547,6 +538,7 @@ void OverviewWindowDragController::StartDragToCloseMode() {
       ->StartNudge(item_);
 
   item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
+  MaybeCreateFloatDragHelper();
 }
 
 void OverviewWindowDragController::ContinueDragToClose(
@@ -976,6 +968,23 @@ void OverviewWindowDragController::RecordDragToClose(
   RecordDrag(Shell::Get()->tablet_mode_controller()->InTabletMode()
                  ? kTabletDrag[action]
                  : kClamshellDrag[action]);
+}
+
+void OverviewWindowDragController::MaybeCreateFloatDragHelper() {
+  if (!chromeos::wm::features::IsFloatWindowEnabled()) {
+    return;
+  }
+
+  if (auto* float_window =
+          Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
+              DesksController::Get()->active_desk())) {
+    DCHECK(item_);
+    // If the float window is dragged, it will be on top of everything as
+    // expected.
+    if (item_->GetWindow() != float_window) {
+      float_drag_helper_ = std::make_unique<ScopedFloatDragHelper>(this);
+    }
+  }
 }
 
 void OverviewWindowDragController::DestroyFloatDragHelper() {

@@ -3589,6 +3589,54 @@ TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
       base::Contains(controller->desks()[1]->windows(), normal_window.get()));
 }
 
+// Tests that the overview item associated with the floated window appears
+// underneath the about to be dragged window after long pressing.
+TEST_F(FloatOverviewSessionTest, LongPressingWithFloatedWindow) {
+  // Shorten the long press times so we don't have to delay as long.
+  ui::GestureConfiguration* gesture_config =
+      ui::GestureConfiguration::GetInstance();
+  gesture_config->set_long_press_time_in_ms(1);
+  gesture_config->set_short_press_time(base::Milliseconds(1));
+  gesture_config->set_show_press_delay_in_ms(1);
+
+  // Create one normal and one floated window.
+  auto normal_window = CreateAppWindow();
+  auto floated_window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  ToggleOverview();
+
+  // Simulate a long press on the overview item of the normal window.
+  OverviewItem* normal_item = GetOverviewItemForWindow(normal_window.get());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
+  generator->PressTouch();
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
+  run_loop.Run();
+
+  // After long pressing, the float container should be stacked under the desk
+  // container so that the overview item of the float window appears underneath
+  // during the drag.
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    EXPECT_TRUE(
+        IsStackedBelow(root->GetChildById(kShellWindowId_FloatContainer),
+                       root->GetChildById(kShellWindowId_DeskContainerA)));
+  }
+
+  // Test that on release, the float container is stacked above the desk
+  // container again.
+  generator->ReleaseTouch();
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    EXPECT_TRUE(
+        IsStackedBelow(root->GetChildById(kShellWindowId_DeskContainerA),
+                       root->GetChildById(kShellWindowId_FloatContainer)));
+  }
+}
+
 class TabletModeOverviewSessionTest : public OverviewTestBase {
  public:
   TabletModeOverviewSessionTest() = default;

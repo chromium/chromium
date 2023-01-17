@@ -176,6 +176,11 @@ class ASH_EXPORT OverviewWindowDragController {
                         bool is_dragged_to_other_display) const;
   void RecordDragToClose(DragToCloseAction action) const;
 
+  // Creates `float_drag_helper_` if needed. The helper will temporarily stack
+  // the float container under the active desk container, so that dragging
+  // regular windows appear above overview items of floated windows.
+  void MaybeCreateFloatDragHelper();
+
   // Called by `float_drag_helper_` to destroy itself as it may need to live
   // after a gesture is completed if there is an animation.
   void DestroyFloatDragHelper();
