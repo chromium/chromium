@@ -101,7 +101,7 @@ base::Value SecureDnsManager::GetProviders(const std::string& mode,
   const bool want_all = doh_providers.DictEmpty();
   for (const auto& provider : local_doh_providers_) {
     const std::string& server_template = provider.first.server_template();
-    if (want_all || doh_providers.FindKey(server_template)) {
+    if (want_all || doh_providers.GetDict().contains(server_template)) {
       doh_providers.SetKey(server_template, base::Value(provider.second));
     }
   }
