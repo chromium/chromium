@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -43,11 +44,17 @@
 
 namespace content {
 
+using XrRuntimeManagerObservers =
+    base::ObserverList<XRRuntimeManager::Observer>;
+
 namespace {
 XRRuntimeManagerImpl* g_xr_runtime_manager = nullptr;
 
-base::LazyInstance<base::ObserverList<XRRuntimeManager::Observer>>::Leaky
-    g_xr_runtime_manager_observers;
+XrRuntimeManagerObservers& GetXrRuntimeManagerObservers() {
+  static base::NoDestructor<XrRuntimeManagerObservers>
+      xr_runtime_manager_observers;
+  return *xr_runtime_manager_observers;
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 bool IsEnabled(const base::CommandLine* command_line,
@@ -83,11 +90,11 @@ XRRuntimeManager* XRRuntimeManager::GetInstanceIfCreated() {
 }
 
 void XRRuntimeManager::AddObserver(XRRuntimeManager::Observer* observer) {
-  g_xr_runtime_manager_observers.Get().AddObserver(observer);
+  GetXrRuntimeManagerObservers().AddObserver(observer);
 }
 
 void XRRuntimeManager::RemoveObserver(XRRuntimeManager::Observer* observer) {
-  g_xr_runtime_manager_observers.Get().RemoveObserver(observer);
+  GetXrRuntimeManagerObservers().RemoveObserver(observer);
 }
 
 void XRRuntimeManager::ExitImmersivePresentation() {
@@ -497,8 +504,9 @@ void XRRuntimeManagerImpl::AddRuntime(
   runtimes_[id] = std::make_unique<BrowserXRRuntimeImpl>(
       id, std::move(device_data), std::move(runtime));
 
-  for (Observer& obs : g_xr_runtime_manager_observers.Get())
+  for (Observer& obs : GetXrRuntimeManagerObservers()) {
     obs.OnRuntimeAdded(runtimes_[id].get());
+  }
 
   for (VRServiceImpl* service : services_) {
     // TODO(sumankancherla): Consider combining with XRRuntimeManager::Observer.
