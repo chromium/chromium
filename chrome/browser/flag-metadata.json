@@ -3954,7 +3954,7 @@
   },
   {
     "name": "global-media-controls-cast-start-stop",
-    "owners": [  "takumif", "muyaoxu@google.com", "openscreen-eng@google.com" ],
+    "owners": [ "takumif", "muyaoxu@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -4618,6 +4618,11 @@
     "name": "media-app-photos-integration-video",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 115
+  },
+  {
+    "name": "media-remoting-without-fullscreen",
+    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "media-router-cast-allow-all-ips",

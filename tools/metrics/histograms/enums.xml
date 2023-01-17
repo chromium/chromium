@@ -62175,6 +62175,7 @@ from previous Chrome versions.
   <int value="665409384"
       label="AutofillToolkitViewsCreditCardDialogsMac:enabled"/>
   <int value="665647051" label="DiscountConsentV2:enabled"/>
+  <int value="666428855" label="MediaRemotingWithoutFullscreen:enabled"/>
   <int value="666871156" label="KaleidoscopeModule:enabled"/>
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
@@ -63938,6 +63939,7 @@ from previous Chrome versions.
   <int value="1699180023" label="PaymentRequestOptionalTotal:disabled"/>
   <int value="1699182601" label="DockedMagnifier:disabled"/>
   <int value="1699290689" label="CssSelectorFragmentAnchor:enabled"/>
+  <int value="1699499166" label="MediaRemotingWithoutFullscreen:disabled"/>
   <int value="1700117535" label="MediaFeedsBackgroundFetching:disabled"/>
   <int value="1700181145" label="PowerBookmarksSidePanel:enabled"/>
   <int value="1700394127" label="OverlayScrollbar:disabled"/>

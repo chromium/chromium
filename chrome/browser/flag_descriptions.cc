@@ -1539,9 +1539,14 @@ const char kGlobalMediaControlsForCastName[] = "Global Media Controls for Cast";
 const char kGlobalMediaControlsForCastDescription[] =
     "Shows Cast sessions in the Global Media Controls UI.";
 
+const char kMediaRemotingWithoutFullscreenName[] =
+    "Media Remoting without videos in fullscreen mode";
+const char kMediaRemotingWithoutFullscreenDescription[] =
+    "Starts Media Remoting from Global Media Controls without making the "
+    "videos fullscreen.";
+
 const char kGlobalMediaControlsModernUIName[] =
     "Global Media Controls Modern UI";
-
 const char kGlobalMediaControlsModernUIDescription[] =
     "Use a redesigned version of the Global Media Controls UI. Requires "
     "#global-media-controls to also be enabled.";
