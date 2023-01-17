@@ -113,8 +113,6 @@ void BackgroundFetchJobController::InitializeRequestStatus(
   for (const auto& request_info : active_fetch_requests)
     active_guids.push_back(request_info->download_guid());
 
-  // TODO(https://crbug.com/1199077): Should we update
-  // BackgroundFetchDescription to StorageKey?
   auto fetch_description = std::make_unique<BackgroundFetchDescription>(
       registration_id().unique_id(), registration_id().storage_key().origin(),
       options_->title, icon_, completed_downloads_, total_downloads_,
