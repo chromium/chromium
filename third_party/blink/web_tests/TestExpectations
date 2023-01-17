@@ -6946,7 +6946,3 @@ http/tests/security/cross-frame-access-parent-explicit-domain.html [ Failure Pas
 http/tests/security/cross-frame-access-port-explicit-domain.html [ Failure Pass ]
 http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure Pass ]
 http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure Pass ]
-
-# Sheriff 2023-01-16
-crbug.com/1407922 http/tests/devtools/background-services/background-service-grid.js [ Failure Pass ]
-crbug.com/1407922 http/tests/devtools/background-services/background-services-panel.js [ Failure Pass ]

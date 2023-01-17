@@ -40,8 +40,6 @@ async function toggleRecord(model) {
 }
 
 (async function() {
-  Root.Runtime.experiments.setEnabled('backgroundServices', true);
-
   TestRunner.addResult(`Tests the bottom panel shows information as expected.\n`);
   await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('resources');
