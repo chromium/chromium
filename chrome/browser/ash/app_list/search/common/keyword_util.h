@@ -17,17 +17,14 @@ namespace app_list {
 using KeywordToProvidersMap =
     base::flat_map<std::u16string, std::vector<ProviderType>>;
 
-using KeywordToProvidersPair =
-    std::pair<std::u16string, std::vector<ProviderType>>;
-
-// Given a user query, processes the query into tokens separated by ' '.
-std::vector<std::string> TokenizeQuery(const std::u16string& query);
+using KeywordToProvidersPairs =
+    std::vector<std::pair<std::u16string, std::vector<ProviderType>>>;
 
 // Provided the list of tokens produced from the user query, returns a list of
 // keywords and its associated SearchProviders.
 //   - A given keyword can be associated with 1 or more SearchProviders.
 //   - Multiple keywords may map to the same SearchProvider.
-KeywordToProvidersPair ExtractKeyword(const std::u16string& query);
+KeywordToProvidersPairs ExtractKeyword(const std::u16string& query);
 
 }  // namespace app_list
 

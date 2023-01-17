@@ -11,26 +11,48 @@ namespace app_list::list {
 
 namespace {
 
-TEST(KeywordUtilTest, ExtractKeyword) {
-  // Test for successful matching of keyword in query returns pair of
-  // {keyword, SearchProviders}.
-
-  KeywordToProvidersPair p1 = {
-      u"app",
-      {ProviderType::kInstalledApp, ProviderType::kArcAppShortcut,
-       ProviderType::kPlayStoreApp}};
+// Test for successful matching of ONE keyword in query returns pair of
+// {keyword, SearchProviders}.
+TEST(KeywordUtilTest, OneKeyword) {
+  KeywordToProvidersPairs p1 = {
+      {u"app",
+       {ProviderType::kInstalledApp, ProviderType::kArcAppShortcut,
+        ProviderType::kPlayStoreApp}}};
   EXPECT_EQ(p1, ExtractKeyword(u"app test"));
 
-  KeywordToProvidersPair p2 = {u"search", {ProviderType::kOmnibox}};
-  EXPECT_EQ(p2, ExtractKeyword(u"test searching"));
+  KeywordToProvidersPairs p2 = {{u"search", {ProviderType::kOmnibox}}};
+  EXPECT_EQ(p2, ExtractKeyword(u"test search"));
 
-  KeywordToProvidersPair p3 = {
-      u"android", {ProviderType::kArcAppShortcut, ProviderType::kPlayStoreApp}};
+  KeywordToProvidersPairs p3 = {
+      {u"android",
+       {ProviderType::kArcAppShortcut, ProviderType::kPlayStoreApp}}};
   EXPECT_EQ(p3, ExtractKeyword(u"/testing android */"));
+}
 
-  // Test unsuccessful matching of keyword
+// Test unsuccessful matching of keyword
+TEST(KeywordUtilTest, NoKeyword) {
+  EXPECT_EQ(KeywordToProvidersPairs(), ExtractKeyword(u"no keyword"));
+  EXPECT_EQ(KeywordToProvidersPairs(), ExtractKeyword(u"searching driver"));
+}
 
-  EXPECT_EQ(KeywordToProvidersPair(), ExtractKeyword(u"no keyword"));
+// Test for successful matching of multiple keywords in query
+// Pairs of keywords-to-providers are ordered in the same order in which the
+// keywords are displayed in the query e.g. For query "help app change
+// brightness", the order of keyword pairs is {"help", "app"}
+TEST(KeywordUtilTest, MultipleKeywords) {
+  KeywordToProvidersPairs p1 = {
+      {u"help", {ProviderType::kHelpApp}},
+      {u"app",
+       {ProviderType::kInstalledApp, ProviderType::kArcAppShortcut,
+        ProviderType::kPlayStoreApp}}};
+
+  EXPECT_EQ(p1, ExtractKeyword(u"help app change brightness"));
+
+  KeywordToProvidersPairs p2 = {{u"google", {ProviderType::kOmnibox}},
+                                {u"gaming", {ProviderType::kGames}},
+                                {u"assistant", {ProviderType::kAssistantText}}};
+
+  EXPECT_EQ(p2, ExtractKeyword(u"google gaming assistant"));
 }
 
 }  // namespace

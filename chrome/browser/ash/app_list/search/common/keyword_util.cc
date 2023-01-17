@@ -5,10 +5,13 @@
 #include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 
 #include "base/containers/flat_map.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace app_list {
 
 namespace {
+
+using ::ash::string_matching::TokenizedString;
 
 // Return a dictionary of keywords and their associated search providers.
 // Structure: { keyword: [SearchProviders] }
@@ -39,28 +42,24 @@ KeywordToProvidersMap MakeMap() {
 
 }  // namespace
 
-std::vector<std::string> TokenizeQuery(const std::u16string& query) {
-  // TODO(b/262623111): Implement function to tokenize user query into
-  // individual tokens.
-  return std::vector<std::string>();
-}
+KeywordToProvidersPairs ExtractKeyword(const std::u16string& query) {
+  // Given the user query, process into a tokenized string and
+  // check if keyword exists as one of the tokens.
 
-KeywordToProvidersPair ExtractKeyword(const std::u16string& query) {
-  // TODO(b/262623111): Implement function to identify and extract the keywords
-  // from list of tokens.
+  TokenizedString tokenized_string(query, TokenizedString::Mode::kWords);
+  KeywordToProvidersMap keyword_map = MakeMap();
+  KeywordToProvidersPairs extracted_keywords_to_providers = {};
 
-  // Implementation: Given the above dictionary of keywords, iterate through
-  // each key-value pair and check if the keyword exists in the query string. If
-  // a keyword exists, then return the keyword and its associated Search
-  // Provider.
+  for (const std::u16string& token : tokenized_string.tokens()) {
+    const auto& keyword_to_providers_pair = keyword_map.find(token);
 
-  for (KeywordToProvidersPair& keyword_to_providers : MakeMap()) {
-    if (query.find(keyword_to_providers.first) != std::string::npos) {
-      return keyword_to_providers;
+    if (keyword_to_providers_pair != keyword_map.end()) {
+      extracted_keywords_to_providers.emplace_back(
+          keyword_to_providers_pair->first, keyword_to_providers_pair->second);
     }
   }
 
-  return KeywordToProvidersPair();
+  return extracted_keywords_to_providers;
 }
 
 }  // namespace app_list

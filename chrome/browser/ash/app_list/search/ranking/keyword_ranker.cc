@@ -20,10 +20,18 @@ void KeywordRanker::Start(const std::u16string& query,
   // be called.
   last_query_ = query;
 
-  // TODO(b/263816068): Use real keyword extraction function when ready.
-
   // Stores the providers that match with the keyword within the input query.
-  matched_providers_ = ExtractKeyword(last_query_).second;
+
+  // TODO(b/262623111): Type which ExtractKeyword() will return is a struct
+  // containing {keyword string, score, Search Providers}
+  KeywordToProvidersPairs extracted_keywords_to_providers =
+      ExtractKeyword(last_query_);
+
+  if (!extracted_keywords_to_providers.empty()) {
+    // TODO(b/262623111): To iterate through the extracted keywords to providers
+    // to place the Search Providers into the vector matched_providers_
+    matched_providers_ = extracted_keywords_to_providers[0].second;
+  }
 }
 
 void KeywordRanker::UpdateResultRanks(ResultsMap& results,
