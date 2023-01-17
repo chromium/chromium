@@ -497,8 +497,12 @@ source_set("platform_base") {
     "src/internal/platform/runnable.h",
     "src/internal/platform/socket.h",
     "src/internal/platform/types.h",
+    "src/internal/platform/wifi_credential.h",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  public_deps = [
+    ":connections_enums_proto",
+    "//third_party/abseil-cpp:absl",
+  ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
