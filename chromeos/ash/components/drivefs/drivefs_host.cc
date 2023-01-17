@@ -94,6 +94,9 @@ class DriveFsHost::MountState : public DriveFsSession,
         base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring),
         delegate->IsVerboseLoggingEnabled(),
         base::FeatureList::IsEnabled(ash::features::kDriveFsChromeNetworking),
+        base::FeatureList::IsEnabled(ash::features::kDriveFsShowCSEFiles)
+            ? mojom::CSESupport::kListing
+            : mojom::CSESupport::kNone,
     };
     return DriveFsConnection::Create(delegate->CreateMojoListener(),
                                      std::move(config));

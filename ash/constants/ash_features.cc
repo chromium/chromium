@@ -657,6 +657,12 @@ BASE_FEATURE(kDriveFsBulkPinning,
              "DriveFsBulkPinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables partial support of CSE files on ChromeOS: users will be able to see
+// the files and open in web apps, but not to open/read/write CSE files locally.
+BASE_FEATURE(kDriveFsShowCSEFiles,
+             "DriveFsShowCSEFiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables authenticating to Wi-Fi networks using EAP-GTC.
 BASE_FEATURE(kEapGtcWifiAuthentication,
              "EapGtcWifiAuthentication",
