@@ -7,7 +7,6 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -171,19 +170,6 @@ base::FileErrorOr<int64_t> FileSystemAccessIncognitoFileDelegate::GetLength() {
   return file_error == base::File::Error::FILE_OK ? length : file_error;
 }
 
-void FileSystemAccessIncognitoFileDelegate::GetLengthAsync(
-    base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  mojo_ptr_->GetLength(WTF::BindOnce(
-      [](base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback,
-         base::File::Error file_error, int64_t length) {
-        CHECK_GE(length, 0);
-        std::move(callback).Run(
-            file_error == base::File::Error::FILE_OK ? length : file_error);
-      },
-      std::move(callback)));
-}
-
 base::FileErrorOr<bool> FileSystemAccessIncognitoFileDelegate::SetLength(
     int64_t length) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -191,15 +177,6 @@ base::FileErrorOr<bool> FileSystemAccessIncognitoFileDelegate::SetLength(
   base::File::Error file_error;
   mojo_ptr_->SetLength(length, &file_error);
   return file_error == base::File::Error::FILE_OK ? true : file_error;
-}
-
-void FileSystemAccessIncognitoFileDelegate::SetLengthAsync(
-    int64_t length,
-    base::OnceCallback<void(base::File::Error)> callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  CHECK_GE(length, 0);
-
-  mojo_ptr_->SetLength(length, WTF::BindOnce(std::move(callback)));
 }
 
 bool FileSystemAccessIncognitoFileDelegate::Flush() {
@@ -212,29 +189,9 @@ bool FileSystemAccessIncognitoFileDelegate::Flush() {
   return true;
 }
 
-void FileSystemAccessIncognitoFileDelegate::FlushAsync(
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  // Flush is a no-op for in-memory file systems. Even if the file delegate is
-  // used for other FS types, writes through the FileSystemOperationRunner are
-  // automatically flushed. If this proves to be too slow, we can consider
-  // changing the FileSystemAccessFileDelegateHostImpl to write with a
-  // FileStreamWriter and only flushing when this method is called.
-  task_runner_->PostTask(FROM_HERE,
-                         WTF::BindOnce(std::move(callback), /*success=*/true));
-}
-
 void FileSystemAccessIncognitoFileDelegate::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo_ptr_.reset();
-}
-
-void FileSystemAccessIncognitoFileDelegate::CloseAsync(
-    base::OnceClosure callback) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  mojo_ptr_.reset();
-
-  task_runner_->PostTask(FROM_HERE, std::move(callback));
 }
 
 }  // namespace blink

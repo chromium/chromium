@@ -14,30 +14,22 @@
   RuntimeEnabled=FileSystemAccessAccessHandle,
   SecureContext
 ] interface FileSystemSyncAccessHandle {
-  [CallWith=ScriptState, Measure] any close();
+  [Measure] void close();
 
-[
-  CallWith=ScriptState, RaisesException, Measure
-] any flush();
+  [RaisesException, Measure] void flush();
 
-[
-  CallWith=ScriptState, RaisesException, Measure
-] any getSize();
+  [RaisesException, Measure] unsigned long long getSize();
 
-// TODO(crbug.com/1338340): Add back [EnforceRange] to `size` after all methods
-// migrated to be sync. This check is currently done in 
-// `file_system_sync_access_handle.cc` due to `any` return type wrapping a
-// ScriptPromise throwing a TypeError instead of rejecting a promise.
-[
-  CallWith = ScriptState, RaisesException, Measure
-] any truncate(unsigned long long size);
+  [
+    RaisesException, Measure
+  ] void truncate([EnforceRange] unsigned long long size);
 
-[
-  RaisesException, Measure
-] unsigned long long read([AllowShared] ArrayBufferView buffer,
-                           optional FileSystemReadWriteOptions options = {});
-[
-  RaisesException, Measure
-] unsigned long long write([AllowShared] ArrayBufferView buffer,
-                           optional FileSystemReadWriteOptions options = {});
+  [
+    RaisesException, Measure
+  ] unsigned long long read([AllowShared] ArrayBufferView buffer,
+                            optional FileSystemReadWriteOptions options = {});
+  [
+    RaisesException, Measure
+  ] unsigned long long write([AllowShared] ArrayBufferView buffer,
+                            optional FileSystemReadWriteOptions options = {});
 };

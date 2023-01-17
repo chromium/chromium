@@ -9136,11 +9136,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "BindingManagerConnectionLimit")},
 #endif
 
-    {"sync-access-handle-all-sync-surface",
-     flag_descriptions::kSyncAccessHandleAllSyncSurfaceName,
-     flag_descriptions::kSyncAccessHandleAllSyncSurfaceDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kSyncAccessHandleAllSyncSurface)},
-
     {"webauthn-new-desktop-ui", flag_descriptions::kWebAuthnNewDesktopUIName,
      flag_descriptions::kWebAuthnNewDesktopUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kWebAuthnNewDiscoverableCredentialsUi)},

@@ -1517,10 +1517,6 @@ BASE_FEATURE(kWebRtcMetronome,
              "WebRtcMetronome",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAccessHandleAllSyncSurface,
-             "SyncAccessHandleAllSyncSurface",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRunTextInputUpdatePostLifecycle,
              "RunTextInputUpdatePostLifecycle",
              base::FEATURE_ENABLED_BY_DEFAULT);

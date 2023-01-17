@@ -6518,11 +6518,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "sync-access-handle-all-sync-surface",
-    "owners": [ "dslee@google.com", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 111
-  },
-  {
     "name": "sync-autofill-wallet-usage-data",
     "owners": [ "alexandertekle@google.com", "treib" ],
     "expiry_milestone": 120

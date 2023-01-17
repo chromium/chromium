@@ -5,12 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_INCOGNITO_FILE_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_INCOGNITO_FILE_DELEGATE_H_
 
-#include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -41,16 +39,9 @@ class FileSystemAccessIncognitoFileDelegate final
   base::FileErrorOr<int> Write(int64_t offset,
                                const base::span<uint8_t> data) override;
   base::FileErrorOr<int64_t> GetLength() override;
-  void GetLengthAsync(
-      base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) override;
   base::FileErrorOr<bool> SetLength(int64_t new_length) override;
-  void SetLengthAsync(
-      int64_t new_length,
-      base::OnceCallback<void(base::File::Error)> callback) override;
   bool Flush() override;
-  void FlushAsync(base::OnceCallback<void(bool)> callback) override;
   void Close() override;
-  void CloseAsync(base::OnceClosure callback) override;
   bool IsValid() const override { return mojo_ptr_.is_bound(); }
 
   void Trace(Visitor*) const override;

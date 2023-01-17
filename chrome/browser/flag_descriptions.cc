@@ -2834,11 +2834,6 @@ const char kSuppressToolbarCapturesName[] = "Suppress Toolbar Captures";
 const char kSuppressToolbarCapturesDescription[] =
     "Suppress Toolbar Captures except when certain properties change.";
 
-const char kSyncAccessHandleAllSyncSurfaceName[] =
-    "Sync Access Handle All Sync Surface";
-const char kSyncAccessHandleAllSyncSurfaceDescription[] =
-    "Enables all-sync surface for SyncAccessHandle in File System Access API.";
-
 const char kSyncAutofillWalletUsageDataName[] =
     "Sync Autofill Wallet Usage Data";
 const char kSyncAutofillWalletUsageDataDescription[] =

@@ -771,9 +771,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcMetronome);
 
-// If enabled, all of FileSystemAccessSyncAccessHandle methods are synchronous.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSyncAccessHandleAllSyncSurface);
-
 // If enabled, IME updates are computed at the end of a lifecycle update rather
 // than the beginning.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
