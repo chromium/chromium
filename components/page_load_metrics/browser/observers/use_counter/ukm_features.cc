@@ -267,6 +267,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebNfcNdefReaderScan,
           WebFeature::kWakeLockAcquireScreenLockWithoutActivation,
           WebFeature::kGetDisplayMediaWithoutUserActivation,
+          WebFeature::kDataUrlInSvgUse,
       }));
   return *opt_in_features;
 }
