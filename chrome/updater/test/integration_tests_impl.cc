@@ -494,7 +494,8 @@ void ExpectAppVersion(UpdaterScope scope,
       base::MakeRefCounted<PersistedData>(
           CreateGlobalPrefs(scope)->GetPrefService())
           ->GetProductVersion(app_id);
-  EXPECT_TRUE(app_version.IsValid() && version == app_version);
+  EXPECT_TRUE(app_version.IsValid());
+  EXPECT_EQ(version, app_version);
 }
 
 void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
