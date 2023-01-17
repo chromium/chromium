@@ -71,7 +71,8 @@ void BubbleView::AddedToWidget() {
   // they scroll (if more effects are present than can fit in the available
   // height).
   if (controller_->effects_manager().HasToggleEffects()) {
-    layout->AddChildView(std::make_unique<ToggleEffectsView>(controller_));
+    layout->AddChildView(std::make_unique<ToggleEffectsView>(
+        controller_, GetPreferredSize().width()));
   }
   if (controller_->effects_manager().HasSetValueEffects()) {
     layout->AddChildView(std::make_unique<SetValueEffectsView>(controller_));

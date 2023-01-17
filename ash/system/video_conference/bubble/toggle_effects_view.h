@@ -22,7 +22,10 @@ namespace video_conference {
 // controller.
 class ToggleEffectsView : public views::View {
  public:
-  explicit ToggleEffectsView(VideoConferenceTrayController* controller);
+  METADATA_HEADER(ToggleEffectsView);
+
+  ToggleEffectsView(VideoConferenceTrayController* controller,
+                    const int parent_width);
   ToggleEffectsView(const ToggleEffectsView&) = delete;
   ToggleEffectsView& operator=(const ToggleEffectsView&) = delete;
   ~ToggleEffectsView() override = default;
