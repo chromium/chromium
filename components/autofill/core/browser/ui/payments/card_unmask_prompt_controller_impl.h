@@ -74,6 +74,9 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   base::TimeDelta GetSuccessMessageDuration() const override;
   AutofillClient::PaymentsRpcResult GetVerificationResult() const override;
   bool IsVirtualCard() const override;
+#if !BUILDFLAG(IS_IOS)
+  int GetCvcTooltipResourceId() override;
+#endif
 
  protected:
   // Exposed for testing.
@@ -81,6 +84,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
  private:
   bool AllowsRetry(AutofillClient::PaymentsRpcResult result);
+  bool IsCvcInFront();
   bool ShouldDismissUnmaskPromptUponResult(
       AutofillClient::PaymentsRpcResult result);
   void LogOnCloseEvents();

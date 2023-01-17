@@ -378,6 +378,14 @@ bool CardUnmaskPromptControllerImpl::IsVirtualCard() const {
   return card_.record_type() == CreditCard::VIRTUAL_CARD;
 }
 
+#if !BUILDFLAG(IS_IOS)
+int CardUnmaskPromptControllerImpl::GetCvcTooltipResourceId() {
+  return IsCvcInFront()
+             ? IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION_FOR_AMEX
+             : IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION;
+}
+#endif
+
 bool CardUnmaskPromptControllerImpl::AllowsRetry(
     AutofillClient::PaymentsRpcResult result) {
   if (result == AutofillClient::PaymentsRpcResult::kNetworkError ||
@@ -389,6 +397,19 @@ bool CardUnmaskPromptControllerImpl::AllowsRetry(
     return false;
   }
   return true;
+}
+
+bool CardUnmaskPromptControllerImpl::IsCvcInFront() {
+  // Rely on the challenge option to inform us whether the CVC to be entered is
+  // on the front or back of the card.
+  if (IsChallengeOptionPresent()) {
+    return card_unmask_prompt_options_.challenge_option->cvc_position ==
+           CvcPosition::kFrontOfCard;
+  }
+
+  // For normal CVC unmask case, depend on the network to inform where the CVC
+  // is on the card.
+  return card_.network() == kAmericanExpressCard;
 }
 
 bool CardUnmaskPromptControllerImpl::ShouldDismissUnmaskPromptUponResult(

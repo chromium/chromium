@@ -368,8 +368,8 @@ void CardUnmaskPromptViews::InitIfNecessary() {
 
   auto cvc_image = std::make_unique<views::ImageView>();
   cvc_image->SetImage(rb.GetImageSkiaNamed(controller_->GetCvcImageRid()));
-  cvc_image->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION));
+  cvc_image->SetTooltipText(
+      l10n_util::GetStringUTF16(controller_->GetCvcTooltipResourceId()));
   input_row->AddChildView(std::move(cvc_image));
   input_row_ = input_container->AddChildView(std::move(input_row));
 

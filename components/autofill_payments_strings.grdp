@@ -337,6 +337,9 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION" desc="Accessible description for the CVC image. It should describe where to find the CVC on a credit card.">
       The CVC is located behind your card.
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION_FOR_AMEX" desc="Accessible description for the CVC image. It should describe where to find the CVC on an American Express credit card.">
+      The CVC is located on the front of your card.
+    </message>
   </if>
   <if expr="is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
