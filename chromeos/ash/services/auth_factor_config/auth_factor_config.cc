@@ -84,8 +84,8 @@ void AuthFactorConfig::GetManagementType(
       CHECK(prefs);
       const mojom::ManagementType result =
           prefs->IsManagedPreference(prefs::kRecoveryFactorBehavior)
-              ? mojom::ManagementType::kDevice
-              : mojom::ManagementType::kUser;
+              ? mojom::ManagementType::kUser
+              : mojom::ManagementType::kNone;
 
       std::move(callback).Run(result);
       break;
