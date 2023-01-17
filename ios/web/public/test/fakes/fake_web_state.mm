@@ -568,6 +568,30 @@ void FakeWebState::DownloadCurrentPage(
     id<CRWWebViewDownloadDelegate> delegate,
     void (^handler)(id<CRWWebViewDownload>)) {}
 
+bool FakeWebState::IsFindInteractionSupported() {
+  return false;
+}
+
+bool FakeWebState::IsFindInteractionEnabled() {
+  // Should only be called if `IsFindInteractionSupported()` returns `true`,
+  // which it never does in this implementation.
+  NOTREACHED();
+  return false;
+}
+
+void FakeWebState::SetFindInteractionEnabled(bool enabled) {
+  // Should only be called if `IsFindInteractionSupported()` returns `true`,
+  // which it never does in this implementation.
+  NOTREACHED();
+}
+
+UIFindInteraction* FakeWebState::GetFindInteraction() API_AVAILABLE(ios(16)) {
+  // Should only be called if `IsFindInteractionSupported()` returns `true`,
+  // which it never does in this implementation.
+  NOTREACHED();
+  return nil;
+}
+
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(
     BrowserState* browser_state)
     : FakeWebState(),

@@ -112,6 +112,10 @@ class FakeWebState : public WebState {
                            id<CRWWebViewDownloadDelegate> delegate,
                            void (^handler)(id<CRWWebViewDownload>)) override
       API_AVAILABLE(ios(14.5));
+  bool IsFindInteractionSupported() final;
+  bool IsFindInteractionEnabled() final;
+  void SetFindInteractionEnabled(bool enabled) final;
+  UIFindInteraction* GetFindInteraction() final API_AVAILABLE(ios(16));
 
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;

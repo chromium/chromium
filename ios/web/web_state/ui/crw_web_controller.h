@@ -248,6 +248,20 @@ class WebStateImpl;
                                handler:(void (^)(id<CRWWebViewDownload>))handler
     API_AVAILABLE(ios(14.5));
 
+// Returns whether the Find interaction is supported and can be enabled.
+- (BOOL)findInteractionSupported;
+
+// Returns whether the Find interaction is enabled on the contained web view, if
+// any.
+- (BOOL)findInteractionEnabled;
+
+// Sets the value of `findInteractionEnabled` to `enabled` on the contained web
+// view, if any.
+- (void)setFindInteractionEnabled:(BOOL)enabled;
+
+// Returns the Find interaction of the contained web view, if any.
+- (UIFindInteraction*)findInteraction API_AVAILABLE(ios(16));
+
 #pragma mark Navigation Message Handlers
 
 // Handles a navigation hash change message for the current webpage.

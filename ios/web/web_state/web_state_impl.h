@@ -350,6 +350,10 @@ class WebStateImpl final : public WebState {
                            id<CRWWebViewDownloadDelegate> delegate,
                            void (^handler)(id<CRWWebViewDownload>)) final
       API_AVAILABLE(ios(14.5));
+  bool IsFindInteractionSupported() final;
+  bool IsFindInteractionEnabled() final;
+  void SetFindInteractionEnabled(bool enabled) final;
+  UIFindInteraction* GetFindInteraction() final API_AVAILABLE(ios(16));
 
  protected:
   // WebState:

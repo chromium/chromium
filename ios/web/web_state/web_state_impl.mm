@@ -693,6 +693,22 @@ void WebStateImpl::DownloadCurrentPage(NSString* destination_file,
                                          handler:handler];
 }
 
+bool WebStateImpl::IsFindInteractionSupported() {
+  return [GetWebController() findInteractionSupported];
+}
+
+bool WebStateImpl::IsFindInteractionEnabled() {
+  return [GetWebController() findInteractionEnabled];
+}
+
+void WebStateImpl::SetFindInteractionEnabled(bool enabled) {
+  [GetWebController() setFindInteractionEnabled:enabled];
+}
+
+UIFindInteraction* WebStateImpl::GetFindInteraction() API_AVAILABLE(ios(16)) {
+  return [GetWebController() findInteraction];
+}
+
 #pragma mark - WebStateImpl private methods
 
 WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {
