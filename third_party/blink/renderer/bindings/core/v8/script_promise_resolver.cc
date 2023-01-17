@@ -139,6 +139,9 @@ void ScriptPromiseResolver::KeepAliveWhilePending() {
 void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextDestroyed());
   DCHECK(!GetExecutionContext()->IsContextPaused());
+
+  probe::WillReactToScriptPromise(GetExecutionContext());
+
   {
     if (state_ == kResolving) {
       resolver_.Resolve(value_.Get(script_state_->GetIsolate()));

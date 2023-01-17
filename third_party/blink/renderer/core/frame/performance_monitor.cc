@@ -154,6 +154,10 @@ void PerformanceMonitor::DidExecuteScript() {
   --script_depth_;
 }
 
+void PerformanceMonitor::WillReactToScriptPromise(ExecutionContext* context) {
+  UpdateTaskAttribution(context);
+}
+
 void PerformanceMonitor::UpdateTaskAttribution(ExecutionContext* context) {
   // If |context| is not a window, unable to attribute a frame context.
   auto* window = DynamicTo<LocalDOMWindow>(context);
