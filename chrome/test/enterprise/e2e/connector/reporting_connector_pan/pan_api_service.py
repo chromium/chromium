@@ -114,8 +114,9 @@ class PanApiService(object):
     headers = self._generate_headers()
     parameters = {}
     request_data = {}
-    request_data["query"] = (r"dataset=%s | fields event, time | limit %d" %
-                             (xdr_dataset, self._event_limit))
+    request_data["query"] = (
+        r"dataset=%s | fields event, time | sort desc _time | limit %d " %
+        (xdr_dataset, self._event_limit))
     request_data["tenants"] = ""
     # Only query for the last self.relative_time hours
     request_data["timeframe"] = {"relativeTime": self._relative_time}

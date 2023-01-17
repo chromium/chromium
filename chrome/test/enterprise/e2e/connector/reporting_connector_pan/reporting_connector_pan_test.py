@@ -49,10 +49,20 @@ class ReportingConnectorPanTest(ChromeEnterpriseTestCase):
     # trigger malware event & get device id from browser
     localDir = os.path.dirname(os.path.abspath(__file__))
     commonDir = os.path.dirname(localDir)
-    clientId = self.RunUITest(
-        self.win_config['client'],
-        os.path.join(commonDir, 'common', 'realtime_reporting_ui_test.py'),
-        timeout=600)
+    clientId = ''
+    retryCount = 0
+    # if not be able to find testsafebrowsing in logging, retry up to
+    # 3 times.
+    while retryCount < 3:
+      retryCount += 1
+      safeNet = ''
+      clientId = self.RunUITest(
+          self.win_config['client'],
+          os.path.join(commonDir, 'common', 'realtime_reporting_ui_test.py'),
+          timeout=600)
+      safeNet = re.search(r'testsafebrowsing', clientId.strip())
+      if safeNet:
+        break
     clientId = re.search(r'DeviceId:.*$',
                          clientId.strip()).group(0).replace('DeviceId:',
                                                             '').rstrip("\\rn'")
