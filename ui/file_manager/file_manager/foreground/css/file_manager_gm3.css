@@ -1144,7 +1144,7 @@ body.check-select #read-only-indicator {
 .list-view #empty-folder > .image {
   /* The list view has a .table-header at the top, the margin-top should also
   cover that, hence the desired margin plus the .table-header height. */
-  margin-top: calc(64px + 57px);
+  margin-top: calc(64px + 49px);
 }
 
 #empty-folder > .label {
@@ -1200,7 +1200,7 @@ body.check-select #read-only-indicator {
 .list-view .loading-indicator {
   /* The list view has a .table-header at the top, the top should also
   cover that, hence the desired top plus the .table-header height. */
-  top: calc(64px + 57px);
+  top: calc(64px + 49px);
 }
 
 @keyframes heightAnimation {
@@ -1735,7 +1735,7 @@ li[renaming=''] .filename-label {
   flex: none;
   font-family: 'Roboto Medium';
   /* The desired height plus the border bottom. */
-  height: calc(56px + 1px);
+  height: calc(48px + 1px);
   line-height: 20px;
 }
 
@@ -2014,23 +2014,23 @@ body[unformatted] .dialog-container #list-container {
   padding-inline-start: 8px;
 }
 
-body.files-ng #list-container .table-header-cell:first-child {
+#list-container .table-header-cell:first-child {
   padding-inline-start: 0;
 }
 
-body.files-ng .table-header-cell {
-  padding-bottom: 12px;
-  padding-top: 12px;
+.table-header-cell {
+  padding-bottom: 8px;
+  padding-top: 8px;
 }
 
-html:not(.pointer-active) body.files-ng .table-header-cell,
-body.files-ng .table-header-cell:active {
+html:not(.pointer-active) .table-header-cell,
+.table-header-cell:active {
   cursor: pointer;
 }
 
-body.files-ng #list-container .table-header-cell:first-child
+#list-container .table-header-cell:first-child
 .table-header-label {
-  margin-inline-start: 16px;
+  margin-inline-start: 20px;
 }
 
 .table-header-label .sort-icon {
@@ -2061,20 +2061,20 @@ html.col-resize .table-header-label .sort-icon:not(:active):hover {
   --cr-icon-button-hover-background-color: none;
 }
 
-body.files-ng .table-label-container {
+.table-label-container {
   align-items: center;
   display: flex;
   height: 32px;
 }
 
 /* Text in the column header */
-body.files-ng .table-label-container > span {
+.table-label-container > span {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 /** Size column is aligned to right. */
-body.files-ng .table-header-label.size .table-label-container {
+.table-header-label.size .table-label-container {
   justify-content: flex-end;
 }
 
@@ -2104,10 +2104,10 @@ body.files-ng .table-row-cell > * {
   padding-top: 0 !important;
 }
 
-body.files-ng .table-header-splitter  {
+.table-header-splitter  {
   background: none;
   height: 32px;
-  margin-top: 12px;
+  margin-top: 8px;
   width: auto;
 }
 
@@ -2116,11 +2116,12 @@ body.files-ng .table-header-splitter  {
    * TODO(crbug.com/1268206): the icon is not in disabled state, a new css
    * variable needs to be created and applied here.
    */
-  --cr-icon-button-fill-color: var(--cros-icon-color-disabled);
+  --cr-icon-button-fill-color: var(--cros-sys-outline);
   --cr-icon-button-hover-background-color: var(--cros-ripple-color);
   --cr-icon-button-icon-size: 32px;
   --cr-icon-button-margin-start: 0px;
   --cr-icon-button-size: 32px;
+  --cr-icon-button-stroke-color: var(--cros-sys-outline);
   cursor: default;
   height: 32px;
 }
