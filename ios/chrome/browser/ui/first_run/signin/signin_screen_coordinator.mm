@@ -135,15 +135,6 @@
   self.authenticationService = nil;
 }
 
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
-                 completion:(ProceduralBlock)completion {
-  // This coordinator should be used only for FRE or force sign-in. Those cases
-  // should not be interrupted.
-  NOTREACHED();
-}
-
 #pragma mark - Private
 
 // Starts the coordinator to present the Add Account module.

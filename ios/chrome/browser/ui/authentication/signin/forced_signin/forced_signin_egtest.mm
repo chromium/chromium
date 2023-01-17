@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
+#import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
@@ -73,7 +74,7 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
 // Returns a matcher for the whole forced sign-in screen.
 id<GREYMatcher> GetForcedSigninScreenMatcher() {
   return grey_accessibilityID(
-      first_run::kFirstRunLegacySignInScreenAccessibilityIdentifier);
+      first_run::kFirstRunSignInScreenAccessibilityIdentifier);
 }
 
 // Checks that the forced sign-in prompt is fully dismissed by making sure
@@ -221,6 +222,22 @@ void OpenGoogleServicesSettings() {
       assertWithMatcher:grey_notNil()];
 }
 
+void AppendEnableMiceFre(AppLaunchConfiguration* config) {
+  // Enable Mice FRE with Tangible Sync A.
+  config->additional_args.push_back(
+      "--enable-features=" +
+      std::string(signin::kNewMobileIdentityConsistencyFRE.name) + "<" +
+      std::string(signin::kNewMobileIdentityConsistencyFRE.name));
+  config->additional_args.push_back(
+      "--force-fieldtrials=" +
+      std::string(signin::kNewMobileIdentityConsistencyFRE.name) + "/Test");
+  config->additional_args.push_back(
+      "--force-fieldtrial-params=" +
+      std::string(signin::kNewMobileIdentityConsistencyFRE.name) +
+      ".Test:" + std::string(kNewMobileIdentityConsistencyFREParam) + "/" +
+      kNewMobileIdentityConsistencyFREParamTangibleSyncA);
+}
+
 }  // namespace
 
 // Test the forced sign-in screens.
@@ -232,7 +249,7 @@ void OpenGoogleServicesSettings() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
 
   // Configure the policy to force sign-in.
   config.additional_args.push_back(
@@ -242,6 +259,11 @@ void OpenGoogleServicesSettings() {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   return config;
+}
+
+- (void)setUp {
+  [[self class] testForStartup];
+  [super setUp];
 }
 
 - (void)tearDown {
@@ -268,13 +290,13 @@ void OpenGoogleServicesSettings() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Validate the Title text of the forced sign-in screen.
-  id<GREYMatcher> title =
-      grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE));
+  id<GREYMatcher> title = grey_text(
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED));
   ScrollToElementAndAssertVisibility(title);
 
   // Validate the Subtitle text of the forced sign-in screen.
   id<GREYMatcher> subtitle = grey_text(
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED));
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED));
   ScrollToElementAndAssertVisibility(subtitle);
 
   // Scroll to the "Continue as ..." button to go to the bottom of the screen.
@@ -599,7 +621,7 @@ void OpenGoogleServicesSettings() {
 - (void)testSignInScreenOnModal {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -627,7 +649,7 @@ void OpenGoogleServicesSettings() {
 - (void)testSignInScreenOnTabSwitcher {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -654,7 +676,7 @@ void OpenGoogleServicesSettings() {
 - (void)testSignInScreenOnIncognito {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -681,7 +703,7 @@ void OpenGoogleServicesSettings() {
 - (void)testSignInScreenDuringRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -718,7 +740,7 @@ void OpenGoogleServicesSettings() {
 - (void)testNoSignInScreenWhenSigninFromRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -797,7 +819,7 @@ void OpenGoogleServicesSettings() {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -854,7 +876,7 @@ void OpenGoogleServicesSettings() {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -912,7 +934,7 @@ void OpenGoogleServicesSettings() {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1052,7 +1074,7 @@ void OpenGoogleServicesSettings() {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1097,7 +1119,7 @@ void OpenGoogleServicesSettings() {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1149,7 +1171,7 @@ void OpenGoogleServicesSettings() {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1203,7 +1225,7 @@ void OpenGoogleServicesSettings() {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
