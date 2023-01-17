@@ -234,9 +234,7 @@ export const FilesQuickView = Polymer({
    * @private
    */
   onMetadataButtonTap_: function(event) {
-    if (this.hasAttribute('files-ng')) {
-      this.metadataBoxActive = !this.metadataBoxActive;
-    }
+    this.metadataBoxActive = !this.metadataBoxActive;
   },
 
   /**
