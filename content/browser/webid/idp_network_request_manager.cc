@@ -427,9 +427,13 @@ void OnClientMetadataParsed(
   auto ExtractUrl = [&](const char* key) {
     const std::string* endpoint = response.FindString(key);
     if (!endpoint) {
-      return std::string();
+      return GURL();
     }
-    return *endpoint;
+    GURL url = GURL(*endpoint);
+    if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+      return GURL();
+    }
+    return url;
   };
 
   IdpNetworkRequestManager::ClientMetadata data;

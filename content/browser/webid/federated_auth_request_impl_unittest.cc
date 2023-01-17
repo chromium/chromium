@@ -373,8 +373,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         FROM_HERE,
         base::BindOnce(std::move(callback), info.client_metadata.fetch_status,
                        IdpNetworkRequestManager::ClientMetadata{
-                           info.client_metadata.privacy_policy_url,
-                           info.client_metadata.terms_of_service_url}));
+                           GURL(info.client_metadata.privacy_policy_url),
+                           GURL(info.client_metadata.terms_of_service_url)}));
   }
 
   void SendAccountsRequest(const GURL& accounts_url,

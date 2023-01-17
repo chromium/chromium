@@ -795,11 +795,11 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
     const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
   const GURL& idp_config_url = idp_info->provider->config_url;
   const std::string idp_for_display = FormatUrlForDisplay(idp_config_url);
-  idp_info->data = IdentityProviderData(
-      idp_for_display, accounts, idp_info->metadata,
-      ClientMetadata{GURL(client_metadata.terms_of_service_url),
-                     GURL(client_metadata.privacy_policy_url)},
-      idp_info->rp_context);
+  idp_info->data =
+      IdentityProviderData(idp_for_display, accounts, idp_info->metadata,
+                           ClientMetadata{client_metadata.terms_of_service_url,
+                                          client_metadata.privacy_policy_url},
+                           idp_info->rp_context);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
   pending_idps_.erase(idp_config_url);

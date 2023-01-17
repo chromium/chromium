@@ -212,12 +212,11 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   IdpClientMetadata SendClientMetadataRequestAndWaitForResponse(
       const char* client_id,
-      net::HttpStatusCode http_status = net::HTTP_OK) {
-    const char response[] = R"({})";
+      const std::string& response = R"({})") {
     GURL client_id_endpoint(kTestClientMetadataEndpoint);
     test_url_loader_factory().AddResponse(
         client_id_endpoint.spec() + "?client_id=" + client_id, response,
-        http_status);
+        net::HTTP_OK);
 
     IdpClientMetadata data;
     base::RunLoop run_loop;
@@ -913,8 +912,8 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   test_url_loader_factory().SetInterceptor(interceptor);
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse("xxx");
   ASSERT_TRUE(called);
-  ASSERT_EQ("", data.privacy_policy_url);
-  ASSERT_EQ("", data.terms_of_service_url);
+  ASSERT_EQ(GURL(), data.privacy_policy_url);
+  ASSERT_EQ(GURL(), data.terms_of_service_url);
 }
 
 // Tests that we correctly records metrics regarding approved_clients.
@@ -1064,6 +1063,32 @@ TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingToken) {
   EXPECT_EQ("", token);
   EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, fetch_status.response_code);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
+  // Both HTTPS and HTTP URLs are allowed.
+  const std::string privacy_policy_url = "https://privacy.policy";
+  const std::string terms_of_service_url = "http://terms.of.service";
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      /*client_id=*/"123", R"({"privacy_policy_url": ")" + privacy_policy_url +
+                               R"(", "terms_of_service_url": ")" +
+                               terms_of_service_url + R"("})");
+  ASSERT_EQ(GURL(privacy_policy_url), data.privacy_policy_url);
+  ASSERT_EQ(GURL(terms_of_service_url), data.terms_of_service_url);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataInvalidUrls) {
+  // Non-HTTP(S) URLs should not be allowed.
+  const std::string privacy_policy_url = "chrome://settings";
+  const std::string terms_of_service_url = "file:///Users/you/file.html";
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      /*client_id=*/"123", R"({"privacy_policy_url": ")" + privacy_policy_url +
+                               R"(", "terms_of_service_url": ")" +
+                               terms_of_service_url + R"("})");
+  ASSERT_EQ(GURL(), data.privacy_policy_url);
+  ASSERT_EQ(GURL(), data.terms_of_service_url);
 }
 
 }  // namespace

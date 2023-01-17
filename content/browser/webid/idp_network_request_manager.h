@@ -98,8 +98,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   };
 
   struct ClientMetadata {
-    std::string privacy_policy_url;
-    std::string terms_of_service_url;
+    GURL privacy_policy_url;
+    GURL terms_of_service_url;
   };
 
   // Error codes sent to the metrics endpoint.
