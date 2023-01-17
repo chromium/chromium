@@ -138,6 +138,16 @@ void CopyConstraintSet(const MediaTrackConstraintSet* source,
   }
 }
 
+void CopySettings(const MediaTrackSettings* source,
+                  MediaTrackSettings* destination,
+                  CopyPanTiltZoom copy_pan_tilt_zoom) {
+  // Merge any present |source| members into |destination|.
+  CopyCommonMembers(source, destination, copy_pan_tilt_zoom);
+  if (source->hasPointsOfInterest() && !source->pointsOfInterest().empty()) {
+    destination->setPointsOfInterest(source->pointsOfInterest());
+  }
+}
+
 bool TrackIsInactive(const MediaStreamTrack& track) {
   // Spec instructs to return an exception if the Track's readyState() is not
   // "live". Also reject if the track is disabled or muted.
@@ -911,54 +921,8 @@ void ImageCapture::ClearMediaTrackConstraints() {
 
 void ImageCapture::GetMediaTrackSettings(MediaTrackSettings* settings) const {
   // Merge any present |settings_| members into |settings|.
-
-  if (settings_->hasWhiteBalanceMode())
-    settings->setWhiteBalanceMode(settings_->whiteBalanceMode());
-  if (settings_->hasExposureMode())
-    settings->setExposureMode(settings_->exposureMode());
-  if (settings_->hasFocusMode())
-    settings->setFocusMode(settings_->focusMode());
-
-  if (settings_->hasPointsOfInterest() &&
-      !settings_->pointsOfInterest().empty()) {
-    settings->setPointsOfInterest(settings_->pointsOfInterest());
-  }
-
-  if (settings_->hasExposureCompensation())
-    settings->setExposureCompensation(settings_->exposureCompensation());
-  if (settings_->hasExposureTime())
-    settings->setExposureTime(settings_->exposureTime());
-  if (settings_->hasColorTemperature())
-    settings->setColorTemperature(settings_->colorTemperature());
-  if (settings_->hasIso())
-    settings->setIso(settings_->iso());
-
-  if (settings_->hasBrightness())
-    settings->setBrightness(settings_->brightness());
-  if (settings_->hasContrast())
-    settings->setContrast(settings_->contrast());
-  if (settings_->hasSaturation())
-    settings->setSaturation(settings_->saturation());
-  if (settings_->hasSharpness())
-    settings->setSharpness(settings_->sharpness());
-
-  if (settings_->hasFocusDistance())
-    settings->setFocusDistance(settings_->focusDistance());
-
-  if (HasPanTiltZoomPermissionGranted()) {
-    if (settings_->hasPan())
-      settings->setPan(settings_->pan());
-    if (settings_->hasTilt())
-      settings->setTilt(settings_->tilt());
-    if (settings_->hasZoom())
-      settings->setZoom(settings_->zoom());
-  }
-
-  if (settings_->hasTorch())
-    settings->setTorch(settings_->torch());
-
-  if (settings_->hasBackgroundBlur())
-    settings->setBackgroundBlur(settings_->backgroundBlur());
+  CopySettings(settings_, settings,
+               CopyPanTiltZoom(HasPanTiltZoomPermissionGranted()));
 }
 
 ImageCapture::ImageCapture(ExecutionContext* context,
@@ -1298,46 +1262,7 @@ ImageCapture* ImageCapture::Clone() const {
   CopyCapabilities(capabilities_, clone->capabilities_, CopyPanTiltZoom(true));
 
   // Copy settings.
-  if (settings_->hasWhiteBalanceMode())
-    clone->settings_->setWhiteBalanceMode(settings_->whiteBalanceMode());
-  if (settings_->hasExposureMode())
-    clone->settings_->setExposureMode(settings_->exposureMode());
-  if (settings_->hasFocusMode())
-    clone->settings_->setFocusMode(settings_->focusMode());
-  if (settings_->hasPointsOfInterest() &&
-      !settings_->pointsOfInterest().empty()) {
-    clone->settings_->setPointsOfInterest(settings_->pointsOfInterest());
-  }
-  if (settings_->hasExposureCompensation()) {
-    clone->settings_->setExposureCompensation(
-        settings_->exposureCompensation());
-  }
-  if (settings_->hasExposureTime())
-    clone->settings_->setExposureTime(settings_->exposureTime());
-  if (settings_->hasColorTemperature())
-    clone->settings_->setColorTemperature(settings_->colorTemperature());
-  if (settings_->hasIso())
-    clone->settings_->setIso(settings_->iso());
-  if (settings_->hasBrightness())
-    clone->settings_->setBrightness(settings_->brightness());
-  if (settings_->hasContrast())
-    clone->settings_->setContrast(settings_->contrast());
-  if (settings_->hasSaturation())
-    clone->settings_->setSaturation(settings_->saturation());
-  if (settings_->hasSharpness())
-    clone->settings_->setSharpness(settings_->sharpness());
-  if (settings_->hasFocusDistance())
-    clone->settings_->setFocusDistance(settings_->focusDistance());
-  if (settings_->hasPan())
-    clone->settings_->setPan(settings_->pan());
-  if (settings_->hasTilt())
-    clone->settings_->setTilt(settings_->tilt());
-  if (settings_->hasZoom())
-    clone->settings_->setZoom(settings_->zoom());
-  if (settings_->hasTorch())
-    clone->settings_->setTorch(settings_->torch());
-  if (settings_->hasBackgroundBlur())
-    clone->settings_->setBackgroundBlur(settings_->backgroundBlur());
+  CopySettings(settings_, clone->settings_, CopyPanTiltZoom(true));
 
   // Copy current constraints.
   if (current_constraints_) {
