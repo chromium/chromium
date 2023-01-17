@@ -76,6 +76,8 @@ class SqlQueryPlanExplainer {
   const base::FilePath shell_path_;
 };
 
+std::ostream& operator<<(std::ostream&, SqlQueryPlanExplainer::Error);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_SQL_QUERY_PLAN_TEST_UTIL_H_

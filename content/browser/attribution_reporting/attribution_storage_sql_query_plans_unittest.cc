@@ -46,7 +46,7 @@ class AttributionSqlQueryPlanTest : public testing::Test {
       std::string query,
       absl::optional<SqlFullScanReason> reason = absl::nullopt) {
     auto plan = explainer_->GetPlan(std::move(query), reason);
-    EXPECT_TRUE(plan.has_value());
+    EXPECT_TRUE(plan.has_value()) << plan.error();
     return *plan;
   }
 

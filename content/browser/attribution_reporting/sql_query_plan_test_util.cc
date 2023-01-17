@@ -222,4 +222,16 @@ SqlQueryPlanExplainer::GetPlan(
   return plan;
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         SqlQueryPlanExplainer::Error error) {
+  switch (error) {
+    case SqlQueryPlanExplainer::Error::kInvalidOutput:
+      return out << "kInvalidOutput";
+    case SqlQueryPlanExplainer::Error::kMissingFullScanAnnotation:
+      return out << "kMissingFullScanAnnotation";
+    case SqlQueryPlanExplainer::Error::kExtraneousFullScanAnnotation:
+      return out << "kExtraneousFullScanAnnotation";
+  }
+}
+
 }  // namespace content
