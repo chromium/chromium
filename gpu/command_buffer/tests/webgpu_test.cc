@@ -223,6 +223,16 @@ wgpu::Device WebGPUTest::GetNewDevice() {
   auto* callback = webgpu::BindWGPUOnceCallback(
       [](wgpu::Device* device_out, bool* done, WGPURequestDeviceStatus status,
          WGPUDevice device, const char* message) {
+        // Fail the test with error message if returned status is not success
+        if (status != WGPURequestDeviceStatus_Success) {
+          if (message) {
+            GTEST_FAIL() << "RequestDevice returns unexpected message: "
+                         << message;
+          } else {
+            GTEST_FAIL()
+                << "RequestDevice returns unexpected status without message.";
+          }
+        }
         *device_out = wgpu::Device::Acquire(device);
         *done = true;
       },
