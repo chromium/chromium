@@ -125,8 +125,9 @@ void SendLogMessage(const std::string& message) {
 void MaybeLogStreamDevice(const int32_t& request_id,
                           const String& label,
                           const absl::optional<MediaStreamDevice>& device) {
-  if (!device.has_value())
+  if (!device.has_value()) {
     return;
+  }
 
   SendLogMessage(base::StringPrintf(
       "OnStreamsGenerated({request_id=%d}, {label=%s}, {device=[id: %s, "
@@ -553,8 +554,9 @@ void UserMediaProcessor::RequestInfo::OnAudioSourceStarted(
     const String& result_name) {
   // Check if we're waiting to be notified of this source.  If not, then we'll
   // ignore the notification.
-  if (base::Contains(sources_waiting_for_callback_, source))
+  if (base::Contains(sources_waiting_for_callback_, source)) {
     OnTrackStarted(source, result, result_name);
+  }
 }
 
 UserMediaProcessor::UserMediaProcessor(
@@ -671,8 +673,9 @@ void UserMediaProcessor::SelectAudioDeviceSettings(
         });
     if (it != local_sources_.end()) {
       WebPlatformMediaStreamSource* const source = (*it)->GetPlatformSource();
-      if (source->device().type == MediaStreamType::DEVICE_AUDIO_CAPTURE)
+      if (source->device().type == MediaStreamType::DEVICE_AUDIO_CAPTURE) {
         audio_source = static_cast<MediaStreamAudioSource*>(source);
+      }
     }
     if (audio_source) {
       capabilities.emplace_back(audio_source);
@@ -692,8 +695,9 @@ void UserMediaProcessor::SelectAudioSettings(
   // The frame might reload or |user_media_request| might be cancelled while
   // capabilities are queried. Do nothing if a different request is being
   // processed at this point.
-  if (!IsCurrentRequestInfo(user_media_request))
+  if (!IsCurrentRequestInfo(user_media_request)) {
     return;
+  }
 
   DCHECK(current_request_info_->stream_controls()->audio.requested());
   SendLogMessage(base::StringPrintf("SelectAudioSettings({request_id=%d})",
@@ -854,8 +858,9 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
   // The frame might reload or |user_media_request| might be cancelled while
   // capabilities are queried. Do nothing if a different request is being
   // processed at this point.
-  if (!IsCurrentRequestInfo(user_media_request))
+  if (!IsCurrentRequestInfo(user_media_request)) {
     return;
+  }
 
   DCHECK(current_request_info_->stream_controls()->video.requested());
   DCHECK(blink::IsDeviceMediaType(
@@ -982,8 +987,9 @@ UserMediaProcessor::GetMediaStreamDeviceObserver() {
   if (frame_) {  // Can be null for tests.
     auto* web_frame =
         static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(frame_));
-    if (!web_frame || !web_frame->Client())
+    if (!web_frame || !web_frame->Client()) {
       return nullptr;
+    }
 
     // TODO(704136): Move ownership of |WebMediaStreamDeviceObserver| out of
     // RenderFrameImpl, back to UserMediaClient.
@@ -1127,8 +1133,9 @@ void UserMediaProcessor::GotAllVideoInputFormatsForDevice(
   // The frame might reload or |user_media_request| might be cancelled while
   // video formats are queried. Do nothing if a different request is being
   // processed at this point.
-  if (!IsCurrentRequestInfo(user_media_request))
+  if (!IsCurrentRequestInfo(user_media_request)) {
     return;
+  }
 
   // TODO(crbug.com/1336564): Remove the assumption that all devices support
   // the same video formats.
@@ -1140,8 +1147,9 @@ void UserMediaProcessor::GotAllVideoInputFormatsForDevice(
                            label.Utf8().c_str(), device_id.Utf8().c_str()));
     current_request_info_->AddNativeVideoFormats(device_id, formats);
   }
-  if (current_request_info_->CanStartTracks())
+  if (current_request_info_->CanStartTracks()) {
     StartTracks(label);
+  }
 }
 
 gfx::Size UserMediaProcessor::GetScreenSize() {
@@ -1205,10 +1213,12 @@ void UserMediaProcessor::OnAudioSourceStarted(
        it != pending_local_sources_.end(); ++it) {
     blink::WebPlatformMediaStreamSource* const source_extra_data =
         (*it)->GetPlatformSource();
-    if (source_extra_data != source)
+    if (source_extra_data != source) {
       continue;
-    if (result == MediaStreamRequestResult::OK)
+    }
+    if (result == MediaStreamRequestResult::OK) {
       local_sources_.push_back((*it));
+    }
     pending_local_sources_.erase(it);
 
     NotifyCurrentRequestInfoOfAudioSourceStarted(source, result, result_name);
@@ -1221,8 +1231,9 @@ void UserMediaProcessor::NotifyCurrentRequestInfoOfAudioSourceStarted(
     MediaStreamRequestResult result,
     const String& result_name) {
   // The only request possibly being processed is |current_request_info_|.
-  if (current_request_info_)
+  if (current_request_info_) {
     current_request_info_->OnAudioSourceStarted(source, result, result_name);
+  }
 }
 
 void UserMediaProcessor::OnStreamGenerationFailed(
@@ -1409,8 +1420,9 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
 
   // See if the source is already being initialized.
   auto* pending = FindPendingLocalSource(device);
-  if (pending)
+  if (pending) {
     return pending;
+  }
 
   MediaStreamSource* existing_source = FindLocalSource(device);
   if (existing_source) {
@@ -1488,8 +1500,9 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
   }
 
   capabilities.device_id = blink::WebString::FromUTF8(device.id);
-  if (device.group_id)
+  if (device.group_id) {
     capabilities.group_id = blink::WebString::FromUTF8(*device.group_id);
+  }
 
   MediaStreamSource* source =
       InitializeSourceObject(device, std::move(audio_source));
@@ -1604,8 +1617,9 @@ MediaStreamComponent* UserMediaProcessor::CreateVideoTrack(
     const absl::optional<MediaStreamDevice>& device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_);
-  if (!device)
+  if (!device) {
     return nullptr;
+  }
   MediaStreamSource* source = InitializeVideoSourceObject(*device);
   MediaStreamComponent* component =
       current_request_info_->CreateAndStartVideoTrack(source);
@@ -1619,8 +1633,9 @@ MediaStreamComponent* UserMediaProcessor::CreateAudioTrack(
     const absl::optional<MediaStreamDevice>& device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_);
-  if (!device)
+  if (!device) {
     return nullptr;
+  }
   MediaStreamDevice overriden_audio_device = *device;
   bool render_to_associated_sink =
       current_request_info_->audio_capture_settings().HasValue() &&
@@ -1681,15 +1696,17 @@ void UserMediaProcessor::OnCreateNativeTracksCompleted(
       for (auto web_track : descriptor->AudioComponents()) {
         MediaStreamTrackPlatform* track =
             MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(web_track));
-        if (track)
+        if (track) {
           track->Stop();
+        }
       }
 
       for (auto web_track : descriptor->VideoComponents()) {
         MediaStreamTrackPlatform* track =
             MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(web_track));
-        if (track)
+        if (track) {
           track->Stop();
+        }
       }
     }
   }
@@ -1790,8 +1807,9 @@ MediaStreamSource* UserMediaProcessor::FindLocalSource(
     WebPlatformMediaStreamSource* const source =
         local_source->GetPlatformSource();
     const MediaStreamDevice& active_device = source->device();
-    if (IsSameDevice(active_device, device))
+    if (IsSameDevice(active_device, device)) {
       return local_source;
+    }
   }
   return nullptr;
 }
@@ -1807,8 +1825,9 @@ MediaStreamSource* UserMediaProcessor::InitializeSourceObject(
       String::FromUTF8(device.id), device.display_id, type,
       String::FromUTF8(device.name), false /* remote */,
       std::move(platform_source));
-  if (device.group_id)
+  if (device.group_id) {
     source->SetGroupId(String::FromUTF8(*device.group_id));
+  }
   return source;
 }
 
@@ -1928,8 +1947,9 @@ void UserMediaProcessor::OnLocalSourceStopped(
   // The client can be null if the frame is already detached.
   // If it's already detached, dispatcher_host_ shouldn't be bound again.
   // (ref: crbug.com/1105842)
-  if (!frame_->Client())
+  if (!frame_->Client()) {
     return;
+  }
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   blink::WebPlatformMediaStreamSource* source_impl = source.GetPlatformSource();
@@ -1940,8 +1960,9 @@ void UserMediaProcessor::OnLocalSourceStopped(
   const bool some_source_removed = RemoveLocalSource(source);
   CHECK(some_source_removed);
 
-  if (auto* media_stream_device_observer = GetMediaStreamDeviceObserver())
+  if (auto* media_stream_device_observer = GetMediaStreamDeviceObserver()) {
     media_stream_device_observer->RemoveStreamDevice(source_impl->device());
+  }
 
   String device_id(source_impl->device().id.data());
   GetMediaStreamDispatcherHost()->StopStreamDevice(
@@ -1956,8 +1977,9 @@ void UserMediaProcessor::StopLocalSource(MediaStreamSource* source,
       source_impl->device().session_id().ToString().c_str()));
 
   if (notify_dispatcher) {
-    if (auto* media_stream_device_observer = GetMediaStreamDeviceObserver())
+    if (auto* media_stream_device_observer = GetMediaStreamDeviceObserver()) {
       media_stream_device_observer->RemoveStreamDevice(source_impl->device());
+    }
 
     String device_id(source_impl->device().id.data());
     GetMediaStreamDispatcherHost()->StopStreamDevice(
