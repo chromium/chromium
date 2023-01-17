@@ -1198,10 +1198,13 @@ SkColor Layer::background_color() const {
 }
 
 bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
-  if (type_ == LAYER_SOLID_COLOR && !texture_layer_)
+  if ((type_ == LAYER_SOLID_COLOR || type_ == LAYER_NOT_DRAWN) &&
+      !texture_layer_) {
     return false;
-  if (type_ == LAYER_NINE_PATCH)
+  }
+  if (type_ == LAYER_NINE_PATCH) {
     return false;
+  }
   if (!delegate_ && transfer_resource_.mailbox_holder.mailbox.IsZero())
     return false;
 

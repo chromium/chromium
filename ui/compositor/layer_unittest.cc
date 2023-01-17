@@ -1679,6 +1679,12 @@ TEST_F(LayerWithNullDelegateTest, SetShowReflectedLayerSubtreeBounds) {
   EXPECT_EQ(reflected_bounds, reflected_layer->bounds());
 }
 
+TEST_F(LayerWithNullDelegateTest, NOTDRAWNShouldHaveNoDamage) {
+  auto layer = CreateNoTextureLayer({100, 100});
+  layer->SchedulePaint({100, 100});
+  EXPECT_TRUE(layer->damaged_region_for_testing().IsEmpty());
+}
+
 void ExpectRgba(int x, int y, SkColor expected_color, SkColor actual_color) {
   EXPECT_EQ(expected_color, actual_color)
       << "Pixel error at x=" << x << " y=" << y << "; "
