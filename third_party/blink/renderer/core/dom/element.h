@@ -1103,6 +1103,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ContainerQueryEvaluator& EnsureContainerQueryEvaluator();
   bool SkippedContainerStyleRecalc() const;
 
+  // See PostStyleUpdateScope::PseudoData::AddPendingBackdrop
+  void ApplyPendingBackdropPseudoElementUpdate();
+
   virtual void SetActive(bool active);
   virtual void SetHovered(bool hovered);
 
@@ -1367,6 +1370,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kRebuildLayoutTree,
     kAttachLayoutTree,
   };
+
+  bool ShouldUpdateBackdropPseudoElement(const StyleRecalcChange);
+
+  void UpdateBackdropPseudoElement(const StyleRecalcChange,
+                                   const StyleRecalcContext&);
 
   void UpdateFirstLetterPseudoElement(StyleUpdatePhase,
                                       const StyleRecalcContext&);

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -68,15 +69,54 @@ class CORE_EXPORT PostStyleUpdateScope {
         old_styles_;
   };
 
+  class PseudoData {
+    STACK_ALLOCATED();
+
+   public:
+    // Add a pending ::backdrop update for a given originating element.
+    //
+    // This is required when a ::backdrop exists on a container query container:
+    // Since ::backdrop comes *before* the originating element in the layout
+    // tree, it is not possible to correctly update ::backdrop pseudo-elements
+    // in a single pass if the originating element is the container. Therefore
+    // "conditional" ::backdrop pseudo-elements handled in a follow-up
+    // style/layout pass.
+    void AddPendingBackdrop(Element& originating_element);
+
+   private:
+    friend class PostStyleUpdateScope;
+
+    HeapVector<Member<Element>> pending_backdrops_;
+  };
+
   static AnimationData* CurrentAnimationData();
+  static PseudoData* CurrentPseudoData();
+
+  // Apply side-effects from the style update, e.g. starting and stopping
+  // animations.
+  //
+  // A return value of true means that style needs to be updated again.
+  // This can happen for e.g. ::backdrop pseudo-elements in container queries
+  // (see PseudoData::AddPendingBackdrop).
+  bool Apply();
 
  private:
   Document& document_;
   // Note that |animation_data_| is only used if the PostStyleUpdateScope is the
   // current scope. Otherwise it will remain empty.
   AnimationData animation_data_;
+  PseudoData pseudo_data_;
 
-  void Apply();
+  // Set to true by ApplyPseudo to prevent subsequent style recalc passes from
+  // adding things to PseudoData (which could cause infinite loops).
+  bool nullify_pseudo_data_ = false;
+
+  bool ApplyPseudo();
+  void ApplyAnimations();
+
+  PseudoData* GetPseudoData() {
+    return nullify_pseudo_data_ ? nullptr : &pseudo_data_;
+  }
 
   static PostStyleUpdateScope* current_;
 };

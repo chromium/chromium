@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/property_set_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/resolver/selector_filter_parent_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
@@ -3404,7 +3405,7 @@ StyleRecalcChange Element::RecalcStyle(
   }
 
   if (child_change.TraversePseudoElements(*this)) {
-    UpdatePseudoElement(kPseudoIdBackdrop, child_change, child_recalc_context);
+    UpdateBackdropPseudoElement(child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
   }
@@ -6551,6 +6552,66 @@ void Element::CancelSelectionAfterLayout() {
   if (GetDocument().FocusedElement() == this) {
     GetDocument().SetShouldUpdateSelectionAfterLayout(false);
   }
+}
+
+bool Element::ShouldUpdateBackdropPseudoElement(
+    const StyleRecalcChange change) {
+  PseudoElement* element = GetPseudoElement(
+      PseudoId::kPseudoIdBackdrop, /* view_transition_name */ g_null_atom);
+  bool generate_pseudo = CanGeneratePseudoElement(PseudoId::kPseudoIdBackdrop);
+
+  if (element) {
+    return !generate_pseudo || change.ShouldUpdatePseudoElement(*element);
+  }
+
+  return generate_pseudo;
+}
+
+void Element::UpdateBackdropPseudoElement(
+    const StyleRecalcChange change,
+    const StyleRecalcContext& style_recalc_context) {
+  if (!ShouldUpdateBackdropPseudoElement(change)) {
+    return;
+  }
+
+  if (GetDocument().GetStyleEngine().GetContainerForContainerStyleRecalc() !=
+      this) {
+    UpdatePseudoElement(PseudoId::kPseudoIdBackdrop, change,
+                        style_recalc_context);
+    return;
+  }
+
+  // We have a problem when ::backdrop appears on the interleaving container,
+  // because in that case ::backdrop's LayoutObject appears before the
+  // container's LayoutObject. In other words, it is too late to update
+  // ::backdrop at this point. Therefore, we add a pending update and deal with
+  // it in a separate pass.
+  //
+  // See also PostStyleUpdateScope::PseudoData::AddPendingBackdrop.
+  if (PostStyleUpdateScope::PseudoData* pseudo_data =
+          PostStyleUpdateScope::CurrentPseudoData()) {
+    pseudo_data->AddPendingBackdrop(/* originating_element */ *this);
+  }
+}
+
+void Element::ApplyPendingBackdropPseudoElementUpdate() {
+  PseudoElement* element = GetPseudoElement(
+      PseudoId::kPseudoIdBackdrop, /* view_transition_name */ g_null_atom);
+
+  if (!element && CanGeneratePseudoElement(PseudoId::kPseudoIdBackdrop)) {
+    element = PseudoElement::Create(this, PseudoId::kPseudoIdBackdrop,
+                                    /* view_transition_name */ g_null_atom);
+    EnsureElementRareData().SetPseudoElement(
+        PseudoId::kPseudoIdBackdrop, element,
+        /* view_transition_name */ g_null_atom);
+    element->InsertedInto(*this);
+    GetDocument().AddToTopLayer(element, this);
+  }
+
+  DCHECK(element);
+  element->SetNeedsStyleRecalc(kLocalStyleChange,
+                               StyleChangeReasonForTracing::Create(
+                                   style_change_reason::kConditionalBackdrop));
 }
 
 void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {

@@ -21,6 +21,10 @@ PostStyleUpdateScope::CurrentAnimationData() {
   return current_ ? &current_->animation_data_ : nullptr;
 }
 
+PostStyleUpdateScope::PseudoData* PostStyleUpdateScope::CurrentPseudoData() {
+  return current_ ? current_->GetPseudoData() : nullptr;
+}
+
 PostStyleUpdateScope::PostStyleUpdateScope(Document& document)
     : document_(document) {
   if (!current_) {
@@ -30,13 +34,41 @@ PostStyleUpdateScope::PostStyleUpdateScope(Document& document)
 
 PostStyleUpdateScope::~PostStyleUpdateScope() {
   if (current_ == this) {
-    Apply();
-    document_.ClearFocusedElementIfNeeded();
     current_ = nullptr;
   }
+  DCHECK(animation_data_.elements_with_pending_updates_.empty())
+      << "Missing Apply (animations)";
+  DCHECK(pseudo_data_.pending_backdrops_.empty())
+      << "Missing Apply (::backdrop)";
 }
 
-void PostStyleUpdateScope::Apply() {
+bool PostStyleUpdateScope::Apply() {
+  if (ApplyPseudo()) {
+    return true;
+  }
+  ApplyAnimations();
+  document_.ClearFocusedElementIfNeeded();
+  return false;
+}
+
+bool PostStyleUpdateScope::ApplyPseudo() {
+  nullify_pseudo_data_ = true;
+
+  if (pseudo_data_.pending_backdrops_.empty()) {
+    return false;
+  }
+
+  HeapVector<Member<Element>> pending_backdrops;
+  std::swap(pending_backdrops, pseudo_data_.pending_backdrops_);
+
+  for (Member<Element>& element : pending_backdrops) {
+    element->ApplyPendingBackdropPseudoElementUpdate();
+  }
+
+  return true;
+}
+
+void PostStyleUpdateScope::ApplyAnimations() {
   StyleEngine::InApplyAnimationUpdateScope in_apply_animation_update_scope(
       document_.GetStyleEngine());
 
@@ -75,6 +107,11 @@ const ComputedStyle* PostStyleUpdateScope::AnimationData::GetOldStyle(
     return element.GetComputedStyle();
   }
   return iter->value.get();
+}
+
+void PostStyleUpdateScope::PseudoData::AddPendingBackdrop(
+    Element& originating_element) {
+  pending_backdrops_.push_back(&originating_element);
 }
 
 }  // namespace blink

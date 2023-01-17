@@ -3278,26 +3278,32 @@ void LocalFrameView::UpdateStyleAndLayout() {
 bool LocalFrameView::UpdateStyleAndLayoutInternal() {
   PostStyleUpdateScope post_style_update_scope(*frame_->GetDocument());
 
-  {
-    frame_->GetDocument()->UpdateStyleAndLayoutTreeForThisDocument();
+  bool layout_updated = false;
 
-    // Update style for all embedded SVG documents underneath this frame, so
-    // that intrinsic size computation for any embedded objects has up-to-date
-    // information before layout.
-    ForAllChildLocalFrameViews([](LocalFrameView& view) {
-      Document& document = *view.GetFrame().GetDocument();
-      if (document.IsSVGDocument())
-        document.UpdateStyleAndLayoutTreeForThisDocument();
-    });
-  }
+  do {
+    {
+      frame_->GetDocument()->UpdateStyleAndLayoutTreeForThisDocument();
 
-  if (NeedsLayout()) {
-    SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
-                             LocalFrameUkmAggregator::kLayout);
-    UpdateLayout();
-    return true;
-  }
-  return false;
+      // Update style for all embedded SVG documents underneath this frame, so
+      // that intrinsic size computation for any embedded objects has up-to-date
+      // information before layout.
+      ForAllChildLocalFrameViews([](LocalFrameView& view) {
+        Document& document = *view.GetFrame().GetDocument();
+        if (document.IsSVGDocument()) {
+          document.UpdateStyleAndLayoutTreeForThisDocument();
+        }
+      });
+    }
+
+    if (NeedsLayout()) {
+      SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
+                               LocalFrameUkmAggregator::kLayout);
+      UpdateLayout();
+      layout_updated = true;
+    }
+  } while (post_style_update_scope.Apply());
+
+  return layout_updated;
 }
 
 void LocalFrameView::EnableAutoSizeMode(const gfx::Size& min_size,
