@@ -12,7 +12,9 @@
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/device_public_key_extension.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 
@@ -119,8 +121,10 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
   if (response.enterprise_attestation_returned) {
     map.emplace(4, true);
   }
-  if (response.large_blob_key) {
-    map.emplace(5, cbor::Value(*response.large_blob_key));
+  if (response.has_associated_large_blob_key) {
+    // Chrome ignores the value of the large blob key on make credential
+    // requests.
+    map.emplace(5, cbor::Value(std::array<uint8_t, kLargeBlobKeyLength>()));
   }
   if (response.device_public_key_signature.has_value()) {
     cbor::Value::MapValue unsigned_extension_outputs;

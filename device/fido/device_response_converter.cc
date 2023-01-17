@@ -112,8 +112,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
         it->second.GetBytestring().size() != kLargeBlobKeyLength) {
       return absl::nullopt;
     }
-    response.large_blob_key = fido_parsing_utils::Materialize(
-        base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
+    response.has_associated_large_blob_key = true;
   }
 
   it = decoded_map.find(CBOR(0x06));

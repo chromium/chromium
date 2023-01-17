@@ -159,6 +159,10 @@ std::ostream& operator<<(
   } else {
     out << ", (null)";
   }
+  if (in.dwVersion < WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_4) {
+    return out << "}";
+  }
+  out << kSep << in.dwLargeBlobSupport;
   return out << "}";
 }
 
@@ -178,6 +182,10 @@ std::ostream& operator<<(std::ostream& out,
     return out << "}";
   }
   out << kSep << in.dwUsedTransport;
+  if (in.dwVersion < WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4) {
+    return out << "}";
+  }
+  out << kSep << in.bLargeBlobSupported;
   return out << "}";
 }
 

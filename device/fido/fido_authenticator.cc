@@ -237,4 +237,8 @@ bool FidoAuthenticator::SupportsDevicePublicKey() const {
   return false;
 }
 
+bool FidoAuthenticator::SupportsLargeBlobs() const {
+  return false;
+}
+
 }  // namespace device

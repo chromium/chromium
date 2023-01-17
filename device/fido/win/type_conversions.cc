@@ -20,10 +20,12 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
 
@@ -85,6 +87,8 @@ ToAuthenticatorMakeCredentialResponse(
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4) {
     ret.enterprise_attestation_returned = credential_attestation.bEpAtt;
     ret.is_resident_key = credential_attestation.bResidentKey;
+    ret.has_associated_large_blob_key =
+        credential_attestation.bLargeBlobSupported;
   }
 
   return ret;
@@ -205,6 +209,17 @@ std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
                                ToWinTransportsMask(credential.transports)});
   }
   return result;
+}
+
+uint32_t ToWinLargeBlobSupport(LargeBlobSupport large_blob_support) {
+  switch (large_blob_support) {
+    case LargeBlobSupport::kNotRequested:
+      return WEBAUTHN_LARGE_BLOB_SUPPORT_NONE;
+    case LargeBlobSupport::kPreferred:
+      return WEBAUTHN_LARGE_BLOB_SUPPORT_PREFERRED;
+    case LargeBlobSupport::kRequired:
+      return WEBAUTHN_LARGE_BLOB_SUPPORT_REQUIRED;
+  }
 }
 
 CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(

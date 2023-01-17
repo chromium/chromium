@@ -13,6 +13,7 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
 
@@ -48,6 +49,9 @@ std::vector<WEBAUTHN_CREDENTIAL> ToWinCredentialVector(
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
     const std::vector<PublicKeyCredentialDescriptor>* credentials);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+uint32_t ToWinLargeBlobSupport(LargeBlobSupport large_blob_support);
 
 // WinErrorNameToCtapDeviceResponseCode maps a string returned by
 // WebAuthNGetErrorName() to a CtapDeviceResponseCode.

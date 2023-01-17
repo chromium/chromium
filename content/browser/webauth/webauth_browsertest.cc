@@ -1650,7 +1650,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinMakeCredential) {
 
   device::FakeWinWebAuthnApi fake_api;
   fake_api.set_is_uvpaa(true);
-  fake_api.set_hresult(S_OK);
   auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
   virtual_device_factory->set_win_webauthn_api(&fake_api);
 

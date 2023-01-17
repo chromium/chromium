@@ -20,9 +20,11 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/win/logging.h"
 #include "device/fido/win/type_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
 
@@ -41,7 +43,7 @@ std::string HresultToHex(HRESULT hr) {
 
 class WinWebAuthnApiImpl : public WinWebAuthnApi {
  public:
-  WinWebAuthnApiImpl() : WinWebAuthnApi(), is_bound_(false) {
+  WinWebAuthnApiImpl() {
     if (!base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
       FIDO_LOG(DEBUG) << "Windows WebAuthn API deactivated via feature flag";
       return;
@@ -51,7 +53,7 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
       // (http://crbug/973868).
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
       webauthn_dll_ =
-          LoadLibraryExA("webauthn.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+          LoadLibraryExA("webauthn.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
     }
     if (!webauthn_dll_) {
       FIDO_LOG(ERROR) << "Windows WebAuthn API failed to load";
@@ -107,7 +109,7 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
     FIDO_LOG(DEBUG) << "webauthn.dll version " << api_version_;
   }
 
-  ~WinWebAuthnApiImpl() override {}
+  ~WinWebAuthnApiImpl() override = default;
 
   // WinWebAuthnApi:
   bool IsAvailable() const override {
@@ -116,6 +118,10 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
 
   bool SupportsSilentDiscovery() const override {
     return get_platform_credential_list_;
+  }
+
+  bool SupportsLargeBlobs() const override {
+    return is_bound_ && (api_version_ >= WEBAUTHN_API_VERSION_3);
   }
 
   HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -245,6 +251,8 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     CtapMakeCredentialRequest request,
                                     MakeCredentialOptions request_options) {
   DCHECK(webauthn_api->IsAvailable());
+  DCHECK(request_options.large_blob_support != LargeBlobSupport::kRequired ||
+         webauthn_api->SupportsLargeBlobs());
   const int api_version = webauthn_api->Version();
 
   std::u16string rp_id = base::UTF8ToUTF16(request.rp.id);
@@ -402,7 +410,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       &cancellation_id,
       &exclude_credential_list,
       enterprise_attestation,
-      WEBAUTHN_LARGE_BLOB_SUPPORT_NONE,
+      ToWinLargeBlobSupport(request_options.large_blob_support),
       /*bPreferResidentKey=*/request_options.resident_key ==
           ResidentKeyRequirement::kPreferred,
       request_options.is_off_the_record_context,

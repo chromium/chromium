@@ -88,10 +88,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   // nullopt for cases where we cannot determine the transport (Windows).
   absl::optional<FidoTransportProtocol> transport_used;
 
-  // The large blob key associated to the credential. This value is only
-  // returned if the credential is created with the largeBlobKey extension on a
-  // capable authenticator.
-  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
+  // Whether the credential that was created has an associated large blob key or
+  // not. This can only be true if the credential is created with the
+  // largeBlobKey extension on a capable authenticator.
+  bool has_associated_large_blob_key = false;
 };
 
 // Through cbor::Writer, produces a CTAP style CBOR-encoded byte array

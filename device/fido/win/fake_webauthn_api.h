@@ -64,11 +64,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
     supports_silent_discovery_ = supports_silent_discovery;
   }
 
+  void set_supports_large_blobs(bool supports_large_blobs) {
+    supports_large_blobs_ = supports_large_blobs;
+  }
+
   void set_version(int version) { version_ = version; }
 
   // WinWebAuthnApi:
   bool IsAvailable() const override;
   bool SupportsSilentDiscovery() const override;
+  bool SupportsLargeBlobs() const override;
   HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
       BOOL* available) override;
   HRESULT AuthenticatorMakeCredential(
@@ -101,6 +106,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
  private:
   struct CredentialInfo;
   struct CredentialInfoList;
+  struct WebAuthnAttestation;
   struct WebAuthnAssertionEx;
 
   static WEBAUTHN_CREDENTIAL_ATTESTATION FakeAttestation();
@@ -108,11 +114,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   bool is_available_ = true;
   bool is_uvpaa_ = false;
   bool supports_silent_discovery_ = false;
+  bool supports_large_blobs_ = false;
   int version_ = WEBAUTHN_API_VERSION_2;
   HRESULT result_override_ = S_OK;
 
   // Owns the attestations returned by AuthenticatorMakeCredential().
-  std::vector<WEBAUTHN_CREDENTIAL_ATTESTATION> returned_attestations_;
+  std::vector<std::unique_ptr<WebAuthnAttestation>> returned_attestations_;
 
   // Owns assertions returned by AuthenticatorGetAssertion().
   std::vector<std::unique_ptr<WebAuthnAssertionEx>> returned_assertions_;

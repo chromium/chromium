@@ -1819,7 +1819,7 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
       case RequestExtension::kLargeBlobEnable:
         response->echo_large_blob = true;
         response->supports_large_blob =
-            response_data.large_blob_key.has_value();
+            response_data.has_associated_large_blob_key;
         break;
       case RequestExtension::kCredBlob:
         response->echo_cred_blob = true;

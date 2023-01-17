@@ -536,6 +536,8 @@ void AuthenticatorRequestDialogModel::OnAuthenticatorMissingUserVerification() {
 }
 
 void AuthenticatorRequestDialogModel::OnAuthenticatorMissingLargeBlob() {
+  // TODO(nsatragno): on Windows we should have a more accurate message if large
+  // blob is missing.
   SetCurrentStep(Step::kMissingCapability);
 }
 

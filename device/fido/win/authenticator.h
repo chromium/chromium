@@ -97,6 +97,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   bool SupportsHMACSecretExtension() const override;
   bool SupportsEnterpriseAttestation() const override;
   bool SupportsCredBlobOfSize(size_t num_bytes) const override;
+  bool SupportsLargeBlobs() const override;
   const absl::optional<AuthenticatorSupportedOptions>& Options() const override;
   absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;

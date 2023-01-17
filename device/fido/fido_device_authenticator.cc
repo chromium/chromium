@@ -1190,6 +1190,10 @@ bool FidoDeviceAuthenticator::SupportsDevicePublicKey() const {
                         kExtensionDevicePublicKey);
 }
 
+bool FidoDeviceAuthenticator::SupportsLargeBlobs() const {
+  return options_ && options_->supports_large_blobs;
+}
+
 const absl::optional<AuthenticatorSupportedOptions>&
 FidoDeviceAuthenticator::Options() const {
   return options_;
