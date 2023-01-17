@@ -857,10 +857,6 @@ export class Output {
   ancestryHelper_(args) {
     let {node, prevNode, buff, formatLog, type, ancestors, formatName} = args;
 
-    const rule = new AncestryOutputRule(type);
-    // First, look up the event type's format block.
-    const eventBlock = OutputRule.RULES[rule.event];
-
     const excludeRoles =
         args.exclude ? new Set(args.exclude.map(node => node.role)) : new Set();
 
@@ -876,11 +872,10 @@ export class Output {
         continue;
       }
 
-      // Reset the rule to DEFAULT so we don't unintentionally use a value from
-      // the last iteration.
-      rule.role = CustomRole.DEFAULT;
-      rule.populateRole(formatNode.role, roleInfo.inherits, formatName);
-      rule.populateNavigation(formatName);
+      const rule = new AncestryOutputRule(
+          type, formatNode.role, roleInfo.inherits, formatName);
+      // First, look up the event type's format block.
+      const eventBlock = OutputRule.RULES[rule.event];
 
       if (eventBlock[rule.role][formatName]) {
         rule.output = eventBlock[rule.role][formatName].speak ?
