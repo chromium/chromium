@@ -61,6 +61,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"

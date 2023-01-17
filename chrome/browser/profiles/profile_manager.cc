@@ -135,6 +135,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -454,10 +455,12 @@ Profile* ProfileManager::GetLastUsedProfile() {
   // since it may refer to profile that has been in use in previous session.
   // That profile dir may not be mounted in this session so instead return
   // active profile from current session.
-  base::FilePath profile_dir =
-      ash::ProfileHelper::Get()->GetActiveUserProfileDir();
+  user_manager::UserManager* manager = user_manager::UserManager::Get();
+  // IsLoggedIn check above ensures |user| is non-null.
+  const auto* user = manager->GetActiveUser();
   Profile* profile = profile_manager->GetProfileByPath(
-      profile_manager->user_data_dir().Append(profile_dir));
+      ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+          user->username_hash()));
 #else
   // TODO(crbug.com/1363933): Once Lacros is launched pre-login, we should
   // probably do something analogous to the !IsLoggedIn() check above.
@@ -737,8 +740,14 @@ bool ProfileManager::IsValidProfile(const void* profile) {
 
 base::FilePath ProfileManager::GetInitialProfileDir() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsLoggedIn())
-    return ash::ProfileHelper::Get()->GetActiveUserProfileDir();
+  if (IsLoggedIn()) {
+    user_manager::UserManager* manager = user_manager::UserManager::Get();
+    // IsLoggedIn check above ensures |user| is non-null.
+    const auto* user = manager->GetActiveUser();
+    return base::FilePath(
+        ash::BrowserContextHelper::GetUserBrowserContextDirName(
+            user->username_hash()));
+  }
 #endif
   base::FilePath relative_profile_dir;
   // TODO(mirandac): should not automatically be default profile.

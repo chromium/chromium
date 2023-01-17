@@ -57,6 +57,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"

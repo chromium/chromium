@@ -42,9 +42,6 @@ void UserManager::UserSessionStateObserver::ActiveUserChanged(
 void UserManager::UserSessionStateObserver::UserAddedToSession(
     const User* active_user) {}
 
-void UserManager::UserSessionStateObserver::ActiveUserHashChanged(
-    const std::string& hash) {}
-
 UserManager::UserSessionStateObserver::~UserSessionStateObserver() {}
 
 UserManager::UserAccountData::UserAccountData(

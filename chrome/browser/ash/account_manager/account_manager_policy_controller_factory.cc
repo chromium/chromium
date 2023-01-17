@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 

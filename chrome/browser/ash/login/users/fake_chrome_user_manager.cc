@@ -265,8 +265,6 @@ void FakeChromeUserManager::ResetUserFlow(const AccountId& account_id) {
 
 void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {
   active_account_id_ = account_id;
-  ProfileHelper::Get()->ActiveUserHashChanged(
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
   active_user_ = nullptr;
   if (!users_.empty() && active_account_id_.is_valid()) {
     for (user_manager::User* const user : users_) {

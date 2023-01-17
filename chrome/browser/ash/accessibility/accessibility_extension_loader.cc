@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/user_manager/user.h"
 #include "extensions/browser/extension_system.h"
 
 namespace ash {

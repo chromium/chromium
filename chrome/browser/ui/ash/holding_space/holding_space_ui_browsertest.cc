@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/test/browser_test.h"

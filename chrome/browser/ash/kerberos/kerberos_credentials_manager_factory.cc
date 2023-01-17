@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 

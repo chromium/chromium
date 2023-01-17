@@ -342,9 +342,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Notifies observers that merge session state had changed.
   void NotifyMergeSessionStateChanged();
 
-  // Notifies observers that active account_id hash has changed.
-  void NotifyActiveUserHashChanged(const std::string& hash);
-
   // Call UpdateLoginState.
   void CallUpdateLoginState();
 

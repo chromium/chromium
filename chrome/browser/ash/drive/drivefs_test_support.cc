@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 
 namespace drive {
 

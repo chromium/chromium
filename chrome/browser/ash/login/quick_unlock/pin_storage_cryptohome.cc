@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash::quick_unlock {
 

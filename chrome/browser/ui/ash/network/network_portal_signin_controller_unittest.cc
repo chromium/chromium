@@ -90,8 +90,11 @@ class NetworkPortalSigninControllerTest : public testing::Test {
     CHECK(test_profile_manager_.SetUp());
     user_manager_ = std::make_unique<FakeChromeUserManager>();
     user_manager_->Initialize();
-    ProfileHelper::Get()->Initialize();
     task_environment_.RunUntilIdle();
+
+    // Initialize ProfileHelper.
+    // TODO(crbug.com/1325210): Migrate it into BrowserContextHelper.
+    ProfileHelper::Get();
   }
 
   void TearDown() override {

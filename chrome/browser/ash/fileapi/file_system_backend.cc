@@ -24,6 +24,7 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "components/user_manager/user.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_stream_reader.h"

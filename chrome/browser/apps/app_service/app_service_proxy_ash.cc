@@ -43,6 +43,7 @@
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"

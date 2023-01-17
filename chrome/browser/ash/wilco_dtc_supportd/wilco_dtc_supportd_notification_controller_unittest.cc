@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/grit/generated_resources.h"
@@ -75,9 +74,8 @@ class WilcoDtcSupportdNotificationControllerTest
         std::make_unique<FakeChromeUserManager>());
 
     auto account = AccountId::FromUserEmail(kProfileName);
-    auto* user = GetFakeUserManager()->AddUser(account);
+    GetFakeUserManager()->AddUser(account);
     GetFakeUserManager()->LoginUser(account);
-    ProfileHelper::Get()->ActiveUserHashChanged(user->username_hash());
 
     service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile);

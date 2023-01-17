@@ -76,6 +76,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -100,6 +101,7 @@
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
@@ -242,9 +244,14 @@ void CheckProfileForSanity() {
       base::BindOnce(&CheckCryptohomeIsMounted));
 
   // Confirm that we hadn't loaded the new profile previously.
+  const auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  if (!user) {
+    // No active user means there's no new profile for the active user.
+    return;
+  }
   base::FilePath user_profile_dir =
-      g_browser_process->profile_manager()->user_data_dir().Append(
-          ProfileHelper::Get()->GetActiveUserProfileDir());
+      ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+          user->username_hash());
   CHECK(
       !g_browser_process->profile_manager()->GetProfileByPath(user_profile_dir))
       << "The user profile was loaded before we mounted the cryptohome.";

@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace login {

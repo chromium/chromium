@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

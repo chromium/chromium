@@ -53,6 +53,7 @@
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "components/live_caption/caption_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

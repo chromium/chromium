@@ -884,8 +884,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // on ChromeKeyboardControllerClient.
   chrome_keyboard_controller_client_ = ChromeKeyboardControllerClient::Create();
 
-  // ProfileHelper has to be initialized after UserManager instance is created.
-  ProfileHelper::Get()->Initialize();
+  // Instantiate ProfileHelper as some following code depending on this
+  // behavior.
+  // TODO(crbug.com/1325210): Switch to explicit initialization.
+  ProfileHelper::Get();
   signin_profile_handler_ = std::make_unique<SigninProfileHandler>();
 
   // If kLoginUser is passed this indicates that user has already

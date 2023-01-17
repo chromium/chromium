@@ -54,6 +54,8 @@
 #include "chrome/grit/supervision_resources_map.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"

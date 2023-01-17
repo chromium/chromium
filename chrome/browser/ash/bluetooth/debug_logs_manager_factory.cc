@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 

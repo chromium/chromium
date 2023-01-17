@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 
 namespace {
 

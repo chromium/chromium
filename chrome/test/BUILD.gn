@@ -3981,7 +3981,6 @@ if (!is_android) {
         "../browser/ash/policy/status_collector/child_status_collector_browsertest.cc",
         "../browser/ash/policy/status_collector/device_status_collector_browsertest.cc",
         "../browser/ash/preferences_browsertest.cc",
-        "../browser/ash/profiles/profile_helper_browsertest.cc",
         "../browser/ash/remote_apps/remote_apps_manager_browsertest.cc",
         "../browser/ash/scoped_test_system_nss_key_slot_mixin.cc",
         "../browser/ash/scoped_test_system_nss_key_slot_mixin.h",

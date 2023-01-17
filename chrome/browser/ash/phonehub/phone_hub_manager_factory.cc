@@ -34,6 +34,7 @@
 #include "chromeos/ash/components/phonehub/user_action_recorder_impl.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace phonehub {

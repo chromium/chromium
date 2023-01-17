@@ -25,6 +25,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/re2/src/re2/stringpiece.h"
 

@@ -96,7 +96,6 @@ OfflineSigninLimiterTest::~OfflineSigninLimiterTest() {
   DestroyLimiter();
   Mock::VerifyAndClearExpectations(user_manager_);
   EXPECT_CALL(*user_manager_, Shutdown()).Times(1);
-  EXPECT_CALL(*user_manager_, RemoveSessionStateObserver(_)).Times(1);
   profile_ = nullptr;
   // Finish any pending tasks before deleting the TestingBrowserProcess.
   task_environment_.RunUntilIdle();

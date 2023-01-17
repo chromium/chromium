@@ -321,7 +321,6 @@ void UserManagerBase::SwitchActiveUser(const AccountId& account_id) {
   // Move the user to the front.
   SetLRUUser(active_user_);
 
-  NotifyActiveUserHashChanged(active_user_->username_hash());
   NotifyActiveUserChanged(active_user_);
   CallUpdateLoginState();
 }
@@ -1063,7 +1062,6 @@ void UserManagerBase::NotifyActiveUserChanged(User* active_user) {
 void UserManagerBase::NotifyOnLogin() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
-  NotifyActiveUserHashChanged(active_user_->username_hash());
   NotifyActiveUserChanged(active_user_);
   CallUpdateLoginState();
 }
@@ -1147,12 +1145,6 @@ void UserManagerBase::NotifyUserAddedToSession(const User* added_user,
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   for (auto& observer : session_state_observer_list_)
     observer.UserAddedToSession(added_user);
-}
-
-void UserManagerBase::NotifyActiveUserHashChanged(const std::string& hash) {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  for (auto& observer : session_state_observer_list_)
-    observer.ActiveUserHashChanged(hash);
 }
 
 void UserManagerBase::Initialize() {

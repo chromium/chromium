@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -78,7 +77,6 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
     auto* user =
         GetFakeUserManager()->AddUser(AccountId::FromUserEmail(kProfileName));
     GetFakeUserManager()->LoginUser(user->GetAccountId());
-    ash::ProfileHelper::Get()->ActiveUserHashChanged(user->username_hash());
 #endif
     BrowserList::SetLastActive(browser());
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(

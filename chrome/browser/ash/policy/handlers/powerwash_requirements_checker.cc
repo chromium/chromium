@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/user_manager/user.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -32,6 +32,7 @@
 #include "components/feedback/pii_types.h"
 #include "components/feedback/redaction_tool.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {

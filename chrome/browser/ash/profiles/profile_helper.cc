@@ -46,10 +46,6 @@ class ProfileHelperImpl : public ProfileHelper {
       std::unique_ptr<BrowserContextHelper::Delegate> delegate);
   ~ProfileHelperImpl() override;
 
-  // ProfileHelper overrides
-  base::FilePath GetActiveUserProfileDir() override;
-  void Initialize() override;
-
   Profile* GetProfileByAccountId(const AccountId& account_id) override;
   Profile* GetProfileByUser(const user_manager::User* user) override;
 
@@ -65,13 +61,7 @@ class ProfileHelperImpl : public ProfileHelper {
   void RemoveUserFromListForTesting(const AccountId& account_id) override;
 
  private:
-  // user_manager::UserManager::UserSessionStateObserver implementation:
-  void ActiveUserHashChanged(const std::string& hash) override;
-
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
-
-  // Identifies path to active user profile on Chrome OS.
-  std::string active_user_id_hash_;
 
   // Used for testing by unit tests and FakeUserManager/MockUserManager.
   std::map<const user_manager::User*, Profile*> user_to_profile_for_testing_;
@@ -86,14 +76,9 @@ class ProfileHelperImpl : public ProfileHelper {
 ////////////////////////////////////////////////////////////////////////////////
 // ProfileHelper, public
 
-ProfileHelper::ProfileHelper() {}
+ProfileHelper::ProfileHelper() = default;
 
-ProfileHelper::~ProfileHelper() {
-  // Checking whether UserManager is initialized covers case
-  // when ScopedTestUserManager is used.
-  if (user_manager::UserManager::IsInitialized())
-    user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
-}
+ProfileHelper::~ProfileHelper() = default;
 
 // static
 std::unique_ptr<ProfileHelper> ProfileHelper::CreateInstance() {
@@ -249,14 +234,6 @@ ProfileHelperImpl::ProfileHelperImpl(
 
 ProfileHelperImpl::~ProfileHelperImpl() = default;
 
-base::FilePath ProfileHelperImpl::GetActiveUserProfileDir() {
-  return ProfileHelper::GetUserProfileDir(active_user_id_hash_);
-}
-
-void ProfileHelperImpl::Initialize() {
-  user_manager::UserManager::Get()->AddSessionStateObserver(this);
-}
-
 Profile* ProfileHelperImpl::GetProfileByAccountId(const AccountId& account_id) {
   // TODO(crbug.com/1325210): Remove test injection from here.
   if (!user_to_profile_for_testing_.empty()) {
@@ -344,13 +321,6 @@ user_manager::User* ProfileHelperImpl::GetUserByProfile(
     Profile* profile) const {
   return const_cast<user_manager::User*>(
       GetUserByProfile(static_cast<const Profile*>(profile)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ProfileHelper, UserManager::UserSessionStateObserver implementation:
-
-void ProfileHelperImpl::ActiveUserHashChanged(const std::string& hash) {
-  active_user_id_hash_ = hash;
 }
 
 void ProfileHelperImpl::SetProfileToUserMappingForTesting(

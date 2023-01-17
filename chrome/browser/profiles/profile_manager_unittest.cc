@@ -170,6 +170,10 @@ class ProfileManagerTest : public testing::Test {
               extensions::GetCurrentFeatureSessionType());
     session_type_ = extensions::ScopedCurrentFeatureSessionType(
         extensions::GetCurrentFeatureSessionType());
+
+    // Initializes ProfileHelper.
+    // TODO(crbug.com/1325210): Migrate into BrowserContextHelper.
+    ash::ProfileHelper::Get();
 #endif
   }
 

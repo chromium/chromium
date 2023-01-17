@@ -44,7 +44,6 @@ class DiagnosticsBrowserDelegateImplTest : public testing::Test {
   void SetUp() override {
     user_manager_ = std::make_unique<FakeChromeUserManager>();
     user_manager_->Initialize();
-    ProfileHelper::Get()->Initialize();
     LoginState::Initialize();
 
     task_env_.RunUntilIdle();

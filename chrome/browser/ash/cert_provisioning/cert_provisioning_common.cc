@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/user_manager/user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

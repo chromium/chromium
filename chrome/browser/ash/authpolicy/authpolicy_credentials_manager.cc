@@ -34,6 +34,8 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "dbus/message.h"
 #include "ui/base/l10n/l10n_util.h"
