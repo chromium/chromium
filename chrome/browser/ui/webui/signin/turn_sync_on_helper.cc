@@ -426,7 +426,8 @@ void TurnSyncOnHelper::CreateNewSignedInProfile() {
 #else
   DCHECK(!profile_->IsMainProfile());
   lacros_sign_in_provider_ =
-      std::make_unique<ProfilePickerLacrosSignInProvider>();
+      std::make_unique<ProfilePickerLacrosSignInProvider>(
+          /*hidden_profile=*/false);
   lacros_sign_in_provider_->CreateSignedInProfileWithExistingAccount(
       account_info_.gaia,
       base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,

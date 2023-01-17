@@ -1418,7 +1418,8 @@ void ProfilePickerHandler::SelectAccountLacrosInternal(
 
   DCHECK(!lacros_sign_in_provider_);
   lacros_sign_in_provider_ =
-      std::make_unique<ProfilePickerLacrosSignInProvider>();
+      std::make_unique<ProfilePickerLacrosSignInProvider>(
+          /*hidden_profile=*/true);
   ProfilePickerLacrosSignInProvider::SignedInCallback callback =
       base::BindOnce(&ProfilePickerHandler::OnLacrosSignedInProfileCreated,
                      weak_factory_.GetWeakPtr(), profile_color);

@@ -7,14 +7,19 @@
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/pref_names.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
-ProfilePickerLacrosSignInProvider::ProfilePickerLacrosSignInProvider() =
-    default;
+ProfilePickerLacrosSignInProvider::ProfilePickerLacrosSignInProvider(
+    bool hidden_profile)
+    : hidden_profile_(hidden_profile) {}
 
 ProfilePickerLacrosSignInProvider::~ProfilePickerLacrosSignInProvider() =
     default;
@@ -73,11 +78,25 @@ void ProfilePickerLacrosSignInProvider::OnLacrosProfileCreated(
     return;
   }
 
-  Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
-      result->profile_path);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile = profile_manager->GetProfileByPath(result->profile_path);
   DCHECK(profile);
-  profile_ = profile;
 
+  // The new profile is hidden by default.
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(result->profile_path);
+  DCHECK(entry);
+  DCHECK(entry->IsEphemeral());
+  DCHECK(entry->IsOmitted());
+  if (!hidden_profile_) {
+    entry->SetIsOmitted(false);
+    if (!profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+      entry->SetIsEphemeral(false);
+    }
+  }
+
+  profile_ = profile;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
 

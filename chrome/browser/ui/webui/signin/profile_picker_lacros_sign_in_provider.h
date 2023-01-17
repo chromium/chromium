@@ -23,7 +23,9 @@ class ProfilePickerLacrosSignInProvider
   // window, the callback gets called with a nullptr.
   using SignedInCallback = base::OnceCallback<void(Profile* profile)>;
 
-  ProfilePickerLacrosSignInProvider();
+  // `hidden_profile` controls whether the new profile is ephemeral and omitted.
+  explicit ProfilePickerLacrosSignInProvider(bool hidden_profile);
+
   ~ProfilePickerLacrosSignInProvider() override;
   ProfilePickerLacrosSignInProvider(const ProfilePickerLacrosSignInProvider&) =
       delete;
@@ -54,6 +56,7 @@ class ProfilePickerLacrosSignInProvider
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 
+  const bool hidden_profile_;
   raw_ptr<Profile> profile_ = nullptr;
   // Prevent |profile_| from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

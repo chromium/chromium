@@ -828,6 +828,20 @@ class TurnSyncOnHelperTest : public testing::Test {
     switched_to_new_profile_ = true;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The `FakeProfileOAuth2TokenService` is not connected to the account
+  // mapping. Set the account manually. The mapping is tested in
+  // `SwitchToProfile()`.
+  void SimulateAccountAddedToProfileLacros(Profile* profile) {
+    auto* new_identity_manager = IdentityManagerFactory::GetForProfile(profile);
+    CoreAccountInfo core_account_info =
+        identity_manager()->FindExtendedAccountInfoByAccountId(account_id());
+    signin::MakeAccountAvailable(new_identity_manager, core_account_info.email);
+    signin::SetPrimaryAccount(new_identity_manager, core_account_info.email,
+                              signin::ConsentLevel::kSignin);
+  }
+#endif
+
   void OnDelegateDestroyed() { ++delegate_destroyed_; }
 
  protected:
@@ -1330,8 +1344,6 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
                       .sync_opt_in_started = true});
 }
 
-// TODO(https://crbug.com/1260291): Enable these tests on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Create a new profile after the cross account dialog and show the signin page.
 TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   // Set expectations.
@@ -1349,7 +1361,12 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   // Signin flow.
   ProfileWaiter profile_waiter;
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
-  profile_waiter.WaitForProfileAdded();
+  Profile* created_profile = profile_waiter.WaitForProfileAdded();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  SimulateAccountAddedToProfileLacros(created_profile);
+#endif
+
   AccountRemovedWaiter account_removed_waiter(identity_manager(), account_id());
   account_removed_waiter.Wait();
   // Check expectations.
@@ -1358,12 +1375,22 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   // The token has been removed from the source profile even though
   // KEEP_ACCOUNT was used.
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  ProfileAttributesEntry* created_entry =
+      profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(created_profile->GetPath());
+  EXPECT_FALSE(created_entry->IsOmitted());
+  EXPECT_FALSE(created_entry->IsEphemeral());
   CheckDelegateCalls();
-  CheckSigninMetrics({.sign_in_access_point = kAccessPoint,
-                      .sign_in_recorded = true,
-                      .sync_opt_in_started = true});
-}
+  CheckSigninMetrics({
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    .sign_in_access_point = signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+#else
+    .sign_in_access_point = kAccessPoint,
 #endif
+    .sign_in_recorded = true, .sync_opt_in_started = true
+  });
+}
 
 // Abort after the enterprise confirmation prompt.
 TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationAbort) {
@@ -1430,16 +1457,7 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   EXPECT_TRUE(created_profile);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The `FakeProfileOAuth2TokenService` is not connected to the account
-  // mapping. Set the account manually. The mapping is tested in
-  // `SwitchToProfile()`.
-  auto* new_identity_manager =
-      IdentityManagerFactory::GetForProfile(created_profile);
-  CoreAccountInfo core_account_info =
-      identity_manager()->FindExtendedAccountInfoByAccountId(account_id());
-  signin::MakeAccountAvailable(new_identity_manager, core_account_info.email);
-  signin::SetPrimaryAccount(new_identity_manager, core_account_info.email,
-                            signin::ConsentLevel::kSignin);
+  SimulateAccountAddedToProfileLacros(created_profile);
 #endif
   policy_service(created_profile)->SimulateCloudPolicyUpdate();
 
@@ -1525,22 +1543,9 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   Profile* created_profile = profile_waiter.WaitForProfileAdded();
 
-  auto* new_identity_manager =
-      IdentityManagerFactory::GetForProfile(created_profile);
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The `FakeProfileOAuth2TokenService` is not connected to the account
-  // mapping. Set the account manually. The mapping is tested in
-  // `SwitchToProfile()`.
-  CoreAccountInfo core_account_info =
-      identity_manager()->FindExtendedAccountInfoByAccountId(account_id());
-  signin::MakeAccountAvailable(new_identity_manager, core_account_info.email);
-  signin::SetPrimaryAccount(new_identity_manager, core_account_info.email,
-                            signin::ConsentLevel::kSignin);
-  CheckSigninMetrics({.sign_in_access_point =
-                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN});
+  SimulateAccountAddedToProfileLacros(created_profile);
 #endif
-
   policy_service(created_profile)->SimulateCloudPolicyUpdate();
 
   // The account is removed from the source profile.
@@ -1554,12 +1559,16 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
 
+  auto* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(created_profile);
   DCHECK_NE(new_identity_manager, identity_manager());
   EXPECT_EQ(account_id(), new_identity_manager->GetPrimaryAccountId(
                               signin::ConsentLevel::kSignin));
   CheckDelegateCalls();
   CheckSigninMetrics({
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    .sign_in_access_point = signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+#else
     .sign_in_access_point = kAccessPoint,
 #endif
     .sign_in_recorded = true, .sync_opt_in_started = true
