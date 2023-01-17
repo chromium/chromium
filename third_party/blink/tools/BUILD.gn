@@ -7,7 +7,6 @@ group("wpt_tests_isolate") {
   testonly = true
   data = [
     # Include the test runner.
-    "//testing/scripts/wpt_common.py",
     "//third_party/blink/tools/run_wpt_tests.py",
 
     # WPT tooling
