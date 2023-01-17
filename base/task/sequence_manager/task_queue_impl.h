@@ -555,7 +555,7 @@ class BASE_EXPORT TaskQueueImpl {
       OnTaskPostedCallbackHandleImpl* on_task_posted_callback_handle);
 
   QueueName name_;
-  const raw_ptr<SequenceManagerImpl> sequence_manager_;
+  const raw_ptr<SequenceManagerImpl, DanglingUntriaged> sequence_manager_;
 
   const scoped_refptr<const AssociatedThreadId> associated_thread_;
 
