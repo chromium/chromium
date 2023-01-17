@@ -51,6 +51,7 @@ class RlweClientImpl : public RlweClient {
       const OprfResponse& oprf_response) override;
   ::rlwe::StatusOr<bool> ProcessQueryResponse(
       const QueryResponse& query_response) override;
+  std::string GetPsmIdentifierDebugString() override;
 
  private:
   const std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>

@@ -102,6 +102,10 @@ FakeRlweClient::CreateQueryRequest(
   return server_membership_response == kHasMembership;
 }
 
+std::string FakeRlweClient::GetPsmIdentifierDebugString() {
+  return plaintext_id_.sensitive_id();
+}
+
 FakeRlweClient::FakeRlweClient(psm_rlwe::RlweUseCase use_case,
                                const psm_rlwe::RlwePlaintextId& plaintext_id)
     : use_case_(use_case), plaintext_id_(plaintext_id) {}

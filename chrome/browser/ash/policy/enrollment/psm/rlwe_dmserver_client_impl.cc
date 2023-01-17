@@ -228,7 +228,8 @@ void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
       RecordPsmSuccessTimeHistogram();
 
       LOG(WARNING) << "PSM determination successful. Identifier "
-                   << (*is_member ? "" : "not ") << "present on the server";
+                   << psm_rlwe_client_->GetPsmIdentifierDebugString()
+                   << (*is_member ? "" : " not") << " present on the server";
 
       // Reset the |psm_request_job_| to allow another call to
       // CheckMembership.

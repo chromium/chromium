@@ -44,6 +44,9 @@ class RlweClient {
   // the set, or why the determination failed.
   virtual ::rlwe::StatusOr<bool> ProcessQueryResponse(
       const QueryResponse& query_response) = 0;
+
+  // Gets the sensitive id from `plaintext_id_` for debugging purposes.
+  virtual std::string GetPsmIdentifierDebugString() = 0;
 };
 
 }  // namespace policy::psm

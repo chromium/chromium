@@ -68,6 +68,10 @@ RlweClientImpl::CreateQueryRequest(
   return responses->membership_responses(0).membership_response().is_member();
 }
 
+std::string RlweClientImpl::GetPsmIdentifierDebugString() {
+  return plaintext_id_.sensitive_id();
+}
+
 RlweClientImpl::RlweClientImpl(
     std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client,
     const psm_rlwe::RlwePlaintextId& plaintext_id)
