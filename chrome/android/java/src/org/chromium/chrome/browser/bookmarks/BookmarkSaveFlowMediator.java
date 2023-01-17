@@ -20,10 +20,11 @@ import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
-import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.SubscriptionsObserver;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -32,7 +33,7 @@ import java.util.List;
 
 /** Controls the bookmarks save-flow. */
 public class BookmarkSaveFlowMediator
-        extends BookmarkModelObserver implements SubscriptionsManager.SubscriptionObserver {
+        extends BookmarkModelObserver implements SubscriptionsObserver {
     private final Context mContext;
     private final Runnable mCloseRunnable;
 
@@ -42,7 +43,7 @@ public class BookmarkSaveFlowMediator
     private BookmarkId mBookmarkId;
     private PowerBookmarkMeta mPowerBookmarkMeta;
     private boolean mWasBookmarkMoved;
-    private SubscriptionsManager mSubscriptionsManager;
+    private ShoppingService mShoppingService;
     private CommerceSubscription mSubscription;
     private Callback<Boolean> mSubscriptionsManagerCallback;
     private String mFolderName;
@@ -53,11 +54,10 @@ public class BookmarkSaveFlowMediator
      *         model.
      * @param context The {@link Context} associated with this mediator.
      * @param closeRunnable A {@link Runnable} which closes the bookmark save flow.
-     * @param subscriptionsManager Used to manage the price-tracking subscriptions.
+     * @param shoppingService Used to manage the price-tracking subscriptions.
      */
     public BookmarkSaveFlowMediator(BookmarkModel bookmarkModel, PropertyModel propertyModel,
-            Context context, Runnable closeRunnable,
-            @Nullable SubscriptionsManager subscriptionsManager) {
+            Context context, Runnable closeRunnable, ShoppingService shoppingService) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(this);
 
@@ -65,9 +65,9 @@ public class BookmarkSaveFlowMediator
         mContext = context;
         mCloseRunnable = closeRunnable;
 
-        mSubscriptionsManager = subscriptionsManager;
-        if (mSubscriptionsManager != null) {
-            mSubscriptionsManager.addObserver(this);
+        mShoppingService = shoppingService;
+        if (mShoppingService != null) {
+            mShoppingService.addSubscriptionsObserver(this);
         }
     }
 
@@ -189,8 +189,8 @@ public class BookmarkSaveFlowMediator
 
     void destroy() {
         mBookmarkModel.removeObserver(this);
-        if (mSubscriptionsManager != null) {
-            mSubscriptionsManager.removeObserver(this);
+        if (mShoppingService != null) {
+            mShoppingService.removeSubscriptionsObserver(this);
         }
 
         mBookmarkModel = null;
@@ -228,14 +228,16 @@ public class BookmarkSaveFlowMediator
         bindBookmarkProperties(mBookmarkId, mPowerBookmarkMeta, mWasBookmarkMoved);
     }
 
-    // SubscriptionsManager.SubscriptionObserver implementation
+    // SubscriptionsObserver implementation
     @Override
-    public void onSubscribe(List<CommerceSubscription> subscriptions) {
+    public void onSubscribe(List<CommerceSubscription> subscriptions, boolean succeeded) {
+        if (!succeeded) return;
         setPriceTrackingToggleVisualsOnly(subscriptions.contains(mSubscription));
     }
 
     @Override
-    public void onUnsubscribe(List<CommerceSubscription> subscriptions) {
+    public void onUnsubscribe(List<CommerceSubscription> subscriptions, boolean succeeded) {
+        if (!succeeded) return;
         setPriceTrackingToggleVisualsOnly(!subscriptions.contains(mSubscription));
     }
 }

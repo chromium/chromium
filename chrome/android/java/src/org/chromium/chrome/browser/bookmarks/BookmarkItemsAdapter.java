@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
@@ -68,7 +67,6 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
     private String mSearchText;
     private BookmarkId mCurrentFolder;
     private SyncService mSyncService;
-    private CommerceSubscriptionsServiceFactory mCommerceSubscriptionsServiceFactory;
 
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
@@ -128,7 +126,6 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
                 ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                         Profile.getLastUsedRegularProfile().getProfileKey(),
                         GlobalDiscardableReferencePool.getReferencePool());
-        mCommerceSubscriptionsServiceFactory = new CommerceSubscriptionsServiceFactory();
         mSnackbarManager = snackbarManager;
     }
 

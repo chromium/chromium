@@ -5,11 +5,9 @@
 # TODO(crbug/1210158): This should be a separate build target when circular
 # dependencies are removed.
 commerce_subscriptions_junit_test_sources = [
-  "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionJsonSerializerUnitTest.java",
   "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceFactoryUnitTest.java",
   "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceUnitTest.java",
   "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/ImplicitPriceDropSubscriptionsManagerUnitTest.java",
-  "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsManagerImplTest.java",
 ]
 
 commerce_subscriptions_junit_test_deps = [
@@ -34,30 +32,4 @@ commerce_subscriptions_junit_test_deps = [
   "//third_party/mockito:mockito_java",
   "//url:gurl_java",
   "//url:gurl_junit_test_support",
-]
-
-commerce_subscriptions_java_test_sources = [
-  "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceProxyUnitTest.java",
-  "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorageTest.java",
-  "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsLoadCallbackHelper.java",
-]
-
-commerce_subscriptions_java_test_deps = [
-  "//base:base_java",
-  "//base:base_java_test_support",
-  "//base:jni_java",
-  "//build/android:build_java",
-  "//chrome/android:base_module_java",
-  "//chrome/browser/android/lifecycle:java",
-  "//chrome/browser/endpoint_fetcher:java",
-  "//chrome/browser/flags:java",
-  "//chrome/browser/profiles/android:java",
-  "//chrome/browser/tabmodel:java",
-  "//chrome/test/android:chrome_java_integration_test_support",
-  "//content/public/test/android:content_java_test_support",
-  "//third_party/androidx:androidx_test_core_java",
-  "//third_party/androidx:androidx_test_runner_java",
-  "//third_party/hamcrest:hamcrest_java",
-  "//third_party/junit",
-  "//third_party/mockito:mockito_java",
 ]

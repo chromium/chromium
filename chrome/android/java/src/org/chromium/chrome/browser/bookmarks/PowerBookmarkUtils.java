@@ -18,16 +18,16 @@ import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.PriceTrackableOffer;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.CommerceSubscription.UserSeenOffer;
+import org.chromium.components.commerce.core.IdentifierType;
+import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
@@ -90,14 +90,14 @@ public class PowerBookmarkUtils {
             @NonNull PowerBookmarkMeta meta) {
         ShoppingSpecifics shoppingSpecifics = meta.getShoppingSpecifics();
         // Use UnsignedLongs to convert ProductClusterId to avoid overflow.
-        PriceTrackableOffer seenOffer =
-                new PriceTrackableOffer(UnsignedLongs.toString(shoppingSpecifics.getOfferId()),
-                        Long.toString(shoppingSpecifics.getCurrentPrice().getAmountMicros()),
+        UserSeenOffer seenOffer =
+                new UserSeenOffer(UnsignedLongs.toString(shoppingSpecifics.getOfferId()),
+                        shoppingSpecifics.getCurrentPrice().getAmountMicros(),
                         shoppingSpecifics.getCountryCode());
-        return new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
+        return new CommerceSubscription(SubscriptionType.PRICE_TRACK,
+                IdentifierType.PRODUCT_CLUSTER_ID,
                 UnsignedLongs.toString(shoppingSpecifics.getProductClusterId()),
-                SubscriptionManagementType.USER_MANAGED, TrackingIdType.PRODUCT_CLUSTER_ID,
-                seenOffer);
+                ManagementType.USER_MANAGED, seenOffer);
     }
 
     /**

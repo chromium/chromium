@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -50,8 +50,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
-import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -62,6 +60,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -142,16 +141,12 @@ public class BookmarkUtils {
             return;
         }
 
-        SubscriptionsManager subscriptionService = null;
-        if (ShoppingFeatures.isShoppingListEnabled()) {
-            subscriptionService = new CommerceSubscriptionsServiceFactory()
-                                          .getForLastUsedProfile()
-                                          .getSubscriptionsManager();
-        }
+        ShoppingService shoppingService =
+                ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
 
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
-                new BookmarkSaveFlowCoordinator(activity, bottomSheetController,
-                        subscriptionService, new UserEducationHelper(activity, new Handler()));
+                new BookmarkSaveFlowCoordinator(activity, bottomSheetController, shoppingService,
+                        new UserEducationHelper(activity, new Handler()));
         bookmarkSaveFlowCoordinator.show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved);
     }
 

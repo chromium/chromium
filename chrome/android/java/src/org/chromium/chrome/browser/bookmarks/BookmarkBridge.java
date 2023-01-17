@@ -23,16 +23,19 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
-import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.IdentifierType;
+import org.chromium.components.commerce.core.ManagementType;
+import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.SubscriptionsObserver;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
@@ -54,8 +57,8 @@ class BookmarkBridge {
     private boolean mIsNativeBookmarkModelLoaded;
     private final ObserverList<BookmarkModelObserver> mObservers =
             new ObserverList<BookmarkModelObserver>();
-    private SubscriptionsManager mSubscriptionManager;
-    private SubscriptionsManager.SubscriptionObserver mSubscriptionsObserver;
+    private ShoppingService mShoppingService;
+    private SubscriptionsObserver mSubscriptionsObserver;
 
     /**
      * Handler to fetch the bookmarks, titles, urls and folder hierarchy.
@@ -75,25 +78,26 @@ class BookmarkBridge {
         mNativeBookmarkBridge = nativeBookmarkBridge;
         mIsDoingExtensiveChanges = BookmarkBridgeJni.get().isDoingExtensiveChanges(
                 mNativeBookmarkBridge, BookmarkBridge.this);
-        mSubscriptionsObserver = new SubscriptionsManager.SubscriptionObserver() {
+        // TODO(crbug.com/1382191): Move this observer to native.
+        mSubscriptionsObserver = new SubscriptionsObserver() {
             @Override
-            public void onSubscribe(List<CommerceSubscription> subscriptions) {}
+            public void onSubscribe(List<CommerceSubscription> subscriptions, boolean succeeded) {}
 
             @Override
-            public void onUnsubscribe(List<CommerceSubscription> subscriptions) {
+            public void onUnsubscribe(List<CommerceSubscription> subscriptions, boolean succeeded) {
+                if (!succeeded) return;
                 removeExplicitShoppingSubscriptions(subscriptions);
             }
         };
         if (ShoppingFeatures.isShoppingListEnabled()) {
-            mSubscriptionManager = new CommerceSubscriptionsServiceFactory()
-                                           .getForLastUsedProfile()
-                                           .getSubscriptionsManager();
-            mSubscriptionManager.addObserver(mSubscriptionsObserver);
+            mShoppingService =
+                    ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+            mShoppingService.addSubscriptionsObserver(mSubscriptionsObserver);
         }
     }
 
     @VisibleForTesting
-    SubscriptionsManager.SubscriptionObserver getSubscriptionObserver() {
+    SubscriptionsObserver getSubscriptionObserver() {
         return mSubscriptionsObserver;
     }
 
@@ -109,8 +113,8 @@ class BookmarkBridge {
         }
         mObservers.clear();
 
-        if (mSubscriptionManager != null) {
-            mSubscriptionManager.removeObserver(mSubscriptionsObserver);
+        if (mShoppingService != null) {
+            mShoppingService.removeSubscriptionsObserver(mSubscriptionsObserver);
         }
     }
 
@@ -450,17 +454,14 @@ class BookmarkBridge {
         HashSet<Long> clusterIdMap = new HashSet<>();
         for (CommerceSubscription c : subscriptions) {
             // Ensure the subscription is explicit.
-            if (c == null
-                    || !c.getManagementType().equals(
-                            CommerceSubscription.SubscriptionManagementType.USER_MANAGED)) {
+            if (c == null || c.managementType != ManagementType.USER_MANAGED) {
                 continue;
             }
 
-            if (c.getTrackingIdType().equals(CommerceSubscription.TrackingIdType.OFFER_ID)) {
-                offerIdMap.add(UnsignedLongs.parseUnsignedLong(c.getTrackingId()));
-            } else if (c.getTrackingIdType().equals(
-                               CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID)) {
-                clusterIdMap.add(UnsignedLongs.parseUnsignedLong(c.getTrackingId()));
+            if (c.idType == IdentifierType.OFFER_ID) {
+                offerIdMap.add(UnsignedLongs.parseUnsignedLong(c.id));
+            } else if (c.idType == IdentifierType.PRODUCT_CLUSTER_ID) {
+                clusterIdMap.add(UnsignedLongs.parseUnsignedLong(c.id));
             }
         }
 

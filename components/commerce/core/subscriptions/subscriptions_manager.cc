@@ -54,12 +54,8 @@ SubscriptionsManager::SubscriptionsManager(
       account_checker_(account_checker),
       observers_(base::ObserverListPolicy::EXISTING_ONLY),
       weak_ptr_factory_(this) {
-// Avoid duplicate server calls on android. Remove this after we integrate
-// android implementation to shopping service.
-#if !BUILDFLAG(IS_ANDROID)
   SyncSubscriptions();
   scoped_identity_manager_observation_.Observe(identity_manager);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 SubscriptionsManager::~SubscriptionsManager() = default;

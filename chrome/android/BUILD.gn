@@ -1436,6 +1436,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/styles/android:java",
       "//components/browser_ui/util/android:java",
       "//components/browser_ui/widget/android:java",
+      "//components/commerce/core/android:core_java",
       "//components/crash/android:java",
       "//components/embedder_support/android:context_menu_java",
       "//components/embedder_support/android:util_java",
@@ -1510,8 +1511,11 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_play_services_gcm_java",
       "$google_play_services_package:google_play_services_iid_java",
       "$google_play_services_package:google_play_services_tasks_java",
+      "//base:base_java",
       "//base:base_java_test_support",
+      "//base:jni_java",
       "//base/test:test_support_java",
+      "//build/android:build_java",
       "//cc:cc_java",
       "//chrome/android:chrome_java",
       "//chrome/android/features/keyboard_accessory/public:public_java",
@@ -1825,8 +1829,6 @@ if (current_toolchain == default_toolchain) {
     ]
 
     deps += feed_test_deps
-
-    deps += commerce_subscriptions_java_test_deps
 
     if (enable_printing) {
       deps += [ "//printing:printing_java" ]
@@ -4066,7 +4068,6 @@ group("jni_headers") {
     "//chrome/browser/battery/android:jni_headers",
     "//chrome/browser/commerce/merchant_viewer/android:jni_headers",
     "//chrome/browser/commerce/price_tracking/android:jni_headers",
-    "//chrome/browser/commerce/subscriptions/android:jni_headers",
     "//chrome/browser/contextmenu:jni_headers",
     "//chrome/browser/download/android:jni_headers",
     "//chrome/browser/enterprise/util:jni_headers",
