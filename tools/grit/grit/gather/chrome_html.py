@@ -14,7 +14,6 @@ factors are also removed from existing image sets to support explicitly
 referencing all available images.
 """
 
-from __future__ import print_function
 
 import os
 import re
@@ -287,7 +286,7 @@ class ChromeHtml(interface.GathererBase):
   """
 
   def __init__(self, *args, **kwargs):
-    super(ChromeHtml, self).__init__(*args, **kwargs)
+    super().__init__(*args, **kwargs)
     self.allow_external_script_ = False
     self.flatten_html_ = False
     self.preprocess_only_ = False

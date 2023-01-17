@@ -10,7 +10,6 @@ and inlines the specified file, producing one HTML file with no external
 dependencies. It recursively inlines the included files.
 """
 
-from __future__ import print_function
 
 import os
 import re
@@ -587,7 +586,7 @@ def InlineToString(input_filename, grd_node, preprocess_only = False,
         strip_whitespace=strip_whitespace,
         rewrite_function=rewrite_function,
         filename_expansion_function=filename_expansion_function).inlined_data
-  except IOError as e:
+  except OSError as e:
     raise Exception("Failed to open %s while trying to flatten %s. (%s)" %
                     (e.filename, input_filename, e.strerror))
 
@@ -627,7 +626,7 @@ def GetResourceFilenames(filename,
         strip_whitespace=False,
         rewrite_function=rewrite_function,
         filename_expansion_function=filename_expansion_function).inlined_files
-  except IOError as e:
+  except OSError as e:
     raise Exception("Failed to open %s while trying to flatten %s. (%s)" %
                     (e.filename, filename, e.strerror))
 

@@ -207,7 +207,7 @@ def ReadFile(filename, encoding):
   else:
     mode = 'r'
 
-  with io.open(filename, mode, encoding=encoding) as f:
+  with open(filename, mode, encoding=encoding) as f:
     return f.read()
 
 
@@ -527,7 +527,7 @@ def ParseDefine(define):
   return (name, val)
 
 
-class Substituter(object):
+class Substituter:
   '''Finds and substitutes variable names in text strings.
 
   Given a dictionary of variable names and values, prepares to
@@ -644,7 +644,7 @@ class Substituter(object):
       return msg
 
 
-class TempDir(object):
+class TempDir:
   '''Creates files with the specified contents in a temporary directory,
   for unit testing.
   '''
@@ -677,7 +677,7 @@ class TempDir(object):
   def AsCurrentDir(self):
     return self._AsCurrentDirClass(self.GetPath())
 
-  class _AsCurrentDirClass(object):
+  class _AsCurrentDirClass:
     def __init__(self, path):
       self.path = path
     def __enter__(self):

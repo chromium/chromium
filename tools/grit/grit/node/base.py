@@ -19,7 +19,7 @@ from grit.node import brotli_util
 import grit.format.gzip_string
 
 
-class Node(object):
+class Node:
   '''An item in the tree that has children.'''
 
   # Valid content types that can be returned by _ContentType()
@@ -49,7 +49,7 @@ class Node(object):
     self.mixed_content = []   # A list of u'' and/or child elements (this
     # duplicates 'children' but
     # is needed to preserve markup-type content).
-    self.name = u''           # The name of this element
+    self.name = ''           # The name of this element
     self.attrs = {}           # The set of attributes (keys to values)
     self.parent = None        # Our parent unless we are the root element.
     self.uberclique = None    # Allows overriding uberclique for parts of tree
@@ -63,7 +63,7 @@ class Node(object):
 
   def __exit__(self, exc_type, exc_value, traceback):
     if exc_type is not None:
-      print(u'Error processing node %s: %s' % (str(self), exc_value))
+      print('Error processing node %s: %s' % (str(self), exc_value))
 
   def __iter__(self):
     '''A preorder iteration through the tree that this node is the root of.'''
@@ -74,8 +74,7 @@ class Node(object):
     any child nodes.'''
     yield self
     for child in self.children:
-      for iterchild in child.Preorder():
-        yield iterchild
+      yield from child.Preorder()
 
   def ActiveChildren(self):
     '''Returns the children of this node that should be included in the current
@@ -87,8 +86,7 @@ class Node(object):
     the current configuration, in preorder.'''
     yield self
     for child in self.ActiveChildren():
-      for descendant in child.ActiveDescendants():
-        yield descendant
+      yield from child.ActiveDescendants()
 
   def GetRoot(self):
     '''Returns the root Node in the tree this Node belongs to.'''
@@ -257,13 +255,13 @@ class Node(object):
   def __str__(self):
     '''Returns this node and all nodes below it as an XML document in a Unicode
     string.'''
-    header = u'<?xml version="1.0" encoding="UTF-8"?>\n'
+    header = '<?xml version="1.0" encoding="UTF-8"?>\n'
     return header + self.FormatXml()
 
   # Some Python 2 glue.
   __unicode__ = __str__
 
-  def FormatXml(self, indent = u'', one_line = False):
+  def FormatXml(self, indent = '', one_line = False):
     '''Returns this node and all nodes below it as an XML
     element in a Unicode string.  This differs from __unicode__ in that it does
     not include the <?xml> stuff at the top of the string.  If one_line is true,
@@ -277,30 +275,30 @@ class Node(object):
     inside_content = self.ContentsAsXml(indent, content_one_line)
 
     # Then the attributes for this node.
-    attribs = u''
+    attribs = ''
     default_attribs = self.DefaultAttributes()
     for attrib, value in sorted(self.attrs.items()):
       # Only print an attribute if it is other than the default value.
       if attrib not in default_attribs or value != default_attribs[attrib]:
-        attribs += u' %s=%s' % (attrib, saxutils.quoteattr(value))
+        attribs += ' %s=%s' % (attrib, saxutils.quoteattr(value))
 
     # Finally build the XML for our node and return it
     if len(inside_content) > 0:
       if one_line:
-        return u'<%s%s>%s</%s>' % (self.name, attribs, inside_content,
+        return '<%s%s>%s</%s>' % (self.name, attribs, inside_content,
                                    self.name)
       elif content_one_line:
-        return u'%s<%s%s>\n%s  %s\n%s</%s>' % (
+        return '%s<%s%s>\n%s  %s\n%s</%s>' % (
           indent, self.name, attribs,
           indent, inside_content,
           indent, self.name)
       else:
-        return u'%s<%s%s>\n%s\n%s</%s>' % (
+        return '%s<%s%s>\n%s\n%s</%s>' % (
           indent, self.name, attribs,
           inside_content,
           indent, self.name)
     else:
-      return u'%s<%s%s />' % (indent, self.name, attribs)
+      return '%s<%s%s />' % (indent, self.name, attribs)
 
   def ContentsAsXml(self, indent, one_line):
     '''Returns the contents of this node (CDATA and child elements) in XML
@@ -312,15 +310,15 @@ class Node(object):
     last_item = None
     for mixed_item in self.mixed_content:
       if isinstance(mixed_item, Node):
-        inside_parts.append(mixed_item.FormatXml(indent + u'  ', one_line))
+        inside_parts.append(mixed_item.FormatXml(indent + '  ', one_line))
         if not one_line:
-          inside_parts.append(u'\n')
+          inside_parts.append('\n')
       else:
         message = mixed_item
         # If this is the first item and it starts with whitespace, we add
         # the ''' delimiter.
         if not last_item and message.lstrip() != message:
-          message = u"'''" + message
+          message = "'''" + message
         inside_parts.append(util.EncodeCdata(message))
       last_item = mixed_item
 
@@ -332,9 +330,9 @@ class Node(object):
     # If the last item is a string (not a node) and ends with whitespace,
     # we need to add the ''' delimiter.
     if (isinstance(last_item, str) and last_item.rstrip() != last_item):
-      inside_parts[-1] = inside_parts[-1] + u"'''"
+      inside_parts[-1] = inside_parts[-1] + "'''"
 
-    return u''.join(inside_parts)
+    return ''.join(inside_parts)
 
   def SubstituteMessages(self, substituter):
     '''Applies substitutions to all messages in the tree.

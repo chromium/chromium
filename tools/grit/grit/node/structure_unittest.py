@@ -6,7 +6,6 @@
 '''Unit tests for <structure> nodes.
 '''
 
-from __future__ import print_function
 
 import os
 import os.path
@@ -55,18 +54,18 @@ class StructureUnittest(unittest.TestCase):
     grd.SetOutputLanguage('fr')
     grd.RunGatherers()
     transl = ''.join(rc.Format(grd, 'fr', '.'))
-    self.failUnless(transl.count('040704') and transl.count('110978'))
-    self.failUnless(transl.count('2005",IDC_STATIC'))
+    self.assertTrue(transl.count('040704') and transl.count('110978'))
+    self.assertTrue(transl.count('2005",IDC_STATIC'))
 
   def testRunCommandOnCurrentPlatform(self):
     node = structure.StructureNode()
     node.attrs = node.DefaultAttributes()
-    self.failUnless(node.RunCommandOnCurrentPlatform())
+    self.assertTrue(node.RunCommandOnCurrentPlatform())
     node.attrs['run_command_on_platforms'] = 'Nosuch'
-    self.failIf(node.RunCommandOnCurrentPlatform())
+    self.assertFalse(node.RunCommandOnCurrentPlatform())
     node.attrs['run_command_on_platforms'] = (
         'Nosuch,%s,Othernot' % platform.system())
-    self.failUnless(node.RunCommandOnCurrentPlatform())
+    self.assertTrue(node.RunCommandOnCurrentPlatform())
 
   def testVariables(self):
     grd = util.ParseGrdForUnittest('''
@@ -80,7 +79,7 @@ class StructureUnittest(unittest.TestCase):
     filepath = os.path.join(tempfile.gettempdir(), filename)
     with open(filepath) as f:
       result = f.read()
-      self.failUnlessEqual(('<h1>Hello!</h1>\n'
+      self.assertEqual(('<h1>Hello!</h1>\n'
                             'Some cool things are foo, bar, baz.\n'
                             'Did you know that 2+2==4?\n'
                             '<p>\n'
@@ -199,7 +198,7 @@ class StructureUnittest(unittest.TestCase):
     node.RunPreSubstitutionGatherer()
     data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
 
-    self.assertEqual('LOTTIE'.encode('utf-8'), data[0:6])
+    self.assertEqual(b'LOTTIE', data[0:6])
     self.assertEqual(
         util.ReadFile(os.path.join(test_data_root, 'test_json.json'),
                       util.BINARY),
@@ -221,7 +220,7 @@ class StructureUnittest(unittest.TestCase):
     ])
     data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
 
-    self.assertEqual('LOTTIE'.encode('utf-8'), data[0:6])
+    self.assertEqual(b'LOTTIE', data[0:6])
     self.assertEqual(constants.BROTLI_CONST, data[6:8])
     self.assertEqual(
         len(

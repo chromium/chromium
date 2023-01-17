@@ -37,7 +37,7 @@ class CorruptDataPack(Exception):
   pass
 
 
-class DataPackSizes(object):
+class DataPackSizes:
   def __init__(self, header, id_table, alias_table, data):
     self.header = header
     self.id_table = id_table
@@ -61,7 +61,7 @@ class DataPackSizes(object):
     return self.__class__.__name__ + repr(self.__dict__)
 
 
-class DataPackContents(object):
+class DataPackContents:
   def __init__(self, resources, encoding, version, aliases, sizes):
     # Map of resource_id -> str.
     self.resources = resources
@@ -208,7 +208,7 @@ def WriteDataPack(resources, output_file, encoding):
 
 def ReadGrdInfo(grd_file):
   info_dict = {}
-  with open(grd_file + '.info', 'rt') as f:
+  with open(grd_file + '.info') as f:
     for line in f:
       item = GrdInfoItem._make(line.strip().split(','))
       info_dict[int(item.id)] = item
@@ -243,7 +243,7 @@ def RePack(output_file,
     lines = util.ReadFile(allowlist_file, 'utf-8').strip().splitlines()
     if not lines:
       raise Exception('Allowlist file should not be empty')
-    allowlist = set(int(x) for x in lines)
+    allowlist = {int(x) for x in lines}
   inputs = [(p.resources, p.encoding) for p in input_data_packs]
   resources, encoding = RePackFromDataPackStrings(inputs, allowlist,
                                                   suppress_removed_key_output)
@@ -252,7 +252,7 @@ def RePack(output_file,
     output_info_filepath = output_file + '.info'
   with open(output_info_filepath, 'w') as output_info_file:
     for filename in input_info_files:
-      with open(filename, 'r') as info_file:
+      with open(filename) as info_file:
         output_info_file.writelines(info_file.readlines())
 
 
@@ -293,9 +293,9 @@ def RePackFromDataPackStrings(inputs,
                      ' vs ' + str(input_encoding))
 
     if allowlist:
-      allowlisted_resources = dict([(key, input_resources[key])
+      allowlisted_resources = {key: input_resources[key]
                                     for key in input_resources.keys()
-                                    if key in allowlist])
+                                    if key in allowlist}
       resources.update(allowlisted_resources)
       removed_keys = [
           key for key in input_resources.keys() if key not in allowlist

@@ -6,7 +6,6 @@
 When adding a new node type, you add to this mapping.
 '''
 
-from __future__ import print_function
 
 from grit import exception
 

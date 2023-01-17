@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
 
 import os
 import sys
@@ -134,11 +133,11 @@ class AssignerUnittest(unittest.TestCase):
     for exp, spec in test_cases:
       try:
         actual, new_spec = _RunCoarseIdAssigner(spec)
-        self.failUnlessEqual(exp, actual)
+        self.assertEqual(exp, actual)
         # Test that assignment is idempotent.
         actual2, new_spec2 = _RunCoarseIdAssigner(new_spec)
-        self.failUnlessEqual(actual, actual2)
-        self.failUnlessEqual(new_spec, new_spec2)
+        self.assertEqual(actual, actual2)
+        self.assertEqual(new_spec, new_spec2)
       except Exception as e:
         print(common.Color.RED(traceback.format_exc().rstrip()))
         print('Failed spec: %s' % common.Color.CYAN(spec))

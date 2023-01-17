@@ -5,7 +5,6 @@
 '''The 'grit resize' tool.
 '''
 
-from __future__ import print_function
 
 import getopt
 import os

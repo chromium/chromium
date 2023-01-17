@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Pseudolocale translations for chrome."""
 
-from __future__ import print_function
 
 import re
 import string
@@ -13,49 +12,49 @@ from grit import lazy_re
 from grit import tclib
 
 ACCENTED_STRINGS = {
-    '!': u'\u00a1',
-    '$': u'\u20ac',
-    '?': u'\u00bf',
-    'A': u'\u00c5',
-    'C': u'\u00c7',
-    'D': u'\u00d0',
-    'E': u'\u00c9',
-    'G': u'\u011c',
-    'H': u'\u0124',
-    'I': u'\u00ce',
-    'J': u'\u0134',
-    'K': u'\u0136',
-    'L': u'\u013b',
-    'N': u'\u00d1',
-    'O': u'\u00d6',
-    'P': u'\u00de',
-    'R': u'\u00ae',
-    'S': u'\u0160',
-    'T': u'\u0162',
-    'U': u'\u00db',
-    'W': u'\u0174',
-    'Y': u'\u00dd',
-    'Z': u'\u017d',
-    'a': u'\u00e5',
-    'c': u'\u00e7',
-    'd': u'\u00f0',
-    'e': u'\u00e9',
-    'f': u'\u0192',
-    'g': u'\u011d',
-    'h': u'\u0125',
-    'i': u'\u00ee',
-    'j': u'\u0135',
-    'k': u'\u0137',
-    'l': u'\u013c',
-    'n': u'\u00f1',
-    'o': u'\u00f6',
-    'p': u'\u00fe',
-    's': u'\u0161',
-    't': u'\u0163',
-    'u': u'\u00fb',
-    'w': u'\u0175',
-    'y': u'\u00fd',
-    'z': u'\u017e',
+    '!': '\u00a1',
+    '$': '\u20ac',
+    '?': '\u00bf',
+    'A': '\u00c5',
+    'C': '\u00c7',
+    'D': '\u00d0',
+    'E': '\u00c9',
+    'G': '\u011c',
+    'H': '\u0124',
+    'I': '\u00ce',
+    'J': '\u0134',
+    'K': '\u0136',
+    'L': '\u013b',
+    'N': '\u00d1',
+    'O': '\u00d6',
+    'P': '\u00de',
+    'R': '\u00ae',
+    'S': '\u0160',
+    'T': '\u0162',
+    'U': '\u00db',
+    'W': '\u0174',
+    'Y': '\u00dd',
+    'Z': '\u017d',
+    'a': '\u00e5',
+    'c': '\u00e7',
+    'd': '\u00f0',
+    'e': '\u00e9',
+    'f': '\u0192',
+    'g': '\u011d',
+    'h': '\u0125',
+    'i': '\u00ee',
+    'j': '\u0135',
+    'k': '\u0137',
+    'l': '\u013c',
+    'n': '\u00f1',
+    'o': '\u00f6',
+    'p': '\u00fe',
+    's': '\u0161',
+    't': '\u0163',
+    'u': '\u00fb',
+    'w': '\u0175',
+    'y': '\u00fd',
+    'z': '\u017e',
 }
 
 NUMBERS = [
@@ -67,11 +66,11 @@ ALPHABETIC_RUN = lazy_re.compile(r'([^\W0-9_]+)')
 WORD = lazy_re.compile(r'\b\S+\b')
 
 # RTL modifiers for letters
-RLO = u'\u202e'
-PDF = u'\u202c'
+RLO = '\u202e'
+PDF = '\u202c'
 
 
-class Node(object):
+class Node:
   """A node in the syntax tree representing a message to be translated."""
 
   translatable = False
@@ -100,7 +99,7 @@ class Node(object):
     translation from.
     """
     children = ''.join(c.ToString() for c in self.children)
-    return u'%s%s%s' % (self.text, children, self.after)
+    return '%s%s%s' % (self.text, children, self.after)
 
   def __repr__(self):
     # For debugging
@@ -231,7 +230,7 @@ class NodeSequence(Node):
   child_types = [HtmlTag, BasicVariable, Plural, RawText]
 
   def __init__(self, children):
-    super(NodeSequence, self).__init__('', children)
+    super().__init__('', children)
 
   @classmethod
   def Parse(cls, text):

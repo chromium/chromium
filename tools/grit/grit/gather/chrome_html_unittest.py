@@ -5,7 +5,6 @@
 
 '''Unit tests for grit.gather.chrome_html'''
 
-from __future__ import print_function
 
 import os
 import re
@@ -65,7 +64,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '1.4x,1.8x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       <!DOCTYPE HTML>
       <html>
@@ -106,7 +105,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       <!DOCTYPE HTML>
       <html>
@@ -138,7 +137,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '1.4x,1.8x'})
     html.SetAttributes({'flattenhtml': 'false'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url('test.png') 1x, url('1.4x/test.png') 1.4x, url('1.8x/test.png') 1.8x);
@@ -167,7 +166,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '1.4x,1.8x'})
     html.SetAttributes({'flattenhtml': 'false'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url('sub/test.png') 1x, url('sub/1.4x/test.png') 1.4x, url('sub/1.8x/test.png') 1.8x);
@@ -197,7 +196,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '1.4x,1.8x'})
     html.SetAttributes({'flattenhtml': 'false', 'preprocess': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url('test.png') 1x, url('1.4x/test.png') 1.4x, url('1.8x/test.png') 1.8x);
@@ -224,7 +223,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url("data:image/png;base64,UE5HIERBVEE=") 1x, url("data:image/png;base64,MnggUE5HIERBVEE=") 2x);
@@ -251,7 +250,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
@@ -278,7 +277,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MnggUE5HIERBVEE=') 2x);
@@ -315,7 +314,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       <!DOCTYPE HTML>
       <html>
@@ -352,7 +351,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x), -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
@@ -380,7 +379,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x),
@@ -411,7 +410,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x),
@@ -440,7 +439,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
         background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
@@ -476,7 +475,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '2x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       <!DOCTYPE HTML>
       <html>
@@ -530,7 +529,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetDefines({'scale_factors': '1.8x'})
     html.SetAttributes({'flattenhtml': 'true'})
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       <!DOCTYPE HTML>
       <html>
@@ -587,7 +586,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     html.SetAttributes({'flattenhtml': 'true'})
     html.SetFilenameExpansionFunction(replacer('WHICH', '1'));
     html.Parse()
-    self.failUnlessEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
+    self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       <!DOCTYPE HTML>
       <html>

@@ -64,7 +64,6 @@ to, and generates an updated version of the resource_ids file while preserving
 structure elements 1-3 stated above.
 """
 
-from __future__ import print_function
 
 import argparse
 import collections
@@ -82,7 +81,7 @@ def _ReadData(input_file):
     data = sys.stdin.read()
     file_dir = os.getcwd()
   else:
-    with open(input_file, 'rt') as f:
+    with open(input_file) as f:
       data = f.read()
     file_dir = os.path.dirname(input_file)
   return data, file_dir
@@ -178,7 +177,7 @@ Other options:
 """
 
   def __init(self):
-    super(UpdateResourceIds, self).__init__()
+    super().__init__()
 
   def ShortDescription(self):
     return 'Updates a resource_ids file based on usage, preserving structure'

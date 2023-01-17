@@ -210,7 +210,7 @@ def _DebugPrint(text):
     print(text.encode('utf-8'))
 
 
-class HtmlChunks(object):
+class HtmlChunks:
   '''A parser that knows how to break an HTML-like document into a list of
   chunks, where each chunk is either translateable or non-translateable.
   The chunks are unmodified sections of the original document, so concatenating
@@ -599,7 +599,7 @@ class TrHtml(interface.GathererBase):
   Total Recall for HTML documents.'''
 
   def __init__(self, *args, **kwargs):
-    super(TrHtml, self).__init__(*args, **kwargs)
+    super().__init__(*args, **kwargs)
     self.have_parsed_ = False
     self.skeleton_ = []  # list of strings and MessageClique objects
     self.fold_whitespace_ = False
@@ -676,7 +676,7 @@ class TrHtml(interface.GathererBase):
     text = self._LoadInputFile()
 
     # Ignore the BOM character if the document starts with one.
-    if text.startswith(u'\ufeff'):
+    if text.startswith('\ufeff'):
       text = text[1:]
 
     self.text_ = text

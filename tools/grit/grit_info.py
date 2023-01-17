@@ -6,7 +6,6 @@
 '''Tool to determine inputs and outputs of a grit file.
 '''
 
-from __future__ import print_function
 
 import optparse
 import os
@@ -22,7 +21,7 @@ class WrongNumberOfArguments(Exception):
 
 def Outputs(filename, defines, ids_file, target_platform=None):
   grd = grd_reader.Parse(
-      filename, defines=defines, tags_to_ignore=set(['messages']),
+      filename, defines=defines, tags_to_ignore={'messages'},
       first_ids_file=ids_file, target_platform=target_platform)
 
   target = []
@@ -52,7 +51,7 @@ def GritSourceFiles():
 
 def Inputs(filename, defines, ids_file, target_platform=None):
   grd = grd_reader.Parse(
-      filename, debug=False, defines=defines, tags_to_ignore=set(['message']),
+      filename, debug=False, defines=defines, tags_to_ignore={'message'},
       first_ids_file=ids_file, target_platform=target_platform)
   files = set()
   for lang, ctx, fallback in grd.GetConfigurations():

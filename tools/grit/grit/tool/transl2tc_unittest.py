@@ -5,7 +5,6 @@
 
 '''Unit tests for the 'grit transl2tc' tool.'''
 
-from __future__ import print_function
 
 import os
 import sys
@@ -14,7 +13,7 @@ if __name__ == '__main__':
 
 import unittest
 
-from six import StringIO
+from io import StringIO
 
 from grit.tool import transl2tc
 from grit import grd_reader
@@ -39,7 +38,7 @@ class TranslationToTcUnittest(unittest.TestCase):
     ]
     tool.WriteTranslations(buf, translations)
     output = buf.getvalue()
-    self.failUnless(output.strip() == '''
+    self.assertTrue(output.strip() == '''
 1 Hello USERNAME, how are you?
 12 Howdie doodie!
 123 Hello
@@ -107,26 +106,26 @@ how are you?
     values = list(translations.values())
     output = output_buf.getvalue()
 
-    self.failUnless('Ein' in values)
-    self.failUnless('NUMBIRDS Vogeln' in values)
-    self.failUnless('ITEM von COUNT' in values)
-    self.failUnless(values.count('Hallo') == 1)
-    self.failIf('Dass war die alte Version' in values)
-    self.failIf(':' in values)
-    self.failIf('Dokument FILENAME ist entfernt worden' in values)
-    self.failIf('Nicht verwendet' in values)
-    self.failUnless(('Howdie' in values or 'Hallo sagt man' in values) and not
+    self.assertTrue('Ein' in values)
+    self.assertTrue('NUMBIRDS Vogeln' in values)
+    self.assertTrue('ITEM von COUNT' in values)
+    self.assertTrue(values.count('Hallo') == 1)
+    self.assertFalse('Dass war die alte Version' in values)
+    self.assertFalse(':' in values)
+    self.assertFalse('Dokument FILENAME ist entfernt worden' in values)
+    self.assertFalse('Nicht verwendet' in values)
+    self.assertTrue(('Howdie' in values or 'Hallo sagt man' in values) and not
       ('Howdie' in values and 'Hallo sagt man' in values))
 
-    self.failUnless('XX01XX&SkraXX02XX&HaettaXX03XXThetta er "Klonk" sem eg fylaXX04XXgonkurinnXX05XXKlonk && er [good]XX06XX&HjalpXX07XX&Um...XX08XX' in values)
+    self.assertTrue('XX01XX&SkraXX02XX&HaettaXX03XXThetta er "Klonk" sem eg fylaXX04XXgonkurinnXX05XXKlonk && er [good]XX06XX&HjalpXX07XX&Um...XX08XX' in values)
 
-    self.failUnless('I lagi' in values)
+    self.assertTrue('I lagi' in values)
 
-    self.failUnless(output.count('Structure of message IDS_REORDERED_PLACEHOLDERS has changed'))
-    self.failUnless(output.count('Message IDS_CHANGED has changed'))
-    self.failUnless(output.count('Structure of message IDS_LONGER_TRANSLATED has changed'))
-    self.failUnless(output.count('Two different translations for "Howdie"'))
-    self.failUnless(output.count('IDD_DIFFERENT_LENGTH_IN_TRANSL has wrong # of cliques'))
+    self.assertTrue(output.count('Structure of message IDS_REORDERED_PLACEHOLDERS has changed'))
+    self.assertTrue(output.count('Message IDS_CHANGED has changed'))
+    self.assertTrue(output.count('Structure of message IDS_LONGER_TRANSLATED has changed'))
+    self.assertTrue(output.count('Two different translations for "Howdie"'))
+    self.assertTrue(output.count('IDD_DIFFERENT_LENGTH_IN_TRANSL has wrong # of cliques'))
 
 
 if __name__ == '__main__':

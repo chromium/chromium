@@ -5,9 +5,8 @@
 ''' Base class for postprocessing of RC files.
 '''
 
-from __future__ import print_function
 
-class PostProcessor(object):
+class PostProcessor:
   ''' Base class for postprocessing of the RC file data before being
   output through the RC2GRD tool. You should implement this class if
   you want GRIT to do specific things to the RC files after it has

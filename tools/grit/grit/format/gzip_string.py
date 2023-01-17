@@ -4,7 +4,6 @@
 """Provides gzip utilities for strings.
 """
 
-from __future__ import print_function
 
 import gzip
 import io

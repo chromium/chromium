@@ -21,9 +21,9 @@ class TxtUnittest(unittest.TestCase):
     input = io.StringIO('Hello there\nHow are you?')
     gatherer = txt.TxtFile(input)
     gatherer.Parse()
-    self.failUnless(gatherer.GetText() == input.getvalue())
-    self.failUnless(len(gatherer.GetCliques()) == 1)
-    self.failUnless(gatherer.GetCliques()[0].GetMessage().GetRealContent() ==
+    self.assertTrue(gatherer.GetText() == input.getvalue())
+    self.assertTrue(len(gatherer.GetCliques()) == 1)
+    self.assertTrue(gatherer.GetCliques()[0].GetMessage().GetRealContent() ==
                     input.getvalue())
 
 

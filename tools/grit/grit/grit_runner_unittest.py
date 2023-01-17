@@ -30,9 +30,9 @@ class OptionArgsUnittest(unittest.TestCase):
                            util.PathFromRoot('grit/testdata/simple-input.xml'),
                            'test', 'bla', 'voff', 'ga'])
     output = self.buf.getvalue()
-    self.failUnless(output.count("'test'") == 0)  # tool name doesn't occur
-    self.failUnless(output.count('bla'))
-    self.failUnless(output.count('simple-input.xml'))
+    self.assertTrue(output.count("'test'") == 0)  # tool name doesn't occur
+    self.assertTrue(output.count('bla'))
+    self.assertTrue(output.count('simple-input.xml'))
 
 
 if __name__ == '__main__':

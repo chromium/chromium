@@ -5,7 +5,6 @@
 
 '''Unit tests for grit.format.gzip_string'''
 
-from __future__ import print_function
 
 import gzip
 import io
@@ -32,7 +31,7 @@ class FormatGzipStringUnittest(unittest.TestCase):
                b'<finished NOW>')
 
       compressed = gzip_string.GzipStringRsyncable(input)
-      self.failUnless(header_begin == compressed[:2])
+      self.assertTrue(header_begin == compressed[:2])
 
       compressed_file = io.BytesIO()
       compressed_file.write(compressed)
@@ -40,7 +39,7 @@ class FormatGzipStringUnittest(unittest.TestCase):
 
       with gzip.GzipFile(mode='rb', fileobj=compressed_file) as f:
         output = f.read()
-      self.failUnless(output == input)
+      self.assertTrue(output == input)
 
   def testGzipString(self):
     header_begin = b'\x1f\x8b'  # gzip first two bytes
@@ -50,7 +49,7 @@ class FormatGzipStringUnittest(unittest.TestCase):
              b'<finished NOW>')
 
     compressed = gzip_string.GzipString(input)
-    self.failUnless(header_begin == compressed[:2])
+    self.assertTrue(header_begin == compressed[:2])
 
     compressed_file = io.BytesIO()
     compressed_file.write(compressed)
@@ -58,7 +57,7 @@ class FormatGzipStringUnittest(unittest.TestCase):
 
     with gzip.GzipFile(mode='rb', fileobj=compressed_file) as f:
       output = f.read()
-    self.failUnless(output == input)
+    self.assertTrue(output == input)
 
 
 if __name__ == '__main__':

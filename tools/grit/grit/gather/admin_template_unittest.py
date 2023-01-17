@@ -30,12 +30,12 @@ class AdmGathererUnittest(unittest.TestCase):
         'gotcha = "bingolabongola "the wise" fingulafongula" \n')
     gatherer = admin_template.AdmGatherer(pseudofile)
     gatherer.Parse()
-    self.failUnless(len(gatherer.GetCliques()) == 2)
-    self.failUnless(gatherer.GetCliques()[1].GetMessage().GetRealContent() ==
+    self.assertTrue(len(gatherer.GetCliques()) == 2)
+    self.assertTrue(gatherer.GetCliques()[1].GetMessage().GetRealContent() ==
                     'bingolabongola "the wise" fingulafongula')
 
     translation = gatherer.Translate('en')
-    self.failUnless(translation == gatherer.GetText().strip())
+    self.assertTrue(translation == gatherer.GetText().strip())
 
   def testErrorHandling(self):
     pseudofile = io.StringIO(
@@ -57,10 +57,10 @@ class AdmGathererUnittest(unittest.TestCase):
   )
 
   def VerifyCliquesFromAdmFile(self, cliques):
-    self.failUnless(len(cliques) > 20)
+    self.assertTrue(len(cliques) > 20)
     for clique, expected in zip(cliques, self._TRANSLATABLES_FROM_FILE):
       text = clique.GetMessage().GetRealContent()
-      self.failUnless(text == expected)
+      self.assertTrue(text == expected)
 
   def testFromFile(self):
     fname = util.PathFromRoot('grit/testdata/GoogleDesktop.adm')
@@ -104,8 +104,8 @@ class AdmGathererUnittest(unittest.TestCase):
       tool.res = grd
       tool.Process()
 
-      self.failUnless(os.path.isfile(dirname.GetPath('de_GoogleDesktop.adm')))
-      self.failUnless(os.path.isfile(dirname.GetPath('de_README.txt')))
+      self.assertTrue(os.path.isfile(dirname.GetPath('de_GoogleDesktop.adm')))
+      self.assertTrue(os.path.isfile(dirname.GetPath('de_README.txt')))
     finally:
       dirname.CleanUp()
 

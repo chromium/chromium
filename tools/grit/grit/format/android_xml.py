@@ -59,7 +59,6 @@ in the output xml file. For example:
   </plurals>
 """
 
-from __future__ import print_function
 
 import os
 import re
@@ -81,7 +80,7 @@ _NAME_PATTERN = lazy_re.compile(r'IDS_(?P<name>[A-Z0-9_]+)\Z')
 
 # Most strings are output as a <string> element. Note the double quotes
 # around the value to preserve whitespace.
-_STRING_TEMPLATE = u'<string name="%s">"%s"</string>\n'
+_STRING_TEMPLATE = '<string name="%s">"%s"</string>\n'
 
 # Some strings are output as a <plurals> element.
 _PLURALS_TEMPLATE = '<plurals name="%s">\n%s</plurals>\n'

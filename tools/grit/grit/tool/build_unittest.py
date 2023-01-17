@@ -6,7 +6,6 @@
 '''Unit tests for the 'grit build' tool.
 '''
 
-from __future__ import print_function
 
 import codecs
 import os
@@ -37,7 +36,7 @@ class BuildUnittest(unittest.TestCase):
     # another <message>.
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/substitute.grd')
         self.verbose = False
@@ -48,7 +47,7 @@ class BuildUnittest(unittest.TestCase):
   def testGenerateDepFile(self):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/depfile.grd')
         self.verbose = False
@@ -58,14 +57,14 @@ class BuildUnittest(unittest.TestCase):
                               '--depdir', output_dir.GetPath(),
                               '--depfile', expected_dep_file])
 
-    self.failUnless(os.path.isfile(expected_dep_file))
+    self.assertTrue(os.path.isfile(expected_dep_file))
     with open(expected_dep_file) as f:
       line = f.readline()
       (dep_output_file, deps_string) = line.split(': ')
       deps = deps_string.split(' ')
 
-      self.failUnlessEqual("default_100_percent.pak", dep_output_file)
-      self.failUnlessEqual(deps, [
+      self.assertEqual("default_100_percent.pak", dep_output_file)
+      self.assertEqual(deps, [
           util.PathFromRoot('grit/testdata/default_100_percent/a.png'),
           util.PathFromRoot('grit/testdata/grit_part.grdp'),
           util.PathFromRoot('grit/testdata/special_100_percent/a.png'),
@@ -75,7 +74,7 @@ class BuildUnittest(unittest.TestCase):
   def testGenerateDepFileWithResourceIds(self):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/substitute_no_ids.grd')
         self.verbose = False
@@ -87,23 +86,23 @@ class BuildUnittest(unittest.TestCase):
          '--depdir', output_dir.GetPath(),
          '--depfile', expected_dep_file])
 
-    self.failUnless(os.path.isfile(expected_dep_file))
+    self.assertTrue(os.path.isfile(expected_dep_file))
     with open(expected_dep_file) as f:
       line = f.readline()
       (dep_output_file, deps_string) = line.split(': ')
       deps = deps_string.split(' ')
 
-      self.failUnlessEqual("resource.h", dep_output_file)
-      self.failUnlessEqual(2, len(deps))
-      self.failUnlessEqual(deps[0],
+      self.assertEqual("resource.h", dep_output_file)
+      self.assertEqual(2, len(deps))
+      self.assertEqual(deps[0],
           util.PathFromRoot('grit/testdata/substitute.xmb'))
-      self.failUnlessEqual(deps[1],
+      self.assertEqual(deps[1],
           util.PathFromRoot('grit/testdata/resource_ids'))
     output_dir.CleanUp()
 
   def testAssertOutputs(self):
     output_dir = util.TempDir({})
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/substitute.grd')
         self.verbose = False
@@ -111,7 +110,7 @@ class BuildUnittest(unittest.TestCase):
 
     # Incomplete output file list should fail.
     builder_fail = build.RcBuilder()
-    self.failUnlessEqual(2,
+    self.assertEqual(2,
         builder_fail.Run(DummyOpts(), [
             '-o', output_dir.GetPath(),
             '-a', os.path.abspath(
@@ -119,7 +118,7 @@ class BuildUnittest(unittest.TestCase):
 
     # Complete output file list should succeed.
     builder_ok = build.RcBuilder()
-    self.failUnlessEqual(0,
+    self.assertEqual(0,
         builder_ok.Run(DummyOpts(), [
             '-o', output_dir.GetPath(),
             '-a', os.path.abspath(
@@ -131,7 +130,7 @@ class BuildUnittest(unittest.TestCase):
 
   def testAssertTemplateOutputs(self):
     output_dir = util.TempDir({})
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/substitute_tmpl.grd')
         self.verbose = False
@@ -139,7 +138,7 @@ class BuildUnittest(unittest.TestCase):
 
     # Incomplete output file list should fail.
     builder_fail = build.RcBuilder()
-    self.failUnlessEqual(2,
+    self.assertEqual(2,
         builder_fail.Run(DummyOpts(), [
             '-o', output_dir.GetPath(),
             '-E', 'name=foo',
@@ -147,7 +146,7 @@ class BuildUnittest(unittest.TestCase):
 
     # Complete output file list should succeed.
     builder_ok = build.RcBuilder()
-    self.failUnlessEqual(0,
+    self.assertEqual(0,
         builder_ok.Run(DummyOpts(), [
             '-o', output_dir.GetPath(),
             '-E', 'name=foo',
@@ -161,7 +160,7 @@ class BuildUnittest(unittest.TestCase):
                                allowlisted_ids,
                                non_allowlisted_ids,
                                encoding='utf8'):
-    self.failUnless(os.path.exists(filename))
+    self.assertTrue(os.path.exists(filename))
     allowlisted_ids_found = []
     non_allowlisted_ids_found = []
     with codecs.open(filename, encoding=encoding) as f:
@@ -189,7 +188,7 @@ class BuildUnittest(unittest.TestCase):
   def testAllowlistStrings(self):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/allowlist_strings.grd')
         self.verbose = False
@@ -216,7 +215,7 @@ class BuildUnittest(unittest.TestCase):
   def testAllowlistResources(self):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/allowlist_resources.grd')
         self.verbose = False
@@ -231,8 +230,8 @@ class BuildUnittest(unittest.TestCase):
 
     # Ensure the resource map header and .pak files exist, but don't verify
     # their content.
-    self.failUnless(os.path.exists(map_h))
-    self.failUnless(os.path.exists(pak))
+    self.assertTrue(os.path.exists(map_h))
+    self.assertTrue(os.path.exists(pak))
 
     allowlisted_ids = [
         'IDR_STRUCTURE_ALLOWLISTED',
@@ -257,7 +256,7 @@ class BuildUnittest(unittest.TestCase):
   def testWriteOnlyNew(self):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/substitute.grd')
         self.verbose = False
@@ -266,19 +265,19 @@ class BuildUnittest(unittest.TestCase):
     header = output_dir.GetPath('resource.h')
 
     builder.Run(DummyOpts(), ['-o', output_dir.GetPath()])
-    self.failUnless(os.path.exists(header))
+    self.assertTrue(os.path.exists(header))
     first_mtime = os.stat(header).st_mtime
 
     os.utime(header, (UNCHANGED, UNCHANGED))
     builder.Run(DummyOpts(),
                 ['-o', output_dir.GetPath(), '--write-only-new', '0'])
-    self.failUnless(os.path.exists(header))
+    self.assertTrue(os.path.exists(header))
     second_mtime = os.stat(header).st_mtime
 
     os.utime(header, (UNCHANGED, UNCHANGED))
     builder.Run(DummyOpts(),
                 ['-o', output_dir.GetPath(), '--write-only-new', '1'])
-    self.failUnless(os.path.exists(header))
+    self.assertTrue(os.path.exists(header))
     third_mtime = os.stat(header).st_mtime
 
     self.assertTrue(abs(second_mtime - UNCHANGED) > 5)
@@ -288,7 +287,7 @@ class BuildUnittest(unittest.TestCase):
   def testGenerateDepFileWithDependOnStamp(self):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
-    class DummyOpts(object):
+    class DummyOpts:
       def __init__(self):
         self.input = util.PathFromRoot('grit/testdata/substitute.grd')
         self.verbose = False
@@ -303,7 +302,7 @@ class BuildUnittest(unittest.TestCase):
                               '--depdir', output_dir.GetPath(),
                               '--depfile', expected_dep_file,
                               '--depend-on-stamp'])
-    self.failUnless(os.path.isfile(expected_stamp_file))
+    self.assertTrue(os.path.isfile(expected_stamp_file))
     first_mtime = os.stat(expected_stamp_file).st_mtime
 
     # Reset mtime to very old.
@@ -314,21 +313,21 @@ class BuildUnittest(unittest.TestCase):
                               '--depdir', output_dir.GetPath(),
                               '--depfile', expected_dep_file,
                               '--depend-on-stamp'])
-    self.failUnless(os.path.isfile(expected_stamp_file))
+    self.assertTrue(os.path.isfile(expected_stamp_file))
     second_mtime = os.stat(expected_stamp_file).st_mtime
 
     # Some OS have a 2s stat resolution window, so can't do a direct comparison.
     self.assertTrue((second_mtime - OLDTIME) > 5)
     self.assertTrue(abs(second_mtime - first_mtime) < 5)
 
-    self.failUnless(os.path.isfile(expected_dep_file))
+    self.assertTrue(os.path.isfile(expected_dep_file))
     with open(expected_dep_file) as f:
       line = f.readline()
       (dep_output_file, deps_string) = line.split(': ')
       deps = deps_string.split(' ')
 
-      self.failUnlessEqual(expected_stamp_file_name, dep_output_file)
-      self.failUnlessEqual(deps, [
+      self.assertEqual(expected_stamp_file_name, dep_output_file)
+      self.assertEqual(deps, [
           util.PathFromRoot('grit/testdata/substitute.xmb'),
       ])
     output_dir.CleanUp()

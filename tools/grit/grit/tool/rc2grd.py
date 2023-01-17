@@ -4,7 +4,6 @@
 
 '''The 'grit rc2grd' tool.'''
 
-from __future__ import print_function
 
 import os.path
 import getopt
@@ -12,7 +11,7 @@ import re
 import sys
 
 import six
-from six import StringIO
+from io import StringIO
 
 import grit.node.empty
 from grit.node import include
@@ -201,7 +200,7 @@ C preprocessor on the .rc file or manually edit it before using this tool.
                 os.path.splitext(os.path.basename(path))[0] + '.grd')
 
     rctext = util.ReadFile(path, self.input_encoding)
-    grd_text = six.text_type(self.Process(rctext, path))
+    grd_text = str(self.Process(rctext, path))
     with util.WrapOutputStream(open(out_path, 'wb'), 'utf-8') as outfile:
       outfile.write(grd_text)
 
@@ -341,7 +340,7 @@ C preprocessor on the .rc file or manually edit it before using this tool.
         # Messages that contain only placeholders do not need translation.
         is_translateable = False
         for item in msg_obj.GetContent():
-          if isinstance(item, six.string_types):
+          if isinstance(item, str):
             if not _WHITESPACE_ONLY.match(item):
               is_translateable = True
 
@@ -389,7 +388,7 @@ C preprocessor on the .rc file or manually edit it before using this tool.
       # TODO(joi) Allow use of non-TotalRecall flavors of HTML placeholderizing
       msg = tr_html.HtmlToMessage(text, True)
       for item in msg.GetContent():
-        if not isinstance(item, six.string_types):
+        if not isinstance(item, str):
           return msg  # Contained at least one placeholder, so we're done
 
       # HTML placeholderization didn't do anything, so try to find printf or

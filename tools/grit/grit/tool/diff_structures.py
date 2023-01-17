@@ -5,7 +5,6 @@
 '''The 'grit sdiff' tool.
 '''
 
-from __future__ import print_function
 
 import os
 import getopt

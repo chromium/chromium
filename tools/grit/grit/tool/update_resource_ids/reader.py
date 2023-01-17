@@ -9,7 +9,6 @@ tags. This approach avoids the complexties of conditional inclusions, but
 produces a conservative estimate of ID usages.
 """
 
-from __future__ import print_function
 
 import collections
 import os
@@ -18,7 +17,7 @@ from grit import grd_reader
 from grit import util
 from grit.tool.update_resource_ids import common
 
-TAGS_OF_INTEREST = set(['include', 'message', 'structure'])
+TAGS_OF_INTEREST = {'include', 'message', 'structure'}
 
 def _CountResourceUsage(grd, seen_files):
   tag_name_to_count = {tag: set() for tag in TAGS_OF_INTEREST}
@@ -55,7 +54,7 @@ def GenerateResourceUsages(item_list, src_dir, fake, seen_files):
       yield item, tag_name_to_usage
     return
   for item in item_list:
-    supported_tag_names = set(tag.name for tag in item.tags)
+    supported_tag_names = {tag.name for tag in item.tags}
     if item.meta and 'sizes' in item.meta:
       # If META has "sizes" field, use it instead of reading GRD.
       tag_name_to_usage = collections.Counter()

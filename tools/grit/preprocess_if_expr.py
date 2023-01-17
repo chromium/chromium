@@ -19,7 +19,7 @@ _CWD = os.getcwd()
 
 class PreprocessIfExprNode(grit.node.base.Node):
   def __init__(self):
-    super(PreprocessIfExprNode, self).__init__()
+    super().__init__()
 
   def PreprocessIfExpr(self, content, removal_comments_extension):
     return grit.format.html_inline.CheckConditionalElements(
@@ -94,7 +94,7 @@ def main(argv):
   for input_file in args.in_files:
     in_path = os.path.join(in_folder, input_file)
     content = ""
-    with io.open(in_path, encoding='utf-8', mode='r') as f:
+    with open(in_path, encoding='utf-8') as f:
       content = f.read()
 
     removal_comments_extension = None  # None means no removal comments
@@ -135,14 +135,14 @@ def main(argv):
       if os.path.exists(to_check):
         os.remove(to_check)
 
-    with io.open(out_path, mode='wb') as f:
+    with open(out_path, mode='wb') as f:
       f.write(preprocessed.encode('utf-8'))
 
   if args.out_manifest:
     manifest_data = {}
     manifest_data['base_dir'] = '%s' % args.out_folder
     manifest_data['files'] = args.in_files
-    manifest_file = io.open(
+    manifest_file = open(
         os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w',
         encoding='utf-8', newline='\n')
     json.dump(manifest_data, manifest_file)

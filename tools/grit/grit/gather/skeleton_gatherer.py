@@ -18,7 +18,7 @@ class SkeletonGatherer(interface.GathererBase):
   '''
 
   def __init__(self, *args, **kwargs):
-    super(SkeletonGatherer, self).__init__(*args, **kwargs)
+    super().__init__(*args, **kwargs)
     # List of parts of the document. Translateable parts are
     # clique.MessageClique objects, nontranslateable parts are plain strings.
     # Translated messages are inserted back into the skeleton using the quoting

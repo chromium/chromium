@@ -5,7 +5,6 @@
 """Translates policy_templates.json files.
 """
 
-from __future__ import print_function
 
 from grit.node import structure
 

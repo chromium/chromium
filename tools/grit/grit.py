@@ -6,7 +6,6 @@
 '''Bootstrapping for GRIT.
 '''
 
-from __future__ import print_function
 
 import os
 import sys

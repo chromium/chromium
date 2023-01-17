@@ -5,7 +5,6 @@
 '''Item formatters for RC headers.
 '''
 
-from __future__ import print_function
 
 
 def Format(root, lang='en', output_dir='.'):

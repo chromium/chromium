@@ -31,7 +31,7 @@ _PREAMBLE = '''\
 '''
 
 
-class DummyOutput(object):
+class DummyOutput:
   def __init__(self, type, language, file = 'hello.gif'):
     self.type = type
     self.language = language
@@ -69,7 +69,7 @@ Sting sting
     buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
-    self.assertEqual(_PREAMBLE + u'''\
+    self.assertEqual(_PREAMBLE + '''\
 STRINGTABLE
 BEGIN
   IDS_BTN_GO      "Go!"
@@ -91,7 +91,7 @@ END''', output)
     buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
-    expected = _PREAMBLE + u'''\
+    expected = _PREAMBLE + '''\
 IDC_KLONKMENU MENU
 BEGIN
     POPUP "&File"
@@ -169,8 +169,8 @@ END'''.strip()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = (_PREAMBLE +
-                u'IDR_HTML           HTML               "%s"\n'
-                u'IDR_HTML2          HTML               "%s"'
+                'IDR_HTML           HTML               "%s"\n'
+                'IDR_HTML2          HTML               "%s"'
                 % (util.normpath('/temp/bingo.html').replace('\\', '\\\\'),
                    util.normpath('/temp/bingo2.html').replace('\\', '\\\\')))
     # hackety hack to work on win32&lin
@@ -188,8 +188,8 @@ END'''.strip()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = (_PREAMBLE +
-                u'TEXT_ONE           TXT                "%s"\n'
-                u'TEXT_TWO           TXT                "%s"'
+                'TEXT_ONE           TXT                "%s"\n'
+                'TEXT_TWO           TXT                "%s"'
                 % (util.normpath('/temp/bingo.txt').replace('\\', '\\\\'),
                    'bingo2.txt'))
     # hackety hack to work on win32&lin
@@ -210,7 +210,7 @@ END'''.strip()
     output = util.StripBlankLinesAndComments(buf.getvalue())
 
     expected = (_PREAMBLE +
-        u'HTML_FILE1         BINDATA            "HTML_FILE1_include_test.html"')
+        'HTML_FILE1         BINDATA            "HTML_FILE1_include_test.html"')
     # hackety hack to work on win32&lin
     output = re.sub(r'"[c-zC-Z]:', '"', output)
     self.assertEqual(expected, output)
@@ -218,19 +218,19 @@ END'''.strip()
     file_contents = util.ReadFile(output_file, 'utf-8')
 
     # Check for the content added by the <include> tag.
-    self.failUnless(file_contents.find('Hello Include!') != -1)
+    self.assertTrue(file_contents.find('Hello Include!') != -1)
     # Check for the content that was removed by if tag.
-    self.failUnless(file_contents.find('should be removed') == -1)
+    self.assertTrue(file_contents.find('should be removed') == -1)
     # Check for the content that was kept in place by if.
-    self.failUnless(file_contents.find('should be kept') != -1)
-    self.failUnless(file_contents.find('in the middle...') != -1)
-    self.failUnless(file_contents.find('at the end...') != -1)
+    self.assertTrue(file_contents.find('should be kept') != -1)
+    self.assertTrue(file_contents.find('in the middle...') != -1)
+    self.assertTrue(file_contents.find('at the end...') != -1)
     # Check for nested content that was kept
-    self.failUnless(file_contents.find('nested true should be kept') != -1)
-    self.failUnless(file_contents.find('silbing true should be kept') != -1)
+    self.assertTrue(file_contents.find('nested true should be kept') != -1)
+    self.assertTrue(file_contents.find('silbing true should be kept') != -1)
     # Check for removed "<if>" and "</if>" tags.
-    self.failUnless(file_contents.find('<if expr=') == -1)
-    self.failUnless(file_contents.find('</if>') == -1)
+    self.assertTrue(file_contents.find('<if expr=') == -1)
+    self.assertTrue(file_contents.find('</if>') == -1)
     os.remove(output_file)
 
   def testStructureNodeOutputfile(self):
@@ -247,14 +247,14 @@ END'''.strip()
 
     output_dir = tempfile.gettempdir()
     en_file = struct.FileForLanguage('en', output_dir)
-    self.failUnless(en_file == input_file)
+    self.assertTrue(en_file == input_file)
     fr_file = struct.FileForLanguage('fr', output_dir)
-    self.failUnless(fr_file == os.path.join(output_dir, 'fr_simple.html'))
+    self.assertTrue(fr_file == os.path.join(output_dir, 'fr_simple.html'))
 
     contents = util.ReadFile(fr_file, 'utf-8')
 
-    self.failUnless(contents.find('<p>') != -1)  # should contain the markup
-    self.failUnless(contents.find('Hello!') == -1)  # should be translated
+    self.assertTrue(contents.find('<p>') != -1)  # should contain the markup
+    self.assertTrue(contents.find('Hello!') == -1)  # should be translated
     os.remove(fr_file)
 
   def testChromeHtmlNodeOutputfile(self):
@@ -276,7 +276,7 @@ END'''.strip()
                                 buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = (_PREAMBLE +
-        u'HTML_FILE1         BINDATA            "HTML_FILE1_chrome_html.html"')
+        'HTML_FILE1         BINDATA            "HTML_FILE1_chrome_html.html"')
     # hackety hack to work on win32&lin
     output = re.sub(r'"[c-zC-Z]:', '"', output)
     self.assertEqual(expected, output)
@@ -284,9 +284,9 @@ END'''.strip()
     file_contents = util.ReadFile(output_file, 'utf-8')
 
     # Check for the content added by the <include> tag.
-    self.failUnless(file_contents.find('Hello Include!') != -1)
+    self.assertTrue(file_contents.find('Hello Include!') != -1)
     # Check for inserted -webkit-image-set.
-    self.failUnless(file_contents.find('content: -webkit-image-set') != -1)
+    self.assertTrue(file_contents.find('content: -webkit-image-set') != -1)
     os.remove(output_file)
 
   def testSubstitutionHtml(self):
@@ -309,12 +309,12 @@ END'''.strip()
     output_dir = tempfile.gettempdir()
     struct, = root.GetChildrenOfType(structure.StructureNode)
     ar_file = struct.FileForLanguage('ar', output_dir)
-    self.failUnless(ar_file == os.path.join(output_dir,
+    self.assertTrue(ar_file == os.path.join(output_dir,
                                             'ar_toolbar_about.html'))
 
     contents = util.ReadFile(ar_file, 'utf-8')
 
-    self.failUnless(contents.find('dir="RTL"') != -1)
+    self.assertTrue(contents.find('dir="RTL"') != -1)
     os.remove(ar_file)
 
   def testFallbackToEnglish(self):

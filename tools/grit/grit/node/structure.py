@@ -5,7 +5,6 @@
 '''The <structure> element.
 '''
 
-from __future__ import print_function
 
 import os
 import platform
@@ -58,7 +57,7 @@ class StructureNode(base.Node):
   variable_pattern = re.compile(r'([^,=\s]+)=((?:,,|[^,])*)')
 
   def __init__(self):
-    super(StructureNode, self).__init__()
+    super().__init__()
 
     # Keep track of the last filename we flattened to, so we can
     # avoid doing it more than once.
@@ -74,10 +73,10 @@ class StructureNode(base.Node):
   def _ParseVariables(self, variables):
     '''Parse a variable string into a dictionary.'''
     matches = StructureNode.variable_pattern.findall(variables)
-    return dict((name, value.replace(',,', ',')) for name, value in matches)
+    return {name: value.replace(',,', ',') for name, value in matches}
 
   def EndParsing(self):
-    super(StructureNode, self).EndParsing()
+    super().EndParsing()
 
     # Now that we have attributes and children, instantiate the gatherers.
     gathertype = _GATHERERS[self.attrs['type']]

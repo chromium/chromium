@@ -21,9 +21,9 @@ from grit.node import message
 
 def MakePlaceholder(phname='BINGO'):
   ph = message.PhNode()
-  ph.StartParsing(u'ph', None)
-  ph.HandleAttribute(u'name', phname)
-  ph.AppendContent(u'bongo')
+  ph.StartParsing('ph', None)
+  ph.HandleAttribute('name', phname)
+  ph.AppendContent('bongo')
   ph.EndParsing()
   return ph
 
@@ -32,49 +32,49 @@ class NodeUnittest(unittest.TestCase):
   def testWhitespaceHandling(self):
     # We test using the Message node type.
     node = message.MessageNode()
-    node.StartParsing(u'hello', None)
-    node.HandleAttribute(u'name', u'bla')
-    node.AppendContent(u" '''  two spaces  ")
+    node.StartParsing('hello', None)
+    node.HandleAttribute('name', 'bla')
+    node.AppendContent(" '''  two spaces  ")
     node.EndParsing()
-    self.failUnless(node.GetCdata() == u'  two spaces')
+    self.assertTrue(node.GetCdata() == '  two spaces')
 
     node = message.MessageNode()
-    node.StartParsing(u'message', None)
-    node.HandleAttribute(u'name', u'bla')
-    node.AppendContent(u"  two spaces  '''  ")
+    node.StartParsing('message', None)
+    node.HandleAttribute('name', 'bla')
+    node.AppendContent("  two spaces  '''  ")
     node.EndParsing()
-    self.failUnless(node.GetCdata() == u'two spaces  ')
+    self.assertTrue(node.GetCdata() == 'two spaces  ')
 
   def testWhitespaceHandlingWithChildren(self):
     # We test using the Message node type.
     node = message.MessageNode()
-    node.StartParsing(u'message', None)
-    node.HandleAttribute(u'name', u'bla')
-    node.AppendContent(u" '''  two spaces  ")
+    node.StartParsing('message', None)
+    node.HandleAttribute('name', 'bla')
+    node.AppendContent(" '''  two spaces  ")
     node.AddChild(MakePlaceholder())
-    node.AppendContent(u' space before and after ')
+    node.AppendContent(' space before and after ')
     node.AddChild(MakePlaceholder('BONGO'))
-    node.AppendContent(u" space before two after  '''")
+    node.AppendContent(" space before two after  '''")
     node.EndParsing()
-    self.failUnless(node.mixed_content[0] == u'  two spaces  ')
-    self.failUnless(node.mixed_content[2] == u' space before and after ')
-    self.failUnless(node.mixed_content[-1] == u' space before two after  ')
+    self.assertTrue(node.mixed_content[0] == '  two spaces  ')
+    self.assertTrue(node.mixed_content[2] == ' space before and after ')
+    self.assertTrue(node.mixed_content[-1] == ' space before two after  ')
 
   def testXmlFormatMixedContent(self):
     # Again test using the Message node type, because it is the only mixed
     # content node.
     node = message.MessageNode()
-    node.StartParsing(u'message', None)
-    node.HandleAttribute(u'name', u'name')
-    node.AppendContent(u'Hello <young> ')
+    node.StartParsing('message', None)
+    node.HandleAttribute('name', 'name')
+    node.AppendContent('Hello <young> ')
 
     ph = message.PhNode()
-    ph.StartParsing(u'ph', None)
-    ph.HandleAttribute(u'name', u'USERNAME')
-    ph.AppendContent(u'$1')
+    ph.StartParsing('ph', None)
+    ph.HandleAttribute('name', 'USERNAME')
+    ph.AppendContent('$1')
     ex = message.ExNode()
-    ex.StartParsing(u'ex', None)
-    ex.AppendContent(u'Joi')
+    ex.StartParsing('ex', None)
+    ex.AppendContent('Joi')
     ex.EndParsing()
     ph.AddChild(ex)
     ph.EndParsing()
@@ -83,51 +83,51 @@ class NodeUnittest(unittest.TestCase):
     node.EndParsing()
 
     non_indented_xml = node.FormatXml()
-    self.failUnless(non_indented_xml == u'<message name="name">\n  Hello '
-                    u'&lt;young&gt; <ph name="USERNAME">$1<ex>Joi</ex></ph>'
-                    u'\n</message>')
+    self.assertTrue(non_indented_xml == '<message name="name">\n  Hello '
+                    '&lt;young&gt; <ph name="USERNAME">$1<ex>Joi</ex></ph>'
+                    '\n</message>')
 
-    indented_xml = node.FormatXml(u'  ')
-    self.failUnless(indented_xml == u'  <message name="name">\n    Hello '
-                    u'&lt;young&gt; <ph name="USERNAME">$1<ex>Joi</ex></ph>'
-                    u'\n  </message>')
+    indented_xml = node.FormatXml('  ')
+    self.assertTrue(indented_xml == '  <message name="name">\n    Hello '
+                    '&lt;young&gt; <ph name="USERNAME">$1<ex>Joi</ex></ph>'
+                    '\n  </message>')
 
   def testXmlFormatMixedContentWithLeadingWhitespace(self):
     # Again test using the Message node type, because it is the only mixed
     # content node.
     node = message.MessageNode()
-    node.StartParsing(u'message', None)
-    node.HandleAttribute(u'name', u'name')
-    node.AppendContent(u"'''   Hello <young> ")
+    node.StartParsing('message', None)
+    node.HandleAttribute('name', 'name')
+    node.AppendContent("'''   Hello <young> ")
 
     ph = message.PhNode()
-    ph.StartParsing(u'ph', None)
-    ph.HandleAttribute(u'name', u'USERNAME')
-    ph.AppendContent(u'$1')
+    ph.StartParsing('ph', None)
+    ph.HandleAttribute('name', 'USERNAME')
+    ph.AppendContent('$1')
     ex = message.ExNode()
-    ex.StartParsing(u'ex', None)
-    ex.AppendContent(u'Joi')
+    ex.StartParsing('ex', None)
+    ex.AppendContent('Joi')
     ex.EndParsing()
     ph.AddChild(ex)
     ph.EndParsing()
 
     node.AddChild(ph)
-    node.AppendContent(u" yessiree '''")
+    node.AppendContent(" yessiree '''")
     node.EndParsing()
 
     non_indented_xml = node.FormatXml()
-    self.failUnless(non_indented_xml ==
-                    u"<message name=\"name\">\n  '''   Hello"
-                    u' &lt;young&gt; <ph name="USERNAME">$1<ex>Joi</ex></ph>'
-                    u" yessiree '''\n</message>")
+    self.assertTrue(non_indented_xml ==
+                    "<message name=\"name\">\n  '''   Hello"
+                    ' &lt;young&gt; <ph name="USERNAME">$1<ex>Joi</ex></ph>'
+                    " yessiree '''\n</message>")
 
-    indented_xml = node.FormatXml(u'  ')
-    self.failUnless(indented_xml ==
-                    u"  <message name=\"name\">\n    '''   Hello"
-                    u' &lt;young&gt; <ph name="USERNAME">$1<ex>Joi</ex></ph>'
-                    u" yessiree '''\n  </message>")
+    indented_xml = node.FormatXml('  ')
+    self.assertTrue(indented_xml ==
+                    "  <message name=\"name\">\n    '''   Hello"
+                    ' &lt;young&gt; <ph name="USERNAME">$1<ex>Joi</ex></ph>'
+                    " yessiree '''\n  </message>")
 
-    self.failUnless(node.GetNodeById('name'))
+    self.assertTrue(node.GetNodeById('name'))
 
   def testXmlFormatContentWithEntities(self):
     '''Tests a bug where &nbsp; would not be escaped correctly.'''
@@ -140,31 +140,31 @@ class NodeUnittest(unittest.TestCase):
         tclib.Placeholder('END_BOLD', '</b>', 'bla')]),
                                              'BINGOBONGO')
     xml = msg_node.FormatXml()
-    self.failUnless(xml.find('&nbsp;') == -1, 'should have no entities')
+    self.assertTrue(xml.find('&nbsp;') == -1, 'should have no entities')
 
   def testIter(self):
     # First build a little tree of message and ph nodes.
     node = message.MessageNode()
-    node.StartParsing(u'message', None)
-    node.HandleAttribute(u'name', u'bla')
-    node.AppendContent(u" '''  two spaces  ")
-    node.AppendContent(u' space before and after ')
+    node.StartParsing('message', None)
+    node.HandleAttribute('name', 'bla')
+    node.AppendContent(" '''  two spaces  ")
+    node.AppendContent(' space before and after ')
     ph = message.PhNode()
-    ph.StartParsing(u'ph', None)
+    ph.StartParsing('ph', None)
     ph.AddChild(message.ExNode())
-    ph.HandleAttribute(u'name', u'BINGO')
-    ph.AppendContent(u'bongo')
+    ph.HandleAttribute('name', 'BINGO')
+    ph.AppendContent('bongo')
     node.AddChild(ph)
     node.AddChild(message.PhNode())
-    node.AppendContent(u" space before two after  '''")
+    node.AppendContent(" space before two after  '''")
 
     order = [
         message.MessageNode, message.PhNode, message.ExNode, message.PhNode
     ]
     for n in node:
-      self.failUnless(type(n) == order[0])
+      self.assertTrue(type(n) == order[0])
       order = order[1:]
-    self.failUnless(len(order) == 0)
+    self.assertTrue(len(order) == 0)
 
   def testGetChildrenOfType(self):
     xml = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -189,14 +189,14 @@ class NodeUnittest(unittest.TestCase):
                            util.PathFromRoot('grit/test/data'))
     from grit.node import node_io
     output_nodes = grd.GetChildrenOfType(node_io.OutputNode)
-    self.failUnlessEqual(len(output_nodes), 3)
-    self.failUnlessEqual(output_nodes[2].attrs['filename'],
+    self.assertEqual(len(output_nodes), 3)
+    self.assertEqual(output_nodes[2].attrs['filename'],
                          'de/generated_resources.rc')
 
   def testEvaluateExpression(self):
     def AssertExpr(expected_value, expr, defs, target_platform,
                    extra_variables):
-      self.failUnlessEqual(expected_value, base.Node.EvaluateExpression(
+      self.assertEqual(expected_value, base.Node.EvaluateExpression(
           expr, defs, target_platform, extra_variables))
 
     AssertExpr(True, "True", {}, 'linux', {})

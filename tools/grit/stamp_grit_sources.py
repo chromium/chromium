@@ -12,7 +12,6 @@
 # Usage:
 #    stamp_grit_sources.py <directory> <stamp-file> <.d-file>
 
-from __future__ import print_function
 
 import os
 import sys

@@ -8,7 +8,6 @@ custom parser that annotates source byte ranges of "leaf values" (strings and
 integers).
 """
 
-from __future__ import print_function
 
 _isWhitespace = lambda ch: ch in ' \t\n'
 _isNotNewline = lambda ch: ch != '\n'

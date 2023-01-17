@@ -21,7 +21,7 @@ from grit.tool import build
 class CFormatUnittest(unittest.TestCase):
 
   def testMessages(self):
-    root = util.ParseGrdForUnittest(u"""
+    root = util.ParseGrdForUnittest("""
     <messages>
       <message name="IDS_QUESTIONS">Do you want to play questions?</message>
       <message name="IDS_QUOTES">
@@ -41,7 +41,7 @@ Statement.  Two all.  Game point.
     buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('c_format', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
-    self.assertEqual(u"""\
+    self.assertEqual("""\
 #include "resource.h"
 const char* GetString(int id) {
   switch (id) {
@@ -59,7 +59,7 @@ const char* GetString(int id) {
 }""", output)
 
 
-class DummyOutput(object):
+class DummyOutput:
 
   def __init__(self, type, language):
     self.type = type

@@ -5,7 +5,6 @@
 '''Tool to create a new, empty .grd file with all the basic sections.
 '''
 
-from __future__ import print_function
 
 import getopt
 import sys

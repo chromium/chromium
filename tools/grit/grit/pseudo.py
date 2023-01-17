@@ -21,7 +21,6 @@ character Qof.  It looks sort of like a latin character "p" but it is outside
 the latin-1 character set which will stress character encoding bugs.
 '''
 
-from __future__ import print_function
 
 from grit import lazy_re
 from grit import tclib
@@ -36,22 +35,22 @@ PSEUDO_LANG = 'x-P-pseudo'
 # a better solution, i.e. one that introduces a non-latin1 character into the
 # pseudotranslation.
 #_QOF = u'\u05e7'
-_QOF = u'P'
+_QOF = 'P'
 
 # How we map each vowel.
 _VOWELS = {
-  u'a' : u'\u00e5',  # a with ring
-  u'e' : u'\u00e9',  # e acute
-  u'i' : u'\u00ef',  # i diaresis
-  u'o' : u'\u00f4',  # o circumflex
-  u'u' : u'\u00fc',  # u diaresis
-  u'y' : u'\u00fd',  # y acute
-  u'A' : u'\u00c5',  # A with ring
-  u'E' : u'\u00c9',  # E acute
-  u'I' : u'\u00cf',  # I diaresis
-  u'O' : u'\u00d4',  # O circumflex
-  u'U' : u'\u00dc',  # U diaresis
-  u'Y' : u'\u00dd',  # Y acute
+  'a' : '\u00e5',  # a with ring
+  'e' : '\u00e9',  # e acute
+  'i' : '\u00ef',  # i diaresis
+  'o' : '\u00f4',  # o circumflex
+  'u' : '\u00fc',  # u diaresis
+  'y' : '\u00fd',  # y acute
+  'A' : '\u00c5',  # A with ring
+  'E' : '\u00c9',  # E acute
+  'I' : '\u00cf',  # I diaresis
+  'O' : '\u00d4',  # O circumflex
+  'U' : '\u00dc',  # U diaresis
+  'Y' : '\u00dd',  # Y acute
 }
 _VOWELS_KEYS = set(_VOWELS.keys())
 
@@ -87,7 +86,7 @@ def PseudoString(str):
   if str in _existing_translations:
     return _existing_translations[str]
 
-  outstr = u''
+  outstr = ''
   ix = 0
   while ix < len(str):
     if str[ix] not in _VOWELS_KEYS:
@@ -96,7 +95,7 @@ def PseudoString(str):
     else:
       # We want to treat consecutive vowels as one composite vowel.  This is not
       # always accurate e.g. in composite words but good enough.
-      consecutive_vowels = u''
+      consecutive_vowels = ''
       while ix < len(str) and str[ix] in _VOWELS_KEYS:
         consecutive_vowels += str[ix]
         ix += 1

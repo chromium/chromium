@@ -272,7 +272,7 @@ class IfNode(SplicingNode):
 
   def _IsValidChild(self, child):
     return (isinstance(child, (ThenNode, ElseNode)) or
-            super(IfNode, self)._IsValidChild(child))
+            super()._IsValidChild(child))
 
   def EndParsing(self):
     children = self.children
@@ -290,7 +290,7 @@ class IfNode(SplicingNode):
       return self.children[0 if cond else 1].ActiveChildren()
     else:
       # Equivalent to having all children inside <then> with an empty <else>
-      return super(IfNode, self).ActiveChildren() if cond else []
+      return super().ActiveChildren() if cond else []
 
 
 class ThenNode(SplicingNode):
@@ -308,14 +308,14 @@ class PartNode(SplicingNode):
   """
 
   def __init__(self):
-    super(PartNode, self).__init__()
+    super().__init__()
     self.started_inclusion = False
 
   def MandatoryAttributes(self):
     return ['file']
 
   def _IsValidChild(self, child):
-    return self.started_inclusion and super(PartNode, self)._IsValidChild(child)
+    return self.started_inclusion and super()._IsValidChild(child)
 
 
 class ReleaseNode(base.Node):
@@ -343,7 +343,7 @@ class GritNode(base.Node):
   """The <grit> root element."""
 
   def __init__(self):
-    super(GritNode, self).__init__()
+    super().__init__()
     self.output_language = ''
     self.defines = {}
     self.substituter = None
@@ -386,7 +386,7 @@ class GritNode(base.Node):
     }
 
   def EndParsing(self):
-    super(GritNode, self).EndParsing()
+    super().EndParsing()
     if (int(self.attrs['latest_public_release'])
         > int(self.attrs['current_release'])):
       raise exception.Parsing('latest_public_release cannot have a greater '
@@ -556,8 +556,8 @@ class GritNode(base.Node):
     """Returns the distinct (language, context, fallback_to_default_layout)
     triples from the output nodes.
     """
-    return set((n.GetLanguage(), n.GetContext(), n.GetFallbackToDefaultLayout())
-               for n in self.GetOutputFiles())
+    return {(n.GetLanguage(), n.GetContext(), n.GetFallbackToDefaultLayout())
+               for n in self.GetOutputFiles()}
 
   def GetSubstitutionMessages(self):
     """Returns the list of <message sub_variable="true"> nodes."""
@@ -727,7 +727,7 @@ class IdentifierNode(base.Node):
 
   def EndParsing(self):
     """Handles system identifiers."""
-    super(IdentifierNode, self).EndParsing()
+    super().EndParsing()
     if self.attrs['systemid'] == 'true':
       util.SetupSystemIdentifiers((self.attrs['name'],))
 

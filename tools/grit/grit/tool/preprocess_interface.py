@@ -5,9 +5,8 @@
 ''' Base class for preprocessing of RC files.
 '''
 
-from __future__ import print_function
 
-class PreProcessor(object):
+class PreProcessor:
   ''' Base class for preprocessing of the RC file data before being
   output through the RC2GRD tool. You should implement this class if
   you have specific constructs in your RC files that GRIT cannot handle.'''

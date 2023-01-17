@@ -5,7 +5,6 @@
 '''Gatherer for administrative template files.
 '''
 
-from __future__ import print_function
 
 import re
 

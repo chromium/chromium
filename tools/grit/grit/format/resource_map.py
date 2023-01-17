@@ -6,7 +6,6 @@
 resource_map_source files.  A resource map is a mapping between resource names
 (string) and the internal resource ID.'''
 
-from __future__ import print_function
 
 import os
 from functools import partial

@@ -8,12 +8,11 @@ them on demand the first time they are used, thus speeding up startup
 time in some cases.
 '''
 
-from __future__ import print_function
 
 import re
 
 
-class LazyRegexObject(object):
+class LazyRegexObject:
   '''This object creates a RegexObject with the arguments passed in
   its constructor, the first time any attribute except the several on
   the class itself is accessed.  This accomplishes lazy compilation of

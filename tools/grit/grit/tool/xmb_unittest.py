@@ -5,7 +5,6 @@
 
 '''Unit tests for 'grit xmb' tool.'''
 
-from __future__ import print_function
 
 import io
 import os
@@ -16,7 +15,7 @@ if __name__ == '__main__':
 import unittest
 import xml.sax
 
-from six import StringIO
+from io import StringIO
 
 from grit import grd_reader
 from grit import util
@@ -26,7 +25,7 @@ from grit.tool import xmb
 class XmbUnittest(unittest.TestCase):
   def setUp(self):
     self.res_tree = grd_reader.Parse(
-        io.BytesIO(u'''<?xml version="1.0" encoding="UTF-8"?>
+        io.BytesIO('''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <release seq="3">
           <includes>
@@ -50,23 +49,23 @@ class XmbUnittest(unittest.TestCase):
             <structure type="dialog" name="IDD_SPACYBOX" encoding="utf-16" file="grit/testdata/klonk.rc" />
           </structures>
         </release>
-      </grit>'''.encode('utf-8')), '.')
+      </grit>'''.encode()), '.')
     self.xmb_file = io.BytesIO()
 
   def testNormalOutput(self):
     xmb.OutputXmb().Process(self.res_tree, self.xmb_file)
     output = self.xmb_file.getvalue().decode('utf-8')
-    self.failUnless(output.count('Joi'))
-    self.failUnless(output.count('Yibbee'))
-    self.failUnless(output.count(u'Ol\xe1, \u4eca\u65e5\u306f! \U0001F60A'))
+    self.assertTrue(output.count('Joi'))
+    self.assertTrue(output.count('Yibbee'))
+    self.assertTrue(output.count('Ol\xe1, \u4eca\u65e5\u306f! \U0001F60A'))
 
   def testLimitList(self):
     limit_file = StringIO(
       'IDS_BONGOBINGO\nIDS_DOES_NOT_EXIST\nIDS_ALSO_DOES_NOT_EXIST')
     xmb.OutputXmb().Process(self.res_tree, self.xmb_file, limit_file, False)
     output = self.xmb_file.getvalue().decode('utf-8')
-    self.failUnless(output.count('Yibbee'))
-    self.failUnless(not output.count('Joi'))
+    self.assertTrue(output.count('Yibbee'))
+    self.assertTrue(not output.count('Joi'))
 
   def testLimitGrd(self):
     limit_file = StringIO('''<?xml version="1.0" encoding="UTF-8"?>
@@ -80,13 +79,13 @@ class XmbUnittest(unittest.TestCase):
         </release>
       </grit>''')
     tool = xmb.OutputXmb()
-    class DummyOpts(object):
+    class DummyOpts:
       extra_verbose = False
     tool.o = DummyOpts()
     tool.Process(self.res_tree, self.xmb_file, limit_file, True, dir='.')
     output = self.xmb_file.getvalue().decode('utf-8')
-    self.failUnless(output.count('Joi'))
-    self.failUnless(not output.count('Yibbee'))
+    self.assertTrue(output.count('Joi'))
+    self.assertTrue(not output.count('Yibbee'))
 
   def testSubstitution(self):
     self.res_tree.SetOutputLanguage('en')
@@ -94,7 +93,7 @@ class XmbUnittest(unittest.TestCase):
     self.res_tree.RunGatherers()
     xmb.OutputXmb().Process(self.res_tree, self.xmb_file)
     output = self.xmb_file.getvalue().decode('utf-8')
-    self.failUnless(output.count(
+    self.assertTrue(output.count(
         '<ph name="GOOD_1"><ex>excellent</ex>[GOOD]</ph>'))
 
   def testLeadingTrailingWhitespace(self):
@@ -106,7 +105,7 @@ class XmbUnittest(unittest.TestCase):
     self.res_tree.RunGatherers()
     xmb.OutputXmb().Process(self.res_tree, self.xmb_file)
     output = self.xmb_file.getvalue().decode('utf-8')
-    self.failUnless(output.count('OK ? </msg>'))
+    self.assertTrue(output.count('OK ? </msg>'))
 
   def testDisallowedChars(self):
     # Validate that the invalid unicode is not accepted. Since it's not valid,

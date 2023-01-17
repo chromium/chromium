@@ -5,7 +5,6 @@
 
 '''Unit tests for the 'grit newgrd' tool.'''
 
-from __future__ import print_function
 
 import os
 import sys
@@ -18,7 +17,7 @@ from grit import util
 from grit.tool import newgrd
 
 
-class DummyOpts(object):
+class DummyOpts:
   """Options needed by NewGrd."""
 
 

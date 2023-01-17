@@ -5,7 +5,6 @@
 '''Support for gathering resources from RC files.
 '''
 
-from __future__ import print_function
 
 import re
 
@@ -36,7 +35,7 @@ _ESCAPE_CHARS = {
 }
 
 # How to unescape certain strings
-_UNESCAPE_CHARS = dict([[value, key] for key, value in _ESCAPE_CHARS.items()])
+_UNESCAPE_CHARS = {value: key for key, value in _ESCAPE_CHARS.items()}
 
 
 
@@ -62,7 +61,7 @@ class Section(regexp.RegexpGatherer):
     '''Overrides _RegExpParse to add shortcut group handling.  Otherwise
     the same.
     '''
-    super(Section, self)._RegExpParse(rexp, text_to_parse)
+    super()._RegExpParse(rexp, text_to_parse)
 
     if not self.is_skeleton and len(self.GetTextualIds()) > 0:
       group_name = self.GetTextualIds()[0]

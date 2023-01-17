@@ -110,7 +110,7 @@ class GritNodeUnittest(unittest.TestCase):
               path in grd.GetInputFiles()]
     # Convert path separator for Windows paths.
     actual = [path.replace('\\', '/') for path in actual]
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   # Verifies that GetInputFiles() returns the correct list of files
   # when files include other files.
@@ -136,7 +136,7 @@ class GritNodeUnittest(unittest.TestCase):
               path in grd.GetInputFiles()]
     # Convert path separator for Windows paths.
     actual = [path.replace('\\', '/') for path in actual]
-    self.assertEquals(expected, actual)
+    self.assertEqual(expected, actual)
 
   def testNonDefaultEntry(self):
     grd = util.ParseGrdForUnittest('''
@@ -151,7 +151,7 @@ class GritNodeUnittest(unittest.TestCase):
     self.assertIn('#define IDS_A 2378\n#define IDS_B 2379', output)
 
   def testMaxIds(self):
-    xml = u'''<?xml version="1.0" encoding="UTF-8"?>
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
 <grit latest_public_release="2" source_lang_id="en-US" current_release="3"
       base_dir="." first_ids_file="%s">
   <release seq="3">
@@ -280,33 +280,33 @@ class IfNodeUnittest(unittest.TestCase):
     grd.SetOutputLanguage('fr')
     grd.SetDefines({'hello': '1'})
     active = set(grd.ActiveDescendants())
-    self.failUnless(bingo_message not in active)
-    self.failUnless(hello_message in active)
-    self.failUnless(french_message in active)
+    self.assertTrue(bingo_message not in active)
+    self.assertTrue(hello_message in active)
+    self.assertTrue(french_message in active)
 
     grd.SetOutputLanguage('en')
     grd.SetDefines({'bingo': 1})
     active = set(grd.ActiveDescendants())
-    self.failUnless(bingo_message in active)
-    self.failUnless(hello_message not in active)
-    self.failUnless(french_message not in active)
+    self.assertTrue(bingo_message in active)
+    self.assertTrue(hello_message not in active)
+    self.assertTrue(french_message not in active)
 
     grd.SetOutputLanguage('en')
     grd.SetDefines({'FORCE_FRENCH': '1', 'bingo': '1'})
     active = set(grd.ActiveDescendants())
-    self.failUnless(bingo_message in active)
-    self.failUnless(hello_message not in active)
-    self.failUnless(french_message in active)
+    self.assertTrue(bingo_message in active)
+    self.assertTrue(hello_message not in active)
+    self.assertTrue(french_message in active)
 
     grd.SetOutputLanguage('en')
     grd.SetDefines({})
-    self.failUnless(grd.target_platform == sys.platform)
+    self.assertTrue(grd.target_platform == sys.platform)
     grd.SetTargetPlatform('darwin')
     active = set(grd.ActiveDescendants())
-    self.failUnless(is_win_message not in active)
+    self.assertTrue(is_win_message not in active)
     grd.SetTargetPlatform('win32')
     active = set(grd.ActiveDescendants())
-    self.failUnless(is_win_message in active)
+    self.assertTrue(is_win_message in active)
 
   def testElsiness(self):
     grd = util.ParseGrdForUnittest('''
@@ -383,7 +383,7 @@ class IfNodeUnittest(unittest.TestCase):
     grd.SetOutputLanguage('ru')
     grd.SetDefines({'hello': '1'})
     outputs = [output.GetFilename() for output in grd.GetOutputFiles()]
-    self.assertEquals(
+    self.assertEqual(
         outputs,
         ['uncond1.rc', 'only_fr.adm', 'only_fr.plist', 'doc.html',
          'uncond2.adm', 'iftest.h'])
@@ -391,14 +391,14 @@ class IfNodeUnittest(unittest.TestCase):
     grd.SetOutputLanguage('ru')
     grd.SetDefines({'bingo': '2'})
     outputs = [output.GetFilename() for output in grd.GetOutputFiles()]
-    self.assertEquals(
+    self.assertEqual(
         outputs,
         ['uncond1.rc', 'doc.html', 'uncond2.adm', 'iftest.h'])
 
     grd.SetOutputLanguage('fr')
     grd.SetDefines({'hello': '1'})
     outputs = [output.GetFilename() for output in grd.GetOutputFiles()]
-    self.assertEquals(
+    self.assertEqual(
         outputs,
         ['uncond1.rc', 'only_fr.adm', 'only_fr.plist', 'uncond2.adm',
          'iftest.h'])
@@ -406,12 +406,12 @@ class IfNodeUnittest(unittest.TestCase):
     grd.SetOutputLanguage('en')
     grd.SetDefines({'bingo': '1'})
     outputs = [output.GetFilename() for output in grd.GetOutputFiles()]
-    self.assertEquals(outputs, ['uncond1.rc', 'uncond2.adm', 'iftest.h'])
+    self.assertEqual(outputs, ['uncond1.rc', 'uncond2.adm', 'iftest.h'])
 
     grd.SetOutputLanguage('fr')
     grd.SetDefines({'bingo': '1'})
     outputs = [output.GetFilename() for output in grd.GetOutputFiles()]
-    self.assertNotEquals(outputs, ['uncond1.rc', 'uncond2.adm', 'iftest.h'])
+    self.assertNotEqual(outputs, ['uncond1.rc', 'uncond2.adm', 'iftest.h'])
 
   def testChildrenAccepted(self):
     grd_reader.Parse(io.StringIO(r'''<?xml version="1.0"?>
@@ -596,10 +596,10 @@ class ReleaseNodeUnittest(unittest.TestCase):
     menu = grd.GetNodeById('IDC_KLONKMENU')
 
     for node in [hello, aboutbox]:
-      self.failUnless(not node.PseudoIsAllowed())
+      self.assertTrue(not node.PseudoIsAllowed())
 
     for node in [bingo, menu]:
-      self.failUnless(node.PseudoIsAllowed())
+      self.assertTrue(node.PseudoIsAllowed())
 
     # TODO(benrg): There was a test here that formatting hello and aboutbox with
     # a pseudo language should fail, but they do not fail and the test was

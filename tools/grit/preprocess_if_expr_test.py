@@ -22,7 +22,7 @@ class PreprocessIfExprTest(unittest.TestCase):
 
   def _read_out_file(self, file_name):
     assert self._out_folder
-    with open(os.path.join(self._out_folder, file_name), 'r') as f:
+    with open(os.path.join(self._out_folder, file_name)) as f:
       return f.read()
 
   def _run_test(self, additional_options, file_name, expected_file_name):
@@ -37,8 +37,7 @@ class PreprocessIfExprTest(unittest.TestCase):
         file_name,
     ] + additional_options)
     actual = self._read_out_file(file_name)
-    with open(os.path.join(_HERE_DIR, 'preprocess_tests', expected_file_name),
-              'r') as f:
+    with open(os.path.join(_HERE_DIR, 'preprocess_tests', expected_file_name)) as f:
       expected = f.read()
       self.assertMultiLineEqual(expected, actual)
 

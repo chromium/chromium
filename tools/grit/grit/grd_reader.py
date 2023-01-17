@@ -6,7 +6,6 @@
 '''Class for reading GRD files into memory, without processing them.
 '''
 
-from __future__ import print_function
 
 import os.path
 import sys
@@ -200,7 +199,7 @@ def Parse(filename_or_stream,
     grit.exception.Parsing
   '''
 
-  if isinstance(filename_or_stream, six.string_types):
+  if isinstance(filename_or_stream, str):
     source = filename_or_stream
     if dir is None:
       dir = util.dirname(filename_or_stream)
@@ -252,4 +251,4 @@ def Parse(filename_or_stream,
 
 if __name__ == '__main__':
   util.ChangeStdoutEncoding()
-  print(six.text_type(Parse(sys.argv[1])))
+  print(str(Parse(sys.argv[1])))

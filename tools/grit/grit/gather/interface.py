@@ -11,7 +11,7 @@ from grit import clique
 from grit import util
 
 
-class GathererBase(object):
+class GathererBase:
   '''Interface for all gatherer implementations.  Subclasses must implement
   all methods that raise NotImplemented.'''
 
