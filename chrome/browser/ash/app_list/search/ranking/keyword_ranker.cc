@@ -16,8 +16,7 @@ KeywordRanker::~KeywordRanker() = default;
 void KeywordRanker::Start(const std::u16string& query,
                           ResultsMap& results,
                           CategoriesList& categories) {
-  // TODO(b/263059094): when the user start input, this function will
-  // be called.
+  // When the user start input, this function will be called.
   last_query_ = query;
 
   // Stores the providers that match with the keyword within the input query.
@@ -36,13 +35,10 @@ void KeywordRanker::Start(const std::u16string& query,
 
 void KeywordRanker::UpdateResultRanks(ResultsMap& results,
                                       ProviderType provider) {
-  // TODO(b/263059094): update the result by boost the scores that
-  // match certain keywords, the rest remain unchanged.
-
-  // Return if the given provider matched a keyword in the query
+  // Return if the given provider does not matched a keyword in the query
   // as this does not require modification of results.
   if (std::find(matched_providers_.begin(), matched_providers_.end(),
-                provider) != matched_providers_.end()) {
+                provider) == matched_providers_.end()) {
     return;
   }
 
@@ -52,7 +48,7 @@ void KeywordRanker::UpdateResultRanks(ResultsMap& results,
   }
 
   for (auto& result : it->second) {
-    result->scoring().set_keyword_multiplier(0.9);
+    result->scoring().set_keyword_multiplier(1.2);
   }
 }
 

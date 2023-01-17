@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/ranking/constants.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
 namespace app_list {
@@ -125,7 +126,13 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
       continue;
     }
     Scoring& scoring = result->scoring();
-    if (scoring.BestMatchScore() >= kBestMatchThreshold) {
+
+    double threshold = kBestMatchThreshold;
+    if (search_features::IsLauncherKeywordExtractionScoringEnabled()) {
+      threshold = kBestMatchThresholdWithKeywordRanking;
+    }
+
+    if (scoring.BestMatchScore() >= threshold) {
       best_matches_.push_back(result->GetWeakPtr());
     }
   }

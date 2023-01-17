@@ -22,6 +22,10 @@ constexpr size_t kNumBestMatchesToStabilize = 1u;
 // The score threshold before we consider a result a best match.
 constexpr double kBestMatchThreshold = 0.8;
 
+// The score threshold used when there's keyword ranking.
+// This is given by tanh(2.65 * 0.8) where 0.8 is original best match threshold.
+constexpr double kBestMatchThresholdWithKeywordRanking = 0.97159407725;
+
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_CONSTANTS_H_

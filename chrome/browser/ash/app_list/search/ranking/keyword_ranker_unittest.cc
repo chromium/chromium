@@ -53,7 +53,7 @@ TEST_F(KeywordRankerTest, NoMatchedKeywords) {
 
   // As no detection of keywords for this result type,
   // therefore the keyword multiplier is down-weighted.
-  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 0.9);
+  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 1.0);
 }
 
 // Test the input query only match one provider.
@@ -78,8 +78,8 @@ TEST_F(KeywordRankerTest, OneMatchedKeyword) {
   ASSERT_EQ(results_1[ResultType::kInstalledApp].size(), 2u);
   ASSERT_EQ(results_1[ResultType::kHelpApp].size(), 2u);
 
-  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 0.9);
-  ExpectKeywordMultiplier(results_1, ResultType::kHelpApp, 1.0);
+  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 1.0);
+  ExpectKeywordMultiplier(results_1, ResultType::kHelpApp, 1.2);
 }
 
 // Test the input query match multiple provider.
@@ -108,9 +108,9 @@ TEST_F(KeywordRankerTest, KeywordMatchesMultipleProviders) {
   ASSERT_EQ(results_1[ResultType::kFileSearch].size(), 2u);
   ASSERT_EQ(results_1[ResultType::kDriveSearch].size(), 2u);
 
-  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 0.9);
-  ExpectKeywordMultiplier(results_1, ResultType::kFileSearch, 1.0);
-  ExpectKeywordMultiplier(results_1, ResultType::kDriveSearch, 1.0);
+  ExpectKeywordMultiplier(results_1, ResultType::kInstalledApp, 1.0);
+  ExpectKeywordMultiplier(results_1, ResultType::kFileSearch, 1.2);
+  ExpectKeywordMultiplier(results_1, ResultType::kDriveSearch, 1.2);
 }
 
 }  // namespace app_list::test
