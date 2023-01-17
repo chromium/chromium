@@ -9,30 +9,6 @@
 
 module arc.keymaster.mojom;
 
-// Enumerates the crypto algorithms supported by Host.
-[Extensible]
-enum Algorithm {
-  kRsaPkcs1,
-};
-
-// Enumerates the digests supported by Host.
-[Extensible]
-enum Digest {
-  kSha1,
-  kSha256,
-  kSha384,
-  kSha512,
-};
-
-// Enumerates the result codes of signature operation.
-[Extensible]
-enum SignatureResult {
-  kOk,
-  // Failed with net or internal error on chrome side.
-  kFailed,
-  kUnsupportedAlgorithm,
-};
-
 // The possible chaps slots relevant for arc-keymaster. Note this does NOT map
 // to the PKCS#11 CK_SLOT_ID, but rather to an abstract representation of the
 // value. The corresponding CK_SLOT_ID must be queried from cryptohome.
@@ -85,14 +61,9 @@ interface CertStoreInstance {
 };
 
 // Implemented in Chrome.
+// Nothing is using this interface. It is only kept to avoid changing
+// CertStoreHost.
+// Deprecated method IDs: 0
 // Next method ID: 1
 interface SecurityTokenOperation {
-  // Signs input |data| pre-hashed with the given |digest|.
-  // Retrieves a |signature| signed by a certificate identified by
-  // |subject_public_key_info| by |algorithm| (currently, only RSA is
-  // supported).
-  // In case of any error, |signature| is null.
-  SignDigest@0(string subject_public_key_info, Algorithm algorithm,
-       Digest digest, array<uint8> data) => (SignatureResult result,
-           array<uint8>? signature);
 };
