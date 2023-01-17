@@ -820,6 +820,10 @@ const char kDeviceTrustDisableKeyCreationPref[] =
     "enterprise_connectors.device_trust.disable_key_creation";
 #endif  // BUILDFLAG(IS_MAC)
 
+// Deprecated 01/2023.
+const char kFileSystemSyncAccessHandleAsyncInterfaceEnabled[] =
+    "policy.file_system_sync_access_handle_async_interface_enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1096,6 +1100,10 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 12/2022.
   registry->RegisterBooleanPref(kAutofillWalletImportStorageCheckboxState,
                                 true);
+
+  // Deprecated 01/2023.
+  registry->RegisterBooleanPref(
+      kFileSystemSyncAccessHandleAsyncInterfaceEnabled, false);
 }
 
 }  // namespace
@@ -2145,6 +2153,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 12/2022.
   profile_prefs->ClearPref(kAutofillWalletImportStorageCheckboxState);
+
+  // Added 01/2023.
+  profile_prefs->ClearPref(kFileSystemSyncAccessHandleAsyncInterfaceEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

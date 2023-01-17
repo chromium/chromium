@@ -141,8 +141,6 @@ CONTENT_EXPORT extern const char kEnableWebRtcSrtpAesGcm[];
 CONTENT_EXPORT extern const char kEnableWebRtcSrtpEncryptedHeaders[];
 CONTENT_EXPORT extern const char kEnforceWebRtcIPPermissionCheck[];
 CONTENT_EXPORT extern const char kEnableWebVR[];
-CONTENT_EXPORT extern const char
-    kFileSystemSyncAccessHandleAsyncInterfaceEnabled[];
 CONTENT_EXPORT extern const char kFileUrlPathAlias[];
 CONTENT_EXPORT extern const char kForceDisplayList2dCanvas[];
 CONTENT_EXPORT extern const char kForceEnablePepperVideoDecoderDevAPI[];

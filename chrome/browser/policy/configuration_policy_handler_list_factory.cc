@@ -839,9 +839,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPaymentMethodQueryEnabled,
     payments::kCanMakePaymentEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kFileSystemSyncAccessHandleAsyncInterfaceEnabled,
-    storage::kFileSystemSyncAccessHandleAsyncInterfaceEnabled,
-    base::Value::Type::BOOLEAN },
 
 #if !BUILDFLAG(IS_CHROMEOS)
   { key::kMetricsReportingEnabled,

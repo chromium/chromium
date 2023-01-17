@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -162,11 +161,8 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
 
   // Whether all-sync interface feature is enabled and the async interface is
   // not force-enabled by enterprise policy, as indicated by the switch.
-  const bool is_all_sync_interface_enabled_ =
-      base::FeatureList::IsEnabled(
-          blink::features::kSyncAccessHandleAllSyncSurface) &&
-      !RuntimeEnabledFeatures::
-          FileSystemSyncAccessHandleAsyncInterfaceOverrideEnabled();
+  const bool is_all_sync_interface_enabled_ = base::FeatureList::IsEnabled(
+      blink::features::kSyncAccessHandleAllSyncSurface);
 
   // crbug.com/1338340: Note that this is only used (and valid) when async
   // methods are in-use before the migration to the all-sync interface.
