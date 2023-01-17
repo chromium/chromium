@@ -8,11 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// This has to be included before windows.h.
-#include "third_party/re2/src/re2/re2.h"
-
-#include <windows.h>
-
 #include <d3d11.h>
 #include <d3d11_3.h>
 #include <d3d12.h>
@@ -32,9 +27,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "gpu/config/gpu_util.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_display.h"
@@ -163,20 +158,6 @@ bool GetActiveAdapterLuid(LUID* luid) {
 
 }  // namespace
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD)
-// This function has a real implementation for official builds that can
-// be found in src/third_party/amd.
-bool GetAMDSwitchableInfo(bool* is_switchable,
-                          uint32_t* active_vendor_id,
-                          uint32_t* active_device_id);
-#else
-bool GetAMDSwitchableInfo(bool* is_switchable,
-                          uint32_t* active_vendor_id,
-                          uint32_t* active_device_id) {
-  return false;
-}
-#endif
-
 // This has to be called after a context is created, active GPU is identified,
 // and GPU driver bug workarounds are computed again. Otherwise the workaround
 // |disable_direct_composition| may not be correctly applied.
@@ -211,10 +192,6 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
   if (FAILED(hr))
     return false;
 
-  bool found_amd = false;
-  bool found_intel = false;
-  bool found_nvidia = false;
-
   UINT i;
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   for (i = 0; SUCCEEDED(dxgi_factory->EnumAdapters(i, &dxgi_adapter)); i++) {
@@ -241,41 +218,10 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
       DLOG(ERROR) << "Unable to retrieve the umd version of adapter: "
                   << desc.Description << " HR: " << std::hex << hr;
     }
-    switch (device.vendor_id) {
-      case 0x8086:
-        found_intel = true;
-        break;
-      case 0x1002:
-        found_amd = true;
-        break;
-      case 0x10de:
-        found_nvidia = true;
-        break;
-      default:
-        break;
-    }
-
     if (i == 0) {
       gpu_info->gpu = device;
     } else {
       gpu_info->secondary_gpus.push_back(device);
-    }
-  }
-
-  if (found_intel && base::win::GetVersion() < base::win::Version::WIN10) {
-    // Since Windows 10 (and Windows 8.1 on some systems), switchable graphics
-    // platforms are managed by Windows and each adapter is accessible as
-    // separate devices.
-    // See https://msdn.microsoft.com/en-us/windows/dn265501(v=vs.80)
-    if (found_amd) {
-      bool is_amd_switchable = false;
-      uint32_t active_vendor = 0, active_device = 0;
-      GetAMDSwitchableInfo(&is_amd_switchable, &active_vendor, &active_device);
-      gpu_info->amd_switchable = is_amd_switchable;
-    } else if (found_nvidia) {
-      // nvd3d9wrap.dll is loaded into all processes when Optimus is enabled.
-      HMODULE nvd3d9wrap = GetModuleHandleW(L"nvd3d9wrap.dll");
-      gpu_info->optimus = nvd3d9wrap != nullptr;
     }
   }
 
@@ -541,7 +487,6 @@ bool InitVulkanInstanceProc(
     PFN_vkEnumeratePhysicalDevices* vkEnumeratePhysicalDevices,
     PFN_vkEnumerateDeviceExtensionProperties*
         vkEnumerateDeviceExtensionProperties) {
-
   *vkEnumeratePhysicalDevices =
       reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(
           vkGetInstanceProcAddr(vk_instance, "vkEnumeratePhysicalDevices"));

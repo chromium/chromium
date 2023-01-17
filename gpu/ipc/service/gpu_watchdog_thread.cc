@@ -4,6 +4,10 @@
 
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/atomicops.h"
 #include "base/bit_cast.h"
 #include "base/command_line.h"
@@ -30,10 +34,6 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/result_codes.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace gpu {
 
 base::TimeDelta GetGpuWatchdogTimeout() {
@@ -50,12 +50,11 @@ base::TimeDelta GetGpuWatchdogTimeout() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    int num_of_processors = base::SysInfo::NumberOfProcessors();
-    if (num_of_processors > 8)
-      return (kGpuWatchdogTimeout - base::Seconds(10));
-    else if (num_of_processors <= 4)
-      return kGpuWatchdogTimeout + base::Seconds(5);
+  int num_of_processors = base::SysInfo::NumberOfProcessors();
+  if (num_of_processors > 8) {
+    return (kGpuWatchdogTimeout - base::Seconds(10));
+  } else if (num_of_processors <= 4) {
+    return kGpuWatchdogTimeout + base::Seconds(5);
   }
 #endif
 

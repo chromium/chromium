@@ -11,7 +11,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_angle_util_win.h"
 
@@ -21,12 +20,9 @@ namespace {
 class DXGISharedHandleManagerTest : public testing::Test {
  protected:
   void SetUp() override {
-    // Using DXGI NT handles is universally supported only on Win8 and above.
     // TODO(sunnyps): Unify this with the check in D3DImageBackingFactory.
-    const bool shared_handles_supported =
-        base::win::GetVersion() >= base::win::Version::WIN8;
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
-    if (shared_handles_supported && d3d11_device_) {
+    if (d3d11_device_) {
       dxgi_shared_handle_manager_ =
           base::MakeRefCounted<DXGISharedHandleManager>(d3d11_device_);
     }

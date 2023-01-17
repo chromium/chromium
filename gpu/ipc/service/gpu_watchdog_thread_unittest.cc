@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
+
+#include <memory>
+#include <string>
+
 #include "base/test/task_environment.h"
 
 #include "base/power_monitor/power_monitor.h"
@@ -14,10 +18,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -121,13 +121,7 @@ void GpuWatchdogTest::SetUp() {
 
   TimeOutType timeout_type = kNormal;
 
-#if BUILDFLAG(IS_WIN)
-  // Win7
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    timeout_type = kSlow;
-  }
-
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Use slow timeout for Mac versions < 11.00 and for MacBookPro model <
   // MacBookPro14,1
   int os_version = base::mac::internal::MacOSVersion();
