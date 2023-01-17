@@ -15,9 +15,11 @@ import '../os_people_page/setup_pin_dialog.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorInterface} from '../os_people_page/lock_state_behavior.js';
+
+import {getTemplate} from './multidevice_screen_lock_subpage.html.js';
 
 /**
  * @constructor
@@ -36,7 +38,7 @@ class SettingsMultideviceScreenLockSubpageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

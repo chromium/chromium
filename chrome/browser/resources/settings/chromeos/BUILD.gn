@@ -295,7 +295,6 @@ generate_grd("build_grd") {
 group("generate_web_components") {
   public_deps = [
     # Sub-folder targets
-    "multidevice_page:web_components",
     "nearby_share_page:web_components",
     "os_a11y_page:web_components",
     "os_privacy_page:web_components",

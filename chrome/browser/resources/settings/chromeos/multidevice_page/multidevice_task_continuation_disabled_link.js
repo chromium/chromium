@@ -17,10 +17,12 @@ import '../../settings_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Router} from '../router.js';
 import {routes} from '../os_route.js';
+import {Router} from '../router.js';
+
+import {getTemplate} from './multidevice_task_continuation_disabled_link.html.js';
 
 /**
  * @constructor
@@ -38,7 +40,7 @@ class SettingsMultideviceTaskContinuationDisabledLinkElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   /** @override */

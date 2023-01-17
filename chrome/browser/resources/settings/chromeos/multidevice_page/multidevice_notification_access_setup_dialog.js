@@ -19,16 +19,17 @@ import '../../settings_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature} from './multidevice_constants.js';
+import {getTemplate} from './multidevice_notification_access_setup_dialog.html.js';
 
 /**
  * Numerical values should not be changed because they must stay in sync with
  * notification_access_setup_operation.h, with the exception of
  * CONNECTION_REQUESTED.
- * @enum{number}
+ * @enum {number}
  */
 export const NotificationAccessSetupOperationStatus = {
   CONNECTION_REQUESTED: 0,
@@ -57,7 +58,7 @@ class SettingsMultideviceNotificationAccessSetupDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

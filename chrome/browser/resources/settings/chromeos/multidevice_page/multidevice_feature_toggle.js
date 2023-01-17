@@ -13,11 +13,11 @@
 
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceFeature, MultiDeviceFeatureState} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
-
+import {getTemplate} from './multidevice_feature_toggle.html.js';
 
 /**
  * @constructor
@@ -35,7 +35,7 @@ export class SettingsMultideviceFeatureToggleElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

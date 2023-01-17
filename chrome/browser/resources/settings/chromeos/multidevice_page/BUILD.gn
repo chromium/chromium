@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -236,24 +235,4 @@ js_library("multidevice_smartlock_item") {
 
 js_library("multidevice_metrics_logger") {
   deps = [ "//ash/webui/common/resources:assert" ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "multidevice_combined_setup_item.js",
-    "multidevice_feature_item.js",
-    "multidevice_feature_toggle.js",
-    "multidevice_notification_access_setup_dialog.js",
-    "multidevice_page.js",
-    "multidevice_permissions_setup_dialog.js",
-    "multidevice_radio_button.js",
-    "multidevice_screen_lock_subpage.js",
-    "multidevice_smartlock_item.js",
-    "multidevice_subpage.js",
-    "multidevice_task_continuation_disabled_link.js",
-    "multidevice_task_continuation_item.js",
-    "multidevice_tether_item.js",
-    "multidevice_wifi_sync_disabled_link.js",
-    "multidevice_wifi_sync_item.js",
-  ]
 }
