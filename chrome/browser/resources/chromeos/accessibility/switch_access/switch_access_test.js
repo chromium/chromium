@@ -13,28 +13,36 @@ SwitchAccessSwitchAccessTest = class extends SwitchAccessE2ETest {
   }
 };
 
-AX_TEST_F('SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', function() {
-  // Build a new SwitchAccess instance with hooks.
-  let initCount = 0;
-  SwitchAccess.finishInit_ = () => initCount++;
+async function waitForAsyncToResolve() {
+  await new Promise(resolve => setTimeout(resolve, 0));
+}
 
-  // A fake desktop.
-  const fakeDesktop = {};
-  fakeDesktop.addEventListener = () => {};
-  fakeDesktop.removeEventListener = () => {};
+AX_TEST_F(
+    'SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', async function() {
+      // Build a new SwitchAccess instance with hooks.
+      let initCount = 0;
+      SwitchAccess.finishInit_ = () => initCount++;
 
-  // Stub out this to be synchronous.
-  chrome.automation.getDesktop = callback => callback(fakeDesktop);
+      // A fake desktop.
+      const fakeDesktop = {};
+      fakeDesktop.addEventListener = () => {};
+      fakeDesktop.removeEventListener = () => {};
 
-  // Stub this out as well so that focus is undefined.
-  chrome.automation.getFocus = callback => callback();
+      // Stub out this to be synchronous.
+      chrome.automation.getDesktop = callback => callback(fakeDesktop);
 
-  // Initialize; we should not have called finishInit_ since there's no focus.
-  SwitchAccess.initialize();
-  assertEquals(0, initCount);
+      // Stub this out as well so that focus is undefined.
+      chrome.automation.getFocus = callback => callback();
 
-  // Restub this to pass a "focused" node.
-  chrome.automation.getFocus = callback => callback({});
-  SwitchAccess.initialize();
-  assertEquals(1, initCount);
-});
+      // Initialize; we should not have called finishInit_ since there's no
+      // focus.
+      SwitchAccess.initialize();
+      await waitForAsyncToResolve();
+      assertEquals(0, initCount);
+
+      // Restub this to pass a "focused" node.
+      chrome.automation.getFocus = callback => callback({});
+      SwitchAccess.initialize();
+      await waitForAsyncToResolve();
+      assertEquals(1, initCount);
+    });

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AsyncUtil} from '../common/async_util.js';
 import {EventHandler} from '../common/event_handler.js';
 
 import {SACommands} from './commands.js';
@@ -18,41 +19,40 @@ const AutomationNode = chrome.automation.AutomationNode;
  * codebase.
  */
 export class SwitchAccess {
-  static initialize() {
+  static async initialize() {
     SwitchAccess.instance = new SwitchAccess();
 
-    chrome.automation.getDesktop(desktop => {
-      chrome.automation.getFocus(focus => {
-        // Focus is available. Finish init without waiting for further events.
-        // Disallow web view nodes, which indicate a root web area is still
-        // loading and pending focus.
-        if (focus && focus.role !== chrome.automation.RoleType.WEB_VIEW) {
-          SwitchAccess.finishInit_(desktop);
-          return;
-        }
+    const desktop = await AsyncUtil.getDesktop();
+    const focus = await AsyncUtil.getFocus();
 
-        // Wait for the focus to be sent. If |focus| was undefined, this is
-        // guaranteed. Otherwise, also set a timed callback to ensure we do
-        // eventually init.
-        let callbackId = 0;
-        const listener = maybeEvent => {
-          if (maybeEvent &&
-              maybeEvent.target.role === chrome.automation.RoleType.WEB_VIEW) {
-            return;
-          }
+    // Focus is available. Finish init without waiting for further events.
+    // Disallow web view nodes, which indicate a root web area is still
+    // loading and pending focus.
+    if (focus && focus.role !== chrome.automation.RoleType.WEB_VIEW) {
+      SwitchAccess.finishInit_(desktop);
+      return;
+    }
 
-          desktop.removeEventListener(
-              chrome.automation.EventType.FOCUS, listener, false);
-          clearTimeout(callbackId);
+    // Wait for the focus to be sent. If |focus| was undefined, this is
+    // guaranteed. Otherwise, also set a timed callback to ensure we do
+    // eventually init.
+    let callbackId = 0;
+    const listener = maybeEvent => {
+      if (maybeEvent &&
+          maybeEvent.target.role === chrome.automation.RoleType.WEB_VIEW) {
+        return;
+      }
 
-          SwitchAccess.finishInit_(desktop);
-        };
+      desktop.removeEventListener(
+          chrome.automation.EventType.FOCUS, listener, false);
+      clearTimeout(callbackId);
 
-        desktop.addEventListener(
-            chrome.automation.EventType.FOCUS, listener, false);
-        callbackId = setTimeout(listener, 5000);
-      });
-    });
+      SwitchAccess.finishInit_(desktop);
+    };
+
+    desktop.addEventListener(
+        chrome.automation.EventType.FOCUS, listener, false);
+    callbackId = setTimeout(listener, 5000);
   }
 
   /** @private */
