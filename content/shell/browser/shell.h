@@ -163,19 +163,19 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void ActivateContents(WebContents* contents) override;
   bool IsBackForwardCacheSupported() override;
   bool IsPrerender2Supported(WebContents& web_contents) override;
-  std::unique_ptr<content::WebContents> ActivatePortalWebContents(
-      content::WebContents* predecessor_contents,
-      std::unique_ptr<content::WebContents> portal_contents) override;
+  std::unique_ptr<WebContents> ActivatePortalWebContents(
+      WebContents* predecessor_contents,
+      std::unique_ptr<WebContents> portal_contents) override;
   void UpdateInspectedWebContentsIfNecessary(
-      content::WebContents* old_contents,
-      content::WebContents* new_contents,
+      WebContents* old_contents,
+      WebContents* new_contents,
       base::OnceCallback<void()> callback) override;
-  bool ShouldAllowRunningInsecureContent(content::WebContents* web_contents,
+  bool ShouldAllowRunningInsecureContent(WebContents* web_contents,
                                          bool allowed_per_prefs,
                                          const url::Origin& origin,
                                          const GURL& resource_url) override;
   PictureInPictureResult EnterPictureInPicture(
-      content::WebContents* web_contents) override;
+      WebContents* web_contents) override;
   bool ShouldResumeRequestsForCreatedWindow() override;
   void SetContentsBounds(WebContents* source, const gfx::Rect& bounds) override;
 
@@ -216,7 +216,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void TitleWasSet(NavigationEntry* entry) override;
   void RenderFrameCreated(RenderFrameHost* frame_host) override;
 #if BUILDFLAG(IS_MAC)
-  void PrimaryPageChanged(content::Page& page) override;
+  void PrimaryPageChanged(Page& page) override;
 #endif
 
   std::unique_ptr<JavaScriptDialogManager> dialog_manager_;

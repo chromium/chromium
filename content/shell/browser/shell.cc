@@ -216,8 +216,7 @@ Shell* Shell::CreateNewWindow(BrowserContext* browser_context,
   WebContents::CreateParams create_params(browser_context, site_instance);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForcePresentationReceiverForTesting)) {
-    create_params.starting_sandbox_flags =
-        content::kPresentationReceiverSandboxFlags;
+    create_params.starting_sandbox_flags = kPresentationReceiverSandboxFlags;
   }
   std::unique_ptr<WebContents> web_contents =
       WebContents::Create(create_params);
@@ -505,7 +504,7 @@ void Shell::RegisterProtocolHandler(RenderFrameHost* requesting_frame,
                                     const std::string& protocol,
                                     const GURL& url,
                                     bool user_gesture) {
-  content::BrowserContext* context = requesting_frame->GetBrowserContext();
+  BrowserContext* context = requesting_frame->GetBrowserContext();
   if (context->IsOffTheRecord())
     return;
 
@@ -594,9 +593,9 @@ JavaScriptDialogManager* Shell::GetJavaScriptDialogManager(
 }
 
 #if BUILDFLAG(IS_MAC)
-void Shell::PrimaryPageChanged(content::Page& page) {
+void Shell::PrimaryPageChanged(Page& page) {
   g_platform->DidNavigatePrimaryMainFramePostCommit(
-      this, content::WebContents::FromRenderFrameHost(&page.GetMainDocument()));
+      this, WebContents::FromRenderFrameHost(&page.GetMainDocument()));
 }
 
 bool Shell::HandleKeyboardEvent(WebContents* source,
@@ -672,8 +671,8 @@ class PendingCallback : public base::RefCounted<PendingCallback> {
 }  // namespace
 
 void Shell::UpdateInspectedWebContentsIfNecessary(
-    content::WebContents* old_contents,
-    content::WebContents* new_contents,
+    WebContents* old_contents,
+    WebContents* new_contents,
     base::OnceCallback<void()> callback) {
   scoped_refptr<PendingCallback> pending_callback =
       base::MakeRefCounted<PendingCallback>(std::move(callback));
