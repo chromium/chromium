@@ -27,7 +27,7 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 @interface ConfirmationAlertViewController : UIViewController
 // The navigation bar title view. Nil if not needed. If needed, must be set
 // before the view is loaded.
-@property(nonatomic, assign) UIView* titleView;
+@property(nonatomic, strong) UIView* titleView;
 
 // The headline below the image. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* titleString;
