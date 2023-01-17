@@ -8,12 +8,6 @@
 #include <windows.h>
 #include <winternl.h>
 
-typedef enum _KEY_INFORMATION_CLASS {
-  KeyBasicInformation = 0,
-  KeyFullInformation = 2
-} KEY_INFORMATION_CLASS,
-    *PKEY_INFORMATION_CLASS;
-
 typedef enum _KEY_VALUE_INFORMATION_CLASS {
   KeyValueFullInformation = 1
 } KEY_VALUE_INFORMATION_CLASS,
@@ -27,27 +21,6 @@ typedef struct _KEY_VALUE_FULL_INFORMATION {
   ULONG NameLength;
   WCHAR Name[1];
 } KEY_VALUE_FULL_INFORMATION, *PKEY_VALUE_FULL_INFORMATION;
-
-typedef struct _KEY_BASIC_INFORMATION {
-  LARGE_INTEGER LastWriteTime;
-  ULONG TitleIndex;
-  ULONG NameLength;
-  WCHAR Name[1];
-} KEY_BASIC_INFORMATION, *PKEY_BASIC_INFORMATION;
-
-typedef struct _KEY_FULL_INFORMATION {
-  LARGE_INTEGER LastWriteTime;
-  ULONG TitleIndex;
-  ULONG ClassOffset;
-  ULONG ClassLength;
-  ULONG SubKeys;
-  ULONG MaxNameLen;
-  ULONG MaxClassLen;
-  ULONG Values;
-  ULONG MaxValueNameLen;
-  ULONG MaxValueDataLen;
-  WCHAR Class[1];
-} KEY_FULL_INFORMATION, *PKEY_FULL_INFORMATION;
 
 extern "C" {
 // wdm.h.
@@ -67,21 +40,6 @@ NTSTATUS WINAPI NtOpenKeyEx(OUT PHANDLE KeyHandle,
 
 // wdm.h.
 NTSTATUS WINAPI NtDeleteKey(IN HANDLE KeyHandle);
-
-// wdm.h.
-NTSTATUS WINAPI NtQueryKey(IN HANDLE KeyHandle,
-                           IN KEY_INFORMATION_CLASS KeyInformationClass,
-                           OUT PVOID KeyInformation,
-                           IN ULONG Length,
-                           OUT PULONG ResultLength);
-
-// wdm.h.
-NTSTATUS WINAPI NtEnumerateKey(IN HANDLE KeyHandle,
-                               IN ULONG Index,
-                               IN KEY_INFORMATION_CLASS KeyInformationClass,
-                               OUT PVOID KeyInformation,
-                               IN ULONG Length,
-                               OUT PULONG ResultLength);
 
 // wdm.h.
 NTSTATUS WINAPI
