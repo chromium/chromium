@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UpdateEngine.SuccessfulUpdate.DurationFromSeenDays.NoTimeRestriction"
-    units="days" expires_after="2023-05-14">
+    units="days" expires_after="2023-07-16">
   <owner>snijhara@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>

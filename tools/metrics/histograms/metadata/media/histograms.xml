@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Capture.Mac.MicSystemPermission.FixedTime.SinceFirstFailure"
-    units="ms" expires_after="2023-04-30">
+    units="ms" expires_after="2023-07-16">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Capture.Mac.MicSystemPermission.StartupAfterFailure"
-    enum="SystemMediaCapturePermission" expires_after="2023-04-30">
+    enum="SystemMediaCapturePermission" expires_after="2023-07-16">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -1482,7 +1482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioSystem.GetDeviceDescription.Result"
-    enum="BooleanSuccess" expires_after="2023-05-13">
+    enum="BooleanSuccess" expires_after="2023-07-16">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -2365,7 +2365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.HardwareSecure.Support"
-    enum="BooleanSupported" expires_after="2023-07-09">
+    enum="BooleanSupported" expires_after="2023-07-16">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3122,7 +3122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Latency" units="ms"
-    expires_after="2023-05-01">
+    expires_after="2023-07-16">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3135,7 +3135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Result"
-    enum="UserMediaRequestResult" expires_after="2023-05-01">
+    enum="UserMediaRequestResult" expires_after="2023-07-16">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3302,7 +3302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaFoundationRenderer.PlaybackError" enum="Hresult"
-    expires_after="2023-05-07">
+    expires_after="2023-07-16">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3357,7 +3357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaStreamManager.DisplayVideoDeviceUpdate"
-    enum="MediaStreamRequestResult2" expires_after="2023-05-14">
+    enum="MediaStreamRequestResult2" expires_after="2023-07-16">
   <owner>eladalon@chromium.org</owner>
   <owner>tovep@chromium.org</owner>
   <summary>
@@ -4786,7 +4786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Capture.Mac.CameraSystemPermission.UserMedia"
-    enum="SystemMediaCapturePermission" expires_after="2023-04-30">
+    enum="SystemMediaCapturePermission" expires_after="2023-07-16">
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -5076,7 +5076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StartErrorCode" enum="VideoCaptureError"
-    expires_after="2023-05-14">
+    expires_after="2023-07-16">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>
@@ -6320,7 +6320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Sink.SelectedType" enum="MediaSinkType"
-    expires_after="2023-07-09">
+    expires_after="2023-07-16">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6414,7 +6414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Device.Count" units="units"
-    expires_after="2023-07-09">
+    expires_after="2023-07-16">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

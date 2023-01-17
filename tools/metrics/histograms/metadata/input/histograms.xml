@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.Actions.PK.EnabledByDefault"
-    enum="IMEAutocorrectActions" expires_after="2023-03-19">
+    enum="IMEAutocorrectActions" expires_after="2023-07-16">
   <owner>zacpartridge@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -671,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.MultiWord.PrecedingTextLength"
-    units="chars" expires_after="2023-05-14">
+    units="chars" expires_after="2023-07-16">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

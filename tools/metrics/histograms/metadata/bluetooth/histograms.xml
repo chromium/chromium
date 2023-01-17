@@ -1770,7 +1770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2023-04-25">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2023-07-16">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1782,7 +1782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.StartNotifications.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2023-04-25">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2023-07-16">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

@@ -1335,7 +1335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
-    enum="OmniboxSearchEngineType" expires_after="2023-05-14">
+    enum="OmniboxSearchEngineType" expires_after="2023-07-16">
   <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>

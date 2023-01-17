@@ -98,7 +98,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.Identifiability.FinchConfigValidationResult"
-    enum="BooleanSuccess" expires_after="2023-05-14">
+    enum="BooleanSuccess" expires_after="2023-07-16">
   <owner>antoniosartori@chromium.org</owner>
   <owner>hasanka@chromium.org</owner>
   <summary>

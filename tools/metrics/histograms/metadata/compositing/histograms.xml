@@ -572,7 +572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.CommitHung" units="boolean"
-    expires_after="2023-05-14">
+    expires_after="2023-07-16">
   <owner>skobes@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -636,7 +636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.LCDTextDisallowedReasonLayers"
-    enum="LCDTextDisallowedReason" expires_after="2023-04-16">
+    enum="LCDTextDisallowedReason" expires_after="2023-07-16">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>

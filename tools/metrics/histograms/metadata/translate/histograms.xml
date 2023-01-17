@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.TFLiteModelEvaluationDuration"
-    units="ms" expires_after="2023-05-14">
+    units="ms" expires_after="2023-07-16">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>

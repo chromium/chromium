@@ -598,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.ConsecutiveLoadsWithoutLaunch" units="count"
-    expires_after="2023-05-14">
+    expires_after="2023-07-16">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -770,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.MobileSessionStartFromApps"
-    enum="MobileSessionCallerApp" expires_after="2023-05-14">
+    enum="MobileSessionCallerApp" expires_after="2023-07-16">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The calling application (if any).</summary>
@@ -895,7 +895,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromProcessCreationToDidFinishLaunchingCall"
-    units="ms" expires_after="2023-05-14">
+    units="ms" expires_after="2023-07-16">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -926,7 +926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromProcessCreationToSceneConnection" units="ms"
-    expires_after="2023-05-14">
+    expires_after="2023-07-16">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>

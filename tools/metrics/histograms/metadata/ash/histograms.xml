@@ -3767,7 +3767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.WindowDrag.Workflow" enum="OverviewDragAction"
-    expires_after="2023-05-14">
+    expires_after="2023-07-16">
   <owner>amusbach@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -4365,7 +4365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.NumberOfItems" units="Icons"
-    expires_after="2023-05-14">
+    expires_after="2023-07-16">
   <owner>anasalazar@chromium.org</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
@@ -4567,7 +4567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.ShutdownConfirmationBubble.Action"
-    enum="ShutdownConfirmationBubbleAction" expires_after="2023-05-14">
+    enum="ShutdownConfirmationBubbleAction" expires_after="2023-07-16">
   <owner>sherrilin@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>

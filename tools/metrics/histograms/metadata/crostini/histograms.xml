@@ -523,7 +523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.TimeFromDeviceSetupToInstall" units="ms"
-    expires_after="2023-05-14">
+    expires_after="2023-07-16">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

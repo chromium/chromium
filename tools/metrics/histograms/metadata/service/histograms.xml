@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.DiskCache.ReadResponseResult"
-    enum="ServiceWorkerReadResponseResult" expires_after="2023-05-14">
+    enum="ServiceWorkerReadResponseResult" expires_after="2023-07-16">
   <owner>bashi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <summary>
@@ -398,7 +398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.FetchEvent.QueuingTime" units="ms"
-    expires_after="2023-04-16">
+    expires_after="2023-07-16">
   <owner>asamidoi@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1163,7 +1163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.Storage.DeleteAndStartOverResult"
-    enum="ServiceWorkerDeleteAndStartOverResult" expires_after="2023-05-14">
+    enum="ServiceWorkerDeleteAndStartOverResult" expires_after="2023-07-16">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
