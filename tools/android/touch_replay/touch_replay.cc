@@ -46,7 +46,7 @@ struct TouchInputEventRecord {
   int code;
   int value;
 
-  uint64_t InMilliseconds() {
+  uint64_t InMilliseconds() const {
     return base::checked_cast<uint64_t>(sec) * 1000 +
            base::checked_cast<uint64_t>(usec / 1000);
   }
@@ -229,6 +229,15 @@ void SleepMillis(uint64_t ms) {
   }
 }
 
+void SleepUntil(uint64_t record_time, int64_t timebase_offset_ms) {
+  int64_t current_time =
+      base::TimeTicks::Now().ToUptimeMillis() - timebase_offset_ms;
+  int64_t sleep_millis = record_time - current_time;
+  if (sleep_millis > 0) {
+    SleepMillis(sleep_millis);
+  }
+}
+
 bool RecordForever(const base::FilePath& file_path) {
   // Open the dump file for writing.
   base::File dump_file(file_path,
@@ -298,6 +307,20 @@ bool RecordForever(const base::FilePath& file_path) {
   }
 }
 
+void ValidateRecords(const std::vector<TouchInputEventRecord>& records) {
+  // Ensure records are monotonically non-decreasing.
+  uint64_t last_ms = 0;
+  for (const TouchInputEventRecord& record : records) {
+    uint64_t current_ms = record.InMilliseconds();
+    if (current_ms < last_ms) {
+      LOG(ERROR) << "Log timestamps are required to be "
+                 << "monotonically non-decreasing";
+      abort();
+    }
+    last_ms = current_ms;
+  }
+}
+
 bool Replay(const base::FilePath& file_path) {
   // Open the dump file for reading.
   base::File dump_file(file_path,
@@ -337,6 +360,8 @@ bool Replay(const base::FilePath& file_path) {
     return false;
   }
 
+  ValidateRecords(records);
+
   // Open the device.
   base::FilePath device_path(device_name);
   std::unique_ptr<InputDevice> device =
@@ -352,24 +377,21 @@ bool Replay(const base::FilePath& file_path) {
   // emulating touch events often got delayed by an order of 1ms on modern
   // Android devices. Therefore, emulating with precision higher than 1ms
   // would be nontrivial.
-  uint64_t log_start_millis = records[0].InMilliseconds();
-  base::TimeTicks replay_start_ticks = base::TimeTicks::Now();
-  uint64_t current_millis = log_start_millis;
-  uint64_t next_millis;
-  int chunk_first = 0;
   int chunk_last = 0;
+  // Offset between our two timebases.
+  int64_t offset_ms =
+      base::TimeTicks::Now().ToUptimeMillis() - records[0].InMilliseconds();
   while (chunk_last < num_records) {
+    SleepUntil(records[chunk_last].InMilliseconds(), offset_ms);
+    uint64_t chunk_end_ms = base::TimeTicks::Now().ToUptimeMillis() - offset_ms;
+
+    int chunk_first = chunk_last;
     // Arrange the chunk. Clamping to millisecond intervals should be OK
     // because of the overall 1ms precision.
-    do {
-      next_millis = records[chunk_last].InMilliseconds();
-      if (next_millis < current_millis) {
-        LOG(ERROR) << "Log timestamps are required to be "
-                   << "monotonically non-decreasing";
-        abort();
-      }
+    while (chunk_last < num_records &&
+           records[chunk_last].InMilliseconds() <= chunk_end_ms) {
       chunk_last++;
-    } while (chunk_last < num_records && current_millis == next_millis);
+    }
 
     // Send all events from the chunk to the device without delays in between.
     device->SendEvents(records, chunk_first, chunk_last);
@@ -379,16 +401,6 @@ bool Replay(const base::FilePath& file_path) {
     for (int j = chunk_first; j < chunk_last; j++) {
       PrintProgressMarkers(j);
     }
-    chunk_first = chunk_last;
-
-    // Sleep until it is time for the next chunk.
-    uint64_t elapsed = base::checked_cast<uint64_t>(
-        (base::TimeTicks::Now() - replay_start_ticks).InMilliseconds());
-    uint64_t next_chunk_offset_millis = next_millis - log_start_millis;
-    if (elapsed < next_chunk_offset_millis) {
-      SleepMillis(next_chunk_offset_millis - elapsed);
-    }
-    current_millis = next_millis;
   }
   std::cout << std::endl;
   return true;
