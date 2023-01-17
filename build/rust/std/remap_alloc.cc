@@ -42,7 +42,11 @@
 // do that here, or we could build a crate with a #[global_allocator] and
 // redirect these symbols to that crate instead. The advantage of the latter
 // is that it would work equally well for those cases where rustc is doing
-// the final linking.
+// the final linking. At present, this is not necessary because
+// PartitionAlloc-Everywhere successfully handles the calls to malloc which
+// result from passing through this code. We might want to call into
+// PA directly if we wished for Rust allocations to be in a different
+// partition, or similar, in future.
 //
 // They're weak symbols, because this file will sometimes end up in targets
 // which are linked by rustc, and thus we would otherwise get duplicate
