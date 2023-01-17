@@ -14,9 +14,15 @@ import("//tools/typescript/ts_library.gni")
 #
 # In general all new ash typescript code should use this library.
 template("ash_ts_library") {
-  ts_library(target_name + "_raw") {
+  ts_library_target_name = "${target_name}__ts_library"
+
+  # Intermediate directory we output our compiled TS to before transforming it
+  # into it's final form.
+  intermediate_dir = "$target_gen_dir/to_be_rewritten"
+
+  ts_library(ts_library_target_name) {
     forward_variables_from(invoker, "*", [ "use_lit" ])
-    out_dir = "${target_gen_dir}/tsc_raw"
+    out_dir = intermediate_dir
     if (!defined(path_mappings)) {
       path_mappings = []
     }
@@ -67,11 +73,12 @@ template("ash_ts_library") {
   # `tsconfig_${target_name}_raw.json`. This step copies the generate tsconfig
   # and names it `tsconfig_${target_name}.json` so downstream ts_libraries can
   # interact with ash_ts_library as if it was a ts_library itself.
-  copy("rename_ts_config") {
-    sources = [ "${target_gen_dir}/tsconfig_${target_name}_raw.json" ]
-    outputs = [ "${target_gen_dir}/tsconfig_${target_name}.json" ]
+  rename_ts_config_target_name = "${target_name}_rename_ts_config"
+  copy(rename_ts_config_target_name) {
+    sources = [ "$target_gen_dir/tsconfig_${ts_library_target_name}.json" ]
+    outputs = [ "$target_gen_dir/tsconfig_${target_name}.json" ]
 
-    deps = [ ":${target_name}_raw" ]
+    deps = [ ":$ts_library_target_name" ]
   }
 
   rewrite_imports(target_name) {
@@ -83,12 +90,11 @@ template("ash_ts_library") {
     ]
 
     deps = [
-      ":${target_name}_raw",
-      ":rename_ts_config",
+      ":$rename_ts_config_target_name",
+      ":$ts_library_target_name",
     ]
 
-    base_dir = "${target_gen_dir}/tsc_raw"
-
+    base_dir = intermediate_dir
     out_dir = target_gen_dir
     if (defined(invoker.out_dir)) {
       out_dir = invoker.out_dir
