@@ -186,7 +186,8 @@ BookmarkBridge::~BookmarkBridge() {
 }
 
 void BookmarkBridge::Destroy(JNIEnv*, const JavaParamRef<jobject>&) {
-  delete this;
+  // This will call the destructor because the user data is a unique pointer.
+  bookmark_model_->RemoveUserData(kBookmarkBridgeUserDataKey);
 }
 
 base::android::ScopedJavaLocalRef<jobject>
