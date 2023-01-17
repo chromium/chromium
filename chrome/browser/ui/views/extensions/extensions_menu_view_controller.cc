@@ -8,9 +8,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -81,15 +83,19 @@ void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
                                                 int index,
                                                 TabChangeType change_type) {
   DCHECK(current_page_);
-  current_page_->Update();
+  current_page_->Update(contents);
 }
 
 void ExtensionsMenuViewController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  DCHECK(current_page_);
-  current_page_->Update();
+  content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
+  if (!selection.active_tab_changed() || !web_contents) {
+    return;
+  }
+
+  current_page_->Update(browser_->tab_strip_model()->GetActiveWebContents());
 }
 
 // TODO(crbug.com/1390952): Listen for "toolbar pinned actions changed" to

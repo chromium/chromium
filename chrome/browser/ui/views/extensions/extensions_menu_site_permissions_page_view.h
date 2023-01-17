@@ -20,7 +20,7 @@ class ExtensionsMenuSitePermissionsPage : public ExtensionsMenuPageView {
   ~ExtensionsMenuSitePermissionsPage() override = default;
 
   // ExtensionsMenuPageView:
-  void Update() override;
+  void Update(content::WebContents* web_contents) override;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

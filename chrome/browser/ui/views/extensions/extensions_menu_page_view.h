@@ -7,12 +7,18 @@
 
 #include "ui/views/view.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // An interface for pages in the extensions menu.
 class ExtensionsMenuPageView : public views::View {
  public:
   // TODO(crbug.com/1390952): Move shared page view construction from "main
   // page" and "site permissions page".
-  virtual void Update() = 0;
+
+  // Updates the menu page for `web_contents`.
+  virtual void Update(content::WebContents* web_contents) = 0;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuPageView, views::View)

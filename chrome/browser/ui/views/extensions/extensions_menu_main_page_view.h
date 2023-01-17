@@ -44,7 +44,7 @@ class ExtensionsMenuMainPageView : public ExtensionsMenuPageView {
   void OnToggleButtonPressed();
 
   // ExtensionsMenuPageView:
-  void Update() override;
+  void Update(content::WebContents* web_contents) override;
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.

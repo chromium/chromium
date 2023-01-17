@@ -227,16 +227,20 @@ void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
   UpdateSiteSettingToggleText(site_settings_toggle_);
 }
 
-void ExtensionsMenuMainPageView::Update() {
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (web_contents) {
-    subheader_subtitle_->SetText(GetCurrentSite(web_contents));
+void ExtensionsMenuMainPageView::Update(content::WebContents* web_contents) {
+  DCHECK(web_contents);
 
-    site_settings_toggle_->SetVisible(
-        IsSiteSettingsToggleVisible(toolbar_model_, web_contents));
-    site_settings_toggle_->SetIsOn(
-        IsSiteSettingsToggleOn(browser_, web_contents));
-    UpdateSiteSettingToggleText(site_settings_toggle_);
+  subheader_subtitle_->SetText(GetCurrentSite(web_contents));
+
+  site_settings_toggle_->SetVisible(
+      IsSiteSettingsToggleVisible(toolbar_model_, web_contents));
+  site_settings_toggle_->SetIsOn(
+      IsSiteSettingsToggleOn(browser_, web_contents));
+  UpdateSiteSettingToggleText(site_settings_toggle_);
+
+  // Update menu items.
+  for (auto* view : menu_items_->children()) {
+    GetAsMenuItem(view)->Update();
   }
 }
 
