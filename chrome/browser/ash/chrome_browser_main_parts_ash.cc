@@ -1597,6 +1597,11 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // vc_app_service_client_ has to be destructed before PostMainMessageLoopRun.
   vc_app_service_client_.reset();
 
+  // Has a dependency on Profile, so it needs to be destroyed before Profile
+  // gets destroyed during ProfileManager destruction, which happens inside
+  // PostMainMessageLoop below.
+  web_kiosk_app_manager_.reset();
+
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
 
@@ -1607,7 +1612,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // Destroy classes that may have ash observers or dependencies.
   arc_kiosk_app_manager_.reset();
-  web_kiosk_app_manager_.reset();
   chrome_keyboard_controller_client_.reset();
 
   // All ARC related modules should have been shut down by this point, so
