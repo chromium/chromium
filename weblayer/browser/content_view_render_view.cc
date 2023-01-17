@@ -221,9 +221,6 @@ void ContentViewRenderView::InitCompositor() {
 
   compositor_.reset(content::Compositor::Create(this, root_window_));
   root_container_layer_ = cc::Layer::Create();
-  root_container_layer_->SetHitTestable(false);
-  root_container_layer_->SetElementId(
-      cc::ElementId(root_container_layer_->id()));
   root_container_layer_->SetIsDrawable(false);
   compositor_->SetRootLayer(root_container_layer_);
   UpdateBackgroundColor(base::android::AttachCurrentThread());
