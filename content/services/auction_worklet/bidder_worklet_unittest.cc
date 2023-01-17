@@ -3614,6 +3614,14 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
       {"https://url.test/ execution of `generateBid` timed out."});
 }
 
+// Test that per-buyer timeout of zero results in no bid produced.
+TEST_F(BidderWorkletTest, TimeoutZero) {
+  per_buyer_timeout_ = base::Seconds(0);
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid:1, render:"https://response.test/"})",
+      mojom::BidderWorkletBidPtr());
+}
+
 // Test that in the case of multiple setBid() calls, the most recent call takes
 // precedence. Note that this test sets `bid_duration` to
 // `AuctionV8Helper::kScriptTimeout`, to make sure the full timeout time is

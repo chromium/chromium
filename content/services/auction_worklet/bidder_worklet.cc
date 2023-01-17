@@ -732,9 +732,12 @@ BidderWorklet::V8State::GenerateSingleBid(
     const scoped_refptr<TrustedSignals::Result>& trusted_bidding_signals_result,
     uint64_t trace_id,
     bool restrict_to_kanon_ads) {
-  // Can't make a bid without any ads.
-  if (!bidder_worklet_non_shared_params->ads)
+  // Can't make a bid without any ads, or if we aren't permitted to spend any
+  // time on it.
+  if (!bidder_worklet_non_shared_params->ads ||
+      (per_buyer_timeout.has_value() && per_buyer_timeout.value().is_zero())) {
     return absl::nullopt;
+  }
 
   base::TimeTicks start = base::TimeTicks::Now();
 
