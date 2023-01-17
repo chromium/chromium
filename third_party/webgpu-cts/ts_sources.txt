@@ -416,6 +416,7 @@ src/webgpu/shader/execution/expression/call/builtin/workgroupBarrier.spec.ts
 src/webgpu/shader/execution/expression/unary/unary.ts
 src/webgpu/shader/execution/expression/unary/bool_logical.spec.ts
 src/webgpu/shader/execution/expression/unary/f32_arithmetic.spec.ts
+src/webgpu/shader/execution/expression/unary/i32_arithmetic.spec.ts
 src/webgpu/shader/execution/memory_model/memory_model_setup.ts
 src/webgpu/shader/execution/memory_model/atomicity.spec.ts
 src/webgpu/shader/execution/memory_model/barrier.spec.ts
@@ -442,7 +443,6 @@ src/webgpu/shader/validation/shader_io/entry_point.spec.ts
 src/webgpu/shader/validation/shader_io/interpolate.spec.ts
 src/webgpu/shader/validation/shader_io/invariant.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
-src/webgpu/shader/validation/shader_io/shareable_types.spec.ts
 src/webgpu/shader/validation/static_assert/static_assert.spec.ts
 src/webgpu/util/color_space_conversion.ts
 src/webgpu/util/copy_to_texture.ts
