@@ -355,8 +355,7 @@ function jsonSerialize(item, seen) {
 
   // TODO(crbug.com/1337415): Implement WindowProxy serialization.
 
-  if (typeof item.toJSON === 'function' &&
-      item.hasOwnProperty('toJSON')) {
+  if (typeof item.toJSON === 'function' && Object.hasOwn(item, 'toJSON')) {
     return item.toJSON();
   }
   if (isCollection(item))
