@@ -1,0 +1,67 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+
+const source_matching_promise_test = (testCase) => {
+  attribution_reporting_promise_test(async t => {
+    await registerAttributionSrc(t, {
+      source: {
+        destination: testCase.sourceDestination,
+      },
+      reportingOrigin: testCase.sourceReportingOrigin,
+    });
+
+    await registerAttributionSrc(t, {
+      trigger: {
+        event_trigger_data: [{}],
+        debug_reporting: true,
+      },
+      cookie: attributionDebugCookie,
+    });
+
+    if (testCase.expectMatched) {
+      const payload = await pollEventLevelReports();
+      assert_equals(payload.reports.length, 1);
+      return;
+    }
+
+    const payload = await pollVerboseDebugReports();
+    assert_equals(payload.reports.length, 1);
+    const debugReport = JSON.parse(payload.reports[0].body);
+    assert_equals(debugReport.length, 1);
+    assert_equals(debugReport[0].type, 'trigger-no-matching-source');
+  }, testCase.testName);
+};
+
+assert_not_equals(location.origin, get_host_info().HTTPS_REMOTE_ORIGIN);
+
+[
+  {
+    testName: 'Same destination origin and reporting origin',
+    sourceDestination: location.origin,
+    expectMatched: true,
+  },
+  {
+    testName: 'Different destination origin but same site',
+    sourceDestination: get_host_info().HTTPS_REMOTE_ORIGIN,
+    expectMatched: true,
+  },
+  {
+    testName: 'Different destination site',
+    sourceDestination: 'https://example.test',
+    expectMatched: false,
+  },
+  {
+    testName: 'Different reporting origin',
+    sourceDestination: location.origin,
+    sourceReportingOrigin: get_host_info().HTTPS_REMOTE_ORIGIN,
+    expectMatched: false,
+  },
+].forEach(source_matching_promise_test);
+
+</script>
