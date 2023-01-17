@@ -7,7 +7,7 @@
 #endif
 #endif
 
-#if !defined(OPENSSL_NO_ASM) && defined(__powerpc64__)
+#if !defined(OPENSSL_NO_ASM) && defined(__powerpc64__) && defined(__ELF__)
 .machine	"any"
 .abiversion	2
 .text
@@ -1406,5 +1406,8 @@ abi_test_clobber_lr:
 	bctr	
 .size	abi_test_clobber_lr,.-abi_test_clobber_lr
 
-#endif  // !OPENSSL_NO_ASM && __powerpc64__
-.section	.note.GNU-stack,"",@progbits
+#endif  // !OPENSSL_NO_ASM && __powerpc64__ && __ELF__
+#if defined(__ELF__)
+// See https://www.airs.com/blog/archives/518.
+.section .note.GNU-stack,"",%progbits
+#endif

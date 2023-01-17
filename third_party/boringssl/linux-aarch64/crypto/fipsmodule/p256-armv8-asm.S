@@ -8,8 +8,7 @@
 #define OPENSSL_NO_ASM
 #endif
 
-#if !defined(OPENSSL_NO_ASM)
-#if defined(__aarch64__)
+#if !defined(OPENSSL_NO_ASM) && defined(__AARCH64EL__) && defined(__ELF__)
 #if defined(BORINGSSL_PREFIX)
 #include <boringssl_prefix_symbols_asm.h>
 #endif
@@ -1708,6 +1707,8 @@ ecp_nistz256_select_w7:
 
 	ret
 .size	ecp_nistz256_select_w7,.-ecp_nistz256_select_w7
+#endif  // !OPENSSL_NO_ASM && defined(__AARCH64EL__) && defined(__ELF__)
+#if defined(__ELF__)
+// See https://www.airs.com/blog/archives/518.
+.section .note.GNU-stack,"",%progbits
 #endif
-#endif  // !OPENSSL_NO_ASM
-.section	.note.GNU-stack,"",%progbits

@@ -1,6 +1,7 @@
 ; This file is generated from a similarly-named Perl script in the BoringSSL
 ; source tree. Do not edit by hand.
 
+%ifidn __OUTPUT_FORMAT__, win64
 default	rel
 %define XMMWORD
 %define YMMWORD
@@ -680,3 +681,4 @@ DB	0
 
 DB	$L$abi_test_bad_unwind_epilog_seh_push_r12-$L$abi_test_bad_unwind_epilog_seh_begin
 DB	192
+%endif

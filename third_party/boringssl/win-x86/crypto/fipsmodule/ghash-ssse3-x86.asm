@@ -4,6 +4,7 @@
 %ifdef BORINGSSL_PREFIX
 %include "boringssl_prefix_symbols_nasm.inc"
 %endif
+%ifidn __OUTPUT_FORMAT__, win32
 %ifidn __OUTPUT_FORMAT__,obj
 section	code	use32 class=code align=64
 %elifidn __OUTPUT_FORMAT__,win32
@@ -290,3 +291,4 @@ db	15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
 align	16
 L$low4_mask:
 dd	252645135,252645135,252645135,252645135
+%endif

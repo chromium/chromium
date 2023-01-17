@@ -1,6 +1,7 @@
 ; This file is generated from a similarly-named Perl script in the BoringSSL
 ; source tree. Do not edit by hand.
 
+%ifidn __OUTPUT_FORMAT__, win64
 default	rel
 %define XMMWORD
 %define YMMWORD
@@ -493,3 +494,4 @@ DB	104
 
 DB	$L$ghash_seh_allocstack-$L$ghash_seh_begin
 DB	98
+%endif

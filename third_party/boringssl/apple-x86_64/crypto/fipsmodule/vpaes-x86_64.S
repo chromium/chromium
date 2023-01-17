@@ -7,7 +7,7 @@
 #endif
 #endif
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM) && defined(__APPLE__)
 #if defined(BORINGSSL_PREFIX)
 #include <boringssl_prefix_symbols_asm.h>
 #endif
@@ -1127,4 +1127,8 @@ L$ctr_add_two:
 .byte	86,101,99,116,111,114,32,80,101,114,109,117,116,97,116,105,111,110,32,65,69,83,32,102,111,114,32,120,56,54,95,54,52,47,83,83,83,69,51,44,32,77,105,107,101,32,72,97,109,98,117,114,103,32,40,83,116,97,110,102,111,114,100,32,85,110,105,118,101,114,115,105,116,121,41,0
 .p2align	6
 
+#endif
+#if defined(__ELF__)
+// See https://www.airs.com/blog/archives/518.
+.section .note.GNU-stack,"",%progbits
 #endif

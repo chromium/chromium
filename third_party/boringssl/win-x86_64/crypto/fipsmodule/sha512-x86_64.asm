@@ -1,6 +1,7 @@
 ; This file is generated from a similarly-named Perl script in the BoringSSL
 ; source tree. Do not edit by hand.
 
+%ifidn __OUTPUT_FORMAT__, win64
 default	rel
 %define XMMWORD
 %define YMMWORD
@@ -3137,3 +3138,4 @@ $L$SEH_info_sha512_block_data_order_avx:
 DB	9,0,0,0
 	DD	se_handler wrt ..imagebase
 	DD	$L$prologue_avx wrt ..imagebase,$L$epilogue_avx wrt ..imagebase
+%endif

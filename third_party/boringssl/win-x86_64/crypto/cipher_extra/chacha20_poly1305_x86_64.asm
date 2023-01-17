@@ -1,6 +1,7 @@
 ; This file is generated from a similarly-named Perl script in the BoringSSL
 ; source tree. Do not edit by hand.
 
+%ifidn __OUTPUT_FORMAT__, win64
 default	rel
 %define XMMWORD
 %define YMMWORD
@@ -8944,3 +8945,4 @@ $L$seal_avx2_exit:
 	jmp	NEAR $L$seal_sse_tail_16
 
 
+%endif

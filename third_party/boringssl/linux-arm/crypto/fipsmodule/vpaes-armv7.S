@@ -8,8 +8,7 @@
 #define OPENSSL_NO_ASM
 #endif
 
-#if !defined(OPENSSL_NO_ASM)
-#if defined(__arm__)
+#if !defined(OPENSSL_NO_ASM) && defined(__ARMEL__) && defined(__ELF__)
 #if defined(BORINGSSL_PREFIX)
 #include <boringssl_prefix_symbols_asm.h>
 #endif
@@ -1231,6 +1230,8 @@ vpaes_ctr32_encrypt_blocks:
 	vldmia	sp!, {d8,d9,d10,d11,d12,d13,d14,d15}
 	ldmia	sp!, {r7,r8,r9,r10,r11, pc}	@ return
 .size	vpaes_ctr32_encrypt_blocks,.-vpaes_ctr32_encrypt_blocks
+#endif  // !OPENSSL_NO_ASM && defined(__ARMEL__) && defined(__ELF__)
+#if defined(__ELF__)
+// See https://www.airs.com/blog/archives/518.
+.section .note.GNU-stack,"",%progbits
 #endif
-#endif  // !OPENSSL_NO_ASM
-.section	.note.GNU-stack,"",%progbits

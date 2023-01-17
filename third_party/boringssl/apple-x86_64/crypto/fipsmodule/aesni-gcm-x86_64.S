@@ -7,7 +7,7 @@
 #endif
 #endif
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM) && defined(__APPLE__)
 #if defined(BORINGSSL_PREFIX)
 #include <boringssl_prefix_symbols_asm.h>
 #endif
@@ -305,6 +305,9 @@ L$enc_tail:
 	vpaddb	%xmm2,%xmm1,%xmm0
 	movq	%r13,112+8(%rsp)
 	leaq	96(%rdi),%rdi
+
+	prefetcht0	512(%rdi)
+	prefetcht0	576(%rdi)
 	vaesenclast	%xmm5,%xmm11,%xmm11
 	vpaddb	%xmm2,%xmm0,%xmm5
 	movq	%r12,120+8(%rsp)
@@ -847,4 +850,8 @@ L$one_lsb:
 .byte	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 .byte	65,69,83,45,78,73,32,71,67,77,32,109,111,100,117,108,101,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .p2align	6
+#endif
+#if defined(__ELF__)
+// See https://www.airs.com/blog/archives/518.
+.section .note.GNU-stack,"",%progbits
 #endif

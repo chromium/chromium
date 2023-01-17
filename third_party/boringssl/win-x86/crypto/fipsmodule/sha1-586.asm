@@ -4,6 +4,7 @@
 %ifdef BORINGSSL_PREFIX
 %include "boringssl_prefix_symbols_nasm.inc"
 %endif
+%ifidn __OUTPUT_FORMAT__, win32
 %ifidn __OUTPUT_FORMAT__,obj
 section	code	use32 class=code align=64
 %elifidn __OUTPUT_FORMAT__,win32
@@ -3804,3 +3805,4 @@ db	89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112
 db	114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 segment	.bss
 common	_OPENSSL_ia32cap_P 16
+%endif

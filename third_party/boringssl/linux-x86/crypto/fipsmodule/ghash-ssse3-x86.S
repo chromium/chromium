@@ -1,7 +1,13 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__i386__)
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
+#if !defined(OPENSSL_NO_ASM) && defined(__i386__) && defined(__ELF__)
 #if defined(BORINGSSL_PREFIX)
 #include <boringssl_prefix_symbols_asm.h>
 #endif
@@ -290,5 +296,8 @@ gcm_ghash_ssse3:
 .align	16
 .Llow4_mask:
 .long	252645135,252645135,252645135,252645135
+#endif  // !defined(OPENSSL_NO_ASM) && defined(__i386__) && defined(__ELF__)
+#if defined(__ELF__)
+// See https://www.airs.com/blog/archives/518.
+.section .note.GNU-stack,"",%progbits
 #endif
-.section	.note.GNU-stack,"",@progbits

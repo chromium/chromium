@@ -8,8 +8,7 @@
 #define OPENSSL_NO_ASM
 #endif
 
-#if !defined(OPENSSL_NO_ASM)
-#if defined(__arm__)
+#if !defined(OPENSSL_NO_ASM) && defined(__ARMEL__) && defined(__ELF__)
 #if defined(BORINGSSL_PREFIX)
 #include <boringssl_prefix_symbols_asm.h>
 #endif
@@ -374,6 +373,8 @@ abi_test_clobber_d15:
 	vmov	s31, r0
 	bx	lr
 .size	abi_test_clobber_d15,.-abi_test_clobber_d15
+#endif  // !OPENSSL_NO_ASM && defined(__ARMEL__) && defined(__ELF__)
+#if defined(__ELF__)
+// See https://www.airs.com/blog/archives/518.
+.section .note.GNU-stack,"",%progbits
 #endif
-#endif  // !OPENSSL_NO_ASM
-.section	.note.GNU-stack,"",%progbits

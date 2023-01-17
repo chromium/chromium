@@ -4,6 +4,7 @@
 %ifdef BORINGSSL_PREFIX
 %include "boringssl_prefix_symbols_nasm.inc"
 %endif
+%ifidn __OUTPUT_FORMAT__, win32
 %ifidn __OUTPUT_FORMAT__,obj
 section	code	use32 class=code align=64
 %elifidn __OUTPUT_FORMAT__,win32
@@ -672,3 +673,4 @@ L$022cbc_abort:
 	pop	ebx
 	pop	ebp
 	ret
+%endif

@@ -7,7 +7,7 @@
 #endif
 #endif
 
-#if !defined(OPENSSL_NO_ASM) && defined(__powerpc64__)
+#if !defined(OPENSSL_NO_ASM) && defined(__powerpc64__) && defined(__ELF__)
 .machine	"any"
 
 .abiversion	2
@@ -3666,5 +3666,8 @@ _aesp8_xts_dec5x:
 	blr	
 .long	0
 .byte	0,12,0x14,0,0,0,0,0
-#endif  // !OPENSSL_NO_ASM && __powerpc64__
-.section	.note.GNU-stack,"",@progbits
+#endif  // !OPENSSL_NO_ASM && __powerpc64__ && __ELF__
+#if defined(__ELF__)
+// See https://www.airs.com/blog/archives/518.
+.section .note.GNU-stack,"",%progbits
+#endif

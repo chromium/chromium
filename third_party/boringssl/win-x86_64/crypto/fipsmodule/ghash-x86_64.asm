@@ -1,6 +1,7 @@
 ; This file is generated from a similarly-named Perl script in the BoringSSL
 ; source tree. Do not edit by hand.
 
+%ifidn __OUTPUT_FORMAT__, win64
 default	rel
 %define XMMWORD
 %define YMMWORD
@@ -1219,3 +1220,4 @@ DB	0x10,0x88,0x02,0x00
 DB	0x0c,0x78,0x01,0x00
 DB	0x08,0x68,0x00,0x00
 DB	0x04,0x01,0x15,0x00
+%endif

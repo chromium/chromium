@@ -1,6 +1,7 @@
 ; This file is generated from a similarly-named Perl script in the BoringSSL
 ; source tree. Do not edit by hand.
 
+%ifidn __OUTPUT_FORMAT__, win64
 default	rel
 %define XMMWORD
 %define YMMWORD
@@ -1924,3 +1925,4 @@ $L$SEH_info_ChaCha20_8x:
 DB	9,0,0,0
 	DD	full_handler wrt ..imagebase
 	DD	$L$8x_body wrt ..imagebase,$L$8x_epilogue wrt ..imagebase
+%endif
