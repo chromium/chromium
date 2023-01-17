@@ -125,7 +125,7 @@
 <translation id="2084108471225856927">Түзмөктү тууралоо</translation>
 <translation id="2084809735218147718">"Рахмат" деп жазып жаткан адам</translation>
 <translation id="2088690981887365033">VPN тармагы</translation>
-<translation id="2122305276694332719">Жашырылган тармакка автоматтык түрдө туташуу түзмөгүңүздү жана тармактын айрым жөндөөлөрүн башкаларга көрсөтүп турат, андыктан аны колдонуу сунушталбайт.</translation>
+<translation id="2122305276694332719">Жашырылган тармакка автоматтык түрдө туташуу түзмөгүңүздү жана тармактын айрым параметрлерин башкаларга көрсөтүп турат, андыктан аны колдонуу сунушталбайт.</translation>
 <translation id="2125607626296734455">Хмерче</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз башкарат, Туташуу</translation>
 <translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
@@ -525,7 +525,7 @@
 <translation id="5364067326287025678">Таштандыда эч нерсе жок</translation>
 <translation id="5368191757080475556">Папканы Linux аркылуу бөлүшүү</translation>
 <translation id="5402367795255837559">Брайл</translation>
-<translation id="5411472733320185105">Бул хосттор жана домендер үчүн прокси жөндөөлөрү колдонулбасын:</translation>
+<translation id="5411472733320185105">Бул хосттор жана домендер үчүн прокси параметрлери колдонулбасын:</translation>
 <translation id="541890217011173530">Сорани (англисче баскычтоп)</translation>
 <translation id="5422221874247253874">Жетки чекити</translation>
 <translation id="5428105026674456456">Испанча</translation>
@@ -578,7 +578,7 @@
 <translation id="5818003990515275822">Корейче</translation>
 <translation id="5819442873484330149">Хангул 3 топтому (Соңку)</translation>
 <translation id="5832976493438355584">Кулпуланган</translation>
-<translation id="5833610766403489739">Файл башка жакка кирип кетти. Жуктөлүп алынган нерселерди жайгаштыруу жөндөөлөрүн текшерип, кайра аракет кылып көрүңүз.</translation>
+<translation id="5833610766403489739">Файл башка жакка кирип кетти. Жуктөлүп алынган нерселерди жайгаштыруу параметрлерин текшерип, кайра аракет кылып көрүңүз.</translation>
 <translation id="5838451609423551646">Бардык пункттар тандоодон чыгарылды.</translation>
 <translation id="5838825566232597749">US Workman эл аралык</translation>
 <translation id="5845721951356578987">Медайым</translation>

@@ -1989,7 +1989,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6045164183059402045">Šablon položaja</translation>
 <translation id="6047233362582046994">Ako razumijete rizike po vašu sigurnost, možete <ph name="BEGIN_LINK" />posjetiti ovu web lokaciju<ph name="END_LINK" /> prije uklanjanja štetnih aplikacija.</translation>
 <translation id="6047927260846328439">Ovaj sadržaj vas može navesti da instalirate softver ili otkrijete lične informacije. <ph name="BEGIN_LINK" />Ipak pokaži<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Pritisnite i držite tipku |<ph name="ACCELERATOR" />| da izađete iz cijelog ekrana</translation>
+<translation id="6049004884579590341">Pritisnite i zadržite tipku |<ph name="ACCELERATOR" />| da izađete iz cijelog ekrana</translation>
 <translation id="6049056807983403918">Koverta B4</translation>
 <translation id="6049488691372270142">Izlaz stranica</translation>
 <translation id="6051221802930200923">Trenutno ne možete posjetiti web lokaciju <ph name="SITE" />, jer web lokacija koristi kačenje potvrde. Greške i napadi na mreži su obično privremenog karaktera, tako da će ova stranica vjerovatno raditi kasnije.</translation>
