@@ -2,13 +2,14 @@
   :host {
     --cr-grid-gap: 0px;
     --cr-column-width: auto;
+    --cr-grid-width: fit-content;
   }
 
   #grid {
     display: grid;
     grid-gap: var(--cr-grid-gap);
     grid-template-columns: repeat(var(--cr-grid-columns), var(--cr-column-width));
-    width: fit-content;
+    width: var(--cr-grid-width);
   }
 
   ::slotted(*) {

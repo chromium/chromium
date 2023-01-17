@@ -21,7 +21,8 @@
 
   cr-grid {
     --cr-column-width: 1fr;
-    --cr-grid-gap: 16px 11px;
+    --cr-grid-gap: 16px 12px;
+    --cr-grid-width: 100%;
     display: block;
     margin: 16px 16px 32px;
   }
@@ -50,8 +51,7 @@
     }
   }
 
-  .image-container img,
-  .image-container div {
+  .image-container img {
     position: absolute;
   }
 
@@ -60,14 +60,6 @@
     left: 50%;
     top: 0;
     transform: translateX(-50%);
-  }
-
-  .label {
-    color: var(--cr-primary-text-color);
-    font-size: 11px;
-    line-height: 16px;
-    padding-top: 7px;
-    text-align: center;
   }
 
   .image-container {
@@ -101,14 +93,13 @@
 <cr-grid columns="3">
   <template is="dom-repeat" id="themesRepeat" items="[[themes_]]">
     <div class="tile theme" tabindex="0" role="button"
-        on-click="onSelectTheme_">
+        on-click="onSelectTheme_" title="[[item.attribution1]]">
       <div class="image-container">
         <img is="cr-auto-img"
             auto-src="[[item.previewImageUrl.url]]"
             draggable="false">
         </img>
       </div>
-      <div class="label">[[item.attribution1]]</div>
     </div>
   </template>
 </cr-grid>

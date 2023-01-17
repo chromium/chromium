@@ -89,17 +89,11 @@ suite('ThemesTest', () => {
     let themes = themesElement.shadowRoot!.querySelectorAll('.theme');
     assertEquals(themes.length, 3);
     assertEquals(
-        'attribution1_1', themes[0]!.querySelector('.label')!.textContent);
-    assertEquals(
         'https://preview_1.jpg',
         themes[0]!.querySelector('img')!.getAttribute('auto-src'));
     assertEquals(
-        'attribution1_2', themes[1]!.querySelector('.label')!.textContent);
-    assertEquals(
         'https://preview_2.jpg',
         themes[1]!.querySelector('img')!.getAttribute('auto-src'));
-    assertEquals(
-        'attribution1_3', themes[2]!.querySelector('.label')!.textContent);
     assertEquals(
         'https://preview_3.jpg',
         themes[2]!.querySelector('img')!.getAttribute('auto-src'));
@@ -111,27 +105,17 @@ suite('ThemesTest', () => {
     themes = themesElement.shadowRoot!.querySelectorAll('.theme');
     assertEquals(themes.length, 5);
     assertEquals(
-        'attribution1_1', themes[0]!.querySelector('.label')!.textContent);
-    assertEquals(
         'https://preview_1.jpg',
         themes[0]!.querySelector('img')!.getAttribute('auto-src'));
-    assertEquals(
-        'attribution1_2', themes[1]!.querySelector('.label')!.textContent);
     assertEquals(
         'https://preview_2.jpg',
         themes[1]!.querySelector('img')!.getAttribute('auto-src'));
     assertEquals(
-        'attribution1_3', themes[2]!.querySelector('.label')!.textContent);
-    assertEquals(
         'https://preview_3.jpg',
         themes[2]!.querySelector('img')!.getAttribute('auto-src'));
     assertEquals(
-        'attribution1_4', themes[3]!.querySelector('.label')!.textContent);
-    assertEquals(
         'https://preview_4.jpg',
         themes[3]!.querySelector('img')!.getAttribute('auto-src'));
-    assertEquals(
-        'attribution1_5', themes[4]!.querySelector('.label')!.textContent);
     assertEquals(
         'https://preview_5.jpg',
         themes[4]!.querySelector('img')!.getAttribute('auto-src'));
