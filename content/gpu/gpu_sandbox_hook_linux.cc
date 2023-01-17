@@ -297,6 +297,39 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   AddDrmGpuPermissions(permissions);
 }
 
+void AddVirtIOGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
+  static const char* const kReadOnlyList[] = {
+      "/etc/ld.so.cache",
+      // To support threads in mesa we use --gpu-sandbox-start-early and
+      // that requires the following libs and files to be accessible.
+      // "/sys", "/sys/dev", "/sys/dev/char", "/sys/devices" are probed in order
+      // to use kms_swrast.
+      "/sys",
+      "/sys/dev",
+      "/usr/lib64/libEGL.so.1",
+      "/usr/lib64/libGLESv2.so.2",
+      "/usr/lib64/libglapi.so.0",
+      "/usr/lib64/libc++.so.1",
+      // If kms_swrast_dri is not usable, swrast_dri is used instead.
+      "/usr/lib64/dri/swrast_dri.so",
+      "/usr/lib64/dri/kms_swrast_dri.so",
+      "/usr/lib64/dri/virtio_gpu_dri.so",
+  };
+  for (const char* item : kReadOnlyList) {
+    permissions->push_back(BrokerFilePermission::ReadOnly(item));
+  }
+  static const char* kDevices[] = {"/sys/dev/char", "/sys/devices"};
+  for (const char* item : kDevices) {
+    std::string path(item);
+    permissions->push_back(
+        BrokerFilePermission::StatOnlyWithIntermediateDirs(path));
+    permissions->push_back(BrokerFilePermission::ReadOnly(path));
+    permissions->push_back(BrokerFilePermission::ReadOnlyRecursive(path + "/"));
+  }
+
+  AddDrmGpuPermissions(permissions);
+}
+
 void AddArmGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char kLdSoCache[] = "/etc/ld.so.cache";
 
@@ -442,6 +475,9 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
     }
     if (options.use_nvidia_specific_policies) {
       AddStandardGpuPermissions(&permissions, options);
+    }
+    if (options.use_virtio_specific_policies) {
+      AddVirtIOGpuPermissions(&permissions);
     }
     return permissions;
   }
@@ -610,7 +646,8 @@ sandbox::syscall_broker::BrokerCommandSet CommandSetForGPU(
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
   if (IsChromeOS() &&
       (options.use_amd_specific_policies ||
-       options.use_intel_specific_policies || IsArchitectureArm())) {
+       options.use_intel_specific_policies ||
+       options.use_virtio_specific_policies || IsArchitectureArm())) {
     command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
   }
   return command_set;

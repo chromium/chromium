@@ -27,6 +27,7 @@ class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
   struct Options {
     bool use_amd_specific_policies = false;     // For ChromiumOS.
     bool use_intel_specific_policies = false;   // For ChromiumOS.
+    bool use_virtio_specific_policies = false;  // For ChromiumOS VM.
     bool use_nvidia_specific_policies = false;  // For Linux.
     bool use_asahi_specific_policies = false;   // For Linux.
 

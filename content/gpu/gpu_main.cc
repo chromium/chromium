@@ -432,6 +432,8 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
         angle::IsAMD(gpu_info->active_gpu().vendor_id);
     sandbox_options.use_intel_specific_policies =
         angle::IsIntel(gpu_info->active_gpu().vendor_id);
+    sandbox_options.use_virtio_specific_policies =
+        angle::IsVirtIO(gpu_info->active_gpu().vendor_id);
     sandbox_options.use_nvidia_specific_policies =
         angle::IsNVIDIA(gpu_info->active_gpu().vendor_id);
     sandbox_options.use_asahi_specific_policies =
