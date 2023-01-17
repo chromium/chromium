@@ -410,11 +410,7 @@ void AshTestHelper::SimulateUserLogin(const AccountId& account_id,
 }
 
 void AshTestHelper::StabilizeUIForPixelTest() {
-  const gfx::Size primary_display_size =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
-          .size();
-  pixel_test_helper_->StabilizeUi(primary_display_size);
+  pixel_test_helper_->StabilizeUi();
 }
 
 }  // namespace ash

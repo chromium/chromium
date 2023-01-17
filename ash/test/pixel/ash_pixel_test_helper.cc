@@ -10,7 +10,9 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/i18n/base_i18n_switches.h"
+#include "base/run_loop.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 
@@ -19,7 +21,10 @@ namespace ash {
 namespace {
 
 // The color of the default wallpaper in pixel tests.
-constexpr SkColor kWallPaperColor = SK_ColorMAGENTA;
+constexpr SkColor kWallpaperColor = SK_ColorMAGENTA;
+
+// 1x1 wallpaper will tile to cover the display.
+constexpr int kWallpaperSize = 1;
 
 // Specify the locale and the time zone used in pixel tests.
 constexpr char kLocale[] = "en_US";
@@ -39,9 +44,9 @@ AshPixelTestHelper::AshPixelTestHelper(pixel_test::InitParams params)
 
 AshPixelTestHelper::~AshPixelTestHelper() = default;
 
-void AshPixelTestHelper::StabilizeUi(const gfx::Size& wallpaper_size) {
+void AshPixelTestHelper::StabilizeUi() {
   MaybeSetDarkMode();
-  SetWallPaper(wallpaper_size);
+  SetWallpaper();
   SetBatteryState();
 }
 
@@ -56,31 +61,45 @@ void AshPixelTestHelper::MaybeSetDarkMode() {
     dark_light_mode_controller->ToggleColorMode();
 }
 
-void AshPixelTestHelper::SetWallPaper(const gfx::Size& wallpaper_size) {
+void AshPixelTestHelper::SetWallpaper() {
   auto* controller = Shell::Get()->wallpaper_controller();
   controller->set_wallpaper_reload_no_delay_for_test();
 
   switch (params_.wallpaper_init_type) {
     case pixel_test::WallpaperInitType::kRegular: {
-      gfx::ImageSkia wallpaper_image =
-          CreateSolidColorTestImage(wallpaper_size, kWallPaperColor);
+      gfx::ImageSkia wallpaper_image = CreateSolidColorTestImage(
+          {kWallpaperSize, kWallpaperSize}, kWallpaperColor);
       controller->set_allow_blur_or_shield_for_testing();
+
+      DCHECK(!wallpaper_controller_observation_.IsObserving());
+      wallpaper_controller_observation_.Observe(controller);
+
+      base::RunLoop loop;
+      DCHECK(!on_wallpaper_finalized_);
+      on_wallpaper_finalized_ = loop.QuitClosure();
 
       // Use the one shot wallpaper to ensure that the custom wallpaper set by
       // pixel tests does not go away after changing display metrics.
       controller->ShowWallpaperImage(
           wallpaper_image,
           WallpaperInfo{/*in_location=*/std::string(),
-                        /*in_layout=*/WALLPAPER_LAYOUT_STRETCH,
+                        /*in_layout=*/WALLPAPER_LAYOUT_TILE,
                         /*in_type=*/WallpaperType::kOneShot,
                         /*in_date=*/base::Time::Now().LocalMidnight()},
           /*preview_mode=*/false, /*always_on_top=*/false);
+
+      // Wait for `WallpaperControllerObserver::OnWallpaperColorsChanged` so
+      // that colors are finalized before pixel testing views.
+      loop.Run();
+      DCHECK(!wallpaper_controller_observation_.IsObserving());
       break;
     }
     case pixel_test::WallpaperInitType::kPolicy:
       controller->set_bypass_decode_for_testing();
 
       // A dummy file path is sufficient for setting a default policy wallpaper.
+      // Do not wait for resize or color calculation, as this is not a real png
+      // and it will never load.
       controller->SetDevicePolicyWallpaperPath(base::FilePath("tmp.png"));
 
       break;
@@ -95,6 +114,12 @@ void AshPixelTestHelper::SetBatteryState() {
       power_manager::PowerSupplyProperties_BatteryState_DISCHARGING);
   proto.set_battery_percent(50.0);
   chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(proto);
+}
+
+void AshPixelTestHelper::OnWallpaperColorsChanged() {
+  DCHECK(on_wallpaper_finalized_);
+  wallpaper_controller_observation_.Reset();
+  std::move(on_wallpaper_finalized_).Run();
 }
 
 }  // namespace ash
