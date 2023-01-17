@@ -1662,7 +1662,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
       R"HTML(
       <style>
         #multicol {
-          column-count:2; column-fill:auto; column-gap:0px; width:100px;
+          column-count:2; column-gap:0px; width:100px;
         }
         .abs {
           position:absolute; width:50px; height:200px; top:0;

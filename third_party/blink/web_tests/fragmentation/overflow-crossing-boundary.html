@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<div id="multicol" style="position:relative; columns:2; column-fill:auto; line-height:20px; orphans:1; widows:1; background:yellow;">
+<div id="multicol" style="position:relative; columns:2; line-height:20px; orphans:1; widows:1; background:yellow;">
     <div style="width:4em;">
         <div style="height:20px; background:hotpink;"></div>
         <div style="height:15px;">
@@ -28,6 +28,7 @@ test(() => {
     assert_equals(child4.offsetTop, 20);
     assert_equals(child5.offsetTop, 40);
 
+    multicol.style.columnFill = "auto";
     multicol.style.height = "90px";
     assert_equals(child3.offsetTop, 60);
     assert_equals(child4.offsetTop, 0);
