@@ -56,36 +56,30 @@ schema:
           - INSTALL_ALLOWED
         installer_image_x86_64:
           type: object
-          description: The UEFI-bootable disk image used to install the VM on x86_64 devices
+          description: The UEFI-bootable disk image used to install the VM on x86_64 devices.
           required:
           - url
           - hash
           properties:
             url:
               type: string
-              description: URL of the compressed object to download. Objects may
-               be compressed using gzip, bzip2, lzma, or zstd, which will be
-               automatically detected after downloading. Objects may not be
-               uncompressed, as this cannot be autodetected.
+              description: URL of the disk image to download.
             hash:
               type: string
-              description: Hexadecimal encoded SHA-256 hash of the compressed object
+              description: Hexadecimal encoded SHA-256 hash of the disk image.
         uefi_pflash_x86_64:
           type: object
-          description: The initial non-volatile UEFI data used by the VM firmware
+          description: The initial non-volatile UEFI data used by the VM firmware.
           required:
           - url
           - hash
           properties:
             url:
               type: string
-              description: URL of the compressed object to download. Objects may
-               be compressed using gzip, bzip2, lzma, or zstd, which will be
-               automatically detected after downloading. Objects may not be
-               uncompressed, as this cannot be autodetected.
+              description: URL of the data to download.
             hash:
               type: string
-              description: Hexadecimal encoded SHA-256 hash of the compressed object
+              description: Hexadecimal encoded SHA-256 hash of the data.
         uefi_image_x86_64:
           type: object
           description: The UEFI firmware image used by the VM. This exists as a
@@ -96,13 +90,10 @@ schema:
           properties:
             url:
               type: string
-              description: URL of the compressed object to download. Objects may
-               be compressed using gzip, bzip2, lzma, or zstd, which will be
-               automatically detected after downloading. Objects may not be
-               uncompressed, as this cannot be autodetected.
+              description: URL of the firmware image to download.
             hash:
               type: string
-              description: Hexadecimal encoded SHA-256 hash of the compressed object
+              description: Hexadecimal encoded SHA-256 hash of the firmware image.
         vtpm:
           type: object
           description: Controls if VMs using this configuration have
@@ -115,12 +106,12 @@ schema:
             enabled:
               type: boolean
               description: Controls whether VMs using this configuration have
-               access to a vTPM, defaults to false
+               access to a vTPM, defaults to false.
             policy_update_action:
               type: string
               description: Controls how to treat running VMs that don't match
                this policy setting, defaults to
-               <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED">FORCE_SHUTDOWN_IF_MORE_RESTRICTED</ph>
+               <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED">FORCE_SHUTDOWN_IF_MORE_RESTRICTED</ph>.
               enum:
               - NONE
               - FORCE_SHUTDOWN_IF_MORE_RESTRICTED
