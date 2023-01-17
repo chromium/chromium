@@ -53,9 +53,7 @@ class ThemeSelectionScreenTest
       public ::testing::WithParamInterface<test::UIPath> {
  public:
   ThemeSelectionScreenTest() {
-    feature_list_.InitWithFeatures({features::kEnableOobeThemeSelection,
-                                    chromeos::features::kDarkLightMode},
-                                   {});
+    feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode}, {});
   }
 
   void SetUpOnMainThread() override {

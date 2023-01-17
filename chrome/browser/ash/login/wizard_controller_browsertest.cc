@@ -3216,8 +3216,7 @@ class WizardControllerThemeSelectionDefaultSettingsTest
   WizardControllerThemeSelectionDefaultSettingsTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kEnableOobeThemeSelection,
-                               chromeos::features::kDarkLightMode});
+        /*disabled_features=*/{chromeos::features::kDarkLightMode});
   }
 
  protected:
@@ -3246,8 +3245,7 @@ class WizardControllerThemeSelectionEnabledTest
  public:
   WizardControllerThemeSelectionEnabledTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEnableOobeThemeSelection,
-                              chromeos::features::kDarkLightMode},
+        /*enabled_features=*/{chromeos::features::kDarkLightMode},
         /*disabled_features=*/{});
   }
 

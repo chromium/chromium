@@ -800,8 +800,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(bool is_managed) {
     HandleGestureNavigationScreen();
   }
 
-  if (features::IsDarkLightModeEnabled() &&
-      features::IsOobeThemeSelectionEnabled()) {
+  if (features::IsDarkLightModeEnabled()) {
     HandleThemeSelectionScreen();
   }
 
@@ -1152,8 +1151,7 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
       test_setup()->hide_shelf_controls_in_tablet_mode()) {
     HandleGestureNavigationScreen();
 
-    if (features::IsDarkLightModeEnabled() &&
-        features::IsOobeThemeSelectionEnabled()) {
+    if (features::IsDarkLightModeEnabled()) {
       HandleThemeSelectionScreen();
     }
 

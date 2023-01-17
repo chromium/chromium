@@ -779,11 +779,6 @@ BASE_FEATURE(kEnableOobeNetworkScreenSkip,
              "EnableOobeNetworkScreenSkip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables skipping of network screen.
-BASE_FEATURE(kEnableOobeThemeSelection,
-             "EnableOobeThemeSelection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables showing notification after the password change for SAML users.
 BASE_FEATURE(kEnableSamlNotificationOnPasswordChangeSuccess,
              "EnableSamlNotificationOnPasswordChangeSuccess",
@@ -2891,10 +2886,6 @@ bool IsOobeQuickStartEnabled() {
 
 bool IsOobeRemoveShutdownButtonEnabled() {
   return base::FeatureList::IsEnabled(kOobeRemoveShutdownButton);
-}
-
-bool IsOobeThemeSelectionEnabled() {
-  return base::FeatureList::IsEnabled(kEnableOobeThemeSelection);
 }
 
 bool IsOobeTouchpadScrollEnabled() {
