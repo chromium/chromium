@@ -824,8 +824,14 @@ TEST_F('CrSettingsSiteSettingsPageTest', 'MAYBE_SiteSettingsPage', function() {
   runMochaSuite('SiteSettingsPage');
 });
 
+// TODO(crbug.com/1401833): Flaky.
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_PrivacySandboxSettings4Disabled DISABLED_PrivacySandboxSettings4Disabled');
+GEN('#else');
+GEN('#define MAYBE_PrivacySandboxSettings4Disabled PrivacySandboxSettings4Disabled');
+GEN('#endif');
 TEST_F(
-    'CrSettingsSiteSettingsPageTest', 'PrivacySandboxSettings4Disabled',
+    'CrSettingsSiteSettingsPageTest', 'MAYBE_PrivacySandboxSettings4Disabled',
     function() {
       runMochaSuite('PrivacySandboxSettings4Disabled');
     });
