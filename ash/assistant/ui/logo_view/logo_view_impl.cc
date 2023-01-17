@@ -28,10 +28,6 @@ int64_t TimeTicksToMs(const base::TimeTicks& timestamp) {
   return (timestamp - base::TimeTicks()).InMilliseconds();
 }
 
-int32_t GetLogoAlpha(const LogoViewImpl::Logo& logo) {
-  return logo.GetAlpha() * 255;
-}
-
 }  // namespace
 
 LogoViewImpl::LogoViewImpl()
@@ -148,7 +144,7 @@ void LogoViewImpl::DrawShape(gfx::Canvas* canvas, Shape* shape, SkColor color) {
   cc::PaintFlags paint_flags;
   paint_flags.setAntiAlias(true);
   paint_flags.setColor(color);
-  paint_flags.setAlpha(GetLogoAlpha(logo_));
+  paint_flags.setAlphaf(logo_.GetAlpha());
   paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
   paint_flags.setStrokeCap(shape->cap());
 
@@ -164,7 +160,7 @@ void LogoViewImpl::DrawLine(gfx::Canvas* canvas, Dot* dot, float x, float y) {
   cc::PaintFlags paint_flags;
   paint_flags.setAntiAlias(true);
   paint_flags.setColor(dot->color());
-  paint_flags.setAlpha(GetLogoAlpha(logo_));
+  paint_flags.setAlphaf(logo_.GetAlpha());
   paint_flags.setStrokeWidth(stroke_width);
   paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
   paint_flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
@@ -182,7 +178,7 @@ void LogoViewImpl::DrawCircle(gfx::Canvas* canvas, Dot* dot, float x, float y) {
   cc::PaintFlags paint_flags;
   paint_flags.setAntiAlias(true);
   paint_flags.setColor(dot->color());
-  paint_flags.setAlpha(GetLogoAlpha(logo_));
+  paint_flags.setAlphaf(logo_.GetAlpha());
   paint_flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawCircle(gfx::PointF(x * dots_scale_, y * dots_scale_),
                      radius * dots_scale_, paint_flags);

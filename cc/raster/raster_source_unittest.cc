@@ -570,7 +570,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
   const unsigned alpha_dark = 10u;
   PaintFlags white_flags;
   white_flags.setColor(SK_ColorWHITE);
-  white_flags.setAlpha(alpha_dark);
+  white_flags.setAlphaf(alpha_dark / 255.0f);
   recording_source->add_draw_rect_with_flags(gfx::Rect(layer_bounds),
                                              white_flags);
   recording_source->Rerecord();
@@ -606,7 +606,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
 
   // Record everything as a slightly lighter white.
   const unsigned alpha_light = 18u;
-  white_flags.setAlpha(alpha_light);
+  white_flags.setAlphaf(alpha_light / 255.0f);
   recording_source_light->add_draw_rect_with_flags(gfx::Rect(layer_bounds),
                                                    white_flags);
   recording_source_light->Rerecord();

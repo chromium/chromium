@@ -156,7 +156,7 @@ void NineImagePainter::Paint(Canvas* canvas,
   int i4h = std::max(height_in_pixels - i4y - std::min({i6h, i7h, i8h}), 0);
 
   cc::PaintFlags flags;
-  flags.setAlpha(alpha);
+  flags.setAlphaf(alpha / 255.0f);
 
   Fill(canvas, image_reps[4], i4x, i4y, i4w, i4h, flags);
   Fill(canvas, image_reps[0], 0, 0, i0w, i0h, flags);

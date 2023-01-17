@@ -269,7 +269,7 @@ bool DrawVideoFrameIntoResourceProvider(
   }
 
   cc::PaintFlags media_flags;
-  media_flags.setAlpha(0xFF);
+  media_flags.setAlphaf(1.0f);
   media_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   media_flags.setBlendMode(SkBlendMode::kSrc);
 

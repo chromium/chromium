@@ -136,7 +136,7 @@ class PaintOpAppendTest : public ::testing::Test {
   PaintOpAppendTest() {
     rect_ = SkRect::MakeXYWH(2, 3, 4, 5);
     flags_.setColor(SK_ColorMAGENTA);
-    flags_.setAlpha(100);
+    flags_.setAlphaf(100.0f / 255.0f);
   }
 
   void PushOps(PaintOpBuffer* buffer) {
@@ -245,7 +245,7 @@ TEST(PaintOpBufferTest, SaveDrawRestore) {
   int paint_flags_alpha = 50;
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlpha(paint_flags_alpha);
+  draw_flags.setAlphaf(paint_flags_alpha / 255.0f);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   buffer.push<DrawRectOp>(rect, draw_flags);
@@ -295,7 +295,7 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_BadFlags) {
 
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlpha(50);
+  draw_flags.setAlphaf(50.0f / 255.0f);
   draw_flags.setBlendMode(SkBlendMode::kSrc);
   EXPECT_FALSE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -322,7 +322,7 @@ TEST(PaintOpBufferTest, SaveDrawRestore_BadFlags255Alpha) {
 
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlpha(50);
+  draw_flags.setAlphaf(50.0f / 255.0f);
   draw_flags.setBlendMode(SkBlendMode::kColorBurn);
   EXPECT_FALSE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -347,7 +347,7 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_TooManyOps) {
 
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlpha(50);
+  draw_flags.setAlphaf(50.0f / 255.0f);
   draw_flags.setBlendMode(SkBlendMode::kSrcOver);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -390,7 +390,7 @@ TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpRecordWithSingleOp) {
   int paint_flags_alpha = 50;
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlpha(paint_flags_alpha);
+  draw_flags.setAlphaf(paint_flags_alpha / 255.0f);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   sub_buffer.push<DrawRectOp>(rect, draw_flags);
@@ -1143,7 +1143,7 @@ std::vector<PaintFlags> test_flags = {
     [] {
       PaintFlags flags;
       flags.setColor(SK_ColorCYAN);
-      flags.setAlpha(103);
+      flags.setAlphaf(103.0f / 255.0f);
       flags.setStrokeWidth(0.32f);
       flags.setStrokeMiter(7.98f);
       flags.setBlendMode(SkBlendMode::kSrcOut);
@@ -2113,7 +2113,7 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
     written = nullptr;
 
     PaintFlags override_flags = static_cast<const PaintOpWithFlags&>(op).flags;
-    override_flags.setAlpha(override_flags.getAlpha() * 0.5);
+    override_flags.setAlphaf(override_flags.getAlpha() * 0.5f / 255.0f);
     bytes_written = op.Serialize(output_.get(), output_size_,
                                  options_provider.serialize_options(),
                                  &override_flags, SkM44(), SkM44());
@@ -2293,7 +2293,7 @@ TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
 
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlpha(50);
+  draw_flags.setAlphaf(50.0f / 255.0f);
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   buffer.push<DrawRectOp>(rect, draw_flags);
   buffer.push<RestoreOp>();

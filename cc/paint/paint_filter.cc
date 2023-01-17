@@ -1065,7 +1065,7 @@ sk_sp<PaintFilter> ShaderPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
   PaintFlags orig_flags;
   orig_flags.setShader(shader_);
-  orig_flags.setAlpha(alpha_);
+  orig_flags.setAlphaf(alpha_ / 255.0f);
   orig_flags.setFilterQuality(filter_quality_);
   orig_flags.setDither(dither_ == SkImageFilters::Dither::kYes);
 

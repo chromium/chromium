@@ -40,7 +40,7 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilled(
   PaintFlags salmon_pink_flags;
   salmon_pink_flags.setColor(SK_ColorRED);
   salmon_pink_flags.setBlendMode(SkBlendMode::kMultiply);
-  salmon_pink_flags.setAlpha(128);
+  salmon_pink_flags.setAlphaf(128.0f / 255.0f);
   recording_source->add_draw_rect_with_flags(gfx::Rect(size),
                                              salmon_pink_flags);
 

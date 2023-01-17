@@ -868,7 +868,7 @@ SkRect HeadsUpDisplayLayerImpl::DrawMemoryDisplay(PaintCanvas* canvas,
 
   // Draw current status.
   flags.setStyle(PaintFlags::kStroke_Style);
-  flags.setAlpha(32);
+  flags.setAlphaf(32.0f / 255.0f);
   flags.setStrokeWidth(4);
   DrawArc(canvas, oval, 180, angle, flags);
 

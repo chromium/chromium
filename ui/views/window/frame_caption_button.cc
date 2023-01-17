@@ -289,7 +289,7 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     // maximized state or vice versa. https://crbug.com/840901.
     cc::PaintFlags flags;
     flags.setColor(InkDrop::Get(this)->GetBaseColor());
-    flags.setAlpha(highlight_alpha);
+    flags.setAlphaf(highlight_alpha / 255.0f);
     DrawHighlight(canvas, flags);
   }
 
@@ -308,11 +308,11 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   if (crossfade_icon_alpha > 0 && !crossfade_icon_image_.isNull()) {
     canvas->SaveLayerAlpha(GetAlphaForIcon(alpha_));
     cc::PaintFlags flags;
-    flags.setAlpha(icon_alpha);
+    flags.setAlphaf(icon_alpha / 255.0f);
     DrawIconContents(canvas, icon_image_, centered_origin_x, centered_origin_y,
                      flags);
 
-    flags.setAlpha(crossfade_icon_alpha);
+    flags.setAlphaf(crossfade_icon_alpha / 255.0f);
     flags.setBlendMode(SkBlendMode::kPlus);
     DrawIconContents(canvas, crossfade_icon_image_, centered_origin_x,
                      centered_origin_y, flags);
@@ -321,7 +321,7 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     if (!swap_images_animation_->is_animating())
       icon_alpha = alpha_;
     cc::PaintFlags flags;
-    flags.setAlpha(GetAlphaForIcon(icon_alpha));
+    flags.setAlphaf(GetAlphaForIcon(icon_alpha) / 255.0f);
     DrawIconContents(canvas, icon_image_, centered_origin_x, centered_origin_y,
                      flags);
   }

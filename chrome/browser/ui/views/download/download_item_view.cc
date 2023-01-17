@@ -655,7 +655,7 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     // Use an alpha to make the image look disabled.
     if (!GetEnabled())
-      flags.setAlpha(120);
+      flags.setAlphaf(120.0f / 255.0f);
     canvas->DrawImageInt(*file_icon, progress_x + offset, progress_y + offset,
                          flags);
   }

@@ -1010,7 +1010,7 @@ void PaintCanvasVideoRenderer::Paint(
         video_frame->format() == PIXEL_FORMAT_XBGR ||
         video_frame->HasTextures())) {
     cc::PaintFlags black_with_alpha_flags;
-    black_with_alpha_flags.setAlpha(flags.getAlpha());
+    black_with_alpha_flags.setAlphaf(flags.getAlphaf());
     canvas->drawRect(dest, black_with_alpha_flags);
     canvas->flush();
     return;
@@ -1027,7 +1027,7 @@ void PaintCanvasVideoRenderer::Paint(
   DCHECK(image);
 
   cc::PaintFlags video_flags;
-  video_flags.setAlpha(flags.getAlpha());
+  video_flags.setAlphaf(flags.getAlphaf());
   video_flags.setBlendMode(flags.getBlendMode());
 
   const bool need_rotation = video_transformation.rotation != VIDEO_ROTATION_0;

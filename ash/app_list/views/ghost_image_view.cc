@@ -78,7 +78,7 @@ void GhostImageView::OnPaint(gfx::Canvas* canvas) {
   flags.setColor(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                      ? gfx::kGoogleGrey200
                      : gfx::kGoogleGrey900);
-  flags.setAlpha(kGhostColorOpacity);
+  flags.setAlphaf(kGhostColorOpacity / 255.0f);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kGhostCircleStrokeWidth);
   gfx::Rect bounds = GetContentsBounds();

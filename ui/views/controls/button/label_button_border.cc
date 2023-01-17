@@ -113,7 +113,7 @@ void LabelButtonAssetBorder::Paint(const View& view, gfx::Canvas* canvas) {
 
     // Then modulate the foreground by alpha, and blend using kPlus_Mode.
     cc::PaintFlags flags;
-    flags.setAlpha(fg_alpha);
+    flags.setAlphaf(fg_alpha / 255.0f);
     flags.setBlendMode(SkBlendMode::kPlus);
     canvas->sk_canvas()->saveLayer(sk_rect, flags);
     state = native_theme_delegate->GetForegroundThemeState(&extra);

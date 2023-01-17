@@ -599,7 +599,7 @@ void ConversionContext<Result>::StartEffect(
     if (has_other_effects) {
       cc::PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
-      flags.setAlpha(alpha);
+      flags.setAlphaf(alpha / 255.0f);
       save_layer_id = push<cc::SaveLayerOp>(flags);
     } else {
       save_layer_id =

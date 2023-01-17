@@ -213,7 +213,7 @@ void BaseRenderingContext2D::beginLayer() {
         std::max(state_stack_.size(), max_state_stack_depth_);
 
     cc::PaintFlags extra_flags;
-    extra_flags.setAlpha(globalAlpha() * 255);
+    extra_flags.setAlphaf(static_cast<float>(globalAlpha()));
     if (GetState().ShouldDrawShadows())
       extra_flags.setImageFilter(StateGetFilter());
     canvas->saveLayer(extra_flags);
@@ -224,7 +224,7 @@ void BaseRenderingContext2D::beginLayer() {
     // shadows, or filters, both of them, or none of them.
     flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
         GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
-    flags.setAlpha(globalAlpha() * 255);
+    flags.setAlphaf(static_cast<float>(globalAlpha()));
     canvas->saveLayer(flags);
   }
 

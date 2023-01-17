@@ -352,9 +352,9 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
 
     if (controller_.IsAssistantAvailable()) {
       // active: 100% alpha, inactive: 54% alpha
-      fg_flags.setAlpha(controller_.IsAssistantVisible()
-                            ? kAssistantVisibleAlpha
-                            : kAssistantInvisibleAlpha);
+      fg_flags.setAlphaf(controller_.IsAssistantVisible()
+                             ? kAssistantVisibleAlpha / 255.0f
+                             : kAssistantInvisibleAlpha / 255.0f);
     }
 
     const float thickness = std::ceil(ring_thickness_dp * dsf);
@@ -364,7 +364,7 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
     canvas->DrawCircle(circle_center, radius, fg_flags);
 
     if (controller_.IsAssistantAvailable()) {
-      fg_flags.setAlpha(255);
+      fg_flags.setAlphaf(1.0f);
       const float kCircleRadiusDp = 5.f;
       fg_flags.setStyle(cc::PaintFlags::kFill_Style);
       canvas->DrawCircle(circle_center, std::ceil(kCircleRadiusDp * dsf),

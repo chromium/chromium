@@ -198,7 +198,7 @@ void ViewMaskLayer::OnDeviceScaleFactorChanged(float old_device_scale_factor,
 
 void ViewMaskLayer::OnPaintLayer(const ui::PaintContext& context) {
   cc::PaintFlags flags;
-  flags.setAlpha(255);
+  flags.setAlphaf(1.0f);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
 

@@ -52,9 +52,6 @@ class CC_PAINT_EXPORT PaintFlags {
     return SkColorGetA(color_.toSkColor());
   }
   ALWAYS_INLINE float getAlphaf() const { return color_.fA; }
-  ALWAYS_INLINE void setAlpha(uint8_t a) {
-    color_ = SkColor4f::FromColor(SkColorSetA(color_.toSkColor(), a));
-  }
   template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
   ALWAYS_INLINE void setAlphaf(F a) {
     color_.fA = a;
