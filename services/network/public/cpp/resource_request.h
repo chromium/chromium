@@ -30,6 +30,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/trust_token_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom-forward.h"
@@ -64,6 +65,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     bool has_user_activation = false;
     bool allow_cookies_from_browser = false;
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
+    mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer;
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer;
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;

@@ -31,6 +31,7 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
+#include "services/network/public/mojom/trust_token_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
@@ -72,17 +73,29 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static mojo::PendingRemote<network::mojom::CookieAccessObserver>
   cookie_observer(
       const network::ResourceRequest::TrustedParams& trusted_params) {
-    if (!trusted_params.cookie_observer)
+    if (!trusted_params.cookie_observer) {
       return mojo::NullRemote();
+    }
     return std::move(
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .cookie_observer);
   }
+  static mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
+  trust_token_observer(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    if (!trusted_params.trust_token_observer) {
+      return mojo::NullRemote();
+    }
+    return std::move(
+        const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
+            .trust_token_observer);
+  }
   static mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
   url_loader_network_observer(
       const network::ResourceRequest::TrustedParams& trusted_params) {
-    if (!trusted_params.url_loader_network_observer)
+    if (!trusted_params.url_loader_network_observer) {
       return mojo::NullRemote();
+    }
     return std::move(
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .url_loader_network_observer);
@@ -90,8 +103,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static mojo::PendingRemote<network::mojom::DevToolsObserver>
   devtools_observer(
       const network::ResourceRequest::TrustedParams& trusted_params) {
-    if (!trusted_params.devtools_observer)
+    if (!trusted_params.devtools_observer) {
       return mojo::NullRemote();
+    }
     return std::move(
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .devtools_observer);
@@ -103,8 +117,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
   accept_ch_frame_observer(
       const network::ResourceRequest::TrustedParams& trusted_params) {
-    if (!trusted_params.accept_ch_frame_observer)
+    if (!trusted_params.accept_ch_frame_observer) {
       return mojo::NullRemote();
+    }
     return std::move(
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .accept_ch_frame_observer);
@@ -128,8 +143,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
   static mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle(
       const network::ResourceRequest::WebBundleTokenParams& params) {
-    if (!params.handle)
+    if (!params.handle) {
       return mojo::NullRemote();
+    }
     return std::move(
         const_cast<network::ResourceRequest::WebBundleTokenParams&>(params)
             .handle);

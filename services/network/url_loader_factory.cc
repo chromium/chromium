@@ -79,6 +79,7 @@ URLLoaderFactory::URLLoaderFactory(
       header_client_(std::move(params_->header_client)),
       cors_url_loader_factory_(cors_url_loader_factory),
       cookie_observer_(std::move(params_->cookie_observer)),
+      trust_token_observer_(std::move(params_->trust_token_observer)),
       url_loader_network_service_observer_(
           std::move(params_->url_loader_network_observer)),
       devtools_observer_(std::move(params_->devtools_observer)) {
@@ -296,9 +297,13 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
         std::move(const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
             resource_request.trusted_params->cookie_observer));
   }
-  // TODO(https://crbug.com/1378264): Currently Trust Token Access observer
-  // isn't hooked up through URLLoaderFactory.
   mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer;
+  if (resource_request.trusted_params &&
+      resource_request.trusted_params->trust_token_observer) {
+    trust_token_observer = std::move(
+        const_cast<mojo::PendingRemote<mojom::TrustTokenAccessObserver>&>(
+            resource_request.trusted_params->trust_token_observer));
+  }
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer;
   if (resource_request.trusted_params &&
@@ -366,8 +371,9 @@ mojom::CookieAccessObserver* URLLoaderFactory::GetCookieAccessObserver() const {
 
 mojom::TrustTokenAccessObserver* URLLoaderFactory::GetTrustTokenAccessObserver()
     const {
-  // TODO(https://crbug.com/1378264): URLLoaderFactory support for the Trust
-  // Token Access Observer is currently unimplemented.
+  if (trust_token_observer_) {
+    return trust_token_observer_.get();
+  }
   return nullptr;
 }
 

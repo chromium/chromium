@@ -23,7 +23,6 @@ struct TrustTokenAccessDetails {
 // Users of TrustTokenAccessObserver should create a dedicated observer for
 // each network request context (URLLoaderFactory) they are interested in
 // observing.
-[RequireContext=sandbox.mojom.Context.kBrowser]
 interface TrustTokenAccessObserver {
   // Called when an attempt has been made to access trust tokens by the
   // NetworkService with the details about the trust token access.
@@ -31,6 +30,5 @@ interface TrustTokenAccessObserver {
 
   // Called to create a copy of this observer. (e.g. when cloning observers
   // from ResourceRequest).
-  [AllowedContext=sandbox.mojom.Context.kBrowser]
   Clone(pending_receiver<TrustTokenAccessObserver> listener);
 };

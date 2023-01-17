@@ -26,6 +26,7 @@ import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/trust_token_access_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
 import "services/network/public/mojom/accept_ch_frame_observer.mojom";
@@ -74,6 +75,11 @@ struct TrustedUrlRequestParams {
   // a cookie. If this is set to non-null, the observer passed to
   // URLLoaderFactory will be ignored.
   pending_remote<CookieAccessObserver>? cookie_observer;
+
+  // Observer which should be notified when this URLRequest accesses a Trust
+  // Token. If this is set to non-null, the observer passed to
+  // URLLoaderFactory will be ignored.
+  pending_remote<TrustTokenAccessObserver>? trust_token_observer;
 
   // Observer which should be notified when this URLRequest has authentication
   // and certificate events. If this is set to non-null, the observer passed to

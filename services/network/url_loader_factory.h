@@ -135,6 +135,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   corb::PerFactoryState corb_state_;
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
+  mojo::Remote<mojom::TrustTokenAccessObserver> trust_token_observer_;
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_service_observer_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
