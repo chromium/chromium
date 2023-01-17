@@ -494,7 +494,12 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
       const char* new_origin,
       bool should_destroy,
       bool is_new_document_picture_in_picture,
-      bool is_old_document_picture_in_picture) {
+      bool is_old_document_picture_in_picture,
+      bool is_new_document_opener,
+      bool is_old_document_opener) {
+    // The two documents cannot both be opener.
+    EXPECT_FALSE(is_new_document_opener && is_old_document_opener);
+
     SetSecurityOrigin(old_origin);
     WaitForPlayer();
     // Player should not be destroyed yet.
@@ -511,6 +516,12 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     auto new_dummy_page_holder = CreatePageWithSecurityOrigin(
         new_origin, is_new_document_picture_in_picture);
     Document& new_document = new_dummy_page_holder->GetDocument();
+
+    if (is_old_document_opener) {
+      new_document.GetFrame()->SetOpener(original_document.GetFrame());
+    } else if (is_new_document_opener) {
+      original_document.GetFrame()->SetOpener(new_document.GetFrame());
+    }
 
     // Move the element.
     new_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
@@ -1324,7 +1335,9 @@ TEST_P(HTMLMediaElementTest,
       "https://a.com", "https://a.com",
       /*should_destroy=*/true,
       /*is_new_document_picture_in_picture=*/false,
-      /*is_old_document_picture_in_picture=*/false);
+      /*is_old_document_picture_in_picture=*/false,
+      /*is_new_document_opener=*/false,
+      /*is_old_document_opener=*/false);
 }
 
 TEST_P(
@@ -1337,7 +1350,9 @@ TEST_P(
       "https://a.com", "https://b.com",
       /*should_destroy=*/true,
       /*is_new_document_picture_in_picture=*/false,
-      /*is_old_document_picture_in_picture=*/false);
+      /*is_old_document_picture_in_picture=*/false,
+      /*is_new_document_opener=*/false,
+      /*is_old_document_opener=*/false);
 }
 
 TEST_P(
@@ -1350,7 +1365,9 @@ TEST_P(
       "https://a.com", "https://a.com",
       /*should_destroy=*/false,
       /*is_new_document_picture_in_picture=*/true,
-      /*is_old_document_picture_in_picture=*/false);
+      /*is_old_document_picture_in_picture=*/false,
+      /*is_new_document_opener=*/false,
+      /*is_old_document_opener=*/true);
 }
 
 TEST_P(
@@ -1364,7 +1381,9 @@ TEST_P(
       "https//a.com", "https://a.com",
       /*should_destroy=*/true,
       /*is_new_document_picture_in_picture=*/false,
-      /*is_old_document_picture_in_picture=*/false);
+      /*is_old_document_picture_in_picture=*/false,
+      /*is_new_document_opener=*/false,
+      /*is_old_document_opener=*/false);
 }
 
 TEST_P(
@@ -1378,7 +1397,25 @@ TEST_P(
       "https://a.com", "https://a.com",
       /*should_destroy=*/false,
       /*is_new_document_picture_in_picture=*/false,
-      /*is_old_document_picture_in_picture=*/true);
+      /*is_old_document_picture_in_picture=*/true,
+      /*is_new_document_opener=*/true,
+      /*is_old_document_opener=*/false);
+}
+
+TEST_P(
+    HTMLMediaElementTest,
+    DestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfNotOpenerPipRelation) {
+  // Ensure that the WebMediaPlayer is destroyed when moving to a
+  // same-origin document when the new document is in picture-in-picture window
+  // but not opened from old document.
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
+  MoveElementAndTestPlayerDestruction(
+      "https://a.com", "https://a.com",
+      /*should_destroy=*/true,
+      /*is_new_document_picture_in_picture=*/true,
+      /*is_old_document_picture_in_picture=*/false,
+      /*is_new_document_opener=*/false,
+      /*is_old_document_opener=*/false);
 }
 
 TEST_P(
@@ -1392,7 +1429,9 @@ TEST_P(
       "https://a.com", "https://b.com",
       /*should_destroy=*/true,
       /*is_new_document_picture_in_picture=*/true,
-      /*is_old_document_picture_in_picture=*/false);
+      /*is_old_document_picture_in_picture=*/false,
+      /*is_new_document_opener=*/false,
+      /*is_old_document_opener=*/true);
 }
 
 TEST_P(HTMLMediaElementTest,
@@ -1405,6 +1444,8 @@ TEST_P(HTMLMediaElementTest,
   WaitForPlayer();
   auto new_dummy_page_holder =
       CreatePageWithSecurityOrigin(origin, /*is_picture_in_picture=*/true);
+  new_dummy_page_holder->GetDocument().GetFrame()->SetOpener(
+      Media()->GetDocument().GetFrame());
   new_dummy_page_holder->GetDocument().adoptNode(Media(), ASSERT_NO_EXCEPTION);
 
   EXPECT_FALSE(WasPlayerDestroyed());
@@ -1422,6 +1463,7 @@ TEST_P(HTMLMediaElementTest,
       CreatePageWithSecurityOrigin(origin, /*is_picture_in_picture=*/true);
   Document& new_document = new_dummy_page_holder->GetDocument();
   LocalFrame* old_frame = Media()->GetDocument().GetFrame();
+  new_document.GetFrame()->SetOpener(old_frame);
   EXPECT_EQ(old_frame, Media()->LocalFrameForPlayer());
   new_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
   // The element should still use the original frame.

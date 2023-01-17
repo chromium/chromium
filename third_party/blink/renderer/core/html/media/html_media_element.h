@@ -721,6 +721,10 @@ class CORE_EXPORT HTMLMediaElement
   void ResetMojoState();
   void OnRemotePlaybackMetadataChange();
 
+  // Determine if we should reuse the player when moving the element from
+  // |old_document| to |new_document|
+  bool ShouldReusePlayer(Document& old_document, Document& new_document) const;
+
   // Adds a new MediaPlayerObserver remote that will be notified about media
   // player events and returns a receiver that an observer implementation can
   // bind to.
