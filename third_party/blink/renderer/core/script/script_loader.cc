@@ -1018,10 +1018,11 @@ PendingScript* ScriptLoader::PrepareScript(
                                                        &parse_error)) {
           speculation_rule_set_ = rule_set;
           DocumentSpeculationRules::From(element_document).AddRuleSet(rule_set);
-        }
-        if (!parse_error.IsNull()) {
+        } else {
           CountSpeculationRulesLoadOutcome(
               SpeculationRulesLoadOutcome::kParseErrorInline);
+        }
+        if (!parse_error.IsNull()) {
           auto* console_message = MakeGarbageCollected<ConsoleMessage>(
               mojom::ConsoleMessageSource::kOther,
               mojom::ConsoleMessageLevel::kWarning,

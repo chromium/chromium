@@ -271,13 +271,13 @@ void DocumentSpeculationRules::DocumentBaseURLChanged() {
   // updated document base URL.
   for (Member<SpeculationRuleSet>& rule_set : rule_sets_) {
     SpeculationRuleSet::Source* source = rule_set->source();
-    String parse_error;
     rule_set = SpeculationRuleSet::Parse(
-        source, GetSupplementable()->GetExecutionContext(), &parse_error);
+        source, GetSupplementable()->GetExecutionContext(),
+        /*out_error=*/nullptr);
     // There should not be any parsing errors as these rule sets have already
     // been parsed once without errors, and an updated base URL should not cause
-    // new errors.
-    DCHECK(parse_error.empty());
+    // new errors. There may however still be warnings.
+    DCHECK(rule_set);
   }
   if (initialized_)
     InvalidateAllLinks();

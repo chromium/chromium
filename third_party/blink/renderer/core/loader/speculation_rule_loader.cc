@@ -85,10 +85,11 @@ void SpeculationRuleLoader::NotifyFinished() {
   if (auto* rule_set = SpeculationRuleSet::Parse(
           source, document_->GetExecutionContext(), &parse_error)) {
     DocumentSpeculationRules::From(*document_).AddRuleSet(rule_set);
-  }
-  if (!parse_error.IsNull()) {
+  } else {
     CountSpeculationRulesLoadOutcome(
         SpeculationRulesLoadOutcome::kParseErrorFetched);
+  }
+  if (!parse_error.IsNull()) {
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,

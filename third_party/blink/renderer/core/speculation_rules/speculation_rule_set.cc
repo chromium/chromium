@@ -50,9 +50,18 @@ bool IsValidBrowsingContextNameOrKeyword(const String& name_or_keyword) {
   return false;
 }
 
+// If `out_error` is provided and hasn't already had a message set, sets it to
+// `message`.
+void SetParseErrorMessage(String* out_error, String message) {
+  if (out_error && out_error->IsNull()) {
+    *out_error = message;
+  }
+}
+
 SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
-                                      ExecutionContext* context) {
+                                      ExecutionContext* context,
+                                      String* out_error) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
 
   // If input has any key other than "source", "urls", "requires", "target_hint"
@@ -75,6 +84,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     const String& input_key = input->at(i).first;
     if (!base::Contains(kKnownKeys, input_key) &&
         !base::Contains(kConditionalKnownKeys, input_key)) {
+      SetParseErrorMessage(
+          out_error, "A rule contains an unknown key: \"" + input_key + "\".");
       return nullptr;
     }
   }
@@ -88,15 +99,24 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   // If input["source"] does not exist or is neither the string "list" nor the
   // string "document", then return null.
   String source;
-  if (!input->GetString("source", &source) ||
-      !(source == "list" || (document_rules_enabled && source == "document")))
+  if (!input->GetString("source", &source)) {
+    SetParseErrorMessage(out_error, "A rule must have a source.");
     return nullptr;
+  }
+  if (!(source == "list" || (document_rules_enabled && source == "document"))) {
+    SetParseErrorMessage(out_error,
+                         "A rule has an unknown source: \"" + source + "\".");
+    return nullptr;
+  }
 
   Vector<KURL> urls;
   if (source == "list") {
     // If input["where"] exists, then return null.
-    if (input->Get("where"))
+    if (input->Get("where")) {
+      SetParseErrorMessage(out_error,
+                           "A list rule may not have document rule matchers.");
       return nullptr;
+    }
 
     // For now, use the given base URL to construct the list rules.
     KURL base_url_to_parse = base_url;
@@ -108,6 +128,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       // "document", then return null.
       if (!relative_to_enabled || !relative_to->AsString(&value) ||
           !base::Contains(kKnownRelativeToValues, value)) {
+        SetParseErrorMessage(out_error,
+                             "A rule has an unknown \"relative_to\" value.");
         return nullptr;
       }
       // If relativeTo is "document", then set baseURL to the document's
@@ -121,15 +143,20 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     // If input["urls"] does not exist, is not a list, or has any element which
     // is not a string, then return null.
     JSONArray* input_urls = input->GetArray("urls");
-    if (!input_urls)
+    if (!input_urls) {
+      SetParseErrorMessage(out_error,
+                           "A list rule must have a \"urls\" array.");
       return nullptr;
+    }
 
     // For each urlString of input["urls"]...
     urls.ReserveInitialCapacity(input_urls->size());
     for (wtf_size_t i = 0; i < input_urls->size(); ++i) {
       String url_string;
-      if (!input_urls->at(i)->AsString(&url_string))
+      if (!input_urls->at(i)->AsString(&url_string)) {
+        SetParseErrorMessage(out_error, "URLs must be given as strings.");
         return nullptr;
+      }
 
       // Let parsedURL be the result of parsing urlString with baseURL.
       // If parsedURL is failure, then continue.
@@ -141,6 +168,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
   }
 
+  // TODO(mcnee): Populate `out_error` for document rule warnings.
   DocumentRulePredicate* document_rule_predicate = nullptr;
   if (source == "document") {
     DCHECK(document_rules_enabled);
@@ -171,8 +199,10 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   // Let requirements be an empty ordered set.
   // If input["requires"] exists, but is not a list, then return null.
   JSONValue* requirements = input->Get("requires");
-  if (requirements && requirements->GetType() != JSONValue::kTypeArray)
+  if (requirements && requirements->GetType() != JSONValue::kTypeArray) {
+    SetParseErrorMessage(out_error, "\"requires\" must be an array.");
     return nullptr;
+  }
 
   // For each requirement of input["requires"]...
   SpeculationRule::RequiresAnonymousClientIPWhenCrossOrigin
@@ -180,13 +210,18 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   if (JSONArray* requirements_array = JSONArray::Cast(requirements)) {
     for (wtf_size_t i = 0; i < requirements_array->size(); ++i) {
       String requirement;
-      if (!requirements_array->at(i)->AsString(&requirement))
+      if (!requirements_array->at(i)->AsString(&requirement)) {
+        SetParseErrorMessage(out_error, "Requirements must be strings.");
         return nullptr;
+      }
 
       if (requirement == "anonymous-client-ip-when-cross-origin") {
         requires_anonymous_client_ip =
             SpeculationRule::RequiresAnonymousClientIPWhenCrossOrigin(true);
       } else {
+        SetParseErrorMessage(
+            out_error,
+            "A rule has an unknown requirement: \"" + requirement + "\".");
         return nullptr;
       }
     }
@@ -202,10 +237,16 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     // then return null.
     // Set targetHint to input["target_hint"].
     String target_hint_str;
-    if (!target_hint_value->AsString(&target_hint_str))
+    if (!target_hint_value->AsString(&target_hint_str)) {
+      SetParseErrorMessage(out_error, "\"target_hint\" must be a string.");
       return nullptr;
-    if (!IsValidBrowsingContextNameOrKeyword(target_hint_str))
+    }
+    if (!IsValidBrowsingContextNameOrKeyword(target_hint_str)) {
+      SetParseErrorMessage(out_error,
+                           "A rule has an invalid \"target_hint\": \"" +
+                               target_hint_str + "\".");
       return nullptr;
+    }
     // Currently only "_blank" and "_self" are supported.
     // TODO(https://crbug.com/1354049): Support more browsing context names and
     // keywords.
@@ -226,8 +267,10 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
         context));
 
     String referrer_policy_str;
-    if (!referrer_policy_value->AsString(&referrer_policy_str))
+    if (!referrer_policy_value->AsString(&referrer_policy_str)) {
+      SetParseErrorMessage(out_error, "A referrer policy must be a string.");
       return nullptr;
+    }
 
     if (!referrer_policy_str.empty()) {
       network::mojom::ReferrerPolicy referrer_policy_out =
@@ -235,6 +278,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       if (!SecurityPolicy::ReferrerPolicyFromString(
               referrer_policy_str, kDoNotSupportReferrerPolicyLegacyKeywords,
               &referrer_policy_out)) {
+        SetParseErrorMessage(out_error,
+                             "A rule has an invalid referrer policy: \"" +
+                                 referrer_policy_str + "\".");
         return nullptr;
       }
       DCHECK_NE(referrer_policy_out, network::mojom::ReferrerPolicy::kDefault);
@@ -332,11 +378,10 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
 
   // If parsed is not a map, then return null.
   if (!parsed) {
-    if (out_error) {
-      *out_error = parse_error.type != JSONParseErrorType::kNoError
-                       ? parse_error.message
-                       : "Parsed JSON must be an object.";
-    }
+    SetParseErrorMessage(out_error,
+                         parse_error.type != JSONParseErrorType::kNoError
+                             ? parse_error.message
+                             : "Parsed JSON must be an object.");
     return nullptr;
   }
 
@@ -348,19 +393,22 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
       [&](const char* key, HeapVector<Member<SpeculationRule>>& destination,
           bool allow_target_hint) {
         JSONArray* array = parsed->GetArray(key);
-        if (!array)
+        if (!array) {
           return;
+        }
 
         for (wtf_size_t i = 0; i < array->size(); ++i) {
           // If prefetch/prerenderRule is not a map, then continue.
           JSONObject* input_rule = JSONObject::Cast(array->at(i));
-          if (!input_rule)
+          if (!input_rule) {
+            SetParseErrorMessage(out_error, "A rule must be an object.");
             continue;
+          }
 
           // Let rule be the result of parsing a speculation rule given
           // prefetch/prerenderRule and baseURL.
           SpeculationRule* rule =
-              ParseSpeculationRule(input_rule, base_url, context);
+              ParseSpeculationRule(input_rule, base_url, context, out_error);
 
           // If rule is null, then continue.
           if (!rule)
@@ -370,6 +418,9 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           // continue.
           if (!allow_target_hint &&
               rule->target_browsing_context_name_hint().has_value()) {
+            SetParseErrorMessage(
+                out_error, "\"target_hint\" may not be set for " + String(key) +
+                               " rules.");
             continue;
           }
 

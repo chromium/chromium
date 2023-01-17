@@ -126,7 +126,8 @@ class SpeculationRuleSetTest : public ::testing::Test {
   }
 
   SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
-      const char* target_hint) {
+      const char* target_hint,
+      String* parse_error = nullptr) {
     return CreateRuleSet(String::Format(R"({
         "prefetch": [{
           "source": "list",
@@ -145,7 +146,8 @@ class SpeculationRuleSetTest : public ::testing::Test {
         }]
       })",
                                         target_hint, target_hint, target_hint),
-                         KURL("https://example.com/"), execution_context_);
+                         KURL("https://example.com/"), execution_context_,
+                         parse_error);
   }
 
   NullExecutionContext* execution_context() {
@@ -346,8 +348,12 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
 }
 
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
+  String parse_error;
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
+
+      // A rule of incorrect type.
+      R"("not an object",)"
 
       // A rule that doesn't elaborate on its source.
       R"({"urls": ["no-source.html"]},)"
@@ -363,6 +369,13 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
 
       // A rule with an unrecognized requirement.
       R"({"source": "list", "urls": ["/"], "requires": ["more-vespene-gas"]},)"
+
+      // A rule with requirements not given as an array.
+      R"({"source": "list", "urls": ["/"],
+          "requires": "anonymous-client-ip-when-cross-origin"},)"
+
+      // A rule with requirements of incorrect type.
+      R"({"source": "list", "urls": ["/"], "requires": [42]},)"
 
       // A rule with a referrer_policy of incorrect type.
       R"({"source": "list", "urls": ["/"], "referrer_policy": 42},)"
@@ -384,6 +397,10 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
           "urls": ["/no-source.html"],
           "relative_to": "not_document"},)"
 
+      // A rule with a "target_hint" of incorrect type (in addition to being
+      // invalid to use target_hint in a prefetch rule).
+      R"({"source": "list", "urls": ["/"], "target_hint": 42},)"
+
       // Invalid URLs within a list rule should be discarded.
       // This includes totally invalid ones and ones with unacceptable schemes.
       R"({"source": "list",
@@ -392,16 +409,24 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
             "blob:https://bar"
            ]
          }]})",
-      KURL("https://example.com/"), execution_context());
+      KURL("https://example.com/"), execution_context(), &parse_error);
   ASSERT_TRUE(rule_set);
+  // The rule set itself is valid, however many of the individual rules are
+  // invalid. So we should have populated a warning message.
+  EXPECT_FALSE(parse_error.empty());
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/valid.html")));
 }
 
 // Test that only prerender rule can process a "_blank" target hint.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Blank) {
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_blank");
+  String parse_error;
+  auto* rule_set =
+      CreateSpeculationRuleSetWithTargetHint("_blank", &parse_error);
   ASSERT_TRUE(rule_set);
+  EXPECT_TRUE(
+      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
+      << parse_error;
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -412,8 +437,13 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Blank) {
 
 // Test that only prerender rule can process a "_self" target hint.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Self) {
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_self");
+  String parse_error;
+  auto* rule_set =
+      CreateSpeculationRuleSetWithTargetHint("_self", &parse_error);
   ASSERT_TRUE(rule_set);
+  EXPECT_TRUE(
+      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
+      << parse_error;
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -427,8 +457,13 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Self) {
 // TODO(https://crbug.com/1354049): Support the "_parent" keyword for
 // prerendering.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Parent) {
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_parent");
+  String parse_error;
+  auto* rule_set =
+      CreateSpeculationRuleSetWithTargetHint("_parent", &parse_error);
   ASSERT_TRUE(rule_set);
+  EXPECT_TRUE(
+      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
+      << parse_error;
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -442,8 +477,12 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Parent) {
 // Test that rules with a "_top" hint are ignored.
 // TODO(https://crbug.com/1354049): Support the "_top" keyword for prerendering.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Top) {
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_top");
+  String parse_error;
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_top", &parse_error);
   ASSERT_TRUE(rule_set);
+  EXPECT_TRUE(
+      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
+      << parse_error;
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -454,8 +493,10 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Top) {
 
 // Test that rules with an empty target hint are ignored.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_EmptyString) {
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("");
+  String parse_error;
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("", &parse_error);
   ASSERT_TRUE(rule_set);
+  EXPECT_TRUE(parse_error.Contains("invalid \"target_hint\"")) << parse_error;
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
@@ -465,8 +506,13 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_EmptyString) {
 // but treat it as no hint.
 // TODO(https://crbug.com/1354049): Support valid browsing context names.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_ValidBrowsingContextName) {
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("valid");
+  String parse_error;
+  auto* rule_set =
+      CreateSpeculationRuleSetWithTargetHint("valid", &parse_error);
   ASSERT_TRUE(rule_set);
+  EXPECT_TRUE(
+      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
+      << parse_error;
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -478,8 +524,11 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_ValidBrowsingContextName) {
 // Test that rules with an invalid browsing context name target hint are
 // ignored.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_InvalidBrowsingContextName) {
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_invalid");
+  String parse_error;
+  auto* rule_set =
+      CreateSpeculationRuleSetWithTargetHint("_invalid", &parse_error);
   ASSERT_TRUE(rule_set);
+  EXPECT_TRUE(parse_error.Contains("invalid \"target_hint\"")) << parse_error;
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
@@ -893,6 +942,32 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarning) {
   EXPECT_TRUE(base::ranges::any_of(
       chrome_client->ConsoleMessages(),
       [](const String& message) { return message.Contains("Syntax error"); }));
+}
+
+// Tests that errors of individual rules which cause them to be ignored are
+// logged to the console.
+TEST_F(SpeculationRuleSetTest, ConsoleWarningForInvalidRule) {
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setText(
+      R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": [["a", ".", "c", "o", "m"]]
+        }]
+      })");
+  document.head()->appendChild(script);
+
+  EXPECT_TRUE(base::ranges::any_of(
+      chrome_client->ConsoleMessages(), [](const String& message) {
+        return message.Contains("URLs must be given as strings");
+      }));
 }
 
 TEST_F(SpeculationRuleSetTest, RejectsWhereClause) {
@@ -1725,7 +1800,7 @@ TEST_F(DocumentRulesTest, ListRuleCombinedWithDocumentRule) {
 }
 
 // Tests that candidates created for document rules are correct when
-// "anonyomour-client-ip-when-origin" is specified.
+// "anonymous-client-ip-when-cross-origin" is specified.
 TEST_F(DocumentRulesTest, RequiresAnonymousClientIPWhenCrossOrigin) {
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
