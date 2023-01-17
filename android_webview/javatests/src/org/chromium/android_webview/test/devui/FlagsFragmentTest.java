@@ -513,6 +513,10 @@ public class FlagsFragmentTest {
     private DataInteraction toggleFlag(DataInteraction flagInteraction, Boolean state) {
         String stateText = state == null ? "Default" : state ? "Enabled" : "Disabled";
         flagInteraction.onChildView(withId(R.id.flag_toggle)).perform(click());
+        // In rare conditions, the onData check can be performed before the dialog
+        // has been displayed. The wait for view waits for the default text that
+        // is only present in the dialog to be visible (see crbug.com/1400515 for more details).
+        ViewUtils.waitForView(withText(containsString("Default")));
         onData(allOf(is(instanceOf(String.class)), is(stateText))).perform(click());
         flagInteraction.onChildView(withId(R.id.flag_toggle))
                 .check(matches(withSpinnerText(containsString(stateText))));
