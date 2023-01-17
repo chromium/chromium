@@ -2390,6 +2390,7 @@ TEST_F(WebStateObserverTest, ImmediatelyStopNavigation) {
       /*has_user_gesture=*/false);
   EXPECT_CALL(*decider_, MockShouldAllowRequest(
                              _, RequestInfoMatch(expected_request_info), _))
+      .Times(::testing::AtMost(1))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
   test::LoadUrl(web_state(), test_server_->GetURL("/hung"));

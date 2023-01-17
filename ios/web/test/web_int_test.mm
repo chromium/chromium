@@ -135,30 +135,11 @@ void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
   base::RunLoop run_loop;
   __block base::OnceClosure quit_closure = run_loop.QuitClosure();
 
-  ProceduralBlock remove_data = ^{
-    [data_store removeDataOfTypes:websiteDataTypes
-                    modifiedSince:NSDate.distantPast
-                completionHandler:^{
-                  std::move(quit_closure).Run();
-                }];
-  };
-
-  if ([websiteDataTypes containsObject:WKWebsiteDataTypeCookies]) {
-    // TODO(crbug.com/554225): This approach of creating a WKWebView and
-    // executing JS to clear cookies is a workaround for
-    // https://bugs.webkit.org/show_bug.cgi?id=149078.
-    // Remove this, when that bug is fixed. The `marker_web_view` will be
-    // released when cookies have been cleared.
-    WKWebView* marker_web_view =
-        web::BuildWKWebView(CGRectZero, GetBrowserState());
-    [marker_web_view evaluateJavaScript:@""
-                      completionHandler:^(id, NSError*) {
-                        [marker_web_view self];
-                        remove_data();
-                      }];
-  } else {
-    remove_data();
-  }
+  [data_store removeDataOfTypes:websiteDataTypes
+                  modifiedSince:NSDate.distantPast
+              completionHandler:^{
+                std::move(quit_closure).Run();
+              }];
 
   // Wait until the data is removed. We increase the timeout to 90 seconds here
   // since this action has been timing out frequently on the bots.
