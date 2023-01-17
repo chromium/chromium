@@ -83,7 +83,7 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   GPUQueue* queue();
 
-  void destroy(ScriptState* script_state);
+  void destroy(v8::Isolate* isolate);
 
   GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor,
                           ExceptionState& exception_state);
@@ -168,7 +168,7 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   void DestroyAllExternalTextures();
   void DissociateMailboxes();
-  void UnmapAllMappableBuffers(ScriptState* script_state);
+  void UnmapAllMappableBuffers(v8::Isolate* isolate);
 
   void OnUncapturedError(WGPUErrorType errorType, const char* message);
   void OnLogging(WGPULoggingType loggingType, const char* message);

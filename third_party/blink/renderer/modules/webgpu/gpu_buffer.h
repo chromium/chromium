@@ -17,9 +17,9 @@ namespace blink {
 class DOMArrayBuffer;
 class GPUBufferDescriptor;
 class GPUMappedDOMArrayBuffer;
-class ExecutionContext;
 struct BoxedMappableWGPUBufferHandles;
 class ScriptPromiseResolver;
+class ScriptState;
 
 class GPUBuffer : public DawnObject<WGPUBuffer> {
   DEFINE_WRAPPERTYPEINFO();
@@ -46,15 +46,15 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                          uint64_t offset,
                          uint64_t size,
                          ExceptionState& exception_state);
-  DOMArrayBuffer* getMappedRange(ExecutionContext* execution_context,
+  DOMArrayBuffer* getMappedRange(v8::Isolate* isolate,
                                  uint64_t offset,
                                  ExceptionState& exception_state);
-  DOMArrayBuffer* getMappedRange(ExecutionContext* execution_context,
+  DOMArrayBuffer* getMappedRange(v8::Isolate* isolate,
                                  uint64_t offset,
                                  uint64_t size,
                                  ExceptionState& exception_state);
-  void unmap(ScriptState* script_state);
-  void destroy(ScriptState* script_state);
+  void unmap(v8::Isolate* isolate);
+  void destroy(v8::Isolate* isolate);
   uint64_t size() const;
   uint32_t usage() const;
   String mapState() const;
@@ -67,18 +67,17 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                              uint64_t offset,
                              absl::optional<uint64_t> size,
                              ExceptionState& exception_state);
-  DOMArrayBuffer* GetMappedRangeImpl(uint64_t offset,
+  DOMArrayBuffer* GetMappedRangeImpl(v8::Isolate* isolate,
+                                     uint64_t offset,
                                      absl::optional<uint64_t> size,
-                                     ExecutionContext* execution_context,
                                      ExceptionState& exception_state);
 
   void OnMapAsyncCallback(ScriptPromiseResolver* resolver,
                           WGPUBufferMapAsyncStatus status);
 
-  DOMArrayBuffer* CreateArrayBufferForMappedData(
-      void* data,
-      size_t data_length,
-      ExecutionContext* execution_context);
+  DOMArrayBuffer* CreateArrayBufferForMappedData(v8::Isolate* isolate,
+                                                 void* data,
+                                                 size_t data_length);
   void ResetMappingState(v8::Isolate* isolate);
 
   void setLabelImpl(const String& value) override {

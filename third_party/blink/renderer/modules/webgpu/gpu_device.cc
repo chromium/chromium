@@ -389,13 +389,13 @@ GPUQueue* GPUDevice::queue() {
   return queue_;
 }
 
-void GPUDevice::destroy(ScriptState* script_state) {
+void GPUDevice::destroy(v8::Isolate* isolate) {
   destroyed_ = true;
   DestroyAllExternalTextures();
   // Dissociate mailboxes before destroying the device. This ensures that
   // mailbox operations which run during dissociation can succeed.
   DissociateMailboxes();
-  UnmapAllMappableBuffers(script_state);
+  UnmapAllMappableBuffers(isolate);
   GetProcs().deviceDestroy(GetHandle());
   FlushNow();
 }
@@ -642,9 +642,9 @@ void GPUDevice::DissociateMailboxes() {
   textures_with_mailbox_.clear();
 }
 
-void GPUDevice::UnmapAllMappableBuffers(ScriptState* script_state) {
+void GPUDevice::UnmapAllMappableBuffers(v8::Isolate* isolate) {
   for (GPUBuffer* buffer : mappable_buffers_) {
-    buffer->unmap(script_state);
+    buffer->unmap(isolate);
   }
 }
 

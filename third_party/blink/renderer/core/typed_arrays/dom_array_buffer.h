@@ -69,10 +69,10 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   // Transfer the ArrayBuffer with |detach_key| if it is detachable,
   // otherwise make a copy and transfer that. Rethrows a V8 exception
   // or a TypeError on failure.
-  virtual bool Transfer(v8::Isolate*,
-                        v8::Local<v8::Value> detach_key,
-                        ArrayBufferContents& result,
-                        ExceptionState& exception_state);
+  bool Transfer(v8::Isolate*,
+                v8::Local<v8::Value> detach_key,
+                ArrayBufferContents& result,
+                ExceptionState& exception_state);
 
   bool Transfer(v8::Isolate*,
                 ArrayBufferContents& result,

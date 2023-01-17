@@ -140,8 +140,12 @@ void GPU::ContextDestroyed() {
   // This is necessary because we will free the shmem backings, and some
   // short amount of JS can still execute after the ContextDestroyed event
   // is received.
-  for (GPUBuffer* buffer : mappable_buffers_) {
-    buffer->DetachMappedArrayBuffers(ThreadState::Current()->GetIsolate());
+  if (!mappable_buffers_.empty()) {
+    v8::Isolate* isolate = ThreadState::Current()->GetIsolate();
+    v8::HandleScope scope(isolate);
+    for (GPUBuffer* buffer : mappable_buffers_) {
+      buffer->DetachMappedArrayBuffers(isolate);
+    }
   }
   // GPUBuffer::~GPUBuffer and GPUBuffer::destroy will remove WGPUBuffers from
   // |mappable_buffer_handles_|.

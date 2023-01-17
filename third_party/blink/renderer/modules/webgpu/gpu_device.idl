@@ -15,7 +15,7 @@
 
     [SameObject] readonly attribute GPUQueue queue;
 
-    [CallWith=ScriptState] void destroy();
+    [CallWith=Isolate] void destroy();
 
     [RaisesException] GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);

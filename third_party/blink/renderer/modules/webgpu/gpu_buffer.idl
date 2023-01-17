@@ -12,11 +12,11 @@
         GPUMapModeFlags mode,
         optional GPUSize64 offset = 0,
         optional GPUSize64 size);
-    [CallWith=ExecutionContext, RaisesException] ArrayBuffer getMappedRange(
+    [CallWith=Isolate, RaisesException] ArrayBuffer getMappedRange(
         optional GPUSize64 offset = 0,
         optional GPUSize64 size);
-    [CallWith=ScriptState] void unmap();
-    [CallWith=ScriptState] void destroy();
+    [CallWith=Isolate] void unmap();
+    [CallWith=Isolate] void destroy();
 
     readonly attribute GPUSize64 size;
     readonly attribute GPUBufferUsageFlags usage;
