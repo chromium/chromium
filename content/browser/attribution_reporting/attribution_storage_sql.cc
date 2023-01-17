@@ -104,22 +104,6 @@ constexpr int64_t kUnsetReportId = -1;
   "failed_send_attempts=failed_send_attempts+1 "            \
   "WHERE " column "=?"
 
-#define ATTRIBUTION_NEXT_REPORT_TIME_SQL(table) \
-  "SELECT MIN(report_time)FROM " table " WHERE report_time>?"
-
-// Set the report time for all reports that should have been sent before now
-// to now + a random number of microseconds between `min_delay` and
-// `max_delay`, both inclusive. We use RANDOM, instead of a method on the
-// delegate, to avoid having to pull all reports into memory and update them
-// one by one. We use ABS because RANDOM may return a negative integer. We add
-// 1 to the difference between `max_delay` and `min_delay` to ensure that the
-// range of generated values is inclusive. If `max_delay == min_delay`, we
-// take the remainder modulo 1, which is always 0.
-#define ATTRIBUTION_SET_REPORT_TIME_SQL(table) \
-  "UPDATE " table                              \
-  " SET report_time=?+ABS(RANDOM()%?)"         \
-  "WHERE report_time<?"
-
 // clang-format off
 
 #define ATTRIBUTION_SOURCE_COLUMNS_SQL(prefix) \
@@ -159,22 +143,6 @@ constexpr int64_t kUnsetReportId = -1;
   "A.aggregation_coordinator "                              \
   "FROM aggregatable_report_metadata A "                               \
   "JOIN sources I ON A.source_id=I.source_id "
-
-// This query should be reasonably optimized via
-// `kConversionDestinationIndexSql`. The conversion origin is the third
-// column in a multi-column index where the first two columns are just booleans.
-// Therefore the third column in the index should be very well-sorted.
-//
-// Note: to take advantage of this, we need to hint to the query planner that
-// |event_level_active| and |aggregatable_active| are booleans, so include
-// them in the conditional.
-#define ATTRIBUTION_COUNT_REPORTS_SQL(table) \
-  "SELECT COUNT(*)FROM " table " R "         \
-  "JOIN sources I "                          \
-  "ON I.source_id=R.source_id "              \
-  "WHERE I.destination_site=? "              \
-  "AND(event_level_active BETWEEN 0 AND 1)"  \
-  "AND(aggregatable_active BETWEEN 0 AND 1)"
 
 // clang-format on
 
@@ -1508,9 +1476,8 @@ absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
 
 absl::optional<base::Time> AttributionStorageSql::GetNextEventLevelReportTime(
     base::Time time) {
-  static constexpr char kNextReportTimeSql[] =
-      ATTRIBUTION_NEXT_REPORT_TIME_SQL(ATTRIBUTION_CONVERSIONS_TABLE);
-  return GetNextReportTime(SQL_FROM_HERE, kNextReportTimeSql, time);
+  return GetNextReportTime(
+      SQL_FROM_HERE, attribution_queries::kNextEventLevelReportTimeSql, time);
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetReports(
@@ -1704,10 +1671,9 @@ AttributionStorageSql::AdjustOfflineEventLevelReportTimes(
     base::TimeDelta min_delay,
     base::TimeDelta max_delay,
     base::Time now) {
-  static constexpr char kSetReportTimeSql[] =
-      ATTRIBUTION_SET_REPORT_TIME_SQL(ATTRIBUTION_CONVERSIONS_TABLE);
-  if (!AdjustOfflineReportTimes(SQL_FROM_HERE, kSetReportTimeSql, min_delay,
-                                max_delay, now)) {
+  if (!AdjustOfflineReportTimes(
+          SQL_FROM_HERE, attribution_queries::kSetEventLevelReportTimeSql,
+          min_delay, max_delay, now)) {
     return absl::nullopt;
   }
 
@@ -1960,13 +1926,11 @@ AttributionStorageSql::CapacityForStoringReport(
   switch (report_type) {
     case AttributionReport::Type::kEventLevel:
       statement.Assign(db_->GetCachedStatement(
-          SQL_FROM_HERE,
-          ATTRIBUTION_COUNT_REPORTS_SQL(ATTRIBUTION_CONVERSIONS_TABLE)));
+          SQL_FROM_HERE, attribution_queries::kCountEventLevelReportsSql));
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       statement.Assign(db_->GetCachedStatement(
-          SQL_FROM_HERE, ATTRIBUTION_COUNT_REPORTS_SQL(
-                             ATTRIBUTION_AGGREGATABLE_REPORT_METADATA_TABLE)));
+          SQL_FROM_HERE, attribution_queries::kCountAggregatableReportsSql));
       break;
   }
 
@@ -2670,12 +2634,8 @@ AttributionStorageSql::GetAggregatableAttributionReportsInternal(
 std::vector<AggregatableHistogramContribution>
 AttributionStorageSql::GetAggregatableContributions(
     AttributionReport::AggregatableAttributionData::Id aggregation_id) {
-  static constexpr char kGetContributionsSql[] =
-      "SELECT key_high_bits,key_low_bits,value "
-      "FROM aggregatable_contributions "
-      "WHERE aggregation_id=?";
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kGetContributionsSql));
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kGetContributionsSql));
   statement.BindInt64(0, *aggregation_id);
 
   std::vector<AggregatableHistogramContribution> contributions;
@@ -2739,9 +2699,8 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
 absl::optional<base::Time>
 AttributionStorageSql::GetNextAggregatableAttributionReportTime(
     base::Time time) {
-  static constexpr char kNextReportTimeSql[] = ATTRIBUTION_NEXT_REPORT_TIME_SQL(
-      ATTRIBUTION_AGGREGATABLE_REPORT_METADATA_TABLE);
-  return GetNextReportTime(SQL_FROM_HERE, kNextReportTimeSql, time);
+  return GetNextReportTime(
+      SQL_FROM_HERE, attribution_queries::kNextAggregatableReportTimeSql, time);
 }
 
 absl::optional<base::Time>
@@ -2749,10 +2708,9 @@ AttributionStorageSql::AdjustOfflineAggregatableAttributionReportTimes(
     base::TimeDelta min_delay,
     base::TimeDelta max_delay,
     base::Time now) {
-  static constexpr char kSetReportTimeSql[] = ATTRIBUTION_SET_REPORT_TIME_SQL(
-      ATTRIBUTION_AGGREGATABLE_REPORT_METADATA_TABLE);
-  if (!AdjustOfflineReportTimes(SQL_FROM_HERE, kSetReportTimeSql, min_delay,
-                                max_delay, now)) {
+  if (!AdjustOfflineReportTimes(
+          SQL_FROM_HERE, attribution_queries::kSetAggregatableReportTimeSql,
+          min_delay, max_delay, now)) {
     return absl::nullopt;
   }
 

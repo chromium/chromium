@@ -112,5 +112,46 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteAggregationsSql) {
               UsesCoveringIndex("aggregate_source_id_idx"));
 }
 
+TEST_F(AttributionSqlQueryPlanTest, kGetContributionsSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kGetContributionsSql),
+              UsesPrimaryKey());
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kCountEventLevelReportsSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kCountEventLevelReportsSql),
+              AllOf(UsesCoveringIndex(
+                        "sources_by_active_destination_site_reporting_origin",
+                        {"event_level_active"}),
+                    UsesCoveringIndex("event_level_reports_by_source_id")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kCountAggregatableReportsSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kCountAggregatableReportsSql),
+              AllOf(UsesCoveringIndex(
+                        "sources_by_active_destination_site_reporting_origin",
+                        {"event_level_active"}),
+                    UsesCoveringIndex("aggregate_source_id_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kNextEventLevelReportTimeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kNextEventLevelReportTimeSql),
+              UsesCoveringIndex("event_level_reports_by_report_time"));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kNextAggregatableReportTimeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kNextAggregatableReportTimeSql),
+              UsesCoveringIndex("aggregate_report_time_idx"));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kSetEventLevelReportTimeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kSetEventLevelReportTimeSql),
+              UsesIndex("event_level_reports_by_report_time"));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kSetAggregatableReportTimeSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kSetAggregatableReportTimeSql),
+              UsesIndex("aggregate_report_time_idx"));
+}
+
 }  // namespace
 }  // namespace content
