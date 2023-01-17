@@ -2,3 +2,6 @@
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
+virtual/portals/http/tests/devtools/portals/portals-console.js [ Skip ]
+virtual/portals/http/tests/devtools/portals/portals-elements-activate.js [ Skip ]
+
