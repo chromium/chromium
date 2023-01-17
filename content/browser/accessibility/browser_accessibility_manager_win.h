@@ -70,14 +70,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   // Do event post-processing
   void FinalizeAccessibilityEvents() override;
 
-  // Track this object and post a VISIBLE_DATA_CHANGED notification when
-  // its container scrolls.
-  // TODO(dmazzoni): remove once http://crbug.com/113483 is fixed.
-  void TrackScrollingObject(BrowserAccessibilityWin* node);
-
-  // Called when |accessible_hwnd_| is deleted by its parent.
-  void OnAccessibleHwndDeleted();
-
  protected:
   // AXTreeObserver methods.
   void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
