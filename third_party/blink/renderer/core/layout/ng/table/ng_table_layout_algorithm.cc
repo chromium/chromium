@@ -1531,8 +1531,13 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
 
   block_size += previously_consumed_block_size;
-  if (ConstraintSpace().IsFixedBlockSize())
+  if (ConstraintSpace().IsFixedBlockSize()) {
     block_size = ConstraintSpace().AvailableSize().block_size;
+    if (ConstraintSpace().MinBlockSizeShouldEncompassIntrinsicSize()) {
+      block_size = std::max(
+          block_size, previously_consumed_block_size + intrinsic_block_size);
+    }
+  }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   if (RuntimeEnabledFeatures::MathMLCoreEnabled() && Node().GetDOMNode() &&
