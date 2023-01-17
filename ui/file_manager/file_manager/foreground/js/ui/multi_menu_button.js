@@ -226,10 +226,10 @@ export class MultiMenuButton {
         break;
       case 'keydown':
         this.handleKeyDown(e);
-        // If a menu is visible we let it handle all the keyboard events
-        // unless Ctrl is held down.
+        // If a menu is visible we let it handle keyboard events intended for
+        // the menu.
         if (e.currentTarget == this.ownerDocument && this.hasVisibleMenu_() &&
-            !e.ctrlKey) {
+            this.isMenuEvent(e)) {
           this.menu.handleKeyDown(e);
           e.preventDefault();
           e.stopPropagation();
@@ -445,6 +445,21 @@ export class MultiMenuButton {
         this.hideMenu();
         break;
     }
+  }
+
+  isMenuEvent(e) {
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowUp':
+      case 'ArrowLeft':
+      case 'ArrowRight':
+      case 'Enter':
+      case ' ':
+      case 'Escape':
+      case 'Tab':
+        return true;
+    }
+    return false;
   }
 }
 
