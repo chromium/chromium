@@ -349,7 +349,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)cardholderNameItem:(bool)isEditing {
   AutofillEditItem* cardholderNameItem =
       [[AutofillEditItem alloc] initWithType:ItemTypeCardholderName];
-  cardholderNameItem.textFieldName =
+  cardholderNameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARDHOLDER);
   cardholderNameItem.textFieldValue = autofill::GetCreditCardName(
       _creditCard, GetApplicationContext()->GetApplicationLocale());
@@ -362,7 +362,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)cardNumberItem:(bool)isEditing {
   AutofillEditItem* cardNumberItem =
       [[AutofillEditItem alloc] initWithType:ItemTypeCardNumber];
-  cardNumberItem.textFieldName =
+  cardNumberItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARD_NUMBER);
   // Never show full card number for Wallet cards, even if copied locally.
   cardNumberItem.textFieldValue =
@@ -386,7 +386,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)expirationMonthItem:(bool)isEditing {
   AutofillEditItem* expirationMonthItem =
       [[AutofillEditItem alloc] initWithType:ItemTypeExpirationMonth];
-  expirationMonthItem.textFieldName =
+  expirationMonthItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_MONTH);
   expirationMonthItem.textFieldValue =
       [NSString stringWithFormat:@"%02d", _creditCard.expiration_month()];
@@ -402,7 +402,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Expiration year.
   AutofillEditItem* expirationYearItem =
       [[AutofillEditItem alloc] initWithType:ItemTypeExpirationYear];
-  expirationYearItem.textFieldName =
+  expirationYearItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_YEAR);
   expirationYearItem.textFieldValue =
       [NSString stringWithFormat:@"%04d", _creditCard.expiration_year()];
@@ -418,7 +418,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)nicknameItem:(bool)isEditing {
   AutofillEditItem* nicknameItem =
       [[AutofillEditItem alloc] initWithType:ItemTypeNickname];
-  nicknameItem.textFieldName =
+  nicknameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_NICKNAME);
   nicknameItem.textFieldValue =
       autofill::GetCreditCardNicknameString(_creditCard);

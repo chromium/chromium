@@ -160,23 +160,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierContent];
 
-  TableViewTextEditItem* sourceLanguageItem = [self
-      textEditItemForType:ItemTypeSourceLanguage
-            textFieldName:
-                l10n_util::GetNSString(
-                    IDS_IOS_TRANSLATE_INFOBAR_MODAL_SOURCE_LANGUAGE_FIELD_NAME)
-           textFieldValue:self.sourceLanguage];
+  TableViewTextEditItem* sourceLanguageItem =
+      [self textEditItemForType:ItemTypeSourceLanguage
+             fieldNameLabelText:
+                 l10n_util::GetNSString(
+                     IDS_IOS_TRANSLATE_INFOBAR_MODAL_SOURCE_LANGUAGE_FIELD_NAME)
+                 textFieldValue:self.sourceLanguage];
   sourceLanguageItem.accessibilityIdentifier =
       kTranslateInfobarModalTranslateSourceLanguageItemAXId;
   [model addItem:sourceLanguageItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
-  TableViewTextEditItem* targetLanguageItem = [self
-      textEditItemForType:ItemTypeTargetLanguage
-            textFieldName:
-                l10n_util::GetNSString(
-                    IDS_IOS_TRANSLATE_INFOBAR_MODAL_TARGET_LANGUAGE_FIELD_NAME)
-           textFieldValue:self.targetLanguage];
+  TableViewTextEditItem* targetLanguageItem =
+      [self textEditItemForType:ItemTypeTargetLanguage
+             fieldNameLabelText:
+                 l10n_util::GetNSString(
+                     IDS_IOS_TRANSLATE_INFOBAR_MODAL_TARGET_LANGUAGE_FIELD_NAME)
+                 textFieldValue:self.targetLanguage];
   targetLanguageItem.accessibilityIdentifier =
       kTranslateInfobarModalTranslateTargetLanguageItemAXId;
   [model addItem:targetLanguageItem
@@ -468,12 +468,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Private
 
 - (TableViewTextEditItem*)textEditItemForType:(ItemType)itemType
-                                textFieldName:(NSString*)name
+                           fieldNameLabelText:(NSString*)name
                                textFieldValue:(NSString*)value {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:itemType];
   item.textFieldEnabled = NO;
-  item.textFieldName = name;
+  item.fieldNameLabelText = name;
   item.textFieldValue = value;
   return item;
 }

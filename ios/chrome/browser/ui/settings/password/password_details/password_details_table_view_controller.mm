@@ -235,7 +235,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypeUsername];
   item.textFieldBackgroundColor = [UIColor clearColor];
-  item.textFieldName =
+  item.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   item.textFieldValue = passwordDetails.username;  // Empty for a new form.
   // If password is missing (federated credential) don't allow to edit username.
@@ -258,7 +258,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypePassword];
   item.textFieldBackgroundColor = [UIColor clearColor];
-  item.textFieldName =
+  item.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
   item.textFieldValue = [self isPasswordShown] || self.tableView.editing
                             ? passwordDetails.password
@@ -300,7 +300,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc]
       initWithType:PasswordDetailsItemTypeFederation];
   item.textFieldBackgroundColor = [UIColor clearColor];
-  item.textFieldName =
+  item.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_FEDERATION);
   item.textFieldValue = passwordDetails.federation;
   item.textFieldEnabled = NO;
@@ -551,7 +551,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
-  if ([tableViewItem.textFieldName
+  if ([tableViewItem.fieldNameLabelText
           isEqualToString:l10n_util::GetNSString(
                               IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD)]) {
     [self checkIfValidPasswords];

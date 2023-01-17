@@ -61,7 +61,7 @@ const CGFloat kSymbolSize = 15;
 
   NSString* textLabelFormat = self.required ? @"%@*" : @"%@";
   cell.textLabel.text =
-      [NSString stringWithFormat:textLabelFormat, self.textFieldName];
+      [NSString stringWithFormat:textLabelFormat, self.fieldNameLabelText];
   if (self.textFieldPlaceholder) {
     cell.textField.attributedPlaceholder = [[NSAttributedString alloc]
         initWithString:self.textFieldPlaceholder
@@ -72,9 +72,9 @@ const CGFloat kSymbolSize = 15;
   }
   cell.textField.text = self.textFieldValue;
   cell.textField.secureTextEntry = self.textFieldSecureTextEntry;
-  if (self.textFieldName.length) {
+  if (self.fieldNameLabelText.length) {
     cell.textField.accessibilityIdentifier =
-        [NSString stringWithFormat:@"%@_textField", self.textFieldName];
+        [NSString stringWithFormat:@"%@_textField", self.fieldNameLabelText];
   }
 
   if (self.textFieldBackgroundColor) {
@@ -103,15 +103,15 @@ const CGFloat kSymbolSize = 15;
 
     if (!self.hasValidText) {
       cell.iconView.accessibilityIdentifier =
-          [NSString stringWithFormat:@"%@_errorIcon", self.textFieldName];
+          [NSString stringWithFormat:@"%@_errorIcon", self.fieldNameLabelText];
       [cell setIcon:TableViewTextEditItemIconTypeError];
     } else if (cell.textField.editing && cell.textField.text.length > 0) {
       cell.iconView.accessibilityIdentifier =
-          [NSString stringWithFormat:@"%@_noIcon", self.textFieldName];
+          [NSString stringWithFormat:@"%@_noIcon", self.fieldNameLabelText];
       [cell setIcon:TableViewTextEditItemIconTypeNone];
     } else {
       cell.iconView.accessibilityIdentifier =
-          [NSString stringWithFormat:@"%@_editIcon", self.textFieldName];
+          [NSString stringWithFormat:@"%@_editIcon", self.fieldNameLabelText];
       [cell setIcon:TableViewTextEditItemIconTypeEdit];
     }
   }

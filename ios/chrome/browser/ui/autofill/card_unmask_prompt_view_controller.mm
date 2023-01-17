@@ -339,7 +339,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   TableViewTextEditItem* CVCInputItem =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeCVCInput];
   CVCInputItem.delegate = self;
-  CVCInputItem.textFieldName =
+  CVCInputItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_AUTOFILL_CARD_UNMASK_PROMPT_CVC_FIELD_TITLE);
   CVCInputItem.keyboardType = UIKeyboardTypeNumberPad;
   CVCInputItem.hideIcon = YES;

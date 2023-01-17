@@ -210,7 +210,8 @@ const CGFloat kSymbolSize = 15;
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeWebsite];
   item.textFieldBackgroundColor = [UIColor clearColor];
-  item.textFieldName = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
+  item.fieldNameLabelText =
+      l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
   item.textFieldEnabled = YES;
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
   item.hideIcon = NO;
@@ -225,7 +226,7 @@ const CGFloat kSymbolSize = 15;
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeUsername];
   item.textFieldBackgroundColor = [UIColor clearColor];
-  item.textFieldName =
+  item.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   item.textFieldEnabled = YES;
   item.hideIcon = NO;
@@ -240,7 +241,7 @@ const CGFloat kSymbolSize = 15;
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypePassword];
   item.textFieldBackgroundColor = [UIColor clearColor];
-  item.textFieldName =
+  item.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
   item.textFieldSecureTextEntry = ![self isPasswordShown];
   item.textFieldEnabled = YES;

@@ -125,7 +125,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     AutofillEditItem* item =
         [[AutofillEditItem alloc] initWithType:ItemTypeTextField];
-    item.textFieldName = l10n_util::GetNSString(field.displayStringID);
+    item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
     item.autofillUIType = AutofillUITypeFromAutofillType(field.autofillType);
     item.textFieldValue = _profileData[@(item.autofillUIType)];
     item.textFieldEnabled = YES;

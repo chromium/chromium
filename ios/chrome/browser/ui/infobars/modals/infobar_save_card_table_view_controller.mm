@@ -157,7 +157,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewTextEditItem* cardLastDigitsItem = [self
       textEditItemWithType:ItemTypeCardLastDigits
-             textFieldName:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARD_NUMBER)
+        fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARD_NUMBER)
             textFieldValue:self.cardNumber
           textFieldEnabled:NO];
   cardLastDigitsItem.identifyingIcon = self.cardIssuerIcon;
@@ -166,7 +166,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.cardholderNameItem =
       [self textEditItemWithType:ItemTypeCardHolderName
-                   textFieldName:l10n_util::GetNSString(
+              fieldNameLabelText:l10n_util::GetNSString(
                                      IDS_IOS_AUTOFILL_CARDHOLDER_NAME)
                   textFieldValue:self.cardholderName
                 textFieldEnabled:self.supportsEditing];
@@ -175,7 +175,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.expirationMonthItem = [self
       textEditItemWithType:ItemTypeCardExpireMonth
-             textFieldName:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_MONTH)
+        fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_MONTH)
             textFieldValue:self.expirationMonth
           textFieldEnabled:self.supportsEditing];
   [model addItem:self.expirationMonthItem
@@ -183,7 +183,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.expirationYearItem = [self
       textEditItemWithType:ItemTypeCardExpireYear
-             textFieldName:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_YEAR)
+        fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_YEAR)
             textFieldValue:self.expirationYear
           textFieldEnabled:self.supportsEditing];
   [model addItem:self.expirationYearItem
@@ -452,12 +452,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Helpers
 
 - (TableViewTextEditItem*)textEditItemWithType:(ItemType)type
-                                 textFieldName:(NSString*)name
+                            fieldNameLabelText:(NSString*)name
                                 textFieldValue:(NSString*)value
                               textFieldEnabled:(BOOL)enabled {
   TableViewTextEditItem* textEditItem =
       [[TableViewTextEditItem alloc] initWithType:type];
-  textEditItem.textFieldName = name;
+  textEditItem.fieldNameLabelText = name;
   textEditItem.textFieldValue = value;
   textEditItem.textFieldEnabled = enabled;
   textEditItem.hideIcon = !enabled;

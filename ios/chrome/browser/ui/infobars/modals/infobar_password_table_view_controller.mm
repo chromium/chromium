@@ -163,7 +163,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewTextEditItem* URLItem =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeURL];
-  URLItem.textFieldName =
+  URLItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
   URLItem.textFieldValue = self.URL;
   URLItem.hideIcon = YES;
@@ -172,7 +172,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.originalUsername = self.username;
   self.usernameItem =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeUsername];
-  self.usernameItem.textFieldName =
+  self.usernameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   self.usernameItem.textFieldValue = self.username;
   self.usernameItem.returnKeyType = UIReturnKeyDone;
@@ -183,7 +183,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.passwordItem =
       [[TableViewTextEditItem alloc] initWithType:ItemTypePassword];
-  self.passwordItem.textFieldName =
+  self.passwordItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
   self.passwordItem.textFieldValue = self.maskedPassword;
   self.passwordItem.identifyingIcon =

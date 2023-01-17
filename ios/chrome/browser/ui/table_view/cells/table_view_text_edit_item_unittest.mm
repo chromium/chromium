@@ -24,7 +24,7 @@ TEST_F(TableViewTextEditItemTest, ConfigureCell) {
   NSString* value = @"Value";
   BOOL enabled = NO;
 
-  item.textFieldName = name;
+  item.fieldNameLabelText = name;
   item.textFieldValue = value;
   item.textFieldEnabled = enabled;
 

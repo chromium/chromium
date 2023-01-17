@@ -306,7 +306,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Returns initialized tableViewItem with passed arguments.
 - (AutofillEditItem*)createTableViewItemWithType:(NSInteger)itemType
-                                   textFieldName:(NSString*)textFieldName
+                              fieldNameLabelText:(NSString*)fieldNameLabelText
                                   textFieldValue:(NSString*)textFieldValue
                             textFieldPlaceholder:(NSString*)textFieldPlaceholder
                                     keyboardType:(UIKeyboardType)keyboardType
@@ -314,7 +314,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                       (AutofillUIType)autofillUIType {
   AutofillEditItem* item = [[AutofillEditItem alloc] initWithType:itemType];
   item.delegate = self;
-  item.textFieldName = textFieldName;
+  item.fieldNameLabelText = fieldNameLabelText;
   item.textFieldValue = textFieldValue;
   item.textFieldPlaceholder = textFieldPlaceholder;
   item.keyboardType = keyboardType;
@@ -327,7 +327,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)expirationYearItem {
   AutofillEditItem* expirationYearItem =
       [self createTableViewItemWithType:ItemTypeExpirationYear
-                          textFieldName:l10n_util::GetNSString(
+                     fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_EXP_YEAR)
                          textFieldValue:self.expirationYear
                    textFieldPlaceholder:
@@ -341,7 +341,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)expirationMonthItem {
   AutofillEditItem* expirationMonthItem =
       [self createTableViewItemWithType:ItemTypeExpirationMonth
-                          textFieldName:l10n_util::GetNSString(
+                     fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_EXP_MONTH)
                          textFieldValue:self.expirationMonth
                    textFieldPlaceholder:
@@ -355,7 +355,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)cardNumberItem {
   AutofillEditItem* cardNumberItem =
       [self createTableViewItemWithType:ItemTypeCardNumber
-                          textFieldName:l10n_util::GetNSString(
+                     fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_CARD_NUMBER)
                          textFieldValue:self.cardNumber
                    textFieldPlaceholder:
@@ -369,7 +369,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)cardHolderNameItem {
   AutofillEditItem* cardHolderNameItem =
       [self createTableViewItemWithType:ItemTypeName
-                          textFieldName:l10n_util::GetNSString(
+                     fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_CARDHOLDER)
                          textFieldValue:self.cardHolderName
                    textFieldPlaceholder:
@@ -383,7 +383,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AutofillEditItem*)cardNicknameItem {
   AutofillEditItem* cardNicknameItem =
       [self createTableViewItemWithType:ItemTypeCardNickname
-                          textFieldName:l10n_util::GetNSString(
+                     fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_NICKNAME)
                          textFieldValue:self.cardNickname
                    textFieldPlaceholder:
