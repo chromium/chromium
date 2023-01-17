@@ -203,6 +203,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
   bool has_large_blob = options->GetHasLargeBlob(/*defaultValue=*/false);
   bool has_cred_blob = options->GetHasCredBlob(/*defaultValue=*/false);
   bool has_min_pin_length = options->GetHasMinPinLength(/*defaultValue=*/false);
+  bool has_prf = options->GetHasPrf(/*defaultValue=*/false);
   bool has_resident_key = options->GetHasResidentKey(/*defaultValue=*/false);
 
   if (has_large_blob && !has_resident_key)
@@ -236,6 +237,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
       virt_auth_options->has_large_blob = has_large_blob;
       virt_auth_options->has_cred_blob = has_cred_blob;
       virt_auth_options->has_min_pin_length = has_min_pin_length;
+      virt_auth_options->has_prf = has_prf;
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();

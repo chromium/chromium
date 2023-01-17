@@ -34,6 +34,7 @@ struct VirtualAuthenticatorOptions {
   bool has_large_blob;
   bool has_cred_blob;
   bool has_min_pin_length;
+  bool has_prf;
 };
 
 // Encapsulates both public (key handle) and private information associated

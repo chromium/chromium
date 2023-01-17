@@ -3270,15 +3270,10 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(
         is_desktop,
         self._driver.capabilities['webauthn:virtualAuthenticators'])
-    self.assertEqual(
-        is_desktop,
-        self._driver.capabilities['webauthn:extension:largeBlob'])
-    self.assertEqual(
-        is_desktop,
-        self._driver.capabilities['webauthn:extension:minPinLength'])
-    self.assertEqual(
-        is_desktop,
-        self._driver.capabilities['webauthn:extension:credBlob'])
+    for extension in ['largeBlob', 'minPinLength', 'credBlob', 'prf']:
+      self.assertEqual(
+          is_desktop,
+          self._driver.capabilities['webauthn:extension:' + extension])
 
   def testCanClickInIframesInShadow(self):
     """Test that you can interact with a iframe within a shadow element.
@@ -3425,6 +3420,14 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
           bytes(result['credential']['authenticatorData'], 'ascii'), 'base64')
       # 0xf5 is 'true' in CBOR.
       self.assertTrue(b'credBlob\xf5' in authData)
+
+    with self.subTest(extension = 'prf'):
+      result = addAuthenticatorAndRegister(
+          "prf: {}",
+          {'extensions': ['prf']},
+          )
+      self.assertEqual('OK', result['status'])
+      self.assertEqual(True, result['extensions']['prf']['enabled'])
 
   def testAddVirtualAuthenticatorProtocolVersion(self):
     self._driver.Load(self.GetHttpsUrlForFile(

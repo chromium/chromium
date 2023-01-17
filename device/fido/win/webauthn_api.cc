@@ -39,6 +39,64 @@ std::string HresultToHex(HRESULT hr) {
   return base::StringPrintf("0x%0lX", hr);
 }
 
+// FillHMACSalts converts `input` to the Windows representation of a pair of
+// HMAC salt values, using `salts_storage` to own the returned pointer.
+WEBAUTHN_HMAC_SECRET_SALT* FillHMACSalts(
+    std::vector<WEBAUTHN_HMAC_SECRET_SALT>* salts_storage,
+    const CtapGetAssertionOptions::PRFInput& input) {
+  const WEBAUTHN_HMAC_SECRET_SALT salts{
+      base::checked_cast<DWORD>(input.salt1.size()),
+      const_cast<PBYTE>(input.salt1.data()),
+      input.salt2.has_value() ? base::checked_cast<DWORD>(input.salt2->size())
+                              : 0,
+      input.salt2.has_value() ? const_cast<PBYTE>(input.salt2->data())
+                              : nullptr,
+  };
+  salts_storage->push_back(salts);
+  return &salts_storage->back();
+}
+
+// FillHMACSaltValues converts `inputs` to the Windows representation of the
+// PRF inputs and uses the `*_storage` arguments to own the returned structures.
+WEBAUTHN_HMAC_SECRET_SALT_VALUES* FillHMACSaltValues(
+    WEBAUTHN_HMAC_SECRET_SALT_VALUES* values_storage,
+    std::vector<WEBAUTHN_HMAC_SECRET_SALT>* salts_storage,
+    std::vector<WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT>* cred_salts_storage,
+    const std::vector<CtapGetAssertionOptions::PRFInput>& inputs) {
+  if (inputs.empty()) {
+    return nullptr;
+  }
+
+  memset(values_storage, 0, sizeof(*values_storage));
+  // These vectors must not reallocate because the Windows structures will have
+  // pointers into their elements.
+  salts_storage->reserve(inputs.size());
+  cred_salts_storage->reserve(inputs.size());
+
+  for (const auto& input : inputs) {
+    if (!input.credential_id.has_value()) {
+      // Only the first input may omit the credential ID.
+      DCHECK(cred_salts_storage->empty());
+      values_storage->pGlobalHmacSalt = FillHMACSalts(salts_storage, input);
+    } else {
+      const WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT cred_salt{
+          base::checked_cast<DWORD>(input.credential_id->size()),
+          const_cast<PBYTE>(input.credential_id->data()),
+          FillHMACSalts(salts_storage, input),
+      };
+      cred_salts_storage->push_back(cred_salt);
+    }
+  }
+
+  if (!cred_salts_storage->empty()) {
+    values_storage->cCredWithHmacSecretSaltList =
+        base::checked_cast<DWORD>(cred_salts_storage->size());
+    values_storage->pCredWithHmacSecretSaltList = cred_salts_storage->data();
+  }
+
+  return values_storage;
+}
+
 }  // namespace
 
 class WinWebAuthnApiImpl : public WinWebAuthnApi {
@@ -501,10 +559,24 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
     });
   }
 
+  WEBAUTHN_HMAC_SECRET_SALT_VALUES hmac_salt_values_storage;
+  std::vector<WEBAUTHN_HMAC_SECRET_SALT> salts_storage;
+  std::vector<WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT> cred_salts_storage;
+  WEBAUTHN_HMAC_SECRET_SALT_VALUES* const hmac_salt_values =
+      FillHMACSaltValues(&hmac_salt_values_storage, &salts_storage,
+                         &cred_salts_storage, request_options.prf_inputs);
+
+  DWORD flags = 0;
+  if (hmac_salt_values) {
+    // The HMAC salts are hashed in the renderer. This flag indicates that they
+    // should not be hashed again.
+    flags |= WEBAUTHN_AUTHENTICATOR_HMAC_SECRET_VALUES_FLAG;
+  }
+
   static BOOL kUseAppIdTrue = TRUE;    // const
   static BOOL kUseAppIdFalse = FALSE;  // const
   WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS options{
-      WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_4,
+      WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_6,
       kWinWebAuthnTimeoutMilliseconds,
       // As of Nov 2018, the WebAuthNAuthenticatorGetAssertion method will
       // fail to challenge credentials via CTAP1 if the allowList is passed
@@ -522,11 +594,16 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                           extensions.data()},
       WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY,
       ToWinUserVerificationRequirement(request.user_verification),
-      /*dwFlags=*/0,
+      flags,
       opt_app_id16 ? base::as_wcstr(*opt_app_id16) : nullptr,
       opt_app_id16 ? &kUseAppIdTrue : &kUseAppIdFalse,
       &cancellation_id,
       &allow_credential_list,
+      /*dwCredLargeBlobOperation=*/0,
+      /*cbCredLargeBlob=*/0,
+      /*pbCredLargeBlob=*/nullptr,
+      hmac_salt_values,
+      /*bBrowserInPrivateMode=*/false,
   };
 
   WEBAUTHN_ASSERTION* assertion = nullptr;
@@ -552,8 +629,10 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion()=" << *assertion;
   absl::optional<AuthenticatorGetAssertionResponse> response =
       ToAuthenticatorGetAssertionResponse(*assertion, request.allow_list);
-  if (response && !request_options.prf_inputs.empty()) {
-    // Windows does not yet support passing in inputs for hmac_secret.
+  if (response && !request_options.prf_inputs.empty() &&
+      webauthn_api->Version() < WEBAUTHN_API_VERSION_4) {
+    // This version of Windows does not yet support passing in inputs for
+    // hmac_secret.
     response->hmac_secret_not_evaluated = true;
   }
   return {response ? CtapDeviceResponseCode::kSuccess

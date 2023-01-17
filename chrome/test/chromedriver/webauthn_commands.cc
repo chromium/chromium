@@ -131,6 +131,8 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
         mapped_params.SetByDottedPath("options.hasCredBlob", true);
       } else if (extension_string == "minPinLength") {
         mapped_params.SetByDottedPath("options.hasMinPinLength", true);
+      } else if (extension_string == "prf") {
+        mapped_params.SetByDottedPath("options.hasPrf", true);
       } else {
         return Status(kUnsupportedOperation,
                       extension_string + kUnrecognizedExtension);

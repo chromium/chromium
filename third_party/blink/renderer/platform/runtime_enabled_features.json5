@@ -3142,6 +3142,11 @@
       name: "WebAuthenticationLargeBlobExtension",
       status: "experimental",
     },
+    // https://w3c.github.io/webauthn/#prf-extension
+    {
+      name: "WebAuthenticationPRF",
+      status: "experimental",
+    },
     {
       name: "WebAuthenticationRemoteDesktopSupport",
       public: true,

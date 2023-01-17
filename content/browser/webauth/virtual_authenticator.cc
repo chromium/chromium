@@ -28,6 +28,7 @@ VirtualAuthenticator::VirtualAuthenticator(
       has_large_blob_(options.has_large_blob),
       has_cred_blob_(options.has_cred_blob),
       has_min_pin_length_(options.has_min_pin_length),
+      has_prf_(options.has_prf),
       unique_id_(base::GenerateGUID()),
       state_(base::MakeRefCounted<device::VirtualFidoDevice::State>()) {
   state_->transport = options.transport;
@@ -127,9 +128,15 @@ VirtualAuthenticator::ConstructDevice() {
       config.large_blob_support = has_large_blob_;
       config.cred_protect_support = config.cred_blob_support = has_cred_blob_;
       config.min_pin_length_extension_support = has_min_pin_length_;
-      if (has_large_blob_ && has_user_verification_) {
-        // Writing a large blob requires obtaining a PinUvAuthToken with
-        // permissions if the authenticator is protected by user verification.
+      config.hmac_secret_support = has_prf_;
+
+      if (
+          // Writing a large blob requires obtaining a PinUvAuthToken with
+          // permissions if the authenticator is protected by user verification.
+          (has_large_blob_ && has_user_verification_) ||
+          // PRF support always requires PIN support because the exchange is
+          // encrypted.
+          has_prf_) {
         config.pin_uv_auth_token_support = true;
       }
       config.internal_uv_support = has_user_verification_;

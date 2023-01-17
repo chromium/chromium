@@ -46,4 +46,8 @@ dictionary AuthenticationExtensionsClientInputs {
   // Device-bound public-key support.
   // https://github.com/w3c/webauthn/pull/1663
   [RuntimeEnabled=WebAuthenticationDevicePublicKey] AuthenticationExtensionsDevicePublicKeyInputs devicePubKey;
+
+  // Pseudo-random function support.
+  // https://w3c.github.io/webauthn/#prf-extension
+  [RuntimeEnabled=WebAuthenticationPRF] AuthenticationExtensionsPRFInputs prf;
 };

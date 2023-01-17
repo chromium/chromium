@@ -29,6 +29,28 @@
 
 namespace device {
 
+namespace {
+
+absl::optional<std::vector<uint8_t>> HMACSecretOutputs(
+    const WEBAUTHN_HMAC_SECRET_SALT& salt) {
+  constexpr size_t kOutputLength = 32;
+  if (salt.cbFirst != kOutputLength ||
+      (salt.cbSecond != 0 && salt.cbSecond != kOutputLength)) {
+    FIDO_LOG(ERROR) << "Incorrect HMAC output lengths: " << salt.cbFirst << " "
+                    << salt.cbSecond;
+    return absl::nullopt;
+  }
+
+  std::vector<uint8_t> ret;
+  ret.insert(ret.end(), salt.pbFirst, salt.pbFirst + salt.cbFirst);
+  if (salt.cbSecond == kOutputLength) {
+    ret.insert(ret.end(), salt.pbSecond, salt.pbSecond + salt.cbSecond);
+  }
+  return ret;
+}
+
+}  // namespace
+
 absl::optional<AuthenticatorMakeCredentialResponse>
 ToAuthenticatorMakeCredentialResponse(
     const WEBAUTHN_CREDENTIAL_ATTESTATION& credential_attestation) {
@@ -119,6 +141,10 @@ ToAuthenticatorGetAssertionResponse(
   if (assertion.cbUserId > 0) {
     response.user_entity = PublicKeyCredentialUserEntity(std::vector<uint8_t>(
         assertion.pbUserId, assertion.pbUserId + assertion.cbUserId));
+  }
+  if (assertion.dwVersion >= WEBAUTHN_ASSERTION_VERSION_3 &&
+      assertion.pHmacSecret) {
+    response.hmac_secret = HMACSecretOutputs(*assertion.pHmacSecret);
   }
   return response;
 }

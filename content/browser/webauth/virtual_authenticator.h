@@ -174,6 +174,7 @@ class CONTENT_EXPORT VirtualAuthenticator
   const bool has_large_blob_;
   const bool has_cred_blob_;
   const bool has_min_pin_length_;
+  const bool has_prf_;
   bool is_user_verified_ = true;
   const std::string unique_id_;
   bool is_user_present_;

@@ -17,6 +17,8 @@
 
 namespace blink {
 class AuthenticationExtensionsDevicePublicKeyInputs;
+class AuthenticationExtensionsPRFInputs;
+class AuthenticationExtensionsPRFValues;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class CableRegistrationData;
@@ -214,6 +216,20 @@ struct TypeConverter<blink::mojom::blink::DevicePublicKeyRequestPtr,
                      blink::AuthenticationExtensionsDevicePublicKeyInputs> {
   static blink::mojom::blink::DevicePublicKeyRequestPtr Convert(
       const blink::AuthenticationExtensionsDevicePublicKeyInputs&);
+};
+
+template <>
+struct TypeConverter<blink::mojom::blink::PRFValuesPtr,
+                     blink::AuthenticationExtensionsPRFValues> {
+  static StructPtr<blink::mojom::blink::PRFValues> Convert(
+      const blink::AuthenticationExtensionsPRFValues&);
+};
+
+template <>
+struct TypeConverter<Vector<blink::mojom::blink::PRFValuesPtr>,
+                     blink::AuthenticationExtensionsPRFInputs> {
+  static Vector<StructPtr<blink::mojom::blink::PRFValues>> Convert(
+      const blink::AuthenticationExtensionsPRFInputs&);
 };
 
 }  // namespace mojo

@@ -210,6 +210,7 @@ base::Value::Dict CreateCapabilities(Session* session,
   caps.Set("webauthn:extension:largeBlob", !capabilities.IsAndroid());
   caps.Set("webauthn:extension:minPinLength", !capabilities.IsAndroid());
   caps.Set("webauthn:extension:credBlob", !capabilities.IsAndroid());
+  caps.Set("webauthn:extension:prf", !capabilities.IsAndroid());
 
   // Chrome-specific extensions.
   const std::string chrome_driver_version_key = base::StringPrintf(
