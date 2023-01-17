@@ -155,7 +155,7 @@ constexpr char kPassword[] = "test";
 
 @interface FakeSnackbarImplementation : NSObject <SnackbarCommands>
 
-@property(nonatomic, assign) NSString* snackbarMessage;
+@property(nonatomic, copy) NSString* snackbarMessage;
 
 @end
 

@@ -70,7 +70,7 @@ PasswordForm CreatePasswordForm() {
 // causes the update to occur.
 @property(nonatomic, assign) NSInteger numberOfCallToChangeOnDeviceEncryption;
 
-@property(nonatomic, assign) NSString* detailedText;
+@property(nonatomic, copy) NSString* detailedText;
 
 @end
 

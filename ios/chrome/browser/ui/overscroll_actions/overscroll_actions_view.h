@@ -64,7 +64,7 @@ extern const CGFloat kActionViewBackgroundColorBrightnessIncognito;
 // The current style of the overscroll actions UI.
 @property(nonatomic, assign) OverscrollStyle style;
 
-@property(nonatomic, assign) id<OverscrollActionsViewDelegate> delegate;
+@property(nonatomic, weak) id<OverscrollActionsViewDelegate> delegate;
 
 // Add a snapshot view on top of the background image view. The previous
 // snapshot view if any will be removed.

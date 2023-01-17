@@ -35,7 +35,7 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 // The URL of the page to be bookmarked.
 @property(nonatomic, assign) GURL URL;
 // The title of the page to be bookmarked.
-@property(nonatomic, assign) NSString* title;
+@property(nonatomic, copy) NSString* title;
 // The handler invoked when the activity is performed.
 @property(nonatomic, weak) id<BookmarksCommands> handler;
 // User's preferences service.

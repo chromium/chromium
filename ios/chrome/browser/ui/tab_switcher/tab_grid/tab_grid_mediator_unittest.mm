@@ -101,7 +101,7 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
 @interface FakeConsumer : NSObject <TabCollectionConsumer>
 // The fake consumer only keeps the identifiers of items for simplicity
 @property(nonatomic, strong) NSMutableArray<NSString*>* items;
-@property(nonatomic, assign) NSString* selectedItemID;
+@property(nonatomic, copy) NSString* selectedItemID;
 @end
 @implementation FakeConsumer
 @synthesize items = _items;

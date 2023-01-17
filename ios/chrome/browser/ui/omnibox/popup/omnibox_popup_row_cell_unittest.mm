@@ -26,8 +26,8 @@
 @property(nonatomic, assign) NSInteger numberOfLines;
 @property(nonatomic, strong) id<OmniboxIcon> icon;
 @property(nonatomic, assign) BOOL isTailSuggestion;
-@property(nonatomic, assign) NSString* commonPrefix;
-@property(nonatomic, assign) id<OmniboxPedal, OmniboxIcon> pedal;
+@property(nonatomic, copy) NSString* commonPrefix;
+@property(nonatomic, weak) id<OmniboxPedal, OmniboxIcon> pedal;
 @property(nonatomic, strong) NSAttributedString* omniboxPreviewText;
 @property(nonatomic, strong) UIImage* matchTypeIcon;
 @property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;

@@ -59,11 +59,11 @@
 @property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
 
 // The view controller representing the NTP feed header.
-@property(nonatomic, assign) FeedHeaderViewController* feedHeaderViewController;
+@property(nonatomic, weak) FeedHeaderViewController* feedHeaderViewController;
 
 // The view controller representing the Feed top section (between the feed
 // header and the feed collection).
-@property(nonatomic, assign) UIViewController* feedTopSectionViewController;
+@property(nonatomic, strong) UIViewController* feedTopSectionViewController;
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;

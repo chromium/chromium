@@ -26,7 +26,7 @@
 @property(nonatomic) id<OmniboxIcon> icon;
 @property(nonatomic) id<OmniboxPedal, OmniboxIcon> pedal;
 @property(nonatomic) BOOL isTailSuggestion;
-@property(nonatomic, readonly) NSString* commonPrefix;
+@property(nonatomic, readonly, copy) NSString* commonPrefix;
 @property(nonatomic, strong) NSNumber* suggestionGroupId;
 @property(nonatomic, strong) NSNumber* suggestionSectionId;
 

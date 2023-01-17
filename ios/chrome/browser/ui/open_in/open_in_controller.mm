@@ -191,7 +191,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 @property(nonatomic, assign) CGFloat previousScrollViewOffset;
 
 // The base view controller from which to present UI.
-@property(nonatomic, assign) UIViewController* baseViewController;
+@property(nonatomic, weak) UIViewController* baseViewController;
 
 // Task runner on which file operations should happen.
 @property(nonatomic, assign) scoped_refptr<base::SequencedTaskRunner>

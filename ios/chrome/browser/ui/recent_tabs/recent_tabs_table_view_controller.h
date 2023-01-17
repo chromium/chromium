@@ -59,7 +59,7 @@ class DistantSession;
 @property(nonatomic, weak) id<RecentTabsMenuProvider> menuProvider;
 
 // Multi-window session for this vc's recent tabs.
-@property(nonatomic, assign) UISceneSession* session;
+@property(nonatomic, weak) UISceneSession* session;
 
 // Initializers.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

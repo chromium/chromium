@@ -31,7 +31,7 @@
 
 // Provides methods for presenting the tab strip and checking the visibility
 // of the tab strip in the containing object.
-@property(nonatomic, assign) id<TabStripPresentation> presentationProvider;
+@property(nonatomic, weak) id<TabStripPresentation> presentationProvider;
 
 // The duration to wait before starting tab strip animations. Used to
 // synchronize animations.

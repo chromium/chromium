@@ -69,7 +69,7 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 @property(nonatomic, readonly) BOOL isTailSuggestion;
 
 /// Common prefix for tail suggestions. Empty otherwise.
-@property(nonatomic, readonly) NSString* commonPrefix;
+@property(nonatomic, readonly, copy) NSString* commonPrefix;
 
 @end
 

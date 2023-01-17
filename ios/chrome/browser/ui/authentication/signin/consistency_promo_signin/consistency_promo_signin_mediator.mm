@@ -49,7 +49,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 @property(nonatomic, assign) PrefService* userPrefService;
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 // Identity for the sign-in in progress.
-@property(nonatomic, assign) id<SystemIdentity> signingIdentity;
+@property(nonatomic, weak) id<SystemIdentity> signingIdentity;
 // Duration before sign-in timeout. The property is overwritten in unittests.
 @property(nonatomic, assign, readonly) NSInteger signinTimeoutDurationSeconds;
 

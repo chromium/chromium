@@ -93,7 +93,7 @@
 @property(nonatomic, weak) id<CardListDelegate> navigationDelegate;
 
 // The credit card data for this cell.
-@property(nonatomic, assign) ManualFillCreditCard* card;
+@property(nonatomic, weak) ManualFillCreditCard* card;
 
 @end
 
