@@ -114,6 +114,44 @@ base::Value OsStatesDebugValue(
         current_states.uninstall_registration().registered_with_os());
   }
 
+  if (current_states.has_shortcut_menus()) {
+    for (const auto& shortcut_menu :
+         current_states.shortcut_menus().shortcut_menu_info()) {
+      base::Value::Dict icon_data_any_dict;
+      base::Value::Dict icon_data_maskable_dict;
+      base::Value::Dict icon_data_monochrome_dict;
+      for (const auto& icon_data_any : shortcut_menu.icon_data_any()) {
+        icon_data_any_dict.Set(
+            base::NumberToString(icon_data_any.icon_size()),
+            syncer::GetTimeDebugString(
+                syncer::ProtoTimeToTime(icon_data_any.timestamp())));
+      }
+      for (const auto& icon_data_maskable : shortcut_menu.icon_data_any()) {
+        icon_data_maskable_dict.Set(
+            base::NumberToString(icon_data_maskable.icon_size()),
+            syncer::GetTimeDebugString(
+                syncer::ProtoTimeToTime(icon_data_maskable.timestamp())));
+      }
+      for (const auto& icon_data_monochrome : shortcut_menu.icon_data_any()) {
+        icon_data_monochrome_dict.Set(
+            base::NumberToString(icon_data_monochrome.icon_size()),
+            syncer::GetTimeDebugString(
+                syncer::ProtoTimeToTime(icon_data_monochrome.timestamp())));
+      }
+      base::Value::Dict shortcut_menu_dict;
+      shortcut_menu_dict.Set("app_title", shortcut_menu.app_title());
+      shortcut_menu_dict.Set("app_launch_url", shortcut_menu.app_launch_url());
+      shortcut_menu_dict.Set("icon_data_any",
+                             base::Value(std::move(icon_data_any_dict)));
+      shortcut_menu_dict.Set("icon_data_maskable",
+                             base::Value(std::move(icon_data_maskable_dict)));
+      shortcut_menu_dict.Set("icon_data_monochrome",
+                             base::Value(std::move(icon_data_monochrome_dict)));
+      debug_dict.Set("shortcut_menus",
+                     base::Value(std::move(shortcut_menu_dict)));
+    }
+  }
+
   return base::Value(std::move(debug_dict));
 }
 
