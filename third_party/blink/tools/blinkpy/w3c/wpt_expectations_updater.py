@@ -154,6 +154,8 @@ class WPTExpectationsUpdater(object):
             mapping tests that couldn't be rebaselined to lists of expectation
             lines written to flag specific test expectations.
         """
+        # TODO(crbug.com/1344709): This method has no coverage and should be
+        # merged with `update_expectations`.
         self.port.wpt_manifest.cache_clear()
 
         issue_number = self.get_issue_number()
@@ -164,7 +166,7 @@ class WPTExpectationsUpdater(object):
         # instead of hardcoding.
         builder = 'linux-blink-rel'
         builder_names = [builder]
-        test_suite = self.flag_specific_suite(builder, flag_specific)
+        test_suite = self.suite_for_builder(builder, flag_specific)
 
         build_to_status = self.git_cl.latest_try_jobs(
             builder_names=builder_names,
