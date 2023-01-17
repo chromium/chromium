@@ -24,13 +24,11 @@
         directory: "dev-mediacodec",
         from: "parent",
         to: "#isolated_codec_factory",
-        rights: [ "rw*" ],
     },
     {
         directory: "dev-gpu",
         from: "parent",
         to: "#isolated_codec_factory",
-        rights: [ "rw*" ],
     },
   ],
   use: [
