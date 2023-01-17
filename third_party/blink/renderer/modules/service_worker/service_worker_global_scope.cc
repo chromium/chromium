@@ -689,6 +689,12 @@ bool ServiceWorkerGlobalScope::AddEventListenerInternal(
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning, message));
+    // Count the update of fetch handlers after the initial evaluation.
+    if (event_type == event_type_names::kFetch) {
+      UseCounter::Count(
+          this,
+          WebFeature::kServiceWorkerFetchHandlerUpdateAfterInitialization);
+    }
   }
   return WorkerGlobalScope::AddEventListenerInternal(event_type, listener,
                                                      options);

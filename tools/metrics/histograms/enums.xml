@@ -41827,6 +41827,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4442" label="PrivateNetworkAccessFetchedSubFrame"/>
   <int value="4443" label="PrivateNetworkAccessFetchedTopFrame"/>
   <int value="4444" label="DisableThirdPartyStoragePartitioning"/>
+  <int value="4445" label="ServiceWorkerFetchHandlerUpdateAfterInitialization"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
