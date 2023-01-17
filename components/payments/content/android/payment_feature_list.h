@@ -13,7 +13,12 @@ namespace payments {
 namespace android {
 
 // Android only payment features in alphabetical order:
+
 BASE_DECLARE_FEATURE(kAndroidAppPaymentUpdateEvents);
+
+// If enabled, then the web merchant origin and web wallet parameters will be
+// omitted from the isReadyToPayRequest. See: https://crbug.com/1406655.
+BASE_DECLARE_FEATURE(kOmitParametersInReadyToPay);
 
 }  // namespace android
 }  // namespace payments

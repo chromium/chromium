@@ -37,6 +37,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebPaymentsRedactShippingAddress,
     &features::kWebPaymentsSingleAppUiSkip,
     &kAndroidAppPaymentUpdateEvents,
+    &kOmitParametersInReadyToPay,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
@@ -56,6 +57,9 @@ const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
 BASE_FEATURE(kAndroidAppPaymentUpdateEvents,
              "AndroidAppPaymentUpdateEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOmitParametersInReadyToPay,
+             "OmitParametersInReadyToPay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jboolean JNI_PaymentFeatureList_IsEnabled(
     JNIEnv* env,
