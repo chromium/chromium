@@ -3578,6 +3578,9 @@ extern const char kDisableQuickAnswersV2TranslationDescription[];
 extern const char kSyncChromeOSExplicitPassphraseSharingName[];
 extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
 
+extern const char kChromeOSSyncedSessionSharingName[];
+extern const char kChromeOSSyncedSessionSharingDescription[];
+
 extern const char kTouchTextEditingRedesignName[];
 extern const char kTouchTextEditingRedesignDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)

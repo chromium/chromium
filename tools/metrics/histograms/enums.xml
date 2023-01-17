@@ -57217,6 +57217,7 @@ from previous Chrome versions.
   <int value="-2141602766" label="NtpWebUI:enabled"/>
   <int value="-2141575276" label="FileHandlingIcons:enabled"/>
   <int value="-2141247271" label="AndroidOmniboxPreviewsBadge:enabled"/>
+  <int value="-2141179322" label="ChromeOSSyncedSessionSharing:disabled"/>
   <int value="-2140007754" label="HomepageSettingsUIConversion:disabled"/>
   <int value="-2139379065" label="StoragePressureUI:enabled"/>
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
@@ -58009,6 +58010,7 @@ from previous Chrome versions.
   <int value="-1703308540" label="disable-webaudio"/>
   <int value="-1701123067" label="ShowManagedUi:enabled"/>
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
+  <int value="-1699960514" label="ChromeOSSyncedSessionSharing:enabled"/>
   <int value="-1699700244"
       label="VirtualKeyboardMultipasteSuggestion:disabled"/>
   <int value="-1698438797" label="TabGroupsCollapseFreezing:enabled"/>

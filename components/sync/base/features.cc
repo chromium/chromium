@@ -62,6 +62,10 @@ BASE_FEATURE(kSyncChromeOSExplicitPassphraseSharing,
 BASE_FEATURE(kSyncChromeOSAppsToggleSharing,
              "SyncChromeOSAppsToggleSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeOSSyncedSessionSharing,
+             "ChromeOSSyncedSessionSharing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 BASE_FEATURE(kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling,

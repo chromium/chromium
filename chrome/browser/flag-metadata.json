@@ -1012,6 +1012,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "chromeos-synced-session-sharing",
+    "owners": ["jasonrhee", "chromeos-cross-device-eng@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
     "owners": [ "shuuran", "kaustubhag" ],
     "expiry_milestone": 115

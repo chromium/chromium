@@ -83,6 +83,9 @@ BASE_DECLARE_FEATURE(kSyncChromeOSExplicitPassphraseSharing);
 
 // Whether Apps toggle value is exposed by Ash to Lacros.
 BASE_DECLARE_FEATURE(kSyncChromeOSAppsToggleSharing);
+
+// Whether SyncedSessions are updated by Lacros to Ash.
+BASE_DECLARE_FEATURE(kChromeOSSyncedSessionSharing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Whether the periodic degraded recoverability polling is enabled.
