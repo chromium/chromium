@@ -422,8 +422,6 @@ void ServiceWorkerContextWrapper::OnStarted(
   if (is_deleting_and_starting_over_)
     return;
 
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextCoreObserver
-  // implements StorageKey.
   auto insertion_result = running_service_workers_.insert(std::make_pair(
       version_id,
       ServiceWorkerRunningInfo(script_url, scope, key, process_id, token)));

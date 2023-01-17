@@ -214,8 +214,6 @@ class DevToolsBackgroundServicesContextTest
  private:
   int64_t RegisterServiceWorker() {
     GURL script_url(origin_.GetURL().spec() + "sw.js");
-    // TODO(crbug.com/1199077): Update this when
-    // DevToolsBackgroundServicesContextImpl implements StorageKey.
     blink::StorageKey key(origin_);
     int64_t service_worker_registration_id =
         blink::mojom::kInvalidServiceWorkerRegistrationId;

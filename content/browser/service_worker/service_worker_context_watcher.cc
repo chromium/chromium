@@ -365,8 +365,6 @@ void ServiceWorkerContextWatcher::OnRegistrationCompleted(
     const GURL& scope,
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/1199077): Pipe in StorageKey when it's available in this
-  // function.
   SendRegistrationInfo(registration_id, scope, key,
                        ServiceWorkerRegistrationInfo::IS_NOT_DELETED);
 }

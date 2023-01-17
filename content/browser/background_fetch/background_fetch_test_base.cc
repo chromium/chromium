@@ -161,8 +161,6 @@ void BackgroundFetchTestBase::UnregisterServiceWorker(
     int64_t service_worker_registration_id) {
   base::RunLoop run_loop;
   const GURL scope = GetScopeForId(kTestOrigin, service_worker_registration_id);
-  // TODO(crbug.com/1199077): Update this when background fetch implements
-  // StorageKey.
   embedded_worker_test_helper_.context()->UnregisterServiceWorker(
       scope, blink::StorageKey(url::Origin::Create(scope)),
       /*is_immediate=*/false,

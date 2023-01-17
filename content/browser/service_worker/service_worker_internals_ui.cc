@@ -726,8 +726,6 @@ void ServiceWorkerInternalsHandler::UnregisterWithScope(
 
   // ServiceWorkerContextWrapper::UnregisterServiceWorker doesn't work here
   // because that reduces a status code to boolean.
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerInternalsHandler
-  // implements StorageKey.
   context->context()->UnregisterServiceWorker(scope, storage_key,
                                               /*is_immediate=*/false,
                                               std::move(callback));

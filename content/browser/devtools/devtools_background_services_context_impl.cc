@@ -218,8 +218,6 @@ void DevToolsBackgroundServicesContextImpl::LogBackgroundServiceEvent(
   event.mutable_event_metadata()->insert(event_metadata.begin(),
                                          event_metadata.end());
 
-  // TODO(crbug.com/1199077): Update this when
-  // DevToolsBackgroundServicesContextImpl implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
       service_worker_registration_id, storage_key,
       {{CreateEntryKey(event.background_service()), event.SerializeAsString()}},

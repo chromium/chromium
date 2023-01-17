@@ -450,8 +450,6 @@ class BackgroundFetchDataManagerTest
                      const std::string& value) {
     std::vector<std::string> data;
 
-    // TODO(crbug.com/1199077): Update this when BackgroundFetchTestBase
-    // implements StorageKey.
     base::RunLoop run_loop;
     embedded_worker_test_helper()->context_wrapper()->StoreRegistrationUserData(
         service_worker_registration_id, storage_key(), {{key, value}},
