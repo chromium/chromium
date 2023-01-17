@@ -17,6 +17,8 @@ class NET_EXPORT SignatureVerifyCache {
     kUnknown,  // Cache has no information.
   };
 
+  virtual ~SignatureVerifyCache() = default;
+
   // This interface uses a const std::string reference instead of
   // std::string_view because any implementation that may reasonably want to use
   // std::unordered_map or similar can run into problems with std::hash before
