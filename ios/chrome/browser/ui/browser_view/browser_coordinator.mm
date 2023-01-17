@@ -268,12 +268,12 @@ enum class ToolbarKind {
 @property(nonatomic, strong)
     ActivityOverlayCoordinator* activityOverlayCoordinator;
 
-// Presents a QLPreviewController in order to display USDZ format 3D models.
-@property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
-
 // Coordinator to add new credit card.
 @property(nonatomic, strong)
     AutofillAddCreditCardCoordinator* addCreditCardCoordinator;
+
+// Presents a QLPreviewController in order to display USDZ format 3D models.
+@property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
 
 // Coordinator for the badge popup menu.
 @property(nonatomic, strong)
@@ -282,6 +282,18 @@ enum class ToolbarKind {
 // Coordinator-ish provider for context menus.
 @property(nonatomic, strong)
     ContextMenuConfigurationProvider* contextMenuProvider;
+
+// Coordinator that manages the default browser promo modal.
+@property(nonatomic, strong)
+    DefaultBrowserPromoCoordinator* defaultBrowserPromoCoordinator;
+
+// Coordinator that manages the presentation of Download Manager UI.
+@property(nonatomic, strong)
+    DownloadManagerCoordinator* downloadManagerCoordinator;
+
+// The coordinator that manages enterprise prompts.
+@property(nonatomic, strong)
+    EnterprisePromptCoordinator* enterprisePromptCoordinator;
 
 // Coordinator for the find bar.
 @property(nonatomic, strong) FindBarCoordinator* findBarCoordinator;
@@ -297,15 +309,18 @@ enum class ToolbarKind {
 @property(nonatomic, strong)
     FormInputAccessoryCoordinator* formInputAccessoryCoordinator;
 
-// Presents a SFSafariViewController in order to download .mobileconfig file.
+// The container coordinators for the infobar modalities.
 @property(nonatomic, strong)
-    SafariDownloadCoordinator* SafariDownloadCoordinator;
-
-// Opens downloaded Vcard.
-@property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
+    OverlayContainerCoordinator* infobarBannerOverlayContainerCoordinator;
+@property(nonatomic, strong)
+    OverlayContainerCoordinator* infobarModalOverlayContainerCoordinator;
 
 // The coordinator that manages net export.
 @property(nonatomic, strong) NetExportCoordinator* netExportCoordinator;
+
+// Coordinator for the non-modal default promo.
+@property(nonatomic, strong)
+    DefaultBrowserPromoNonModalCoordinator* nonModalPromoCoordinator;
 
 // Coordinator for Page Info UI.
 @property(nonatomic, strong) ChromeCoordinator* pageInfoCoordinator;
@@ -329,6 +344,9 @@ enum class ToolbarKind {
 @property(nonatomic, strong)
     PasswordSuggestionCoordinator* passwordSuggestionCoordinator;
 
+// Coordinator for the popup menu.
+@property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
+
 // Coordinator for the price notifications IPH feature.
 @property(nonatomic, strong)
     PriceNotificationsIPHCoordinator* priceNotificationsIPHCoordinator;
@@ -347,9 +365,6 @@ enum class ToolbarKind {
 // Coordinator for the QR scanner.
 @property(nonatomic, strong) QRScannerLegacyCoordinator* qrScannerCoordinator;
 
-// Coordinator for the popup menu.
-@property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
-
 // Coordinator for displaying the Reading List.
 @property(nonatomic, strong) ReadingListCoordinator* readingListCoordinator;
 
@@ -362,52 +377,37 @@ enum class ToolbarKind {
 // Coordinator for displaying Sad Tab.
 @property(nonatomic, strong) SadTabCoordinator* sadTabCoordinator;
 
+// Presents a SFSafariViewController in order to download .mobileconfig file.
+@property(nonatomic, strong)
+    SafariDownloadCoordinator* SafariDownloadCoordinator;
+
 // Coordinator for Safe Browsing.
 @property(nonatomic, strong) SafeBrowsingCoordinator* safeBrowsingCoordinator;
 
 // Coordinator for sharing scenarios.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
+// The coordinator used for Spotlight Debugger.
+@property(nonatomic, strong)
+    SpotlightDebuggerCoordinator* spotlightDebuggerCoordinator;
+
 // Coordinator for presenting SKStoreProductViewController.
 @property(nonatomic, strong) StoreKitCoordinator* storeKitCoordinator;
-
-// Coordinator for Text Zoom.
-@property(nonatomic, strong) TextZoomCoordinator* textZoomCoordinator;
-
-// Coordinator that manages the default browser promo modal.
-@property(nonatomic, strong)
-    DefaultBrowserPromoCoordinator* defaultBrowserPromoCoordinator;
-
-// Coordinator that manages the presentation of Download Manager UI.
-@property(nonatomic, strong)
-    DownloadManagerCoordinator* downloadManagerCoordinator;
 
 // Coordinator that manages the tailored promo modals.
 @property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
 
-// The container coordinators for the infobar modalities.
-@property(nonatomic, strong)
-    OverlayContainerCoordinator* infobarBannerOverlayContainerCoordinator;
-@property(nonatomic, strong)
-    OverlayContainerCoordinator* infobarModalOverlayContainerCoordinator;
-
-// Coordinator for the non-modal default promo.
-@property(nonatomic, strong)
-    DefaultBrowserPromoNonModalCoordinator* nonModalPromoCoordinator;
-
-// The coordinator that manages enterprise prompts.
-@property(nonatomic, strong)
-    EnterprisePromptCoordinator* enterprisePromptCoordinator;
-
 // The coordinator used for the Text Fragments feature.
 @property(nonatomic, strong) TextFragmentsCoordinator* textFragmentsCoordinator;
 
+// Coordinator for Text Zoom.
+@property(nonatomic, strong) TextZoomCoordinator* textZoomCoordinator;
+
+// Opens downloaded Vcard.
+@property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
+
 // The coordinator used for What's New feature.
 @property(nonatomic, strong) WhatsNewCoordinator* whatsNewCoordinator;
-
-// The coordinator used for Spotlight Debugger.
-@property(nonatomic, strong)
-    SpotlightDebuggerCoordinator* spotlightDebuggerCoordinator;
 
 @end
 
