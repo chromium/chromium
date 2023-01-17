@@ -454,8 +454,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.InstallEvent.All.FetchCount" units="fetches"
-    expires_after="2023-06-11">
-  <owner>wanderview@chromium.org</owner>
+    expires_after="2023-07-17">
+  <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The number of network fetches performed by the install event handler.
@@ -463,8 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.InstallEvent.{type}.Status"
-    enum="ServiceWorkerStatusCode" expires_after="2023-01-26">
-  <owner>wanderview@chromium.org</owner>
+    enum="ServiceWorkerStatusCode" expires_after="2023-07-17">
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -479,8 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.InstallEvent.{type}.Time" units="ms"
-    expires_after="2023-01-26">
-  <owner>wanderview@chromium.org</owner>
+    expires_after="2023-07-17">
   <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
