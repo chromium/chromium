@@ -25,6 +25,20 @@ source_set("headless") {
   }
 }
 
+source_set("command_processor") {
+  sources = [
+    "headless_command_processor.cc",
+    "headless_command_processor.h",
+  ]
+
+  deps = [
+    ":headless",
+    "//base",
+    "//components/headless/command_handler",
+    "//content/public/browser",
+  ]
+}
+
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true

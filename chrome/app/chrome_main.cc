@@ -150,6 +150,10 @@ int ChromeMain(int argc, const char** argv) {
 
   // Chrome-specific process modes.
   if (headless::IsHeadlessMode()) {
+    if (command_line->GetArgs().size() > 1) {
+      LOG(ERROR) << "Multiple targets are not supported in headless mode.";
+      return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
+    }
     headless::SetUpCommandLine(command_line);
   } else {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \

@@ -51,23 +51,36 @@ const char kChromeHeadlessURL[] = "chrome://headless/";
 const char kHeadlessCommandHtml[] = "headless_command.html";
 const char kHeadlessCommandJs[] = "headless_command.js";
 
-content::WebUIDataSource* CreateHeadlessHostDataSource() {
+void EnsureHeadlessCommandResources() {
+  // Check if our resources are already loaded and bail out early. This happens
+  // when running Chrome with --headless switch and headless command resources
+  // have been merged into the Chrome's resource pack.
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  if (!bundle.GetRawDataResource(IDR_HEADLESS_COMMAND_HTML).empty()) {
+    DCHECK(!bundle.GetRawDataResource(IDR_HEADLESS_COMMAND_JS).empty());
+    return;
+  }
+
+  // Check if we have headless command resource pack next to our binary and load
+  // it if so. Note that this code is expected to run early during the browser
+  // startup phase when file system access is still allowed.
   base::FilePath resource_dir;
   bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);
   DCHECK(result);
 
-  // Try loading the headless library pak file first. If it doesn't exist (i.e.,
-  // when we're running with the --headless switch), fall back to the browser's
-  // resource pak.
   base::FilePath resource_pack =
       resource_dir.Append(FILE_PATH_LITERAL("headless_command_resources.pak"));
   if (base::PathExists(resource_pack)) {
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        resource_pack, ui::kScaleFactorNone);
+    bundle.AddDataPackFromPath(resource_pack, ui::kScaleFactorNone);
   }
+}
+
+content::WebUIDataSource* CreateHeadlessHostDataSource() {
+  EnsureHeadlessCommandResources();
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeHeadlessHost);
+  DCHECK(source);
 
   source->AddResourcePath(kHeadlessCommandHtml, IDR_HEADLESS_COMMAND_HTML);
   source->AddResourcePath(kHeadlessCommandJs, IDR_HEADLESS_COMMAND_JS);
@@ -232,6 +245,7 @@ HeadlessCommandHandler::HeadlessCommandHandler(
       target_url_(std::move(target_url)),
       done_callback_(std::move(done_callback)),
       io_task_runner_(std::move(io_task_runner)) {
+  DCHECK(web_contents_);
   DCHECK(io_task_runner_);
 
   // Load command execution harness resources and create URL data source

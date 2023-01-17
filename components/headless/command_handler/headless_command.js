@@ -202,6 +202,11 @@ class TargetPage {
     return this._session;
   }
 
+  async close() {
+    const dp = this._session.protocol();
+    dp.Target.closeTarget({targetId: this._targetId});
+  }
+
   async _navigate(url) {
     const dp = this._session.protocol();
     await dp.Page.enable();
@@ -312,5 +317,9 @@ async function executeCommands(commands) {
     await Promise.race(promises);
   }
 
-  return await handleCommands(dp, commands);
+  const result = await handleCommands(dp, commands);
+
+  await targetPage.close();
+
+  return result;
 }
