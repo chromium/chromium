@@ -539,6 +539,7 @@ ci.builder(
         category = "linux|webkit",
         short_name = "msn",
     ),
+    os = os.LINUX_FOCAL,
 )
 
 ci.builder(
