@@ -904,10 +904,12 @@ def main():
     targets = _RebasePath(generated_inputs, output_dir)
     _RunNinja(output_dir, targets)
 
-  logging.warning('Generated files will only appear once you\'ve built them.')
-  logging.warning('Generated projects for Android Studio %s', channel)
-  logging.warning('For more tips: https://chromium.googlesource.com/chromium'
-                  '/src.git/+/main/docs/android_studio.md')
+  print('Generated projects for Android Studio ' + channel)
+  print('** Building using Android Studio / Gradle does not work.')
+  print('** This project is only for IDE editing & tools.')
+  print('Note: Generated files will appear only if they have been built')
+  print('For more tips: https://chromium.googlesource.com/chromium/src.git/'
+        '+/main/docs/android_studio.md')
 
 
 if __name__ == '__main__':
