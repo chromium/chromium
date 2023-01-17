@@ -60,6 +60,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "dual_reading_list_model_unittest.cc",
     "offline_url_utils_unittest.cc",
     "reading_list_entry_unittest.cc",
     "reading_list_model_storage_impl_unittest.cc",

@@ -17,12 +17,14 @@ DualReadingListModel::DualReadingListModel(
       account_model_(std::move(account_model)) {
   DCHECK(local_or_syncable_model_);
   DCHECK(account_model_);
-
-  // TODO(crbug.com/1402196): Register `this` as observer to both models so
-  // notifications can propagate.
+  local_or_syncable_model_->AddObserver(this);
+  account_model_->AddObserver(this);
 }
 
-DualReadingListModel::~DualReadingListModel() = default;
+DualReadingListModel::~DualReadingListModel() {
+  local_or_syncable_model_->RemoveObserver(this);
+  account_model_->RemoveObserver(this);
+}
 
 void DualReadingListModel::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -198,6 +200,15 @@ void DualReadingListModel::AddObserver(ReadingListModelObserver* observer) {
 void DualReadingListModel::RemoveObserver(ReadingListModelObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
+}
+
+void DualReadingListModel::ReadingListModelLoaded(
+    const ReadingListModel* model) {
+  if (loaded()) {
+    for (auto& observer : observers_) {
+      observer.ReadingListModelLoaded(this);
+    }
+  }
 }
 
 }  // namespace reading_list

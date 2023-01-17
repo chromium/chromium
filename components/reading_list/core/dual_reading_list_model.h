@@ -25,7 +25,8 @@ namespace reading_list {
 // data sources (local entries and entries server-side) should be treated
 // independently under the hood, but an in-memory merged view can be presented
 // to UI layers and generally feature integrations.
-class DualReadingListModel : public ReadingListModel {
+class DualReadingListModel : public ReadingListModel,
+                             public ReadingListModelObserver {
  public:
   DualReadingListModel(
       std::unique_ptr<ReadingListModel> local_or_syncable_model,
@@ -73,6 +74,9 @@ class DualReadingListModel : public ReadingListModel {
                                      base::Time distilation_time) override;
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;
+
+  // ReadingListModelObserver overrides.
+  void ReadingListModelLoaded(const ReadingListModel* model) override;
 
   class ScopedReadingListBatchUpdateImpl : public ScopedReadingListBatchUpdate {
    public:
