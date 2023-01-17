@@ -37,8 +37,14 @@ FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID(
 
   std::string encoded_data;
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  if (!base::DirectoryExists(store_path_)) {
+    const bool success = base::CreateDirectory(store_path_);
+    DCHECK(success) << "Failed to create GCM store directory";
+  }
+
   if (!base::ReadFileToString(store_path_.Append(kStoredTokensFileName),
                               &encoded_data)) {
+    // Do not fail in case the file does not exist.
     return;
   }
 

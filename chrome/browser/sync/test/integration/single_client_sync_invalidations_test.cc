@@ -675,6 +675,7 @@ IN_PROC_BROWSER_TEST_F(
   // Sign in again.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetClient(0)->AwaitInvalidationsStatus(/*expected_status=*/true));
   ASSERT_TRUE(SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
                   ->GetFCMRegistrationToken());
   const std::string new_token =
