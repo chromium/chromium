@@ -3441,6 +3441,59 @@ TEST_F(PrivacySandboxServiceM1Test,
       /*expected_count=*/1);
 }
 
+TEST_F(PrivacySandboxServiceM1Test, RecordPrivacySandbox4StartupMetrics_APIs) {
+  // Each test for the APIs are scoped below to ensure we start with a clean
+  // HistogramTester as each call to `RecordPrivacySandbox4StartupMetrics` emits
+  // histograms for all APIs.
+
+  // Topics
+  {
+    base::HistogramTester histogram_tester;
+    prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+    privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+    histogram_tester.ExpectBucketCount("Settings.PrivacySandbox.Topics.Enabled",
+                                       static_cast<int>(true),
+                                       /*expected_count=*/1);
+
+    prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
+    privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+    histogram_tester.ExpectBucketCount("Settings.PrivacySandbox.Topics.Enabled",
+                                       static_cast<int>(false),
+                                       /*expected_count=*/1);
+  }
+
+  // Fledge
+  {
+    base::HistogramTester histogram_tester;
+    prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+    privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+    histogram_tester.ExpectBucketCount("Settings.PrivacySandbox.Fledge.Enabled",
+                                       static_cast<int>(true),
+                                       /*expected_count=*/1);
+    prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
+    privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+    histogram_tester.ExpectBucketCount("Settings.PrivacySandbox.Fledge.Enabled",
+                                       static_cast<int>(false),
+                                       /*expected_count=*/1);
+  }
+
+  // Ad measurement
+  {
+    base::HistogramTester histogram_tester;
+    prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
+    privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+    histogram_tester.ExpectBucketCount(
+        "Settings.PrivacySandbox.AdMeasurement.Enabled", static_cast<int>(true),
+        /*expected_count=*/1);
+    prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, false);
+    privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+    histogram_tester.ExpectBucketCount(
+        "Settings.PrivacySandbox.AdMeasurement.Enabled",
+        static_cast<int>(false),
+        /*expected_count=*/1);
+  }
+}
+
 class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceM1Test {
  public:
   void InitializeFeaturesBeforeStart() override {

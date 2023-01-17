@@ -523,8 +523,17 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
 }
 
 void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
-  // TODO(crbug.com/1378703): Add metrics for inidividial PS APIs being enabled
-  // or not in the beginning here.
+  // Record the status of the APIs.
+  const bool topics_enabled =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
+  base::UmaHistogramBoolean("Settings.PrivacySandbox.Topics.Enabled",
+                            topics_enabled);
+  base::UmaHistogramBoolean(
+      "Settings.PrivacySandbox.Fledge.Enabled",
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
+  base::UmaHistogramBoolean(
+      "Settings.PrivacySandbox.AdMeasurement.Enabled",
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
 
   const std::string privacy_sandbox_prompt_startup_histogram =
       "Settings.PrivacySandbox.PromptStartupState";
@@ -591,8 +600,6 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     }
 
     // Consent decision made at this point.
-    const bool topics_enabled =
-        pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
 
     // Notice Acknowledged
     const bool notice_acknowledged = pref_service_->GetBoolean(

@@ -327,6 +327,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.AdMeasurement.Enabled"
+    enum="BooleanEnabled" expires_after="M115">
+  <owner>sauski@google.com</owner>
+  <owner>olesiamarukhno@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    Records the startup state of the ad measurement API for Privacy Sandbox GA
+    M1. This is recorded during the profile start up.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.DeprecatedRedirect"
     enum="BooleanRedirected" expires_after="M115">
   <owner>olesiamarukhno@google.com</owner>
@@ -373,6 +385,18 @@ chromium-metrics-reviews@google.com.
     Whether or not privacy sandbox apis are enabled, including the current state
     of cookie settings, and if it is disabled by policy. Recorded on profile
     startup. Values 8, 9, and 10 were added with M92.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
+    expires_after="M115">
+  <owner>sauski@google.com</owner>
+  <owner>olesiamarukhno@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    Records the startup state of the fledge API for Privacy Sandbox GA M1. This
+    is recorded during the profile start up.
   </summary>
 </histogram>
 
@@ -424,6 +448,18 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
     Records the startup state of user prefs controlling Privacy Sandbox.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacySandbox.Topics.Enabled" enum="BooleanEnabled"
+    expires_after="M115">
+  <owner>sauski@google.com</owner>
+  <owner>olesiamarukhno@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    Records the startup state of the topics API for Privacy Sandbox GA M1. This
+    is recorded during the profile start up.
   </summary>
 </histogram>
 
