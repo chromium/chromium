@@ -237,6 +237,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/gl_repack_utils.h",
     "shared_image/gl_texture_common_representations.cc",
     "shared_image/gl_texture_common_representations.h",
+    "shared_image/gl_texture_holder.cc",
+    "shared_image/gl_texture_holder.h",
     "shared_image/gl_texture_image_backing.cc",
     "shared_image/gl_texture_image_backing.h",
     "shared_image/gl_texture_image_backing_factory.cc",

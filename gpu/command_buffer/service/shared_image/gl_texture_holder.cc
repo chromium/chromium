@@ -1,0 +1,335 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
+
+#include "build/build_config.h"
+#include "components/viz/common/resources/resource_sizes.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/gl_repack_utils.h"
+#include "gpu/command_buffer/service/skia_utils.h"
+#include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "ui/gl/gl_version_info.h"
+#include "ui/gl/progress_reporter.h"
+#include "ui/gl/scoped_binders.h"
+
+namespace gpu {
+namespace {
+
+// This value can't be cached as it may change for different contexts.
+bool SupportsUnpackSubimage() {
+  return gl::g_current_gl_version->is_es3_capable ||
+         gl::g_current_gl_driver->ext.b_GL_EXT_unpack_subimage;
+}
+
+// This value can't be cached as it may change for different contexts.
+bool SupportsPackSubimage() {
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
+  // GL_PACK_ROW_LENGTH is broken in the Android emulator. glReadPixels()
+  // modifies bytes between the last pixel in a row and the end of the stride
+  // for that row.
+  return false;
+#else
+  return gl::g_current_gl_version->is_es3_capable;
+#endif
+}
+
+}  // anonymous namespace
+
+GLTextureHolder::GLTextureHolder(viz::ResourceFormat format,
+                                 const gfx::Size& size,
+                                 bool is_passthrough)
+    : format_(format), size_(size), is_passthrough_(is_passthrough) {}
+
+GLTextureHolder::GLTextureHolder(GLTextureHolder&& other) {
+  operator=(std::move(other));
+}
+
+GLTextureHolder& GLTextureHolder::operator=(GLTextureHolder&& other) {
+  size_ = other.size_;
+  is_passthrough_ = other.is_passthrough_;
+  context_lost_ = other.context_lost_;
+  texture_ = other.texture_;
+  other.texture_ = nullptr;
+  passthrough_texture_ = std::move(other.passthrough_texture_);
+  format_desc_ = other.format_desc_;
+  return *this;
+}
+
+GLTextureHolder::~GLTextureHolder() {
+  if (is_passthrough_) {
+    if (passthrough_texture_) {
+      if (context_lost_) {
+        passthrough_texture_->MarkContextLost();
+      }
+      passthrough_texture_.reset();
+    }
+  } else {
+    if (texture_) {
+      texture_->RemoveLightweightRef(!context_lost_);
+      texture_ = nullptr;
+    }
+  }
+}
+
+GLuint GLTextureHolder::GetServiceId() const {
+  return is_passthrough_ ? passthrough_texture_->service_id()
+                         : texture_->service_id();
+}
+
+void GLTextureHolder::Initialize(
+    const GLCommonImageBackingFactory::FormatInfo& format_info,
+    bool framebuffer_attachment_angle,
+    base::span<const uint8_t> pixel_data,
+    gl::ProgressReporter* progress_reporter,
+    const std::string& debug_label) {
+  format_desc_.target = GL_TEXTURE_2D;
+  format_desc_.data_format = format_info.gl_format;
+  format_desc_.data_type = format_info.gl_type;
+  format_desc_.image_internal_format = format_info.image_internal_format;
+  format_desc_.storage_internal_format = format_info.storage_internal_format;
+
+  GLTextureImageBackingHelper::MakeTextureAndSetParameters(
+      format_desc_.target, /*service_id=*/0, framebuffer_attachment_angle,
+      is_passthrough_ ? &passthrough_texture_ : nullptr,
+      is_passthrough_ ? nullptr : &texture_);
+
+  if (is_passthrough_) {
+    passthrough_texture_->SetEstimatedSize(
+        viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size_, format_));
+  } else {
+    // TODO(piman): We pretend the texture was created in an ES2 context, so
+    // that it can be used in other ES2 contexts, and so we have to pass
+    // gl_format as the internal format in the LevelInfo.
+    // https://crbug.com/628064
+    texture_->SetLevelInfo(format_desc_.target, 0, format_desc_.data_format,
+                           size_.width(), size_.height(), /*depth=*/1, 0,
+                           format_desc_.data_format, format_desc_.data_type,
+                           /*cleared_rect=*/gfx::Rect());
+    texture_->SetImmutable(true, format_info.supports_storage);
+  }
+
+  gl::GLApi* api = gl::g_current_gl_context;
+  GLTextureImageBackingHelper::ScopedRestoreTexture scoped_restore(
+      api, format_desc_.target, GetServiceId());
+
+  // Initialize the texture storage/image parameters and upload initial pixels
+  // if available.
+  if (format_info.supports_storage) {
+    {
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
+      api->glTexStorage2DEXTFn(format_desc_.target, /*levels=*/1,
+                               format_info.adjusted_storage_internal_format,
+                               size_.width(), size_.height());
+    }
+
+    if (!pixel_data.empty()) {
+      ScopedUnpackState scoped_unpack_state(
+          /*uploading_data=*/true);
+      gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
+      api->glTexSubImage2DFn(format_desc_.target, /*level=*/0, /*xoffset=*/0,
+                             /*yoffset=*/0, size_.width(), size_.height(),
+                             format_info.adjusted_format,
+                             format_desc_.data_type, pixel_data.data());
+    }
+  } else if (format_info.is_compressed) {
+    ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
+    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
+    api->glCompressedTexImage2DFn(format_desc_.target, 0,
+                                  format_desc_.image_internal_format,
+                                  size_.width(), size_.height(), /*border=*/0,
+                                  pixel_data.size(), pixel_data.data());
+  } else {
+    ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
+    gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter);
+    api->glTexImage2DFn(
+        format_desc_.target, /*level=*/0, format_desc_.image_internal_format,
+        size_.width(), size_.height(), /*border=*/0,
+        format_info.adjusted_format, format_desc_.data_type, pixel_data.data());
+  }
+
+  if (!is_passthrough_) {
+    // Must be set after initial pixel upload.
+    texture_->SetCompatibilitySwizzle(format_info.swizzle);
+  }
+
+  if (!debug_label.empty()) {
+    api->glObjectLabelFn(GL_TEXTURE, GetServiceId(), -1, debug_label.c_str());
+  }
+}
+
+bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {
+  const GLuint texture_id = GetServiceId();
+  const GLenum gl_format = format_desc_.data_format;
+  const GLenum gl_type = format_desc_.data_type;
+  const GLenum gl_target = format_desc_.target;
+
+  // Actual stride of the given pixmap, not necessarily with the expected
+  // alignment, or equal to expected stride.
+  const size_t pixmap_stride = pixmap.rowBytes();
+  const size_t expected_stride = pixmap.info().minRowBytes64();
+  const GLuint gl_unpack_alignment = pixmap.info().bytesPerPixel();
+  DCHECK_GE(pixmap_stride, expected_stride);
+  DCHECK_EQ(expected_stride % gl_unpack_alignment, 0u);
+
+  GLuint gl_unpack_row_length = 0;
+  std::vector<uint8_t> repacked_data;
+  if (format_ == viz::BGRX_8888 || format_ == viz::RGBX_8888) {
+    DCHECK_EQ(gl_format, static_cast<GLenum>(GL_RGB));
+    // BGRX and RGBX data is uploaded as GL_RGB. Repack from 4 to 3 bytes per
+    // pixel.
+    repacked_data =
+        RepackPixelDataAsRgb(size_, pixmap, format_ == viz::BGRX_8888);
+  } else if (pixmap_stride != expected_stride) {
+    if (SupportsUnpackSubimage()) {
+      // Use GL_UNPACK_ROW_LENGTH to skip data past end of each row on upload.
+      gl_unpack_row_length = pixmap_stride / gl_unpack_alignment;
+    } else {
+      // If GL_UNPACK_ROW_LENGTH isn't supported then repack pixels with the
+      // expected stride.
+      repacked_data = RepackPixelDataWithStride(size_, pixmap, expected_stride);
+    }
+  }
+
+  // TODO(kylechar): Create ScopedProgressReporter for duration of
+  // glTexSubImage2D.
+
+  gl::ScopedTextureBinder scoped_texture_binder(gl_target, texture_id);
+  ScopedUnpackState scoped_unpack_state(
+      /*uploading_data=*/true, gl_unpack_row_length, gl_unpack_alignment);
+
+  const void* pixels =
+      !repacked_data.empty() ? repacked_data.data() : pixmap.addr();
+  gl::GLApi* api = gl::g_current_gl_context;
+  api->glTexSubImage2DFn(gl_target, /*level=*/0, 0, 0, size_.width(),
+                         size_.height(), gl_format, gl_type, pixels);
+  DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
+
+  return true;
+}
+
+bool GLTextureHolder::ReadbackToMemory(SkPixmap& pixmap) {
+  const GLuint texture_id = GetServiceId();
+  GLenum gl_format = format_desc_.data_format;
+  GLenum gl_type = format_desc_.data_type;
+
+  if (format_ == viz::BGRX_8888 || format_ == viz::RGBX_8888) {
+    DCHECK_EQ(gl_format, static_cast<GLenum>(GL_RGB));
+    DCHECK_EQ(gl_type, static_cast<GLenum>(GL_UNSIGNED_BYTE));
+
+    // Always readback RGBX/BGRX as RGBA/BGRA instead of RGB to avoid needing a
+    // temporary buffer.
+    gl_format = format_ == viz::BGRX_8888 ? GL_BGRA_EXT : GL_RGBA;
+  }
+
+  gl::GLApi* api = gl::g_current_gl_context;
+  GLuint framebuffer;
+  api->glGenFramebuffersEXTFn(1, &framebuffer);
+  gl::ScopedFramebufferBinder scoped_framebuffer_binder(framebuffer);
+  // This uses GL_FRAMEBUFFER instead of GL_READ_FRAMEBUFFER as the target for
+  // GLES2 compatibility.
+  api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                   GL_TEXTURE_2D, texture_id, /*level=*/0);
+  DCHECK_EQ(api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER),
+            static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE));
+
+  bool needs_rb_swizzle = false;
+
+  // GL_RGBA + GL_UNSIGNED_BYTE are always supported. Otherwise there is a
+  // preferred format + type that can be queried and is based on what is bound
+  // to GL_READ_FRAMEBUFFER.
+  if (gl_format != GL_RGBA || gl_type != GL_UNSIGNED_BYTE) {
+    GLint preferred_format = 0;
+    api->glGetIntegervFn(GL_IMPLEMENTATION_COLOR_READ_FORMAT,
+                         &preferred_format);
+    GLint preferred_type = 0;
+    api->glGetIntegervFn(GL_IMPLEMENTATION_COLOR_READ_TYPE, &preferred_type);
+
+    if (gl_format != static_cast<GLenum>(preferred_format) ||
+        gl_type != static_cast<GLenum>(preferred_type)) {
+      if (format_ == viz::BGRA_8888 || format_ == viz::BGRX_8888) {
+        DCHECK_EQ(gl_format, static_cast<GLenum>(GL_BGRA_EXT));
+        DCHECK_EQ(gl_type, static_cast<GLenum>(GL_UNSIGNED_BYTE));
+
+        // If BGRA readback isn't support then use RGBA and swizzle.
+        gl_format = GL_RGBA;
+        needs_rb_swizzle = true;
+      } else {
+        DLOG(ERROR) << viz::SharedImageFormat::SinglePlane(format_).ToString()
+                    << " is not supported by glReadPixels()";
+        return false;
+      }
+    }
+  }
+
+  const size_t pixmap_stride = pixmap.rowBytes();
+  const size_t expected_stride = pixmap.info().minRowBytes64();
+  const GLuint gl_pack_alignment = pixmap.info().bytesPerPixel();
+  DCHECK_GE(pixmap_stride, expected_stride);
+  DCHECK_EQ(expected_stride % gl_pack_alignment, 0u);
+
+  std::vector<uint8_t> unpack_buffer;
+  GLuint gl_pack_row_length = 0;
+  if (pixmap_stride != expected_stride) {
+    if (SupportsPackSubimage()) {
+      // Use GL_PACK_ROW_LENGTH to avoid temporary buffer.
+      gl_pack_row_length = pixmap_stride / gl_pack_alignment;
+    } else {
+      // If GL_PACK_ROW_LENGTH isn't supported then readback to a temporary
+      // buffer with expected stride.
+      unpack_buffer = std::vector<uint8_t>(expected_stride * size_.height());
+    }
+  }
+
+  // TODO(kylechar): Create ScopedProgressReporter for duration of
+  // glReadPixels.
+
+  ScopedPackState scoped_pack_state(gl_pack_row_length, gl_pack_alignment);
+
+  void* pixels =
+      !unpack_buffer.empty() ? unpack_buffer.data() : pixmap.writable_addr();
+  api->glReadPixelsFn(0, 0, size_.width(), size_.height(), gl_format, gl_type,
+                      pixels);
+  DCHECK_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
+
+  api->glDeleteFramebuffersEXTFn(1, &framebuffer);
+
+  if (!unpack_buffer.empty()) {
+    DCHECK_GT(pixmap_stride, expected_stride);
+    UnpackPixelDataWithStride(size_, unpack_buffer, expected_stride, pixmap);
+  }
+
+  if (needs_rb_swizzle) {
+    SwizzleRedAndBlue(pixmap);
+  }
+
+  return true;
+}
+
+sk_sp<SkPromiseImageTexture> GLTextureHolder::GetPromiseImage(
+    SharedContextState* context_state) {
+  GrBackendTexture backend_texture;
+  GetGrBackendTexture(context_state->feature_info(), format_desc_.target, size_,
+                      GetServiceId(), format_desc_.storage_internal_format,
+                      context_state->gr_context()->threadSafeProxy(),
+                      &backend_texture);
+  return SkPromiseImageTexture::Make(backend_texture);
+}
+
+gfx::Rect GLTextureHolder::GetClearedRect() const {
+  DCHECK(!is_passthrough_);
+  return texture_->GetLevelClearedRect(format_desc_.target, 0);
+}
+
+void GLTextureHolder::SetClearedRect(const gfx::Rect& cleared_rect) {
+  DCHECK(!is_passthrough_);
+  texture_->SetLevelClearedRect(format_desc_.target, 0, cleared_rect);
+}
+
+void GLTextureHolder::SetContextLost() {
+  context_lost_ = true;
+}
+
+}  // namespace gpu
