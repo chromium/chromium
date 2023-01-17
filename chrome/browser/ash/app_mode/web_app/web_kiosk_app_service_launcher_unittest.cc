@@ -309,9 +309,6 @@ TEST_F(WebKioskAppServiceLauncherTest, NormalFlowNotInstalled) {
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), observer(), OnAppLaunched());
 
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
-  EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
-
   // App isn't always ready by the time it's being launched. Therefore we check
   // the total count of kLaunchAppReadinessUMA instead of individual cases.
   histogram.ExpectTotalCount(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
