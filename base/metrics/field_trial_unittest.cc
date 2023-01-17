@@ -338,43 +338,6 @@ TEST_F(FieldTrialTest, GetGroupNameWithoutActivation) {
   EXPECT_TRUE(FieldTrialList::IsTrialActive(kTrialName));
 }
 
-TEST_F(FieldTrialTest, Save) {
-  std::string save_string;
-
-  scoped_refptr<FieldTrial> trial =
-      CreateFieldTrial("Some name", 10, "Default some name");
-  // There is no winner yet, so no textual group name is associated with trial.
-  // In this case, the trial should not be included.
-  EXPECT_EQ("", trial->group_name_internal());
-  FieldTrialList::StatesToString(&save_string);
-  EXPECT_EQ("", save_string);
-  save_string.clear();
-
-  // Create a winning group.
-  trial->AppendGroup("Winner", 10);
-  trial->Activate();
-  FieldTrialList::StatesToString(&save_string);
-  EXPECT_EQ("Some name/Winner/", save_string);
-  save_string.clear();
-
-  // Create a second trial and winning group.
-  scoped_refptr<FieldTrial> trial2 = CreateFieldTrial("xxx", 10, "Default xxx");
-  trial2->AppendGroup("yyyy", 10);
-  trial2->Activate();
-
-  FieldTrialList::StatesToString(&save_string);
-  // We assume names are alphabetized... though this is not critical.
-  EXPECT_EQ("Some name/Winner/xxx/yyyy/", save_string);
-  save_string.clear();
-
-  // Create a third trial with only the default group.
-  scoped_refptr<FieldTrial> trial3 = CreateFieldTrial("zzz", 10, "default");
-  trial3->Activate();
-
-  FieldTrialList::StatesToString(&save_string);
-  EXPECT_EQ("Some name/Winner/xxx/yyyy/zzz/default/", save_string);
-}
-
 TEST_F(FieldTrialTest, SaveAll) {
   std::string save_string;
 
@@ -459,8 +422,9 @@ TEST_F(FieldTrialTest, DuplicateRestore) {
   trial->AppendGroup("Winner", 10);
   trial->Activate();
   std::string save_string;
-  FieldTrialList::StatesToString(&save_string);
-  EXPECT_EQ("Some name/Winner/", save_string);
+  FieldTrialList::AllStatesToString(&save_string);
+  // * prefix since it is activated.
+  EXPECT_EQ("*Some name/Winner/", save_string);
 
   // It is OK if we redundantly specify a winner.
   EXPECT_TRUE(FieldTrialList::CreateTrialsFromString(save_string));
@@ -854,9 +818,9 @@ TEST_F(FieldTrialTest, CreateSimulatedFieldTrial) {
     FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
     EXPECT_TRUE(active_groups.empty());
 
-    // The trial shouldn't be listed in the |StatesToString()| result.
+    // The trial shouldn't be listed in the |AllStatesToString()| result.
     std::string states;
-    FieldTrialList::StatesToString(&states);
+    FieldTrialList::AllStatesToString(&states);
     EXPECT_TRUE(states.empty());
   }
 }

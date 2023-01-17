@@ -517,22 +517,6 @@ bool FieldTrialList::IsTrialActive(StringPiece trial_name) {
 }
 
 // static
-void FieldTrialList::StatesToString(std::string* output) {
-  FieldTrial::ActiveGroups active_groups;
-  GetActiveFieldTrialGroups(&active_groups);
-  for (const auto& active_group : active_groups) {
-    DCHECK_EQ(std::string::npos,
-              active_group.trial_name.find(kPersistentStringSeparator));
-    DCHECK_EQ(std::string::npos,
-              active_group.group_name.find(kPersistentStringSeparator));
-    output->append(active_group.trial_name);
-    output->append(1, kPersistentStringSeparator);
-    output->append(active_group.group_name);
-    output->append(1, kPersistentStringSeparator);
-  }
-}
-
-// static
 std::vector<FieldTrial::State> FieldTrialList::GetAllFieldTrialStates(
     PassKey<test::ScopedFeatureList>) {
   std::vector<FieldTrial::State> states;

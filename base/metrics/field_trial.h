@@ -371,9 +371,9 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
 
 //------------------------------------------------------------------------------
 // Class with a list of all active field trials.  A trial is active if it has
-// been registered, which includes evaluating its state based on its probaility.
-// Only one instance of this class exists and outside of testing, will live for
-// the entire life time of the process.
+// been registered, which includes evaluating its state based on its
+// probability. Only one instance of this class exists and outside of testing,
+// will live for the entire life time of the process.
 class BASE_EXPORT FieldTrialList {
  public:
   using FieldTrialAllocator = PersistentMemoryAllocator;
@@ -450,16 +450,6 @@ class BASE_EXPORT FieldTrialList {
   // Returns true if the named trial exists and has been activated.
   static bool IsTrialActive(StringPiece trial_name);
 
-  // Creates a persistent representation of active FieldTrial instances for
-  // resurrection in another process. This allows randomization to be done in
-  // one process, and secondary processes can be synchronized on the result.
-  // The resulting string contains the name and group name pairs of all
-  // registered FieldTrials for which the group has been chosen and externally
-  // observed (via |group()|) and which have not been disabled, with "/" used
-  // to separate all names and to terminate the string. This string is parsed
-  // by |CreateTrialsFromString()|.
-  static void StatesToString(std::string* output);
-
   // Creates a persistent representation of all FieldTrial instances for
   // resurrection in another process. This allows randomization to be done in
   // one process, and secondary processes can be synchronized on the result.
@@ -499,7 +489,7 @@ class BASE_EXPORT FieldTrialList {
       const CommandLine& command_line,
       FieldTrial::ActiveGroups* active_groups);
 
-  // Use a state string (re: StatesToString()) to augment the current list of
+  // Use a state string (re: AllStatesToString()) to augment the current list of
   // field trials to include the supplied trials, and using a 100% probability
   // for each trial, force them to have the same group string. This is commonly
   // used in a non-browser process, to carry randomly selected state in a
