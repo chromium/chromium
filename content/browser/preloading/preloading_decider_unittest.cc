@@ -24,15 +24,6 @@
 namespace content {
 namespace {
 
-class PrerenderWebContentsDelegate : public WebContentsDelegate {
- public:
-  PrerenderWebContentsDelegate() = default;
-
-  bool IsPrerender2Supported(WebContents& web_contents) override {
-    return true;
-  }
-};
-
 class MockAnchorElementPreconnector : public AnchorElementPreconnectDelegate {
  public:
   explicit MockAnchorElementPreconnector(
@@ -144,7 +135,9 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
     web_contents_ = TestWebContents::Create(
         browser_context_.get(),
         SiteInstanceImpl::Create(browser_context_.get()));
-    web_contents_->SetDelegate(&web_contents_delegate_);
+    web_contents_delegate_ =
+        std::make_unique<test::ScopedPrerenderWebContentsDelegate>(
+            *web_contents_);
     web_contents_->NavigateAndCommit(GetSameOriginUrl("/"));
     prefetch_service_ =
         std::make_unique<TestPrefetchService>(GetBrowserContext());
@@ -176,9 +169,10 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
   test::ScopedPrerenderFeatureList prerender_feature_list_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
-  PrerenderWebContentsDelegate web_contents_delegate_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
+      web_contents_delegate_;
 };
 
 TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {

@@ -83,15 +83,6 @@ void CommitPrerenderNavigation(PrerenderHost& host) {
   EXPECT_TRUE(host.is_ready_for_activation());
 }
 
-class PrerenderWebContentsDelegate : public WebContentsDelegate {
- public:
-  PrerenderWebContentsDelegate() = default;
-
-  bool IsPrerender2Supported(WebContents& web_contents) override {
-    return true;
-  }
-};
-
 class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
  public:
   PrerenderHostRegistryTest() {
@@ -108,7 +99,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->SetDelegate(&web_contents_delegate_);
+    web_contents_delegate_ =
+        std::make_unique<test::ScopedPrerenderWebContentsDelegate>(*contents());
     contents()->NavigateAndCommit(GURL("https://example.com/"));
   }
 
@@ -263,8 +255,9 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  PrerenderWebContentsDelegate web_contents_delegate_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
+      web_contents_delegate_;
 };
 
 TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_SpeculationRule) {

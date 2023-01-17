@@ -66,22 +66,14 @@ std::unique_ptr<NavigationSimulatorImpl> CreateActivation(
   return navigation;
 }
 
-class TestWebContentsDelegate : public WebContentsDelegate {
- public:
-  TestWebContentsDelegate() = default;
-  ~TestWebContentsDelegate() override = default;
-  bool IsPrerender2Supported(WebContents& web_contents) override {
-    return true;
-  }
-};
-
 class PrerenderHostTest : public RenderViewHostImplTestHarness {
  public:
   PrerenderHostTest() = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->SetDelegate(&web_contents_delegate_);
+    web_contents_delegate_ =
+        std::make_unique<test::ScopedPrerenderWebContentsDelegate>(*contents());
     contents()->NavigateAndCommit(GURL("https://example.com"));
   }
 
@@ -135,7 +127,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
 
  private:
   test::ScopedPrerenderFeatureList prerender_feature_list_;
-  TestWebContentsDelegate web_contents_delegate_;
+  std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
+      web_contents_delegate_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 };

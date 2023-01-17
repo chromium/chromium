@@ -17,15 +17,6 @@
 namespace content {
 namespace {
 
-class PrerenderWebContentsDelegate : public WebContentsDelegate {
- public:
-  PrerenderWebContentsDelegate() = default;
-
-  bool IsPrerender2Supported(WebContents& web_contents) override {
-    return true;
-  }
-};
-
 class PrerendererTest : public RenderViewHostTestHarness {
  public:
   PrerendererTest() = default;
@@ -37,7 +28,9 @@ class PrerendererTest : public RenderViewHostTestHarness {
     web_contents_ = TestWebContents::Create(
         browser_context_.get(),
         SiteInstanceImpl::Create(browser_context_.get()));
-    web_contents_->SetDelegate(&web_contents_delegate_);
+    web_contents_delegate_ =
+        std::make_unique<test::ScopedPrerenderWebContentsDelegate>(
+            *web_contents_);
     web_contents_->NavigateAndCommit(GURL("https://example.com"));
   }
 
@@ -74,10 +67,10 @@ class PrerendererTest : public RenderViewHostTestHarness {
 
  private:
   test::ScopedPrerenderFeatureList prerender_feature_list_;
-
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
-  PrerenderWebContentsDelegate web_contents_delegate_;
+  std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
+      web_contents_delegate_;
 };
 
 // Tests that Prerenderer starts prerendering when it receives prerender
