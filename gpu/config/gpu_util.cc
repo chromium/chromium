@@ -769,9 +769,9 @@ gl::GLDisplay* InitializeGLThreadSafe(base::CommandLine* command_line,
   gl::GLDisplay* gl_display = nullptr;
   if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
     // Some tests initialize bindings by themselves.
-    gl_display =
-        gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                 /*system_device_id=*/0);
+    gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+        /*init_bindings=*/true,
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
     if (!gl_display) {
       VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
       return nullptr;

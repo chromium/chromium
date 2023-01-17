@@ -30,7 +30,8 @@ static int RunHelper(base::TestSuite* test_suite) {
       base::MessagePumpType::IO);
 #endif
 
-  CHECK(gl::init::InitializeGLOneOff(/*system_device_id=*/0));
+  CHECK(gl::init::InitializeGLOneOff(
+      /*gpu_preference=*/gl::GpuPreference::kDefault));
   return test_suite->Run();
 }
 

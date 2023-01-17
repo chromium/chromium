@@ -18,8 +18,8 @@
 namespace ui {
 
 gl::GLDisplay* GLOzoneEGL::InitializeGLOneOffPlatform(
-    uint64_t system_device_id) {
-  gl::GLDisplayEGL* display = gl::GetDisplayEGL(system_device_id);
+    gl::GpuPreference gpu_preference) {
+  gl::GLDisplayEGL* display = gl::GetDisplayEGL(gpu_preference);
   if (!display->Initialize(GetNativeDisplay())) {
     LOG(ERROR) << "GLDisplayEGL::Initialize failed.";
     return nullptr;

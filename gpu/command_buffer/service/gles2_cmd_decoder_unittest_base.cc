@@ -2435,7 +2435,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       /*fallback_to_software_gl=*/false,
       /*disable_gl_drawing=*/false,
       /*init_extensions=*/true,
-      /*system_device_id=*/0);
+      /*gpu_preference=*/gl::GpuPreference::kDefault);
 
   scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
   group_ = new gles2::ContextGroup(

@@ -58,7 +58,7 @@ class CodecImageTest : public testing::Test {
         /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/false,
-        /*system_device_id=*/0);
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
 
     surface_ = new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
                                            gfx::Size(320, 240));

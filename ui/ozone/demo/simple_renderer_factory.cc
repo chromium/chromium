@@ -75,7 +75,8 @@ bool SimpleRendererFactory::Initialize() {
   }
 #endif
   if (!command_line->HasSwitch(kDisableGpu)) {
-    display_ = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+    display_ = gl::init::InitializeGLOneOff(
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
     if (display_) {
       type_ = GL;
     } else {

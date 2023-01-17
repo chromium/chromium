@@ -17,16 +17,16 @@
 namespace gl {
 namespace init {
 
-GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
+GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference) {
   if (HasGLOzone()) {
     gl::GLDisplayEglUtil::SetInstance(gl::GLDisplayEglUtilOzone::GetInstance());
-    return GetGLOzone()->InitializeGLOneOffPlatform(system_device_id);
+    return GetGLOzone()->InitializeGLOneOffPlatform(gpu_preference);
   }
 
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      return GetDisplayEGL(system_device_id);
+      return GetDisplayEGL(gpu_preference);
     default:
       NOTREACHED();
   }

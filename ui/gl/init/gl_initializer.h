@@ -19,9 +19,9 @@ namespace init {
 // InitializeGLNoExtensionsOneOff(). For tests possibly
 // InitializeStaticGLBindingsImplementation() +
 // InitializeGLOneOffPlatformImplementation() instead.
-// |system_device_id| specifies which GPU to use on a multi-GPU system.
-// If its value is 0, use the default GPU of the system.
-GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id);
+// |gpu_preference| specifies which GPU to use on a multi-GPU system.
+// If its value is kDefault, use the default GPU of the system.
+GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference);
 
 // Initializes a particular GL implementation.
 bool InitializeStaticGLBindings(GLImplementationParts implementation);

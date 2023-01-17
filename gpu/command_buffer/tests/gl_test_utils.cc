@@ -38,8 +38,9 @@ const uint8_t GLTestHelper::kCheckClearValue;
 gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
   gl::GLDisplay* display = nullptr;
   if (gl_impl == gl::GLImplementation::kGLImplementationNone) {
-    display = gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                       /*system_device_id=*/0);
+    display = gl::init::InitializeGLNoExtensionsOneOff(
+        /*init_bindings=*/true,
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
   } else {
     if (!gl::init::InitializeStaticGLBindingsImplementation(
             gl::GLImplementationParts(gl_impl),
@@ -50,7 +51,7 @@ gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
         /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/false,
-        /*system_device_id=*/0);
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
   }
 
   if (!display)

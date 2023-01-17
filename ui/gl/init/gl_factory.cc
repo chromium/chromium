@@ -132,7 +132,7 @@ GLImplementationParts GetRequestedGLImplementation(
 }
 
 GLDisplay* InitializeGLOneOffPlatformHelper(bool init_extensions,
-                                            uint64_t system_device_id) {
+                                            gl::GpuPreference gpu_preference) {
   TRACE_EVENT1("gpu,startup", "gl::init::InitializeGLOneOffPlatformHelper",
                "init_extensions", init_extensions);
 
@@ -142,12 +142,12 @@ GLDisplay* InitializeGLOneOffPlatformHelper(bool init_extensions,
 
   return InitializeGLOneOffPlatformImplementation(
       fallback_to_software_gl, disable_gl_drawing, init_extensions,
-      system_device_id);
+      gpu_preference);
 }
 
 }  // namespace
 
-GLDisplay* InitializeGLOneOff(uint64_t system_device_id) {
+GLDisplay* InitializeGLOneOff(gl::GpuPreference gpu_preference) {
   TRACE_EVENT0("gpu,startup", "gl::init::InitializeOneOff");
 
   if (!InitializeStaticGLBindingsOneOff())
@@ -156,11 +156,11 @@ GLDisplay* InitializeGLOneOff(uint64_t system_device_id) {
     return GetDefaultDisplayEGL();
   }
 
-  return InitializeGLOneOffPlatformHelper(true, system_device_id);
+  return InitializeGLOneOffPlatformHelper(true, gpu_preference);
 }
 
 GLDisplay* InitializeGLNoExtensionsOneOff(bool init_bindings,
-                                          uint64_t system_device_id) {
+                                          gl::GpuPreference gpu_preference) {
   TRACE_EVENT1("gpu,startup", "gl::init::InitializeNoExtensionsOneOff",
                "init_bindings", init_bindings);
   if (init_bindings) {
@@ -171,7 +171,7 @@ GLDisplay* InitializeGLNoExtensionsOneOff(bool init_bindings,
     }
   }
 
-  return InitializeGLOneOffPlatformHelper(false, system_device_id);
+  return InitializeGLOneOffPlatformHelper(false, gpu_preference);
 }
 
 bool InitializeStaticGLBindingsOneOff() {
@@ -212,16 +212,24 @@ GLDisplay* InitializeGLOneOffPlatformImplementation(
     bool fallback_to_software_gl,
     bool disable_gl_drawing,
     bool init_extensions,
-    uint64_t system_device_id) {
+    gl::GpuPreference gpu_preference) {
   if (IsSoftwareGLImplementation(GetGLImplementationParts()))
     fallback_to_software_gl = false;
 
-  GLDisplay* display = InitializeGLOneOffPlatform(system_device_id);
+  GLDisplay* display = InitializeGLOneOffPlatform(gpu_preference);
   bool initialized = !!display;
+
+  if (!initialized) {
+    DVLOG(1) << "Initialization failed. Attempting to initialize default "
+                "GLDisplayEGL.";
+    RemoveGpuPreferenceEGL(gpu_preference);
+    display = InitializeGLOneOffPlatform(gl::GpuPreference::kDefault);
+    initialized = !!display;
+  }
   if (!initialized && fallback_to_software_gl) {
     ShutdownGL(nullptr, /*due_to_fallback=*/true);
     if (InitializeStaticGLBindings(GetSoftwareGLImplementation())) {
-      display = InitializeGLOneOffPlatform(system_device_id);
+      display = InitializeGLOneOffPlatform(gpu_preference);
       initialized = !!display;
     }
   }
@@ -237,6 +245,26 @@ GLDisplay* InitializeGLOneOffPlatformImplementation(
   DVLOG(1) << "Using " << GetGLImplementationGLName(GetGLImplementationParts())
            << " GL implementation.";
   SetNullDrawGLBindings(disable_gl_drawing);
+  return display;
+}
+
+GLDisplay* GetOrInitializeGLOneOffPlatformImplementation(
+    bool fallback_to_software_gl,
+    bool disable_gl_drawing,
+    bool init_extensions,
+    gl::GpuPreference gpu_preference) {
+  gl::GLDisplay* display = gl::GetDisplay(gpu_preference);
+  DCHECK(display);
+
+  if (display->IsInitialized()) {
+    return display;
+  }
+
+  display = gl::init::InitializeGLOneOffPlatformImplementation(
+      /*fallback_to_software_gl=*/false, /*disable_gl_drawing=*/false,
+      /*init_extensions=*/true,
+      /*gpu_preference=*/gpu_preference);
+
   return display;
 }
 

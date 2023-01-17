@@ -45,10 +45,6 @@ TEST_F(GLDisplayManagerEGLTest, SingleGPU) {
   GLDisplayEGL* display_2 = manager->GetDisplay(GpuPreference::kDefault);
   EXPECT_EQ(display, display_2);
 
-  // Query with the system device id.
-  display_2 = manager->GetDisplay(kSingleGpu);
-  EXPECT_EQ(display, display_2);
-
   // Query the low power display. It should be the same as the default.
   GLDisplayEGL* display_low_power =
       manager->GetDisplay(GpuPreference::kLowPower);
@@ -67,6 +63,7 @@ TEST_F(GLDisplayManagerEGLTest, DualGPUs) {
 
   // Set up.
   ScopedGLDisplayManagerEGL manager;
+  manager->OverrideEGLDualGPURenderingSupportForTests(true);
   manager->SetGpuPreference(GpuPreference::kDefault, kDefaultGpu);
   manager->SetGpuPreference(GpuPreference::kLowPower, kIntegratedGpu);
   manager->SetGpuPreference(GpuPreference::kHighPerformance, kDiscreteGpu);
@@ -82,9 +79,38 @@ TEST_F(GLDisplayManagerEGLTest, DualGPUs) {
       manager->GetDisplay(GpuPreference::kLowPower);
   EXPECT_EQ(display_low_power, display_low_power_2);
 
-  // Query with the system device id.
-  display_low_power_2 = manager->GetDisplay(kIntegratedGpu);
-  EXPECT_EQ(display_low_power, display_low_power_2);
+  // Query the high performance display.
+  GLDisplayEGL* display_high_performance =
+      manager->GetDisplay(GpuPreference::kHighPerformance);
+  EXPECT_NE(nullptr, display_high_performance);
+  EXPECT_EQ(kDiscreteGpu, display_high_performance->system_device_id());
+
+  // Query the default display.
+  // Due to the set up, it should be the same as the low power display.
+  GLDisplayEGL* display_default = manager->GetDisplay(GpuPreference::kDefault);
+  EXPECT_EQ(display_low_power, display_default);
+}
+
+TEST_F(GLDisplayManagerEGLTest, RemoveDefaultGPU) {
+  constexpr uint64_t kIntegratedGpu = 18;
+  constexpr uint64_t kDiscreteGpu = 76;
+  constexpr uint64_t kDefaultGpu = kIntegratedGpu;
+
+  // Set up.
+  ScopedGLDisplayManagerEGL manager;
+  manager->OverrideEGLDualGPURenderingSupportForTests(true);
+  manager->SetGpuPreference(GpuPreference::kDefault, kDefaultGpu);
+  manager->SetGpuPreference(GpuPreference::kLowPower, kIntegratedGpu);
+  manager->SetGpuPreference(GpuPreference::kHighPerformance, kDiscreteGpu);
+  // Remove the low power GPU, which should change the default to the high
+  // performance GPU.
+  manager->RemoveGpuPreference(GpuPreference::kLowPower);
+
+  // Query the low power display. Expect it to return the high performance GPU
+  GLDisplayEGL* display_low_power =
+      manager->GetDisplay(GpuPreference::kLowPower);
+  EXPECT_NE(nullptr, display_low_power);
+  EXPECT_EQ(kDiscreteGpu, display_low_power->system_device_id());
 
   // Query the high performance display.
   GLDisplayEGL* display_high_performance =
@@ -92,9 +118,38 @@ TEST_F(GLDisplayManagerEGLTest, DualGPUs) {
   EXPECT_NE(nullptr, display_high_performance);
   EXPECT_EQ(kDiscreteGpu, display_high_performance->system_device_id());
 
-  // Query with the system device id.
-  GLDisplayEGL* display_high_performance_2 = manager->GetDisplay(kDiscreteGpu);
-  EXPECT_EQ(display_high_performance, display_high_performance_2);
+  // Query the default display.
+  // Due to the set up, it should be the same as the high performance display.
+  GLDisplayEGL* display_default = manager->GetDisplay(GpuPreference::kDefault);
+  EXPECT_EQ(display_high_performance, display_default);
+}
+
+TEST_F(GLDisplayManagerEGLTest, RemoveNonDefaultGPU) {
+  constexpr uint64_t kIntegratedGpu = 18;
+  constexpr uint64_t kDiscreteGpu = 76;
+  constexpr uint64_t kDefaultGpu = kIntegratedGpu;
+
+  // Set up.
+  ScopedGLDisplayManagerEGL manager;
+  manager->OverrideEGLDualGPURenderingSupportForTests(true);
+  manager->SetGpuPreference(GpuPreference::kDefault, kDefaultGpu);
+  manager->SetGpuPreference(GpuPreference::kLowPower, kIntegratedGpu);
+  manager->SetGpuPreference(GpuPreference::kHighPerformance, kDiscreteGpu);
+  // Remove the high performance GPU, which shouldn't affect the default or low
+  // power preference.
+  manager->RemoveGpuPreference(GpuPreference::kHighPerformance);
+
+  // Query the low power display.
+  GLDisplayEGL* display_low_power =
+      manager->GetDisplay(GpuPreference::kLowPower);
+  EXPECT_NE(nullptr, display_low_power);
+  EXPECT_EQ(kIntegratedGpu, display_low_power->system_device_id());
+
+  // Query the high performance display. Expect it to return the low power GPU.
+  GLDisplayEGL* display_high_performance =
+      manager->GetDisplay(GpuPreference::kHighPerformance);
+  EXPECT_NE(nullptr, display_high_performance);
+  EXPECT_EQ(kIntegratedGpu, display_high_performance->system_device_id());
 
   // Query the default display.
   // Due to the set up, it should be the same as the low power display.

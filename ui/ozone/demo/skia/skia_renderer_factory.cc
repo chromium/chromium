@@ -46,7 +46,8 @@ SkiaRendererFactory::~SkiaRendererFactory() {
 }
 
 bool SkiaRendererFactory::Initialize() {
-  display_ = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+  display_ = gl::init::InitializeGLOneOff(
+      /*gpu_preference=*/gl::GpuPreference::kDefault);
   if (!display_) {
     LOG(FATAL) << "Failed to initialize GL";
   }

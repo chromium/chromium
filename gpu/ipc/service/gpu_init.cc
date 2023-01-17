@@ -190,8 +190,8 @@ uint64_t CHROME_LUID_to_uint64_t(const CHROME_LUID& luid) {
 // GPU picking is only effective with ANGLE/Metal backend on Mac and
 // on Windows with EGL.
 // Returns the default GPU's system_device_id.
-uint64_t SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
-                                  const GpuFeatureInfo& gpu_feature_info) {
+void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
+                              const GpuFeatureInfo& gpu_feature_info) {
   const GPUInfo::GPUDevice* gpu_high_perf =
       gpu_info.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
   const GPUInfo::GPUDevice* gpu_low_power =
@@ -219,26 +219,26 @@ uint64_t SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
   if (gpu_info.GpuCount() <= 1) {
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
                             system_device_id_default);
-    return system_device_id_default;
+    return;
   }
   if (gpu_feature_info.IsWorkaroundEnabled(FORCE_LOW_POWER_GPU) &&
       system_device_id_low_power) {
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
                             system_device_id_low_power);
-    return system_device_id_low_power;
+    return;
   }
   if (gpu_feature_info.IsWorkaroundEnabled(FORCE_HIGH_PERFORMANCE_GPU) &&
       system_device_id_high_perf) {
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
                             system_device_id_high_perf);
-    return system_device_id_high_perf;
+    return;
   }
   if (gpu_default == gpu_high_perf) {
     // If the default GPU is already the high performance GPU, then it's better
     // for Chrome to always use this GPU.
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
                             system_device_id_high_perf);
-    return system_device_id_high_perf;
+    return;
   }
 
   // Chrome uses the default GPU for internal rendering and the high
@@ -247,11 +247,11 @@ uint64_t SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
   // supported.
   gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
                           system_device_id_default);
-  if (system_device_id_high_perf && features::SupportsEGLDualGPURendering()) {
+  if (system_device_id_high_perf) {
     gl::SetGpuPreferenceEGL(gl::GpuPreference::kHighPerformance,
                             system_device_id_high_perf);
   }
-  return system_device_id_default;
+  return;
 }
 #endif  // USE_EGL && (IS_WIN || IS_MAC)
 
@@ -270,7 +270,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // need more context based GPUInfo. In such situations, switching to
   // SwiftShader needs to wait until creating a context.
   bool needs_more_info = true;
-  uint64_t system_device_id = 0;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
   needs_more_info = false;
   if (!PopGPUInfoCache(&gpu_info_)) {
@@ -309,7 +308,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 
 #if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
-  system_device_id = SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
+  SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
 #endif  // USE_EGL && (IS_WIN || IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
@@ -470,7 +469,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif
     if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
       gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-          /*init_bindings*/ false, system_device_id);
+          /*init_bindings*/ false, gl::GpuPreference::kDefault);
       gl_initialized = !!gl_display;
       if (!gl_initialized) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
@@ -557,7 +556,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         watchdog_thread_ = nullptr;
         watchdog_init.SetGpuWatchdogPtr(nullptr);
         gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-            /*init_bindings=*/true, system_device_id);
+            /*init_bindings=*/true, gl::GpuPreference::kDefault);
         if (!gl_display) {
           VLOG(1)
               << "gl::init::InitializeGLNoExtensionsOneOff with SwiftShader "
@@ -862,8 +861,9 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, needs_more_info);
-  gl_display = gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                        /*system_device_id=*/0);
+  gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+      /*init_bindings=*/true,
+      /*gpu_preference=*/gl::GpuPreference::kDefault);
   if (!gl_display) {
     VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
     return;
@@ -892,7 +892,8 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       SaveHardwareGpuInfoAndGpuFeatureInfo();
       gl::init::ShutdownGL(gl_display, true);
       gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-          /*init_bindings=*/true, /*system_device_id=*/0);
+          /*init_bindings=*/true,
+          /*gpu_preference=*/gl::GpuPreference::kDefault);
       if (!gl_display) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
                 << "with SwiftShader";
@@ -948,7 +949,8 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       SaveHardwareGpuInfoAndGpuFeatureInfo();
       gl::init::ShutdownGL(gl_display, true);
       gl_display = gl::init::InitializeGLNoExtensionsOneOff(
-          /*init_bindings=*/true, /*system_device_id=*/0);
+          /*init_bindings=*/true,
+          /*gpu_preference=*/gl::GpuPreference::kDefault);
       if (!gl_display) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
                 << "with SwiftShader";

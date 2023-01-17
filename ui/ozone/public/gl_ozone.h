@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(OZONE_BASE) GLOzone {
 
   // Performs any one off initialization for GL implementation.
   virtual gl::GLDisplay* InitializeGLOneOffPlatform(
-      uint64_t system_device_id) = 0;
+      gl::GpuPreference gpu_preference) = 0;
 
   // Disables the specified extensions in the window system bindings,
   // e.g., GLX, EGL, etc. This is part of the GPU driver bug workarounds

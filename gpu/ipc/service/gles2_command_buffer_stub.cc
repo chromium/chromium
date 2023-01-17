@@ -186,17 +186,13 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       gpu_preference == gl::GpuPreference::kNone || force_default_display) {
     gpu_preference = gl::GpuPreference::kDefault;
   }
-  gl::GLDisplay* display = gl::GetDisplay(gpu_preference);
-  DCHECK(display);
 
-  if (!display->IsInitialized()) {
-    gl::GLDisplay* initialized_display =
-        gl::init::InitializeGLOneOffPlatformImplementation(
-            /*fallback_to_software_gl=*/false, /*disable_gl_drawing=*/false,
-            /*init_extensions=*/true,
-            /*system_device_id=*/display->system_device_id());
-    DCHECK_EQ(initialized_display, display);
-  }
+  // We may be requesting a new GPU/display, so get or initialize the display.
+  gl::GLDisplay* display =
+      gl::init::GetOrInitializeGLOneOffPlatformImplementation(
+          /*fallback_to_software_gl=*/false, /*disable_gl_drawing=*/false,
+          /*init_extensions=*/true,
+          /*gpu_preference=*/gpu_preference);
 
   if (offscreen) {
     // Do we want to create an offscreen rendering context suitable

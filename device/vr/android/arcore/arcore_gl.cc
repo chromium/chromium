@@ -450,7 +450,8 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
 
   gl::GLDisplay* display = nullptr;
   if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
-    display = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+    display = gl::init::InitializeGLOneOff(
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
     if (!display) {
       DLOG(ERROR) << "gl::init::InitializeGLOneOff failed";
       return false;

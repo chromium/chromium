@@ -36,16 +36,16 @@ namespace init {
 GL_INIT_EXPORT std::vector<GLImplementationParts> GetAllowedGLImplementations();
 
 // Initializes GL bindings and extension settings.
-// |system_device_id| specifies which GPU to use on a multi-GPU system.
-// If its value is 0, use the default GPU of the system.
-GL_INIT_EXPORT GLDisplay* InitializeGLOneOff(uint64_t system_device_id);
+// |gpu_preference| specifies which GPU to use on a multi-GPU system.
+// If its value is kDefault, use the default GPU of the system.
+GL_INIT_EXPORT GLDisplay* InitializeGLOneOff(gl::GpuPreference gpu_preference);
 
 // Initializes GL bindings without initializing extension settings.
-// |system_device_id| specifies which GPU to use on a multi-GPU system.
-// If its value is 0, use the default GPU of the system.
+// |gpu_preference| specifies which GPU to use on a multi-GPU system.
+// If its value is kDefault, use the default GPU of the system.
 GL_INIT_EXPORT GLDisplay* InitializeGLNoExtensionsOneOff(
     bool init_bindings,
-    uint64_t system_device_id);
+    gl::GpuPreference gpu_preference);
 
 // Initializes GL bindings - load dlls and get proc address according to gl
 // command line switch.
@@ -65,13 +65,21 @@ GL_INIT_EXPORT bool InitializeStaticGLBindingsImplementation(
 // Initializes GL platform using the provided parameters. This might be required
 // for use in tests. This should be called only after GL bindings are initilzed
 // successfully.
-// |system_device_id| specifies which GPU to use on a multi-GPU system.
-// If its value is 0, use the default GPU of the system.
+// |gpu_preference| specifies which GPU to use on a multi-GPU system.
+// If its value is kDefault, use the default GPU of the system.
 GL_INIT_EXPORT GLDisplay* InitializeGLOneOffPlatformImplementation(
     bool fallback_to_software_gl,
     bool disable_gl_drawing,
     bool init_extensions,
-    uint64_t system_device_id);
+    gl::GpuPreference gpu_preference);
+
+// Does the same as the above, but returns a cached display if one is already
+// initialized for the requested GPU.
+GL_INIT_EXPORT GLDisplay* GetOrInitializeGLOneOffPlatformImplementation(
+    bool fallback_to_software_gl,
+    bool disable_gl_drawing,
+    bool init_extensions,
+    gl::GpuPreference gpu_preference);
 
 // Clears GL bindings and resets GL implementation.
 // Calling this function a second time on the same |display| is a no-op.

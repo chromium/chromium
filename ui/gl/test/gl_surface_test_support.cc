@@ -72,7 +72,7 @@ GLDisplay* InitializeOneOffHelper(bool init_extensions) {
       impl, fallback_to_software_gl));
   GLDisplay* display = gl::init::InitializeGLOneOffPlatformImplementation(
       fallback_to_software_gl, disable_gl_drawing, init_extensions,
-      /*system_device_id=*/0);
+      /*gpu_preference=*/gl::GpuPreference::kDefault);
   CHECK(display);
   return display;
 }
@@ -102,7 +102,7 @@ GLDisplay* GLSurfaceTestSupport::InitializeOneOffImplementation(
       impl, fallback_to_software_gl));
   GLDisplay* display = gl::init::InitializeGLOneOffPlatformImplementation(
       fallback_to_software_gl, disable_gl_drawing, init_extensions,
-      /*system_device_id=*/0);
+      /*gpu_preference=*/gl::GpuPreference::kDefault);
   CHECK(display);
   return display;
 }

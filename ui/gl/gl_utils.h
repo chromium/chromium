@@ -71,6 +71,9 @@ GL_EXPORT void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
 GL_EXPORT void SetGpuPreferenceEGL(GpuPreference preference,
                                    uint64_t system_device_id);
 
+// Remove the entry at <preference> from GLDisplayManagerEGL.
+GL_EXPORT void RemoveGpuPreferenceEGL(GpuPreference preference);
+
 // Query the default GLDisplay. May return either a GLDisplayEGL or
 // GLDisplayX11.
 GL_EXPORT GLDisplay* GetDefaultDisplay();
@@ -82,14 +85,9 @@ GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference);
 // Query the default GLDisplayEGL.
 GL_EXPORT GLDisplayEGL* GetDefaultDisplayEGL();
 
-// Query the GLDisplayEGL by |system_device_id|.
-GL_EXPORT GLDisplayEGL* GetDisplayEGL(uint64_t system_device_id);
+// Query the GLDisplayEGL by |gpu_preference|.
+GL_EXPORT GLDisplayEGL* GetDisplayEGL(GpuPreference gpu_preference);
 #endif  // USE_EGL
-
-#if defined(USE_GLX)
-// Query the GLDisplayX11 by |system_device_id|.
-GL_EXPORT GLDisplayX11* GetDisplayX11(uint64_t system_device_id);
-#endif  // USE_GLX
 
 // Temporarily allows compilation of shaders that use the
 // ARB_texture_rectangle/ANGLE_texture_rectangle extension. We don't want to

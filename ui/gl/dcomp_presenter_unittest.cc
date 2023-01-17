@@ -130,7 +130,7 @@ class DCompPresenterTest : public testing::Test {
 
     // Without this, the following check always fails.
     display_ = gl::init::InitializeGLNoExtensionsOneOff(
-        /*init_bindings=*/true, /*system_device_id=*/0);
+        /*init_bindings=*/true, /*gpu_preference=*/gl::GpuPreference::kDefault);
     if (!DirectCompositionSupported()) {
       LOG(WARNING) << "DirectComposition not supported, skipping test.";
       return;

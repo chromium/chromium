@@ -89,9 +89,9 @@ egl::ThreadState* ThreadState::Get() {
 #if BUILDFLAG(IS_OZONE)
       ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
 #endif
-      gl::GLDisplay* display =
-          gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
-                                                   /*system_device_id=*/0);
+      gl::GLDisplay* display = gl::init::InitializeGLNoExtensionsOneOff(
+          /*init_bindings=*/true,
+          /*gpu_preference=*/gl::GpuPreference::kDefault);
       gpu::GpuFeatureInfo gpu_feature_info;
       if (!command_line->HasSwitch(switches::kDisableGpuDriverBugWorkarounds)) {
         gpu::GPUInfo gpu_info;

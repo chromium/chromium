@@ -345,7 +345,7 @@ class CommandBufferSetup {
         /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/true,
-        /*system_device_id=*/0);
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
     CHECK(display_);
 #elif defined(GPU_FUZZER_USE_STUB)
     gl::GLSurfaceTestSupport::InitializeOneOffWithStubBindings();

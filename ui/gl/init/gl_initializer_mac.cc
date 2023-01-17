@@ -165,8 +165,8 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
 }  // namespace
 
-GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
-  GLDisplayEGL* display = GetDisplayEGL(system_device_id);
+GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference) {
+  GLDisplayEGL* display = GetDisplayEGL(gpu_preference);
   switch (GetGLImplementation()) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:

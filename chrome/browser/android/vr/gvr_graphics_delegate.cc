@@ -174,7 +174,8 @@ void GvrGraphicsDelegate::InitializeGl(gfx::AcceleratedWidget window,
 
   gl::GLDisplay* display = nullptr;
   if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
-    display = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+    display = gl::init::InitializeGLOneOff(
+        /*gpu_preference=*/gl::GpuPreference::kDefault);
     if (!display) {
       LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
       browser_->ForceExitVr();
