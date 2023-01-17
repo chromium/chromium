@@ -1905,6 +1905,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT" desc="Info bar message to save a password. [Length: 60em]">
         Save password?
       </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_ON_ACCOUNT_SAVE_SUBTITLE" desc="Infobar subtitle to save a password on account. [Length: 60em]">
+        To Google Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_LOCAL_SAVE_SUBTITLE" desc="Infobar subtitle to save a password on device. [Length: 60em]">
+        To Google Password Manager on this device
+      </message>
       <message name="IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_TITLE" desc="Infobar title to save a password. [Length: 70em]">
         Save password
       </message>

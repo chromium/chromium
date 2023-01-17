@@ -65,7 +65,9 @@
   NSString* title = config->title();
   NSString* subtitle = config->subtitle();
   NSString* bannerAccessibilityLabel = config->customAccessibilityLabel();
-  [self.consumer setBannerAccessibilityLabel:bannerAccessibilityLabel];
+  if (bannerAccessibilityLabel) {
+    [self.consumer setBannerAccessibilityLabel:bannerAccessibilityLabel];
+  }
   [self.consumer setButtonText:config->button_text()];
   [self.consumer setIconImage:[self iconImageWithConfig:config]];
   [self.consumer setPresentsModal:YES];

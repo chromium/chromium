@@ -43,6 +43,7 @@ BASE_DECLARE_FEATURE(kInferConfirmationPasswordField);
 BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
 BASE_DECLARE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
+BASE_DECLARE_FEATURE(kIOSShowPasswordStorageInSaveInfobar);
 #endif  // IS_IOS
 BASE_DECLARE_FEATURE(kMuteCompromisedPasswords);
 BASE_DECLARE_FEATURE(kNewRegexForOtpFields);

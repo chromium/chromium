@@ -34,6 +34,7 @@ source_set("infobar_banner") {
     "//base",
     "//components/autofill/core/browser",
     "//components/infobars/core",
+    "//components/password_manager/core/common:features",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",

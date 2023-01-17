@@ -101,6 +101,12 @@ BASE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport,
 BASE_FEATURE(kIOSPasswordCheckup,
              "IOSPasswordCheckup",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature flag to show local/account storage in save/update password infobar
+// subtitle.
+BASE_FEATURE(kIOSShowPasswordStorageInSaveInfobar,
+             "ShowPasswordStorageInSaveInfobar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 // Enables (un)muting compromised passwords from bulk leak check in settings.

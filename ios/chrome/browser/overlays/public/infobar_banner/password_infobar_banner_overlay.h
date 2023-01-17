@@ -26,7 +26,9 @@ class PasswordInfobarBannerOverlayRequestConfig
   NSString* title() const { return title_; }
   // The infobar delegate's subtitle text.
   NSString* subtitle() const { return subtitle_; }
-  // The infobar delegate's accessibility text.
+  // The infobar delegate's accessibility text. This is used when the subtitle
+  // includes a hidden password text. Other than this, it will be null and the
+  // default value of accessibility label will be used.
   NSString* customAccessibilityLabel() const {
     return custom_accessibility_label_;
   }
