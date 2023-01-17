@@ -118,7 +118,7 @@ const char PlatformStateStoreWinTest::kProfileName_[] = "test_profile";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const wchar_t PlatformStateStoreWinTest::kStoreKeyName_[] =
     L"Software\\Google\\Chrome\\IncidentsSent";
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
 const wchar_t PlatformStateStoreWinTest::kStoreKeyName_[] =
     L"Software\\Google\\Chrome for Testing\\IncidentsSent";
 #else
