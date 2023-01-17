@@ -1548,6 +1548,7 @@ if (!is_android) {
       "//third_party/blink/public/mojom:web_feature_mojo_bindings",
       "//third_party/icu",
       "//third_party/leveldatabase",
+      "//third_party/libwebp",
       "//third_party/openscreen/src/cast/streaming:common",
       "//third_party/protobuf:py_proto_runtime",
       "//third_party/webrtc_overrides:webrtc_component",

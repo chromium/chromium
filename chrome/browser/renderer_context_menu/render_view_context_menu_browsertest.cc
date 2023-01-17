@@ -113,6 +113,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/libwebp/src/src/webp/decode.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -351,6 +352,13 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
                             .get();
       ASSERT_EQ(expected_size.width(), decoded_bitmap.width());
       ASSERT_EQ(expected_size.height(), decoded_bitmap.height());
+    } else if (response_file_extension == ".webp") {
+      int width;
+      int height;
+      EXPECT_TRUE(WebPGetInfo(&response_image_data.front(),
+                              response_image_data.size(), &width, &height));
+      ASSERT_EQ(expected_size.width(), width);
+      ASSERT_EQ(expected_size.height(), height);
     }
   }
 
@@ -2460,6 +2468,36 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, JpgImageDownscaleToJpg) {
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::ORIGINAL,
       gfx::Size(480, 320), gfx::Size(100, /* 100 / 480 * 320 =  */ 66), ".jpg");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, JpgImageDownscaleToWebp) {
+  OpenImagePageAndContextMenu("/android/watch.jpg");
+  RequestImageAndVerifyResponse(
+      gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
+      gfx::Size(480, 320), gfx::Size(100, /* 100 / 480 * 320 =  */ 66),
+      ".webp");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, PngImageDownscaleToWebp) {
+  OpenImagePageAndContextMenu("/image_search/valid.png");
+  RequestImageAndVerifyResponse(
+      gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
+      gfx::Size(200, 100), gfx::Size(100, 50), ".webp");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, GifImageDownscaleToWebp) {
+  OpenImagePageAndContextMenu("/google/logo.gif");
+  RequestImageAndVerifyResponse(
+      gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
+      gfx::Size(276, 110), gfx::Size(100, /* 100 / 275 * 110 =  */ 39),
+      ".webp");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, WebpImageDownscaleToWebp) {
+  OpenImagePageAndContextMenu("/banners/webp-icon.webp");
+  RequestImageAndVerifyResponse(
+      gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
+      gfx::Size(192, 192), gfx::Size(100, 100), ".webp");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
