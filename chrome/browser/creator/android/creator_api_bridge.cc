@@ -17,6 +17,8 @@
 #include "components/creator/public/creator_api.h"
 #include "url/android/gurl_android.h"
 
+using base::android::ConvertUTF8ToJavaString;
+
 namespace creator {
 
 namespace {
@@ -34,6 +36,12 @@ void DoGetCreator(std::string web_channel_id,
   std::move(callback).Run(Creator{u"alexainsley.com", u"Alex Ainsley"});
 }
 
+// TODO(crbug/1374058): Replace this with actual access to creator api stub.
+void DoGetWebId(std::string url,
+                base::OnceCallback<void(std::string)> callback) {
+  std::move(callback).Run(std::string("wId/12345"));
+}
+
 }  // namespace
 
 static void JNI_CreatorApiBridge_GetCreator(
@@ -49,6 +57,21 @@ static void JNI_CreatorApiBridge_GetCreator(
                          j_callback, ToJava(env, creator));
                    },
                    base::android::ScopedJavaGlobalRef(j_callback)));
+}
+
+static void JNI_CreatorApiBridge_GetWebId(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& j_url,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  DoGetWebId(base::android::ConvertJavaStringToUTF8(env, j_url),
+             base::BindOnce(
+                 [](const base::android::JavaRef<jobject>& j_callback,
+                    std::string webid) {
+                   JNIEnv* env = base::android::AttachCurrentThread();
+                   base::android::RunObjectCallbackAndroid(
+                       j_callback, ConvertUTF8ToJavaString(env, webid));
+                 },
+                 base::android::ScopedJavaGlobalRef(j_callback)));
 }
 
 }  // namespace creator

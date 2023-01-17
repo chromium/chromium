@@ -14,6 +14,9 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("creator")
 public class CreatorApiBridge {
+    /**
+     * A Java Class to store creator metadata.
+     */
     public static class Creator {
         public final String url;
         public final String title;
@@ -29,8 +32,13 @@ public class CreatorApiBridge {
         CreatorApiBridgeJni.get().getCreator(webChannelId, callback);
     }
 
+    public static void getWebId(String url, Callback<String> callback) {
+        CreatorApiBridgeJni.get().getWebId(url, callback);
+    }
+
     @NativeMethods
     interface Natives {
         void getCreator(String webChannelId, Callback<Creator> callback);
+        void getWebId(String url, Callback<String> callback);
     }
 }

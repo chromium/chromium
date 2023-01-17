@@ -15,8 +15,10 @@ class CreatorApiImpl : public CreatorApi {
   CreatorApiImpl(const CreatorApiImpl&) = delete;
   CreatorApiImpl& operator=(const CreatorApiImpl&) = delete;
 
-  // Creator
+  // CreatorApi
   Creator GetCreator(std::string web_channel_id);
+  void GetWebId(std::string url,
+                base::OnceCallback<void(std::string)> callback);
 };
 
 }  // namespace creator

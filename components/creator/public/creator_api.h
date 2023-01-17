@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/callback.h"
+
 namespace creator {
 
 struct Creator {
@@ -23,6 +25,8 @@ class CreatorApi {
   CreatorApi& operator=(const CreatorApi&) = delete;
 
   Creator GetCreator(std::string web_channel_id);
+  void GetWebId(std::string url,
+                base::OnceCallback<void(std::string)> callback);
 };
 
 }  // namespace creator
