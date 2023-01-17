@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -31,11 +30,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync_sessions/open_tabs_ui_delegate.h"
-#include "components/sync_sessions/session_sync_service.h"
-#include "components/sync_sessions/synced_session.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -83,77 +77,15 @@ bool IsSuggestionChip(const std::string& app_id) {
 
 const InternalApp* FindInternalApp(const std::string& app_id) {
   for (const auto& app : GetInternalAppListImpl(true, nullptr)) {
-    if (app_id == app.app_id)
+    if (app_id == app.app_id) {
       return &app;
+    }
   }
   return nullptr;
 }
 
 bool IsInternalApp(const std::string& app_id) {
   return !!FindInternalApp(app_id);
-}
-
-bool HasRecommendableForeignTab(
-    Profile* profile,
-    std::u16string* title,
-    GURL* url,
-    sync_sessions::OpenTabsUIDelegate* test_delegate) {
-  sync_sessions::SessionSyncService* service =
-      SessionSyncServiceFactory::GetForProfile(profile);
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions;
-  sync_sessions::OpenTabsUIDelegate* delegate =
-      test_delegate ? test_delegate : service->GetOpenTabsUIDelegate();
-  if (delegate)
-    delegate->GetAllForeignSessions(&foreign_sessions);
-
-  constexpr int kMaxForeignTabAgeInMinutes = 120;
-  base::Time latest_timestamp;
-  bool has_recommendation = false;
-  for (const sync_sessions::SyncedSession* session : foreign_sessions) {
-    if (latest_timestamp > session->modified_time)
-      continue;
-
-    auto device_form_factor = session->GetDeviceFormFactor();
-    if (device_form_factor != syncer::DeviceInfo::FormFactor::kPhone &&
-        device_form_factor != syncer::DeviceInfo::FormFactor::kTablet) {
-      continue;
-    }
-
-    for (const auto& key_value : session->windows) {
-      for (const std::unique_ptr<sessions::SessionTab>& tab :
-           key_value.second->wrapped_window.tabs) {
-        if (tab->navigations.empty())
-          continue;
-
-        const sessions::SerializedNavigationEntry& navigation =
-            tab->navigations.back();
-        const GURL& virtual_url = navigation.virtual_url();
-
-        // Only show pages with http or https.
-        if (!virtual_url.SchemeIsHTTPOrHTTPS())
-          continue;
-
-        // Only show pages recently opened.
-        const base::TimeDelta tab_age = base::Time::Now() - tab->timestamp;
-        if (tab_age > base::Minutes(kMaxForeignTabAgeInMinutes))
-          continue;
-
-        if (latest_timestamp < tab->timestamp) {
-          has_recommendation = true;
-          latest_timestamp = tab->timestamp;
-          if (title) {
-            *title = navigation.title().empty()
-                         ? base::UTF8ToUTF16(virtual_url.spec())
-                         : navigation.title();
-          }
-
-          if (url)
-            *url = virtual_url;
-        }
-      }
-    }
-  }
-  return has_recommendation;
 }
 
 size_t GetNumberOfInternalAppsShowInLauncherForTest(std::string* apps_name,
@@ -169,8 +101,9 @@ size_t GetNumberOfInternalAppsShowInLauncherForTest(std::string* apps_name,
       }
     }
   }
-  if (apps_name)
+  if (apps_name) {
     *apps_name = base::JoinString(internal_apps_name, ",");
+  }
   return num_of_internal_apps_show_in_launcher;
 }
 

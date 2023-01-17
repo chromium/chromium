@@ -11,15 +11,10 @@
 #include "ui/gfx/image/image_skia.h"
 
 class Profile;
-class GURL;
 
 namespace apps {
 enum class BuiltInAppName;
 }
-
-namespace sync_sessions {
-class OpenTabsUIDelegate;
-}  // namespace sync_sessions
 
 namespace app_list {
 
@@ -62,18 +57,6 @@ const InternalApp* FindInternalApp(const std::string& app_id);
 
 // Returns true if |app_id| corresponds to an internal app.
 bool IsInternalApp(const std::string& app_id);
-
-// Returns true if there is a recommendable foreign tab.
-// If |title| is not nullptr, it will be replaced with the title of the foreign
-// tab's last navigation.
-// If |url| is not nullptr, it will be replaced with the url of the foreign
-// tab's last navigation.
-// |test_delegate| is used to mock OpenTabsUIDelegate in test.
-bool HasRecommendableForeignTab(
-    Profile* profile,
-    std::u16string* title,
-    GURL* url,
-    sync_sessions::OpenTabsUIDelegate* test_delegate);
 
 // Returns the number of internal apps which can show in launcher.
 // If |apps_name| is not nullptr, it will be the concatenated string of these
