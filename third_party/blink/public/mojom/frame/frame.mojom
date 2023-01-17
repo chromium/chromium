@@ -149,6 +149,14 @@ enum TraverseCancelledReason {
   kSandboxViolation,
 };
 
+// The ViewTransitionOnNavigation opt-in state for a Document. This indicates
+// whether this Document wants to enable a ViewTransition for same-origin
+// cross-document navigations initiated from it.
+enum ViewTransitionSameOriginOptIn {
+  kDisabled,
+  kEnabled,
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
@@ -628,6 +636,12 @@ interface LocalFrameHost {
       RemoteFrameInterfacesFromRenderer remote_frame_interfaces,
       blink.mojom.RemoteFrameToken frame_token,
       mojo_base.mojom.UnguessableToken devtools_frame_token);
+
+  // Notifies when the ViewTransition opt-in state for the current Document
+  // changes.
+  // See https://github.com/WICG/view-transitions/blob/main/explainer.md#declarative-opt-in-to-transitions.
+  OnViewTransitionOptInChanged(
+    ViewTransitionSameOriginOptIn view_transition_opt_in);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

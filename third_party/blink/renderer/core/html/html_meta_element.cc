@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -543,6 +544,10 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
     GetDocument().ColorSchemeMetaChanged();
   } else if (EqualIgnoringASCIICase(name_value, "supports-reduced-motion")) {
     GetDocument().SupportsReducedMotionMetaChanged();
+  } else if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled() &&
+             EqualIgnoringASCIICase(name_value, "view-transition")) {
+    ViewTransitionSupplement::From(GetDocument())
+        ->OnMetaTagChanged(g_null_atom);
   }
 }
 
@@ -676,6 +681,10 @@ void HTMLMetaElement::ProcessContent() {
       UseCounter::Count(&GetDocument(),
                         WebFeature::kHTMLMetaElementMonetization);
     }
+  } else if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled() &&
+             EqualIgnoringASCIICase(name_value, "view-transition")) {
+    ViewTransitionSupplement::From(GetDocument())
+        ->OnMetaTagChanged(content_value);
   }
 }
 

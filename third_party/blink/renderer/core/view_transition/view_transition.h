@@ -182,6 +182,12 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
     return creation_type_ == CreationType::kScript;
   }
 
+  // Returns true if this object was created for a navigation initiated
+  // transition on the new Document.
+  bool IsForNavigationOnNewDocument() const {
+    return creation_type_ == CreationType::kFromSnapshot;
+  }
+
   // Notifies before the compositor associated with this frame will initiate a
   // lifecycle update.
   void WillBeginMainFrame();

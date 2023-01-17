@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/view_transition_commit_deferring_condition.h"
+
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -14,11 +16,20 @@
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
-
 class ViewTransitionCommitDeferringConditionTest
     : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override { RenderViewHostImplTestHarness::SetUp(); }
+
+  void AddOptIn() {
+    auto* opt_in_state =
+        ViewTransitionOptInState::GetOrCreateForCurrentDocument(
+            main_test_rfh());
+    EXPECT_EQ(opt_in_state->same_origin_opt_in(),
+              blink::mojom::ViewTransitionSameOriginOptIn::kDisabled);
+    opt_in_state->set_same_origin_opt_in(
+        blink::mojom::ViewTransitionSameOriginOptIn::kEnabled);
+  }
 
  private:
   base::test::ScopedFeatureList view_transition_feature_{
@@ -47,6 +58,8 @@ TEST_F(ViewTransitionCommitDeferringConditionTest,
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->IsInPrimaryMainFrame());
 
+  AddOptIn();
+
   EXPECT_LT(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
 
   EXPECT_NE(request->frame_tree_node()
@@ -73,6 +86,8 @@ TEST_F(ViewTransitionCommitDeferringConditionTest,
   ASSERT_TRUE(request->IsInPrimaryMainFrame());
 
   EXPECT_LT(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+
+  AddOptIn();
 
   EXPECT_EQ(request->frame_tree_node()
                 ->current_frame_host()

@@ -124,6 +124,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -7968,6 +7969,12 @@ void RenderFrameHostImpl::CreateFencedFrame(
   // Fenced frames (after their first navigation) do not have opaque origins,
   // and this default-constructed FRS does not impact that.
   DCHECK(initial_replicated_state.origin.opaque());
+}
+
+void RenderFrameHostImpl::OnViewTransitionOptInChanged(
+    blink::mojom::ViewTransitionSameOriginOptIn view_transition_opt_in) {
+  ViewTransitionOptInState::GetOrCreateForCurrentDocument(this)
+      ->set_same_origin_opt_in(view_transition_opt_in);
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

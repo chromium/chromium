@@ -1869,6 +1869,8 @@ source_set("browser") {
     "renderer_host/ui_events_helper.h",
     "renderer_host/view_transition_commit_deferring_condition.cc",
     "renderer_host/view_transition_commit_deferring_condition.h",
+    "renderer_host/view_transition_opt_in_state.cc",
+    "renderer_host/view_transition_opt_in_state.h",
     "renderer_host/visible_time_request_trigger.cc",
     "renderer_host/visible_time_request_trigger.h",
     "resource_context_impl.cc",

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
-<title>View transitions: basic cross-document navigation</title>
+<title>View transitions: basic cross-document navigation opt-in removed</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
-<link rel="match" href="root-element-transition-ref.html">
-<meta name="view-transition" content="same-origin">
+<link rel="match" href="root-element-transition-no-opt-in-ref.html">
+<meta id="optin" name="view-transition" content="same-origin">
 
 <script src="/common/reftest-wait.js"></script>
 <style>
@@ -24,6 +24,7 @@
 
 <script>
 function runTest() {
+  optin.remove();
   const url = "resources/root-element-transition.html";
   window.location.replace(new URL(url, window.location));
 }

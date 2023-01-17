@@ -3,8 +3,8 @@
 <title>View transitions: basic cross-document navigation (new page)</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
-<link rel="match" href="root-element-transition-ref.html">
-<meta name="view-transition" content="same-origin">
+<link rel="match" href="root-element-transition-no-opt-in-ref.html">
+<meta id="optin" name="view-transition" content="same-origin">
 <style>
   html {
     background: grey;
@@ -43,5 +43,12 @@
     opacity: 1;
   }
 </style>
+<body>
 <div class="hidden"></div>
+</body>
+<script>
+  requestAnimationFrame(() => {
+    optin.remove();
+  });
+</script>
 

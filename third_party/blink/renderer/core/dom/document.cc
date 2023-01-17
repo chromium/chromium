@@ -3544,6 +3544,10 @@ void Document::WillInsertBody() {
   if (Loader())
     fetcher_->LoosenLoadThrottlingPolicy();
 
+  if (auto* supplement = ViewTransitionSupplement::FromIfExists(*this)) {
+    supplement->WillInsertBody();
+  }
+
   // If we get to the <body> try to resume commits since we should have content
   // to paint now.
   // TODO(esprehn): Is this really optimal? We might start producing frames

@@ -222,4 +222,42 @@ ViewTransitionSupplement::TakePendingRequests() {
   return std::move(pending_requests_);
 }
 
+void ViewTransitionSupplement::OnMetaTagChanged(
+    const AtomicString& content_value) {
+  auto same_origin_opt_in =
+      EqualIgnoringASCIICase(content_value, "same-origin")
+          ? mojom::ViewTransitionSameOriginOptIn::kEnabled
+          : mojom::ViewTransitionSameOriginOptIn::kDisabled;
+
+  if (same_origin_opt_in_ == same_origin_opt_in) {
+    return;
+  }
+  same_origin_opt_in_ = same_origin_opt_in;
+
+  auto* document = GetSupplementable();
+  DCHECK(document);
+  DCHECK(document->GetFrame());
+  document->GetFrame()->GetLocalFrameHostRemote().OnViewTransitionOptInChanged(
+      same_origin_opt_in);
+
+  if (same_origin_opt_in_ == mojom::ViewTransitionSameOriginOptIn::kDisabled &&
+      transition_ && !transition_->IsCreatedViaScriptAPI()) {
+    transition_->skipTransition();
+    DCHECK(!transition_)
+        << "skipTransition() should finish existing |transition_|";
+  }
+}
+
+void ViewTransitionSupplement::WillInsertBody() {
+  if (same_origin_opt_in_ == mojom::ViewTransitionSameOriginOptIn::kEnabled) {
+    return;
+  }
+
+  if (transition_ && transition_->IsForNavigationOnNewDocument()) {
+    transition_->skipTransition();
+    DCHECK(!transition_)
+        << "skipTransition() should finish existing |transition_|";
+  }
+}
+
 }  // namespace blink

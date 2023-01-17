@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_
 
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -69,6 +70,14 @@ class CORE_EXPORT ViewTransitionSupplement
   VectorOf<std::unique_ptr<ViewTransitionRequest>> TakePendingRequests();
   void OnTransitionFinished(ViewTransition* transition) override;
 
+  // Notifies when the "view-transition" meta tag associated with this Document
+  // has changed.
+  void OnMetaTagChanged(const AtomicString& content_value);
+
+  // Notifies that the `body` element has been parsed and will be added to the
+  // Document.
+  void WillInsertBody();
+
  private:
   ViewTransition* StartTransition(ScriptState* script_state,
                                   Document& document,
@@ -84,6 +93,9 @@ class CORE_EXPORT ViewTransitionSupplement
   VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
 
   HeapHashSet<Member<const Element>> elements_with_view_transition_name_;
+
+  mojom::ViewTransitionSameOriginOptIn same_origin_opt_in_ =
+      mojom::ViewTransitionSameOriginOptIn::kDisabled;
 };
 
 }  // namespace blink

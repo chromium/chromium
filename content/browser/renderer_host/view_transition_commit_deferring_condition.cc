@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
@@ -41,10 +42,15 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
   if (!navigation_request.IsInPrimaryMainFrame())
     return nullptr;
 
-  const url::Origin& current_request_origin =
-      navigation_request.frame_tree_node()
-          ->current_frame_host()
-          ->GetLastCommittedOrigin();
+  RenderFrameHostImpl* rfh =
+      navigation_request.frame_tree_node()->current_frame_host();
+  if (ViewTransitionOptInState::GetOrCreateForCurrentDocument(rfh)
+          ->same_origin_opt_in() ==
+      blink::mojom::ViewTransitionSameOriginOptIn::kDisabled) {
+    return nullptr;
+  }
+
+  const url::Origin& current_request_origin = rfh->GetLastCommittedOrigin();
   const url::Origin& new_request_origin =
       navigation_request.state() >= NavigationRequest::WILL_PROCESS_RESPONSE
           ? navigation_request.GetOriginToCommit().value_or(url::Origin())
