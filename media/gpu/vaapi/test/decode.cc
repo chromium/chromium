@@ -279,7 +279,6 @@ int main(int argc, char** argv) {
     }
 
     for (int i = 0; i < n_frames || n_frames == 0; i++) {
-      LOG(INFO) << "Frame " << i << "...";
       const VideoDecoder::Result res = dec->DecodeNextFrame();
 
       if (res == VideoDecoder::kEOStream) {
