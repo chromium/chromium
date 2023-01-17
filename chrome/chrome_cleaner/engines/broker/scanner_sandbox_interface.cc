@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_handle.h"
+#include "chrome/chrome_cleaner/engines/common/nt_functions.h"
 #include "chrome/chrome_cleaner/engines/common/registry_util.h"
 #include "chrome/chrome_cleaner/engines/common/sandbox_error_code.h"
 #include "chrome/chrome_cleaner/os/file_path_sanitization.h"
@@ -27,7 +28,6 @@
 #include "chrome/chrome_cleaner/os/system_util.h"
 #include "chrome/chrome_cleaner/os/task_scheduler.h"
 #include "chrome/chrome_cleaner/settings/settings.h"
-#include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace chrome_cleaner_sandbox {

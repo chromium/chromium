@@ -11,19 +11,9 @@
 #include <memory>
 #include <string>
 
-#include "sandbox/win/src/nt_internals.h"
+#include "chrome/chrome_elf/nt_registry/nt_registry_functions.h"
 
 namespace {
-
-// Function pointers used for registry access.
-NtCreateKeyFunction g_nt_create_key = nullptr;
-NtDeleteKeyFunction g_nt_delete_key = nullptr;
-NtOpenKeyExFunction g_nt_open_key_ex = nullptr;
-NtCloseFunction g_nt_close = nullptr;
-NtQueryKeyFunction g_nt_query_key = nullptr;
-NtEnumerateKeyFunction g_nt_enumerate_key = nullptr;
-NtQueryValueKeyFunction g_nt_query_value_key = nullptr;
-NtSetValueKeyFunction g_nt_set_value_key = nullptr;
 
 // Lazy init.  No concern about concurrency in chrome_elf.
 bool g_initialized = false;
@@ -79,51 +69,11 @@ bool IsThisProcWow64() {
 }
 
 bool InitNativeRegApi() {
-  HMODULE ntdll = ::GetModuleHandleW(L"ntdll.dll");
-
-  // Setup the global function pointers for registry access.
-  g_nt_create_key = reinterpret_cast<NtCreateKeyFunction>(
-      ::GetProcAddress(ntdll, "NtCreateKey"));
-
-  g_nt_delete_key = reinterpret_cast<NtDeleteKeyFunction>(
-      ::GetProcAddress(ntdll, "NtDeleteKey"));
-
-  g_nt_open_key_ex = reinterpret_cast<NtOpenKeyExFunction>(
-      ::GetProcAddress(ntdll, "NtOpenKeyEx"));
-
-  g_nt_close =
-      reinterpret_cast<NtCloseFunction>(::GetProcAddress(ntdll, "NtClose"));
-
-  g_nt_query_key = reinterpret_cast<NtQueryKeyFunction>(
-      ::GetProcAddress(ntdll, "NtQueryKey"));
-
-  g_nt_enumerate_key = reinterpret_cast<NtEnumerateKeyFunction>(
-      ::GetProcAddress(ntdll, "NtEnumerateKey"));
-
-  g_nt_query_value_key = reinterpret_cast<NtQueryValueKeyFunction>(
-      ::GetProcAddress(ntdll, "NtQueryValueKey"));
-
-  g_nt_set_value_key = reinterpret_cast<NtSetValueKeyFunction>(
-      ::GetProcAddress(ntdll, "NtSetValueKey"));
-
-  if (!g_nt_create_key || !g_nt_open_key_ex || !g_nt_delete_key ||
-      !g_nt_close || !g_nt_query_key || !g_nt_enumerate_key ||
-      !g_nt_query_value_key || !g_nt_set_value_key) {
-    return false;
-  }
-
   // We need to set HKCU based on the sid of the current user account.
-  RtlFormatCurrentUserKeyPathFunction rtl_current_user_string =
-      reinterpret_cast<RtlFormatCurrentUserKeyPathFunction>(
-          ::GetProcAddress(ntdll, "RtlFormatCurrentUserKeyPath"));
-
-  if (!rtl_current_user_string) {
+  UNICODE_STRING current_user_reg_path;
+  if (!NT_SUCCESS(::RtlFormatCurrentUserKeyPath(&current_user_reg_path))) {
     return false;
   }
-
-  UNICODE_STRING current_user_reg_path;
-  if (!NT_SUCCESS(rtl_current_user_string(&current_user_reg_path)))
-    return false;
 
   // Finish setting up global HKCU path.
   ::wcsncat(g_kRegPathHKCU, current_user_reg_path.Buffer, nt::g_kRegMaxPathLen);
@@ -608,8 +558,8 @@ NTSTATUS CreateKeyWrapper(const std::wstring& key_path,
   InitializeObjectAttributes(&obj, &key_path_uni, OBJ_CASE_INSENSITIVE, NULL,
                              nullptr);
 
-  return g_nt_create_key(out_handle, access, &obj, 0, nullptr,
-                         REG_OPTION_NON_VOLATILE, create_or_open);
+  return ::NtCreateKey(out_handle, access, &obj, 0, nullptr,
+                       REG_OPTION_NON_VOLATILE, create_or_open);
 }
 
 }  // namespace
@@ -658,7 +608,7 @@ bool CreateRegKey(ROOT_KEY root,
 
   size_t subkeys_size = subkeys.size();
   if (subkeys_size != 0)
-    g_nt_close(last_handle);
+    ::NtClose(last_handle);
 
   // Recursively open/create each subkey.
   std::vector<HANDLE> rollback;
@@ -684,19 +634,19 @@ bool CreateRegKey(ROOT_KEY root,
       if (created == REG_CREATED_NEW_KEY)
         rollback.push_back(key_handle);
       else
-        g_nt_close(key_handle);
+        ::NtClose(key_handle);
     }
   }
 
   if (!success) {
     // Delete any subkeys created.
     for (HANDLE handle : rollback) {
-      g_nt_delete_key(handle);
+      ::NtDeleteKey(handle);
     }
   }
   for (HANDLE handle : rollback) {
     // Close the rollback handles, on success or failure.
-    g_nt_close(handle);
+    ::NtClose(handle);
   }
   if (!success)
     return false;
@@ -705,7 +655,7 @@ bool CreateRegKey(ROOT_KEY root,
   if (out_handle)
     *out_handle = last_handle;
   else
-    g_nt_close(last_handle);
+    ::NtClose(last_handle);
 
   return true;
 }
@@ -744,7 +694,7 @@ bool OpenRegKey(ROOT_KEY root,
   InitializeObjectAttributes(&obj, &key_path_uni, OBJ_CASE_INSENSITIVE, NULL,
                              NULL);
 
-  status = g_nt_open_key_ex(out_handle, access, &obj, 0);
+  status = ::NtOpenKeyEx(out_handle, access, &obj, 0);
   // See if caller wants the NTSTATUS.
   if (error_code)
     *error_code = status;
@@ -759,7 +709,7 @@ bool DeleteRegKey(HANDLE key) {
   if (!g_initialized && !InitNativeRegApi())
     return false;
 
-  NTSTATUS status = g_nt_delete_key(key);
+  NTSTATUS status = ::NtDeleteKey(key);
 
   return NT_SUCCESS(status);
 }
@@ -785,7 +735,7 @@ bool DeleteRegKey(ROOT_KEY root,
 void CloseRegKey(HANDLE key) {
   if (!g_initialized)
     InitNativeRegApi();
-  g_nt_close(key);
+  ::NtClose(key);
 }
 
 //------------------------------------------------------------------------------
@@ -813,8 +763,8 @@ bool QueryRegKeyValue(HANDLE key,
     buffer.resize(size_needed);
     value_info = reinterpret_cast<KEY_VALUE_FULL_INFORMATION*>(buffer.data());
 
-    ntstatus = g_nt_query_value_key(key, &value_uni, KeyValueFullInformation,
-                                    value_info, size_needed, &size_needed);
+    ntstatus = ::NtQueryValueKey(key, &value_uni, KeyValueFullInformation,
+                                 value_info, size_needed, &size_needed);
   } while ((ntstatus == STATUS_BUFFER_OVERFLOW ||
             ntstatus == STATUS_BUFFER_TOO_SMALL) &&
            ++tries < kMaxTries);
@@ -983,7 +933,7 @@ bool SetRegKeyValue(HANDLE key,
 
   BYTE* non_const_data = const_cast<BYTE*>(data);
   ntstatus =
-      g_nt_set_value_key(key, &value_uni, 0, type, non_const_data, data_size);
+      ::NtSetValueKey(key, &value_uni, 0, type, non_const_data, data_size);
 
   if (NT_SUCCESS(ntstatus))
     return true;
@@ -1120,8 +1070,8 @@ bool QueryRegEnumerationInfo(HANDLE key, ULONG* out_subkey_count) {
     buffer.resize(size_needed);
     key_info = reinterpret_cast<KEY_FULL_INFORMATION*>(buffer.data());
 
-    ntstatus = g_nt_query_key(key, KeyFullInformation, key_info, size_needed,
-                              &size_needed);
+    ntstatus = ::NtQueryKey(key, KeyFullInformation, key_info, size_needed,
+                            &size_needed);
   } while ((ntstatus == STATUS_BUFFER_OVERFLOW ||
             ntstatus == STATUS_BUFFER_TOO_SMALL) &&
            ++tries < kMaxTries);
@@ -1155,8 +1105,8 @@ bool QueryRegSubkey(HANDLE key,
     buffer.resize(size_needed);
     subkey_info = reinterpret_cast<KEY_BASIC_INFORMATION*>(buffer.data());
 
-    ntstatus = g_nt_enumerate_key(key, subkey_index, KeyBasicInformation,
-                                  subkey_info, size_needed, &size_needed);
+    ntstatus = ::NtEnumerateKey(key, subkey_index, KeyBasicInformation,
+                                subkey_info, size_needed, &size_needed);
   } while ((ntstatus == STATUS_BUFFER_OVERFLOW ||
             ntstatus == STATUS_BUFFER_TOO_SMALL) &&
            ++tries < kMaxTries);

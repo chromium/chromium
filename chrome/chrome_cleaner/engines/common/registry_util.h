@@ -5,12 +5,16 @@
 #ifndef CHROME_CHROME_CLEANER_ENGINES_COMMON_REGISTRY_UTIL_H_
 #define CHROME_CHROME_CLEANER_ENGINES_COMMON_REGISTRY_UTIL_H_
 
+#include <Windows.h>
+
+#include <ntstatus.h>
+#include <winternl.h>
+
 #include <limits>
 #include <ostream>
 #include <vector>
 
 #include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
-#include "sandbox/win/src/nt_internals.h"
 
 namespace chrome_cleaner_sandbox {
 

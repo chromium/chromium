@@ -4,6 +4,7 @@ include_rules = [
   # Nothing from chrome.
   "-chrome",
   "+chrome/chrome_elf/nt_registry/nt_registry.h",
+  "+chrome/chrome_elf/nt_registry/nt_registry_functions.h",
 ]
 specific_include_rules = {
   ".*_unittest\.cc": [

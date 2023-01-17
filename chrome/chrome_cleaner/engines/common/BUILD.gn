@@ -10,6 +10,7 @@ source_set("common") {
     "engine_digest_verifier.cc",
     "engine_digest_verifier.h",
     "engine_result_codes.h",
+    "nt_functions.h",
     "registry_util.cc",
     "registry_util.h",
     "sandbox_error_code.h",

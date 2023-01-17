@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/win_util.h"
+#include "chrome/chrome_cleaner/engines/common/nt_functions.h"
 #include "chrome/chrome_cleaner/ipc/ipc_test_util.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
 #include "chrome/chrome_cleaner/mojom/windows_handle.mojom.h"

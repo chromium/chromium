@@ -158,9 +158,9 @@ static_library("hook_util") {
 # kernel32 or ntdll. Please don't add dependencies on other system libraries.
 static_library("nt_registry") {
   sources = [
-    "../../sandbox/win/src/nt_internals.h",
     "nt_registry/nt_registry.cc",
     "nt_registry/nt_registry.h",
+    "nt_registry/nt_registry_functions.h",
   ]
 
   libs = [

@@ -37,7 +37,6 @@
 #include "chrome/chrome_cleaner/test/test_strings.h"
 #include "chrome/chrome_cleaner/test/test_task_scheduler.h"
 #include "chrome/chrome_cleaner/test/test_util.h"
-#include "sandbox/win/src/nt_internals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using chrome_cleaner::GetWow64RedirectedSystemPath;

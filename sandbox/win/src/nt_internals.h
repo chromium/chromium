@@ -171,10 +171,7 @@ typedef struct _PROCESS_ACCESS_TOKEN {
 constexpr auto ProcessInformationAccessToken = static_cast<PROCESSINFOCLASS>(9);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wenum-constexpr-conversion"
-// constexpr auto ProcessExecuteFlags = static_cast<PROCESSINFOCLASS>(34);
 constexpr auto ProcessHandleTable = static_cast<PROCESSINFOCLASS>(58);
-constexpr auto ProcessCommandLineInformation =
-    static_cast<PROCESSINFOCLASS>(60);
 #pragma clang diagnostic pop
 
 // Partial definition only adding fields not in winternl.h, from
@@ -243,105 +240,6 @@ typedef NTSTATUS(WINAPI* RtlCreateUserThreadFunction)(
     IN PVOID Parameter,
     OUT PHANDLE Thread,
     OUT PCLIENT_ID ClientId);
-
-// -----------------------------------------------------------------------
-// Registry
-
-typedef enum _KEY_INFORMATION_CLASS {
-  KeyBasicInformation = 0,
-  KeyFullInformation = 2
-} KEY_INFORMATION_CLASS,
-    *PKEY_INFORMATION_CLASS;
-
-typedef struct _KEY_BASIC_INFORMATION {
-  LARGE_INTEGER LastWriteTime;
-  ULONG TitleIndex;
-  ULONG NameLength;
-  WCHAR Name[1];
-} KEY_BASIC_INFORMATION, *PKEY_BASIC_INFORMATION;
-
-typedef struct _KEY_FULL_INFORMATION {
-  LARGE_INTEGER LastWriteTime;
-  ULONG TitleIndex;
-  ULONG ClassOffset;
-  ULONG ClassLength;
-  ULONG SubKeys;
-  ULONG MaxNameLen;
-  ULONG MaxClassLen;
-  ULONG Values;
-  ULONG MaxValueNameLen;
-  ULONG MaxValueDataLen;
-  WCHAR Class[1];
-} KEY_FULL_INFORMATION, *PKEY_FULL_INFORMATION;
-
-typedef enum _KEY_VALUE_INFORMATION_CLASS {
-  KeyValueFullInformation = 1
-} KEY_VALUE_INFORMATION_CLASS,
-    *PKEY_VALUE_INFORMATION_CLASS;
-
-typedef struct _KEY_VALUE_FULL_INFORMATION {
-  ULONG TitleIndex;
-  ULONG Type;
-  ULONG DataOffset;
-  ULONG DataLength;
-  ULONG NameLength;
-  WCHAR Name[1];
-} KEY_VALUE_FULL_INFORMATION, *PKEY_VALUE_FULL_INFORMATION;
-
-typedef NTSTATUS(WINAPI* NtCreateKeyFunction)(OUT PHANDLE KeyHandle,
-                                              IN ACCESS_MASK DesiredAccess,
-                                              IN POBJECT_ATTRIBUTES
-                                                  ObjectAttributes,
-                                              IN ULONG TitleIndex,
-                                              IN PUNICODE_STRING Class OPTIONAL,
-                                              IN ULONG CreateOptions,
-                                              OUT PULONG Disposition OPTIONAL);
-
-typedef NTSTATUS(WINAPI* NtOpenKeyFunction)(OUT PHANDLE KeyHandle,
-                                            IN ACCESS_MASK DesiredAccess,
-                                            IN POBJECT_ATTRIBUTES
-                                                ObjectAttributes);
-
-typedef NTSTATUS(WINAPI* NtOpenKeyExFunction)(OUT PHANDLE KeyHandle,
-                                              IN ACCESS_MASK DesiredAccess,
-                                              IN POBJECT_ATTRIBUTES
-                                                  ObjectAttributes,
-                                              IN DWORD open_options);
-
-typedef NTSTATUS(WINAPI* NtDeleteKeyFunction)(IN HANDLE KeyHandle);
-
-typedef NTSTATUS(WINAPI* RtlFormatCurrentUserKeyPathFunction)(
-    OUT PUNICODE_STRING RegistryPath);
-
-typedef NTSTATUS(WINAPI* NtQueryKeyFunction)(IN HANDLE KeyHandle,
-                                             IN KEY_INFORMATION_CLASS
-                                                 KeyInformationClass,
-                                             OUT PVOID KeyInformation,
-                                             IN ULONG Length,
-                                             OUT PULONG ResultLength);
-
-typedef NTSTATUS(WINAPI* NtEnumerateKeyFunction)(IN HANDLE KeyHandle,
-                                                 IN ULONG Index,
-                                                 IN KEY_INFORMATION_CLASS
-                                                     KeyInformationClass,
-                                                 OUT PVOID KeyInformation,
-                                                 IN ULONG Length,
-                                                 OUT PULONG ResultLength);
-
-typedef NTSTATUS(WINAPI* NtQueryValueKeyFunction)(IN HANDLE KeyHandle,
-                                                  IN PUNICODE_STRING ValueName,
-                                                  IN KEY_VALUE_INFORMATION_CLASS
-                                                      KeyValueInformationClass,
-                                                  OUT PVOID KeyValueInformation,
-                                                  IN ULONG Length,
-                                                  OUT PULONG ResultLength);
-
-typedef NTSTATUS(WINAPI* NtSetValueKeyFunction)(IN HANDLE KeyHandle,
-                                                IN PUNICODE_STRING ValueName,
-                                                IN ULONG TitleIndex OPTIONAL,
-                                                IN ULONG Type,
-                                                IN PVOID Data,
-                                                IN ULONG DataSize);
 
 // -----------------------------------------------------------------------
 // Memory

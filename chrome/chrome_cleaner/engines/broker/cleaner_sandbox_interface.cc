@@ -28,7 +28,6 @@
 #include "chrome/chrome_cleaner/os/process.h"
 #include "chrome/chrome_cleaner/os/system_util_cleaner.h"
 #include "chrome/chrome_cleaner/os/task_scheduler.h"
-#include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/win_utils.h"
 
 // This typedef is not included in sandbox/'s nt_internals.h.
