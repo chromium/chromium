@@ -123,7 +123,7 @@ BASE_FEATURE(kTLS13KeyUpdate,
 
 BASE_FEATURE(kPermuteTLSExtensions,
              "PermuteTLSExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPostQuantumCECPQ2,
              "PostQuantumCECPQ2",
