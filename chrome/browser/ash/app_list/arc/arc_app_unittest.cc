@@ -1902,9 +1902,8 @@ TEST_P(ArcAppModelBuilderTest, RequestShortcutIcons) {
 
   // Validate all icon files are installed.
   for (auto& scale_factor : scale_factors) {
-    const base::FilePath icon_path = prefs->GetIconPath(
-        ArcAppTest::GetAppId(shortcut), GetAppListIconDescriptor(scale_factor));
-    EXPECT_TRUE(base::PathExists(icon_path));
+    EXPECT_TRUE(IsIconCreated(profile(), prefs, ArcAppTest::GetAppId(shortcut),
+                              scale_factor));
   }
 }
 
