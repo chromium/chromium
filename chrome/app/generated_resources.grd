@@ -12860,7 +12860,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Chrome for Testing infobar main text -->
-    <message name="IDS_CHROME_FOR_TESTING_DISCLAIMER" desc="An infobar prompt shown whenever Chrome for Testing is launched.">
+    <message name="IDS_CHROME_FOR_TESTING_DISCLAIMER" desc="An infobar prompt shown whenever Chrome for Testing is launched. In Title Case: 'Chrome for Testing'.">
       Chrome for Testing v<ph name="BROWSER_VERSION">
         $1<ex>109.0.5369.0</ex>
       </ph> is only for automated testing. For regular browsing, use a standard version of Chrome that updates automatically.
