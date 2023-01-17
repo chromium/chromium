@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_UDP_SOCKET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_UDP_SOCKET_H_
 
+#include "third_party/blink/renderer/modules/direct_sockets/socket.h"
+
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -13,8 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_service_mojo_remote.h"
-#include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
@@ -50,6 +50,9 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
                            const UDPSocketOptions*,
                            ExceptionState&);
 
+  // Socket:
+  ScriptPromise close(ScriptState*, ExceptionState&) override;
+
  public:
   explicit UDPSocket(ScriptState*);
   ~UDPSocket() override;
@@ -73,16 +76,28 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
   // ActiveScriptWrappable:
   bool HasPendingActivity() const override;
 
+  // ExecutionContextLifecycleStateObserver:
+  void ContextDestroyed() override;
+
  private:
   mojo::PendingReceiver<network::mojom::blink::RestrictedUDPSocket>
   GetUDPSocketReceiver();
 
+  // Invoked if mojo pipe for |service_| breaks.
   void OnServiceConnectionError() override;
+
+  // Invoked if mojo pipe for |udp_socket_| breaks.
   void CloseOnError();
+
+  // Resets mojo resources held by this class.
+  void ReleaseResources();
 
   void OnBothStreamsClosed(std::vector<ScriptValue> args);
 
-  const Member<UDPSocketMojoRemote> udp_socket_;
+  Member<UDPSocketMojoRemote> udp_socket_;
+
+  Member<UDPReadableStreamWrapper> readable_stream_wrapper_;
+  Member<UDPWritableStreamWrapper> writable_stream_wrapper_;
 };
 
 }  // namespace blink

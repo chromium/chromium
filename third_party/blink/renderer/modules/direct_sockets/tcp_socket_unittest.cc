@@ -51,30 +51,6 @@ TEST(TCPSocketTest, CloseBeforeInit) {
             DOMExceptionCode::kInvalidStateError);
 }
 
-TEST(TCPSocketTest, CloseAfterInitWithoutResultOK) {
-  V8TestingScope scope;
-
-  auto* script_state = scope.GetScriptState();
-  auto* tcp_socket = MakeGarbageCollected<TCPSocket>(script_state);
-
-  auto opened_promise = tcp_socket->opened(script_state);
-  ScriptPromiseTester opened_tester(script_state, opened_promise);
-
-  tcp_socket->Init(net::ERR_FAILED, net::IPEndPoint(), net::IPEndPoint(),
-                   mojo::ScopedDataPipeConsumerHandle(),
-                   mojo::ScopedDataPipeProducerHandle());
-
-  opened_tester.WaitUntilSettled();
-  ASSERT_TRUE(opened_tester.IsRejected());
-
-  auto close_promise =
-      tcp_socket->close(script_state, scope.GetExceptionState());
-
-  ASSERT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-            DOMExceptionCode::kInvalidStateError);
-}
-
 TEST(TCPSocketTest, CloseAfterInitWithResultOK) {
   V8TestingScope scope;
 
