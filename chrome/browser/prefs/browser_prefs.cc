@@ -815,6 +815,10 @@ const char kAutofillWalletImportStorageCheckboxState[] =
 // Deprecated 01/2023
 const char kSendDownloadToCloudPref[] =
     "enterprise_connectors.send_download_to_cloud";
+#if BUILDFLAG(IS_MAC)
+const char kDeviceTrustDisableKeyCreationPref[] =
+    "enterprise_connectors.device_trust.disable_key_creation";
+#endif  // BUILDFLAG(IS_MAC)
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -887,6 +891,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 01/2023
   registry->RegisterListPref(kSendDownloadToCloudPref);
+#if BUILDFLAG(IS_MAC)
+  registry->RegisterBooleanPref(kDeviceTrustDisableKeyCreationPref, false);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1284,7 +1291,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_MAC)
   confirm_quit::RegisterLocalState(registry);
   QuitWithAppsController::RegisterPrefs(registry);
-  enterprise_connectors::RegisterLocalPrefs(registry);
   system_media_permissions::RegisterSystemMediaPermissionStatesPrefs(registry);
   AppShimRegistry::Get()->RegisterLocalPrefs(registry);
 #endif
@@ -1839,6 +1845,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 01/2023
   local_state->ClearPref(kSendDownloadToCloudPref);
+#if BUILDFLAG(IS_MAC)
+  local_state->ClearPref(kDeviceTrustDisableKeyCreationPref);
+#endif  // BUILDFLAG(IS_MAC)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

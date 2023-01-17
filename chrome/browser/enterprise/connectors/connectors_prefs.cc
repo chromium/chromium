@@ -63,10 +63,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   RegisterDeviceTrustConnectorProfilePrefs(registry);
 }
 
-#if BUILDFLAG(IS_MAC)
-void RegisterLocalPrefs(PrefRegistrySimple* registry) {
-  RegisterDeviceTrustConnectorLocalPrefs(registry);
-}
-#endif
-
 }  // namespace enterprise_connectors

@@ -20,9 +20,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
-#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/common/channel_info.h"
-#include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -71,10 +69,8 @@ void StartRotation(
 }  // namespace
 
 MacKeyRotationCommand::MacKeyRotationCommand(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrefService* local_prefs)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(std::move(url_loader_factory)),
-      local_prefs_(local_prefs),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
@@ -96,7 +92,6 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
   if (!client_->VerifySecureEnclaveSupported()) {
     SYSLOG(ERROR) << "Device trust key rotation failed. The secure enclave is "
                      "not supported.";
-    local_prefs_->SetBoolean(kDeviceTrustDisableKeyCreationPref, true);
     std::move(callback).Run(KeyRotationCommand::Status::FAILED_OS_RESTRICTION);
     return;
   }
@@ -148,7 +143,6 @@ void MacKeyRotationCommand::OnKeyRotated(KeyRotationManager::Result result) {
   if (result == KeyRotationManager::Result::FAILED_KEY_CONFLICT) {
     SYSLOG(ERROR) << "Device trust key rotation failed. Conflict "
                      "with the key that exists on the server.";
-    local_prefs_->SetBoolean(kDeviceTrustDisableKeyCreationPref, true);
     std::move(pending_callback_)
         .Run(KeyRotationCommand::Status::FAILED_KEY_CONFLICT);
     return;

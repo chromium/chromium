@@ -250,7 +250,7 @@ ChromeBrowserCloudManagementControllerDesktop::CreateDeviceTrustKeyManager() {
     auto key_rotation_launcher =
         enterprise_connectors::KeyRotationLauncher::Create(
             BrowserDMTokenStorage::Get(), GetDeviceManagementService(),
-            GetSharedURLLoaderFactory(), g_browser_process->local_state());
+            GetSharedURLLoaderFactory());
     return std::make_unique<enterprise_connectors::DeviceTrustKeyManagerImpl>(
         std::move(key_rotation_launcher));
   }

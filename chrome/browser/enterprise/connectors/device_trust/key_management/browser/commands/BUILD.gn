@@ -24,7 +24,6 @@ source_set("commands") {
 
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust/common",
-    "//components/prefs",
     "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
   ]
@@ -58,7 +57,6 @@ source_set("commands") {
       "mac_key_rotation_command.h",
     ]
     deps += [
-      "//chrome/browser/enterprise/connectors/device_trust:prefs",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",

@@ -9,8 +9,6 @@
 
 #include "base/memory/scoped_refptr.h"
 
-class PrefService;
-
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -27,11 +25,9 @@ class KeyRotationCommandFactory {
 
   // Creates a platform-specific key rotation command
   // object. The shared `url_loader_factory` is used in both the linux and mac
-  // key rotation for mojo support, and the `local_prefs` is needed in the mac
-  // key rotation exclusively for updating a local preference.
+  // key rotation for mojo support.
   virtual std::unique_ptr<KeyRotationCommand> CreateCommand(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* local_prefs);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  protected:
   static void SetFactoryInstanceForTesting(KeyRotationCommandFactory* factory);

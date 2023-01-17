@@ -13,22 +13,8 @@ namespace enterprise_connectors {
 // Pref that maps to the "ContextAwareAccessSignalsAllowlistPref" policy.
 extern const char kContextAwareAccessSignalsAllowlistPref[];
 
-#if BUILDFLAG(IS_MAC)
-// The pref on whether the device trust key creation is disabled for the
-// current user. The device trust key creation is disabled when a key for
-// the device is already present on the Server but a key upload is
-// requested with a another key not signed by the previous one. The key
-// creation is enabled by default.
-extern const char kDeviceTrustDisableKeyCreationPref[];
-#endif
-
 // Registers the device trust connectors profile preferences.
 void RegisterDeviceTrustConnectorProfilePrefs(PrefRegistrySimple* registry);
-
-// Registers the device trust connectors local preferences.
-#if BUILDFLAG(IS_MAC)
-void RegisterDeviceTrustConnectorLocalPrefs(PrefRegistrySimple* registry);
-#endif
 
 }  // namespace enterprise_connectors
 

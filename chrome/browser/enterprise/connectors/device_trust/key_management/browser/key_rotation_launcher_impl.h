@@ -17,8 +17,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_upload_request.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 
-class PrefService;
-
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -35,8 +33,7 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
   KeyRotationLauncherImpl(
       policy::BrowserDMTokenStorage* dm_token_storage,
       policy::DeviceManagementService* device_management_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* local_prefs);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~KeyRotationLauncherImpl() override;
 
   // KeyRotationLauncher:
@@ -56,7 +53,6 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
   raw_ptr<policy::BrowserDMTokenStorage> dm_token_storage_;
   raw_ptr<policy::DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  base::raw_ptr<PrefService> local_prefs_;
   MojoKeyNetworkDelegate network_delegate_;
 
   std::unique_ptr<KeyRotationCommand> command_;

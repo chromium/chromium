@@ -19,6 +19,11 @@ BrowserDeviceTrustConnectorService::BrowserDeviceTrustConnectorService(
 BrowserDeviceTrustConnectorService::~BrowserDeviceTrustConnectorService() =
     default;
 
+bool BrowserDeviceTrustConnectorService::IsConnectorEnabled() const {
+  return DeviceTrustConnectorService::IsConnectorEnabled() &&
+         !key_manager_->HasPermanentFailure();
+}
+
 void BrowserDeviceTrustConnectorService::OnConnectorEnabled() {
   key_manager_->StartInitialization();
 }

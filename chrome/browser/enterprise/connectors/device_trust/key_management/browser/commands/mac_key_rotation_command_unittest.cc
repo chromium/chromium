@@ -18,8 +18,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
-#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
-#include "components/prefs/testing_pref_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,10 +86,8 @@ class MacKeyRotationCommandTest : public testing::Test {
     mock_persistence_delegate_ = mock_persistence_delegate.get();
     EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
 
-    RegisterDeviceTrustConnectorLocalPrefs(local_prefs_.registry());
-
     rotation_command_ = absl::WrapUnique(
-        new MacKeyRotationCommand(test_shared_loader_factory_, &local_prefs_));
+        new MacKeyRotationCommand(test_shared_loader_factory_));
 
     KeyRotationManager::SetForTesting(KeyRotationManager::CreateForTesting(
         std::move(mock_network_delegate),
@@ -113,7 +109,6 @@ class MacKeyRotationCommandTest : public testing::Test {
   MockKeyPersistenceDelegate* mock_persistence_delegate_ = nullptr;
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
   KeyRotationCommand::Params params_;
-  TestingPrefServiceSimple local_prefs_;
 };
 
 // Tests a failed key rotation due to the secure enclave not being supported.
@@ -124,7 +119,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_SecureEnclaveUnsupported) {
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
   EXPECT_EQ(KeyRotationCommand::Status::FAILED_OS_RESTRICTION, future.Get());
-  EXPECT_TRUE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 
 // Tests a failed key rotation due to an invalid command to rotate.
@@ -137,7 +131,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidCommand) {
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
   EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
-  EXPECT_FALSE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 
 // Tests a failed key rotation due to failure creating a new signing key pair.
@@ -153,7 +146,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
   EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
-  EXPECT_FALSE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 
 // Tests a failed key rotation due to a store key failure.
@@ -170,7 +162,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
   EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
-  EXPECT_FALSE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 
 // Tests a failed key rotation when uploading a the key to the dm server
@@ -198,7 +189,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_KeyConflict) {
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
   EXPECT_EQ(KeyRotationCommand::Status::FAILED_KEY_CONFLICT, future.Get());
-  EXPECT_TRUE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 
 // Tests a failed key rotation due to a failure sending the key to the dm
@@ -226,7 +216,6 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
   EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
-  EXPECT_FALSE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 
 // Tests when the key rotation is successful.
@@ -251,7 +240,6 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Success) {
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
   EXPECT_EQ(KeyRotationCommand::Status::SUCCEEDED, future.Get());
-  EXPECT_FALSE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 
   // Advancing beyond timeout time doesn't cause any crashes.
   FastForwardBeyondTimeout();

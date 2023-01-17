@@ -28,7 +28,6 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/prefs/testing_pref_service.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -80,9 +79,9 @@ class KeyRotationLauncherTest : public testing::Test {
 
     test_key_pair_ = CreateFakeKeyPair();
 
-    launcher_ = KeyRotationLauncher::Create(
-        &fake_dm_token_storage_, &fake_device_management_service_,
-        test_shared_loader_factory_, &local_prefs_);
+    launcher_ = KeyRotationLauncher::Create(&fake_dm_token_storage_,
+                                            &fake_device_management_service_,
+                                            test_shared_loader_factory_);
   }
 
   void SetDMToken() {
@@ -125,7 +124,6 @@ class KeyRotationLauncherTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
-  TestingPrefServiceSimple local_prefs_;
   std::unique_ptr<SigningKeyPair> test_key_pair_;
   std::unique_ptr<KeyRotationLauncher> launcher_;
 };

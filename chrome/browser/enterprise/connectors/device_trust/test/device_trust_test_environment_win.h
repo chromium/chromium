@@ -22,8 +22,8 @@ class DeviceTrustTestEnvironmentWin : public DeviceTrustTestEnvironment,
 
   // KeyRotationCommandFactory:
   std::unique_ptr<KeyRotationCommand> CreateCommand(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* local_prefs) override;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      override;
 
   // DeviceTrustTestEnvironment:
   void SetUpExistingKey() override;

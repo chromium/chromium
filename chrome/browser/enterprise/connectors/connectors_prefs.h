@@ -45,10 +45,6 @@ extern const char kOnSecurityEventScopePref[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-#if BUILDFLAG(IS_MAC)
-void RegisterLocalPrefs(PrefRegistrySimple* registry);
-#endif
-
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_

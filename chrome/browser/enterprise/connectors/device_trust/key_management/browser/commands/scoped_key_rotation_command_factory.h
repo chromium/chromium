@@ -13,8 +13,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class PrefService;
-
 namespace enterprise_connectors {
 
 namespace test {
@@ -31,8 +29,8 @@ class ScopedKeyRotationCommandFactory : public KeyRotationCommandFactory {
 
   // KeyRotationCommandFactory:
   std::unique_ptr<KeyRotationCommand> CreateCommand(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* local_prefs) override;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      override;
 
  private:
   std::unique_ptr<test::MockKeyRotationCommand> mock_key_rotation_command_;

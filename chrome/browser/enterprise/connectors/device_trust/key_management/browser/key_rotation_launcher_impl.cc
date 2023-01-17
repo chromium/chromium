@@ -20,7 +20,6 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
-#include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -44,17 +43,14 @@ absl::optional<const KeyUploadRequest> CreateRequest(
 KeyRotationLauncherImpl::KeyRotationLauncherImpl(
     policy::BrowserDMTokenStorage* dm_token_storage,
     policy::DeviceManagementService* device_management_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrefService* local_prefs)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : dm_token_storage_(dm_token_storage),
       device_management_service_(device_management_service),
       url_loader_factory_(std::move(url_loader_factory)),
-      local_prefs_(local_prefs),
       network_delegate_(url_loader_factory_) {
   DCHECK(dm_token_storage_);
   DCHECK(device_management_service_);
   DCHECK(url_loader_factory_);
-  DCHECK(local_prefs_);
 }
 KeyRotationLauncherImpl::~KeyRotationLauncherImpl() = default;
 
@@ -77,7 +73,7 @@ void KeyRotationLauncherImpl::LaunchKeyRotation(
   KeyRotationCommand::Params params{dm_token.value(), dm_server_url.value(),
                                     nonce};
   command_ = KeyRotationCommandFactory::GetInstance()->CreateCommand(
-      url_loader_factory_, local_prefs_);
+      url_loader_factory_);
   if (!command_) {
     // Command can be nullptr if trying to create a key on a unsupported
     // platform.

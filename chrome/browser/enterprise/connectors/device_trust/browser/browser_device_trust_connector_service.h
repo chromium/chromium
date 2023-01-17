@@ -29,12 +29,16 @@ class BrowserDeviceTrustConnectorService : public DeviceTrustConnectorService {
 
   ~BrowserDeviceTrustConnectorService() override;
 
+  // DeviceTrustConnectorService:
+  bool IsConnectorEnabled() const override;
+
  protected:
   // Hook that is called to notify that the policy changed and the connector
   // became, or is still, enabled.
   void OnConnectorEnabled() override;
 
  private:
+  // Browser-process-level object that will outlive the current instance.
   raw_ptr<DeviceTrustKeyManager> key_manager_;
 };
 

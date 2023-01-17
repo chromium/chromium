@@ -6038,15 +6038,6 @@ static_library("browser") {
     ]
   }
 
-  if (is_mac) {
-    sources += [
-      "enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.cc",
-      "enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.h",
-    ]
-
-    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac" ]
-  }
-
   if (is_linux || is_win || is_mac || is_android) {
     sources += [
       "enterprise/idle/action.cc",
@@ -6121,7 +6112,10 @@ static_library("browser") {
     }
 
     if (is_mac) {
-      deps += [ "//components/device_signals/core/browser/mac" ]
+      deps += [
+        "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
+        "//components/device_signals/core/browser/mac",
+      ]
     }
   }
 

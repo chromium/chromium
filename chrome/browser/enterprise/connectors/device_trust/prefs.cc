@@ -9,19 +9,8 @@ namespace enterprise_connectors {
 const char kContextAwareAccessSignalsAllowlistPref[] =
     "enterprise_connectors.device_trust.origins";
 
-#if BUILDFLAG(IS_MAC)
-const char kDeviceTrustDisableKeyCreationPref[] =
-    "enterprise_connectors.device_trust.disable_key_creation";
-#endif
-
 void RegisterDeviceTrustConnectorProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kContextAwareAccessSignalsAllowlistPref);
 }
-
-#if BUILDFLAG(IS_MAC)
-void RegisterDeviceTrustConnectorLocalPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kDeviceTrustDisableKeyCreationPref, false);
-}
-#endif
 
 }  // namespace enterprise_connectors

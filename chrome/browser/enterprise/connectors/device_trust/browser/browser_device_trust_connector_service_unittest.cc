@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/browser/browser_device_trust_connector_service.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -28,17 +28,15 @@ base::Value::List GetOrigins() {
 
 }  // namespace
 
-class MacDeviceTrustConnectorServiceTest
+class BrowserDeviceTrustConnectorServiceTest
     : public testing::Test,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  protected:
   void SetUp() override {
     RegisterDeviceTrustConnectorProfilePrefs(profile_prefs_.registry());
-    RegisterDeviceTrustConnectorLocalPrefs(local_prefs_.registry());
     feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
                                        is_flag_enabled());
     UpdateAllowlistProfilePreference();
-    UpdateKeyCreationLocalPreference();
   }
 
   void UpdateAllowlistProfilePreference() {
@@ -49,48 +47,43 @@ class MacDeviceTrustConnectorServiceTest
                                         base::Value(base::Value::List()));
   }
 
-  void UpdateKeyCreationLocalPreference() {
-    local_prefs_.SetManagedPref(kDeviceTrustDisableKeyCreationPref,
-                                base::Value(!is_key_creation_enabled()));
-  }
-
-  std::unique_ptr<MacDeviceTrustConnectorService> CreateService() {
-    return std::make_unique<MacDeviceTrustConnectorService>(
-        &mock_key_manager_, &profile_prefs_, &local_prefs_);
+  std::unique_ptr<BrowserDeviceTrustConnectorService> CreateService() {
+    auto service = std::make_unique<BrowserDeviceTrustConnectorService>(
+        &mock_key_manager_, &profile_prefs_);
+    service->Initialize();
+    return service;
   }
 
   bool is_attestation_flow_enabled() {
     return is_flag_enabled() && is_policy_enabled() &&
-           is_key_creation_enabled();
+           !has_permanent_key_creation_failure();
   }
 
   bool is_flag_enabled() { return std::get<0>(GetParam()); }
   bool is_policy_enabled() { return std::get<1>(GetParam()); }
-  bool is_key_creation_enabled() { return !std::get<2>(GetParam()); }
+  bool has_permanent_key_creation_failure() { return std::get<2>(GetParam()); }
 
   base::test::ScopedFeatureList feature_list_;
-  MockDeviceTrustKeyManager mock_key_manager_;
+  testing::StrictMock<MockDeviceTrustKeyManager> mock_key_manager_;
   TestingPrefServiceSimple profile_prefs_;
-  TestingPrefServiceSimple local_prefs_;
 };
 
-TEST_P(MacDeviceTrustConnectorServiceTest, IsConnectorEnabled) {
+TEST_P(BrowserDeviceTrustConnectorServiceTest, IsConnectorEnabled) {
+  if (is_flag_enabled() && is_policy_enabled()) {
+    // Called when the service is initialized.
+    EXPECT_CALL(mock_key_manager_, StartInitialization());
+
+    // Called in `IsConnectorEnabled`.
+    EXPECT_CALL(mock_key_manager_, HasPermanentFailure())
+        .WillOnce(testing::Return(has_permanent_key_creation_failure()));
+  }
+
   auto service = CreateService();
-  service->Initialize();
   EXPECT_EQ(is_attestation_flow_enabled(), service->IsConnectorEnabled());
 }
 
-// Tests that key manager is initialized only when key creation is not disabled.
-TEST_P(MacDeviceTrustConnectorServiceTest, OnConnectorEnabled) {
-  auto service = CreateService();
-  EXPECT_CALL(mock_key_manager_, StartInitialization())
-      .Times(is_key_creation_enabled() ? 1 : 0);
-
-  service->OnConnectorEnabled();
-}
-
 INSTANTIATE_TEST_SUITE_P(,
-                         MacDeviceTrustConnectorServiceTest,
+                         BrowserDeviceTrustConnectorServiceTest,
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
