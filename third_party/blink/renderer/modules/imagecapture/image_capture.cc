@@ -59,12 +59,13 @@ const char kInvalidStateTrackError[] =
 
 using CopyPanTiltZoom = base::StrongAlias<class CopyPanTiltZoomTag, bool>;
 
-void CopyCapabilities(const MediaTrackCapabilities* source,
-                      MediaTrackCapabilities* destination,
-                      CopyPanTiltZoom copy_pan_tilt_zoom) {
+template <typename T>
+void CopyCommonMembers(const T* source,
+                       T* destination,
+                       CopyPanTiltZoom copy_pan_tilt_zoom) {
   DCHECK(source);
   DCHECK(destination);
-  // Merge any present |source| members into |destination|.
+  // Merge any present |source| common members into |destination|.
   if (source->hasWhiteBalanceMode()) {
     destination->setWhiteBalanceMode(source->whiteBalanceMode());
   }
@@ -117,6 +118,23 @@ void CopyCapabilities(const MediaTrackCapabilities* source,
   }
   if (source->hasBackgroundBlur()) {
     destination->setBackgroundBlur(source->backgroundBlur());
+  }
+}
+
+void CopyCapabilities(const MediaTrackCapabilities* source,
+                      MediaTrackCapabilities* destination,
+                      CopyPanTiltZoom copy_pan_tilt_zoom) {
+  // Merge any present |source| members into |destination|.
+  CopyCommonMembers(source, destination, copy_pan_tilt_zoom);
+}
+
+void CopyConstraintSet(const MediaTrackConstraintSet* source,
+                       MediaTrackConstraintSet* destination,
+                       CopyPanTiltZoom copy_pan_tilt_zoom) {
+  // Merge any present |source| members into |destination|.
+  CopyCommonMembers(source, destination, copy_pan_tilt_zoom);
+  if (source->hasPointsOfInterest()) {
+    destination->setPointsOfInterest(source->pointsOfInterest());
   }
 }
 
@@ -1321,70 +1339,11 @@ ImageCapture* ImageCapture::Clone() const {
   if (settings_->hasBackgroundBlur())
     clone->settings_->setBackgroundBlur(settings_->backgroundBlur());
 
-  if (!current_constraints_)
-    return clone;
-
   // Copy current constraints.
-  clone->current_constraints_ = MediaTrackConstraintSet::Create();
-  if (current_constraints_->hasWhiteBalanceMode()) {
-    clone->current_constraints_->setWhiteBalanceMode(
-        current_constraints_->whiteBalanceMode());
-  }
-  if (current_constraints_->hasExposureMode()) {
-    clone->current_constraints_->setExposureMode(
-        current_constraints_->exposureMode());
-  }
-  if (current_constraints_->hasFocusMode()) {
-    clone->current_constraints_->setFocusMode(
-        current_constraints_->focusMode());
-  }
-  if (current_constraints_->hasPointsOfInterest()) {
-    clone->current_constraints_->setPointsOfInterest(
-        current_constraints_->pointsOfInterest());
-  }
-  if (current_constraints_->hasExposureCompensation()) {
-    clone->current_constraints_->setExposureCompensation(
-        current_constraints_->exposureCompensation());
-  }
-  if (current_constraints_->hasExposureTime()) {
-    clone->current_constraints_->setExposureTime(
-        current_constraints_->exposureTime());
-  }
-  if (current_constraints_->hasColorTemperature()) {
-    clone->current_constraints_->setColorTemperature(
-        current_constraints_->colorTemperature());
-  }
-  if (current_constraints_->hasIso())
-    clone->current_constraints_->setIso(current_constraints_->iso());
-  if (current_constraints_->hasBrightness()) {
-    clone->current_constraints_->setBrightness(
-        current_constraints_->brightness());
-  }
-  if (current_constraints_->hasContrast())
-    clone->current_constraints_->setContrast(current_constraints_->contrast());
-  if (current_constraints_->hasSaturation()) {
-    clone->current_constraints_->setSaturation(
-        current_constraints_->saturation());
-  }
-  if (current_constraints_->hasSharpness()) {
-    clone->current_constraints_->setSharpness(
-        current_constraints_->sharpness());
-  }
-  if (current_constraints_->hasFocusDistance()) {
-    clone->current_constraints_->setFocusDistance(
-        current_constraints_->focusDistance());
-  }
-  if (current_constraints_->hasPan())
-    clone->current_constraints_->setPan(current_constraints_->pan());
-  if (current_constraints_->hasTilt())
-    clone->current_constraints_->setTilt(current_constraints_->tilt());
-  if (current_constraints_->hasZoom())
-    clone->current_constraints_->setZoom(current_constraints_->zoom());
-  if (current_constraints_->hasTorch())
-    clone->current_constraints_->setTorch(current_constraints_->torch());
-  if (current_constraints_->hasBackgroundBlur()) {
-    clone->current_constraints_->setBackgroundBlur(
-        current_constraints_->backgroundBlur());
+  if (current_constraints_) {
+    clone->current_constraints_ = MediaTrackConstraintSet::Create();
+    CopyConstraintSet(current_constraints_, clone->current_constraints_,
+                      CopyPanTiltZoom(true));
   }
 
   return clone;
