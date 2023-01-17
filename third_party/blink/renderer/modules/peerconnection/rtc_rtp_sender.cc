@@ -805,12 +805,6 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
       }
       codec->setSdpFmtpLine(sdp_fmtp_line.c_str());
     }
-    Vector<String> scalability_modes;
-    for (const auto& mode : rtc_codec.scalability_modes) {
-      scalability_modes.push_back(WTF::String::FromUTF8(
-          std::string(webrtc::ScalabilityModeToString(mode))));
-    }
-    codec->setScalabilityModes(scalability_modes);
     codecs.push_back(codec);
   }
   capabilities->setCodecs(codecs);

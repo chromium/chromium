@@ -39,13 +39,6 @@ void IdentifiabilityAddRTCRtpCapabilitiesToBuilder(
       } else {
         builder.AddToken(IdentifiableToken());
       }
-      if (codec->hasScalabilityModes()) {
-        for (const auto& mode : codec->scalabilityModes()) {
-          builder.AddToken(IdentifiabilitySensitiveStringToken(mode));
-        }
-      } else {
-        builder.AddToken(IdentifiableToken());
-      }
     }
   } else {
     builder.AddToken(IdentifiableToken());
