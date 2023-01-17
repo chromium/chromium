@@ -783,7 +783,7 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     const bool is_expected_storage_type =
         native_input_mode_
             ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
-            : frame->storage_type() == VideoFrame::STORAGE_SHMEM;
+            : frame->IsMappable();
     if (!is_expected_storage_type) {
       VLOGF(1) << "Unexpected storage: "
                << VideoFrame::StorageTypeToString(frame->storage_type());
@@ -1392,27 +1392,16 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
         NOTIFY_ERROR(kPlatformFailureError);
       }
 
-      // TODO(b/243883312): This copies the video frame to a writable buffer
-      // since the USERPTR API requires writable permission. Remove this
-      // workaround once the unreasonable permission is fixed.
-      const size_t buffer_size = frame->shm_region()->GetSize();
-      std::vector<uint8_t> writable_buffer(buffer_size);
-      std::memcpy(writable_buffer.data(), frame->data(0), buffer_size);
+      // The frame data is readable only and the driver doesn't actually write
+      // the buffer. But USRPTR buffer needs void*. So const_cast<> is required.
       std::vector<void*> user_ptrs(num_planes);
       for (size_t i = 0; i < num_planes; ++i) {
-        const std::intptr_t plane_offset =
-            reinterpret_cast<std::intptr_t>(frame->data(i)) -
-            reinterpret_cast<std::intptr_t>(frame->data(0));
-        user_ptrs[i] = writable_buffer.data() + plane_offset;
+        user_ptrs[i] = const_cast<uint8_t*>(frame->data(i));
       }
-
       if (!std::move(input_buf).QueueUserPtr(std::move(user_ptrs))) {
-        VPLOGF(1) << "Failed to queue a USRPTR buffer to input queue";
-        NOTIFY_ERROR(kPlatformFailureError);
+        VPLOGF(1) << "Failed queue a USRPTR buffer to input queue";
         return false;
       }
-      frame->AddDestructionObserver(
-          base::DoNothingWithBoundArgs(std::move(writable_buffer)));
       break;
     }
     case V4L2_MEMORY_DMABUF: {
@@ -1421,6 +1410,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
         VPLOGF(1) << "Failed queue a DMABUF buffer to input queue";
         return false;
       }
+
       // Keep |gmb_handle| alive as long as |frame| is alive so that fds passed
       // to the driver are valid during encoding.
       frame->AddDestructionObserver(base::BindOnce(
