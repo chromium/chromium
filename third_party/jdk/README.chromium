@@ -12,15 +12,10 @@ developing Java applications and applets. (linux-x64)
 
 How to update:
 For the `jdk` directory:
-1. Find the specific version you want to update from
-   https://wiki.openjdk.java.net/display/JDKUpdates/JDK11u#JDK11u-Releases
-2. Click the link "[Binaries]" for the specific version.
-3. Copy the link address of the asset "OpenJDK11U-jre_x64_linux_<specific_version>.tar.gz"
-4. Update the "download_url" and "version" in 3pp/3pp.pb with the desired values.
-5. Upload and land the CL.
-6. Wait for the 3pp packager (https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager)
-   to create the new instance at https://chrome-infra-packages.appspot.com/p/chromium/third_party/jdk/+/
-7. Update instance ID in //DEPS
+1. 3pp automatically uploads new releases at https://chrome-infra-packages.appspot.com/p/chromium/third_party/jdk/+/
+2. Each instance is tagged with version:2@<jdk version>.<md5 hash>.
+3. Choose the cipd instance you wish to roll.
+7. Update the cipd instance ID in //DEPS
 
 Local Modifications:
 None
