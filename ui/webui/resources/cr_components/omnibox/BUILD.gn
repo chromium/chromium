@@ -2,66 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//mojo/public/tools/bindings/mojom.gni")
-import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/webui_features.gni")
-import("omnibox.gni")
+import("../../tools/build_cr_component.gni")
 
 assert(!is_android && !is_ios)
 
-preprocess_folder =
-    "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/omnibox"
+build_cr_component("build") {
+  grd_prefix = "cr_components_omnibox"
+  web_component_files = [
+    "realbox_action.ts",
+    "realbox_dropdown.ts",
+    "realbox_icon.ts",
+    "realbox_match.ts",
+  ]
+  non_web_component_files = [
+    "realbox_browser_proxy.ts",
+    "utils.ts",
+  ]
+  css_files = [ "realbox_dropdown_shared_style.css" ]
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-  minify = optimize_webui
-}
-
-css_to_wrapper("css_wrapper_files") {
-  in_files = css_files
-  minify = optimize_webui
-}
-
-copy("copy_mojom") {
-  deps = [ "//components/omnibox/browser:mojo_bindings_ts__generator" ]
-  sources =
+  mojo_files_deps =
+      [ "//components/omnibox/browser:mojo_bindings_ts__generator" ]
+  mojo_files =
       [ "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
 
-copy("copy_src") {
-  sources = ts_files
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  out_dir = preprocess_folder
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + html_wrapper_files + css_wrapper_files + mojo_files
-  deps = [
+  tsc_dir =
+      "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/omnibox"
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/js/metrics_reporter:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
-  extra_deps = [
-    ":copy_mojom",
-    ":copy_src",
-    ":css_wrapper_files",
-    ":html_wrapper_files",
-  ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "omnibox"
-  out_grd = "$target_gen_dir/resources.grdp"
-  public_deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  resource_path_prefix = "cr_components/omnibox"
 }
