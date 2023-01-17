@@ -9,6 +9,7 @@
 #import <memory>
 #import <utility>
 
+#import "base/ios/ios_util.h"
 #import "base/json/json_reader.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
@@ -970,8 +971,7 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
 
 // Check that password form is not filled if 'readonly' attribute is set
 // on either username or password fields.
-// TODO(crbug.com/503050): Test is flaky.
-TEST_F(PasswordControllerTest, FLAKY_DontFillReadOnly) {
+TEST_F(PasswordControllerTest, DontFillReadOnly) {
   TestPasswordFormData test_data = {/*form_name=*/"f0",
                                     /*form_renderer_id=*/1,
                                     /*username_element=*/"un0",
@@ -1648,10 +1648,13 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
 
 // Tests that the user is prompted to save or update password on a succesful
 // form submission.
-// TODO(crbug.com/1404697): This test is flaky: it sometimes fails to finish
-// loading the HTML.
-TEST_F(PasswordControllerTest,
-       DISABLED_ShowingSavingPromptOnSuccessfulSubmission) {
+TEST_F(PasswordControllerTest, ShowingSavingPromptOnSuccessfulSubmission) {
+  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
+  // sometimes failing to finish loading the HTML.
+  if (!base::ios::IsRunningOnIOS15OrLater()) {
+    return;
+  }
+
   const char* kHtml = {"<html><body>"
                        "<form name='login_form' id='login_form'>"
                        "  <input type='text' name='username'>"
@@ -1720,6 +1723,12 @@ TEST_F(PasswordControllerTest, NotShowingSavingPromptWithoutSubmission) {
 // Tests that the user is not prompted to save or update password on a
 // succesful form submission while saving is disabled.
 TEST_F(PasswordControllerTest, NotShowingSavingPromptWhileSavingIsDisabled) {
+  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
+  // sometimes failing to finish loading the HTML.
+  if (!base::ios::IsRunningOnIOS15OrLater()) {
+    return;
+  }
+
   const char* kHtml = {"<html><body>"
                        "<form name='login_form' id='login_form'>"
                        "  <input type='text' name='username'>"
@@ -1748,10 +1757,13 @@ TEST_F(PasswordControllerTest, NotShowingSavingPromptWhileSavingIsDisabled) {
 // Tests that the user is prompted to update password on a succesful
 // form submission when there's already a credential with the same
 // username in the store.
-// TODO(crbug.com/1404697): This test is flaky: it sometimes fails to finish
-// loading the HTML.
-TEST_F(PasswordControllerTest,
-       DISABLED_ShowingUpdatePromptOnSuccessfulSubmission) {
+TEST_F(PasswordControllerTest, ShowingUpdatePromptOnSuccessfulSubmission) {
+  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
+  // sometimes failing to finish loading the HTML.
+  if (!base::ios::IsRunningOnIOS15OrLater()) {
+    return;
+  }
+
   PasswordForm form(MakeSimpleForm());
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeConsumer(store_.get(), form)));
@@ -2122,9 +2134,13 @@ TEST_F(PasswordControllerTest,
   }));
 }
 
-// TODO(crbug.com/1404697): This test is flaky: it sometimes fails to finish
-// loading the HTML.
-TEST_F(PasswordControllerTest, DISABLED_PasswordMetricsNoSavedCredentials) {
+TEST_F(PasswordControllerTest, PasswordMetricsNoSavedCredentials) {
+  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
+  // sometimes failing to finish loading the HTML.
+  if (!base::ios::IsRunningOnIOS15OrLater()) {
+    return;
+  }
+
   base::HistogramTester histogram_tester;
   {
     ON_CALL(*store_, GetLogins)
