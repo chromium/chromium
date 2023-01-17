@@ -182,7 +182,7 @@ const base::FeatureParam<int> kChromeRootStoreSysImpl{&kChromeRootStoreUsed,
 #endif /* BUILDFLAG(IS_MAC) */
 #endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_NSS_CERTS)
 BASE_FEATURE(kTrustStoreTrustedLeafSupport,
              "TrustStoreTrustedLeafSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);

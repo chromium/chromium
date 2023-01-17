@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "crypto/nss_util.h"
+#include "net/base/features.h"
 #include "net/cert/known_roots_nss.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
@@ -97,13 +98,16 @@ CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
     return CertificateTrust::ForUnspecified();
   }
 
-  int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trust_type_);
+  unsigned int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trust_type_);
 
   // Determine if the certificate is distrusted.
   if ((trust_flags & (CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED_CA |
                       CERTDB_TRUSTED)) == CERTDB_TERMINAL_RECORD) {
     return CertificateTrust::ForDistrusted();
   }
+
+  bool is_trusted_ca = false;
+  bool is_trusted_leaf = false;
 
   // Determine if the certificate is a trust anchor.
   //
@@ -120,12 +124,25 @@ CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
     // handling this may require iterating all the slots and manually computing
     // the trust settings directly, rather than CERT_GetCertTrust.
     if (!ignore_system_trust_settings_ || !IsKnownRoot(nss_cert.get())) {
-      return CertificateTrust::ForTrustAnchor();
+      is_trusted_ca = true;
     }
   }
 
-  // Trusted server certs (CERTDB_TERMINAL_RECORD + CERTDB_TRUSTED) are
-  // intentionally treated as unspecified. See https://crbug.com/814994.
+  if (base::FeatureList::IsEnabled(features::kTrustStoreTrustedLeafSupport)) {
+    constexpr unsigned int kTrustedPeerBits =
+        CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED;
+    if ((trust_flags & kTrustedPeerBits) == kTrustedPeerBits) {
+      is_trusted_leaf = true;
+    }
+  }
+
+  if (is_trusted_ca && is_trusted_leaf) {
+    return CertificateTrust::ForTrustAnchorOrLeaf();
+  } else if (is_trusted_ca) {
+    return CertificateTrust::ForTrustAnchor();
+  } else if (is_trusted_leaf) {
+    return CertificateTrust::ForTrustedLeaf();
+  }
 
   return CertificateTrust::ForUnspecified();
 }

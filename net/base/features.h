@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/net_buildflags.h"
 
@@ -221,7 +222,7 @@ NET_EXPORT extern const base::FeatureParam<int> kChromeRootStoreSysImpl;
 // TrustStore implementation will only use TRUSTED_ANCHOR.
 // TODO(https://crbug.com/1403034): remove this a few milestones after the
 // trusted leaf support has been launched on all relevant platforms.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_NSS_CERTS)
 NET_EXPORT BASE_DECLARE_FEATURE(kTrustStoreTrustedLeafSupport);
 #endif
 

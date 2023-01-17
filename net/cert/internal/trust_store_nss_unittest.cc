@@ -11,8 +11,10 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "net/base/features.h"
 #include "net/cert/known_roots_nss.h"
 #include "net/cert/pki/cert_issuer_source_sync_unittest.h"
 #include "net/cert/pki/parsed_certificate.h"
@@ -103,6 +105,37 @@ std::shared_ptr<const ParsedCertificate> GetASSLTrustedBuiltinRoot() {
 
 class TrustStoreNSSTestBase : public ::testing::Test {
  public:
+  explicit TrustStoreNSSTestBase(bool trusted_leaf_support)
+      : trusted_leaf_support_(trusted_leaf_support) {
+    if (trusted_leaf_support) {
+      feature_list_.InitAndEnableFeature(
+          features::kTrustStoreTrustedLeafSupport);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kTrustStoreTrustedLeafSupport);
+    }
+  }
+
+  TrustStoreNSSTestBase() : TrustStoreNSSTestBase(true) {}
+
+  bool IsTrustedLeafSupportEnabled() const { return trusted_leaf_support_; }
+
+  CertificateTrust ExpectedTrustForAnchorOrLeaf() const {
+    if (IsTrustedLeafSupportEnabled()) {
+      return CertificateTrust::ForTrustAnchorOrLeaf();
+    } else {
+      return CertificateTrust::ForTrustAnchor();
+    }
+  }
+
+  CertificateTrust ExpectedTrustForLeaf() const {
+    if (IsTrustedLeafSupportEnabled()) {
+      return CertificateTrust::ForTrustedLeaf();
+    } else {
+      return CertificateTrust::ForUnspecified();
+    }
+  }
+
   void SetUp() override {
     ASSERT_TRUE(test_nssdb_.is_open());
     ASSERT_TRUE(other_test_nssdb_.is_open());
@@ -189,6 +222,13 @@ class TrustStoreNSSTestBase : public ::testing::Test {
     ChangeCertTrust(cert, CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED);
   }
 
+  // Trusts |cert| as both a server and as a CA. Assumes the cert was already
+  // imported into NSS.
+  void TrustCaAndServerCert(const ParsedCertificate* cert) {
+    ChangeCertTrust(cert, CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED |
+                              CERTDB_TRUSTED_CA | CERTDB_VALID_CA);
+  }
+
   // Distrusts |cert|. Assumes the cert was already imported into NSS.
   void DistrustCert(const ParsedCertificate* cert) {
     ChangeCertTrust(cert, CERTDB_TERMINAL_RECORD);
@@ -270,6 +310,9 @@ class TrustStoreNSSTestBase : public ::testing::Test {
 
     return success;
   }
+
+  base::test::ScopedFeatureList feature_list_;
+  const bool trusted_leaf_support_;
 
   std::shared_ptr<const ParsedCertificate> oldroot_;
   std::shared_ptr<const ParsedCertificate> newroot_;
@@ -354,9 +397,11 @@ INSTANTIATE_TEST_SUITE_P(
                       SlotFilterType::kAllowSpecifiedUserSlot));
 
 // Tests a TrustStoreNSS that ignores system root certs.
-class TrustStoreNSSTestIgnoreSystemCerts : public TrustStoreNSSTestBase {
+class TrustStoreNSSTestIgnoreSystemCerts
+    : public TrustStoreNSSTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  TrustStoreNSSTestIgnoreSystemCerts() = default;
+  TrustStoreNSSTestIgnoreSystemCerts() : TrustStoreNSSTestBase(GetParam()) {}
   ~TrustStoreNSSTestIgnoreSystemCerts() override = default;
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
@@ -366,29 +411,53 @@ class TrustStoreNSSTestIgnoreSystemCerts : public TrustStoreNSSTestBase {
   }
 };
 
-TEST_F(TrustStoreNSSTestIgnoreSystemCerts, UserRootTrusted) {
+TEST_P(TrustStoreNSSTestIgnoreSystemCerts, UserRootTrusted) {
   AddCertsToNSS();
   TrustCert(newroot_.get());
   EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
 }
 
-TEST_F(TrustStoreNSSTestIgnoreSystemCerts, UserRootDistrusted) {
+TEST_P(TrustStoreNSSTestIgnoreSystemCerts, UserRootDistrusted) {
   AddCertsToNSS();
   DistrustCert(newroot_.get());
   EXPECT_TRUE(HasTrust({newroot_}, CertificateTrust::ForDistrusted()));
 }
 
-TEST_F(TrustStoreNSSTestIgnoreSystemCerts, SystemRootCertsIgnored) {
+TEST_P(TrustStoreNSSTestIgnoreSystemCerts, SystemRootCertsIgnored) {
   std::shared_ptr<const ParsedCertificate> system_root =
       GetASSLTrustedBuiltinRoot();
   ASSERT_TRUE(system_root);
   EXPECT_TRUE(HasTrust({system_root}, CertificateTrust::ForUnspecified()));
 }
 
+TEST_P(TrustStoreNSSTestIgnoreSystemCerts, UserTrustedServer) {
+  AddCertsToNSS();
+  TrustServerCert(target_.get());
+  EXPECT_TRUE(HasTrust({target_}, ExpectedTrustForLeaf()));
+}
+
+TEST_P(TrustStoreNSSTestIgnoreSystemCerts, UserTrustedCaAndServer) {
+  AddCertsToNSS();
+  TrustCaAndServerCert(target_.get());
+  EXPECT_TRUE(HasTrust({target_}, ExpectedTrustForAnchorOrLeaf()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TrustStoreNSSTestIgnoreSystemCerts,
+    testing::Values(true, false),
+    [](const testing::TestParamInfo<
+        TrustStoreNSSTestIgnoreSystemCerts::ParamType>& info) {
+      return info.param ? "TrustedLeafSupported" : "TrustAnchorOnly";
+    });
+
 // Tests a TrustStoreNSS that does not filter which certificates
-class TrustStoreNSSTestWithoutSlotFilter : public TrustStoreNSSTestBase {
+class TrustStoreNSSTestWithoutSlotFilter
+    : public TrustStoreNSSTestBase,
+      public testing::WithParamInterface<bool> {
  public:
-  TrustStoreNSSTestWithoutSlotFilter() = default;
+  TrustStoreNSSTestWithoutSlotFilter() : TrustStoreNSSTestBase(GetParam()) {}
+
   ~TrustStoreNSSTestWithoutSlotFilter() override = default;
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
@@ -400,7 +469,7 @@ class TrustStoreNSSTestWithoutSlotFilter : public TrustStoreNSSTestBase {
 
 // If certs are present in NSS DB but aren't marked as trusted, should get no
 // anchor results for any of the test certs.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, CertsPresentButNotTrusted) {
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, CertsPresentButNotTrusted) {
   AddCertsToNSS();
 
   // None of the certificates are trusted.
@@ -410,7 +479,7 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, CertsPresentButNotTrusted) {
 }
 
 // Trust a single self-signed CA certificate.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedCA) {
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, TrustedCA) {
   AddCertsToNSS();
   TrustCert(newroot_.get());
 
@@ -423,7 +492,7 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedCA) {
 }
 
 // Distrust a single self-signed CA certificate.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, DistrustedCA) {
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, DistrustedCA) {
   AddCertsToNSS();
   DistrustCert(newroot_.get());
 
@@ -436,7 +505,7 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, DistrustedCA) {
 }
 
 // Trust a single intermediate certificate.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedIntermediate) {
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, TrustedIntermediate) {
   AddCertsToNSS();
   TrustCert(newintermediate_.get());
 
@@ -447,7 +516,7 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedIntermediate) {
 }
 
 // Distrust a single intermediate certificate.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, DistrustedIntermediate) {
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, DistrustedIntermediate) {
   AddCertsToNSS();
   DistrustCert(newintermediate_.get());
 
@@ -458,20 +527,29 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, DistrustedIntermediate) {
 }
 
 // Trust a single server certificate.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, TrustedServer) {
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, TrustedServer) {
   AddCertsToNSS();
   TrustServerCert(target_.get());
 
-  // Server-trusted certificates are handled as UNSPECIFIED since we don't
-  // support the notion of explictly trusted server certs. See
-  // https://crbug.com/814994.
-  EXPECT_TRUE(HasTrust({oldroot_, newroot_, target_, oldintermediate_,
-                        newintermediate_, newrootrollover_},
+  EXPECT_TRUE(HasTrust({oldroot_, newroot_, oldintermediate_, newintermediate_,
+                        newrootrollover_},
                        CertificateTrust::ForUnspecified()));
+  EXPECT_TRUE(HasTrust({target_}, ExpectedTrustForLeaf()));
+}
+
+// Trust a single certificate with both CA and server trust bits.
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, TrustedCaAndServer) {
+  AddCertsToNSS();
+  TrustCaAndServerCert(target_.get());
+
+  EXPECT_TRUE(HasTrust({oldroot_, newroot_, oldintermediate_, newintermediate_,
+                        newrootrollover_},
+                       CertificateTrust::ForUnspecified()));
+  EXPECT_TRUE(HasTrust({target_}, ExpectedTrustForAnchorOrLeaf()));
 }
 
 // Trust multiple self-signed CA certificates with the same name.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, MultipleTrustedCAWithSameSubject) {
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, MultipleTrustedCAWithSameSubject) {
   AddCertsToNSS();
   TrustCert(oldroot_.get());
   TrustCert(newroot_.get());
@@ -484,7 +562,7 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, MultipleTrustedCAWithSameSubject) {
 
 // Different trust settings for multiple self-signed CA certificates with the
 // same name.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, DifferingTrustCAWithSameSubject) {
+TEST_P(TrustStoreNSSTestWithoutSlotFilter, DifferingTrustCAWithSameSubject) {
   AddCertsToNSS();
   DistrustCert(oldroot_.get());
   TrustCert(newroot_.get());
@@ -495,6 +573,15 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, DifferingTrustCAWithSameSubject) {
   EXPECT_TRUE(HasTrust({oldroot_}, CertificateTrust::ForDistrusted()));
   EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TrustStoreNSSTestWithoutSlotFilter,
+    testing::Values(true, false),
+    [](const testing::TestParamInfo<
+        TrustStoreNSSTestWithoutSlotFilter::ParamType>& info) {
+      return info.param ? "TrustedLeafSupported" : "TrustAnchorOnly";
+    });
 
 // Tests for a TrustStoreNSS which does not allow certificates on user slots
 // to be trusted.
