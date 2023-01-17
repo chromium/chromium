@@ -505,9 +505,7 @@ BubbleDialogDelegateView::BubbleDialogDelegateView()
 BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
                                                    BubbleBorder::Arrow arrow,
                                                    BubbleBorder::Shadow shadow)
-    : BubbleDialogDelegate(anchor_view, arrow, shadow) {
-  UMA_HISTOGRAM_BOOLEAN("Dialog.BubbleDialogDelegateView.Create", true);
-}
+    : BubbleDialogDelegate(anchor_view, arrow, shadow) {}
 
 BubbleDialogDelegateView::~BubbleDialogDelegateView() {
   // TODO(pbos): Investigate if this is actually still needed, and if so

@@ -346,9 +346,6 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // Use a fixed dialog width for dialog. Used by DialogClientView.
   int fixed_width_ = 0;
 
-  // The time the dialog is created.
-  base::TimeTicks creation_time_;
-
   // Dialog parameters for this dialog.
   Params params_;
 

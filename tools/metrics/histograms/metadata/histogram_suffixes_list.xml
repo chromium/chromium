@@ -1603,20 +1603,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="DevTools.Launch"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DialogTypes" separator="." ordering="prefix">
-  <suffix name="BubbleDialogDelegateView"
-      label="Counts dialog boxes created using BubbleDialogDelegateView.
-             These are a subset of those created with DialogDelegateView
-             (which, in turn, are a subset of those created with
-             DialogDelegate)."/>
-  <suffix name="DialogDelegate"
-      label="Counts dialog boxes created using DialogDelegate."/>
-  <suffix name="DialogDelegateView"
-      label="Counts dialog boxes created using DialogDelegateView. These are
-             a subset of those created with DialogDelegate."/>
-  <affected-histogram name="Dialog.Create"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DiskCacheExperiment1" separator="_">
   <suffix name="1" label="Experiment group 1 (70% clients)"/>
   <suffix name="2" label="Experiment group 2 (10% clients)"/>

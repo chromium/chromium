@@ -4803,32 +4803,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Dialog.Create" enum="BooleanCreated" expires_after="M85">
-  <owner>pdyson@chromium.org</owner>
-  <summary>
-    Counts the number times dialog boxes are created using a particular parent
-    class.
-  </summary>
-</histogram>
-
-<histogram name="Dialog.Creation" enum="DialogName" expires_after="M85">
-  <owner>pdyson@chromium.org</owner>
-  <summary>
-    Counts the number times various types of dialog boxes are created.
-  </summary>
-</histogram>
-
-<histogram name="Dialog.DialogDelegate.Duration" units="ms" expires_after="M77">
-  <owner>pdyson@chromium.org</owner>
-  <summary>
-    How long dialog boxes are open, for dialog boxes created using the parent
-    class DialogDelegate. This will include bubbles that use
-    BubbleDialogDelegateView as a parent class, and dialogs that use
-    DialogDelegateView as a parent class. This is logged on delegate
-    destruction.
-  </summary>
-</histogram>
-
 <histogram name="DirectSockets.PermissionDeniedFailures"
     enum="DirectSocketPermissionFailureType" expires_after="2023-09-13">
   <owner>ericwilligers@chromium.org</owner>
