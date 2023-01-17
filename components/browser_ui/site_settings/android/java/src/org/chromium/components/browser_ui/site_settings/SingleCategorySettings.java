@@ -27,6 +27,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
@@ -1377,10 +1379,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         AlertDialog alertDialog =
                 new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                        .setTitle(String.format(
-                                getContext().getString(
-                                        R.string.website_settings_edit_site_dialog_title),
-                                site.getTitleForPreferenceRow()))
+                        .setTitle(getContext().getString(
+                                R.string.website_settings_edit_site_dialog_title))
                         .setPositiveButton(R.string.cancel, null)
                         .setNegativeButton(R.string.remove,
                                 (dialog, which) -> {
@@ -1400,12 +1400,19 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                                 })
                         .create();
 
-        // Set custom radio button group layout that uses RadioButtonWithDescriptionLayout.
+        // Set a custom view with description text and a radio button group that uses
+        // RadioButtonWithDescriptionLayout.
         var inflater =
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        var radioGroup = (RadioButtonWithDescriptionLayout) inflater.inflate(
-                R.layout.edit_site_dialog_radio_group, null);
+        var contentView = (LinearLayout) inflater.inflate(R.layout.edit_site_dialog_content, null);
 
+        TextView messageView = contentView.findViewById(R.id.message);
+        messageView.setText(
+                getContext().getString(R.string.website_settings_edit_site_dialog_description,
+                        site.getTitleForPreferenceRow()));
+
+        RadioButtonWithDescriptionLayout radioGroup =
+                contentView.findViewById(R.id.radio_button_group);
         RadioButtonWithDescription allowButton = radioGroup.findViewById(R.id.allow);
         allowButton.setPrimaryText(getString(ContentSettingsResources.getSiteSummary(
                 ContentSettingValues.ALLOW, contentSettingsType)));
@@ -1432,7 +1439,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             getInfoForOrigins();
             alertDialog.dismiss();
         });
-        alertDialog.setView(radioGroup);
+        alertDialog.setView(contentView);
         return alertDialog;
     }
 

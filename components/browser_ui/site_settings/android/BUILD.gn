@@ -222,7 +222,7 @@ android_resources("java_resources") {
     "java/res/layout/clear_data_dialog.xml",
     "java/res/layout/clear_reset_dialog.xml",
     "java/res/layout/clear_storage.xml",
-    "java/res/layout/edit_site_dialog_radio_group.xml",
+    "java/res/layout/edit_site_dialog_content.xml",
     "java/res/layout/four_state_cookie_settings_preference.xml",
     "java/res/layout/storage_preferences_view.xml",
     "java/res/layout/tri_state_cookie_settings_preference.xml",

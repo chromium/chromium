@@ -258,7 +258,10 @@
   <!-- Site settings Edit Exception dialog -->
 
   <message name="IDS_WEBSITE_SETTINGS_EDIT_SITE_DIALOG_TITLE" desc="The title of the dialog to edit permissions for a website from a list.">
-    Site preference for <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
+    Site preference
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_EDIT_SITE_DIALOG_DESCRIPTION" desc="The description of the dialog to edit permissions for a website from a list.">
+    Select an option for <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
   </message>
 
   <!-- Site settings Clear Data Dialog and other ways of resetting permissions -->

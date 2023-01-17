@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/dialog_message_padding_start"
+        android:paddingEnd="@dimen/dialog_message_padding_end"
+        android:paddingBottom="@dimen/dialog_message_padding_bottom"
+        android:paddingTop="@dimen/dialog_message_padding_top"
+        android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
+        android:textAlignment="viewStart" />
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+        android:id="@+id/radio_button_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/allow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/radio_button_with_description_height" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/block"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/radio_button_with_description_height" />
+
+    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+</LinearLayout>
