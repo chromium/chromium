@@ -78,6 +78,8 @@ def print_landmines():
   if host_os() == 'linux':
     print('Clobber to workaround buggy .ninja_deps cycle (crbug.com/934404)')
   print('Clobber to flush stale generated files. See crbug.com/1406628')
+  print('Clobber to flush old .ninja_log files for updating ninja. '
+        'See crbug.com/1406628#c14')
 
 
 def main():
