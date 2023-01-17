@@ -1255,13 +1255,6 @@
       },
     },
   },
-  'win10-20h2': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-10-19042',
-      },
-    },
-  },
   'win10-any': {
     'swarming': {
       'dimensions': {
