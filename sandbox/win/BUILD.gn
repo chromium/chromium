@@ -171,7 +171,10 @@ static_library("sandbox") {
     "//base:base_static",
   ]
 
-  libs = [ "userenv.lib" ]
+  libs = [
+    "ntdll.lib",
+    "userenv.lib",
+  ]
 }
 
 test("sbox_integration_tests") {

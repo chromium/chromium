@@ -16,7 +16,6 @@
 namespace {
 
 // Function pointers used for registry access.
-RtlInitUnicodeStringFunction g_rtl_init_unicode_string = nullptr;
 NtCreateKeyFunction g_nt_create_key = nullptr;
 NtDeleteKeyFunction g_nt_delete_key = nullptr;
 NtOpenKeyExFunction g_nt_open_key_ex = nullptr;
@@ -83,9 +82,6 @@ bool InitNativeRegApi() {
   HMODULE ntdll = ::GetModuleHandleW(L"ntdll.dll");
 
   // Setup the global function pointers for registry access.
-  g_rtl_init_unicode_string = reinterpret_cast<RtlInitUnicodeStringFunction>(
-      ::GetProcAddress(ntdll, "RtlInitUnicodeString"));
-
   g_nt_create_key = reinterpret_cast<NtCreateKeyFunction>(
       ::GetProcAddress(ntdll, "NtCreateKey"));
 
@@ -110,22 +106,20 @@ bool InitNativeRegApi() {
   g_nt_set_value_key = reinterpret_cast<NtSetValueKeyFunction>(
       ::GetProcAddress(ntdll, "NtSetValueKey"));
 
-  if (!g_rtl_init_unicode_string || !g_nt_create_key || !g_nt_open_key_ex ||
-      !g_nt_delete_key || !g_nt_close || !g_nt_query_key ||
-      !g_nt_enumerate_key || !g_nt_query_value_key || !g_nt_set_value_key)
+  if (!g_nt_create_key || !g_nt_open_key_ex || !g_nt_delete_key ||
+      !g_nt_close || !g_nt_query_key || !g_nt_enumerate_key ||
+      !g_nt_query_value_key || !g_nt_set_value_key) {
     return false;
+  }
 
   // We need to set HKCU based on the sid of the current user account.
   RtlFormatCurrentUserKeyPathFunction rtl_current_user_string =
       reinterpret_cast<RtlFormatCurrentUserKeyPathFunction>(
           ::GetProcAddress(ntdll, "RtlFormatCurrentUserKeyPath"));
 
-  RtlFreeUnicodeStringFunction rtl_free_unicode_str =
-      reinterpret_cast<RtlFreeUnicodeStringFunction>(
-          ::GetProcAddress(ntdll, "RtlFreeUnicodeString"));
-
-  if (!rtl_current_user_string || !rtl_free_unicode_str)
+  if (!rtl_current_user_string) {
     return false;
+  }
 
   UNICODE_STRING current_user_reg_path;
   if (!NT_SUCCESS(rtl_current_user_string(&current_user_reg_path)))
@@ -139,7 +133,7 @@ bool InitNativeRegApi() {
   wchar_t* ptr = ::wcsrchr(current_user_reg_path.Buffer, L'\\');
   ptr++;
   ::wcsncpy(g_current_user_sid_string, ptr, nt::g_kRegMaxPathLen);
-  rtl_free_unicode_str(&current_user_reg_path);
+  ::RtlFreeUnicodeString(&current_user_reg_path);
 
   // Figure out if this is a system or user install.
   g_system_install = IsThisProcSystem();
@@ -608,7 +602,7 @@ NTSTATUS CreateKeyWrapper(const std::wstring& key_path,
                           HANDLE* out_handle,
                           ULONG* create_or_open OPTIONAL) {
   UNICODE_STRING key_path_uni = {};
-  g_rtl_init_unicode_string(&key_path_uni, key_path.c_str());
+  ::RtlInitUnicodeString(&key_path_uni, key_path.c_str());
 
   OBJECT_ATTRIBUTES obj = {};
   InitializeObjectAttributes(&obj, &key_path_uni, OBJ_CASE_INSENSITIVE, NULL,
@@ -746,7 +740,7 @@ bool OpenRegKey(ROOT_KEY root,
   }
   full_path.insert(0, ConvertRootKey(root));
 
-  g_rtl_init_unicode_string(&key_path_uni, full_path.c_str());
+  ::RtlInitUnicodeString(&key_path_uni, full_path.c_str());
   InitializeObjectAttributes(&obj, &key_path_uni, OBJ_CASE_INSENSITIVE, NULL,
                              NULL);
 
@@ -806,7 +800,7 @@ bool QueryRegKeyValue(HANDLE key,
     return false;
 
   UNICODE_STRING value_uni = {};
-  g_rtl_init_unicode_string(&value_uni, value_name);
+  ::RtlInitUnicodeString(&value_uni, value_name);
 
   // Use a loop here, to be a little more tolerant of concurrent registry
   // changes.
@@ -985,7 +979,7 @@ bool SetRegKeyValue(HANDLE key,
 
   NTSTATUS ntstatus = STATUS_UNSUCCESSFUL;
   UNICODE_STRING value_uni = {};
-  g_rtl_init_unicode_string(&value_uni, value_name);
+  ::RtlInitUnicodeString(&value_uni, value_name);
 
   BYTE* non_const_data = const_cast<BYTE*>(data);
   ntstatus =

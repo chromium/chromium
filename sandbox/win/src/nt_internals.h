@@ -244,9 +244,6 @@ typedef NTSTATUS(WINAPI* RtlCreateUserThreadFunction)(
     OUT PHANDLE Thread,
     OUT PCLIENT_ID ClientId);
 
-typedef VOID(WINAPI* RtlFreeUnicodeStringFunction)(
-    IN OUT PUNICODE_STRING UnicodeString);
-
 // -----------------------------------------------------------------------
 // Registry
 
@@ -519,10 +516,6 @@ typedef LONG(WINAPI* RtlCompareUnicodeStringFunction)(
     IN PCUNICODE_STRING String1,
     IN PCUNICODE_STRING String2,
     IN BOOLEAN CaseInSensitive);
-
-typedef VOID(WINAPI* RtlInitUnicodeStringFunction)(IN OUT PUNICODE_STRING
-                                                       DestinationString,
-                                                   IN PCWSTR SourceString);
 
 typedef ULONG(WINAPI* RtlNtStatusToDosErrorFunction)(NTSTATUS status);
 

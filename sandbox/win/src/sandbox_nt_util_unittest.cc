@@ -6,6 +6,7 @@
 
 #include <ntstatus.h>
 #include <windows.h>
+#include <winternl.h>
 
 #include <memory>
 #include <vector>
@@ -24,15 +25,6 @@ namespace sandbox {
 namespace {
 
 using ScopedUnicodeString = std::unique_ptr<UNICODE_STRING, NtAllocDeleter>;
-void InitUnicodeString(UNICODE_STRING* unistr, const wchar_t* wstr) {
-  static RtlInitUnicodeStringFunction rtl_init_unicode_string = nullptr;
-  if (!rtl_init_unicode_string) {
-    rtl_init_unicode_string =
-        reinterpret_cast<RtlInitUnicodeStringFunction>(::GetProcAddress(
-            ::GetModuleHandle(L"ntdll.dll"), "RtlInitUnicodeString"));
-  }
-  rtl_init_unicode_string(unistr, wstr);
-}
 
 TEST(SandboxNtUtil, IsSameProcessPseudoHandle) {
   HANDLE current_process_pseudo = GetCurrentProcess();
@@ -315,7 +307,7 @@ TEST(SandboxNtUtil, GetNtExports) {
 TEST(SandboxNtUtil, ExtractModuleName) {
   {
     UNICODE_STRING module_path = {};
-    InitUnicodeString(&module_path, L"no-path-sep");
+    ::RtlInitUnicodeString(&module_path, L"no-path-sep");
     ScopedUnicodeString result(ExtractModuleName(&module_path));
     EXPECT_TRUE(result);
     EXPECT_EQ(result->Length, module_path.Length);
@@ -323,7 +315,7 @@ TEST(SandboxNtUtil, ExtractModuleName) {
   }
   {
     UNICODE_STRING module_path = {};
-    InitUnicodeString(&module_path, L"c:\\has a\\path\\module.dll");
+    ::RtlInitUnicodeString(&module_path, L"c:\\has a\\path\\module.dll");
     ScopedUnicodeString result(ExtractModuleName(&module_path));
 
     EXPECT_TRUE(result);
@@ -332,14 +324,14 @@ TEST(SandboxNtUtil, ExtractModuleName) {
   }
   {
     UNICODE_STRING module_path = {};
-    InitUnicodeString(&module_path, L"c:\\only a\\path\\");
+    ::RtlInitUnicodeString(&module_path, L"c:\\only a\\path\\");
     ScopedUnicodeString result(ExtractModuleName(&module_path));
 
     EXPECT_FALSE(result);
   }
   {
     UNICODE_STRING module_path = {};
-    InitUnicodeString(&module_path, L"A");
+    ::RtlInitUnicodeString(&module_path, L"A");
     ScopedUnicodeString result(ExtractModuleName(&module_path));
 
     EXPECT_TRUE(result);
@@ -348,7 +340,7 @@ TEST(SandboxNtUtil, ExtractModuleName) {
   }
   {
     UNICODE_STRING module_path = {};
-    InitUnicodeString(&module_path, L"");
+    ::RtlInitUnicodeString(&module_path, L"");
     ScopedUnicodeString result(ExtractModuleName(&module_path));
 
     EXPECT_TRUE(result);

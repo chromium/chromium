@@ -8,6 +8,7 @@
 #include <ntstatus.h>
 #include <windows.h>
 #include <winioctl.h>
+#include <winternl.h>
 
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/filesystem_policy.h"
@@ -101,9 +102,9 @@ SBOX_TESTS_COMMAND int File_Win32Create(int argc, wchar_t** argv) {
 // call succeeded or not.
 SBOX_TESTS_COMMAND int File_CreateSys32(int argc, wchar_t** argv) {
   BINDNTDLL(NtCreateFile);
-  BINDNTDLL(RtlInitUnicodeString);
-  if (!NtCreateFile || !RtlInitUnicodeString)
+  if (!NtCreateFile) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+  }
 
   if (argc != 1)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
@@ -113,7 +114,7 @@ SBOX_TESTS_COMMAND int File_CreateSys32(int argc, wchar_t** argv) {
     file = MakePathToSys(argv[0], true);
 
   UNICODE_STRING object_name;
-  RtlInitUnicodeString(&object_name, file.c_str());
+  ::RtlInitUnicodeString(&object_name, file.c_str());
 
   OBJECT_ATTRIBUTES obj_attributes = {};
   InitializeObjectAttributes(&obj_attributes, &object_name,
@@ -139,16 +140,16 @@ SBOX_TESTS_COMMAND int File_CreateSys32(int argc, wchar_t** argv) {
 // call succeeded or not.
 SBOX_TESTS_COMMAND int File_OpenSys32(int argc, wchar_t** argv) {
   BINDNTDLL(NtOpenFile);
-  BINDNTDLL(RtlInitUnicodeString);
-  if (!NtOpenFile || !RtlInitUnicodeString)
+  if (!NtOpenFile) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+  }
 
   if (argc != 1)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
   std::wstring file = MakePathToSys(argv[0], true);
   UNICODE_STRING object_name;
-  RtlInitUnicodeString(&object_name, file.c_str());
+  ::RtlInitUnicodeString(&object_name, file.c_str());
 
   OBJECT_ATTRIBUTES obj_attributes = {};
   InitializeObjectAttributes(&obj_attributes, &object_name,
@@ -215,10 +216,9 @@ SBOX_TESTS_COMMAND int File_Rename(int argc, wchar_t** argv) {
 SBOX_TESTS_COMMAND int File_QueryAttributes(int argc, wchar_t** argv) {
   BINDNTDLL(NtQueryAttributesFile);
   BINDNTDLL(NtQueryFullAttributesFile);
-  BINDNTDLL(RtlInitUnicodeString);
-  if (!NtQueryAttributesFile || !NtQueryFullAttributesFile ||
-      !RtlInitUnicodeString)
+  if (!NtQueryAttributesFile || !NtQueryFullAttributesFile) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+  }
 
   if (argc != 2)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
@@ -227,7 +227,7 @@ SBOX_TESTS_COMMAND int File_QueryAttributes(int argc, wchar_t** argv) {
 
   UNICODE_STRING object_name;
   std::wstring file = MakePathToSys(argv[0], true);
-  RtlInitUnicodeString(&object_name, file.c_str());
+  ::RtlInitUnicodeString(&object_name, file.c_str());
 
   OBJECT_ATTRIBUTES obj_attributes = {};
   InitializeObjectAttributes(&obj_attributes, &object_name,

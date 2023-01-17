@@ -196,8 +196,10 @@ TEST_F(DelayloadsTest, ChromeElfDllDelayloadsCheck) {
       << "Ensure the delayloads_unittests "
          "target was built, instead of delayloads_unittests.exe";
 
+  // Allowlist of modules that do not delayload.
   static const char* const kValidFilePatterns[] = {
     "KERNEL32.dll",
+    "ntdll.dll",
 #if defined(ADDRESS_SANITIZER) && defined(COMPONENT_BUILD)
     "clang_rt.asan_dynamic-i386.dll",
 #endif
@@ -283,8 +285,10 @@ TEST_F(DelayloadsTest, ChromeExeDelayloadsCheck) {
       << "Ensure the delayloads_unittests "
          "target was built, instead of delayloads_unittests.exe";
 
+  // Allowlist of modules that do not delayload.
   static const char* const kValidFilePatterns[] = {
     "KERNEL32.dll",
+    "ntdll.dll",
     "chrome_elf.dll",
     // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
     // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
