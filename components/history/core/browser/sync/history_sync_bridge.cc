@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/visit_id_remapper.h"
 #include "components/history/core/browser/url_row.h"
@@ -270,12 +271,14 @@ absl::optional<VisitContentAnnotations> MakeContentAnnotations(
   return annotations;
 }
 
+// `included_visit_ids` may be nullptr.
 std::unique_ptr<syncer::EntityData> MakeEntityData(
     const std::string& local_cache_guid,
     const std::vector<AnnotatedVisit>& redirect_visits,
     bool redirect_chain_middle_trimmed,
     const GURL& referrer_url,
-    const std::vector<GURL>& favicon_urls) {
+    const std::vector<GURL>& favicon_urls,
+    std::vector<VisitID>* included_visit_ids) {
   DCHECK(!local_cache_guid.empty());
   DCHECK(!redirect_visits.empty());
 
@@ -300,6 +303,12 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   for (const AnnotatedVisit& annotated_visit : redirect_visits) {
     const URLRow& url = annotated_visit.url_row;
     const VisitRow& visit = annotated_visit.visit_row;
+
+    // Add the visit ID to the out param vector indicating it was included.
+    if (included_visit_ids) {
+      included_visit_ids->push_back(visit.visit_id);
+    }
+
     auto* redirect_entry = history->add_redirect_entries();
     redirect_entry->set_originator_visit_id(
         is_local_entity ? visit.visit_id : visit.originator_visit_id);
@@ -627,8 +636,11 @@ void HistorySyncBridge::GetData(StorageKeyList storage_keys,
       continue;
     }
 
+    // Purposely don't mark visits as known to sync here, as this bit must have
+    // already been set before, when the visit was first seen by Sync.
     std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
-        QueryRedirectChainAndMakeEntityData(final_visit);
+        QueryRedirectChainAndMakeEntityData(final_visit,
+                                            /*included_visit_ids=*/nullptr);
     // Typically, `entity_data_list` will have exactly one entry. In some error
     // cases (corrupted DB), it may be empty, and in some cases the redirect
     // chain may have been split into multiple entities. In that case, the last
@@ -893,10 +905,12 @@ void HistorySyncBridge::MaybeCommit(const VisitRow& visit_row) {
     return;
   }
 
-  // All conditions are fulfilled - convert the visit into Sync's format and
-  // send it on.
+  // Attempt converting the the visit into Sync's format. In some cases, the
+  // conversion process catches additional un-syncable conditions, so early exit
+  // to account for that case as well.
+  std::vector<VisitID> included_visit_ids;
   std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
-      QueryRedirectChainAndMakeEntityData(visit_row);
+      QueryRedirectChainAndMakeEntityData(visit_row, &included_visit_ids);
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
@@ -906,11 +920,17 @@ void HistorySyncBridge::MaybeCommit(const VisitRow& visit_row) {
     change_processor()->Put(storage_key, std::move(entity_data),
                             metadata_change_list.get());
   }
+
+  // Mark these visits as sent in the database. They are sent in a few seconds.
+  for (auto visit_id : included_visit_ids) {
+    history_backend_->MarkVisitAsKnownToSync(visit_id);
+  }
 }
 
 std::vector<std::unique_ptr<syncer::EntityData>>
 HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
-    const VisitRow& final_visit) {
+    const VisitRow& final_visit,
+    std::vector<VisitID>* included_visit_ids) {
   // Query the redirect chain that ended in this visit.
   std::vector<VisitRow> redirect_visits =
       history_backend_->GetRedirectChain(final_visit);
@@ -982,7 +1002,7 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
     // Note: `favicon_urls` may legitimately be empty, that's fine.
     entities.push_back(MakeEntityData(GetLocalCacheGuid(), annotated_visits,
                                       chain_middle_trimmed, referrer_url,
-                                      favicon_urls));
+                                      favicon_urls, included_visit_ids));
   }
   return entities;
 }

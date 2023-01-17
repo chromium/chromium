@@ -101,9 +101,12 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // and creates the corresponding EntityData(s). Typically returns a single
   // EntityData, but in some cases the redirect chain may have to be split up
   // into multiple entities. May return no entities at all in case of
-  // HistoryBackend failure (e.g. corrupted DB).
+  // HistoryBackend failure (e.g. corrupted DB). The local visit IDs that are
+  // included in the entity data will be appended to `included_visit_ids`, if it
+  // is not nullptr.
   std::vector<std::unique_ptr<syncer::EntityData>>
-  QueryRedirectChainAndMakeEntityData(const VisitRow& final_visit);
+  QueryRedirectChainAndMakeEntityData(const VisitRow& final_visit,
+                                      std::vector<VisitID>* included_visit_ids);
 
   GURL GetURLForVisit(VisitID visit_id);
 
