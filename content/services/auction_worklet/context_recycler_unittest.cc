@@ -825,22 +825,6 @@ class ContextRecyclerPrivateAggregationEnabledTest
     EXPECT_EQ(pa_requests[0], expected_request.Clone());
   }
 
-  // Checks given `pa_requests` has one item, which equals to the request
-  // created from given `expected_contribution`.
-  void ExpectPrivateAggregationForEventRequestsEqual(
-      std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>
-          pa_requests,
-      auction_worklet::mojom::AggregatableReportForEventContributionPtr
-          expected_contribution) {
-    auction_worklet::mojom::PrivateAggregationForEventRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New());
-
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1462,9 +1446,38 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
   }
 }
 
+class ContextRecyclerPrivateAggregationExtensionsEnabledTest
+    : public ContextRecyclerTest {
+ public:
+  ContextRecyclerPrivateAggregationExtensionsEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        content::kPrivateAggregationApi,
+        {{"fledge_extensions_enabled", "true"}});
+  }
+
+  // Checks given `pa_requests` has one item, which equals to the request
+  // created from given `expected_contribution`.
+  void ExpectPrivateAggregationForEventRequestsEqual(
+      std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>
+          pa_requests,
+      auction_worklet::mojom::AggregatableReportForEventContributionPtr
+          expected_contribution) {
+    auction_worklet::mojom::PrivateAggregationForEventRequest expected_request(
+        expected_contribution.Clone(),
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New());
+
+    ASSERT_EQ(pa_requests.size(), 1u);
+    EXPECT_EQ(pa_requests[0], expected_request.Clone());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Exercise `reportContributionsForEvent()` of PrivateAggregationBindings, and
 // make sure they reset properly.
-TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
+TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
        PrivateAggregationForEventBindings) {
   using PrivateAggregationForEventRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>;
@@ -2320,6 +2333,68 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests();
     ASSERT_TRUE(pa_requests.empty());
+  }
+}
+
+class ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest
+    : public ContextRecyclerTest {
+ public:
+  ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        content::kPrivateAggregationApi,
+        {{"fledge_extensions_enabled", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Make sure that `reportContributionForEvent()` isn't available, but the other
+// `privateAggregation` functions are.
+TEST_F(ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest,
+       PrivateAggregationForEventBindings) {
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
+  const char kScript[] = R"(
+    function test(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.sendHistogramReport(args);
+      privateAggregation.reportContributionForEvent("example", args);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddPrivateAggregationBindings(
+      /*private_aggregation_permissions_policy_allowed=*/true);
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:9 Uncaught TypeError: "
+                    "privateAggregation.reportContributionForEvent is not a "
+                    "function."));
+
+    PrivateAggregationRequests pa_requests =
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests();
+    ASSERT_EQ(pa_requests.size(), 1u);
   }
 }
 

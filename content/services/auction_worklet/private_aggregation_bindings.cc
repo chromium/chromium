@@ -258,14 +258,16 @@ void PrivateAggregationBindings::FillInGlobalTemplate(
       v8_helper_->CreateStringFromLiteral("sendHistogramReport"),
       send_histogram_report_template);
 
-  v8::Local<v8::FunctionTemplate> report_contribution_for_event_template =
-      v8::FunctionTemplate::New(
-          v8_helper_->isolate(),
-          &PrivateAggregationBindings::ReportContributionForEvent, v8_this);
-  report_contribution_for_event_template->RemovePrototype();
-  private_aggregation_template->Set(
-      v8_helper_->CreateStringFromLiteral("reportContributionForEvent"),
-      report_contribution_for_event_template);
+  if (content::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+    v8::Local<v8::FunctionTemplate> report_contribution_for_event_template =
+        v8::FunctionTemplate::New(
+            v8_helper_->isolate(),
+            &PrivateAggregationBindings::ReportContributionForEvent, v8_this);
+    report_contribution_for_event_template->RemovePrototype();
+    private_aggregation_template->Set(
+        v8_helper_->CreateStringFromLiteral("reportContributionForEvent"),
+        report_contribution_for_event_template);
+  }
 
   v8::Local<v8::FunctionTemplate> enable_debug_mode_template =
       v8::FunctionTemplate::New(v8_helper_->isolate(),
