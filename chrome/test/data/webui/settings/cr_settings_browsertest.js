@@ -676,6 +676,7 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
     return {
       enabled: [
         'privacy_sandbox::kPrivacySandboxSettings4',
+        'privacy_sandbox::kPrivacySandboxFirstPartySetsUI',
         'features::kPreloadingDesktopSettingsSubPage',
       ],
     };
@@ -686,8 +687,8 @@ TEST_F('CrSettingsCookiesPageTest', 'CookiesPageTest', function() {
   runMochaSuite('CrSettingsCookiesPageTest');
 });
 
-TEST_F('CrSettingsCookiesPageTest', 'FirstPartySetsUIEnabled', function() {
-  runMochaSuite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled');
+TEST_F('CrSettingsCookiesPageTest', 'FirstPartySetsUIDisabled', function() {
+  runMochaSuite('CrSettingsCookiesPageTest_FirstPartySetsUIDisabled');
 });
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');

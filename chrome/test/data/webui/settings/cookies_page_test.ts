@@ -36,7 +36,6 @@ suite('CrSettingsCookiesPageTest', function() {
   }
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({firstPartySetsUIEnabled: false});
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -301,53 +300,7 @@ suite('CrSettingsCookiesPageTest', function() {
     assertFalse(page.$.toast.open);
   });
 
-  test('Block third-party cookies in Incognito bullet point', function() {
-    // Confirm the correct string is set.
-    const cookiePageBlockThirdIncognitoBulTwoLabel =
-        page.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#blockThirdPartyIncognitoBulTwo')!.innerText.trim();
-    assertEquals(
-        loadTimeData.getString('thirdPartyCookiesPageBlockIncognitoBulTwo'),
-        cookiePageBlockThirdIncognitoBulTwoLabel);
-  });
-});
-
-suite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  function blockThirdParty(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#blockThirdParty')!;
-  }
-
-  function blockThirdPartyIncognito(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#blockThirdPartyIncognito')!;
-  }
-
-  function allowThirdParty(): SettingsCollapseRadioButtonElement {
-    return page.shadowRoot!.querySelector('#allowThirdParty')!;
-  }
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({firstPartySetsUIEnabled: true});
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  test('Disabled Toggle', function() {
+  test('disabledFPSToggle', function() {
     // Confirm that when the user has not selected the block 3PC setting, the
     // FPS toggle is disabled.
     const firstPartySetsToggle =
@@ -374,20 +327,15 @@ suite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled', function() {
     assertTrue(firstPartySetsToggle.disabled, 'expect toggle to be disabled');
   });
 
-  // TODO(crbug.com/1378703): Both paths should be tested.
-  test('Block third-party cookies in Incognito FPS bullet point', function() {
+  test('blockThirdPartyIncognitoSecondBulletPointText', function() {
     // Confirm the correct string is set.
-    const cookiePageBlockThirdIncognitoBulTwoId =
-        loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
-        '#blockThirdPartyIncognitoBulTwo' :
-        '#cookiePageBlockThirdIncognitoBulTwo';
-    const cookiePageBlockThirdIncognitoBulTwoLabel =
+    const cookiesPageBlockThirdPartyIncognitoBulTwoLabel =
         page.shadowRoot!
             .querySelector<HTMLElement>(
-                cookiePageBlockThirdIncognitoBulTwoId)!.innerText.trim();
+                '#blockThirdPartyIncognitoBulTwo')!.innerText.trim();
     assertEquals(
         loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoFps'),
-        cookiePageBlockThirdIncognitoBulTwoLabel);
+        cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
   });
 });
 
@@ -420,7 +368,6 @@ suite('CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled', function() {
       isSecondaryUser: false,
       // </if>
       isPrivacySandboxSettings4: false,
-      firstPartySetsUIEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -692,17 +639,94 @@ suite('CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled', function() {
     assertFalse(page.$.toast.open);
   });
 
-  test('Block third-party cookies in Incognito bullet point', function() {
+  test('blockThirdPartyIncognitoSecondBulletPointText', function() {
     // Confirm the correct string is set.
-    const cookiePageBlockThirdIncognitoBulTwoLabel =
+    const cookiesPageBlockThirdPartyIncognitoBulTwoLabel =
         page.shadowRoot!
             .querySelector<HTMLElement>(
-                '#cookiePageBlockThirdIncognitoBulTwo')!.innerText.trim();
+                '#cookiesPageBlockThirdPartyIncognitoBulTwo')!.innerText.trim();
     assertEquals(
-        loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwo'),
-        cookiePageBlockThirdIncognitoBulTwoLabel);
+        loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoFps'),
+        cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
   });
 });
+
+// TODO(crbug/1349370): Remove after crbug/1349370 is launched.
+suite('CrSettingsCookiesPageTest_FirstPartySetsUIDisabled', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({firstPartySetsUIEnabled: false});
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('blockThirdPartyIncognitoSecondBulletPointText', function() {
+    // Confirm the correct string is set.
+    const cookiesPageBlockThirdPartyIncognitoBulTwoLabel =
+        page.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#blockThirdPartyIncognitoBulTwo')!.innerText.trim();
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesPageBlockIncognitoBulTwo'),
+        cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
+  });
+});
+
+// TODO(crbug/1378703): Remove after crbug/1378703 or crbug/1349370 are
+// launched.
+suite(
+    'CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled_FirstPartySetsUIDisabled',
+    function() {
+      let page: SettingsCookiesPageElement;
+      let settingsPrefs: SettingsPrefsElement;
+
+      suiteSetup(function() {
+        loadTimeData.overrideValues({
+          isPrivacySandboxSettings4: false,
+          firstPartySetsUIEnabled: false,
+        });
+        settingsPrefs = document.createElement('settings-prefs');
+        return CrSettingsPrefs.initialized;
+      });
+
+      setup(function() {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        page = document.createElement('settings-cookies-page');
+        page.prefs = settingsPrefs.prefs!;
+        document.body.appendChild(page);
+        flush();
+      });
+
+      teardown(function() {
+        page.remove();
+      });
+
+      test('blockThirdPartyIncognitoSecondBulletPointText', function() {
+        // Confirm the correct string is set.
+        const cookiesPageBlockThirdPartyIncognitoBulTwoLabel =
+            page.shadowRoot!
+                .querySelector<HTMLElement>(
+                    '#cookiesPageBlockThirdPartyIncognitoBulTwo')!.innerText
+                .trim();
+        assertEquals(
+            loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwo'),
+            cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
+      });
+    });
 
 // <if expr="chromeos_lacros">
 // TODO(crbug/1378703): Remove after crbug/1378703 launched.
