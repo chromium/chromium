@@ -151,6 +151,14 @@ MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenDatabase(
     return MediaLicenseStorageHostOpenError::kOk;
 
   bool success = false;
+
+  // If this is not the first call to `OpenDatabase()` because we are re-trying
+  // initialization, then the error callback will have previously been set.
+  db_.reset_error_callback();
+
+  // base::Unretained is safe becase |db_| is owned by |this|
+  db_.set_error_callback(base::BindRepeating(
+      &MediaLicenseDatabase::OnDatabaseOpenError, base::Unretained(this)));
   if (path_.empty()) {
     success = db_.OpenInMemory();
   } else {
@@ -210,6 +218,18 @@ MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenDatabase(
   }
 
   return MediaLicenseStorageHostOpenError::kOk;
+}
+
+void MediaLicenseDatabase::OnDatabaseOpenError(int error,
+                                               sql::Statement* stmt) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // This histogram is only logged when the db is closed because we want to only
+  // log errors which prevent the db from opening.
+  if (!db_.is_open()) {
+    sql::UmaHistogramSqliteResult(
+        "Media.EME.MediaLicenseDatabaseOpenSQLiteError", error);
+  }
 }
 
 }  // namespace content

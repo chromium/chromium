@@ -38,6 +38,8 @@ class MediaLicenseDatabase {
   MediaLicenseStorageHost::MediaLicenseStorageHostOpenError OpenDatabase(
       bool is_retry = false);
 
+  void OnDatabaseOpenError(int error, sql::Statement* stmt);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Empty if the database is in-memory.

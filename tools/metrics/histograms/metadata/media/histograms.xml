@@ -2265,6 +2265,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.MediaLicenseDatabaseOpenSQLiteError"
+    enum="SqliteLoggedResultCode" expires_after="2023-12-24">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    SQLite specific errors reported while attempting to unsuccessfully open the
+    Media License Database.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaLicenseStorageHostOpenError"
     enum="MediaLicenseStorageHostOpenError" expires_after="2023-12-24">
   <owner>vpasupathy@chromium.org</owner>
