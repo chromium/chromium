@@ -49,6 +49,13 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 'main': 'tryserver.blink',
                 'has_webdriver_tests': True,
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                    'blink_wpt_tests (with patch)': {},
+                    'flag_specific_blink_wpt_tests (with patch)': {
+                        'flag_specific': 'flag-specific',
+                    },
+                },
             },
             'MOCK Try Precise': {
                 'port_name': 'test-linux-precise',
@@ -104,6 +111,15 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             }))
 
         return host
+
+    def test_suite_for_builder(self):
+        host = self.mock_host()
+        updater = WPTExpectationsUpdater(host)
+        self.assertEqual(updater.suite_for_builder('MOCK Try Trusty'),
+                         'blink_wpt_tests')
+        self.assertEqual(
+            updater.suite_for_builder('MOCK Try Trusty', 'flag-specific'),
+            'flag_specific_blink_wpt_tests')
 
     def test_run_single_platform_failure(self):
         """Tests the main run method in a case where one test fails on one platform."""

@@ -13,7 +13,7 @@ import copy
 import logging
 import re
 from collections import defaultdict, namedtuple
-from typing import List
+from typing import List, Optional
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import GitCL
@@ -133,6 +133,19 @@ class WPTExpectationsUpdater(object):
                  'This command line argument can be used to mark tests '
                  'as flaky.')
 
+    def suite_for_builder(self,
+                          builder: str,
+                          flag_specific: Optional[str] = None) -> str:
+        for step in self.host.builders.step_names_for_builder(builder):
+            if self.host.builders.flag_specific_option(builder,
+                                                       step) == flag_specific:
+                suite_match = re.match(r'(?P<suite>[\w_-]*blink_wpt_tests)',
+                                       step)
+                if suite_match:
+                    return suite_match['suite']
+        raise ValueError('"%s" flag-specific suite on "%s" not found' %
+                         (flag_specific, builder))
+
     def update_expectations_for_flag_specific(self, flag_specific):
         """Adds test expectations lines for flag specific builders.
 
@@ -147,13 +160,11 @@ class WPTExpectationsUpdater(object):
         if issue_number == 'None':
             raise ScriptError('No issue on current branch.')
 
-        if flag_specific == "disable-site-isolation-trials":
-            builder_names = ["linux-rel"]
-            test_suite = "not_site_per_process_blink_wpt_tests"
-        else:
-            builder_names = self.host.builders.all_flag_specific_try_builder_names(
-                flag_specific)
-            test_suite = "blink_wpt_tests"
+        # TODO(crbug.com/1406978): Retrieve builder names from the config
+        # instead of hardcoding.
+        builder = 'linux-blink-rel'
+        builder_names = [builder]
+        test_suite = self.flag_specific_suite(builder, flag_specific)
 
         build_to_status = self.git_cl.latest_try_jobs(
             builder_names=builder_names,

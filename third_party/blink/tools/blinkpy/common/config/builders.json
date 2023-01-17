@@ -124,7 +124,22 @@
         "has_webdriver_tests": true,
         "steps": {
             "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_wpt_tests (with patch)": {},
+            "high_dpi_blink_web_tests (with patch)": {
+                "flag_specific": "highdpi"
+            },
+            "high_dpi_blink_wpt_tests (with patch)": {
+                "flag_specific": "highdpi"
+            },
+            "vulkan_swiftshader_blink_web_tests (with patch)": {
+                "flag_specific": "skia-vulkan-swiftshader"
+            },
+            "not_site_per_process_blink_web_tests (with patch)": {
+                "flag_specific": "disable-site-isolation-trials"
+            },
+            "not_site_per_process_blink_wpt_tests (with patch)": {
+                "flag_specific": "disable-site-isolation-trials"
+            }
         },
         "is_try_builder": true
     },
