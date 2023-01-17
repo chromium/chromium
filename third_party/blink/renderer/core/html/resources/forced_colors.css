@@ -168,7 +168,7 @@
   select:-internal-list-box option:checked:hover,
   select:-internal-list-box:enabled option:checked:enabled:hover {
     background-color: Highlight !important;
-    color: Canvas !important;
+    color: HighlightText !important;
     forced-color-adjust: none;
   }
 
@@ -186,7 +186,7 @@
 
   select:-internal-list-box option:hover {
     background-color: Highlight !important;
-    color: Canvas;
+    color: HighlightText !important;
     forced-color-adjust: none;
   }
 
