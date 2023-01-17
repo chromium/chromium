@@ -589,7 +589,7 @@ TEST_F(FidoCableDiscoveryTest, TestUnregisterAdvertisementUponStop) {
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(1u, cable_discovery->AdvertisementsForTesting().size());
 
-  EXPECT_TRUE(cable_discovery->MaybeStop());
+  cable_discovery->Stop();
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(0u, cable_discovery->AdvertisementsForTesting().size());
 }
@@ -608,7 +608,7 @@ TEST_F(FidoCableDiscoveryTest, TestStopWithNoAdvertisementsSucceeds) {
   task_environment_.FastForwardUntilNoTasksRemain();
 
   EXPECT_EQ(0u, cable_discovery->AdvertisementsForTesting().size());
-  EXPECT_TRUE(cable_discovery->MaybeStop());
+  cable_discovery->Stop();
 }
 
 // Tests that cable discovery resumes after Bluetooth adapter is powered on.

@@ -68,9 +68,9 @@ void VirtualFidoDeviceDiscovery::Disconnect(bool _) {
   RemoveDevice(id_);
 }
 
-bool VirtualFidoDeviceDiscovery::MaybeStop() {
+void VirtualFidoDeviceDiscovery::Stop() {
   trace_->discoveries[trace_index_].is_stopped = true;
-  return FidoDeviceDiscovery::MaybeStop();
+  FidoDeviceDiscovery::Stop();
 }
 
 }  // namespace device::test

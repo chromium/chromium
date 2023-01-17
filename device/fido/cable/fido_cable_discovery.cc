@@ -766,12 +766,9 @@ std::string FidoCableDiscovery::ResultDebugString(
   return ret;
 }
 
-bool FidoCableDiscovery::MaybeStop() {
-  if (!FidoDeviceDiscovery::MaybeStop()) {
-    NOTREACHED();
-  }
+void FidoCableDiscovery::Stop() {
+  FidoDeviceDiscovery::Stop();
   StopAdvertisements(base::DoNothing());
-  return true;
 }
 
 }  // namespace device

@@ -455,7 +455,7 @@ void FidoRequestHandlerBase::ConstructBleAdapterPowerManager() {
 
 void FidoRequestHandlerBase::StopDiscoveries() {
   for (const auto& discovery : discoveries_) {
-    discovery->MaybeStop();
+    discovery->Stop();
   }
 }
 

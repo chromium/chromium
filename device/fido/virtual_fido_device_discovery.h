@@ -51,7 +51,7 @@ class VirtualFidoDeviceDiscovery
 
  protected:
   void StartInternal() override;
-  bool MaybeStop() override;
+  void Stop() override;
 
  private:
   void Disconnect(bool _);

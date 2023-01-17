@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
 
   // FidoDiscoveryBase:
   void Start() override;
-  bool MaybeStop() override;
+  void Stop() override;
 
  protected:
   explicit FidoDeviceDiscovery(FidoTransportProtocol transport);

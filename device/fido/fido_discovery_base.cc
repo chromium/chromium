@@ -10,8 +10,6 @@ FidoDiscoveryBase::FidoDiscoveryBase(FidoTransportProtocol transport)
     : transport_(transport) {}
 FidoDiscoveryBase::~FidoDiscoveryBase() = default;
 
-bool FidoDiscoveryBase::MaybeStop() {
-  return false;
-}
+void FidoDiscoveryBase::Stop() {}
 
 }  // namespace device

@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   ~FidoCableDiscovery() override;
 
   // FidoDeviceDiscovery:
-  bool MaybeStop() override;
+  void Stop() override;
 
   // GetV2AdvertStream returns a stream of caBLEv2 BLE adverts. Only a single
   // stream is supported.

@@ -115,9 +115,8 @@ bool FidoDeviceDiscovery::RemoveDevice(base::StringPiece device_id) {
   return true;
 }
 
-bool FidoDeviceDiscovery::MaybeStop() {
+void FidoDeviceDiscovery::Stop() {
   state_ = State::kStopped;
-  return true;
 }
 
 }  // namespace device
