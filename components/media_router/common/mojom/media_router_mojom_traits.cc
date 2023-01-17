@@ -70,20 +70,6 @@ bool StructTraits<media_router::mojom::MediaSinkDataView,
 
   out->sink().set_name(name);
 
-  absl::optional<std::string> description;
-  if (!data.ReadDescription(&description))
-    return false;
-
-  if (description)
-    out->sink().set_description(*description);
-
-  absl::optional<std::string> domain;
-  if (!data.ReadDomain(&domain))
-    return false;
-
-  if (domain)
-    out->sink().set_domain(*domain);
-
   media_router::SinkIconType icon_type;
   if (!data.ReadIconType(&icon_type))
     return false;

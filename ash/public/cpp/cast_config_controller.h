@@ -29,7 +29,6 @@ struct ASH_PUBLIC_EXPORT CastSink {
 
   std::string id;
   std::string name;
-  std::string domain;
 
   // Icon which describes the type of sink media is being routed to.
   SinkIconType sink_icon_type = SinkIconType::kGeneric;

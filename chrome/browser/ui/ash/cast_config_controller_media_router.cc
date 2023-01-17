@@ -61,10 +61,6 @@ media_router::MediaRouter* GetMediaRouter() {
   return router;
 }
 
-// "Cast for Education" extension uses this string and expects the client to
-// interpret it as "signed-in user's domain".
-constexpr char const kDefaultDomain[] = "default";
-
 }  // namespace
 
 // This class caches the values that the observers give us so we can query them
@@ -126,14 +122,6 @@ void CastDeviceCache::OnSinksReceived(const MediaSinks& sinks) {
     // will be a line that only has a icon with no apparent meaning.
     if (sink.name().empty())
       continue;
-
-    // Hide all sinks which have a non-default domain (ie, castouts) to meet
-    // privacy requirements. This will be enabled once UI can display the
-    // domain. See crbug.com/624016.
-    if (sink.domain() && !sink.domain()->empty() &&
-        sink.domain() != kDefaultDomain) {
-      continue;
-    }
 
     sinks_.push_back(sink);
   }
@@ -229,7 +217,6 @@ void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
     ash::SinkAndRoute device;
     device.sink.id = sink.id();
     device.sink.name = sink.name();
-    device.sink.domain = sink.domain().value_or(std::string());
     device.sink.sink_icon_type =
         static_cast<ash::SinkIconType>(sink.icon_type());
     devices_.push_back(std::move(device));
@@ -293,7 +280,6 @@ void CastConfigControllerMediaRouter::AddFakeCastDevices() {
     ash::SinkAndRoute device;
     device.sink.id = "fake_sink_id_" + base::NumberToString(i);
     device.sink.name = "Fake Sink " + base::NumberToString(i);
-    device.sink.domain = "example.com";
     device.sink.sink_icon_type = ash::SinkIconType::kCast;
     devices_.push_back(std::move(device));
   }

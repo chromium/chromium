@@ -62,15 +62,6 @@ bool IssueMatches(const Issue& issue, const UIMediaSink& ui_sink) {
           issue.info().route_id == ui_sink.route->media_route_id());
 }
 
-std::u16string GetSinkFriendlyName(const MediaSink& sink) {
-  // Use U+2010 (HYPHEN) instead of ASCII hyphen to avoid problems with RTL
-  // languages.
-  const char* separator = " \u2010 ";
-  return base::UTF8ToUTF16(sink.description() ? sink.name() + separator +
-                                                    sink.description().value()
-                                              : sink.name());
-}
-
 void MaybeReportCastingSource(MediaCastMode cast_mode,
                               const RouteRequestResult& result) {
   if (result.result_code() == mojom::RouteRequestResultCode::OK)
@@ -424,7 +415,7 @@ std::u16string MediaRouterUI::GetSinkFriendlyNameFromId(
     const MediaSink::Id& sink_id) {
   for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
     if (sink.sink.id() == sink_id) {
-      return GetSinkFriendlyName(sink.sink);
+      return base::UTF8ToUTF16(sink.sink.name());
     }
   }
   return std::u16string(u"Device");
@@ -595,7 +586,7 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
                                            const absl::optional<Issue>& issue) {
   UIMediaSink ui_sink{sink.sink.provider_id()};
   ui_sink.id = sink.sink.id();
-  ui_sink.friendly_name = GetSinkFriendlyName(sink.sink);
+  ui_sink.friendly_name = base::UTF8ToUTF16(sink.sink.name());
   ui_sink.icon_type = sink.sink.icon_type();
   ui_sink.cast_modes = sink.cast_modes;
 

@@ -215,16 +215,6 @@ struct StructTraits<media_router::mojom::MediaSinkDataView,
     return sink_internal.sink().name();
   }
 
-  static const absl::optional<std::string>& description(
-      const media_router::MediaSinkInternal& sink_internal) {
-    return sink_internal.sink().description();
-  }
-
-  static const absl::optional<std::string>& domain(
-      const media_router::MediaSinkInternal& sink_internal) {
-    return sink_internal.sink().domain();
-  }
-
   static media_router::SinkIconType icon_type(
       const media_router::MediaSinkInternal& sink_internal) {
     return sink_internal.sink().icon_type();

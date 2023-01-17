@@ -59,10 +59,6 @@ base::Value::Dict ToValue(const MediaSinkInternal& sink_internal) {
   const MediaSink& sink = sink_internal.sink();
   dict.Set("id", base::Value(TruncateSinkId(sink.id())));
   dict.Set("name", base::Value(sink.name()));
-  if (sink.description())
-    dict.Set("description", base::Value(*sink.description()));
-  if (sink.domain())
-    dict.Set("domain", base::Value(*sink.domain()));
   dict.Set("icon_type", base::Value(static_cast<int>(sink.icon_type())));
 
   if (sink_internal.is_dial_sink()) {

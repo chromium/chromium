@@ -56,7 +56,6 @@ namespace media_router {
 namespace {
 
 constexpr char kRouteId[] = "route1";
-constexpr char kSinkDescription[] = "description";
 constexpr char kSinkId[] = "sink1";
 constexpr char kSinkName[] = "sink name";
 constexpr char kSourceId[] = "source1";
@@ -304,13 +303,10 @@ TEST_F(MediaRouterViewsUITest, SinkFriendlyName) {
   NiceMock<MockControllerObserver> observer(ui_.get());
 
   MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
-  sink.set_description(kSinkDescription);
   MediaSinkWithCastModes sink_with_cast_modes(sink);
-  const char* separator = " \u2010 ";
   EXPECT_CALL(observer, OnModelUpdated(_))
       .WillOnce(Invoke([&](const CastDialogModel& model) {
-        EXPECT_EQ(base::UTF8ToUTF16(sink.name() + separator +
-                                    sink.description().value()),
+        EXPECT_EQ(base::UTF8ToUTF16(sink.name()),
                   model.media_sinks()[0].friendly_name);
       }));
   NotifyUiOnSinksUpdated({sink_with_cast_modes});

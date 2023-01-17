@@ -32,15 +32,6 @@ struct MediaSink {
   string sink_id;
   // The human-readable name, e.g. "Janet's Chromecast".
   string name;
-  // Optional description of the sink.
-  //
-  // DEPRECATED.  This is currently used in the Media Router UX to relay a
-  // Hangouts meeting name.  It should not be used for other purposes.
-  // TODO(crbug.com/786208): Remove this at a future date when Hangouts names
-  // are no longer required.
-  string? description;
-  // Optional domain of the sink if this sink is associated with an identity.
-  string? domain;
   // The type of icon to show in the UI for this media sink.
   SinkIconType icon_type;
   // The ID of the MediaRouteProvider that this sink belongs to.
