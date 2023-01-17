@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -780,6 +781,84 @@ TEST_P(MLGraphXnnpackTest, InputAndOutputUseSameNameTest) {
 }
 
 template <typename T>
+struct ClampTester {
+  MLGraphXnnpackTest* helper;
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(V8TestingScope& scope,
+            MLClampOptions* options = MLClampOptions::Create()) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope);
+    auto* input_operand =
+        BuildInput(scope, builder, "input", input.dimensions, input.type);
+    auto* output_operand =
+        builder->clamp(input_operand, options, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    auto input_buffer =
+        CreateArrayBufferViewForOperand(input_operand, input.values);
+    auto output_buffer = CreateArrayBufferViewForOperand(output_operand);
+    auto* compute_exception = helper->ComputeGraph(
+        scope, graph, {{"input", input_buffer}}, {{"output", output_buffer}});
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(output_buffer);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, ClampTest) {
+  V8TestingScope scope;
+  {
+    // Test clamp operator with default options that no minimum and maximum
+    // values are defined.
+    ClampTester<float>{.helper = this,
+                       .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {1, 2, 2, 1},
+                                 .values = {-10.0, -0.5, 0.5, 10.0}},
+                       .expected = {-10.0, -0.5, 0.5, 10.0}}
+        .Test(scope);
+  }
+  {
+    // Test clamp operator with the minimum value defined.
+    MLClampOptions* options = MLClampOptions::Create();
+    options->setMinValue(0.0);
+    ClampTester<float>{.helper = this,
+                       .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {1, 2, 2, 1},
+                                 .values = {-10.0, -0.5, 0.5, 10.0}},
+                       .expected = {0.0, 0.0, 0.5, 10.0}}
+        .Test(scope, options);
+  }
+  {
+    // Test clamp operator with the maximum value defined.
+    MLClampOptions* options = MLClampOptions::Create();
+    options->setMaxValue(6.0);
+    ClampTester<float>{.helper = this,
+                       .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {1, 2, 2, 1},
+                                 .values = {-10.0, -0.5, 0.5, 10.0}},
+                       .expected = {-10.0, -0.5, 0.5, 6.0}}
+        .Test(scope, options);
+  }
+  {
+    // Test clamp operator with both the minimum and maximum values defined.
+    MLClampOptions* options = MLClampOptions::Create();
+    options->setMinValue(0.0);
+    options->setMaxValue(6.0);
+    ClampTester<float>{.helper = this,
+                       .input = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {1, 2, 2, 1},
+                                 .values = {-10.0, -0.5, 0.5, 10.0}},
+                       .expected = {0.0, 0.0, 0.5, 6.0}}
+        .Test(scope, options);
+  }
+}
+
+template <typename T>
 MLOperand* BuildConstant(V8TestingScope& scope,
                          MLGraphBuilder* builder,
                          const Vector<uint32_t>& dimensions,
@@ -916,6 +995,35 @@ TEST_P(MLGraphXnnpackTest, Conv2dTest) {
                                .dimensions = {4},
                                .values = {-6000.0, -7000.0, 8000.0, 9000.0}},
         .expected = {0.0, 0.0, 11000.0, 9000.0}}
+        .Test(scope, builder, options);
+  }
+  {
+    // Test fused depthwise conv2d operator by setting groups to input channels,
+    // nhwc input layout, ihwo filter layout, fusing with bias operand and clamp
+    // activation.
+    auto* options = MLConv2dOptions::Create();
+    options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kIhwo);
+    options->setGroups(4);
+    auto* clamp_options = MLClampOptions::Create();
+    clamp_options->setMinValue(0.0);
+    clamp_options->setMaxValue(6.0);
+    options->setActivation(
+        builder->clamp(clamp_options, scope.GetExceptionState()));
+    Conv2dTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 4},
+                  .values = {10.0, 21.0, 10.0, 0.0, 10.0, 22.0, 20.0, 0.0, 10.0,
+                             23.0, 30.0, 0.0, 10.0, 24.0, 40.0, 0.0}},
+        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+                   .dimensions = {1, 2, 2, 4},
+                   .values = {0.25, 0.0, 10.0, 50.0, 0.25, 1.0, 20.0, 50.0,
+                              0.25, 0.0, 30.0, 50.0, 0.25, 1.0, 40.0, 50.0}},
+        .bias =
+            OperandInfo<float>{.type = V8MLOperandType::Enum::kFloat32,
+                               .dimensions = {4},
+                               .values = {-6000.0, -7000.0, 8000.0, 9000.0}},
+        .expected = {0.0, 0.0, 6.0, 6.0}}
         .Test(scope, builder, options);
   }
 }

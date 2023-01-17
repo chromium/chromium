@@ -15,6 +15,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/buildflag.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
@@ -354,6 +355,19 @@ XnnOutputRange GetXnnOutputRangeForActivation(const MLOperator* ml_operator) {
   XnnOutputRange output_range;
   switch (ml_operator->Kind()) {
     // TODO(crbug.com/1273291): Support clamp.
+    case MLOperator::OperatorKind::kClamp: {
+      // According to WebNN clamp spec:
+      // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, clamping occurs
+      // only if the lower bound or/and upper bound are provided.
+      const auto* options =
+          static_cast<const MLClampOptions*>(ml_operator->Options());
+      DCHECK(options);
+      output_range.min =
+          options->getMinValueOr(-std::numeric_limits<float>::infinity());
+      output_range.max =
+          options->getMaxValueOr(+std::numeric_limits<float>::infinity());
+      break;
+    }
     case MLOperator::OperatorKind::kRelu:
       // Set the minimum value to 0 according to the rectified linear function,
       // y = max(0, x).
@@ -365,6 +379,22 @@ XnnOutputRange GetXnnOutputRangeForActivation(const MLOperator* ml_operator) {
       NOTREACHED();
   }
   return output_range;
+}
+
+xnn_status DefineXnnNodeForClamp(xnn_subgraph_t subgraph,
+                                 const MLOperator* clamp,
+                                 const OperandValueIdMap& operand_value_id_map,
+                                 String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(clamp, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(clamp, operand_value_id_map);
+  const auto output_range = GetXnnOutputRangeForActivation(clamp);
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_clamp(subgraph, output_range.min, output_range.max, input_id,
+                       output_id, flags));
+  return xnn_status_success;
 }
 
 xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
@@ -496,6 +526,7 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
                               .max = +std::numeric_limits<float>::infinity()};
   if (options->hasActivation()) {
     switch (options->activation()->Kind()) {
+      case MLOperator::OperatorKind::kClamp:
       case MLOperator::OperatorKind::kRelu:
         output_range = GetXnnOutputRangeForActivation(options->activation());
         break;
@@ -608,6 +639,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
                          const OperandValueIdMap& operand_value_id_map,
                          String& error_message) {
   switch (ml_operator->Kind()) {
+    case MLOperator::OperatorKind::kClamp:
+      XNN_CHECK_STATUS(DefineXnnNodeForClamp(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
     case MLOperator::OperatorKind::kConv2d:
       XNN_CHECK_STATUS(DefineXnnNodeForConv2d(
           subgraph, ml_operator, operand_value_id_map, error_message));
