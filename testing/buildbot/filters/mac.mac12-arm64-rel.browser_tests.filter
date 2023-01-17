@@ -34,6 +34,10 @@
 -All/SearchPrefetchServiceEnabledBrowserTest.RemovingMatchCancelsInFlight/1
 -All/PromotionalTabsEnabledPolicyWhatsNewTest.RunTest/0
 -All/PromotionalTabsEnabledPolicyWhatsNewTest.RunTest/2
+-All/V4SafeBrowsingServiceJsRequestSafeTest.RequestNotBlocked/2
+-All/V4SafeBrowsingServiceJsRequestSafeTest.RequestNotBlocked/4
+-All/V4SafeBrowsingServiceJsRequestSafeTest.RequestNotBlocked/6
+-All/V4SafeBrowsingServiceJsRequestSafeTest.RequestNotBlocked/7
 -AmbientAuthenticationTestWithPolicy.GuestAndRegular
 -AmbientAuthenticationTestWithPolicy.IncognitoAndRegular
 -AmbientAuthenticationTestWithPolicy.RegularOnly
