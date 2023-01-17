@@ -183,6 +183,7 @@ public class WebSandbox {
 
         void unbind() {
             mContext.unbindService(this);
+            sSandboxConnectionInstance = null;
             sInstance = null;
         }
 
