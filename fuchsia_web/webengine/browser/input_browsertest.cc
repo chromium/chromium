@@ -49,42 +49,52 @@ KeyEvent CreateCharacterKeyEvent(uint32_t codepoint, KeyEventType event_type) {
   return key_event;
 }
 
-// Returns a KeyEvent with only the |key| field set, and |key_meaning| not set.
-KeyEvent CreateKeyEventNoMeaning(Key key, KeyEventType event_type) {
-  KeyEvent key_event;
-  key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
-  key_event.set_type(event_type);
-  key_event.set_key(key);
-  return key_event;
-}
+struct KeyEventOptions {
+  bool repeat;
+};
 
 // Returns a KeyEvent with both |key| and |key_meaning| set.
 KeyEvent CreateKeyEvent(Key key,
                         KeyMeaning key_meaning,
-                        KeyEventType event_type) {
-  KeyEvent key_event = CreateKeyEventNoMeaning(key, event_type);
+                        KeyEventType event_type,
+                        KeyEventOptions options = {}) {
+  KeyEvent key_event;
+  key_event.set_timestamp(base::TimeTicks::Now().ToZxTime());
+  key_event.set_type(event_type);
+  key_event.set_key(key);
   key_event.set_key_meaning(std::move(key_meaning));
+  if (options.repeat) {
+    // Chromium doesn't look at the value of this, it just check if the field is
+    // present.
+    key_event.set_repeat_sequence(1);
+  }
   return key_event;
 }
-KeyEvent CreateKeyEvent(Key key, uint32_t codepoint, KeyEventType event_type) {
+KeyEvent CreateKeyEvent(Key key,
+                        uint32_t codepoint,
+                        KeyEventType event_type,
+                        KeyEventOptions options = {}) {
   return CreateKeyEvent(key, KeyMeaning::WithCodepoint(std::move(codepoint)),
-                        event_type);
+                        event_type, options);
 }
 KeyEvent CreateKeyEvent(Key key,
                         NonPrintableKey non_printable_key,
-                        KeyEventType event_type) {
+                        KeyEventType event_type,
+                        KeyEventOptions options = {}) {
   return CreateKeyEvent(
       key, KeyMeaning::WithNonPrintableKey(std::move(non_printable_key)),
-      event_type);
+      event_type, options);
 }
 
 base::Value ExpectedKeyValue(base::StringPiece code,
                              base::StringPiece key,
-                             base::StringPiece type) {
+                             base::StringPiece type,
+                             KeyEventOptions options = {}) {
   base::Value::Dict expected;
   expected.Set("code", code);
   expected.Set("key", key);
   expected.Set("type", type);
+  expected.Set("repeat", options.repeat);
   return base::Value(std::move(expected));
 }
 
@@ -363,6 +373,21 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, ShiftNonPrintableKeys) {
                        ExpectedKeyValue("Enter", "Enter", kKeyPress),
                        ExpectedKeyValue("ControlLeft", "Control", kKeyDown),
                        ExpectedKeyValue("ShiftRight", "Shift", kKeyUp));
+}
+
+IN_PROC_BROWSER_TEST_F(KeyboardInputTest, RepeatedKeys) {
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::A, 'a', KeyEventType::PRESSED, {.repeat = true}));
+  keyboard_service_->SendKeyEvent(
+      CreateKeyEvent(Key::KEY_8, '8', KeyEventType::PRESSED, {.repeat = true}));
+
+  // Note that non-character keys (e.g. shift, control) only generate key down
+  // and key up web events. They do not generate key pressed events.
+  ExpectKeyEventsEqual(
+      ExpectedKeyValue("KeyA", "a", kKeyDown, {.repeat = true}),
+      ExpectedKeyValue("KeyA", "a", kKeyPress, {.repeat = true}),
+      ExpectedKeyValue("Digit8", "8", kKeyDown, {.repeat = true}),
+      ExpectedKeyValue("Digit8", "8", kKeyPress, {.repeat = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(KeyboardInputTest, Disconnect) {

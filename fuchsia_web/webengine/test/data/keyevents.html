@@ -4,17 +4,17 @@
   var keyDicts = [];
 
   document.addEventListener("keypress", (e) => {
-    keyDicts.push( { "key" : e.key, "code" : e.code, "type" : e.type});
+    keyDicts.push( { "key" : e.key, "code" : e.code, "type" : e.type, "repeat": e.repeat});
     document.title = keyDicts.length;
   });
 
   document.addEventListener("keyup", (e) => {
-    keyDicts.push({ "key" : e.key, "code" : e.code, "type" : e.type});
+    keyDicts.push({ "key" : e.key, "code" : e.code, "type" : e.type, "repeat": e.repeat});
     document.title = keyDicts.length;
   });
 
   document.addEventListener("keydown", (e) => {
-    keyDicts.push({ "key" : e.key, "code" : e.code, "type" : e.type});
+    keyDicts.push({ "key" : e.key, "code" : e.code, "type" : e.type, "repeat": e.repeat});
     document.title = keyDicts.length;
   });
 

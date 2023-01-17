@@ -117,6 +117,9 @@ bool KeyboardClient::ProcessKeyEvent(
   int event_flags = EventFlagsForCachedModifiers();
   if (key_event.has_modifiers())
     event_flags |= ModifiersToEventFlags(key_event.modifiers());
+  if (key_event.has_repeat_sequence()) {
+    event_flags |= EF_IS_REPEAT;
+  }
 
   // Derive the DOM Key and Code directly from the event's fields.
   // |key_event| has already been validated, so is guaranteed to have one
