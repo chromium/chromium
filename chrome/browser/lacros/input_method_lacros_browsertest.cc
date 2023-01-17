@@ -13,7 +13,10 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
+namespace crosapi {
 namespace {
 
 using ::crosapi::mojom::InputMethodTestInterface;
@@ -135,6 +138,23 @@ bool SetInputFieldText(content::WebContents* web_content,
       element_id, text, static_cast<int>(selection.start()),
       static_cast<int>(selection.end()));
   return ExecJs(web_content, script);
+}
+
+mojom::KeyEventPtr CreateKeyPressEvent(uint32_t dom_key, ui::DomCode dom_code) {
+  return mojom::KeyEvent::New(
+      mojom::KeyEventType::kKeyPress,
+      static_cast<int>(ui::DomKey::FromCharacter(dom_key)),
+      static_cast<int>(dom_code),
+      static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN));
+}
+
+mojom::KeyEventPtr CreateKeyReleaseEvent(uint32_t dom_key,
+                                         ui::DomCode dom_code) {
+  return mojom::KeyEvent::New(
+      mojom::KeyEventType::kKeyRelease,
+      static_cast<int>(ui::DomKey::FromCharacter(dom_key)),
+      static_cast<int>(dom_code),
+      static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN));
 }
 
 using InputMethodLacrosBrowserTest = InProcessBrowserTest;
@@ -336,4 +356,37 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                                          "abc", gfx::Range(2)));
 }
 
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       SendKeyEventTypesInEmptyTextField) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kSendKeyEventMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  input_method_async_waiter.SendKeyEvent(
+      CreateKeyPressEvent('a', ui::DomCode::US_A));
+  input_method_async_waiter.SendKeyEvent(
+      CreateKeyReleaseEvent('a', ui::DomCode::US_A));
+  input_method_async_waiter.SendKeyEvent(
+      CreateKeyPressEvent('b', ui::DomCode::US_B));
+  input_method_async_waiter.SendKeyEvent(
+      CreateKeyReleaseEvent('b', ui::DomCode::US_B));
+  input_method_async_waiter.SendKeyEvent(
+      CreateKeyPressEvent('c', ui::DomCode::US_C));
+  input_method_async_waiter.SendKeyEvent(
+      CreateKeyReleaseEvent('c', ui::DomCode::US_C));
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "abc", gfx::Range(3)));
+}
+
 }  // namespace
+}  // namespace crosapi

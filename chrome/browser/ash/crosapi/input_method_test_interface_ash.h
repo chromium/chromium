@@ -31,6 +31,8 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
   void SetComposition(const std::string& text,
                       uint32_t index,
                       SetCompositionCallback callback) override;
+  void SendKeyEvent(mojom::KeyEventPtr event,
+                    SendKeyEventCallback callback) override;
 
   // ui::InputMethodObserver:
   void OnFocus() override {}

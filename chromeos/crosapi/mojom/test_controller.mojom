@@ -142,10 +142,24 @@ interface ShillClientTestInterface {
   AddIPConfig@9(string ip_config_path, mojo_base.mojom.Value properties) => ();
 };
 
+[Stable, Extensible]
+enum KeyEventType {
+  [Default] kKeyPress = 0,
+  kKeyRelease = 1
+};
+
+[Stable]
+struct KeyEvent {
+  KeyEventType type@0;
+  int32 dom_key@1;
+  int32 dom_code@2;
+  int32 key_code@3;
+};
+
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to send commands as an input method.
-// Next version: 2
-// Next method id: 3
+// Next version: 3
+// Next method id: 4
 [Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
@@ -157,6 +171,9 @@ interface InputMethodTestInterface {
 
   // Calls `ash::InputMethodAsh::UpdateComposition`.
   [MinVersion=1] SetComposition@2(string text, uint32 index) => ();
+
+  // Calls `ash::InputMethodAsh::SendKeyEvent`.
+  [MinVersion=2] SendKeyEvent@3(KeyEvent event) => ();
 };
 
 // This interface is implemented by Ash-Chrome.
