@@ -860,10 +860,10 @@ void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
   // Only record when the start time is correctly captured.
   if (!results || !results->is_dict())
     return;
+  base::Value::Dict& results_dict = results->GetDict();
   if (!start_time.is_null()) {
-    results->GetDict().Set(
-        "execution_ms",
-        (base::TimeTicks::Now() - start_time).InMillisecondsF());
+    results_dict.Set("execution_ms",
+                     (base::TimeTicks::Now() - start_time).InMillisecondsF());
   }
 
   DVLOG(2) << "OnProductsExtracted: " << *results;
@@ -872,23 +872,23 @@ void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
       render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId());
   auto record_time = [&](const std::string& key,
                          const std::string& metric_name) {
-    auto* value = results->FindKey(key);
-    if (!value)
+    absl::optional<double> optional_time = results_dict.FindDouble(key);
+    if (!optional_time) {
       return;
-    if (value->is_int() || value->is_double()) {
-      double time_value = value->GetDouble();
-      base::TimeDelta time = base::Milliseconds(time_value);
-      base::UmaHistogramTimes("Commerce.Carts." + metric_name, time);
+    }
 
-      if (metric_name == "ExtractionLongestTaskTime") {
-        builder.SetExtractionLongestTaskTime(time_value);
-      } else if (metric_name == "ExtractionTotalTasksTime") {
-        builder.SetExtractionTotalTasksTime(time_value);
-      } else if (metric_name == "ExtractionElapsedTime") {
-        builder.SetExtractionElapsedTime(time_value);
-      } else if (metric_name == "ExtractionExecutionTime") {
-        builder.SetExtractionExecutionTime(time_value);
-      }
+    double time_value = optional_time.value();
+    base::TimeDelta time = base::Milliseconds(time_value);
+    base::UmaHistogramTimes("Commerce.Carts." + metric_name, time);
+
+    if (metric_name == "ExtractionLongestTaskTime") {
+      builder.SetExtractionLongestTaskTime(time_value);
+    } else if (metric_name == "ExtractionTotalTasksTime") {
+      builder.SetExtractionTotalTasksTime(time_value);
+    } else if (metric_name == "ExtractionElapsedTime") {
+      builder.SetExtractionElapsedTime(time_value);
+    } else if (metric_name == "ExtractionExecutionTime") {
+      builder.SetExtractionExecutionTime(time_value);
     }
   };
   record_time("longest_task_ms", "ExtractionLongestTaskTime");
@@ -896,32 +896,35 @@ void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
   record_time("elapsed_ms", "ExtractionElapsedTime");
   record_time("execution_ms", "ExtractionExecutionTime");
 
-  auto* timedout = results->FindKey("timedout");
-  if (timedout && timedout->is_bool()) {
+  absl::optional<bool> timedout = results_dict.FindBool("timedout");
+  if (timedout) {
     base::UmaHistogramBoolean("Commerce.Carts.ExtractionTimedOut",
-                              timedout->GetBool());
-    builder.SetExtractionTimedOut(timedout->GetBool());
+                              timedout.value());
+    builder.SetExtractionTimedOut(timedout.value());
   }
   builder.Record(ukm_recorder_.get());
 
-  auto* extracted_products = results->FindKey("products");
-  if (!extracted_products)
+  const base::Value::List* extracted_products =
+      results_dict.FindList("products");
+  // Don't update cart when the return value does not exist or is not a list.
+  // This could be due to that the cart is not loaded.
+  if (!extracted_products) {
     return;
-  // Don't update cart when the return value is not a list. This could be due to
-  // that the cart is not loaded.
-  if (!extracted_products->is_list())
-    return;
+  }
   bool is_partner = commerce::IsPartnerMerchant(
       GURL(render_frame()->GetWebFrame()->GetDocument().Url()));
   std::vector<mojom::ProductPtr> products;
-  for (const auto& product : extracted_products->GetList()) {
-    if (!product.is_dict())
+  for (const auto& product_val : *extracted_products) {
+    if (!product_val.is_dict()) {
       continue;
-    const auto* image_url = product.FindKey("imageUrl");
-    const auto* product_name = product.FindKey("title");
+    }
+
+    const base::Value::Dict& product = product_val.GetDict();
+    const std::string* image_url = product.FindString("imageUrl");
+    const std::string* product_name = product.FindString("title");
     mojom::ProductPtr product_ptr(mojom::Product::New());
-    product_ptr->image_url = GURL(image_url->GetString());
-    product_ptr->name = product_name->GetString();
+    product_ptr->image_url = GURL(*image_url);
+    product_ptr->name = *product_name;
     DVLOG(1) << "image_url = " << product_ptr->image_url;
     DVLOG(1) << "name = " << product_ptr->name;
     if (ShouldSkip(product_ptr->name)) {
@@ -930,9 +933,9 @@ void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
     }
     if (is_partner) {
       std::string product_id;
-      const auto* extracted_id = product.FindKey("productId");
+      const std::string* extracted_id = product.FindString("productId");
       if (extracted_id) {
-        product_id = extracted_id->GetString();
+        product_id = *extracted_id;
       }
       DVLOG(1) << "product_id = " << product_id;
       DCHECK(!product_id.empty());
