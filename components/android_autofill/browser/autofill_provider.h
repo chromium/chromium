@@ -75,9 +75,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
                                          const FormData& form,
                                          base::TimeTicks timestamp) = 0;
 
-  virtual void OnFormsSeen(AndroidAutofillManager* manager,
-                           const std::vector<FormData>& forms) = 0;
-
   virtual void OnHidePopup(AndroidAutofillManager* manager) = 0;
 
   virtual void OnServerPredictionsAvailable(

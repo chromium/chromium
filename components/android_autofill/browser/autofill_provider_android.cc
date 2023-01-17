@@ -360,9 +360,6 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
   Java_AutofillProvider_onDidFillAutofillFormData(env, obj);
 }
 
-void AutofillProviderAndroid::OnFormsSeen(AndroidAutofillManager* manager,
-                                          const std::vector<FormData>& forms) {}
-
 void AutofillProviderAndroid::OnHidePopup(AndroidAutofillManager* manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager == manager_.get()) {

@@ -53,8 +53,6 @@ class TestAutofillProvider : public AutofillProvider {
   void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
                                  const FormData& form,
                                  base::TimeTicks timestamp) override {}
-  void OnFormsSeen(AndroidAutofillManager* manager,
-                   const std::vector<FormData>& forms) override {}
   void OnHidePopup(AndroidAutofillManager* manager) override {}
   void OnServerPredictionsAvailable(AndroidAutofillManager* manager) override {}
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
