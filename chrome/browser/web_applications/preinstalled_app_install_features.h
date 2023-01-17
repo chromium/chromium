@@ -26,9 +26,6 @@ BASE_DECLARE_FEATURE(kMessagesPreinstall);
 bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
                                             const Profile& profile);
 
-// Checks if migration flag is enabled on all OS.
-bool IsAnyChromeAppToWebAppMigrationEnabled(const Profile& profile);
-
 base::AutoReset<bool> SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
 }  // namespace web_app

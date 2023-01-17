@@ -118,6 +118,14 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
     data_decoder = std::make_unique<data_decoder::DataDecoder>();
   }
 #endif
+
+  bool is_default_chrome_app_migrated;
+#if BUILDFLAG(IS_ANDROID)
+  is_default_chrome_app_migrated = false;
+#else
+  is_default_chrome_app_migrated = true;
+#endif
+
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
       profile->GetPrefs(), TopSitesFactory::GetForProfile(profile),
 #if BUILDFLAG(IS_ANDROID)
@@ -144,11 +152,6 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #else
       nullptr,
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-      web_app::IsAnyChromeAppToWebAppMigrationEnabled(CHECK_DEREF(profile))
-#else
-      false
-#endif
-  );
+      is_default_chrome_app_migrated);
   return most_visited_sites;
 }

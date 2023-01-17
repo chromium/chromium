@@ -103,11 +103,6 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
   return false;
 }
 
-// TODO(crbug.com/1406709): Retire this method.
-bool IsAnyChromeAppToWebAppMigrationEnabled(const Profile& profile) {
-  return true;
-}
-
 base::AutoReset<bool>
 SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting() {
   return base::AutoReset<bool>(&g_always_enabled_for_testing, true);
