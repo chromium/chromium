@@ -156,58 +156,13 @@ public class TabGroupImpl implements ITabGroup {
                     ArkLogger.e(TAG, "from tabInfo tabFile=" + tabFile);
                     TabInfo tabInfo = TabInfo.from(tabFile);
                     ArkLogger.e(TAG, "from tabInfo=" + tabInfo);
-
-//                    File pagesDir = ArkTabDao.getPagesDir(tabInfo.getId());
-//                    List<IPage> pageList = new ArrayList<>();
-//                    for (int pageId : pageIds) {
-//                        File file = new File(pagesDir, String.valueOf(pageId));
-//                        pageList.add(new PageImpl(PageInfo.from(file)));
-//                    }
-
                     mTabList.add(new TabImpl(tabInfo));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
         ArkLogger.d(TAG, "load deltaTime=" + (System.currentTimeMillis() - start));
-
-
-//        List<PageInfo> allPages = PageInfoManager.getAllPages();
-//
-//        Map<String, List<PageInfo>> pageListMap = new HashMap<>();
-//        for (PageInfo pageInfo : allPages) {
-//            String tabInfoId = pageInfo.getTabInfoId();
-//            List<PageInfo> pages = pageListMap.get(tabInfoId);
-//            if (pages == null) {
-//                pages = new ArrayList<>();
-//                pageListMap.put(tabInfoId, pages);
-//            }
-////            Log.d(TAG, "deltaTime pageInfo " + pageInfo.getTabInfoId() + "-" + pageInfo.getOriginalIndex());
-//            pages.add(pageInfo);
-//        }
-//
-//
-//        for (TabInfo tabInfo : TabInfoManager.getAllTabs()) {
-////            long startTime = System.currentTimeMillis();
-//            String tabId = tabInfo.getTabInfoId();
-//            List<PageInfo> pages = pageListMap.get(tabId);
-//            if (pages == null || pages.isEmpty()) {
-//                continue;
-//            }
-//            List<IPage> pageList = new ArrayList<>();
-//            for (PageInfo info : pages) {
-//                pageList.add(new PageImpl(info));
-//            }
-//            mTabList.add(new TabImpl(tabInfo, pageList));
-////            Log.d(TAG, "restore deltaTime=" + (System.currentTimeMillis() - startTime));
-//        }
-//
-//        ArkLogger.d(TAG, "load deltaTime=" + (System.currentTimeMillis() - start));
-//
-//        allPages.clear();
-//        pageListMap.clear();
     }
 
     @Override

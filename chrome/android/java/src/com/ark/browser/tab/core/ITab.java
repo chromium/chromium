@@ -1,5 +1,6 @@
 package com.ark.browser.tab.core;
 
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
@@ -7,9 +8,13 @@ import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.dao.ArkTabDao;
-import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.ThreadPool;
+import com.zpj.utils.FileUtils;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.File;
 import java.util.List;
@@ -140,58 +145,39 @@ public interface ITab {
 
     default ITab cloneTab() {
 
-        TabInfo tabInfo = getTabInfo();
+        TabInfo newTabInfo = getTabInfo().cloneTabInfo();
 
-        TabInfo newTabInfo = TabInfo.create();
-        newTabInfo.setPageIndex(tabInfo.getPageIndex());
-        
-        
-        newTabInfo.setCurrentPageId(Tab.INVALID_PAGE_ID);
-        newTabInfo.setLocked(tabInfo.isLocked());
-        newTabInfo.setIncognito(tabInfo.isIncognito());
-        newTabInfo.setAccessTime(tabInfo.getAccessTime());
-        ITab newTab = new TabImpl(newTabInfo);
+        boolean encrypted = newTabInfo.isIncognito();
+        for (int i = 0; i < getPageSize(); i++) {
+            IPage page = getPageAt(i);
+            IPage newPage = page.clone(newTabInfo.getId());
+            newTabInfo.getPages().add(newPage);
+            newPage.savePageInfo();
 
-//        Log.d(getClass().getSimpleName(), "cloneTab index=" + tabInfo.getPageIndex()
-//                + " currentTabId=" + tabInfo.getCurrentTabId());
-//
-//        PageInfo parentInfo = null;
-//        for (int i = 0; i < getPageGroup().getCount(); i++) {
-//            PageInfo tab = getPageGroup().getPageInfoAt(i);
-//            Log.d(getClass().getSimpleName(), "cloneTab id=" + tab.getPageId());
-//            TabState state = TabState.restoreTabState(getTabListFolder(), tab.getPageId());
-//            if (state == null) {
-//                continue;
-//            }
-//
-//            // 创建新的pageInfo
-//            int newId = TabIdManager.getInstance().generateValidId(Tab.INVALID_PAGE_ID);
-//            PageInfo newPageInfo = PageInfo.from(tab);
-//            newPageInfo.setPageId(newId);
-//            newPageInfo.setTabInfoId(newTabInfo.getTabInfoId());
-//            if (parentInfo == null) {
-//                newPageInfo.setParentId(tab.getParentId());
-//            } else {
-//                newPageInfo.setParentId(newTab.getPageInfoAt(i - 1).getPageId());
-//            }
-//
-//
-//            // 复制TabState
-//            state.parentId = newPageInfo.getParentId();
-////            TabState.saveState(
-////                    TabState.getTabStateFile(newTab.getTabListFolder(), newId, newPageInfo.isIncognito()),
-////                    state,
-////                    newPageInfo.isIncognito()
-////            );
-//
-//            parentInfo = newPageInfo;
-//
-//            newTab.getPageGroup().getPageInfoList().add(new PageImpl(newPageInfo));
-//            if (tabInfo.getPageIndex() == i) {
-//                newTabInfo.setCurrentTabId(newId);
-//            }
-//        }
-        return newTab;
+            ArkWebContents arkWeb = ArkWebManager.get(page.getId());
+            TabState tabState = null;
+            if (arkWeb != null && !arkWeb.isDestroyed()) {
+                tabState = TabStateExtractor.from(arkWeb.getWebContents());
+            }
+            TabState finalTabState = tabState;
+            ThreadPool.executeIO(() -> {
+                File newPageFile = ArkTabDao.getTabStateFile(newPage.getId(), encrypted);
+                if (finalTabState == null) {
+                    File pageFile = ArkTabDao.getTabStateFile(page.getId(), encrypted);
+                    if (pageFile.exists()) {
+                        FileUtils.copyFileFast(pageFile, newPageFile);
+                    }
+                } else {
+                    TabStateFileManager.saveState(newPageFile, finalTabState, encrypted);
+                }
+            });
+            if (getPageIndex() == i) {
+                newTabInfo.setPageIndex(i);
+                PageSnapshotManager.getInstance().copySnapshot(getCurrentPageId(), newPage.getId());
+            }
+        }
+
+        return new TabImpl(newTabInfo);
     }
 
 //    default IPage createPage(Tab parent, LoadUrlParams params, @TabLaunchType int type) {

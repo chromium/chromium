@@ -6,8 +6,7 @@ import android.util.SparseBooleanArray;
 import androidx.annotation.Nullable;
 import androidx.core.util.AtomicFile;
 
-import com.ark.browser.tab.core.ITabGroup;
-import com.ark.browser.tab.core.TabGroupImpl;
+import com.ark.browser.tab.PageInfo;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
@@ -135,20 +134,20 @@ public class ArkTabDao {
         return TabStateFileManager.restoreTabState(pageFile, false);
     }
 
-    public static void savePageState(Tab page) {
-        boolean encrypted = page.isIncognito();
-        File pageFile = getTabStateFile(page.getId(), encrypted);
-        TabStateFileManager.saveState(pageFile, TabStateExtractor.from(page), encrypted);
+    public static void savePageState(Tab tab, PageInfo pageInfo) {
+        boolean encrypted = tab.isIncognito();
+        File pageFile = getTabStateFile(pageInfo.getId(), encrypted);
+        TabStateFileManager.saveState(pageFile, TabStateExtractor.from(tab), encrypted);
     }
 
-    public static File getTabStateFile(int tabId, boolean encrypted) {
+    public static File getTabStateFile(int pageId, boolean encrypted) {
 
         File statesDir= new File(StateDirHolder.sDirectory, "states");
         if (!statesDir.exists()) {
             statesDir.mkdirs();
         }
 
-        return new File(statesDir, "page" + tabId);
+        return new File(statesDir, "page" + pageId);
     }
 
     public static void saveFile(byte[] bytes, File f) {

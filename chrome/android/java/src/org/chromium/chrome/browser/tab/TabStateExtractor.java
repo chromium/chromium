@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 
 import java.nio.ByteBuffer;
@@ -47,6 +48,12 @@ public class TabStateExtractor {
         return tabState;
     }
 
+    public static TabState from(WebContents webContents) {
+        TabState tabState = new TabState();
+        tabState.contentsState = getWebContentsState(webContents);
+        return tabState;
+    }
+
     /**
      * Returns an object representing the state of the Tab's WebContents.
      * @param tab The {@link Tab} from which to extract the WebContents state.
@@ -58,6 +65,16 @@ public class TabStateExtractor {
 
         // Native call returns null when buffer allocation needed to serialize the state failed.
         ByteBuffer buffer = getWebContentsStateAsByteBuffer(tab);
+        if (buffer == null) return null;
+
+        WebContentsState state = new WebContentsState(buffer);
+        state.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        return state;
+    }
+
+    public static WebContentsState getWebContentsState(WebContents webContents) {
+        // Native call returns null when buffer allocation needed to serialize the state failed.
+        ByteBuffer buffer = WebContentsStateBridge.getContentsStateAsByteBuffer(webContents);
         if (buffer == null) return null;
 
         WebContentsState state = new WebContentsState(buffer);

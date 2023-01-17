@@ -101,6 +101,20 @@ public class PageInfo {
         return info;
     }
 
+    public PageInfo clonePageInfo(int newTabId) {
+        PageInfo info = new PageInfo();
+        info.pageId = ArkIdManager.generatePageId();
+        info.tabId = newTabId;
+        info.isIncognito = isIncognito;
+        info.fromMerge = fromMerge;
+        info.themeColor = themeColor;
+        info.originalIndex = originalIndex;
+        info.mUserAgent = mUserAgent;
+        info.url = url;
+        info.title = title;
+        return info;
+    }
+
     public int getId() {
         return pageId;
     }

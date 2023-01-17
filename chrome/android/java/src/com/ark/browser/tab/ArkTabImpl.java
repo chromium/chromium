@@ -1525,8 +1525,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     @Override
     public void saveState() {
         ThreadPool.executeIO(() -> {
+            PageInfo pageInfo = getPageInfo();
+            if (pageInfo == null) {
+                return;
+            }
             long start = System.currentTimeMillis();
-            ArkTabDao.savePageState(ArkTabImpl.this);
+            ArkTabDao.savePageState(ArkTabImpl.this, pageInfo);
             ArkLogger.d(TAG, "saveState id=" + getId() + " deltaTime=" + (System.currentTimeMillis() - start));
         });
     }

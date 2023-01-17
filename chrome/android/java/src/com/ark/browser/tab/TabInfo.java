@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Keep
@@ -74,15 +72,16 @@ public class TabInfo {
 
     public TabInfo cloneTabInfo() {
         TabInfo newTabInfo = TabInfo.create();
-//        newTabInfo.tabId = tabId;
+        newTabInfo.tabId = ArkIdManager.generateTabId();
         newTabInfo.createTime = createTime;
         newTabInfo.pageIndex = pageIndex;
-        newTabInfo.currentPageId = currentPageId;
+        newTabInfo.currentPageId = Tab.INVALID_PAGE_ID;
         newTabInfo.position = position;
         newTabInfo.isLocked = isLocked;
         newTabInfo.incognito = incognito;
         newTabInfo.accessTime = accessTime;
-//        newTabInfo.mPageInfoList.addAll(mPageInfoList);
+        newTabInfo.mLaunchType = mLaunchType;
+        newTabInfo.parentId = parentId;
         return newTabInfo;
     }
 

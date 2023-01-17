@@ -3,7 +3,6 @@ package com.ark.browser.tab.dao;
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.utils.ArkLogger;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -14,14 +13,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tab.TabStateAttributes;
-import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -29,8 +24,6 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
@@ -40,7 +33,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 
 public class ArkTabStore {
 
@@ -86,8 +78,8 @@ public class ArkTabStore {
     void saveNextTab() {
         if (mSaveTabTask != null) return;
         if (!mTabsToSave.isEmpty()) {
-            ArkWebContents tab = mTabsToSave.removeFirst();
-            mSaveTabTask = new SaveTabTask(tab);
+            ArkWebContents webContents = mTabsToSave.removeFirst();
+            mSaveTabTask = new SaveTabTask(webContents);
             mSaveTabTask.executeOnTaskRunner(mSequencedTaskRunner);
         } else {
             saveTabListAsynchronously();
@@ -100,16 +92,16 @@ public class ArkTabStore {
 //        mSaveListTask.executeOnTaskRunner(mSequencedTaskRunner);
     }
 
-    private boolean saveTabState(int tabId, boolean encrypted, TabState state) {
+    private boolean saveTabState(int pageId, boolean encrypted, TabState state) {
         if (state == null) return false;
 
         try {
-            TabStateFileManager.saveState(ArkTabDao.getTabStateFile(tabId, encrypted), state, encrypted);
+            TabStateFileManager.saveState(ArkTabDao.getTabStateFile(pageId, encrypted), state, encrypted);
             return true;
         } catch (OutOfMemoryError e) {
             ArkLogger.e(
                     TAG, "Out of memory error while attempting to save tab state.  Erasing.");
-            deleteTabState(tabId, encrypted);
+            deleteTabState(pageId, encrypted);
         }
         return false;
     }
@@ -274,22 +266,22 @@ public class ArkTabStore {
     }
 
     private class SaveTabTask extends AsyncTask<Void> {
-        ArkWebContents mTab;
+        ArkWebContents mWeb;
         int mId;
         TabState mState;
         boolean mEncrypted;
         boolean mStateSaved;
 
-        SaveTabTask(ArkWebContents tab) {
-            mTab = tab;
-            mId = tab.getId();
-            mEncrypted = tab.isIncognito();
+        SaveTabTask(ArkWebContents webContents) {
+            mWeb = webContents;
+            mId = webContents.getId();
+            mEncrypted = webContents.isIncognito();
         }
 
         @Override
         protected void onPreExecute() {
             if (mDestroyed || isCancelled()) return;
-            mState = from(mTab);
+            mState = from(mWeb);
         }
 
         @Override

@@ -26,6 +26,10 @@ public interface IPage {
 
     PageInfo getPageInfo();
 
+    default IPage clone(int newTabId) {
+        return new PageImpl(getPageInfo().clonePageInfo(newTabId));
+    }
+
     default void remove() {
         ArkWebManager.remove(getId());
         PageSnapshotManager.getInstance().removeSnapshot(getId());
@@ -79,14 +83,16 @@ public interface IPage {
                 public void run() {
                     File pagesDir = ArkTabDao.getPagesDir(pageInfo.tabId);
                     AtomicFile file = new AtomicFile(new File(pagesDir, String.valueOf(pageInfo.pageId)));
+                    ArkLogger.e(this, "savePageInfo pagesDir=" + pagesDir);
                     FileOutputStream fos = null;
                     try {
                         fos = file.startWrite();
                         fos.write(bytes, 0, bytes.length);
                         file.finishWrite(fos);
+                        ArkLogger.e(this, "savePageInfo success!");
                     } catch (IOException e) {
                         if (fos != null) file.failWrite(fos);
-                        ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+                        ArkLogger.e(this, "savePageInfo Failed to write file: " + file.getBaseFile().getAbsolutePath());
                     }
                 }
             });

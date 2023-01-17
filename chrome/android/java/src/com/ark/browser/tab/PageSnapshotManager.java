@@ -15,6 +15,7 @@ import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
+import com.zpj.utils.FileUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -61,6 +62,18 @@ public class PageSnapshotManager {
 
     public static PageSnapshotManager getInstance() {
         return Holder.MANAGER;
+    }
+
+    public void copySnapshot(int oldId, int newId) {
+        ThreadPool.executeIO(() -> {
+            synchronized (snapshotTasks) {
+                File file = new File(PathHolder.path, oldId + ".thumbnail");
+                if (file.exists()) {
+                    File newFile = new File(PathHolder.path, newId + ".thumbnail");
+                    FileUtils.copyFileFast(file, newFile);
+                }
+            }
+        });
     }
 
     public void cacheCurrentPage() {
