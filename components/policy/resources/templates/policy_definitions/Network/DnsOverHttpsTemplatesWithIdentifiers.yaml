@@ -15,8 +15,8 @@ example_value: https://dns.example.net/dns-query{?dns}
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:110-
 owners:
 - chromeos-commercial-networking@google.com
 - srad@google.com
