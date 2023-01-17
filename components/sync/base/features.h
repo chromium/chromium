@@ -155,8 +155,6 @@ inline constexpr base::FeatureParam<int>
 
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataType);
 
-BASE_DECLARE_FEATURE(kSyncPauseUponAnyPersistentAuthError);
-
 // If enabled, issues error and disables bookmarks sync when limit is crossed.
 BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
 

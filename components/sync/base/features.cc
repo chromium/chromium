@@ -118,12 +118,6 @@ BASE_FEATURE(kSyncEnableContactInfoDataType,
              "SyncEnableContactInfoDataType",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Causes sync to pause fully for all persistent auth errors, instead of doing
-// this exclusively for web signouts.
-BASE_FEATURE(kSyncPauseUponAnyPersistentAuthError,
-             "SyncPauseUponAnyPersistentAuthError",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncEnforceBookmarksCountLimit,
              "SyncEnforceBookmarksCountLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);

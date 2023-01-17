@@ -6,14 +6,12 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/engine/sync_credentials.h"
@@ -54,24 +52,6 @@ constexpr net::BackoffEntry::Policy
         // Don't use initial delay unless the last request was an error.
         false,
 };
-
-bool ErrorImpliesSyncPaused(const GoogleServiceAuthError& auth_error) {
-  // Web signout returns true regardless of feature toggle. In this case the
-  // identity code sets an account's refresh token to be invalid (error
-  // CREDENTIALS_REJECTED_BY_CLIENT).
-  if (auth_error == GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                            CREDENTIALS_REJECTED_BY_CLIENT)) {
-    DCHECK(auth_error.IsPersistentError());
-    return true;
-  }
-  if (!auth_error.IsPersistentError()) {
-    return false;
-  }
-  // For persistent auth errors other than web signout, return true only if the
-  // feature is enabled.
-  return base::FeatureList::IsEnabled(kSyncPauseUponAnyPersistentAuthError);
-}
 
 }  // namespace
 
@@ -139,6 +119,9 @@ GoogleServiceAuthError SyncAuthManager::GetLastAuthError() const {
     // maybe we shouldn't expose this case as an auth error at all?
     return GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
   }
+  // |last_auth_error_| is never a transient error, but note that the
+  // CONNECTION_FAILED case returned above is.
+  DCHECK(!last_auth_error_.IsTransientError());
   return last_auth_error_;
 }
 
@@ -151,7 +134,7 @@ base::Time SyncAuthManager::GetLastAuthErrorTime() const {
 }
 
 bool SyncAuthManager::IsSyncPaused() const {
-  return ErrorImpliesSyncPaused(GetLastAuthError());
+  return GetLastAuthError().IsPersistentError();
 }
 
 SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
@@ -330,7 +313,13 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
   GoogleServiceAuthError token_error =
       identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           account_info.account_id);
-  if (ErrorImpliesSyncPaused(token_error)) {
+
+  // GetErrorStateOfRefreshTokenForAccount() only reports persistent errors.
+  DCHECK(!token_error.IsTransientError());
+
+  if (token_error != GoogleServiceAuthError::AuthErrorNone()) {
+    DCHECK(token_error.IsPersistentError());
+
     // When the refresh token is replaced by an invalid token, Sync must be
     // stopped immediately, even if the current access token is still valid.
     // This happens e.g. when the user signs out of the web with Dice enabled.
@@ -342,13 +331,12 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
     SetLastAuthError(token_error);
 
     credentials_changed_callback_.Run();
-  } else if (ErrorImpliesSyncPaused(last_auth_error_)) {
+  } else if (last_auth_error_ != GoogleServiceAuthError::AuthErrorNone()) {
+    DCHECK(last_auth_error_.IsPersistentError());
     // Conversely, if we just exited the paused state, we need to reset the last
     // auth error and tell our client (i.e. the SyncService) so that it'll know
     // to resume syncing (if appropriate).
-    // TODO(blundell): Long-term, it would be nicer if Sync didn't have to
-    // cache signin-level authentication errors.
-    SetLastAuthError(token_error);
+    SetLastAuthError(GoogleServiceAuthError::AuthErrorNone());
     credentials_changed_callback_.Run();
 
     // If we have an open connection to the server, then also get a new access
@@ -362,14 +350,6 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
     // (and hence the retry timer is running), then request a fresh access token
     // now. This will also drop the current access token.
     DCHECK(!ongoing_access_token_fetch_);
-    RequestAccessToken();
-  } else if (last_auth_error_ != GoogleServiceAuthError::AuthErrorNone() &&
-             connection_open_) {
-    // If we were in an auth error state, then now's also a good time to try
-    // again. In this case it's possible that there is already a pending
-    // request, in which case RequestAccessToken will simply do nothing.
-    // Note: This is necessary to recover if the refresh token was previously
-    // removed.
     RequestAccessToken();
   }
 }
@@ -395,18 +375,12 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
   DCHECK_EQ(
       sync_account_.account_info.account_id,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-  if (base::FeatureList::IsEnabled(kSyncPauseUponAnyPersistentAuthError)) {
-    // TODO(crbug.com/1371572): Reconsider setting auth errors created
-    // artificially here that were never received from IdentityManager.
-    SetLastAuthError(GoogleServiceAuthError(
-        GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-    DCHECK(IsSyncPaused());
-  } else {
-    // Legacy codepath, subject to cleanup.
-    SetLastAuthError(
-        GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
-    DCHECK(!IsSyncPaused());
-  }
+
+  // TODO(crbug.com/1371572): Reconsider setting auth errors created
+  // artificially here that were never received from IdentityManager.
+  SetLastAuthError(
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  DCHECK(IsSyncPaused());
 
   // Note: It's possible that we're in the middle of a signout, and the "refresh
   // token removed" event just arrived before the "signout" event. In that case,
@@ -591,6 +565,7 @@ void SyncAuthManager::AccessTokenFetched(
 }
 
 void SyncAuthManager::SetLastAuthError(const GoogleServiceAuthError& error) {
+  DCHECK(!error.IsTransientError());
   if (last_auth_error_ == error) {
     return;
   }

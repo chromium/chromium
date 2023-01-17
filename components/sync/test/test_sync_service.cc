@@ -62,8 +62,6 @@ void TestSyncService::SetHasSyncConsent(bool has_sync_consent) {
 }
 
 void TestSyncService::SetPersistentAuthErrorOtherThanWebSignout() {
-  // This mimics the behavior for the feature toggle
-  // kSyncPauseUponAnyPersistentAuthError being enabled.
   transport_state_ = TransportState::PAUSED;
   auth_error_ = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
       GoogleServiceAuthError::InvalidGaiaCredentialsReason::

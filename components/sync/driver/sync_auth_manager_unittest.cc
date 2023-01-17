@@ -7,13 +7,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "net/base/net_errors.h"
@@ -760,8 +758,6 @@ TEST_F(SyncAuthManagerTest, ClearsCredentialsOnInvalidRefreshToken) {
 }
 
 TEST_F(SyncAuthManagerTest, EntersPausedStateOnPersistentAuthError) {
-  base::test::ScopedFeatureList feature(kSyncPauseUponAnyPersistentAuthError);
-
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",

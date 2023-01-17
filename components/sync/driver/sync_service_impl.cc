@@ -1140,12 +1140,9 @@ ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
     return ModelTypeSet();
   }
 
-  if (GetAuthError().IsPersistentError()) {
-    // If kSyncPauseUponAnyPersistentAuthError is enabled, a persistent auth
-    // error leads to PAUSED, which implies data_type_manager_==null above.
-    DCHECK(!base::FeatureList::IsEnabled(kSyncPauseUponAnyPersistentAuthError));
-    return ModelTypeSet();
-  }
+  // Persistent auth errors lead to PAUSED, which implies
+  // data_type_manager_==null above.
+  DCHECK(!GetAuthError().IsPersistentError());
 
   return data_type_manager_->GetActiveDataTypes();
 }

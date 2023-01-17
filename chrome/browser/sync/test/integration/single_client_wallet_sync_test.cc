@@ -93,9 +93,6 @@ const char kDifferentBillingAddressId[] = "another address entity ID";
 const base::Time kArbitraryDefaultTime = base::Time::FromDoubleT(25);
 const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
     syncer::SyncFirstSetupCompleteSource::BASIC_FLOW;
-constexpr char kInvalidGrantOAuth2Token[] = R"({
-                                           "error": "invalid_grant"
-                                        })";
 
 template <class T>
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
@@ -560,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSignOut) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Wallet data should get cleared from the database when the user enters the
-// sync paused state.
+// sync paused state (e.g. persistent auth error).
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSyncPaused) {
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
                                   CreateDefaultSyncWalletCard(),
@@ -598,62 +595,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSyncPaused) {
   ASSERT_EQ(1uL, pdm->GetCreditCardCloudTokenData().size());
   ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
   ASSERT_EQ(1U, GetServerAddressesMetadata(0).size());
-}
-
-// Wallet data should get cleared from the database when the user enters any
-// persistent error (other than getting signed-out which is covered in the
-// ClearOnSyncPaused test). One such case is when the account password was
-// changed in another device.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnPersistentError) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
-                                  CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
-  ASSERT_TRUE(SetupSync());
-
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  ASSERT_NE(nullptr, pdm);
-
-  // Make sure the data & metadata is in the DB.
-  ASSERT_EQ(1uL, pdm->GetServerProfiles().size());
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  ASSERT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
-  ASSERT_EQ(1uL, pdm->GetCreditCardCloudTokenData().size());
-  ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
-  ASSERT_EQ(1U, GetServerAddressesMetadata(0).size());
-
-  // Enter an error state. First set up fake responses.
-  GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
-  SetOAuth2TokenResponse(kInvalidGrantOAuth2Token, net::HTTP_BAD_REQUEST,
-                         net::OK);
-  signin::DisableAccessTokenFetchRetries(
-      IdentityManagerFactory::GetForProfile(GetProfile(0)));
-
-  // Try to commit a bookmark which fails and triggers an auth token fetch.
-  EXPECT_NE(nullptr, bookmarks_helper::AddURL(0, "Bookmark",
-                                              GURL("http://www.foo.com")));
-
-  // Run until an auth error is encountered.
-  TestForAuthError(GetSyncService(0)).Wait();
-  GoogleServiceAuthError oauth_error = GetSyncService(0)->GetAuthError();
-  ASSERT_TRUE(oauth_error.IsPersistentError());
-  // Verify it's not a locally-initiated web signout, which would otherwise mean
-  // this test is redundant with test ClearOnSyncPaused.
-  // TODO(crbug.com/1156584): Merge the two tests into one when feature toggle
-  // kSyncPauseUponAnyPersistentAuthError is cleaned up.
-  ASSERT_NE(oauth_error,
-            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                    CREDENTIALS_REJECTED_BY_CLIENT));
-
-  // This should result in the data & metadata being gone.
-  WaitForNumberOfCards(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetServerProfiles().size());
-  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
-  EXPECT_EQ(nullptr, pdm->GetPaymentsCustomerData());
-  EXPECT_EQ(0uL, pdm->GetCreditCardCloudTokenData().size());
-  EXPECT_EQ(0U, GetServerCardsMetadata(0).size());
-  EXPECT_EQ(0U, GetServerAddressesMetadata(0).size());
 }
 
 // Wallet is not using incremental updates. Make sure existing data gets
