@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
@@ -69,6 +70,7 @@ UIView* IconViewWithImage(NSString* image_name, BOOL custom_symbol) {
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier = kTangibleSyncViewAccessibilityIdentifier;
   self.shouldHideBanner = YES;
   self.hasAvatarImage = YES;
   self.scrollToEndMandatory = YES;

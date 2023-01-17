@@ -53,6 +53,8 @@ extern NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier;
 // Name of accessibility identifier for "Skip" button in the web sign-in
 // consistency sheet.
 extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
+// Name of the accessibility identifier for the Tangible Sync view.
+extern NSString* const kTangibleSyncViewAccessibilityIdentifier;
 
 // Action that is required to do to complete the sign-in, or instead of sign-in.
 // This action is in charge of the SigninCoordinator's owner.

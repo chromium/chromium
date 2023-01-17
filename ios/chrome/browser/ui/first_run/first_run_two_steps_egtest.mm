@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
@@ -146,7 +147,7 @@ void DismissDefaultBrowserPromo() {
       "--force-fieldtrial-params=" +
       std::string(signin::kNewMobileIdentityConsistencyFRE.name) +
       ".Test:" + std::string(kNewMobileIdentityConsistencyFREParam) + "/" +
-      kNewMobileIdentityConsistencyFREParamTwoSteps);
+      kNewMobileIdentityConsistencyFREParamTangibleSyncA);
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
@@ -353,9 +354,9 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTangibleSyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
@@ -389,9 +390,9 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTangibleSyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
@@ -486,9 +487,9 @@ void DismissDefaultBrowserPromo() {
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't start when discarding advanced settings.");
   // Accept sync.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTangibleSyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
@@ -558,9 +559,9 @@ void DismissDefaultBrowserPromo() {
                  chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   // Accept sync.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTangibleSyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
@@ -613,9 +614,9 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTangibleSyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
@@ -742,9 +743,9 @@ void DismissDefaultBrowserPromo() {
                  chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   // Accept sync.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTangibleSyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
@@ -807,9 +808,9 @@ void DismissDefaultBrowserPromo() {
                        kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Accept sync.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSyncScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTangibleSyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
@@ -853,9 +854,8 @@ void DismissDefaultBrowserPromo() {
   // Sometimes EG continues before the Sync screen is displayed. Make sure to
   // wait for it.
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunSyncScreenAccessibilityIdentifier)];
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kTangibleSyncViewAccessibilityIdentifier)];
   [[self
       elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
                    scrollViewIdentifier:

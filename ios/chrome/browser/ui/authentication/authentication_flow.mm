@@ -99,6 +99,7 @@ enum AuthenticationState {
   BOOL _didSignIn;
   BOOL _failedOrCancelled;
   BOOL _shouldSignOut;
+  BOOL _alreadySignedInWithTheSameAccount;
   // YES if the signed in account is a managed account and the sign-in flow
   // includes sync.
   BOOL _shouldShowManagedConfirmation;
@@ -375,7 +376,7 @@ enum AuthenticationState {
 - (void)isSubjectToParentalControlCapabilityFetched:
     (SystemIdentityCapabilityResult)result {
   if (result == SystemIdentityCapabilityResult::kTrue) {
-    [self didChooseClearDataPolicy:SHOULD_CLEAR_DATA_CLEAR_DATA];
+    [self checkMergeCaseForSupervisedAccounts];
     return;
   }
   switch (self.postSignInAction) {
@@ -388,6 +389,19 @@ enum AuthenticationState {
   }
 }
 
+// Checks if data should be merged or cleared when `_identityToSignIn`
+// is subject to parental controls and then continues sign-in.
+- (void)checkMergeCaseForSupervisedAccounts {
+  // Always clear the data for supervised accounts if the account
+  // is not already signed in.
+  self.localDataClearingStrategy = _alreadySignedInWithTheSameAccount
+                                       ? SHOULD_CLEAR_DATA_MERGE_DATA
+                                       : SHOULD_CLEAR_DATA_CLEAR_DATA;
+  [self continueSignin];
+}
+
+// Checks if data should be merged or cleared when `_identityToSignIn`
+// is not subject to parental controls and then continues sign-in.
 - (void)checkMergeCaseForUnsupervisedAccounts {
   if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
                                   browserStatePrefs:_browser->GetBrowserState()
@@ -413,6 +427,8 @@ enum AuthenticationState {
     // sign-out is required.
     _shouldSignOut = YES;
   }
+  _alreadySignedInWithTheSameAccount =
+      [currentIdentity isEqual:_identityToSignIn];
 }
 
 - (void)signInIdentity:(id<SystemIdentity>)identity {

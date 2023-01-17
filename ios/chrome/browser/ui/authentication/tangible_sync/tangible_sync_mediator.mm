@@ -147,6 +147,12 @@
     (const signin::PrimaryAccountChangeEvent&)event {
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    // In rare cases, the auth flow may change the primary account.
+    // Ignore any primary account cleared event if a sign-in operation
+    // is in progress.
+    if (_authenticationFlow) {
+      return;
+    }
     [self.delegate tangibleSyncMediatorUserRemoved:self];
   }
 }
