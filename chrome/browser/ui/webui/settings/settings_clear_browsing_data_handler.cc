@@ -175,11 +175,12 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
       Profile::FromWebUI(web_ui()));
   for (const base::Value& type : data_type_list) {
     const std::string pref_name = type.GetString();
-    BrowsingDataType data_type =
+    absl::optional<BrowsingDataType> data_type =
         browsing_data::GetDataTypeFromDeletionPreference(pref_name);
-    data_type_vector.push_back(data_type);
+    CHECK(data_type);
+    data_type_vector.push_back(*data_type);
 
-    switch (data_type) {
+    switch (*data_type) {
       case BrowsingDataType::HISTORY:
         if (prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory))
           remove_mask |= chrome_browsing_data_remover::DATA_TYPE_HISTORY;
@@ -222,7 +223,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
     // Inform the T&S sentiment service that this datatype was cleared.
     if (sentiment_service) {
-      sentiment_service->ClearedBrowsingData(data_type);
+      sentiment_service->ClearedBrowsingData(*data_type);
     }
   }
 
