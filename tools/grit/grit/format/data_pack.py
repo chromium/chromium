@@ -7,16 +7,13 @@
 files.
 """
 
-from __future__ import print_function
-
 import collections
 import os
 import struct
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-
-import six
 
 from grit import util
 from grit.node import include
@@ -180,7 +177,7 @@ def WriteDataPackToString(resources, encoding):
     if resource_id in alias_map:
       continue
     data = resources[resource_id]
-    if isinstance(data, six.text_type):
+    if isinstance(data, str):
       data = data.encode('utf-8')
     index_by_id[resource_id] = index
     ret.append(struct.pack('<HI', resource_id, data_offset))

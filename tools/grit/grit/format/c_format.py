@@ -5,13 +5,9 @@
 """Formats as a .C file for compilation.
 """
 
-from __future__ import print_function
-
 import codecs
 import os
 import re
-
-import six
 
 from grit import util
 
@@ -37,7 +33,7 @@ def _FormatHeader(root, output_dir):
 def Format(root, lang='en', output_dir='.'):
   """Outputs a C switch statement representing the string table."""
   from grit.node import message
-  assert isinstance(lang, six.string_types)
+  assert isinstance(lang, str)
 
   yield _FormatHeader(root, output_dir)
 

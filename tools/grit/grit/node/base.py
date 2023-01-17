@@ -5,15 +5,11 @@
 '''Base types for nodes in a GRIT resource tree.
 '''
 
-from __future__ import print_function
-
 import ast
 import os
 import struct
 import sys
 from xml.sax import saxutils
-
-import six
 
 from grit import constants
 from grit import clique
@@ -67,7 +63,7 @@ class Node(object):
 
   def __exit__(self, exc_type, exc_value, traceback):
     if exc_type is not None:
-      print(u'Error processing node %s: %s' % (six.text_type(self), exc_value))
+      print(u'Error processing node %s: %s' % (str(self), exc_value))
 
   def __iter__(self):
     '''A preorder iteration through the tree that this node is the root of.'''
@@ -120,7 +116,7 @@ class Node(object):
       name: u'elementname'
       parent: grit.node.base.Node or subclass or None
     '''
-    assert isinstance(name, six.string_types)
+    assert isinstance(name, str)
     assert not parent or isinstance(parent, Node)
     self.name = name
     self.parent = parent
@@ -163,7 +159,7 @@ class Node(object):
     Return:
       None
     '''
-    assert isinstance(content, six.string_types)
+    assert isinstance(content, str)
     if self._ContentType() != self._CONTENT_TYPE_NONE:
       self.mixed_content.append(content)
     elif content.strip() != '':
@@ -180,8 +176,8 @@ class Node(object):
     Return:
       None
     '''
-    assert isinstance(attrib, six.string_types)
-    assert isinstance(value, six.string_types)
+    assert isinstance(attrib, str)
+    assert isinstance(value, str)
     if self._IsValidAttribute(attrib, value):
       self.attrs[attrib] = value
     else:
@@ -192,34 +188,32 @@ class Node(object):
 
     # TODO(joi) Rewrite this, it's extremely ugly!
     if len(self.mixed_content):
-      if isinstance(self.mixed_content[0], six.string_types):
+      if isinstance(self.mixed_content[0], str):
         # Remove leading and trailing chunks of pure whitespace.
-        while (len(self.mixed_content) and
-               isinstance(self.mixed_content[0], six.string_types) and
-               self.mixed_content[0].strip() == ''):
+        while (len(self.mixed_content)
+               and isinstance(self.mixed_content[0], str)
+               and self.mixed_content[0].strip() == ''):
           self.mixed_content = self.mixed_content[1:]
         # Strip leading and trailing whitespace from mixed content chunks
         # at front and back.
-        if (len(self.mixed_content) and
-            isinstance(self.mixed_content[0], six.string_types)):
+        if (len(self.mixed_content) and isinstance(self.mixed_content[0], str)):
           self.mixed_content[0] = self.mixed_content[0].lstrip()
         # Remove leading and trailing ''' (used to demarcate whitespace)
-        if (len(self.mixed_content) and
-            isinstance(self.mixed_content[0], six.string_types)):
+        if (len(self.mixed_content) and isinstance(self.mixed_content[0], str)):
           if self.mixed_content[0].startswith("'''"):
             self.mixed_content[0] = self.mixed_content[0][3:]
     if len(self.mixed_content):
-      if isinstance(self.mixed_content[-1], six.string_types):
+      if isinstance(self.mixed_content[-1], str):
         # Same stuff all over again for the tail end.
-        while (len(self.mixed_content) and
-               isinstance(self.mixed_content[-1], six.string_types) and
-               self.mixed_content[-1].strip() == ''):
+        while (len(self.mixed_content)
+               and isinstance(self.mixed_content[-1], str)
+               and self.mixed_content[-1].strip() == ''):
           self.mixed_content = self.mixed_content[:-1]
-        if (len(self.mixed_content) and
-            isinstance(self.mixed_content[-1], six.string_types)):
+        if (len(self.mixed_content)
+            and isinstance(self.mixed_content[-1], str)):
           self.mixed_content[-1] = self.mixed_content[-1].rstrip()
-        if (len(self.mixed_content) and
-            isinstance(self.mixed_content[-1], six.string_types)):
+        if (len(self.mixed_content)
+            and isinstance(self.mixed_content[-1], str)):
           if self.mixed_content[-1].endswith("'''"):
             self.mixed_content[-1] = self.mixed_content[-1][:-3]
 
@@ -258,8 +252,7 @@ class Node(object):
   def GetCdata(self):
     '''Returns all CDATA of this element, concatenated into a single
     string.  Note that this ignores any elements embedded in CDATA.'''
-    return ''.join([c for c in self.mixed_content
-                    if isinstance(c, six.string_types)])
+    return ''.join([c for c in self.mixed_content if isinstance(c, str)])
 
   def __str__(self):
     '''Returns this node and all nodes below it as an XML document in a Unicode
@@ -277,7 +270,7 @@ class Node(object):
     children and CDATA are layed out in a way that preserves internal
     whitespace.
     '''
-    assert isinstance(indent, six.string_types)
+    assert isinstance(indent, str)
 
     content_one_line = (one_line or
                         self._ContentType() == self._CONTENT_TYPE_MIXED)
@@ -312,7 +305,7 @@ class Node(object):
   def ContentsAsXml(self, indent, one_line):
     '''Returns the contents of this node (CDATA and child elements) in XML
     format.  If 'one_line' is true, the content will be laid out on one line.'''
-    assert isinstance(indent, six.string_types)
+    assert isinstance(indent, str)
 
     # Build the contents of the element.
     inside_parts = []
@@ -338,8 +331,7 @@ class Node(object):
 
     # If the last item is a string (not a node) and ends with whitespace,
     # we need to add the ''' delimiter.
-    if (isinstance(last_item, six.string_types) and
-        last_item.rstrip() != last_item):
+    if (isinstance(last_item, str) and last_item.rstrip() != last_item):
       inside_parts[-1] = inside_parts[-1] + u"'''"
 
     return u''.join(inside_parts)

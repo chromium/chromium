@@ -4,16 +4,12 @@
 # found in the LICENSE file.
 '''Unit tests for grit.pseudolocales'''
 
-from __future__ import print_function
-
 import sys
 import os.path
-if __name__ == '__main__':
-  sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 import unittest
 
-import six
+if __name__ == '__main__':
+  sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import grit.pseudolocales as pl
 

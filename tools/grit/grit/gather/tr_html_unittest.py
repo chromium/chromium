@@ -5,17 +5,13 @@
 
 '''Unit tests for grit.gather.tr_html'''
 
-from __future__ import print_function
-
+import io
 import os
 import sys
-if __name__ == '__main__':
-  sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-
 import unittest
 
-import six
-from six import StringIO
+if __name__ == '__main__':
+  sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 from grit.gather import tr_html
 from grit import clique
@@ -264,7 +260,7 @@ and BEGIN_LINK_2Privacy FAQEND_LINK_2 online.''')
 
 class TrHtmlUnittest(unittest.TestCase):
   def testSetAttributes(self):
-    html = tr_html.TrHtml(StringIO(''))
+    html = tr_html.TrHtml(io.StringIO(''))
     self.failUnlessEqual(html.fold_whitespace_, False)
     html.SetAttributes({})
     self.failUnlessEqual(html.fold_whitespace_, False)
@@ -276,19 +272,20 @@ class TrHtmlUnittest(unittest.TestCase):
   def testFoldWhitespace(self):
     text = '<td>   Test     Message   </td>'
 
-    html = tr_html.TrHtml(StringIO(text))
+    html = tr_html.TrHtml(io.StringIO(text))
     html.Parse()
     self.failUnlessEqual(html.skeleton_[1].GetMessage().GetPresentableContent(),
                          'Test  Message')
 
-    html = tr_html.TrHtml(StringIO(text))
+    html = tr_html.TrHtml(io.StringIO(text))
     html.fold_whitespace_ = True
     html.Parse()
     self.failUnlessEqual(html.skeleton_[1].GetMessage().GetPresentableContent(),
                          'Test Message')
 
   def testTable(self):
-    html = tr_html.TrHtml(StringIO('''<table class="shaded-header"><tr>
+    html = tr_html.TrHtml(
+        io.StringIO('''<table class="shaded-header"><tr>
 <td class="header-element b expand">Preferences</td>
 <td class="header-element s">
 <a href="http://desktop.google.com/preferences.html">Preferences&nbsp;Help</a>
@@ -299,7 +296,8 @@ class TrHtmlUnittest(unittest.TestCase):
                     'BEGIN_LINKPreferences&nbsp;HelpEND_LINK')
 
   def testSubmitAttribute(self):
-    html = tr_html.TrHtml(StringIO('''</td>
+    html = tr_html.TrHtml(
+        io.StringIO('''</td>
 <td class="header-element"><input type=submit value="Save Preferences"
 name=submit2></td>
 </tr></table>'''))
@@ -312,13 +310,14 @@ name=submit2></td>
     of a translateable section the inline tag will be included.
     '''
     html = tr_html.TrHtml(
-        StringIO('''<label for=DISPLAYNONE><font size=-1> Hello</font>'''))
+        io.StringIO('''<label for=DISPLAYNONE><font size=-1> Hello</font>'''))
     html.Parse()
     self.failUnless(html.skeleton_[1].GetMessage().GetRealContent() ==
                     '<font size=-1> Hello</font>')
 
   def testSillyHeader(self):
-    html = tr_html.TrHtml(StringIO('''[!]
+    html = tr_html.TrHtml(
+        io.StringIO('''[!]
 title\tHello
 bingo
 bongo
@@ -336,16 +335,16 @@ bla
 
   def testExplicitDescriptions(self):
     html = tr_html.TrHtml(
-        StringIO('Hello [USER]<br/><!-- desc=explicit -->'
-                          '<input type="button">Go!</input>'))
+        io.StringIO('Hello [USER]<br/><!-- desc=explicit -->'
+                    '<input type="button">Go!</input>'))
     html.Parse()
     msg = html.GetCliques()[1].GetMessage()
     self.failUnlessEqual(msg.GetDescription(), 'explicit')
     self.failUnlessEqual(msg.GetRealContent(), 'Go!')
 
     html = tr_html.TrHtml(
-        StringIO('Hello [USER]<br/><!-- desc=explicit\nmultiline -->'
-                          '<input type="button">Go!</input>'))
+        io.StringIO('Hello [USER]<br/><!-- desc=explicit\nmultiline -->'
+                    '<input type="button">Go!</input>'))
     html.Parse()
     msg = html.GetCliques()[1].GetMessage()
     self.failUnlessEqual(msg.GetDescription(), 'explicit multiline')
@@ -369,7 +368,7 @@ bla
     # For manual results inspection only...
     list = []
     for item in html.skeleton_:
-      if isinstance(item, six.string_types):
+      if isinstance(item, str):
         list.append(item)
       else:
         list.append(item.GetMessage().GetPresentableContent())
@@ -446,7 +445,8 @@ bla
     # character itself.  So for this test we choose some relatively complex
     # HTML without character entities (but with &nbsp; because that's handled
     # specially).
-    html = tr_html.TrHtml(StringIO('''  <script>
+    html = tr_html.TrHtml(
+        io.StringIO('''  <script>
       <!--
       function checkOffice() { var w = document.getElementById("h7");
       var e = document.getElementById("h8"); var o = document.getElementById("h10");
@@ -516,8 +516,10 @@ bla
 
   def testRegressionCpuHang(self):
     # If this regression occurs, the unit test will never return
-    html = tr_html.TrHtml(StringIO(
-      '''<input type=text size=12 id=advFileTypeEntry [~SHOW-FILETYPE-BOX~] value="[EXT]" name=ext>'''))
+    html = tr_html.TrHtml(
+        io.StringIO(
+            '''<input type=text size=12 id=advFileTypeEntry [~SHOW-FILETYPE-BOX~] value="[EXT]" name=ext>'''
+        ))
     html.Parse()
 
 if __name__ == '__main__':

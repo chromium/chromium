@@ -5,18 +5,15 @@
 
 '''Unit tests for grit.format.rc'''
 
-from __future__ import print_function
-
+import io
 import os
 import re
 import sys
-if __name__ == '__main__':
-  sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-
 import tempfile
 import unittest
 
-from six import StringIO
+if __name__ == '__main__':
+  sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 from grit import grd_reader
 from grit import util
@@ -69,7 +66,7 @@ Sting sting
       </messages>
       """)
 
-    buf = StringIO()
+    buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     self.assertEqual(_PREAMBLE + u'''\
@@ -91,7 +88,7 @@ END''', output)
     root.SetOutputLanguage('en')
     root.RunGatherers()
 
-    buf = StringIO()
+    buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = _PREAMBLE + u'''\
@@ -168,7 +165,7 @@ END'''.strip()
       </structures>''', base_dir = '/temp')
     # We do not run gatherers as it is not needed and wouldn't find the file
 
-    buf = StringIO()
+    buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = (_PREAMBLE +
@@ -187,7 +184,7 @@ END'''.strip()
         <include type="TXT" name="TEXT_TWO" file="bingo2.txt"  filenameonly="true" />
       </includes>''', base_dir = '/temp')
 
-    buf = StringIO()
+    buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
     expected = (_PREAMBLE +
@@ -207,7 +204,7 @@ END'''.strip()
         <include name="HTML_FILE1" flattenhtml="true" file="%s" type="BINDATA" />
       </includes>''' % input_file)
 
-    buf = StringIO()
+    buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en', output_file),
                                 buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
@@ -274,7 +271,7 @@ END'''.strip()
     root.SetOutputLanguage('en')
     root.RunGatherers()
 
-    buf = StringIO()
+    buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en', output_file),
                                 buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
@@ -294,7 +291,8 @@ END'''.strip()
 
   def testSubstitutionHtml(self):
     input_file = util.PathFromRoot('grit/testdata/toolbar_about.html')
-    root = grd_reader.Parse(StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    root = grd_reader.Parse(
+        io.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <release seq="1" allow_pseudo="False">
           <structures fallback_to_english="True">
@@ -327,7 +325,7 @@ END'''.strip()
     root.SetOutputLanguage('en')
     root.RunGatherers()
 
-    buf = StringIO()
+    buf = io.StringIO()
     formatter = build.RcBuilder.ProcessNode(
         root, DummyOutput('rc_all', 'bingobongo'), buf)
     output = util.StripBlankLinesAndComments(buf.getvalue())
@@ -348,7 +346,8 @@ END''', output)
 
 
   def testSubstitutionRc(self):
-    root = grd_reader.Parse(StringIO(r'''<?xml version="1.0" encoding="UTF-8"?>
+    root = grd_reader.Parse(
+        io.StringIO(r'''<?xml version="1.0" encoding="UTF-8"?>
     <grit latest_public_release="2" source_lang_id="en-US" current_release="3"
           base_dir=".">
       <outputs>
@@ -371,7 +370,7 @@ END''', output)
     root.SetOutputLanguage('en')
     root.RunGatherers()
 
-    buf = StringIO()
+    buf = io.StringIO()
     build.RcBuilder.ProcessNode(root, DummyOutput('rc_all', 'en'), buf)
     output = buf.getvalue()
     self.assertEqual('''

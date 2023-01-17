@@ -5,20 +5,16 @@
 '''Utilities used by GRIT.
 '''
 
-from __future__ import print_function
-
 import codecs
+import html.entities
 import io
 import os
 import re
 import shutil
 import sys
 import tempfile
-from xml.sax import saxutils
 
-import six
-from six import StringIO
-from six.moves import html_entities as entities
+from xml.sax import saxutils
 
 from grit import lazy_re
 
@@ -224,7 +220,7 @@ def WrapOutputStream(stream, encoding = 'utf-8'):
 def ChangeStdoutEncoding(encoding = 'utf-8'):
   '''Changes STDOUT to print characters using the specified encoding.'''
   # If we're unittesting, don't reconfigure.
-  if isinstance(sys.stdout, StringIO):
+  if isinstance(sys.stdout, io.StringIO):
     return
 
   if sys.version_info.major < 3:
@@ -270,16 +266,16 @@ def UnescapeHtml(text, replace_nbsp=True):
   def Replace(match):
     groups = match.groupdict()
     if groups['hex']:
-      return six.unichr(int(groups['hex'], 16))
+      return chr(int(groups['hex'], 16))
     elif groups['decimal']:
-      return six.unichr(int(groups['decimal'], 10))
+      return chr(int(groups['decimal'], 10))
     else:
       name = groups['named']
       if name == 'nbsp' and not replace_nbsp:
         return match.group()  # Don't replace &nbsp;
       assert name != None
-      if name in entities.name2codepoint:
-        return six.unichr(entities.name2codepoint[name])
+      if name in html.entities.name2codepoint:
+        return chr(html.entities.name2codepoint[name])
       else:
         return match.group()  # Unknown HTML character entity - don't replace
 
@@ -347,7 +343,7 @@ def ParseGrdForUnittest(body, base_dir=None, predetermined_ids_file=None,
     base_dir: The base_dir attribute of the <grit> tag.
   '''
   from grit import grd_reader
-  if isinstance(body, six.text_type):
+  if isinstance(body, str):
     body = body.encode('utf-8')
   if base_dir is None:
     base_dir = PathFromRoot('.')

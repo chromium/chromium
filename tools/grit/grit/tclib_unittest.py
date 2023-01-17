@@ -5,16 +5,12 @@
 
 '''Unit tests for grit.tclib'''
 
-from __future__ import print_function
-
 import sys
 import os.path
-if __name__ == '__main__':
-  sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 import unittest
 
-import six
+if __name__ == '__main__':
+  sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from grit import tclib
 
@@ -27,14 +23,14 @@ class TclibUnittest(unittest.TestCase):
     msg = tclib.Message(text=u'Hello Earthlings',
                         description='Greetings\n\t      message')
     self.failUnlessEqual(msg.GetPresentableContent(), 'Hello Earthlings')
-    self.failUnless(isinstance(msg.GetPresentableContent(), six.string_types))
+    self.failUnless(isinstance(msg.GetPresentableContent(), str))
     self.failUnlessEqual(msg.GetDescription(), 'Greetings message')
 
   def testGetAttr(self):
     msg = tclib.Message()
     msg.AppendText(u'Hello')  # Tests __getattr__
     self.failUnless(msg.GetPresentableContent() == 'Hello')
-    self.failUnless(isinstance(msg.GetPresentableContent(), six.string_types))
+    self.failUnless(isinstance(msg.GetPresentableContent(), str))
 
   def testAll(self):
     text = u'Howdie USERNAME'
@@ -44,7 +40,7 @@ class TclibUnittest(unittest.TestCase):
 
     trans = tclib.Translation(text=text, placeholders=phs)
     self.failUnless(trans.GetPresentableContent() == 'Howdie USERNAME')
-    self.failUnless(isinstance(trans.GetPresentableContent(), six.string_types))
+    self.failUnless(isinstance(trans.GetPresentableContent(), str))
 
   def testUnicodeReturn(self):
     text = u'\u00fe'
@@ -66,7 +62,7 @@ class TclibUnittest(unittest.TestCase):
     transl = tclib.Translation(text=msg.GetPresentableContent(),
                                placeholders=msg.GetPlaceholders())
     content = transl.GetContent()
-    self.failUnless(isinstance(content[3], six.string_types))
+    self.failUnless(isinstance(content[3], str))
 
   def testFingerprint(self):
     # This has Windows line endings.  That is on purpose.

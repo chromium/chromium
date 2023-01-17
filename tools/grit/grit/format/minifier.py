@@ -3,13 +3,9 @@
 # found in the LICENSE file.
 """Framework for stripping whitespace and comments from resource files"""
 
-from __future__ import print_function
-
 from os import path
 import subprocess
 import sys
-
-import six
 
 __js_minifier = None
 __css_minifier = None
