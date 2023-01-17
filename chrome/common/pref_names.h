@@ -958,6 +958,7 @@ extern const char kHardwareSecureDecryptionDisabledTimes[];
 
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kKioskMetrics[];
+extern const char kKioskTroubleshootingToolsEnabled[];
 extern const char kNewWindowsInKioskAllowed[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -215,6 +215,7 @@ void AppSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void AppSession::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kNewWindowsInKioskAllowed, false);
+  registry->RegisterBooleanPref(prefs::kKioskTroubleshootingToolsEnabled, false);
 }
 
 void AppSession::Init(const std::string& app_id) {

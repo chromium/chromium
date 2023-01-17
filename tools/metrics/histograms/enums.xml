@@ -32410,6 +32410,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1053" label="KerberosUseCustomPrefilledConfig"/>
   <int value="1054" label="DeviceHindiInscriptLayoutEnabled"/>
   <int value="1055" label="DeviceLoginScreenExtensionManifestV2Availability"/>
+  <int value="1056" label="KioskTroubleshootingToolsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

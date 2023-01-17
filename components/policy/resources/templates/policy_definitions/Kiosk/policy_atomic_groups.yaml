@@ -6,3 +6,4 @@ Kiosk:
   - DeviceLocalAccountAutoLoginDelay
   - DeviceLocalAccountAutoLoginBailoutEnabled
   - DeviceLocalAccountPromptForNetworkWhenOffline
+  - KioskTroubleshootingToolsEnabled

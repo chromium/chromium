@@ -2830,6 +2830,11 @@ const char kHardwareSecureDecryptionDisabledTimes[] =
 // This setting resides in local state.
 const char kKioskMetrics[] = "kiosk-metrics";
 
+// A boolean pref which determines whether kiosk troubleshooting tools are
+// enabled.
+const char kKioskTroubleshootingToolsEnabled[] =
+    "kiosk_troubleshooting_tools_enabled";
+
 // A boolean pref which determines whether a Web Kiosk can open more than one
 // browser window.
 const char kNewWindowsInKioskAllowed[] = "new_windows_in_kiosk_allowed";
