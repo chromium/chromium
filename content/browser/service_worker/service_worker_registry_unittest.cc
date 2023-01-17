@@ -1138,6 +1138,45 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
   EXPECT_EQ(live_registration2, found_registration);
 }
 
+TEST_F(ServiceWorkerRegistryTest, MergeDuplicateFindRegistrationCalls) {
+  const GURL kScope("http://www.example.com/scope/");
+  const GURL kScript("http://www.example.com/script.js");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScript,
+                                                kKey,
+                                                /*resource_id=*/1);
+
+  ServiceWorkerVersion* version = registration->waiting_version();
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StoreRegistration(registration, version));
+
+  const int kCallCount = 3;
+  int done_count = 0;
+  base::RunLoop loop;
+  for (int i = 0; i < kCallCount; i++) {
+    registry()->FindRegistrationForClientUrl(
+        kScope, kKey,
+        base::BindLambdaForTesting(
+            [&](blink::ServiceWorkerStatusCode status,
+                scoped_refptr<ServiceWorkerRegistration> found_registration) {
+              EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+              EXPECT_EQ(registration, found_registration);
+              done_count++;
+              if (done_count == kCallCount) {
+                loop.Quit();
+              }
+            }));
+  }
+  // Even when FindRegistrationForClientUrl is called 3 times, the in-flight
+  // calls of FindRegistrationForClientUrl must be merged into one internally.
+  // The following check expects that the
+  // `registry()->FindRegistrationForClientUrl()` implementation keeps track of
+  // `inflight_call_count()` synchronously.
+  EXPECT_EQ(inflight_call_count(), 1U);
+  loop.Run();
+}
+
 // Tests that fields of ServiceWorkerRegistrationInfo are filled correctly.
 TEST_F(ServiceWorkerRegistryTest, RegistrationInfoFields) {
   const GURL kScope("http://www.example.com/scope/");

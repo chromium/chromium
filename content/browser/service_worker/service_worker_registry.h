@@ -323,9 +323,13 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       const GURL& client_url,
       const blink::StorageKey& key,
       int64_t trace_event_id,
-      FindRegistrationCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       storage::mojom::ServiceWorkerFindRegistrationResultPtr result);
+  void RunFindRegistrationCallbacks(
+      const GURL& client_url,
+      const blink::StorageKey& key,
+      scoped_refptr<ServiceWorkerRegistration> registration,
+      blink::ServiceWorkerStatusCode status);
   void DidFindRegistrationForScope(
       FindRegistrationCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
@@ -496,6 +500,12 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   // Indicates whether recovery process should be scheduled.
   bool should_schedule_delete_and_start_over_ = true;
+
+  // Stores in-flight FindRegistrationForClientUrl callbacks to merge duplicate
+  // requests.
+  base::flat_map<std::pair<GURL, blink::StorageKey>,
+                 std::vector<FindRegistrationCallback>>
+      find_registration_callbacks_;
 
   enum class ConnectionState {
     kNormal,
