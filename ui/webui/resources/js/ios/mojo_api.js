@@ -61,157 +61,159 @@ Mojo.bindInterface = function(interfaceName, requestHandle) {
   });
 };
 
-/**
- * @constructor
- * @param {?number=} nativeHandle An opaque number representing the underlying
- *     Mojo system resource.
- */
-const MojoHandle = function(nativeHandle) {
-  if (nativeHandle === undefined) {
-    nativeHandle = null;
+class MojoHandle {
+  /*
+   * @param {?number=} nativeHandle An opaque number representing the underlying
+   *     Mojo system resource.
+   */
+  constructor(nativeHandle) {
+    if (nativeHandle === undefined) {
+      nativeHandle = null;
+    }
+
+    /**
+     * @type {number|null}
+     */
+    this.nativeHandle_ = nativeHandle;
   }
 
   /**
-   * @type {number|null}
+   * Takes the native handle value. This is not part of the public API.
+   * @return {?number}
    */
-  this.nativeHandle_ = nativeHandle;
-};
-
-/**
- * Takes the native handle value. This is not part of the public API.
- * @return {?number}
- */
-MojoHandle.prototype.takeNativeHandle_ = function() {
-  const nativeHandle = this.nativeHandle_;
-  this.nativeHandle_ = null;
-  return nativeHandle;
-};
-
-/**
- * Closes the handle.
- */
-MojoHandle.prototype.close = function() {
-  if (this.nativeHandle_ === null) {
-    return;
+  takeNativeHandle_() {
+    const nativeHandle = this.nativeHandle_;
+    this.nativeHandle_ = null;
+    return nativeHandle;
   }
 
-  const nativeHandle = this.nativeHandle_;
-  this.nativeHandle_ = null;
-  Mojo.internal.sendMessage(
-      {name: 'MojoHandle.close', args: {handle: nativeHandle}});
-};
+  /**
+   * Closes the handle.
+   */
+  close() {
+    if (this.nativeHandle_ === null) {
+      return;
+    }
 
-/**
- * Begins watching the handle for |signals| to be satisfied or unsatisfiable.
- *
- * @param {readable: boolean=, writable: boolean=, peerClosed: boolean=} signals
- *     The signals to watch.
- * @param {!function(!MojoResult)} calback Called with a result any time
- *     the watched signals become satisfied or unsatisfiable.
- *
- * @return {!MojoWatcher} A MojoWatcher instance that could be used to cancel
- *     the watch.
- */
-MojoHandle.prototype.watch = function(signals, callback) {
-  const HANDLE_SIGNAL_NONE = 0;
-  const HANDLE_SIGNAL_READABLE = 1;
-  const HANDLE_SIGNAL_WRITABLE = 2;
-  const HANDLE_SIGNAL_PEER_CLOSED = 4;
-
-  let signalsValue = HANDLE_SIGNAL_NONE;
-  if (signals.readable) {
-    signalsValue |= HANDLE_SIGNAL_READABLE;
-  }
-  if (signals.writable) {
-    signalsValue |= HANDLE_SIGNAL_WRITABLE;
-  }
-  if (signalsValue.peerClosed) {
-    signalsValue |= HANDLE_SIGNAL_PEER_CLOSED;
+    const nativeHandle = this.nativeHandle_;
+    this.nativeHandle_ = null;
+    Mojo.internal.sendMessage(
+        {name: 'MojoHandle.close', args: {handle: nativeHandle}});
   }
 
-  const watchId = Mojo.internal.sendMessage({
-    name: 'MojoHandle.watch',
-    args: {
-      handle: this.nativeHandle_,
-      signals: signalsValue,
-      callbackId: Mojo.internal.watchCallbacksHolder.getNextCallbackId(),
-    },
-  });
-  Mojo.internal.watchCallbacksHolder.addWatchCallback(watchId, callback);
+  /**
+   * Begins watching the handle for |signals| to be satisfied or unsatisfiable.
+   *
+   * @param {readable: boolean=, writable: boolean=, peerClosed: boolean=}
+   *     signals The signals to watch.
+   * @param {!function(!MojoResult)} callback Called with a result any time
+   *     the watched signals become satisfied or unsatisfiable.
+   *
+   * @return {!MojoWatcher} A MojoWatcher instance that could be used to cancel
+   *     the watch.
+   */
+  watch(signals, callback) {
+    const HANDLE_SIGNAL_NONE = 0;
+    const HANDLE_SIGNAL_READABLE = 1;
+    const HANDLE_SIGNAL_WRITABLE = 2;
+    const HANDLE_SIGNAL_PEER_CLOSED = 4;
 
-  return new MojoWatcher(watchId);
-};
+    let signalsValue = HANDLE_SIGNAL_NONE;
+    if (signals.readable) {
+      signalsValue |= HANDLE_SIGNAL_READABLE;
+    }
+    if (signals.writable) {
+      signalsValue |= HANDLE_SIGNAL_WRITABLE;
+    }
+    if (signalsValue.peerClosed) {
+      signalsValue |= HANDLE_SIGNAL_PEER_CLOSED;
+    }
 
-/**
- * Writes a message to the message pipe.
- *
- * @param {!ArrayBufferView} buffer The message data. May be empty.
- * @param {!Array<!MojoHandle>} handles Any handles to attach. Handles are
- *     transferred and will no longer be valid. May be empty.
- * @return {!MojoResult} Result code.
- */
-MojoHandle.prototype.writeMessage = function(buffer, handles) {
-  let base64EncodedBuffer;
-  if (buffer instanceof Uint8Array) {
-    // calls from mojo_bindings.js
-    base64EncodedBuffer = _Uint8ArrayToBase64(buffer);
-  } else if (buffer instanceof ArrayBuffer) {
-    // calls from mojo/public/js/bindings.js
-    base64EncodedBuffer = _arrayBufferToBase64(buffer);
+    const watchId = Mojo.internal.sendMessage({
+      name: 'MojoHandle.watch',
+      args: {
+        handle: this.nativeHandle_,
+        signals: signalsValue,
+        callbackId: Mojo.internal.watchCallbacksHolder.getNextCallbackId(),
+      },
+    });
+    Mojo.internal.watchCallbacksHolder.addWatchCallback(watchId, callback);
+
+    return new MojoWatcher(watchId);
   }
-  const nativeHandles = handles.map(function(handle) {
-    return handle.takeNativeHandle_();
-  });
-  return Mojo.internal.sendMessage({
-    name: 'MojoHandle.writeMessage',
-    args: {
-      handle: this.nativeHandle_,
-      buffer: base64EncodedBuffer,
-      handles: nativeHandles,
-    },
-  });
-};
 
-/**
- * Reads a message from the message pipe.
- *
- * @return {result: !MojoResult,
- *          buffer: !ArrayBufferView=,
- *          handles: !Array<!MojoHandle>=}
- *     Result code and (on success) the data and handles received.
- */
-MojoHandle.prototype.readMessage = function() {
-  const result = Mojo.internal.sendMessage(
-      {name: 'MojoHandle.readMessage', args: {handle: this.nativeHandle_}});
-
-  if (result.result === Mojo.RESULT_OK) {
-    result.buffer = new Uint8Array(result.buffer).buffer;
-    result.handles = result.handles.map(function(handle) {
-      return new MojoHandle(handle);
+  /**
+   * Writes a message to the message pipe.
+   *
+   * @param {!ArrayBufferView} buffer The message data. May be empty.
+   * @param {!Array<!MojoHandle>} handles Any handles to attach. Handles are
+   *     transferred and will no longer be valid. May be empty.
+   * @return {!MojoResult} Result code.
+   */
+  writeMessage(buffer, handles) {
+    let base64EncodedBuffer;
+    if (buffer instanceof Uint8Array) {
+      // calls from mojo_bindings.js
+      base64EncodedBuffer = _Uint8ArrayToBase64(buffer);
+    } else if (buffer instanceof ArrayBuffer) {
+      // calls from mojo/public/js/bindings.js
+      base64EncodedBuffer = _arrayBufferToBase64(buffer);
+    }
+    const nativeHandles = handles.map(function(handle) {
+      return handle.takeNativeHandle_();
+    });
+    return Mojo.internal.sendMessage({
+      name: 'MojoHandle.writeMessage',
+      args: {
+        handle: this.nativeHandle_,
+        buffer: base64EncodedBuffer,
+        handles: nativeHandles,
+      },
     });
   }
-  return result;
-};
+
+  /**
+   * Reads a message from the message pipe.
+   *
+   * @return {result: !MojoResult,
+   *          buffer: !ArrayBufferView=,
+   *          handles: !Array<!MojoHandle>=}
+   *     Result code and (on success) the data and handles received.
+   */
+  readMessage() {
+    const result = Mojo.internal.sendMessage(
+        {name: 'MojoHandle.readMessage', args: {handle: this.nativeHandle_}});
+
+    if (result.result === Mojo.RESULT_OK) {
+      result.buffer = new Uint8Array(result.buffer).buffer;
+      result.handles = result.handles.map(function(handle) {
+        return new MojoHandle(handle);
+      });
+    }
+    return result;
+  }
+}
+
 
 /**
  * MojoWatcher identifies a watch on a MojoHandle and can be used to cancel the
  * watch.
- *
- * @constructor
- * @param {number} An opaque id representing the watch.
  */
-const MojoWatcher = function(watchId) {
-  this.watchId_ = watchId;
-};
+class MojoWatcher {
+  /** @param {number} An opaque id representing the watch. */
+  constructor(watchId) {
+    this.watchId_ = watchId;
+  }
 
-/*
- * Cancels a handle watch.
- */
-MojoWatcher.prototype.cancel = function() {
-  Mojo.internal.sendMessage(
-      {name: 'MojoWatcher.cancel', args: {watchId: this.watchId_}});
-  Mojo.internal.watchCallbacksHolder.removeWatchCallback(this.watchId_);
-};
+  /*
+   * Cancels a handle watch.
+   */
+  cancel() {
+    Mojo.internal.sendMessage(
+        {name: 'MojoWatcher.cancel', args: {watchId: this.watchId_}});
+    Mojo.internal.watchCallbacksHolder.removeWatchCallback(this.watchId_);
+  }
+}
 
 // -----------------------------------------------------------------------------
 // Mojo API implementation details. It is not part of the public API.

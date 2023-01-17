@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-
 import("../tools/build_cr_component.gni")
 
 include_polymer = !is_android && !is_ios
@@ -26,6 +24,7 @@ build_cr_component("build") {
     "icon.ts",
     "keyboard_shortcut_list.ts",
     "load_time_data.ts",
+    "load_time_data_deprecated.js",
     "parse_html_subset.ts",
     "platform.ts",
     "plural_string_proxy.ts",
@@ -42,6 +41,18 @@ build_cr_component("build") {
     non_web_component_files += [ "os_about.ts" ]
   }
 
+  if (is_ios) {
+    non_web_component_files += [
+      "ios/mojo_api.js",
+      "ios/web_ui.js",
+    ]
+  }
+
+  if (is_chromeos_ash || is_ios) {
+    # Used by ChromeOS UIs and ios inspect and omaha UIs
+    non_web_component_files += [ "util_deprecated.js" ]
+  }
+
   if (include_polymer) {
     non_web_component_files += [
       "focus_row_mixin.ts",
@@ -52,34 +63,4 @@ build_cr_component("build") {
   tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/js"
   ts_deps = [ "../mojo:library" ]
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-}
-
-preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js"
-preprocess_src_manifest = "preprocessed_src_manifest.json"
-
-generate_grd("build_grdp_deprecated") {
-  grd_prefix = "webui_js"
-  out_grd = "$target_gen_dir/resources_deprecated.grdp"
-  public_deps = [ ":preprocess_src" ]
-  manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
-  resource_path_prefix = "js"
-}
-
-preprocess_if_expr("preprocess_src") {
-  in_folder = "."
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "load_time_data_deprecated.js" ]
-
-  if (is_chromeos_ash || is_ios) {
-    # Used by ChromeOS UIs and ios inspect and omaha UIs
-    in_files += [ "util_deprecated.js" ]
-  }
-
-  if (is_ios) {
-    in_files += [
-      "ios/mojo_api.js",
-      "ios/web_ui.js",
-    ]
-  }
 }

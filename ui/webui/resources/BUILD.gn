@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//crypto/features.gni")
-import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -33,7 +32,6 @@ generate_grd("build_grd") {
     "css:build_grdp",
     "images:build_grdp",
     "js:build_grdp",
-    "js:build_grdp_deprecated",
     "js/metrics_reporter:build_grdp",
     "//third_party/jstemplate:build_grdp",
   ]
@@ -42,7 +40,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/images/resources.grdp",
     "$target_gen_dir/js/metrics_reporter/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
-    "$target_gen_dir/js/resources_deprecated.grdp",
     "$target_gen_dir/resources_ts.grdp",
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
   ]
@@ -146,11 +143,6 @@ group("preprocess") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
-# Files for which .d.ts files will be auto-generated with ts_definitions().
-if (is_ios) {
-  generate_definitions_js_files = [ "js/ios/web_ui.js" ]
-}
-
 ts_library("library") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
@@ -165,23 +157,12 @@ ts_library("library") {
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
 
-  # Auto-generated .d.ts files.
-  if (is_ios) {
-    foreach(_file, generate_definitions_js_files) {
-      definitions += [ "$root_dir/" + string_replace(_file, ".js", ".d.ts") ]
-    }
-  }
-
   deps = [ "//third_party/polymer/v3_0:library" ]
   extra_deps += [
     ":preprocess",
     "js:build_ts",
     "mojo:library",
   ]
-
-  if (is_ios) {
-    extra_deps += [ ":generate_definitions" ]
-  }
 }
 
 generate_grd("build_ts_grdp") {
@@ -190,13 +171,4 @@ generate_grd("build_ts_grdp") {
   public_deps = [ ":library" ]
   manifest_files =
       filter_include(get_target_outputs(":library"), [ "*.manifest" ])
-}
-
-if (is_ios) {
-  ts_definitions("generate_definitions") {
-    root_dir = preprocessed_folder
-    out_dir = preprocessed_folder
-    js_files = generate_definitions_js_files
-    extra_deps = [ "js:preprocess_src" ]
-  }
 }
