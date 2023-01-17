@@ -311,9 +311,64 @@ enum StorageDevicePurpose {
   kSwapDevice = 2,
 };
 
+// NVMe-specific device info.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+struct NvmeDeviceInfo {
+  // The manufacturer ID.
+  uint32 subsystem_vendor@0;
+  // The product ID.
+  uint32 subsystem_device@1;
+  // The product revision.
+  uint8 pcie_rev@2;
+  // The firmware revision.
+  uint64 firmware_rev@3;
+};
+
+// eMMC-specific device info.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+struct EmmcDeviceInfo {
+  // The manufacturer ID.
+  uint16 manfid@0;
+  // The product name.
+  uint64 pnm@1;
+  // The product revision.
+  uint8 prv@2;
+  // The firmware revision.
+  uint64 fwrev@3;
+};
+
+// UFS-specific device info.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct UfsDeviceInfo {
+  // The JEDEC manufacturer ID.
+  uint16 jedec_manfid@0;
+  // The firmware revision.
+  uint64 fwrev@1;
+};
+
+// The union of device-specific info.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable, Extensible]
+union BlockDeviceInfo {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognized@0;
+
+  NvmeDeviceInfo nvme_device_info@1;
+  EmmcDeviceInfo emmc_device_info@2;
+  UfsDeviceInfo ufs_device_info@3;
+};
+
 // Information related to a specific non-removable block device.
 //
-// NextMinVersion: 1, NextIndex: 17
+// NextMinVersion: 2, NextIndex: 18
 [Stable]
 struct NonRemovableBlockDeviceInfo {
   // IO statistics
@@ -334,19 +389,24 @@ struct NonRemovableBlockDeviceInfo {
   // blocks which are no longer in use. Supported on kernels 4.18+.
   NullableUint64? discard_time_seconds_since_last_boot@5;
 
+  // Additional device info.
+
+  // Device specific info.
+  [MinVersion=1] BlockDeviceInfo? device_info@17;
+
   // Device identification.
 
-  // Device vendor identification.
+  // (Deprecated, use |device_info| instead) Device vendor identification.
   BlockDeviceVendor vendor_id@6;
-  // Device product identification.
+  // (Deprecated, use |device_info| instead) Device product identification.
   BlockDeviceProduct product_id@7;
-  // Device revision.
+  // (Deprecated, use |device_info| instead) Device revision.
   BlockDeviceRevision revision@8;
   // Device model.
   string name@9;
   // Device size in bytes.
   uint64 size@10;
-  // Firmware version.
+  // (Deprecated, use |device_info| instead) Firmware version.
   BlockDeviceFirmware firmware_version@11;
   // Storage type, could be MMC / NVMe / ATA, based on udev subsystem.
   string type@12;
