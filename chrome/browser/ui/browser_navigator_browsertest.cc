@@ -1859,11 +1859,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
 }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// Helper class to enable picture in picture V2 for those tests that need it.
-// Once the feature is enabled permanently, these can be merged back to
-// BrowserNavigatorTest instead.
-// See crbug.com/1320453 for why this is off for lacros.
+//  Helper class to enable picture in picture V2 for those tests that need it.
+//  Once the feature is enabled permanently, these can be merged back to
+//  BrowserNavigatorTest instead.
 class BrowserNavigatorWithPictureInPictureTest : public BrowserNavigatorTest {
   base::test::ScopedFeatureList scoped_feature_list_{
       blink::features::kDocumentPictureInPictureAPI};
@@ -1917,6 +1915,5 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
   EXPECT_EQ(params.browser, nullptr);
 }
-#endif  // !IS_CHROMEOS_LACROS
 
 }  // namespace

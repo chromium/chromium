@@ -169,7 +169,6 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
   return true;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 gfx::Rect CalculateInitialPictureInPictureWindowBounds(
     float initial_aspect_ratio) {
   DCHECK(initial_aspect_ratio > 0);
@@ -197,7 +196,6 @@ gfx::Rect CalculateInitialPictureInPictureWindowBounds(
 
   return window_bounds;
 }
-#endif  // !IS_CHROMEOS_LACROS
 
 // Returns a Browser and tab index. The browser can host the navigation or
 // tab addition specified in |params|.  This might just return the same
@@ -295,7 +293,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       // re-run with NEW_WINDOW.
       return {GetOrCreateBrowser(profile, params.user_gesture), -1};
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-#if !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       if (!base::FeatureList::IsEnabled(
               blink::features::kDocumentPictureInPictureAPI)) {
         return {nullptr, -1};
@@ -325,13 +323,12 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
 
         return {Browser::Create(browser_params), -1};
       }
-#else   // !IS_CHROMEOS_LACROS && !IS_ANDROID
-      // TODO(crbug.com/1320453): Document Picture-in-Picture is turned off in
-      // lacros.
+#else   // !IS_ANDROID
       // For TYPE_PICTURE_IN_PICTURE
       NOTIMPLEMENTED_LOG_ONCE();
       return {nullptr, -1};
-#endif  // !IS_CHROMEOS_LACROS && !IS_ANDROID
+#endif  // !IS_ANDROID
+
     case WindowOpenDisposition::NEW_POPUP: {
       // Make a new popup window.
       // Coerce app-style if |source| represents an app.

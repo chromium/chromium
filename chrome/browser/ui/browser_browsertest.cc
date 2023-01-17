@@ -1484,19 +1484,15 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
 // set_show_state(ui::SHOW_STATE_MAXIMIZED) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
   Browser::CreateParams params[] = {
-    Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
-    Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
-    Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
-                                        browser()->profile(), true),
-    Browser::CreateParams::CreateForDevTools(browser()->profile()),
-    Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                             browser()->profile(), true),
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Picture in picture v2 is not supported yet.
-    // See crbug.com/1320453 .
-    Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
-                          browser()->profile(), true),
-#endif
+      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
+      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
+      Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
+                                          browser()->profile(), true),
+      Browser::CreateParams::CreateForDevTools(browser()->profile()),
+      Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
+                                               browser()->profile(), true),
+      Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
+                            browser()->profile(), true),
   };
   for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MAXIMIZED;
@@ -1514,18 +1510,15 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
 // set_show_state(ui::SHOW_STATE_MINIMIZED) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
   Browser::CreateParams params[] = {
-    Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
-    Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
-    Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
-                                        browser()->profile(), true),
-    Browser::CreateParams::CreateForDevTools(browser()->profile()),
-    Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                             browser()->profile(), true),
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Picture in picture v2 is not supported yet.
-    Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
-                          browser()->profile(), true),
-#endif  // !IS_CHROMEOS_LACROS
+      Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
+      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
+      Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
+                                          browser()->profile(), true),
+      Browser::CreateParams::CreateForDevTools(browser()->profile()),
+      Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
+                                               browser()->profile(), true),
+      Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
+                            browser()->profile(), true),
   };
   for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MINIMIZED;
