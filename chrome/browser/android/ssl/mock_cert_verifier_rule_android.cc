@@ -13,22 +13,15 @@ jlong JNI_MockCertVerifierRuleAndroid_Init(JNIEnv* env) {
 
 MockCertVerifierRuleAndroid::MockCertVerifierRuleAndroid() = default;
 
-void MockCertVerifierRuleAndroid::SetResult(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    int result) {
+void MockCertVerifierRuleAndroid::SetResult(JNIEnv* env, int result) {
   mock_cert_verifier_.mock_cert_verifier()->set_default_result(result);
 }
 
-void MockCertVerifierRuleAndroid::SetUp(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void MockCertVerifierRuleAndroid::SetUp(JNIEnv* env) {
   mock_cert_verifier_.SetUpCommandLine(base::CommandLine::ForCurrentProcess());
   mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
 }
 
-void MockCertVerifierRuleAndroid::TearDown(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void MockCertVerifierRuleAndroid::TearDown(JNIEnv* env) {
   mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
 }

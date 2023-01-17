@@ -93,17 +93,14 @@ class DummySpnegoAuthenticator {
     std::string output_token;
 
     // Java callable members
-    base::android::ScopedJavaLocalRef<jstring> GetTokenToReturn(
-        JNIEnv* env,
-        const base::android::JavaParamRef<jobject>& obj);
-    int GetResult(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+    base::android::ScopedJavaLocalRef<jstring> GetTokenToReturn(JNIEnv* env);
+    int GetResult(JNIEnv* env);
 
     // Called from Java to check the arguments passed to the GetToken. Has to
     // be in C++ since these tests are driven by googletest, and can only report
     // failures through the googletest C++ API.
     void CheckGetTokenArguments(
         JNIEnv* env,
-        const base::android::JavaParamRef<jobject>& obj,
         const base::android::JavaParamRef<jstring>& incoming_token);
   };
 
@@ -121,8 +118,7 @@ class DummySpnegoAuthenticator {
   static void EnsureTestAccountExists();
   static void RemoveTestAccounts();
 
-  long GetNextQuery(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
+  long GetNextQuery(JNIEnv* env);
 
  private:
   // Abandon the test if the query queue is empty. Has to be a void function to

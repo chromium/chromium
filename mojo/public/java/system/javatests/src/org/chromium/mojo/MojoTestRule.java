@@ -48,39 +48,35 @@ public class MojoTestRule extends ExternalResource {
             MojoTestRuleJni.get().initCore();
             sIsCoreInitialized = true;
         }
-        nativeInit();
-        mTestEnvironmentPointer = nativeSetupTestEnvironment();
+        MojoTestRuleJni.get().init();
+        mTestEnvironmentPointer = MojoTestRuleJni.get().setupTestEnvironment();
     }
 
     @Override
     protected void after() {
-        nativeTearDownTestEnvironment(mTestEnvironmentPointer);
+        MojoTestRuleJni.get().tearDownTestEnvironment(mTestEnvironmentPointer);
     }
 
     /**
      * Runs the run loop for the given time.
      */
     public void runLoop(long timeoutMS) {
-        nativeRunLoop(timeoutMS);
+        MojoTestRuleJni.get().runLoop(timeoutMS);
     }
 
     /**
      * Runs the run loop until no handle or task are immediately available.
      */
     public void runLoopUntilIdle() {
-        nativeRunLoop(0);
+        MojoTestRuleJni.get().runLoop(0);
     }
-
-    private native void nativeInit();
-
-    private native long nativeSetupTestEnvironment();
-
-    private native void nativeTearDownTestEnvironment(long testEnvironment);
-
-    private native void nativeRunLoop(long timeoutMS);
 
     @NativeMethods
     interface Natives {
+        void init();
+        long setupTestEnvironment();
+        void tearDownTestEnvironment(long testEnvironment);
+        void runLoop(long timeoutMS);
         void initCore();
     }
 }

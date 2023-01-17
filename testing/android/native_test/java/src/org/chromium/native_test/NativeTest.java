@@ -16,6 +16,7 @@ import android.system.Os;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.build.gtest_apk.NativeTestIntent;
 import org.chromium.test.reporter.TestStatusReporter;
@@ -173,8 +174,8 @@ public class NativeTest {
     }
 
     private void runTests(Activity activity) {
-        nativeRunTests(mCommandLineFlags.toString(), mCommandLineFilePath, mStdoutFilePath,
-                activity.getApplicationContext(), UrlUtils.getIsolatedTestRoot());
+        NativeTestJni.get().runTests(mCommandLineFlags.toString(), mCommandLineFilePath,
+                mStdoutFilePath, activity.getApplicationContext(), UrlUtils.getIsolatedTestRoot());
         activity.finish();
         mReporter.testRunFinished(Process.myPid());
     }
@@ -186,6 +187,9 @@ public class NativeTest {
         Log.e(TAG, "[ RUNNER_FAILED ] could not load native library");
     }
 
-    private native void nativeRunTests(String commandLineFlags, String commandLineFilePath,
-            String stdoutFilePath, Context appContext, String testDataDir);
+    @NativeMethods
+    interface Natives {
+        void runTests(String commandLineFlags, String commandLineFilePath, String stdoutFilePath,
+                Context appContext, String testDataDir);
+    }
 }

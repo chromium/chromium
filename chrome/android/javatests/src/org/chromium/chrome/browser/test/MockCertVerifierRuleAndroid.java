@@ -25,29 +25,28 @@ public class MockCertVerifierRuleAndroid extends ExternalResource {
     protected void before() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mNativePtr = MockCertVerifierRuleAndroidJni.get().init();
-        nativeSetResult(mNativePtr, mResult);
-        nativeSetUp(mNativePtr);
+        MockCertVerifierRuleAndroidJni.get().setResult(mNativePtr, mResult);
+        MockCertVerifierRuleAndroidJni.get().setUp(mNativePtr);
     }
 
     public void setResult(int result) {
         mResult = result;
         if (mNativePtr != 0) {
-            nativeSetResult(mNativePtr, result);
+            MockCertVerifierRuleAndroidJni.get().setResult(mNativePtr, result);
         }
     }
 
     @Override
     protected void after() {
-        nativeTearDown(mNativePtr);
+        MockCertVerifierRuleAndroidJni.get().tearDown(mNativePtr);
         mNativePtr = 0;
     }
-
-    private native void nativeSetUp(long nativeMockCertVerifierRuleAndroid);
-    private native void nativeSetResult(long nativeMockCertVerifierRuleAndroid, int result);
-    private native void nativeTearDown(long nativeMockCertVerifierRuleAndroid);
 
     @NativeMethods
     interface Natives {
         long init();
+        void setUp(long nativeMockCertVerifierRuleAndroid);
+        void setResult(long nativeMockCertVerifierRuleAndroid, int result);
+        void tearDown(long nativeMockCertVerifierRuleAndroid);
     }
 }

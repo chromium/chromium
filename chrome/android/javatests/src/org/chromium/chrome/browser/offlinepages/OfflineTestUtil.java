@@ -10,6 +10,7 @@ import org.junit.Assert;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -31,7 +32,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class OfflineTestUtil {
     // Forces request coordinator to process the requests in the queue.
     public static void startRequestCoordinatorProcessing() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> nativeStartRequestCoordinatorProcessing());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> OfflineTestUtilJni.get().startRequestCoordinatorProcessing());
     }
 
     // Gets all the URLs in the request queue.
@@ -39,7 +41,7 @@ public class OfflineTestUtil {
         final AtomicReference<SavePageRequest[]> result = new AtomicReference<>();
         final CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            nativeGetRequestsInQueue((SavePageRequest[] requests) -> {
+            OfflineTestUtilJni.get().getRequestsInQueue((SavePageRequest[] requests) -> {
                 result.set(requests);
                 callbackHelper.notifyCalled();
             });
@@ -54,10 +56,11 @@ public class OfflineTestUtil {
                 new AtomicReference<List<OfflinePageItem>>();
         final CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            nativeGetAllPages(new ArrayList<OfflinePageItem>(), (List<OfflinePageItem> items) -> {
-                result.set(items);
-                callbackHelper.notifyCalled();
-            });
+            OfflineTestUtilJni.get().getAllPages(
+                    new ArrayList<OfflinePageItem>(), (List<OfflinePageItem> items) -> {
+                        result.set(items);
+                        callbackHelper.notifyCalled();
+                    });
         });
         callbackHelper.waitForCallback(0);
         return result.get();
@@ -69,7 +72,7 @@ public class OfflineTestUtil {
         final CallbackHelper callbackHelper = new CallbackHelper();
         final AtomicReference<String> result = new AtomicReference<String>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            nativeDumpRequestCoordinatorState((String dump) -> {
+            OfflineTestUtilJni.get().dumpRequestCoordinatorState((String dump) -> {
                 result.set(dump);
                 callbackHelper.notifyCalled();
             });
@@ -108,7 +111,7 @@ public class OfflineTestUtil {
         final AtomicReference<byte[]> result = new AtomicReference<>();
         final CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            nativeGetRawThumbnail(offlineId, (byte[] rawThumbnail) -> {
+            OfflineTestUtilJni.get().getRawThumbnail(offlineId, (byte[] rawThumbnail) -> {
                 result.set(rawThumbnail);
                 callbackHelper.notifyCalled();
             });
@@ -147,21 +150,24 @@ public class OfflineTestUtil {
     public static void interceptWithOfflineError(String url) throws TimeoutException {
         final CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            nativeInterceptWithOfflineError(url, () -> callbackHelper.notifyCalled());
+            OfflineTestUtilJni.get().interceptWithOfflineError(
+                    url, () -> callbackHelper.notifyCalled());
         });
         callbackHelper.waitForCallback(0);
     }
 
     // Clears all previous intercepts installed by interceptWithOfflineError.
     public static void clearIntercepts() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> nativeClearIntercepts());
+        TestThreadUtils.runOnUiThreadBlocking(() -> OfflineTestUtilJni.get().clearIntercepts());
     }
 
     // Waits for the connectivity state to change in the native network change notifier.
     public static void waitForConnectivityState(boolean connected) {
         AtomicBoolean done = new AtomicBoolean();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> nativeWaitForConnectivityState(connected, () -> done.set(true)));
+                ()
+                        -> OfflineTestUtilJni.get().waitForConnectivityState(
+                                connected, () -> done.set(true)));
         CriteriaHelper.pollInstrumentationThread(() -> done.get());
     }
 
@@ -169,22 +175,26 @@ public class OfflineTestUtil {
     // also ensures that the server-enabled check is due.
     public static void setPrefetchingEnabledByServer(boolean enabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { nativeSetPrefetchingEnabledByServer(enabled); });
+                () -> { OfflineTestUtilJni.get().setPrefetchingEnabledByServer(enabled); });
     }
 
     public static void setGCMTokenForTesting(String gcmToken) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { nativeSetGCMTokenForTesting(gcmToken); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { OfflineTestUtilJni.get().setGCMTokenForTesting(gcmToken); });
     }
 
-    private static native void nativeGetRequestsInQueue(Callback<SavePageRequest[]> callback);
-    private static native void nativeGetAllPages(
-            List<OfflinePageItem> offlinePages, final Callback<List<OfflinePageItem>> callback);
-    private static native void nativeGetRawThumbnail(long offlineId, Callback<byte[]> callback);
-    private static native void nativeStartRequestCoordinatorProcessing();
-    private static native void nativeInterceptWithOfflineError(String url, Runnable readyRunnable);
-    private static native void nativeClearIntercepts();
-    private static native void nativeDumpRequestCoordinatorState(Callback<String> callback);
-    private static native void nativeWaitForConnectivityState(boolean connected, Runnable callback);
-    private static native void nativeSetPrefetchingEnabledByServer(boolean enabled);
-    private static native void nativeSetGCMTokenForTesting(String gcmToken);
+    @NativeMethods
+    interface Natives {
+        void getRequestsInQueue(Callback<SavePageRequest[]> callback);
+        void getAllPages(
+                List<OfflinePageItem> offlinePages, final Callback<List<OfflinePageItem>> callback);
+        void getRawThumbnail(long offlineId, Callback<byte[]> callback);
+        void startRequestCoordinatorProcessing();
+        void interceptWithOfflineError(String url, Runnable readyRunnable);
+        void clearIntercepts();
+        void dumpRequestCoordinatorState(Callback<String> callback);
+        void waitForConnectivityState(boolean connected, Runnable callback);
+        void setPrefetchingEnabledByServer(boolean enabled);
+        void setGCMTokenForTesting(String gcmToken);
+    }
 }

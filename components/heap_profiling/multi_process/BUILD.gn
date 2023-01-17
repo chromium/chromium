@@ -33,8 +33,12 @@ if (is_android) {
   # shim to function correctly.
   android_library("heap_profiling_java_test_support") {
     testonly = true
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     sources = [ "javatests/src/org/chromium/components/heap_profiling/multi_process/HeapProfilingTestShim.java" ]
-    deps = [ "//build/android:build_java" ]
+    deps = [
+      "//base:jni_java",
+      "//build/android:build_java",
+    ]
   }
 }
 

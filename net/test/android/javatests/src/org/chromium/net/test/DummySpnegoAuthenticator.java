@@ -18,6 +18,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.HttpNegotiateConstants;
 
 import java.io.IOException;
@@ -69,20 +70,22 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
             String authTokenType, Bundle options) {
-        long nativeQuery = nativeGetNextQuery(sNativeDummySpnegoAuthenticator);
+        long nativeQuery =
+                DummySpnegoAuthenticatorJni.get().getNextQuery(sNativeDummySpnegoAuthenticator);
         String incomingToken = options.getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN);
-        nativeCheckGetTokenArguments(nativeQuery, incomingToken);
+        DummySpnegoAuthenticatorJni.get().checkGetTokenArguments(nativeQuery, incomingToken);
         Bundle result = new Bundle();
         result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
         result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-        result.putString(AccountManager.KEY_AUTHTOKEN, nativeGetTokenToReturn(nativeQuery));
+        result.putString(AccountManager.KEY_AUTHTOKEN,
+                DummySpnegoAuthenticatorJni.get().getTokenToReturn(nativeQuery));
         result.putInt(HttpNegotiateConstants.KEY_SPNEGO_RESULT,
-                decodeResult(nativeGetResult(nativeQuery)));
+                decodeResult(DummySpnegoAuthenticatorJni.get().getResult(nativeQuery)));
         return result;
     }
 
     /**
-     * @param nativeGetResult
+     * @param DummySpnegoAuthenticatorJni.get().getResult
      * @return
      */
     private int decodeResult(int gssApiResult) {
@@ -162,22 +165,25 @@ public class DummySpnegoAuthenticator extends AbstractAccountAuthenticator {
         sNativeDummySpnegoAuthenticator = nativeDummySpnegoAuthenticator;
     }
 
-    /**
-     * Send the relevant decoded arguments of getAuthToken to C++ for checking by googletest checks
-     * If the checks fail then the C++ unit test using this authenticator will fail.
-     *
-     * @param authTokenType
-     * @param spn
-     * @param incomingToken
-     */
-    @NativeClassQualifiedName("DummySpnegoAuthenticator::SecurityContextQuery")
-    private native void nativeCheckGetTokenArguments(long nativeQuery, String incomingToken);
+    @NativeMethods
+    interface Natives {
+        /**
+         * Send the relevant decoded arguments of getAuthToken to C++ for checking by googletest
+         * checks If the checks fail then the C++ unit test using this authenticator will fail.
+         *
+         * @param authTokenType
+         * @param spn
+         * @param incomingToken
+         */
+        @NativeClassQualifiedName("DummySpnegoAuthenticator::SecurityContextQuery")
+        void checkGetTokenArguments(long nativeQuery, String incomingToken);
 
-    @NativeClassQualifiedName("DummySpnegoAuthenticator::SecurityContextQuery")
-    private native String nativeGetTokenToReturn(long nativeQuery);
+        @NativeClassQualifiedName("DummySpnegoAuthenticator::SecurityContextQuery")
+        String getTokenToReturn(long nativeQuery);
 
-    @NativeClassQualifiedName("DummySpnegoAuthenticator::SecurityContextQuery")
-    private native int nativeGetResult(long nativeQuery);
+        @NativeClassQualifiedName("DummySpnegoAuthenticator::SecurityContextQuery")
+        int getResult(long nativeQuery);
 
-    private native long nativeGetNextQuery(long nativeDummySpnegoAuthenticator);
+        long getNextQuery(long nativeDummySpnegoAuthenticator);
+    }
 }

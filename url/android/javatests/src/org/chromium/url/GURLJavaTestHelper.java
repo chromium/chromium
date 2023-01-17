@@ -6,6 +6,7 @@ package org.chromium.url;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Helpers for GURLJavaTest that need to call into native code.
@@ -17,6 +18,17 @@ public class GURLJavaTestHelper {
         return new GURL(uri);
     }
 
-    public static native void nativeInitializeICU();
-    public static native void nativeTestGURLEquivalence();
+    public static void nativeInitializeICU() {
+        GURLJavaTestHelperJni.get().initializeICU();
+    }
+
+    public static void nativeTestGURLEquivalence() {
+        GURLJavaTestHelperJni.get().testGURLEquivalence();
+    }
+
+    @NativeMethods
+    interface Natives {
+        void initializeICU();
+        void testGURLEquivalence();
+    }
 }

@@ -21,6 +21,7 @@ import android.util.SparseArray;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.device.bluetooth.test.TestRSSI;
 import org.chromium.device.bluetooth.test.TestTxPower;
@@ -71,7 +72,7 @@ class Fakes {
      * Sets the factory for ThreadUtilsWrapper to always post a task to the UI thread
      * rather than running the task immediately. This simulates events arriving on a separate
      * thread on Android.
-     * runOnUiThread uses nativePostTaskFromJava. This allows java to post tasks to the
+     * runOnUiThread uses FakesJni.get().postTaskFromJava. This allows java to post tasks to the
      * message loop that the test is using rather than to the Java message loop which
      * is not running during tests.
      */
@@ -83,7 +84,7 @@ class Fakes {
                 return new Wrappers.ThreadUtilsWrapper() {
                     @Override
                     public void runOnUiThread(Runnable r) {
-                        nativePostTaskFromJava(nativeBluetoothTestAndroid, r);
+                        FakesJni.get().postTaskFromJava(nativeBluetoothTestAndroid, r);
                     }
                 };
             }
@@ -245,11 +246,11 @@ class Fakes {
         public boolean disable() {
             // android.bluetooth.BluetoothAdapter::disable() is an async call, so we simulate this
             // by posting a task to the UI thread.
-            nativePostTaskFromJava(mNativeBluetoothTestAndroid, new Runnable() {
+            FakesJni.get().postTaskFromJava(mNativeBluetoothTestAndroid, new Runnable() {
                 @Override
                 public void run() {
                     mPowered = false;
-                    nativeOnFakeAdapterStateChanged(mNativeBluetoothTestAndroid, false);
+                    FakesJni.get().onFakeAdapterStateChanged(mNativeBluetoothTestAndroid, false);
                 }
             });
             return true;
@@ -259,11 +260,11 @@ class Fakes {
         public boolean enable() {
             // android.bluetooth.BluetoothAdapter::enable() is an async call, so we simulate this by
             // posting a task to the UI thread.
-            nativePostTaskFromJava(mNativeBluetoothTestAndroid, new Runnable() {
+            FakesJni.get().postTaskFromJava(mNativeBluetoothTestAndroid, new Runnable() {
                 @Override
                 public void run() {
                     mPowered = true;
-                    nativeOnFakeAdapterStateChanged(mNativeBluetoothTestAndroid, true);
+                    FakesJni.get().onFakeAdapterStateChanged(mNativeBluetoothTestAndroid, true);
                 }
             });
             return true;
@@ -530,7 +531,8 @@ class Fakes {
                         "BluetoothGattWrapper doesn't support calls to connectGatt() with "
                         + "multiple distinct callbacks.");
             }
-            nativeOnFakeBluetoothDeviceConnectGattCalled(mAdapter.mNativeBluetoothTestAndroid);
+            FakesJni.get().onFakeBluetoothDeviceConnectGattCalled(
+                    mAdapter.mNativeBluetoothTestAndroid);
             mGattCallback = callback;
             return mGatt;
         }
@@ -576,12 +578,13 @@ class Fakes {
 
         @Override
         public void disconnect() {
-            nativeOnFakeBluetoothGattDisconnect(mDevice.mAdapter.mNativeBluetoothTestAndroid);
+            FakesJni.get().onFakeBluetoothGattDisconnect(
+                    mDevice.mAdapter.mNativeBluetoothTestAndroid);
         }
 
         @Override
         public void close() {
-            nativeOnFakeBluetoothGattClose(mDevice.mAdapter.mNativeBluetoothTestAndroid);
+            FakesJni.get().onFakeBluetoothGattClose(mDevice.mAdapter.mNativeBluetoothTestAndroid);
         }
 
         @Override
@@ -591,7 +594,8 @@ class Fakes {
 
         @Override
         public void discoverServices() {
-            nativeOnFakeBluetoothGattDiscoverServices(mDevice.mAdapter.mNativeBluetoothTestAndroid);
+            FakesJni.get().onFakeBluetoothGattDiscoverServices(
+                    mDevice.mAdapter.mNativeBluetoothTestAndroid);
         }
 
         @Override
@@ -605,7 +609,7 @@ class Fakes {
                 mReadCharacteristicWillFailSynchronouslyOnce = false;
                 return false;
             }
-            nativeOnFakeBluetoothGattReadCharacteristic(
+            FakesJni.get().onFakeBluetoothGattReadCharacteristic(
                     mDevice.mAdapter.mNativeBluetoothTestAndroid);
             return true;
         }
@@ -617,7 +621,7 @@ class Fakes {
                 mSetCharacteristicNotificationWillFailSynchronouslyOnce = false;
                 return false;
             }
-            nativeOnFakeBluetoothGattSetCharacteristicNotification(
+            FakesJni.get().onFakeBluetoothGattSetCharacteristicNotification(
                     mDevice.mAdapter.mNativeBluetoothTestAndroid);
             return true;
         }
@@ -628,7 +632,7 @@ class Fakes {
                 mWriteCharacteristicWillFailSynchronouslyOnce = false;
                 return false;
             }
-            nativeOnFakeBluetoothGattWriteCharacteristic(
+            FakesJni.get().onFakeBluetoothGattWriteCharacteristic(
                     mDevice.mAdapter.mNativeBluetoothTestAndroid, characteristic.getValue());
             return true;
         }
@@ -639,7 +643,8 @@ class Fakes {
                 mReadDescriptorWillFailSynchronouslyOnce = false;
                 return false;
             }
-            nativeOnFakeBluetoothGattReadDescriptor(mDevice.mAdapter.mNativeBluetoothTestAndroid);
+            FakesJni.get().onFakeBluetoothGattReadDescriptor(
+                    mDevice.mAdapter.mNativeBluetoothTestAndroid);
             return true;
         }
 
@@ -649,7 +654,7 @@ class Fakes {
                 mWriteDescriptorWillFailSynchronouslyOnce = false;
                 return false;
             }
-            nativeOnFakeBluetoothGattWriteDescriptor(
+            FakesJni.get().onFakeBluetoothGattWriteDescriptor(
                     mDevice.mAdapter.mNativeBluetoothTestAndroid, descriptor.getValue());
             return true;
         }
@@ -987,45 +992,40 @@ class Fakes {
 
     // ---------------------------------------------------------------------------------------------
     // BluetoothTestAndroid C++ methods declared for access from java:
+    @NativeMethods
+    interface Natives {
 
-    // Bind to BluetoothTestAndroid::PostTaskFromJava.
-    private static native void nativePostTaskFromJava(long nativeBluetoothTestAndroid, Runnable r);
+        // Bind to BluetoothTestAndroid::PostTaskFromJava.
+        void postTaskFromJava(long nativeBluetoothTestAndroid, Runnable r);
 
-    // Binds to BluetoothTestAndroid::OnFakeAdapterStateChanged.
-    private static native void nativeOnFakeAdapterStateChanged(
-            long nativeBluetoothTestAndroid, boolean powered);
+        // Binds to BluetoothTestAndroid::OnFakeAdapterStateChanged.
+        void onFakeAdapterStateChanged(long nativeBluetoothTestAndroid, boolean powered);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothDeviceConnectGattCalled.
-    private static native void nativeOnFakeBluetoothDeviceConnectGattCalled(
-            long nativeBluetoothTestAndroid);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothDeviceConnectGattCalled.
+        void onFakeBluetoothDeviceConnectGattCalled(long nativeBluetoothTestAndroid);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothGattDisconnect.
-    private static native void nativeOnFakeBluetoothGattDisconnect(long nativeBluetoothTestAndroid);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothGattDisconnect.
+        void onFakeBluetoothGattDisconnect(long nativeBluetoothTestAndroid);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothGattClose.
-    private static native void nativeOnFakeBluetoothGattClose(long nativeBluetoothTestAndroid);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothGattClose.
+        void onFakeBluetoothGattClose(long nativeBluetoothTestAndroid);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothGattDiscoverServices.
-    private static native void nativeOnFakeBluetoothGattDiscoverServices(
-            long nativeBluetoothTestAndroid);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothGattDiscoverServices.
+        void onFakeBluetoothGattDiscoverServices(long nativeBluetoothTestAndroid);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothGattSetCharacteristicNotification.
-    private static native void nativeOnFakeBluetoothGattSetCharacteristicNotification(
-            long nativeBluetoothTestAndroid);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothGattSetCharacteristicNotification.
+        void onFakeBluetoothGattSetCharacteristicNotification(long nativeBluetoothTestAndroid);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothGattReadCharacteristic.
-    private static native void nativeOnFakeBluetoothGattReadCharacteristic(
-            long nativeBluetoothTestAndroid);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothGattReadCharacteristic.
+        void onFakeBluetoothGattReadCharacteristic(long nativeBluetoothTestAndroid);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothGattWriteCharacteristic.
-    private static native void nativeOnFakeBluetoothGattWriteCharacteristic(
-            long nativeBluetoothTestAndroid, byte[] value);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothGattWriteCharacteristic.
+        void onFakeBluetoothGattWriteCharacteristic(long nativeBluetoothTestAndroid, byte[] value);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothGattReadDescriptor.
-    private static native void nativeOnFakeBluetoothGattReadDescriptor(
-            long nativeBluetoothTestAndroid);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothGattReadDescriptor.
+        void onFakeBluetoothGattReadDescriptor(long nativeBluetoothTestAndroid);
 
-    // Binds to BluetoothTestAndroid::OnFakeBluetoothGattWriteDescriptor.
-    private static native void nativeOnFakeBluetoothGattWriteDescriptor(
-            long nativeBluetoothTestAndroid, byte[] value);
+        // Binds to BluetoothTestAndroid::OnFakeBluetoothGattWriteDescriptor.
+        void onFakeBluetoothGattWriteDescriptor(long nativeBluetoothTestAndroid, byte[] value);
+    }
 }

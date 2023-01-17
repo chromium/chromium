@@ -92,6 +92,7 @@ android_library("net_java_test_support") {
 
 android_library("net_java_test_support_provider") {
   testonly = true
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
     "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",

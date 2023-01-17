@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.query_tiles;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Spins up a test server and starts serving query tiles in native.
@@ -19,9 +20,13 @@ public class QueryTileFakeServer {
      */
     public static void setupFakeServer(
             int levels, int tilesPerLevel, Callback<Boolean> onFetchCompletedCallback) {
-        nativeSetupFakeServer(onFetchCompletedCallback, levels, tilesPerLevel);
+        QueryTileFakeServerJni.get().setupFakeServer(
+                onFetchCompletedCallback, levels, tilesPerLevel);
     }
 
-    static native void nativeSetupFakeServer(
-            Callback<Boolean> onFetchCompletedCallback, int levels, int tilesPerLevel);
+    @NativeMethods
+    interface Natives {
+        void setupFakeServer(
+                Callback<Boolean> onFetchCompletedCallback, int levels, int tilesPerLevel);
+    }
 }

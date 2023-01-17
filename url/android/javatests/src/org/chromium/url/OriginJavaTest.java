@@ -32,7 +32,7 @@ public class OriginJavaTest {
     @SmallTest
     @Test
     public void testOriginEquivalence() {
-        OriginJavaTestHelper.nativeTestOriginEquivalence();
+        OriginJavaTestHelper.testOriginEquivalence();
     }
 
     @SmallTest

@@ -70,8 +70,8 @@ android_library("system_impl_java") {
 # Targets should also depend on :test_support for the native side.
 android_library("test_support_java") {
   testonly = true
-  sources = [ "javatests/src/org/chromium/mojo/MojoTestRule.java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  sources = [ "javatests/src/org/chromium/mojo/MojoTestRule.java" ]
   deps = [
     "//base:base_java",
     "//base:jni_java",

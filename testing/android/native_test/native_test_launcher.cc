@@ -77,7 +77,6 @@ void AndroidLog(int priority, const char* format, ...) {
 
 static void JNI_NativeTest_RunTests(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jcommand_line_flags,
     const JavaParamRef<jstring>& jcommand_line_file_path,
     const JavaParamRef<jstring>& jstdout_file_path,

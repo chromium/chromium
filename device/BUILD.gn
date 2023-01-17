@@ -454,6 +454,7 @@ if (is_android) {
 
   android_library("bluetooth_test_java") {
     testonly = true
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     sources = bluetooth_java_sources_needing_jni
     deps = [
       "//base:base_java",

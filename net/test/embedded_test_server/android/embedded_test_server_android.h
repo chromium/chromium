@@ -30,47 +30,34 @@ class EmbeddedTestServerAndroid {
 
   ~EmbeddedTestServerAndroid();
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
-  jboolean Start(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& jobj,
-                 jint port);
+  jboolean Start(JNIEnv* env, jint port);
 
   base::android::ScopedJavaLocalRef<jstring> GetRootCertPemPath(
-      JNIEnv* jenv,
-      const base::android::JavaParamRef<jobject>& jobj) const;
+      JNIEnv* jenv) const;
 
-  jboolean ShutdownAndWaitUntilComplete(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj);
+  jboolean ShutdownAndWaitUntilComplete(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jstring> GetURL(
       JNIEnv* jenv,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jrelative_url) const;
 
   base::android::ScopedJavaLocalRef<jstring> GetURLWithHostName(
       JNIEnv* jenv,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jhostname,
       const base::android::JavaParamRef<jstring>& jrelative_url) const;
 
   void AddDefaultHandlers(
       JNIEnv* jenv,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jdirectory_path);
 
-  void SetSSLConfig(JNIEnv* jenv,
-                    const base::android::JavaParamRef<jobject>& jobj,
-                    jint jserver_certificate);
+  void SetSSLConfig(JNIEnv* jenv, jint jserver_certificate);
 
-  void RegisterRequestHandler(JNIEnv* jenv,
-                              const base::android::JavaParamRef<jobject>& jobj,
-                              jlong handler);
+  void RegisterRequestHandler(JNIEnv* jenv, jlong handler);
 
   void ServeFilesFromDirectory(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jdirectory_path);
 
  private:

@@ -34,27 +34,20 @@ static void JNI_MojoTestRule_InitCore(JNIEnv* env) {
   mojo::core::Init();
 }
 
-static void JNI_MojoTestRule_Init(JNIEnv* env,
-                                  const JavaParamRef<jobject>& jcaller) {
+static void JNI_MojoTestRule_Init(JNIEnv* env) {
   base::InitAndroidTestMessageLoop();
 }
 
-static jlong JNI_MojoTestRule_SetupTestEnvironment(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+static jlong JNI_MojoTestRule_SetupTestEnvironment(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new TestEnvironment());
 }
 
-static void JNI_MojoTestRule_TearDownTestEnvironment(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    jlong test_environment) {
+static void JNI_MojoTestRule_TearDownTestEnvironment(JNIEnv* env,
+                                                     jlong test_environment) {
   delete reinterpret_cast<TestEnvironment*>(test_environment);
 }
 
-static void JNI_MojoTestRule_RunLoop(JNIEnv* env,
-                                     const JavaParamRef<jobject>& jcaller,
-                                     jlong timeout_ms) {
+static void JNI_MojoTestRule_RunLoop(JNIEnv* env, jlong timeout_ms) {
   base::RunLoop run_loop;
   if (timeout_ms) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

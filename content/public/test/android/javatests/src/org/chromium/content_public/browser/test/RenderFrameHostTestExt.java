@@ -6,6 +6,7 @@ package org.chromium.content_public.browser.test;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 
@@ -17,7 +18,8 @@ public class RenderFrameHostTestExt {
     private final long mNativeRenderFrameHostTestExt;
 
     public RenderFrameHostTestExt(RenderFrameHost host) {
-        mNativeRenderFrameHostTestExt = nativeInit(((RenderFrameHostImpl) host).getNativePtr());
+        mNativeRenderFrameHostTestExt =
+                RenderFrameHostTestExtJni.get().init(((RenderFrameHostImpl) host).getNativePtr());
     }
 
     /**
@@ -28,26 +30,31 @@ public class RenderFrameHostTestExt {
      *        serialized to a String using JSONStringValueSerializer.
      */
     public void executeJavaScript(String script, Callback<String> callback) {
-        nativeExecuteJavaScript(mNativeRenderFrameHostTestExt, script, callback, false);
+        RenderFrameHostTestExtJni.get().executeJavaScript(
+                mNativeRenderFrameHostTestExt, script, callback, false);
     }
 
     public void executeJavaScriptWithUserGesture(String script) {
-        nativeExecuteJavaScript(mNativeRenderFrameHostTestExt, script, (String r) -> {}, true);
+        RenderFrameHostTestExtJni.get().executeJavaScript(
+                mNativeRenderFrameHostTestExt, script, (String r) -> {}, true);
     }
 
     public void updateVisualState(Callback<Boolean> callback) {
-        nativeUpdateVisualState(mNativeRenderFrameHostTestExt, callback);
+        RenderFrameHostTestExtJni.get().updateVisualState(mNativeRenderFrameHostTestExt, callback);
     }
 
     public void notifyVirtualKeyboardOverlayRect(int x, int y, int width, int height) {
-        nativeNotifyVirtualKeyboardOverlayRect(mNativeRenderFrameHostTestExt, x, y, width, height);
+        RenderFrameHostTestExtJni.get().notifyVirtualKeyboardOverlayRect(
+                mNativeRenderFrameHostTestExt, x, y, width, height);
     }
 
-    private native long nativeInit(long renderFrameHostAndroidPtr);
-    private native void nativeExecuteJavaScript(long nativeRenderFrameHostTestExt, String script,
-            Callback<String> callback, boolean withUserGesture);
-    private native void nativeUpdateVisualState(
-            long nativeRenderFrameHostTestExt, Callback<Boolean> callback);
-    private native void nativeNotifyVirtualKeyboardOverlayRect(
-            long nativeRenderFrameHostTestExt, int x, int y, int width, int height);
+    @NativeMethods
+    interface Natives {
+        long init(long renderFrameHostAndroidPtr);
+        void executeJavaScript(long nativeRenderFrameHostTestExt, String script,
+                Callback<String> callback, boolean withUserGesture);
+        void updateVisualState(long nativeRenderFrameHostTestExt, Callback<Boolean> callback);
+        void notifyVirtualKeyboardOverlayRect(
+                long nativeRenderFrameHostTestExt, int x, int y, int width, int height);
+    }
 }

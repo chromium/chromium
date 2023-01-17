@@ -303,6 +303,7 @@ if (is_android) {
 
   android_library("android_test_helper_java") {
     testonly = true
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     sources = [
       "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java",
       "android/javatests/src/org/chromium/url/OriginJavaTestHelper.java",

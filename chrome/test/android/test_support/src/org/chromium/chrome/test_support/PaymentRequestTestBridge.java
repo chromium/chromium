@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.components.autofill.EditableOption;
@@ -96,8 +97,8 @@ public class PaymentRequestTestBridge {
 
     /**
      * Implements NativeObserverForTest by holding pointers to C++ callbacks, and invoking
-     * them through nativeResolvePaymentRequestObserverCallback() when the observer's
-     * methods are called.
+     * them through PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback() when
+     * the observer's methods are called.
      */
     private static class PaymentRequestNativeObserverBridgeToNativeForTest
             implements NativeObserverForTest {
@@ -152,19 +153,23 @@ public class PaymentRequestTestBridge {
 
         @Override
         public void onCanMakePaymentCalled() {
-            nativeResolvePaymentRequestObserverCallback(mOnCanMakePaymentCalledPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnCanMakePaymentCalledPtr);
         }
         @Override
         public void onCanMakePaymentReturned() {
-            nativeResolvePaymentRequestObserverCallback(mOnCanMakePaymentReturnedPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnCanMakePaymentReturnedPtr);
         }
         @Override
         public void onHasEnrolledInstrumentCalled() {
-            nativeResolvePaymentRequestObserverCallback(mOnHasEnrolledInstrumentCalledPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnHasEnrolledInstrumentCalledPtr);
         }
         @Override
         public void onHasEnrolledInstrumentReturned() {
-            nativeResolvePaymentRequestObserverCallback(mOnHasEnrolledInstrumentReturnedPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnHasEnrolledInstrumentReturnedPtr);
         }
 
         @Override
@@ -184,23 +189,28 @@ public class PaymentRequestTestBridge {
                 }
             }
 
-            nativeSetAppDescriptions(mSetAppDescriptionsPtr, appLabels, appSublabels, appTotals);
-            nativeResolvePaymentRequestObserverCallback(mOnAppListReadyPtr);
+            PaymentRequestTestBridgeJni.get().setAppDescriptions(
+                    mSetAppDescriptionsPtr, appLabels, appSublabels, appTotals);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnAppListReadyPtr);
         }
 
         @Override
         public void onShippingSectionVisibilityChange(boolean isShippingSectionVisible) {
-            nativeInvokeBooleanCallback(mSetShippingSectionVisiblePtr, isShippingSectionVisible);
+            PaymentRequestTestBridgeJni.get().invokeBooleanCallback(
+                    mSetShippingSectionVisiblePtr, isShippingSectionVisible);
         }
 
         @Override
         public void onContactSectionVisibilityChange(boolean isContactSectionVisible) {
-            nativeInvokeBooleanCallback(mSetContactSectionVisiblePtr, isContactSectionVisible);
+            PaymentRequestTestBridgeJni.get().invokeBooleanCallback(
+                    mSetContactSectionVisiblePtr, isContactSectionVisible);
         }
 
         @Override
         public void onErrorDisplayed() {
-            nativeResolvePaymentRequestObserverCallback(mOnErrorDisplayedPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnErrorDisplayedPtr);
         }
 
         private static String ensureNotNull(@Nullable String value) {
@@ -209,23 +219,27 @@ public class PaymentRequestTestBridge {
 
         @Override
         public void onNotSupportedError() {
-            nativeResolvePaymentRequestObserverCallback(mOnNotSupportedErrorPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnNotSupportedErrorPtr);
         }
         @Override
         public void onConnectionTerminated() {
-            nativeResolvePaymentRequestObserverCallback(mOnConnectionTerminatedPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnConnectionTerminatedPtr);
         }
         @Override
         public void onAbortCalled() {
-            nativeResolvePaymentRequestObserverCallback(mOnAbortCalledPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnAbortCalledPtr);
         }
         @Override
         public void onCompleteHandled() {
-            nativeResolvePaymentRequestObserverCallback(mOnCompleteHandledPtr);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(
+                    mOnCompleteHandledPtr);
         }
         @Override
         public void onUiDisplayed() {
-            nativeResolvePaymentRequestObserverCallback(mOnUiDisplayed);
+            PaymentRequestTestBridgeJni.get().resolvePaymentRequestObserverCallback(mOnUiDisplayed);
         }
     }
 
@@ -297,14 +311,16 @@ public class PaymentRequestTestBridge {
         return false;
     }
 
-    /**
-     * The native method responsible to executing RepeatingClosure pointers.
-     */
-    private static native void nativeResolvePaymentRequestObserverCallback(long callbackPtr);
+    @NativeMethods
+    interface Natives {
+        /**
+         * The native method responsible to executing RepeatingClosure pointers.
+         */
+        void resolvePaymentRequestObserverCallback(long callbackPtr);
 
-    private static native void nativeSetAppDescriptions(
-            long callbackPtr, String[] appLabels, String[] appSublabels, String[] appTotals);
-
-    /** The native method responsible for executing RepatingCallback<void(bool)> pointers. */
-    private static native void nativeInvokeBooleanCallback(long callbackPtr, boolean value);
+        void setAppDescriptions(
+                long callbackPtr, String[] appLabels, String[] appSublabels, String[] appTotals);
+        /** The native method responsible for executing RepatingCallback<void(bool)> pointers. */
+        void invokeBooleanCallback(long callbackPtr, boolean value);
+    }
 }

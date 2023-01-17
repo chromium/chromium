@@ -89,6 +89,7 @@ if (is_android) {
       "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/ToolbarManagerTestHelper.java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("test_support_jni_headers") {
