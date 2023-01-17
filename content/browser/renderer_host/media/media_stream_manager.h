@@ -542,6 +542,7 @@ class CONTENT_EXPORT MediaStreamManager
                                   const blink::MediaStreamDevice* const device,
                                   const base::UnguessableToken& transfer_id,
                                   TransferState transfer_state);
+  void CancelRequest(DeviceRequests::const_iterator request_it);
   void DeleteRequest(DeviceRequests::const_iterator request_it);
 
   // Prepare the request with label |label| by starting device enumeration if

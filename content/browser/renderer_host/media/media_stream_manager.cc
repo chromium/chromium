@@ -1758,13 +1758,14 @@ void MediaStreamManager::CancelRequest(int render_process_id,
                                        int requester_id,
                                        int page_request_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  for (const LabeledDeviceRequest& labeled_request : requests_) {
-    DeviceRequest* const request = labeled_request.second.get();
+  for (auto request_it = requests_.begin(); request_it != requests_.end();
+       ++request_it) {
+    const DeviceRequest* const request = request_it->second.get();
     if (request->requesting_process_id == render_process_id &&
         request->requesting_frame_id == render_frame_id &&
         request->requester_id == requester_id &&
         request->page_request_id == page_request_id) {
-      CancelRequest(labeled_request.first);
+      CancelRequest(request_it);
       return;
     }
   }
@@ -1773,15 +1774,29 @@ void MediaStreamManager::CancelRequest(int render_process_id,
 void MediaStreamManager::CancelRequest(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  SendLogMessage(
-      base::StringPrintf("CancelRequest({label=%s})", label.c_str()));
   const DeviceRequests::const_iterator request_it = FindRequestIterator(label);
   if (request_it == requests_.end()) {
-    // The request does not exist.
+    SendLogMessage(
+        base::StringPrintf("CancelRequest({label=%s})", label.c_str()));
     LOG(ERROR) << "The request with label = " << label << " does not exist.";
     return;
   }
+
+  CancelRequest(request_it);
+}
+
+void MediaStreamManager::CancelRequest(
+    DeviceRequests::const_iterator request_it) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (request_it == requests_.end()) {
+    return;
+  }
+  const std::string& label = request_it->first;
   DeviceRequest* const request = request_it->second.get();
+
+  SendLogMessage(
+      base::StringPrintf("CancelRequest({label=%s})", label.c_str()));
 
   // This is a request for closing one or more devices.
   for (const blink::mojom::StreamDevicesPtr& stream_devices_ptr :
@@ -1809,14 +1824,15 @@ void MediaStreamManager::CancelRequest(const std::string& label) {
   // Cancel the request if still pending at UI side.
   request->SetState(MediaStreamType::NUM_MEDIA_TYPES,
                     MEDIA_REQUEST_STATE_CLOSING);
-  DeleteRequest(request_it);
+  DeleteRequest(request_it);  // Invalidates |label| and |request|.
 }
 
 void MediaStreamManager::CancelAllRequests(int render_process_id,
                                            int render_frame_id,
                                            int requester_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  auto request_it = requests_.begin();
+
+  DeviceRequests::const_iterator request_it = requests_.begin();
   while (request_it != requests_.end()) {
     if (request_it->second->requesting_process_id != render_process_id ||
         request_it->second->requesting_frame_id != render_frame_id ||
@@ -1824,9 +1840,10 @@ void MediaStreamManager::CancelAllRequests(int render_process_id,
       ++request_it;
       continue;
     }
-    const std::string label = request_it->first;
-    ++request_it;
-    CancelRequest(label);
+
+    const DeviceRequests::const_iterator next = std::next(request_it);
+    CancelRequest(request_it);
+    request_it = next;
   }
 }
 
@@ -3495,9 +3512,11 @@ void MediaStreamManager::HandleChangeSourceRequestResponse(
 void MediaStreamManager::StopMediaStreamFromBrowser(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  DeviceRequest* request = FindRequest(label);
-  if (!request)
+  const DeviceRequests::const_iterator request_it = FindRequestIterator(label);
+  if (request_it == requests_.end()) {
     return;
+  }
+  DeviceRequest* const request = request_it->second.get();
 
   SendLogMessage(base::StringPrintf("StopMediaStreamFromBrowser({label=%s})",
                                     label.c_str()));
@@ -3520,7 +3539,7 @@ void MediaStreamManager::StopMediaStreamFromBrowser(const std::string& label) {
     }
   }
 
-  CancelRequest(label);
+  CancelRequest(request_it);
   IncrementDesktopCaptureCounter(DESKTOP_CAPTURE_NOTIFICATION_STOP);
 }
 
