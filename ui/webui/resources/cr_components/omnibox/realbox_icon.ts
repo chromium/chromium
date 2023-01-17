@@ -172,16 +172,17 @@ export class RealboxIconElement extends PolymerElement {
   }
 
   private computeImageSrc_(): string {
-    if (!this.match || !this.match.imageUrl) {
+    const imageUrl = this.match?.imageUrl;
+    if (!imageUrl) {
       return '';
     }
 
-    if (this.match.imageUrl.startsWith('data:image/')) {
-      // Zero-prefix matches come with the image content in |match.imageUrl|.
-      return this.match.imageUrl;
+    if (imageUrl.startsWith('data:image/')) {
+      // Zero-prefix matches come with the data URI content in |match.imageUrl|.
+      return imageUrl;
     }
 
-    return `//image?${this.match.imageUrl}`;
+    return `//image?staticEncode=true&encodeType=webp&url=${imageUrl}`;
   }
 
   private containerBgColor_(imageDominantColor: string, imageLoading: boolean):

@@ -2217,7 +2217,8 @@ suite('NewTabPageRealboxTest', () => {
 
         assertEquals(
             matchEls[1]!.$.icon.$.image.getAttribute('src'),
-            `//image?${matches[1]!.imageUrl}`);
+            `//image?staticEncode=true&encodeType=webp&url=${
+                matches[1]!.imageUrl}`);
 
         // Mock image finishing loading, which should remove the temporary
         // background color.
