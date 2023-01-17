@@ -5691,6 +5691,21 @@
             ]
         }
     ],
+    "IOSFeedBackOfCardP13nPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230113",
+                    "enable_features": [
+                        "EnableFeedCardMenuSignInPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSFeedSyncPromo": [
         {
             "platforms": [
