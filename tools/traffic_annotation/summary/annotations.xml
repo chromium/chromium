@@ -418,4 +418,5 @@ Refer to README.md for content description and update process.
  <item id="chromeos_emoji_picker_posts_fetcher" added_in_milestone="111" content_hash_code="06c44c7e" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc" />
  <item id="webapk_minter_install_request" added_in_milestone="111" content_hash_code="042fed33" os_list="chromeos" file_path="chrome/browser/apps/app_service/webapk/webapk_install_task.cc" />
  <item id="deduplication_service" added_in_milestone="111" content_hash_code="06a77ea3" os_list="chromeos" file_path="chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.cc" />
+ <item id="network_portal_detector" added_in_milestone="111" content_hash_code="023cdc21" os_list="chromeos" file_path="chrome/browser/ash/net/network_portal_detector_impl.cc" />
 </annotations>
