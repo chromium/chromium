@@ -223,11 +223,6 @@ class PaintOpHelper {
     return str.str();
   }
 
-  template <typename T>
-  static std::string SkiaTypeToString(const T&) {
-    return "<unknown skia type>";
-  }
-
   static std::string SkiaTypeToString(const SkScalar& scalar) {
     return base::StringPrintf("%.3f", scalar);
   }
@@ -260,6 +255,14 @@ class PaintOpHelper {
         matrix.rc(1, 0), matrix.rc(1, 1), matrix.rc(1, 2), matrix.rc(1, 3),
         matrix.rc(2, 0), matrix.rc(2, 1), matrix.rc(2, 2), matrix.rc(2, 3),
         matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2), matrix.rc(3, 3));
+  }
+
+  static std::string SkiaTypeToString(const SkMatrix& matrix) {
+    return base::StringPrintf(
+        "[%8.4f %8.4f %8.4f][%8.4f %8.4f %8.4f][%8.4f %8.4f %8.4f]]",
+        matrix.rc(0, 0), matrix.rc(0, 1), matrix.rc(0, 2), matrix.rc(1, 0),
+        matrix.rc(1, 1), matrix.rc(1, 2), matrix.rc(2, 0), matrix.rc(2, 1),
+        matrix.rc(2, 2));
   }
 
   static std::string SkiaTypeToString(const SkColor& color) {
@@ -424,11 +427,6 @@ class PaintOpHelper {
     if (!looper)
       return "(nil)";
     return "SkDrawLooper";
-  }
-
-  template <typename T>
-  static std::string EnumToString(T) {
-    return "<unknown enum type>";
   }
 
   static std::string EnumToString(PaintCanvas::AnnotationType type) {
