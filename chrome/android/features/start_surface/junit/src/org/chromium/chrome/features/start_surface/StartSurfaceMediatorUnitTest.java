@@ -1006,8 +1006,7 @@ public class StartSurfaceMediatorUnitTest {
 
         assertEquals(StartSurfaceUserData.getInstance().restoreFeedInstanceState(), instanceState);
 
-        mediator.setStartSurfaceState(
-                StartSurfaceState.SHOWING_START, NewTabPageLaunchOrigin.WEB_FEED);
+        mediator.setLaunchOrigin(NewTabPageLaunchOrigin.WEB_FEED);
         assertNull(StartSurfaceUserData.getInstance().restoreFeedInstanceState());
     }
 
@@ -1024,8 +1023,7 @@ public class StartSurfaceMediatorUnitTest {
 
         assertEquals(StartSurfaceUserData.getInstance().restoreFeedInstanceState(), instanceState);
 
-        mediator.setStartSurfaceState(
-                StartSurfaceState.SHOWING_START, NewTabPageLaunchOrigin.UNKNOWN);
+        mediator.setLaunchOrigin(NewTabPageLaunchOrigin.UNKNOWN);
         assertNotNull(StartSurfaceUserData.getInstance().restoreFeedInstanceState());
     }
 

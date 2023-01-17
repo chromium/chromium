@@ -670,7 +670,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     // two different things, audit the wording usage and see if we can rename this method to
     // setStartSurfaceStateInternal.
     private void setOverviewStateInternal() {
-        if (mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE) {
+        if (mStartSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
+                || mStartSurfaceState == StartSurfaceState.SHOWING_START) {
             // When entering the Start surface by tapping home button or new tab page, we need to
             // reset the scrolling position.
             resetScrollPosition();
