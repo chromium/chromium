@@ -777,8 +777,7 @@ void ChromeAutofillClient::ShowAutofillPopup(
       open_args.text_direction);
 
   popup_controller_->Show(open_args.suggestions,
-                          open_args.autoselect_first_suggestion,
-                          open_args.popup_type);
+                          open_args.autoselect_first_suggestion);
 
   // When testing, try to keep popup open when the reason to hide is from an
   // external browser frame resize that is extraneous to our testing goals.
@@ -820,8 +819,7 @@ ChromeAutofillClient::GetReopenPopupArgs() const {
       screen_space_independent_bounds,
       controller->IsRTL() ? base::i18n::RIGHT_TO_LEFT
                           : base::i18n::LEFT_TO_RIGHT,
-      controller->GetSuggestions(), AutoselectFirstSuggestion(false),
-      controller->GetPopupType());
+      controller->GetSuggestions(), AutoselectFirstSuggestion(false));
 }
 
 void ChromeAutofillClient::UpdatePopup(
@@ -842,8 +840,7 @@ void ChromeAutofillClient::UpdatePopup(
   }
 
   // Calling show will reuse the existing view automatically
-  popup_controller_->Show(suggestions, AutoselectFirstSuggestion(false),
-                          popup_type);
+  popup_controller_->Show(suggestions, AutoselectFirstSuggestion(false));
 }
 
 void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {

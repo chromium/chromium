@@ -810,8 +810,7 @@ bool PasswordAutofillManager::ShowPopup(
   LogMetricsForSuggestions(suggestions);
   autofill::AutofillClient::PopupOpenArgs open_args(
       bounds, text_direction, suggestions,
-      autofill::AutoselectFirstSuggestion(false),
-      autofill::PopupType::kPasswords);
+      autofill::AutoselectFirstSuggestion(false));
   autofill_client_->ShowAutofillPopup(open_args,
                                       weak_ptr_factory_.GetWeakPtr());
   return true;

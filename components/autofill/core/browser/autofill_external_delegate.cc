@@ -151,7 +151,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (query_field_.is_focusable && driver_->CanShowAutofillUi()) {
     AutofillClient::PopupOpenArgs open_args(
         element_bounds_, query_field_.text_direction, suggestions,
-        AutoselectFirstSuggestion(autoselect_first_suggestion), popup_type_);
+        AutoselectFirstSuggestion(autoselect_first_suggestion));
     manager_->client()->ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }

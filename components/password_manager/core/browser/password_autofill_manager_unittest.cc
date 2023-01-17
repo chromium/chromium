@@ -286,8 +286,7 @@ autofill::AutofillClient::PopupOpenArgs CreateReopenArgsWithTestSuggestions(
   return {gfx::RectF(), base::i18n::LEFT_TO_RIGHT,
           CreateTestSuggestions(has_opt_in_and_fill, has_opt_in_and_generate,
                                 has_re_signin),
-          autofill::AutoselectFirstSuggestion(false),
-          autofill::PopupType::kPasswords};
+          autofill::AutoselectFirstSuggestion(false)};
 }
 
 }  // namespace
@@ -603,7 +602,6 @@ TEST_F(PasswordAutofillManagerTest, ShowOptInAndFillButton) {
 #endif
                   autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 // Test that a popup without entries doesn't show "Manage all Passwords".
@@ -625,7 +623,6 @@ TEST_F(PasswordAutofillManagerTest, SuppressManageAllWithoutPasswords) {
               SuggestionVectorIdsAre(ElementsAre(
                   autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN)));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 // Test that the popup is updated once account-stored suggestions are unlocked.
@@ -651,7 +648,6 @@ TEST_F(PasswordAutofillManagerTest, ShowResigninButton) {
 #endif
                   autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 // Test that the popup is updated once "opt in and fill" is clicked.
@@ -1132,7 +1128,6 @@ TEST_F(PasswordAutofillManagerTest, PrettifiedAndroidRealmsAreShownAsLabels) {
           testing::Contains(std::vector<std::vector<Suggestion::Text>>{
               {Suggestion::Text(u"android://com.example1.android/")}})));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 TEST_F(PasswordAutofillManagerTest, FillSuggestionPasswordField) {
@@ -1166,7 +1161,6 @@ TEST_F(PasswordAutofillManagerTest, FillSuggestionPasswordField) {
           Suggestion::Text(GetManagePasswordsTitle(),
                            Suggestion::Text::IsPrimary(true)))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 // Verify that typing "foo" into the username field will match usernames
@@ -1211,7 +1205,6 @@ TEST_F(PasswordAutofillManagerTest, DisplaySuggestionsWithMatchingTokens) {
                   Suggestion::Text(GetManagePasswordsTitle(),
                                    Suggestion::Text::IsPrimary(true)))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 // Verify that typing "oo" into the username field will not match any usernames
@@ -1288,7 +1281,6 @@ TEST_F(PasswordAutofillManagerTest,
                   Suggestion::Text(GetManagePasswordsTitle(),
                                    Suggestion::Text::IsPrimary(true)))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 // Verify that typing "example" into the username field will match and order
@@ -1336,7 +1328,6 @@ TEST_F(PasswordAutofillManagerTest,
                                    Suggestion::Text::IsPrimary(true)))));
 
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
@@ -1476,7 +1467,6 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnNonPasswordField) {
           Suggestion::Text(GetManagePasswordsTitle(),
                            Suggestion::Text::IsPrimary(true)))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 TEST_F(PasswordAutofillManagerTest,
@@ -1663,7 +1653,6 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
               testing::Ge(1u));  // No footer on Android.
   EXPECT_THAT(open_args.suggestions[0].trailing_icon, "google");
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
 
 TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {

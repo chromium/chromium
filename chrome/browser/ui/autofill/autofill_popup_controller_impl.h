@@ -69,8 +69,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // Shows the popup, or updates the existing popup with the given values.
   virtual void Show(const std::vector<Suggestion>& suggestions,
-                    AutoselectFirstSuggestion autoselect_first_suggestion,
-                    PopupType popup_type);
+                    AutoselectFirstSuggestion autoselect_first_suggestion);
 
   // Updates the data list values currently shown with the popup.
   virtual void UpdateDataListValues(const std::vector<std::u16string>& values,

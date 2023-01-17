@@ -263,7 +263,6 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
                                             AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 
   EXPECT_CALL(*browser_autofill_manager_,
               FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _));
@@ -307,7 +306,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
                    "Signin_Impression_FromAutofillDropdown"));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 
   EXPECT_CALL(*browser_autofill_manager_,
               FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _));
@@ -346,7 +344,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
                    "Signin_Impression_FromAutofillDropdown"));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 
   EXPECT_CALL(autofill_client_,
               ExecuteCommand(autofill::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO));
@@ -395,7 +392,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
                                             AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 
   // Try calling OnSuggestionsReturned with no Autofill values and ensure
   // the datalist items are still shown.
@@ -411,7 +407,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
               SuggestionVectorIdsAre(testing::ElementsAre(
                   static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 // Test that datalist values can get updated while a popup is showing.
@@ -454,7 +449,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
                                             AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 
   // This would normally get called from ShowAutofillPopup, but it is mocked so
   // we need to call OnPopupShown ourselves.
@@ -512,7 +506,6 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
                                             AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 // Test that we de-dupe autocomplete values against datalist values, keeping the
@@ -557,7 +550,6 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
                                             AutoselectFirstSuggestion(false));
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIdsAre(element_ids));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 // Test that the Autofill popup is able to display warnings explaining why
@@ -585,7 +577,6 @@ TEST_F(AutofillExternalDelegateUnitTest, AutofillWarnings) {
   EXPECT_EQ(open_args.element_bounds, gfx::RectF());
   EXPECT_EQ(open_args.text_direction, base::i18n::UNKNOWN_DIRECTION);
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 // Test that Autofill warnings are removed if there are also autocomplete
@@ -615,7 +606,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
               SuggestionVectorIdsAre(testing::ElementsAre(
                   static_cast<int>(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY))));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 // Test that the Autofill delegate doesn't try and fill a form with a
@@ -1013,7 +1003,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
               SuggestionVectorStoreIndicatorIconsAre(element_icons));
 #endif
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
@@ -1038,7 +1027,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
       field_id_, autofill_item, AutoselectFirstSuggestion(false), false);
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIconsAre(element_icons));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
@@ -1066,7 +1054,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(element_main_texts));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 // Test that browser autofill manager will handle the unmasking request for the
@@ -1120,7 +1107,6 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(element_main_texts));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 // Tests that the prompt to show account cards shows up when the corresponding
@@ -1142,7 +1128,6 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(element_main_texts));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
-  EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
 #if BUILDFLAG(IS_IOS)
