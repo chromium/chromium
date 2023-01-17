@@ -90,7 +90,11 @@ class MockSimpleIndexFile : public SimpleIndexFile,
     entry_set->swap(disk_write_entry_set_);
   }
 
-  base::OnceClosure TakeLoadCallback() { return std::move(load_callback_); }
+  void RunLoadCallback() {
+    // Clear dangling reference since callback may destroy `load_result_`.
+    load_result_ = nullptr;
+    std::move(load_callback_).Run();
+  }
   SimpleIndexLoadResult* load_result() const { return load_result_; }
   int load_index_entries_calls() const { return load_index_entries_calls_; }
   int disk_writes() const { return disk_writes_; }
@@ -159,7 +163,7 @@ class SimpleIndexTest : public net::TestWithTaskEnvironment,
 
   void ReturnIndexFile() {
     index_file_->load_result()->did_load = true;
-    index_file_->TakeLoadCallback().Run();
+    index_file_->RunLoadCallback();
   }
 
   // Non-const for timer manipulation.
