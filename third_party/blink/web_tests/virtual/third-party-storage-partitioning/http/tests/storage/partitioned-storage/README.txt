@@ -1,1 +1,1 @@
-This suite runs Partitioned Storage tests with ThirdPartyStoragePartitioning enabled.
+This suite runs Partitioned Storage tests with ThirdPartyStoragePartitioning disabled.

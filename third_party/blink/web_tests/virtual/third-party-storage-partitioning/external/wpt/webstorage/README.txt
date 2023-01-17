@@ -1,2 +1,2 @@
-This suite runs webstorage tests with ThirdPartyStoragePartitioning enabled.
+This suite runs webstorage tests with ThirdPartyStoragePartitioning disabled.
 

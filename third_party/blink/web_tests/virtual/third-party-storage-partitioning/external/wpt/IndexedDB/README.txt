@@ -1,1 +1,1 @@
-This suite runs IndexedDB tests with ThirdPartyStoragePartitioning enabled.
+This suite runs IndexedDB tests with ThirdPartyStoragePartitioning disabled.

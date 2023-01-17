@@ -1,2 +1,1 @@
-This suite runs BroadcastChannel tests with ThirdPartyStoragePartitioning
-enabled.
+This suite runs BroadcastChannel tests with ThirdPartyStoragePartitioning disabled.
