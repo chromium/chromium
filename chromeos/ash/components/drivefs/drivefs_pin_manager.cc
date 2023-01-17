@@ -486,9 +486,9 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
   progress_.stage = SetupStage::kCalculatingFreeSpace;
   NotifyProgress();
 
-  get_free_space_.Run(profile_path_.AppendASCII("GCache"),
-                      base::BindOnce(&DriveFsPinManager::OnFreeSpaceRetrieved,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  get_free_space_.Run(
+      profile_path_.AppendASCII("GCache"),
+      base::BindOnce(&DriveFsPinManager::OnFreeSpaceRetrieved, GetWeakPtr()));
 }
 
 void DriveFsPinManager::Stop() {
@@ -536,9 +536,8 @@ void DriveFsPinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
 
   drivefs_interface_->StartSearchQuery(
       search_query_.BindNewPipeAndPassReceiver(), CreateMyDriveQuery());
-  search_query_->GetNextPage(
-      base::BindOnce(&DriveFsPinManager::OnSearchResultForSizeCalculation,
-                     weak_ptr_factory_.GetWeakPtr()));
+  search_query_->GetNextPage(base::BindOnce(
+      &DriveFsPinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
 }
 
 void DriveFsPinManager::OnSearchResultForSizeCalculation(
@@ -579,9 +578,8 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
 
   NotifyProgress();
   DCHECK(search_query_);
-  search_query_->GetNextPage(
-      base::BindOnce(&DriveFsPinManager::OnSearchResultForSizeCalculation,
-                     weak_ptr_factory_.GetWeakPtr()));
+  search_query_->GetNextPage(base::BindOnce(
+      &DriveFsPinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
 }
 
 void DriveFsPinManager::Complete(const SetupStage stage) {
@@ -666,8 +664,7 @@ void DriveFsPinManager::StartPinning() {
   // offline from the `files_to_track_` map.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&DriveFsPinManager::CheckUnstartedFiles,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DriveFsPinManager::CheckUnstartedFiles, GetWeakPtr()),
       kPeriodicRemovalInterval);
 
   PinSomeFiles();
@@ -692,8 +689,8 @@ void DriveFsPinManager::PinSomeFiles() {
     VLOG(2) << "Pinning " << id << " " << Quote(path);
     drivefs_interface_->SetPinnedByStableId(
         static_cast<int64_t>(id), true,
-        base::BindOnce(&DriveFsPinManager::OnFilePinned,
-                       weak_ptr_factory_.GetWeakPtr(), id, path));
+        base::BindOnce(&DriveFsPinManager::OnFilePinned, GetWeakPtr(), id,
+                       path));
 
     const Files::insert_return_type ir =
         files_to_track_.insert(std::move(node));
@@ -835,8 +832,8 @@ void DriveFsPinManager::OnFilesChanged(
     VLOG(2) << "Checking changed " << id << " " << Quote(path);
     drivefs_interface_->GetMetadataByStableId(
         static_cast<int64_t>(id),
-        base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
-                       weak_ptr_factory_.GetWeakPtr(), id, path));
+        base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved, GetWeakPtr(),
+                       id, path));
   }
 }
 
@@ -852,18 +849,18 @@ void DriveFsPinManager::NotifyProgress() {
   }
 
   VLOG(3) << "Notifying observers";
-  for (DriveFsBulkPinObserver& observer : observers_) {
-    observer.OnSetupProgress(progress_);
+  for (Observer& observer : observers_) {
+    observer.OnProgress(progress_);
   }
   VLOG(3) << "Notified observers";
 }
 
-void DriveFsPinManager::AddObserver(DriveFsBulkPinObserver* const observer) {
+void DriveFsPinManager::AddObserver(Observer* const observer) {
   observers_.AddObserver(observer);
   VLOG(3) << "Added observer " << observer;
 }
 
-void DriveFsPinManager::RemoveObserver(DriveFsBulkPinObserver* observer) {
+void DriveFsPinManager::RemoveObserver(Observer* const observer) {
   observers_.RemoveObserver(observer);
   VLOG(3) << "Removed observer " << observer;
 }
@@ -877,15 +874,14 @@ void DriveFsPinManager::CheckUnstartedFiles() {
       VLOG(2) << "Checking unstarted " << id << " " << Quote(path);
       drivefs_interface_->GetMetadataByStableId(
           static_cast<int64_t>(id),
-          base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
-                         weak_ptr_factory_.GetWeakPtr(), id, path));
+          base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved, GetWeakPtr(),
+                         id, path));
     }
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&DriveFsPinManager::CheckUnstartedFiles,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DriveFsPinManager::CheckUnstartedFiles, GetWeakPtr()),
       kPeriodicRemovalInterval);
 
   PinSomeFiles();

@@ -655,7 +655,7 @@ TEST_F(DriveFsPinManagerTest,
   new_run_loop.Run();
 }
 
-class TestBulkPinObserver : public DriveFsBulkPinObserver {
+class TestBulkPinObserver : public DriveFsPinManager::Observer {
  public:
   TestBulkPinObserver() = default;
 
@@ -664,7 +664,7 @@ class TestBulkPinObserver : public DriveFsBulkPinObserver {
 
   ~TestBulkPinObserver() override = default;
 
-  MOCK_METHOD(void, OnSetupProgress, (const SetupProgress&), (override));
+  MOCK_METHOD(void, OnProgress, (const SetupProgress&), (override));
 };
 
 TEST_F(DriveFsPinManagerTest,
@@ -702,7 +702,7 @@ TEST_F(DriveFsPinManagerTest,
           });
 
   TestBulkPinObserver mock_pin_observer;
-  EXPECT_CALL(mock_pin_observer, OnSetupProgress(_)).Times(AnyNumber());
+  EXPECT_CALL(mock_pin_observer, OnProgress(_)).Times(AnyNumber());
 
   DriveFsPinManager manager(
       temp_dir_.GetPath(), &mock_drivefs_,
@@ -721,10 +721,10 @@ TEST_F(DriveFsPinManagerTest,
   base::RunLoop setup_progress_run_loop;
   SetState(status->item_events, mojom::ItemEvent::State::kInProgress);
   status->item_events.at(0)->bytes_transferred = 10;
-  EXPECT_CALL(mock_pin_observer,
-              OnSetupProgress(
-                  AllOf(Field(&SetupProgress::transferred_bytes, 10),
-                        Field(&SetupProgress::stage, SetupStage::kSyncing))))
+  EXPECT_CALL(
+      mock_pin_observer,
+      OnProgress(AllOf(Field(&SetupProgress::transferred_bytes, 10),
+                       Field(&SetupProgress::stage, SetupStage::kSyncing))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
   manager.OnSyncingStatusUpdate(*status);
@@ -745,10 +745,10 @@ TEST_F(DriveFsPinManagerTest,
       .WillOnce(RunClosure(new_run_loop.QuitClosure()));
   SetState(status->item_events, mojom::ItemEvent::State::kCompleted);
   status->item_events.at(0)->bytes_transferred = 128;
-  EXPECT_CALL(mock_pin_observer,
-              OnSetupProgress(
-                  AllOf(Field(&SetupProgress::transferred_bytes, 128),
-                        Field(&SetupProgress::stage, SetupStage::kSuccess))))
+  EXPECT_CALL(
+      mock_pin_observer,
+      OnProgress(AllOf(Field(&SetupProgress::transferred_bytes, 128),
+                       Field(&SetupProgress::stage, SetupStage::kSuccess))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
   manager.OnSyncingStatusUpdate(*status);

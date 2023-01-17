@@ -101,19 +101,6 @@ struct SetupProgress {
   SetupStage stage = SetupStage::kNotStarted;
 };
 
-// Observe the setup progress via subscribing as an observer on the
-// `DriveFsPinManager`.
-// TODO(b/261633796): Send back monitoring events to the observers.
-class DriveFsBulkPinObserver {
- public:
-  // When the setup progresses, this returns back the information gathered and
-  // the current stage of setup.
-  virtual void OnSetupProgress(const SetupProgress& progress) = 0;
-
- protected:
-  virtual ~DriveFsBulkPinObserver() = default;
-};
-
 // Manages bulk pinning of items via DriveFS. This class handles the following:
 //  - Manage batching of pin actions to avoid sending too many events at once.
 //  - Ensure disk space is not being exceeded whilst pinning files.
@@ -156,8 +143,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     return progress_;
   }
 
-  void AddObserver(DriveFsBulkPinObserver* observer);
-  void RemoveObserver(DriveFsBulkPinObserver* observer);
+  // Observer interface.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the setup progresses.
+    virtual void OnProgress(const SetupProgress& progress) = 0;
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // drivefs::DriveFsHostObserver
   void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
@@ -167,6 +161,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   // Stable ID provided by DriveFS.
   enum class StableId : int64_t { kNone = 0 };
+
+  base::WeakPtr<DriveFsPinManager> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   // Adds an item to the files to pin.  Does nothing if an item with the same ID
@@ -275,7 +273,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   const SpaceGetter get_free_space_;
 
   SetupProgress progress_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ObserverList<DriveFsBulkPinObserver>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   const base::FilePath profile_path_;
   const raw_ptr<mojom::DriveFs> drivefs_interface_;
