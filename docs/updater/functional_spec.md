@@ -937,6 +937,14 @@ respectively, a command format of:
 becomes the command line
   `echo.exe AA %2 %BB`
 
+#### Signature verification
+Signature verification is not done on the app command executables, since the
+AppCommands will always be running from a secure location for system, and the
+key that defines the application command path is in HKLM, both of which mitigate
+the threat of a non-admin attacker. An Admin attacker would already be able to
+bypass any signature checking by binplanting a DLL, or just by performing
+whatever changes they like on the system, so is outside the threat model.
+
 ### Policy Status API
 The feature allows Chrome and other applications to query the policies that are
 currently in effect.
