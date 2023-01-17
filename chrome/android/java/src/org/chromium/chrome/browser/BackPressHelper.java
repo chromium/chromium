@@ -8,6 +8,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 import androidx.lifecycle.LifecycleOwner;
 
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+
 /**
  * Helper class for back press event handling via {@link OnBackPressedDisptacher}. This is
  * a recommended way over {@link Activity#onBackPressed}. Refer to the Android developer's guide
@@ -15,9 +17,10 @@ import androidx.lifecycle.LifecycleOwner;
  */
 public final class BackPressHelper {
     /**
-     * Handles back press event.
+     * @deprecated Handles back press event. #onBackPressed is deprecated starting from U. Prefer
+     * {@link BackPressHandler} whenever possible.
      */
-    public interface BackPressedHandler {
+    public interface ObsoleteBackPressedHandler {
         /**
          * @return {@code true} if the event was consumed. {@code false} otherwise.
          */
@@ -25,14 +28,36 @@ public final class BackPressHelper {
     }
 
     /**
-     * Create a {@link BackPressHelper} that can handle a chain of handlers.
+     * @deprecated Create a {@link BackPressHelper} that can handle a chain of handlers.
+     * Prefer {@link #create(LifecycleOwner, OnBackPressedDispatcher, BackPressHandler)}
+     * whenever possible.
      * @param lifecycleOwner {@link LifecycleOwner} managing the back press logic's lifecycle.
      * @param dispatcher {@link OnBackPressedDispatcher} that holds other callbacks.
-     * @param handler {@link BackPressedHandler} implementing the caller's back press handler.
+     * @param handler {@link ObsoleteBackPressedHandler} implementing the caller's back press
+     *         handler.
+     */
+    @Deprecated
+    public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
+            ObsoleteBackPressedHandler handler) {
+        new BackPressHelper(lifecycleOwner, dispatcher, handler);
+    }
+
+    /**
+     * Register a {@link BackPressHandler} on a given {@link  OnBackPressedDispatcher}.
+     * @param lifecycleOwner {@link LifecycleOwner} managing the back press logic's lifecycle.
+     * @param dispatcher {@link OnBackPressedDispatcher} that holds other callbacks.
+     * @param handler {@link BackPressHandler} observing back press state and consuming back press.
      */
     public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            BackPressedHandler handler) {
-        new BackPressHelper(lifecycleOwner, dispatcher, handler);
+            BackPressHandler handler) {
+        var callback = new OnBackPressedCallback(/* enabled */ false) {
+            @Override
+            public void handleOnBackPressed() {
+                handler.handleBackPress();
+            }
+        };
+        handler.getHandleBackPressChangedSupplier().addObserver(callback::setEnabled);
+        dispatcher.addCallback(lifecycleOwner, callback);
     }
 
     /**
@@ -52,7 +77,7 @@ public final class BackPressHelper {
     }
 
     private BackPressHelper(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            BackPressedHandler handler) {
+            ObsoleteBackPressedHandler handler) {
         dispatcher.addCallback(lifecycleOwner, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {

@@ -239,6 +239,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPageAnnotationsService,
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
+    &kBackGestureRefactorActivityAndroid,
     &kBackGestureRefactorAndroid,
     &kOmahaMinSdkVersionAndroid,
     &kOmniboxModernizeVisualUpdate,
@@ -744,6 +745,10 @@ BASE_FEATURE(kBookmarksImprovedSaveFlow,
 
 BASE_FEATURE(kBookmarksRefresh,
              "BookmarksRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBackGestureRefactorActivityAndroid,
+             "BackGestureRefactorActivityAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackGestureRefactorAndroid,

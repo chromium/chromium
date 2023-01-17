@@ -3461,6 +3461,12 @@ const char kAppMenuMobileSiteOptionDescription[] =
     "When enabled, app menu should show 'Mobile site' when showing desktop "
     "site, instead of showing 'Desktop Site' with checkbox";
 
+const char kBackGestureRefactorActivityAndroidName[] =
+    "Back Gesture Refactor (Secondary Activities)";
+const char kBackGestureRefactorActivityAndroidDescription[] =
+    "Enable Back Gesture Refactor for Secondary Activities to support in-app "
+    "activity-to-activity predictive back gestures";
+
 const char kBackGestureRefactorAndroidName[] = "Back Gesture Refactor";
 const char kBackGestureRefactorAndroidDescription[] =
     "Enable Back Gesture Refactor.";

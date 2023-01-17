@@ -29,9 +29,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @Config(manifest = Config.NONE)
 public class BackPressHelperUnitTest {
     @Mock
-    private BackPressHelper.BackPressedHandler mBackPressedHandler;
+    private BackPressHelper.ObsoleteBackPressedHandler mBackPressedHandler;
     @Mock
-    private BackPressHelper.BackPressedHandler mBackPressedHandler2;
+    private BackPressHelper.ObsoleteBackPressedHandler mBackPressedHandler2;
     @Mock
     private LifecycleOwner mLifecycleOwner;
     private LifecycleRegistry mLifecycle;

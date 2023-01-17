@@ -661,6 +661,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "back-gesture-refactor-activity-android",
+    "owners": ["lazzzis@google.com", "jinsukkim", "twellington"],
+    "expiry_milestone": 118
+  },
+  {
     "name": "back-gesture-refactor-android",
     "owners": ["lazzzis@google.com", "jinsukkim", "twellington"],
     "expiry_milestone": 115

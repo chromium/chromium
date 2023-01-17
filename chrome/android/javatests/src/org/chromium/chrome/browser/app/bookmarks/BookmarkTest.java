@@ -533,6 +533,87 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testSearchBookmarks_pressBack() throws Exception {
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE);
+        BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage, folder);
+        addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, folder);
+        openBookmarkManager();
+
+        RecyclerView.Adapter adapter = getAdapter();
+        final BookmarkDelegate delegate = getBookmarkManager();
+
+        // Open the new folder where these bookmarks were created.
+        openFolder(folder);
+
+        Assert.assertEquals(
+                Boolean.TRUE, getBookmarkManager().getHandleBackPressChangedSupplier().get());
+
+        TestThreadUtils.runOnUiThreadBlocking(delegate::openSearchUI);
+
+        Assert.assertEquals(BookmarkUIState.STATE_SEARCHING, delegate.getCurrentState());
+        Assert.assertEquals(
+                "Wrong number of items after showing search UI. The promo should be hidden.", 2,
+                adapter.getItemCount());
+
+        Assert.assertEquals(
+                Boolean.TRUE, getBookmarkManager().getHandleBackPressChangedSupplier().get());
+
+        // Exit search UI.
+        TestThreadUtils.runOnUiThreadBlocking(
+                mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
+        Assert.assertNotEquals(BookmarkUIState.STATE_SEARCHING, delegate.getCurrentState());
+
+        // Enter search UI again.
+        TestThreadUtils.runOnUiThreadBlocking(delegate::openSearchUI);
+
+        searchBookmarks("Google");
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+        Assert.assertEquals("Wrong number of items after searching.", 1,
+                mItemsContainer.getAdapter().getItemCount());
+
+        BookmarkRow itemView =
+                (BookmarkRow) mItemsContainer.findViewHolderForLayoutPosition(0).itemView;
+
+        toggleSelectionAndEndAnimation(getIdByPosition(0), itemView);
+
+        // Make sure the Item "test" is selected.
+        CriteriaHelper.pollUiThread(
+                itemView::isChecked, "Expected item \"test\" to become selected");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
+
+        // Clear selection but still in search UI.
+        CriteriaHelper.pollUiThread(
+                () -> !itemView.isChecked(), "Expected item \"test\" to become not selected");
+        Assert.assertEquals(BookmarkUIState.STATE_SEARCHING, delegate.getCurrentState());
+        Assert.assertEquals(
+                Boolean.TRUE, getBookmarkManager().getHandleBackPressChangedSupplier().get());
+
+        // Exit search UI.
+        TestThreadUtils.runOnUiThreadBlocking(
+                mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
+        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+
+        // Exit folder.
+        Assert.assertEquals(
+                Boolean.TRUE, getBookmarkManager().getHandleBackPressChangedSupplier().get());
+        TestThreadUtils.runOnUiThreadBlocking(
+                mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
+        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+
+        // Exit bookmark activity.
+        Assert.assertEquals(
+                Boolean.FALSE, getBookmarkManager().getHandleBackPressChangedSupplier().get());
+        TestThreadUtils.runOnUiThreadBlocking(
+                mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
+        ApplicationTestUtils.waitForActivityState(mBookmarkActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
     public void testSearchBookmarks_Delete() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);

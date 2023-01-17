@@ -79,6 +79,13 @@ public class BackPressManager implements Destroyable {
     }
 
     /**
+     * @return True if the back gesture refactor is enabled for secondary activities.
+     */
+    public static boolean isSecondaryActivityEnabled() {
+        return ChromeFeatureList.sBackGestureRefactorActivityAndroid.isEnabled();
+    }
+
+    /**
      * Record when the back press is consumed by a certain feature.
      * @param type The {@link Type} which consumes the back press event.
      */

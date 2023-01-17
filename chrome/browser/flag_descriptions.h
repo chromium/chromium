@@ -1978,6 +1978,9 @@ extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 extern const char kAppMenuMobileSiteOptionName[];
 extern const char kAppMenuMobileSiteOptionDescription[];
 
+extern const char kBackGestureRefactorActivityAndroidName[];
+extern const char kBackGestureRefactorActivityAndroidDescription[];
+
 extern const char kBackGestureRefactorAndroidName[];
 extern const char kBackGestureRefactorAndroidDescription[];
 

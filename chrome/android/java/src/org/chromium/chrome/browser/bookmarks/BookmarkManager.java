@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
@@ -38,6 +40,7 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -53,8 +56,9 @@ import java.util.Stack;
  * views and shared logics between tablet and phone. For tablet/phone specific logics, see
  * {@link BookmarkActivity} (phone) and {@link BookmarkPage} (tablet).
  */
-public class BookmarkManager
-        implements BookmarkDelegate, SearchDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
+public class BookmarkManager implements BookmarkDelegate, SearchDelegate,
+                                        PartnerBookmarksReader.FaviconUpdateObserver,
+                                        BackPressHandler {
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
 
@@ -71,7 +75,23 @@ public class BookmarkManager
     private RecyclerView mRecyclerView;
     private BookmarkActionBar mToolbar;
     private SelectionDelegate<BookmarkId> mSelectionDelegate;
-    private final Stack<BookmarkUIState> mStateStack = new Stack<>();
+    private final Stack<BookmarkUIState> mStateStack = new Stack<>() {
+        @Override
+        public BookmarkUIState push(BookmarkUIState item) {
+            // The back press state depends on the size of stack. So push/pop item first in order
+            // to keep the size update-to-date.
+            var state = super.push(item);
+            onBackPressStateChanged();
+            return state;
+        }
+
+        @Override
+        public synchronized BookmarkUIState pop() {
+            var state = super.pop();
+            onBackPressStateChanged();
+            return state;
+        }
+    };
     private LargeIconBridge mLargeIconBridge;
     private boolean mFaviconsNeedRefresh;
     private String mInitialUrl;
@@ -82,6 +102,9 @@ public class BookmarkManager
     private BookmarkItemsAdapter mAdapter;
     private BookmarkDragStateDelegate mDragStateDelegate;
     private AdapterDataObserver mAdapterDataObserver;
+
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
+            new ObservableSupplierImpl<>();
 
     private final BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
         @Override
@@ -220,6 +243,8 @@ public class BookmarkManager
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
         mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
+        mSelectableListLayout.getHandleBackPressChangedSupplier().addObserver(
+                (x) -> onBackPressStateChanged());
 
         mAdapter = new BookmarkItemsAdapter(mContext, snackbarManager);
 
@@ -336,6 +361,28 @@ public class BookmarkManager
             }
         }
         return false;
+    }
+
+    private void onBackPressStateChanged() {
+        if (mIsDestroyed) {
+            mBackPressStateSupplier.set(false);
+            return;
+        }
+        mBackPressStateSupplier.set(
+                Boolean.TRUE.equals(mSelectableListLayout.getHandleBackPressChangedSupplier().get())
+                || mStateStack.size() > 1);
+    }
+
+    // BackPressHandler Overrides
+    @Override
+    public void handleBackPress() {
+        var ret = onBackPressed();
+        assert ret;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
     }
 
     /**
