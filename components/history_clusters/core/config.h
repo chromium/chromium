@@ -99,13 +99,13 @@ struct Config {
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // soon to update clusters after startup in minutes. E.g., by default, will
-  // update clusters 5 minutes after startup.
-  int persist_clusters_in_history_db_after_startup_delay_minutes = 5;
+  // update clusters 60 minutes minutes after startup.
+  int persist_clusters_in_history_db_after_startup_delay_minutes = 60;
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // often to update clusters in minutes. E.g., by default, will update clusters
-  // every hour.
-  int persist_clusters_in_history_db_period_minutes = 60;
+  // every 12 hours.
+  int persist_clusters_in_history_db_period_minutes = 12 * 60;
 
   // No effect if `persist_clusters_in_history_db` is disabled. If disabled,
   // persistence occurs on a timer (see the above 2 params). If enabled, will
@@ -132,7 +132,7 @@ struct Config {
   // clusters. E.g., if set to 2, and clusters up to 1/10 have been persisted,
   // then the next request will include visits from clusters from 1/8 and 1/9,
   // and unclustered visits from 1/10.
-  size_t persist_clusters_recluster_window_days = 2;
+  size_t persist_clusters_recluster_window_days = 0;
 
   // The `kOmniboxAction` feature and child params.
 
