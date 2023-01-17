@@ -1485,13 +1485,7 @@
     "AutofillUpstreamAllowAllEmailDomains": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {

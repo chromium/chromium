@@ -284,8 +284,10 @@ TEST_F(AutofillExperimentsTest,
 TEST_F(
     AutofillExperimentsTest,
     IsCardUploadEnabled_UserEmailWithSupportedAdditionalDomain_NotAllowedIfFlagOff) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillUpstreamAllowAdditionalEmailDomains);
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          features::kAutofillUpstreamAllowAdditionalEmailDomains,
+          features::kAutofillUpstreamAllowAllEmailDomains});
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       "cool.user@hotmail.com",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
