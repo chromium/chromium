@@ -260,9 +260,7 @@ void PlaybackCommandForwardingRenderer::OnError(media::PipelineStatus status) {
 }
 
 void PlaybackCommandForwardingRenderer::OnFallback(
-    media::PipelineStatus status) {
-  NOTREACHED();
-}
+    media::PipelineStatus status) {}
 
 void PlaybackCommandForwardingRenderer::OnEnded() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

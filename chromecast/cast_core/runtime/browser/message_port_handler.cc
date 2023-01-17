@@ -184,9 +184,6 @@ void MessagePortHandler::ForwardMessageNow(cast::web::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!message.has_request() || !has_outstanding_request_);
   bool was_request = message.has_request();
-  if (was_request) {
-    DLOG_CHANNEL(INFO) << "Sending message: " << message.request().data();
-  }
 
   auto call = core_app_stub_->CreateCall<
       cast::v2::CoreMessagePortApplicationServiceStub::PostMessage>(
