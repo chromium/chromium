@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process_iterator.h"
 #include "base/synchronization/waitable_event.h"
@@ -95,6 +97,13 @@ const base::ProcessIterator::ProcessEntries FindProcesses(
 base::FilePath::StringType PrintProcesses(
     const base::FilePath::StringType& executable_name);
 #endif
+
+// Waits for a given `predicate` to become true. Invokes `still_waiting`
+// periodically to provide a indication of progress. Returns true if the
+// predicate becomes true before a timeout, otherwise returns false.
+[[nodiscard]] bool WaitFor(
+    base::RepeatingCallback<bool()> predicate,
+    base::RepeatingClosure still_waiting = base::DoNothing());
 
 struct EventHolder {
   base::WaitableEvent event;

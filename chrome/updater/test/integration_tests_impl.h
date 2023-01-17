@@ -11,8 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -73,13 +71,6 @@ void SetGroupPolicies(const base::Value::Dict& values);
 
 // Copies the logs to a location where they can be retrieved by ResultDB.
 void CopyLog(const base::FilePath& src_dir);
-
-// Waits for a given `predicate` to become true. Invokes `still_waiting`
-// periodically to provide a indication of progress. Returns true if the
-// predicate becomes true before a timeout, otherwise returns false.
-[[nodiscard]] bool WaitFor(
-    base::RepeatingCallback<bool()> predicate,
-    base::RepeatingClosure still_waiting = base::DoNothing());
 
 // Returns the path to the updater data dir.
 absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope);

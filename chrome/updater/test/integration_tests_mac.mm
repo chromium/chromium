@@ -34,6 +34,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/launchd_util.h"
 #import "chrome/updater/util/mac_util.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"

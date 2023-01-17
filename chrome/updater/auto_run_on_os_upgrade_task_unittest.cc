@@ -15,9 +15,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/unittest_util_win.h"
 #include "chrome/updater/util/win_util.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -114,10 +116,10 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
   base::FilePath os_upgrade_file = current_directory.Append(os_upgrade_string);
   base::FilePath hardcoded_file = current_directory.Append(L"HardcodedFile");
 
-  base::WaitableEvent().TimedWait(TestTimeouts::tiny_timeout());
-  EXPECT_TRUE(base::PathExists(os_upgrade_file));
-  EXPECT_TRUE(base::PathExists(hardcoded_file));
-
+  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting([&]() {
+    return base::PathExists(os_upgrade_file) &&
+           base::PathExists(hardcoded_file);
+  })));
   EXPECT_TRUE(base::DeleteFile(os_upgrade_file));
   EXPECT_TRUE(base::DeleteFile(hardcoded_file));
 }

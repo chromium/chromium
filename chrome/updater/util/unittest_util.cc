@@ -11,6 +11,8 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -23,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
@@ -421,5 +424,23 @@ EventHolder CreateWaitableEventForTest() {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+bool WaitFor(base::RepeatingCallback<bool()> predicate,
+             base::RepeatingClosure still_waiting) {
+  constexpr base::TimeDelta kOutputInterval = base::Seconds(10);
+  auto notify_next = base::TimeTicks::Now() + kOutputInterval;
+  const auto deadline = base::TimeTicks::Now() + TestTimeouts::action_timeout();
+  while (base::TimeTicks::Now() < deadline) {
+    if (predicate.Run()) {
+      return true;
+    }
+    if (notify_next < base::TimeTicks::Now()) {
+      still_waiting.Run();
+      notify_next += kOutputInterval;
+    }
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  }
+  return false;
+}
 
 }  // namespace updater::test

@@ -41,7 +41,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -517,24 +516,6 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
       2 * TestTimeouts::action_max_timeout(), exit_code);
   VPLOG_IF(0, !succeeded);
   ASSERT_TRUE(succeeded);
-}
-
-bool WaitFor(base::RepeatingCallback<bool()> predicate,
-             base::RepeatingClosure still_waiting) {
-  constexpr base::TimeDelta kOutputInterval = base::Seconds(10);
-  auto notify_next = base::TimeTicks::Now() + kOutputInterval;
-  const auto deadline = base::TimeTicks::Now() + TestTimeouts::action_timeout();
-  while (base::TimeTicks::Now() < deadline) {
-    if (predicate.Run()) {
-      return true;
-    }
-    if (notify_next < base::TimeTicks::Now()) {
-      still_waiting.Run();
-      notify_next += kOutputInterval;
-    }
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  }
-  return false;
 }
 
 bool RequestMatcherRegex(const std::string& request_body_regex,

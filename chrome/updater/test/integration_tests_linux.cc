@@ -28,6 +28,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/linux_util.h"
 #include "chrome/updater/util/posix_util.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
