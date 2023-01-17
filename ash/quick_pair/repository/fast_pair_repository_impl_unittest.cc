@@ -1024,7 +1024,9 @@ TEST_F(FastPairRepositoryImplTest,
   // be saved in the registry even if it is not paired locally because
   // the SavedDeviceRegistry  tracks devices that have been Fast paired in the
   // past.
-  saved_device_registry_->SaveAccountKey(kTestClassicAddress1, kAccountKey1);
+  bool success = saved_device_registry_->SaveAccountAssociation(
+      kTestClassicAddress1, kAccountKey1);
+  EXPECT_TRUE(success);
   EXPECT_TRUE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 

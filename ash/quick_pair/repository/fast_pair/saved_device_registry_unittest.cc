@@ -62,8 +62,7 @@ class SavedDeviceRegistryTest : public testing::Test {
     ON_CALL(*browser_delegate_, GetActivePrefService())
         .WillByDefault(testing::Return(pref_service_.get()));
 
-    saved_device_registry_ =
-        std::make_unique<SavedDeviceRegistry>(adapter_);
+    saved_device_registry_ = std::make_unique<SavedDeviceRegistry>(adapter_);
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
   }
 
@@ -79,14 +78,19 @@ class SavedDeviceRegistryTest : public testing::Test {
 };
 
 TEST_F(SavedDeviceRegistryTest, ValidLookup) {
-  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
-  saved_device_registry_->SaveAccountKey(kSecondSavedMacAddress, kAccountKey2);
+  bool success1 = saved_device_registry_->SaveAccountAssociation(
+      kFirstSavedMacAddress, kAccountKey1);
+  bool success2 = saved_device_registry_->SaveAccountAssociation(
+      kSecondSavedMacAddress, kAccountKey2);
 
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
 
   ASSERT_EQ(kAccountKey1, *first);
   ASSERT_EQ(kAccountKey2, *second);
+
+  EXPECT_TRUE(success1);
+  EXPECT_TRUE(success2);
 
   EXPECT_TRUE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
@@ -95,7 +99,8 @@ TEST_F(SavedDeviceRegistryTest, ValidLookup) {
 }
 
 TEST_F(SavedDeviceRegistryTest, InvalidLookup) {
-  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
+  bool success1 = saved_device_registry_->SaveAccountAssociation(
+      kFirstSavedMacAddress, kAccountKey1);
 
   auto invalid_result =
       saved_device_registry_->GetAccountKey(kNotSavedMacAddress);
@@ -103,6 +108,7 @@ TEST_F(SavedDeviceRegistryTest, InvalidLookup) {
 
   EXPECT_TRUE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  EXPECT_TRUE(success1);
   EXPECT_FALSE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
 }
@@ -110,8 +116,10 @@ TEST_F(SavedDeviceRegistryTest, InvalidLookup) {
 TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
   ON_CALL(*browser_delegate_, GetActivePrefService())
       .WillByDefault(testing::Return(nullptr));
-  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
-  saved_device_registry_->SaveAccountKey(kSecondSavedMacAddress, kAccountKey2);
+  bool failure1 = saved_device_registry_->SaveAccountAssociation(
+      kFirstSavedMacAddress, kAccountKey1);
+  bool failure2 = saved_device_registry_->SaveAccountAssociation(
+      kSecondSavedMacAddress, kAccountKey2);
 
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
@@ -123,6 +131,9 @@ TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
   EXPECT_FALSE(
       saved_device_registry_->DeleteAccountKey(kSecondSavedMacAddress));
 
+  EXPECT_FALSE(failure1);
+  EXPECT_FALSE(failure2);
+
   EXPECT_FALSE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   EXPECT_FALSE(
@@ -130,14 +141,19 @@ TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
 }
 
 TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_MacAddress) {
-  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
-  saved_device_registry_->SaveAccountKey(kSecondSavedMacAddress, kAccountKey2);
+  bool success1 = saved_device_registry_->SaveAccountAssociation(
+      kFirstSavedMacAddress, kAccountKey1);
+  bool success2 = saved_device_registry_->SaveAccountAssociation(
+      kSecondSavedMacAddress, kAccountKey2);
 
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
 
   ASSERT_EQ(kAccountKey1, *first);
   ASSERT_EQ(kAccountKey2, *second);
+
+  EXPECT_TRUE(success1);
+  EXPECT_TRUE(success2);
 
   EXPECT_TRUE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
@@ -163,14 +179,19 @@ TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_MacAddress) {
 }
 
 TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_AccountKey) {
-  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
-  saved_device_registry_->SaveAccountKey(kSecondSavedMacAddress, kAccountKey2);
+  bool success1 = saved_device_registry_->SaveAccountAssociation(
+      kFirstSavedMacAddress, kAccountKey1);
+  bool success2 = saved_device_registry_->SaveAccountAssociation(
+      kSecondSavedMacAddress, kAccountKey2);
 
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
 
   ASSERT_EQ(kAccountKey1, *first);
   ASSERT_EQ(kAccountKey2, *second);
+
+  EXPECT_TRUE(success1);
+  EXPECT_TRUE(success2);
 
   EXPECT_TRUE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
@@ -205,8 +226,13 @@ TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_AccountKey) {
 TEST_F(SavedDeviceRegistryTest,
        MAYBE_IsAccountKeySavedToRegistry_DeviceRemoved) {
   // Simulate a user saving devices to their account.
-  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
-  saved_device_registry_->SaveAccountKey(kSecondSavedMacAddress, kAccountKey2);
+  bool success1 = saved_device_registry_->SaveAccountAssociation(
+      kFirstSavedMacAddress, kAccountKey1);
+  bool success2 = saved_device_registry_->SaveAccountAssociation(
+      kSecondSavedMacAddress, kAccountKey2);
+
+  EXPECT_TRUE(success1);
+  EXPECT_TRUE(success2);
 
   // Destroy the object to simulate a user's session ending.
   saved_device_registry_.reset();

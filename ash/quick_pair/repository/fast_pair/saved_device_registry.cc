@@ -33,19 +33,22 @@ void SavedDeviceRegistry::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kFastPairSavedDevicesPref);
 }
 
-void SavedDeviceRegistry::SaveAccountKey(
+bool SavedDeviceRegistry::SaveAccountAssociation(
     const std::string& mac_address,
     const std::vector<uint8_t>& account_key) {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
-    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
-    return;
+    QP_LOG(WARNING) << __func__
+                    << ": No user pref service available. Failed to write "
+                       "account association to Saved Device Registry.";
+    return false;
   }
   std::string encoded = base::Base64Encode(account_key);
   ScopedDictPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
   update->Set(mac_address, encoded);
   QP_LOG(INFO) << __func__ << ": Saved account key.";
+  return true;
 }
 
 bool SavedDeviceRegistry::DeleteAccountKey(const std::string& mac_address) {
@@ -153,8 +156,9 @@ void SavedDeviceRegistry::RemoveDevicesIfRemovedFromDifferentUser(
   // cross reference the registry for any devices that need to be removed.
   std::set<std::string> paired_devices;
   for (device::BluetoothDevice* device : adapter_->GetDevices()) {
-    if (device->IsPaired())
+    if (device->IsPaired()) {
       paired_devices.insert(device->GetAddress());
+    }
   }
 
   // Iterate over the list of devices in the registry, and if there are any in

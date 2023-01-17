@@ -173,8 +173,9 @@ bool FastPairRepositoryImpl::IsAccountKeyPairedLocally(
   // and we want to prevent showing a Subsequent pairing notification in this
   // case.
   for (device::BluetoothDevice* device : adapter_->GetDevices()) {
-    if (!device->IsPaired())
+    if (!device->IsPaired()) {
       continue;
+    }
 
     // Use the paired device's |mac_address| and the given |account_key| to
     // generate a SHA256(concat(account_key, mac_address)), and use this
@@ -193,7 +194,16 @@ bool FastPairRepositoryImpl::IsAccountKeyPairedLocally(
             << __func__
             << ": paired device already saved to account at address = "
             << mac_address << "; adding to registry";
-        saved_device_registry_->SaveAccountKey(mac_address, account_key);
+        if (saved_device_registry_->SaveAccountAssociation(mac_address,
+                                                           account_key)) {
+          QP_LOG(VERBOSE) << __func__
+                          << ": paired device at address = " << mac_address
+                          << " added to local registry.";
+        } else {
+          QP_LOG(WARNING) << __func__
+                          << ": failed to add paired device at address = "
+                          << mac_address << " to local registry.";
+        }
 
         // We only expect there to be at most one match with |account_key| in
         // the devices saved to Footprints. An account key is uniquely written
@@ -343,10 +353,18 @@ bool FastPairRepositoryImpl::AssociateAccountKeyLocally(
   }
 
   DCHECK(device->classic_address());
-  saved_device_registry_->SaveAccountKey(device->classic_address().value(),
-                                         account_key.value());
-  QP_LOG(INFO) << __func__ << ": Saved account key locally.";
-  return true;
+  const std::string& mac_address = device->classic_address().value();
+  if (saved_device_registry_->SaveAccountAssociation(mac_address,
+                                                     account_key.value())) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": paired device at address = " << mac_address
+                    << " added to local registry.";
+    return true;
+  }
+
+  QP_LOG(WARNING) << __func__ << ": failed to add paired device at address = "
+                  << mac_address << " to local registry.";
+  return false;
 }
 
 void FastPairRepositoryImpl::WriteDeviceToFootprints(
@@ -398,15 +416,16 @@ void FastPairRepositoryImpl::OnWriteDeviceToFootprintsComplete(
   pending_write_store_->OnPairedDeviceSaved(mac_address);
 
   // Save/Update account key in the saved device registry.
-  saved_device_registry_->SaveAccountKey(mac_address, account_key);
-  if (saved_device_registry_->IsAccountKeySavedToRegistry(account_key)) {
-    QP_LOG(INFO) << __func__
-                 << ": Successfully wrote device to Saved Device Registry.";
+  if (saved_device_registry_->SaveAccountAssociation(mac_address,
+                                                     account_key)) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": paired device at address = " << mac_address
+                    << " added to local registry.";
     return;
   }
 
-  QP_LOG(WARNING) << __func__
-                  << ": Failed to write device to Saved Device Registry.";
+  QP_LOG(WARNING) << __func__ << ": failed to add paired device at address = "
+                  << mac_address << " to local registry.";
 }
 
 void FastPairRepositoryImpl::CheckOptInStatus(
@@ -635,16 +654,18 @@ void FastPairRepositoryImpl::RetryPendingDeletes(
     for (const auto& device : devices) {
       // Account key may be null for a device removed from Android Saved
       // Devices.
-      if (!device.has_account_key())
+      if (!device.has_account_key()) {
         continue;
+      }
 
       const std::string saved_account_key =
           base::HexEncode(std::vector<uint8_t>(device.account_key().begin(),
                                                device.account_key().end()));
       found_in_saved_devices =
           saved_account_key == pending_delete.hex_account_key;
-      if (found_in_saved_devices)
+      if (found_in_saved_devices) {
         break;
+      }
     }
 
     // If our failed-to-delete account key is still found in Footprints, then
@@ -788,13 +809,15 @@ bool FastPairRepositoryImpl::EvictDeviceImages(
   const std::string device_id = device->GetIdentifier();
   absl::optional<const std::string> hex_model_id =
       device_id_map_->GetModelIdForDeviceId(device_id);
-  if (!hex_model_id)
+  if (!hex_model_id) {
     return false;
+  }
   device_id_map_->EvictDeviceIdRecord(device_id);
 
   // Before evicting images, check if other device IDs map to this model ID.
-  if (device_id_map_->HasPersistedRecordsForModelId(hex_model_id.value()))
+  if (device_id_map_->HasPersistedRecordsForModelId(hex_model_id.value())) {
     return false;
+  }
 
   return device_image_store_->EvictDeviceImages(hex_model_id.value());
 }

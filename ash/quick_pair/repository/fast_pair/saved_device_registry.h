@@ -35,9 +35,10 @@ class SavedDeviceRegistry {
   // Registers preferences used by this class in the provided |registry|.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Saves an account key to disk.
-  void SaveAccountKey(const std::string& mac_address,
-                      const std::vector<uint8_t>& account_key);
+  // Saves the account association (|mac_address|, |account_key|) to disk.
+  // Returns true on success, false on failure.
+  bool SaveAccountAssociation(const std::string& mac_address,
+                              const std::vector<uint8_t>& account_key);
 
   // Deletes the |mac_address| -> account key record from prefs based on
   // |mac address|. Returns true on success, false on failure.
