@@ -13,12 +13,12 @@ package ukm;
 message Entry {
   // Unique identifier for an Event. This is used to provide hierarchical
   // structure for Events.
-  optional int32 id = 1;
+  optional int32 DEPRECATED_id = 1 [deprecated = true];
 
   // Parent id, which is associated with an id for another Event. This is set
   // only if the Event has another Event which can be considered a parent.
   // This is to provide hierarchies for Events.
-  optional int32 parent_id = 2;
+  optional int32 DEPRECATED_parent_id = 2 [deprecated = true];
 
   // The id of the Source this Event is associated with.
   optional int64 source_id = 3;

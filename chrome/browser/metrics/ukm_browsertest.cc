@@ -1727,14 +1727,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestForAppConsent,
     const auto id = report->sources(i).id();
     EXPECT_EQ(ukm::GetSourceIdType(id), ukm::SourceIdType::APP_ID);
   }
-
-  // Verify that if an entry exists it is either DEFAULT or APP_ID.
-  // NOTE(crbug/1395144): There were some entries with SourceId of 0, which are
-  // not purged because they do not have a source in the recordings.
-  for (int i = 0; i < report->entries_size(); ++i) {
-    const auto id_type = ukm::GetSourceIdType(report->entries(i).id());
-    EXPECT_EQ(id_type, ukm::SourceIdType::DEFAULT);
-  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -182,7 +182,8 @@ message SystemProfileProto {
     // used only on iOS. Chrome for iOS detects whether device contains a
     // DynamicLibraries/ directory. It's a necessary but insufficient indicator
     // of whether the operating system has been jailbroken.
-    optional bool is_jailbroken = 4;
+    // Deprecated 01/2023. This was never set.
+    optional bool DEPRECATED_is_jailbroken = 4 [deprecated = true];
 
     // The build number for the OS version. The same OS version may have a
     // different build number. The meaning of this field is OS-dependent.
@@ -1085,7 +1086,7 @@ message SystemProfileProto {
 
   // Information about what Chrome components are registered and at which
   // version.
-  // Next Tag: 4
+  // Next Tag: 5
   message ChromeComponent {
     // Which component this information is for.
     optional ComponentId component_id = 1 [default = UNKNOWN];
@@ -1100,6 +1101,11 @@ message SystemProfileProto {
     // was installed as the component. It is a stronger version number that can
     // vary across platform, architecture, or branches of an A/B component test.
     optional fixed32 omaha_fingerprint = 3;
+
+    // A hash of the cohort identifier of this component, excluding
+    // non-assignment information. The hash function is Chromium's
+    // PersistentHash.
+    optional fixed32 cohort_hash = 4;
   }
   repeated ChromeComponent chrome_component = 24;
 
