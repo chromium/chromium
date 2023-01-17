@@ -507,8 +507,14 @@ void StatisticsProviderImpl::LoadCrossystemTool() {
 }
 
 void StatisticsProviderImpl::LoadMachineInfoFile() {
-  if (!base::SysInfo::IsRunningOnChromeOS() &&
-      !base::PathExists(sources_.machine_info_filepath)) {
+  if (!base::PathExists(sources_.machine_info_filepath)) {
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      // This is unexpected, since the file is supposed to always be populated
+      // by write-machine-info script on ui start.
+      LOG(ERROR) << "Missing machine info: " << sources_.machine_info_filepath;
+      return;
+    }
+
     // Use time value to create an unique stub serial because clashes of the
     // same serial for the same domain invalidate earlier enrollments. Persist
     // to disk to keep it constant across restarts (required for re-enrollment
