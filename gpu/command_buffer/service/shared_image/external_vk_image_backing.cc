@@ -112,8 +112,9 @@ bool UseSeparateGLTexture(SharedContextState* context_state,
   if (!context_state->support_vulkan_external_object())
     return true;
 
-  if (format.resource_format() != viz::ResourceFormat::BGRA_8888)
+  if (format != viz::SinglePlaneFormat::kBGRA_8888) {
     return false;
+  }
 
   auto* gl_context = context_state->real_context();
   const auto* version_info = gl_context->GetVersionInfo();

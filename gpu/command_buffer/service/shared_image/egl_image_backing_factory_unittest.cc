@@ -487,14 +487,13 @@ CreateAndValidateSharedImageRepresentations::
 
   // As long as either |chromium_image_ar30| or |chromium_image_ab30| is
   // enabled, we can create a non-scanout SharedImage with format
-  // viz::ResourceFormat::{BGRA,RGBA}_1010102.
+  // viz::SinglePlaneFormat::{BGRA,RGBA}_1010102.
   const bool supports_ar30 =
       context_state->feature_info()->feature_flags().chromium_image_ar30;
   const bool supports_ab30 =
       context_state->feature_info()->feature_flags().chromium_image_ab30;
-  const auto resource_format = format.resource_format();
-  if ((resource_format == viz::ResourceFormat::BGRA_1010102 ||
-       resource_format == viz::ResourceFormat::RGBA_1010102) &&
+  if ((format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+       format == viz::SinglePlaneFormat::kRGBA_1010102) &&
       !supports_ar30 && !supports_ab30) {
     EXPECT_FALSE(backing_);
     return;
@@ -542,8 +541,8 @@ CreateAndValidateSharedImageRepresentations::
   // support. It's possible Skia might support these formats even if the Chrome
   // feature flags are false. We just check here that the feature flags don't
   // allow Chrome to do something that Skia doesn't support.
-  if ((resource_format != viz::ResourceFormat::BGRA_1010102 || supports_ar30) &&
-      (resource_format != viz::ResourceFormat::RGBA_1010102 || supports_ab30)) {
+  if ((format != viz::SinglePlaneFormat::kBGRA_1010102 || supports_ar30) &&
+      (format != viz::SinglePlaneFormat::kRGBA_1010102 || supports_ab30)) {
     EXPECT_TRUE(scoped_write_access);
     if (!scoped_write_access)
       return;

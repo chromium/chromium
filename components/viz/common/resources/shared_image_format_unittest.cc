@@ -32,10 +32,7 @@ class SharedImageFormatTest : public testing::Test {
 
 TEST_F(SharedImageFormatTest, MultiPlaneYUVBiplanar8bit) {
   // 8-bit 4:2:0 Y_UV biplanar format (YUV_420_BIPLANAR)
-  SharedImageFormat format =
-      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
-                                    SharedImageFormat::Subsampling::k420,
-                                    SharedImageFormat::ChannelFormat::k8);
+  SharedImageFormat format = MultiPlaneFormat::kYUV_420_BIPLANAR;
   // Test for NumChannelsInPlane
   std::vector<int> expected_channels = {1, 2};
   TestNumChannelsInPlane(expected_channels, format);
@@ -49,10 +46,7 @@ TEST_F(SharedImageFormatTest, MultiPlaneYUVBiplanar8bit) {
 
 TEST_F(SharedImageFormatTest, MultiPlaneYVU) {
   // 8-bit 4:2:0 Y_V_U format (YVU_420)
-  SharedImageFormat format =
-      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_V_U,
-                                    SharedImageFormat::Subsampling::k420,
-                                    SharedImageFormat::ChannelFormat::k8);
+  SharedImageFormat format = MultiPlaneFormat::kYVU_420;
   // Test for NumChannelsInPlane
   std::vector<int> expected_channels = {1, 1, 1};
   TestNumChannelsInPlane(expected_channels, format);
@@ -67,10 +61,7 @@ TEST_F(SharedImageFormatTest, MultiPlaneYVU) {
 
 TEST_F(SharedImageFormatTest, MultiPlaneP010) {
   // 10-bit 4:2:0 Y_UV biplanar format (P010)
-  SharedImageFormat format =
-      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
-                                    SharedImageFormat::Subsampling::k420,
-                                    SharedImageFormat::ChannelFormat::k10);
+  SharedImageFormat format = MultiPlaneFormat::kP010;
   // Test for NumChannelsInPlane
   std::vector<int> expected_channels = {1, 2};
   TestNumChannelsInPlane(expected_channels, format);

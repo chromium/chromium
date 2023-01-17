@@ -26,10 +26,7 @@ class ResourceFormatUtilTest : public testing::Test {
 
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVBiplanar8bit) {
   // 8-bit 4:2:0 Y_UV biplanar format (YUV_420_BIPLANAR)
-  SharedImageFormat format =
-      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
-                                    SharedImageFormat::Subsampling::k420,
-                                    SharedImageFormat::ChannelFormat::k8);
+  SharedImageFormat format = MultiPlaneFormat::kYUV_420_BIPLANAR;
   std::vector<SkColorType> expected_types = {kAlpha_8_SkColorType,
                                              kR8G8_unorm_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
@@ -37,10 +34,7 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVBiplanar8bit) {
 
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYVU) {
   // 8-bit 4:2:0 Y_V_U format (YVU_420)
-  SharedImageFormat format =
-      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_V_U,
-                                    SharedImageFormat::Subsampling::k420,
-                                    SharedImageFormat::ChannelFormat::k8);
+  SharedImageFormat format = MultiPlaneFormat::kYVU_420;
   std::vector<SkColorType> expected_types = {
       kAlpha_8_SkColorType, kAlpha_8_SkColorType, kAlpha_8_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
@@ -48,10 +42,7 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYVU) {
 
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneP010) {
   // 10-bit 4:2:0 Y_UV biplanar format (P010)
-  SharedImageFormat format =
-      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
-                                    SharedImageFormat::Subsampling::k420,
-                                    SharedImageFormat::ChannelFormat::k10);
+  SharedImageFormat format = MultiPlaneFormat::kP010;
   std::vector<SkColorType> expected_types = {kA16_unorm_SkColorType,
                                              kR16G16_unorm_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
@@ -82,16 +73,14 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeMultiPlaneYUVATriplanar) {
 
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSinglePlaneRGBX) {
   // Single planar RGBX_8888
-  SharedImageFormat format =
-      SharedImageFormat::SinglePlane(ResourceFormat::RGBX_8888);
+  SharedImageFormat format = SinglePlaneFormat::kRGBX_8888;
   std::vector<SkColorType> expected_types = {kRGB_888x_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
 
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSinglePlaneAlpha) {
   // Single planar ALPHA_8
-  SharedImageFormat format =
-      SharedImageFormat::SinglePlane(ResourceFormat::ALPHA_8);
+  SharedImageFormat format = SinglePlaneFormat::kALPHA_8;
   std::vector<SkColorType> expected_types = {kAlpha_8_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/true);
 }
@@ -99,8 +88,7 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSinglePlaneAlpha) {
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSoftwareRGBX) {
   // Software Compositing.
   // Single planar RGBX_8888
-  SharedImageFormat format =
-      SharedImageFormat::SinglePlane(ResourceFormat::RGBX_8888);
+  SharedImageFormat format = SinglePlaneFormat::kRGBX_8888;
   std::vector<SkColorType> expected_types = {kN32_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/false);
 }
@@ -108,10 +96,7 @@ TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSoftwareRGBX) {
 TEST_F(ResourceFormatUtilTest, ToClosestSkColorTypeSoftwareYUV) {
   // Software Compositing.
   // 10-bit 4:2:0 Y_UV biplanar format (P010)
-  SharedImageFormat format =
-      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
-                                    SharedImageFormat::Subsampling::k420,
-                                    SharedImageFormat::ChannelFormat::k10);
+  SharedImageFormat format = MultiPlaneFormat::kP010;
   std::vector<SkColorType> expected_types = {kN32_SkColorType,
                                              kN32_SkColorType};
   TestToClosestSkColorType(expected_types, format, /*gpu_compositing=*/false);

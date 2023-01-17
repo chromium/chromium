@@ -519,12 +519,9 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   // TransferableResource constants.
   const ResourceId single_plane_id(1337);
   const ResourceId multi_plane_id(1338);
-  const SharedImageFormat single_plane_format =
-      SharedImageFormat::SinglePlane(ALPHA_8);
+  const SharedImageFormat single_plane_format = SinglePlaneFormat::kALPHA_8;
   const SharedImageFormat multi_plane_format =
-      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
-                                    SharedImageFormat::Subsampling::k420,
-                                    SharedImageFormat::ChannelFormat::k8);
+      MultiPlaneFormat::kYUV_420_BIPLANAR;
   const uint32_t tr_filter = 1234;
   const gfx::Size tr_size(1234, 5678);
   TransferableResource single_plane_resource;
@@ -1159,7 +1156,7 @@ TEST_F(StructTraitsTest, SurfaceId) {
 
 TEST_F(StructTraitsTest, TransferableResource) {
   const ResourceId id(1337);
-  const SharedImageFormat format = SharedImageFormat::SinglePlane(ALPHA_8);
+  const SharedImageFormat format = SinglePlaneFormat::kALPHA_8;
   const uint32_t filter = 1234;
   const gfx::Size size(1234, 5678);
   const int8_t mailbox_name[GL_MAILBOX_SIZE_CHROMIUM] = {
@@ -1208,28 +1205,16 @@ TEST_F(StructTraitsTest, TransferableResource) {
 }
 
 TEST_F(StructTraitsTest, SharedImageFormatWithSinglePlane) {
-  const ResourceFormat resource_format = RED_8;
-  SharedImageFormat input = SharedImageFormat::SinglePlane(resource_format);
-
+  SharedImageFormat input = SinglePlaneFormat::kRED_8;
   SharedImageFormat output;
   mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
-
   EXPECT_EQ(input, output);
 }
 
 TEST_F(StructTraitsTest, SharedImageFormatWithMultiPlane) {
-  const SharedImageFormat::PlaneConfig plane_config =
-      SharedImageFormat::PlaneConfig::kY_UV;
-  const SharedImageFormat::Subsampling subsampling =
-      SharedImageFormat::Subsampling::k420;
-  const SharedImageFormat::ChannelFormat channel_format =
-      SharedImageFormat::ChannelFormat::k8;
-  SharedImageFormat input =
-      SharedImageFormat::MultiPlane(plane_config, subsampling, channel_format);
-
+  SharedImageFormat input = MultiPlaneFormat::kYUV_420_BIPLANAR;
   SharedImageFormat output;
   mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
-
   EXPECT_EQ(input, output);
 }
 

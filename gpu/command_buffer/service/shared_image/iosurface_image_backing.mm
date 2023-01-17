@@ -965,7 +965,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
       gfx::BufferFormat buffer_format;
       if (format().is_single_plane()) {
         plane = io_surface_plane_;
-        buffer_format = viz::BufferFormat(format().resource_format());
+        buffer_format = ToBufferFormat(format());
       } else {
         // For multiplanar formats (without external sampler) get planar buffer
         // format.

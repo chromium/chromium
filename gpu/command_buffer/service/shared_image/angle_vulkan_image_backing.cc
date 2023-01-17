@@ -264,7 +264,7 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
   DCHECK(vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
                                                          handle.type));
 
-  VkFormat vk_format = ToVkFormat(format().resource_format());
+  VkFormat vk_format = ToVkFormat(format());
   auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
       device_queue, std::move(handle), size(), vk_format, color_space());
 
