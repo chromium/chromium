@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлүүдө...</translation>
-<translation id="111910763555783249">Эскертме жөндөөлөрү</translation>
+<translation id="111910763555783249">Эскертме параметрлери</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 күн мурун}other{# күн мурун}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 мүнөт мурун}other{# мүнөт мурун}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1мүн}other{#мүн}}</translation>
@@ -168,7 +168,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Оңдон солго</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Колдонмонун экран жөндөөлөрү, аны өчүрүп күйгүзгөндө иштеп баштайт.</translation>
+<translation id="7170202025028120564">Колдонмонун экран параметрлери, аны өчүрүп күйгүзгөндө иштеп баштайт.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 мүн. калды}other{# мүн. калды}}</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 мүн. мурун}other{# мүн. мурун}}</translation>
