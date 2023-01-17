@@ -727,16 +727,14 @@ void WaylandSurface::ForceImmediateStateApplication() {
   apply_state_immediately_ = true;
 }
 
-void WaylandSurface::SetKeyboardShortcutsInhibition(bool enabled) {
-  if (!enabled) {
-    keyboard_shortcuts_inhibitor_.reset();
-    return;
-  }
-  if (auto* manager = connection_->keyboard_shortcuts_inhibit_manager_v1()) {
+void WaylandSurface::InhibitKeyboardShortcuts() {
+  if (auto* keyboard_shortcuts_inhibit_manager =
+          connection_->keyboard_shortcuts_inhibit_manager_v1()) {
     keyboard_shortcuts_inhibitor_ =
         wl::Object<zwp_keyboard_shortcuts_inhibitor_v1>(
             zwp_keyboard_shortcuts_inhibit_manager_v1_inhibit_shortcuts(
-                manager, surface_.get(), connection_->seat()->wl_object()));
+                keyboard_shortcuts_inhibit_manager, surface_.get(),
+                connection_->seat()->wl_object()));
   }
 }
 

@@ -489,18 +489,9 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   // Thus, we must store previous bounds to restore later.
   SetOrResetRestoredBounds();
 
-  if (old_state != state_) {
-    if (!did_send_delegate_notification) {
-      previous_state_ = old_state;
-      delegate()->OnWindowStateChanged(previous_state_, state_);
-    }
-
-    if (inhibit_keyboard_shortcuts() &&
-        (state_ == PlatformWindowState::kFullScreen ||
-         old_state == PlatformWindowState::kFullScreen)) {
-      root_surface()->SetKeyboardShortcutsInhibition(
-          window_states.is_fullscreen);
-    }
+  if (old_state != state_ && !did_send_delegate_notification) {
+    previous_state_ = old_state;
+    delegate()->OnWindowStateChanged(previous_state_, state_);
   }
 
   if (did_active_change)

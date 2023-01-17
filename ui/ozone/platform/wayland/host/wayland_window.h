@@ -397,10 +397,6 @@ class WaylandWindow : public PlatformWindow,
 
   const gfx::Size& restored_size_dip() const { return restored_size_dip_; }
 
-  bool inhibit_keyboard_shortcuts() const {
-    return inhibit_keyboard_shortcuts_;
-  }
-
   // Configure related:
 
   // Processes the currently pending State. This may generate a new in-flight
@@ -635,8 +631,6 @@ class WaylandWindow : public PlatformWindow,
   WmDragHandler::DragFinishedCallback drag_finished_callback_;
 
   base::OnceClosure drag_loop_quit_closure_;
-
-  bool inhibit_keyboard_shortcuts_ = false;
 
 #if DCHECK_IS_ON()
   bool disable_null_target_dcheck_for_test_ = false;

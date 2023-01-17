@@ -655,6 +655,10 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
     return false;
   }
 
+  if (properties.inhibit_keyboard_shortcuts) {
+    root_surface_->InhibitKeyboardShortcuts();
+  }
+
   State state;
   state.bounds_dip = properties.bounds;
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's
@@ -664,7 +668,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   opacity_ = properties.opacity;
   type_ = properties.type;
-  inhibit_keyboard_shortcuts_ = properties.inhibit_keyboard_shortcuts;
 
   connection_->window_manager()->AddWindow(GetWidget(), this);
 
