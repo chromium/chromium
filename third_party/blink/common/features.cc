@@ -1692,6 +1692,11 @@ BASE_FEATURE(kAllowPageWithIDBTransactionInBFCache,
              "AllowPageWithIDBTransactionInBFCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled() {
+  return base::FeatureList::IsEnabled(kAllowPageWithIDBConnectionInBFCache) &&
+         base::FeatureList::IsEnabled(kAllowPageWithIDBTransactionInBFCache);
+}
+
 BASE_FEATURE(kUseBlinkSchedulerTaskRunnerWithCustomDeleter,
              "UseBlinkSchedulerTaskRunnerWithCustomDeleter",
              base::FEATURE_ENABLED_BY_DEFAULT);
