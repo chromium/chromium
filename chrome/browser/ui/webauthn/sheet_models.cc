@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/webauthn/other_mechanisms_menu_model.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -147,11 +146,6 @@ void AuthenticatorSheetModelBase::OnModelDestroyed(
 
 // AuthenticatorMechanismSelectorSheetModel -----------------------------------
 
-AuthenticatorMechanismSelectorSheetModel::
-    AuthenticatorMechanismSelectorSheetModel(
-        AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model) {}
-
 bool AuthenticatorMechanismSelectorSheetModel::IsBackButtonVisible() const {
   return false;
 }
@@ -212,12 +206,7 @@ AuthenticatorInsertAndActivateUsbSheetModel::
     AuthenticatorInsertAndActivateUsbSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible),
-      other_mechanisms_menu_model_(
-          std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
-
-AuthenticatorInsertAndActivateUsbSheetModel::
-    ~AuthenticatorInsertAndActivateUsbSheetModel() = default;
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 bool AuthenticatorInsertAndActivateUsbSheetModel::IsActivityIndicatorVisible()
     const {
@@ -245,11 +234,6 @@ std::u16string AuthenticatorInsertAndActivateUsbSheetModel::GetStepDescription()
 std::u16string
 AuthenticatorInsertAndActivateUsbSheetModel::GetAdditionalDescription() const {
   return PossibleResidentKeyWarning(dialog_model());
-}
-
-ui::MenuModel*
-AuthenticatorInsertAndActivateUsbSheetModel::GetOtherMechanismsMenuModel() {
-  return other_mechanisms_menu_model_.get();
 }
 
 // AuthenticatorTimeoutErrorModel ---------------------------------------------
@@ -624,16 +608,6 @@ void AuthenticatorBlePermissionMacSheetModel::OnAccept() {
 // AuthenticatorOffTheRecordInterstitialSheetModel
 // -----------------------------------------
 
-AuthenticatorOffTheRecordInterstitialSheetModel::
-    AuthenticatorOffTheRecordInterstitialSheetModel(
-        AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model),
-      other_mechanisms_menu_model_(
-          std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
-
-AuthenticatorOffTheRecordInterstitialSheetModel::
-    ~AuthenticatorOffTheRecordInterstitialSheetModel() = default;
-
 const gfx::VectorIcon&
 AuthenticatorOffTheRecordInterstitialSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
@@ -654,11 +628,6 @@ std::u16string
 AuthenticatorOffTheRecordInterstitialSheetModel::GetStepDescription() const {
   return l10n_util::GetStringUTF16(
       IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_DESCRIPTION);
-}
-
-ui::MenuModel*
-AuthenticatorOffTheRecordInterstitialSheetModel::GetOtherMechanismsMenuModel() {
-  return other_mechanisms_menu_model_.get();
 }
 
 bool AuthenticatorOffTheRecordInterstitialSheetModel::IsAcceptButtonVisible()
@@ -691,9 +660,7 @@ AuthenticatorOffTheRecordInterstitialSheetModel::GetCancelButtonLabel() const {
 AuthenticatorPaaskSheetModel::AuthenticatorPaaskSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible),
-      other_mechanisms_menu_model_(
-          std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 AuthenticatorPaaskSheetModel::~AuthenticatorPaaskSheetModel() = default;
 
@@ -767,19 +734,6 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
   }
 }
 
-ui::MenuModel* AuthenticatorPaaskSheetModel::GetOtherMechanismsMenuModel() {
-  switch (dialog_model()->experiment_server_link_sheet_) {
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
-      return other_mechanisms_menu_model_.get();
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_2:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_3:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_4:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_5:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_6:
-      return nullptr;
-  }
-}
-
 void AuthenticatorPaaskSheetModel::OnBack() {
   switch (dialog_model()->experiment_server_link_sheet_) {
     case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
@@ -801,9 +755,7 @@ AuthenticatorAndroidAccessorySheetModel::
     AuthenticatorAndroidAccessorySheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible),
-      other_mechanisms_menu_model_(
-          std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 AuthenticatorAndroidAccessorySheetModel::
     ~AuthenticatorAndroidAccessorySheetModel() = default;
@@ -831,11 +783,6 @@ std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepTitle() const {
 std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepDescription()
     const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_AOA_DESCRIPTION);
-}
-
-ui::MenuModel*
-AuthenticatorAndroidAccessorySheetModel::GetOtherMechanismsMenuModel() {
-  return other_mechanisms_menu_model_.get();
 }
 
 // AuthenticatorClientPinEntrySheetModel

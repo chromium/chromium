@@ -44,7 +44,6 @@ class AccountHoverListModel : public HoverListModel {
   ui::ImageModel GetItemIcon(int item_tag) const override;
   void OnListItemSelected(int item_tag) override;
   size_t GetPreferredItemCount() const override;
-  bool StyleForTwoLines() const override;
 
  private:
   struct Item {

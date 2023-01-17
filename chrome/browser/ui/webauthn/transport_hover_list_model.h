@@ -30,7 +30,6 @@ class TransportHoverListModel : public HoverListModel {
   ui::ImageModel GetItemIcon(int item_tag) const override;
   void OnListItemSelected(int item_tag) override;
   size_t GetPreferredItemCount() const override;
-  bool StyleForTwoLines() const override;
 
  private:
   const base::span<const AuthenticatorRequestDialogModel::Mechanism>

@@ -43,7 +43,3 @@ void TransportHoverListModel::OnListItemSelected(int item_tag) {
 size_t TransportHoverListModel::GetPreferredItemCount() const {
   return mechanisms_.size();
 }
-
-bool TransportHoverListModel::StyleForTwoLines() const {
-  return false;
-}

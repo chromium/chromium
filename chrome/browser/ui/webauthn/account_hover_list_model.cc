@@ -71,10 +71,6 @@ size_t AccountHoverListModel::GetPreferredItemCount() const {
   return items_.size();
 }
 
-bool AccountHoverListModel::StyleForTwoLines() const {
-  return false;
-}
-
 AccountHoverListModel::Item::Item(std::u16string text,
                                   std::u16string description,
                                   ui::ImageModel icon)

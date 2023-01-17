@@ -66,10 +66,6 @@ class HoverListView : public views::View {
   std::map<int, ListItemViews> tags_to_list_item_views_;
   raw_ptr<views::ScrollView> scroll_view_;
   raw_ptr<views::View> item_container_;
-  // is_two_line_list_, if true, indicates that list items should be sized so
-  // that entries with only a single line of text are as tall as entries with
-  // two lines.
-  const bool is_two_line_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_HOVER_LIST_VIEW_H_

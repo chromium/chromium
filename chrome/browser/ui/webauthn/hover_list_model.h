@@ -33,12 +33,6 @@ class HoverListModel {
   virtual ui::ImageModel GetItemIcon(int item_tag) const = 0;
   virtual void OnListItemSelected(int item_tag) = 0;
   virtual size_t GetPreferredItemCount() const = 0;
-  // StyleForTwoLines returns true if the items in the list should lay out
-  // with the assumption that there will be both item and description text.
-  // This causes items with no description text to be larger than strictly
-  // necessary so that all items, including those with descriptions, are the
-  // same height.
-  virtual bool StyleForTwoLines() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_HOVER_LIST_MODEL_H_

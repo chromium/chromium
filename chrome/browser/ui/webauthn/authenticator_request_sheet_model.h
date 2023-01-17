@@ -13,10 +13,6 @@ namespace gfx {
 struct VectorIcon;
 }
 
-namespace ui {
-class MenuModel;
-}
-
 // The basic interface of models backing a given UI sheet shown in the WebAuthn
 // request dialog; where each sheet, in turn, corresponds to one of `steps`
 // defined by AuthenticatorRequestDialogModel.
@@ -64,8 +60,6 @@ class AuthenticatorRequestSheetModel {
   virtual std::u16string GetStepDescription() const = 0;
   virtual std::u16string GetAdditionalDescription() const;
   virtual std::u16string GetError() const;
-
-  virtual ui::MenuModel* GetOtherMechanismsMenuModel();
 
   virtual void OnBack() = 0;
   virtual void OnAccept() = 0;
