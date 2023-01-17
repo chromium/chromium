@@ -255,6 +255,15 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
 
   content::TestWebUI test_web_ui_;
   testing::StrictMock<MockAppHomePage> page_;
+#if BUILDFLAG(IS_WIN)
+  // This prevents SetRunOnOsLoginMode from leaving shortcuts in the Windows
+  // startup directory that cause Chrome to get launched when Windows starts on
+  // a bot. It needs to be in the class so that the override lasts until the
+  // test object is destroyed, because tasks can keep running after the test
+  // method finishes.
+  // See https://crbug.com/1239809
+  base::ScopedPathOverride override_user_startup_{base::DIR_USER_STARTUP};
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 MATCHER_P(MatchAppName, expected_app_name, "") {
@@ -444,14 +453,6 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, SetRunOnOsLoginMode) {
-#if BUILDFLAG(IS_WIN)
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  // This prevents the test from leaving shortcuts in the Windows startup
-  // directory that cause Chrome to get launched when Windows starts on a bot.
-  // See https://crbug.com/1239809
-  base::ScopedPathOverride override_user_startup{base::DIR_USER_STARTUP};
-#endif  // BUILDFLAG(IS_WIN)
-
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler();
   EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)))
