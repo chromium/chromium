@@ -9,6 +9,7 @@ source_set("destination_usage_history") {
     "//base",
     "//components/prefs",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_constants",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_swift",
   ]
@@ -20,10 +21,13 @@ source_set("unit_tests") {
   deps = [
     ":destination_usage_history",
     "//base",
+    "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_constants",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_swift",
     "//testing/gmock",
     "//testing/gtest",
   ]

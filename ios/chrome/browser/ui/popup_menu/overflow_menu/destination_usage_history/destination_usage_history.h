@@ -41,6 +41,10 @@ class PrefService;
         (std::vector<overflow_menu::Destination>&)previousRanking
          numAboveFoldDestinations:(int)numAboveFoldDestinations;
 
+// [Publicly exposed for testing purposes only]
+// Fetches the current ranking saved in prefs and returns it.
+- (const base::Value::List*)fetchCurrentRanking;
+
 // Designated initializer. Initializes with `prefService`.
 - (instancetype)initWithPrefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;

@@ -46,6 +46,7 @@ extern const char kNTPContentSuggestionsForSupervisedUserEnabled[];
 extern const char kNTPFollowingFeedSortType[];
 extern const char kDefaultFollowingFeedSortTypeChanged[];
 extern const char kOverflowMenuDestinationUsageHistory[];
+extern const char kOverflowMenuNewDestinations[];
 extern const char kPrintingEnabled[];
 extern const char kSearchSuggestEnabled[];
 extern const char kTrackPricesOnTabsEnabled[];
