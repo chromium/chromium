@@ -87,6 +87,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test needs the files-app-experimental feature.
     bool files_experimental = false;
 
+    // Whether test should enable the conflict dialog.
+    bool enable_conflict_dialog = false;
+
     // Whether test needs a native SMB file system provider.
     bool native_smb = true;
 

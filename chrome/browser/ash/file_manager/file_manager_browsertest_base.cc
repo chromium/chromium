@@ -1922,6 +1922,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kFilesAppExperimental);
   }
 
+  if (options.enable_conflict_dialog) {
+    enabled_features.push_back(ash::features::kFilesConflictDialog);
+  } else {
+    disabled_features.push_back(ash::features::kFilesConflictDialog);
+  }
+
   if (options.arc) {
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
@@ -3037,6 +3043,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         browser()->tab_strip_model()->GetActiveWebContents(), 1);
     observer.Wait();
     *output = observer.last_navigation_url().spec();
+    return;
+  }
+
+  if (name == "isConflictDialogEnabled") {
+    *output = options.enable_conflict_dialog ? "true" : "false";
     return;
   }
 

@@ -105,6 +105,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableConflictDialog() {
+    options.enable_conflict_dialog = true;
+    return *this;
+  }
+
   TestCase& DisableNativeSmb() {
     options.native_smb = false;
     return *this;
@@ -205,6 +210,10 @@ struct TestCase {
 
     if (options.files_experimental)
       full_name += "_FilesExperimental";
+
+    if (options.enable_conflict_dialog) {
+      full_name += "_ConflictDialog";
+    }
 
     if (!options.native_smb)
       full_name += "_DisableNativeSmb";
@@ -1014,7 +1023,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("keyboardCopyDownloads").InGuestMode(),
         TestCase("keyboardCopyDownloads"),
         TestCase("keyboardCopyDownloads").EnableTrash(),
+        TestCase("keyboardCopyDownloads").EnableConflictDialog(),
         TestCase("keyboardCopyDrive"),
+        TestCase("keyboardCopyDrive").EnableConflictDialog(),
 // TODO(crbug.com/1236842): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
         TestCase("keyboardFocusOutlineVisible"),
