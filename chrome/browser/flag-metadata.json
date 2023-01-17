@@ -1097,7 +1097,7 @@
   {
     "name": "content-languages-in-language-picker",
     "owners": [ "sclittle", "basiaz@google.com", "chrome-language@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 114
   },
   {
     "name": "content-suggestions-ui-module-refresh",
@@ -6737,7 +6737,7 @@
   {
     "name": "translate-message-ui",
     "owners": [ "sclittle", "chrome-language@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "trending-queries-module",
