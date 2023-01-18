@@ -102,6 +102,8 @@ class HTMLConstructionSite final {
   DISALLOW_NEW();
 
  public:
+  static constexpr unsigned kMaximumHTMLParserDOMTreeDepth = 512;
+
   HTMLConstructionSite(HTMLParserReentryPermit*,
                        Document&,
                        ParserContentPolicy);

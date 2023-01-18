@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
+#include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
@@ -133,12 +134,19 @@ uint32_t TagnameHash(const String& s) {
 // - Many tags are unsupported, but we could support more. For example, <table>
 //   because of the complex re-parenting rules
 // - Only a few named "&" character references are supported.
-// - No Images with onload. This is because if parsing were to fail, 'onload'
-//   would be called multiple times.
 // - No '\0'. The handling of '\0' varies depending upon where it is found
 //   and in general the correct handling complicates things.
 // - Fails if Document::IsDirAttributeDirty. This relies on
 //   BeginParsingChildren() and FinishParsingChildren() being called.
+// - Fails if an attribute name starts with 'on'. Such attributes are generally
+//   events that may be fired. Allowing this could be problematic if the fast
+//   path fails. For example, the 'onload' event of an <img> would be called
+//   multiple times if parsing fails.
+// - Fails if a text is encountered larger than Text::kDefaultLengthLimit. This
+//   requires special processing.
+// - Fails if a deep hierarchy is encountered. This is both to avoid a crash,
+//   but also at a certain depth elements get added as siblings vs children (see
+//   use of HTMLConstructionSite::kMaximumHTMLParserDOMTreeDepth).
 template <class Char>
 class HTMLFastPathParser {
   STACK_ALLOCATED();
@@ -206,6 +214,9 @@ class HTMLFastPathParser {
 
   bool failed_ = false;
   bool inside_of_tag_a_ = false;
+  // Used to limit how deep a hierarchy can be created. Also note that
+  // HTMLConstructionSite ends up flattening when this depth is reached.
+  unsigned element_depth_ = 0;
   // 32 matches that used by HTMLToken::Attribute.
   Vector<Char, 32> char_buffer_;
   Vector<UChar> uchar_buffer_;
@@ -782,10 +793,16 @@ class HTMLFastPathParser {
       }
       DCHECK(text.first.empty() || text.second.empty());
       if (!text.first.empty()) {
+        if (text.first.size() >= Text::kDefaultLengthLimit) {
+          return Fail(HtmlFastPathResult::kFailedBigText);
+        }
         parent->ParserAppendChild(Text::Create(
             document_, String(text.first.data(),
                               static_cast<unsigned>(text.first.size()))));
       } else if (!text.second.empty()) {
+        if (text.second.size() >= Text::kDefaultLengthLimit) {
+          return Fail(HtmlFastPathResult::kFailedBigText);
+        }
         parent->ParserAppendChild(Text::Create(
             document_, String(text.second.data(),
                               static_cast<unsigned>(text.second.size()))));
@@ -800,7 +817,12 @@ class HTMLFastPathParser {
         // by the caller `ParseContainerElement()`.
         return;
       } else {
+        if (++element_depth_ ==
+            HTMLConstructionSite::kMaximumHTMLParserDOMTreeDepth) {
+          return Fail(HtmlFastPathResult::kFailedMaxDepth);
+        }
         Element* child = ParentTag::ParseChild(*this);
+        --element_depth_;
         if (failed_) {
           return;
         }
@@ -858,6 +880,12 @@ class HTMLFastPathParser {
           return Fail(HtmlFastPathResult::kFailedParsingAttributes);
         }
       }
+      if (attr_name.size() >= 2 && attr_name[0] == 'o' && attr_name[1] == 'n') {
+        // These attributes likely contain script that may be executed at random
+        // points, which could cause problems if parsing via the fast path
+        // fails. For example, an image's onload event.
+        return Fail(HtmlFastPathResult::kFailedOnAttribute);
+      }
       SkipWhitespace();
       std::pair<Span, USpan> attr_value = {};
       if (GetNext() == '=') {
@@ -867,8 +895,7 @@ class HTMLFastPathParser {
       }
       Attribute attribute = ProcessAttribute(attr_name, attr_value);
       attribute_buffer_.push_back(attribute);
-      if (attribute.GetName() == html_names::kIsAttr ||
-          attribute.GetName() == html_names::kOnloadAttr) {
+      if (attribute.GetName() == html_names::kIsAttr) {
         return Fail(HtmlFastPathResult::kFailedParsingAttributes);
       }
       attribute_names_.push_back(attribute.LocalName().Impl());

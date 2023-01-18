@@ -72,8 +72,6 @@
 
 namespace blink {
 
-static const unsigned kMaximumHTMLParserDOMTreeDepth = 512;
-
 void HTMLConstructionSite::SetAttributes(Element* element,
                                          AtomicHTMLToken* token) {
   if (!is_scripting_content_allowed_)

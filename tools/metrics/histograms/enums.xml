@@ -51831,6 +51831,9 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="23"
       label="Could not use fast path because Document::IsDirAttributeDirty()
              is true"/>
+  <int value="24" label="Failed because an attribute name starts with 'on'."/>
+  <int value="25" label="Failed because a deep hierarchy was encountered."/>
+  <int value="26" label="Failed because a long text string was encountered."/>
 </enum>
 
 <enum name="InProductHelpDismissalReason">

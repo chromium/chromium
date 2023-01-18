@@ -51,7 +51,10 @@ enum class HtmlFastPathResult {
   kFailedEndTagNameMismatch = 21,
   kFailedShadowRoots = 22,
   kFailedDirAttributeDirty = 23,
-  kMaxValue = kFailedDirAttributeDirty
+  kFailedOnAttribute = 24,
+  kFailedMaxDepth = 25,
+  kFailedBigText = 25,
+  kMaxValue = kFailedBigText
 };
 
 }  // namespace blink
