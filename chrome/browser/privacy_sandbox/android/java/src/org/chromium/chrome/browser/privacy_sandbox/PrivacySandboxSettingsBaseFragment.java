@@ -139,6 +139,8 @@ public abstract class PrivacySandboxSettingsBaseFragment
             RecordUserAction.record("Settings.PrivacySandbox.OpenedFromSettingsParent");
         } else if (referrer == PrivacySandboxReferrer.COOKIES_SNACKBAR) {
             RecordUserAction.record("Settings.PrivacySandbox.OpenedFromCookiesPageToast");
+        } else if (referrer == PrivacySandboxReferrer.PAGE_INFO_AD_PRIVACY_SECTION) {
+            RecordUserAction.record("PageInfo.AdPersonalization.ManageInterestClicked");
         }
     }
 

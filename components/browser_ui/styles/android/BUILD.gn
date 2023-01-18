@@ -153,6 +153,7 @@ android_resources("java_resources") {
     "java/res/drawable/gm_ads_click_24.xml",
     "java/res/drawable/gm_insert_chart_24.xml",
     "java/res/drawable/ic_account_circle_24dp.xml",
+    "java/res/drawable/ic_ad_privacy_24dp.xml",
     "java/res/drawable/ic_add.xml",
     "java/res/drawable/ic_bar_chart_24dp.xml",
     "java/res/drawable/ic_brightness_medium_24dp.xml",

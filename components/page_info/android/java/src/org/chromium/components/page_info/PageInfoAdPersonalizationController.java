@@ -43,7 +43,10 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.visible = hasJoinedUserToInterestGroup || !mTopics.isEmpty();
         rowParams.title = getSubpageTitle();
-        rowParams.iconResId = R.drawable.gm_ads_click_24;
+        rowParams.iconResId =
+                getDelegate().getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
+                ? R.drawable.ic_ad_privacy_24dp
+                : R.drawable.gm_ads_click_24;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);

@@ -15,7 +15,8 @@ import java.lang.annotation.RetentionPolicy;
  * enums.xml.
  */
 @IntDef({PrivacySandboxReferrer.PRIVACY_SETTINGS, PrivacySandboxReferrer.COOKIES_SNACKBAR,
-        PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE, PrivacySandboxReferrer.COUNT})
+        PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE,
+        PrivacySandboxReferrer.PAGE_INFO_AD_PRIVACY_SECTION, PrivacySandboxReferrer.COUNT})
 @Retention(RetentionPolicy.SOURCE)
 public @interface PrivacySandboxReferrer {
     /**
@@ -30,5 +31,9 @@ public @interface PrivacySandboxReferrer {
      * Corresponds to the notice shown in the main browser window.
      */
     int PRIVACY_SANDBOX_NOTICE = 2;
-    int COUNT = 3;
+    /**
+     * Corresponds to clicking on the Manage Ad privacy button in the page info, ad privacy section.
+     */
+    int PAGE_INFO_AD_PRIVACY_SECTION = 3;
+    int COUNT = 4;
 }
