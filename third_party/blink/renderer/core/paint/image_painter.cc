@@ -163,6 +163,34 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
       return;
   }
 
+  PhysicalRect content_rect(
+      paint_offset + layout_image_.PhysicalContentBoxOffset(),
+      PhysicalSizeToBeNoop(content_size));
+
+  PhysicalRect paint_rect = layout_image_.ReplacedContentRect();
+  paint_rect.offset += paint_offset;
+
+  // If |overflow| is supported for replaced elements, paint the complete image
+  // and the painting will be clipped based on overflow value by clip paint
+  // property nodes.
+  PhysicalRect visual_rect =
+      layout_image_.ClipsToContentBox() ? content_rect : paint_rect;
+
+  // As an optimization for sprite sheets, an image may use the cull rect when
+  // generating the display item, which optimizes the following scenario:
+  //   <div style="overflow: hidden; pos: rel; width: ..px; height: ..px;">
+  //     <img src="spritesheet.svg" style="pos: abs; top: -..px; left: -..px;">
+  // This requires invalidating when the cull rect changes, which could regress
+  // performance due to the interest rect (scrolling cull rect) changing. To
+  // avoid this, we only consider "sprite sheet" cull rects that are cull rects
+  // fully contained within the image's visual rect.
+  PhysicalRect cull_rect(paint_info.GetCullRect().Rect());
+  bool has_sprite_sheet_cull_rect = visual_rect.Contains(cull_rect);
+  if (has_sprite_sheet_cull_rect) {
+    visual_rect.Intersect(cull_rect);
+  }
+  layout_image_.GetMutableForPainting().UpdatePaintedRect(visual_rect);
+
   GraphicsContext& context = paint_info.context;
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, layout_image_,
                                                   paint_info.phase))
@@ -176,32 +204,18 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
       layout_image_.ImageResource()->MaybeAnimated())
     cache_skipper.emplace(context);
 
-  PhysicalRect content_rect(
-      paint_offset + layout_image_.PhysicalContentBoxOffset(),
-      PhysicalSizeToBeNoop(content_size));
-
   if (!has_image) {
     // Draw an outline rect where the image should be.
-    gfx::Rect paint_rect = ToPixelSnappedRect(content_rect);
     BoxDrawingRecorder recorder(context, layout_image_, paint_info.phase,
                                 paint_offset);
     context.SetStrokeStyle(kSolidStroke);
     context.SetStrokeColor(Color::kLightGray);
     context.SetFillColor(Color::kTransparent);
-    context.DrawRect(paint_rect,
+    context.DrawRect(ToPixelSnappedRect(content_rect),
                      PaintAutoDarkMode(layout_image_.StyleRef(),
                                        DarkModeFilter::ElementRole::kBorder));
     return;
   }
-
-  PhysicalRect paint_rect = layout_image_.ReplacedContentRect();
-  paint_rect.offset += paint_offset;
-
-  // If |overflow| is supported for replaced elements, paint the complete image
-  // and the painting will be clipped based on overflow value by clip paint
-  // property nodes.
-  const PhysicalRect visual_rect =
-      layout_image_.ClipsToContentBox() ? content_rect : paint_rect;
 
   DrawingRecorder recorder(context, layout_image_, paint_info.phase,
                            ToEnclosingRect(visual_rect));

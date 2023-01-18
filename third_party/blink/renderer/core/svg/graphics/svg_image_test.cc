@@ -470,4 +470,181 @@ TEST_F(SVGImageSimTest, SpriteSheetCulling) {
   EXPECT_EQ(3U, CountDrawOval(record));
 }
 
+// Similar to `SpriteSheetCulling` but using a full-sized sprite sheet <img>
+// element with absolute positioning under overflow: hidden. This pattern is
+// used by Google Docs.
+TEST_F(SVGImageSimTest, ClippedAbsoluteImageSpriteSheetCulling) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+        body { zoom: 2.5; }
+        #div {
+          width: 100px;
+          height: 100px;
+          overflow: hidden;
+          position: relative;
+        }
+        #image {
+          position: absolute;
+          left: 0;
+          top: -100px;
+        }
+      </style>
+      <div id="div">
+        <img id="image" src="data:image/svg+xml,
+            <svg xmlns='http://www.w3.org/2000/svg' width='100' height='400'>
+              <circle cx='50' cy='50' r='10' fill='red'/>
+              <circle cx='50' cy='150' r='10' fill='green'/>
+              <circle cx='25' cy='250' r='10' fill='blue'/>
+              <circle cx='50' cy='250' r='10' fill='blue'/>
+              <circle cx='75' cy='250' r='10' fill='blue'/>
+            </svg>">
+      </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, only the green circle should be recorded.
+  PaintRecord record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(1U, CountDrawOval(record));
+
+  // Adjust the div's height so one green circle and three blue circles are
+  // visible, and ensure four circles are recorded.
+  Element* div_element = GetDocument().getElementById("div");
+  div_element->setAttribute(html_names::kStyleAttr, "height: 200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(4U, CountDrawOval(record));
+
+  // Adjust the image's position so only the three blue circles are visible,
+  // and ensure three circles are recorded.
+  Element* image_element = GetDocument().getElementById("image");
+  image_element->setAttribute(html_names::kStyleAttr, "top: -200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(3U, CountDrawOval(record));
+}
+
+// Similar to `SpriteSheetCulling` but using a full-sized sprite sheet <img>
+// element under overflow: hidden. This differs from
+// `ClippedAbsoluteImageSpriteSheetCulling` because static positioning and
+// margin are used to position the image, rather than absolute positioning.
+TEST_F(SVGImageSimTest, ClippedStaticImageSpriteSheetCulling) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+        body { zoom: 2.5; }
+        #div {
+          width: 100px;
+          height: 100px;
+          overflow: hidden;
+          position: relative;
+        }
+        #image {
+          margin-top: -100px;
+        }
+      </style>
+      <div id="div">
+        <img id="image" src="data:image/svg+xml,
+            <svg xmlns='http://www.w3.org/2000/svg' width='100' height='400'>
+              <circle cx='50' cy='50' r='10' fill='red'/>
+              <circle cx='50' cy='150' r='10' fill='green'/>
+              <circle cx='25' cy='250' r='10' fill='blue'/>
+              <circle cx='50' cy='250' r='10' fill='blue'/>
+              <circle cx='75' cy='250' r='10' fill='blue'/>
+            </svg>">
+      </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, only the green circle should be recorded.
+  PaintRecord record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(1U, CountDrawOval(record));
+
+  // Adjust the div's height so one green circle and three blue circles are
+  // visible, and ensure four circles are recorded.
+  Element* div_element = GetDocument().getElementById("div");
+  div_element->setAttribute(html_names::kStyleAttr, "height: 200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(4U, CountDrawOval(record));
+
+  // Adjust the image's position so only the three blue circles are visible,
+  // and ensure three circles are recorded.
+  Element* image_element = GetDocument().getElementById("image");
+  image_element->setAttribute(html_names::kStyleAttr, "margin-top: -200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(3U, CountDrawOval(record));
+}
+
+// Similar to `SpriteSheetCulling` but using a regular scrolling interest rect
+// that isn't clipping to a specific sprite within the image. To avoid
+// regressing non-sprite-sheet paint performance with additional invalidatoins,
+// we want to avoid special culling in these cases.
+TEST_F(SVGImageSimTest, InterestRectDoesNotCullImageSpriteSheet) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+        body { zoom: 2.5; }
+        #div {
+          width: 200px;
+          height: 10000px;
+          overflow: hidden;
+          position: relative;
+        }
+        #image {
+          position: absolute;
+          left: 0;
+          top: 0;
+        }
+      </style>
+      <div id="div">
+        <img id="image" src="data:image/svg+xml,
+            <svg xmlns='http://www.w3.org/2000/svg' width='100' height='6000'>
+              <circle cx='50' cy='50' r='10' fill='green'/>
+              <circle cx='25' cy='5950' r='10' fill='blue'/>
+              <circle cx='50' cy='5950' r='10' fill='blue'/>
+              <circle cx='75' cy='5950' r='10' fill='blue'/>
+            </svg>">
+      </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // The sprite sheet optimization in `ImagePainter::PaintReplaced` should not
+  // apply because the scrolling interest rect is not for a specific sprite
+  // within the image, and all circles should be recorded.
+  PaintRecord record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(4U, CountDrawOval(record));
+
+  // Adjust the div's width and height so that it creates a cull rect that clips
+  // to just a single circle, and ensure just one circle is recorded.
+  Element* div_element = GetDocument().getElementById("div");
+  div_element->setAttribute(html_names::kStyleAttr,
+                            "width: 100px; height: 200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(1U, CountDrawOval(record));
+
+  // Adjust the div's width and height so that it no longer creates a cull rect
+  // that clips to a sprite within the image, so the optimization in
+  // `ImagePainter::PaintReplaced` does not kick in, and all circles are
+  // recorded.
+  div_element->removeAttribute(html_names::kStyleAttr);
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(4U, CountDrawOval(record));
+}
+
 }  // namespace blink

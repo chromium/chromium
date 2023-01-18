@@ -107,6 +107,20 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   void UpdateAfterLayout() override;
 
+  class MutableForPainting : public LayoutObject::MutableForPainting {
+   public:
+    void UpdatePaintedRect(const PhysicalRect& paint_rect);
+
+   private:
+    friend class LayoutImage;
+    explicit MutableForPainting(const LayoutImage& image)
+        : LayoutObject::MutableForPainting(image) {}
+  };
+  MutableForPainting GetMutableForPainting() const {
+    NOT_DESTROYED();
+    return MutableForPainting(*this);
+  }
+
  protected:
   bool NeedsPreferredWidthsRecalculation() const final;
   SVGImage* EmbeddedSVGImage() const;
@@ -179,6 +193,9 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   // This field stores whether this image is generated with 'content'.
   bool is_generated_content_ = false;
+
+  friend class MutableForPainting;
+  PhysicalRect last_paint_rect_;
 };
 
 template <>
