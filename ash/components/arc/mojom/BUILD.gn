@@ -22,6 +22,7 @@ mojom("mojom") {
     "bluetooth.mojom",
     "boot_phase_monitor.mojom",
     "camera.mojom",
+    "cert_store.mojom",
     "clipboard.mojom",
     "compatibility_mode.mojom",
     "crash_collector.mojom",

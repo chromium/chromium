@@ -152,6 +152,12 @@ void ArcBridgeHostImpl::OnCameraInstanceReady(
   OnInstanceReady(arc_bridge_service_->camera(), std::move(camera_remote));
 }
 
+void ArcBridgeHostImpl::OnCertStoreInstanceReady(
+    mojo::PendingRemote<mojom::CertStoreInstance> instance_remote) {
+  OnInstanceReady(arc_bridge_service_->cert_store(),
+                  std::move(instance_remote));
+}
+
 void ArcBridgeHostImpl::OnClipboardInstanceReady(
     mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) {
   OnInstanceReady(arc_bridge_service_->clipboard(),
@@ -363,6 +369,13 @@ void ArcBridgeHostImpl::OnSharesheetInstanceReady(
     mojo::PendingRemote<mojom::SharesheetInstance> sharesheet_remote) {
   OnInstanceReady(arc_bridge_service_->sharesheet(),
                   std::move(sharesheet_remote));
+}
+
+void ArcBridgeHostImpl::OnSmartCardManagerInstanceReady(
+    mojo::PendingRemote<mojom::SmartCardManagerInstance>
+        smart_card_manager_remote) {
+  OnInstanceReady(arc_bridge_service_->smart_card_manager(),
+                  std::move(smart_card_manager_remote));
 }
 
 void ArcBridgeHostImpl::OnStorageManagerInstanceReady(
