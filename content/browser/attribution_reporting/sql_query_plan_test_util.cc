@@ -106,14 +106,21 @@ size_t SqlIndexMatcher::FindIndexStart(base::StringPiece plan) const {
   std::string covering_prefix = base::StrCat({"USING COVERING INDEX ", name_});
   std::string noncovering_prefix = base::StrCat({"USING INDEX ", name_});
   std::string primary_prefix = "USING PRIMARY KEY ";
+  std::string integer_primary_prefix = "USING INTEGER PRIMARY KEY ";
   switch (type_) {
     case SqlIndexMatcher::Type::kCovering:
       return plan.find(covering_prefix);
-    case SqlIndexMatcher::Type::kPrimaryKey:
-      return plan.find(primary_prefix);
+    case SqlIndexMatcher::Type::kPrimaryKey: {
+      size_t pos = plan.find(primary_prefix);
+      if (pos != std::string::npos) {
+        return pos;
+      }
+      return plan.find(integer_primary_prefix);
+    }
     case SqlIndexMatcher::Type::kAny:
       for (const base::StringPiece prefix :
-           {covering_prefix, noncovering_prefix, primary_prefix}) {
+           {covering_prefix, noncovering_prefix, primary_prefix,
+            integer_primary_prefix}) {
         size_t pos = plan.find(prefix);
         if (pos != std::string::npos) {
           return pos;
