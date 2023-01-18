@@ -2,38 +2,36 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++date inputType='date' value='2008-09-01'
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
-++++++++++++genericContainer
-++++++++++++++spinButton name='Month' placeholder='mm' value='09' valueForRange=9.00 minValueForRange=1.00 maxValueForRange=12.00
-++++++++++++++++staticText name='09'
-++++++++++++++++++inlineTextBox name='09'
-++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox name='/'
-++++++++++++++spinButton name='Day' placeholder='dd' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=31.00
-++++++++++++++++staticText name='01'
-++++++++++++++++++inlineTextBox name='01'
-++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox name='/'
-++++++++++++++spinButton name='Year' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
-++++++++++++++++staticText name='2008'
-++++++++++++++++++inlineTextBox name='2008'
-++++++++++popUpButton name='Show date picker'
+++++++++++++spinButton name='Month' placeholder='mm' value='09' valueForRange=9.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++staticText name='09'
+++++++++++++++++inlineTextBox name='09'
+++++++++++++staticText name='/'
+++++++++++++++inlineTextBox name='/'
+++++++++++++spinButton name='Day' placeholder='dd' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=31.00
+++++++++++++++staticText name='01'
+++++++++++++++++inlineTextBox name='01'
+++++++++++++staticText name='/'
+++++++++++++++inlineTextBox name='/'
+++++++++++++spinButton name='Year' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++++staticText name='2008'
+++++++++++++++++inlineTextBox name='2008'
+++++++++popUpButton name='Show date picker'
 ++++++date inputType='date' name='When' value='2008-09-01'
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
-++++++++++++genericContainer
-++++++++++++++spinButton name='Month When' placeholder='mm' value='09' valueForRange=9.00 minValueForRange=1.00 maxValueForRange=12.00
-++++++++++++++++staticText name='09'
-++++++++++++++++++inlineTextBox name='09'
-++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox name='/'
-++++++++++++++spinButton name='Day When' placeholder='dd' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=31.00
-++++++++++++++++staticText name='01'
-++++++++++++++++++inlineTextBox name='01'
-++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox name='/'
-++++++++++++++spinButton name='Year When' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
-++++++++++++++++staticText name='2008'
-++++++++++++++++++inlineTextBox name='2008'
-++++++++++popUpButton name='Show date picker'
+++++++++++++spinButton name='Month When' placeholder='mm' value='09' valueForRange=9.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++staticText name='09'
+++++++++++++++++inlineTextBox name='09'
+++++++++++++staticText name='/'
+++++++++++++++inlineTextBox name='/'
+++++++++++++spinButton name='Day When' placeholder='dd' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=31.00
+++++++++++++++staticText name='01'
+++++++++++++++++inlineTextBox name='01'
+++++++++++++staticText name='/'
+++++++++++++++inlineTextBox name='/'
+++++++++++++spinButton name='Year When' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++++staticText name='2008'
+++++++++++++++++inlineTextBox name='2008'
+++++++++popUpButton name='Show date picker'

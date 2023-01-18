@@ -2,33 +2,32 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++inputTime inputType='time' value='13:50:02.922' controlsIds=group
-++++++++genericContainer ignored
+++++++++genericContainer
 ++++++++++genericContainer
-++++++++++++genericContainer
-++++++++++++++spinButton name='Hours' placeholder='--' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=12.00
-++++++++++++++++staticText name='01'
-++++++++++++++++++inlineTextBox name='01'
-++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox name=':'
-++++++++++++++spinButton name='Minutes' placeholder='--' value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=59.00
-++++++++++++++++staticText name='50'
-++++++++++++++++++inlineTextBox name='50'
-++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox name=':'
-++++++++++++++spinButton name='Seconds' placeholder='--' value='02' restriction=disabled valueForRange=2.00 minValueForRange=0.00 maxValueForRange=59.00
-++++++++++++++++staticText name='02'
-++++++++++++++++++inlineTextBox name='02'
-++++++++++++++staticText name='.'
-++++++++++++++++inlineTextBox name='.'
-++++++++++++++spinButton name='Milliseconds' placeholder='---' value='922' restriction=disabled valueForRange=922.00 minValueForRange=0.00 maxValueForRange=999.00
-++++++++++++++++staticText name='922'
-++++++++++++++++++inlineTextBox name='922'
-++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox name=' '
-++++++++++++++spinButton name='AM/PM' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
-++++++++++++++++staticText name='PM'
-++++++++++++++++++inlineTextBox name='PM'
-++++++++++popUpButton name='Show time picker'
+++++++++++++spinButton name='Hours' placeholder='--' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++staticText name='01'
+++++++++++++++++inlineTextBox name='01'
+++++++++++++staticText name=':'
+++++++++++++++inlineTextBox name=':'
+++++++++++++spinButton name='Minutes' placeholder='--' value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++++staticText name='50'
+++++++++++++++++inlineTextBox name='50'
+++++++++++++staticText name=':'
+++++++++++++++inlineTextBox name=':'
+++++++++++++spinButton name='Seconds' placeholder='--' value='02' restriction=disabled valueForRange=2.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++++staticText name='02'
+++++++++++++++++inlineTextBox name='02'
+++++++++++++staticText name='.'
+++++++++++++++inlineTextBox name='.'
+++++++++++++spinButton name='Milliseconds' placeholder='---' value='922' restriction=disabled valueForRange=922.00 minValueForRange=0.00 maxValueForRange=999.00
+++++++++++++++staticText name='922'
+++++++++++++++++inlineTextBox name='922'
+++++++++++++staticText name=' '
+++++++++++++++inlineTextBox name=' '
+++++++++++++spinButton name='AM/PM' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
+++++++++++++++staticText name='PM'
+++++++++++++++++inlineTextBox name='PM'
+++++++++popUpButton name='Show time picker'
 ++++++++group
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored

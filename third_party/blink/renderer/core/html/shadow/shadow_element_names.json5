@@ -133,9 +133,5 @@
       name: "-webkit-textfield-decoration-container",
       Symbol: "kPseudoTextFieldDecorationContainer",
     },
-    {
-      name: "-internal-datetime-container",
-      Symbol: "kPseudoInternalDatetimeContainer",
-    },
   ],
 }
