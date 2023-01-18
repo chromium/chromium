@@ -36,10 +36,9 @@ void TestNetworkConfigurationObserver::OnConfigurationModified(
     if (const std::string* ui_data_str = ui_data->GetIfString()) {
       base::Value ui_data_dict(
           chromeos::onc::ReadDictionaryFromJson(*ui_data_str));
-      if (const base::Value* user_settings =
-              ui_data_dict.FindKey(kUIDataKeyUserSettings)) {
-        user_settings_.insert_or_assign(network_guid,
-                                        user_settings->GetDict().Clone());
+      if (const base::Value::Dict* user_settings =
+              ui_data_dict.GetDict().FindDict(kUIDataKeyUserSettings)) {
+        user_settings_.insert_or_assign(network_guid, user_settings->Clone());
       }
     }
   }
