@@ -280,11 +280,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           feature_engagement::kIPHBadgedReadingListFeature);
     }
 
-    if (self.whatsNewDestination.badge != BadgeTypeNone) {
-      _engagementTracker->Dismissed(
-          feature_engagement::kIPHBadgedWhatsNewFeature);
-    }
-
     _engagementTracker = nullptr;
   }
 
@@ -1056,16 +1051,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     return newDestinations;
   }
 
+  // Set the new label badge.
+  self.whatsNewDestination.badge = BadgeTypeNewLabel;
+
   // Place What's New at the top of the overflow menucarousel.
   [newDestinations addObject:self.whatsNewDestination];
   [newDestinations addObjectsFromArray:destinations];
-
-  // Set the new label badge.
-  if (self.engagementTracker &&
-      self.engagementTracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHBadgedWhatsNewFeature)) {
-    self.whatsNewDestination.badge = BadgeTypeNewLabel;
-  }
 
   return newDestinations;
 }

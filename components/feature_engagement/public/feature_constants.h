@@ -168,7 +168,6 @@ BASE_DECLARE_FEATURE(kIPHLongPressToolbarTipFeature);
 BASE_DECLARE_FEATURE(kIPHNewTabTipFeature);
 BASE_DECLARE_FEATURE(kIPHNewIncognitoTabTipFeature);
 BASE_DECLARE_FEATURE(kIPHBadgedReadingListFeature);
-BASE_DECLARE_FEATURE(kIPHBadgedWhatsNewFeature);
 BASE_DECLARE_FEATURE(kIPHWhatsNewFeature);
 BASE_DECLARE_FEATURE(kIPHReadingListMessagesFeature);
 BASE_DECLARE_FEATURE(kIPHBadgedTranslateManualTriggerFeature);

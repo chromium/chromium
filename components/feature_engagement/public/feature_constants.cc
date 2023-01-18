@@ -391,9 +391,6 @@ BASE_FEATURE(kIPHNewIncognitoTabTipFeature,
 BASE_FEATURE(kIPHBadgedReadingListFeature,
              "IPH_BadgedReadingList",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHBadgedWhatsNewFeature,
-             "IPH_BadgedWhatsNew",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHWhatsNewFeature,
              "IPH_WhatsNew",
              base::FEATURE_DISABLED_BY_DEFAULT);
