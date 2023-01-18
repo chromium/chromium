@@ -60,6 +60,15 @@ std::map<variations::VariationID, int> GetGroupWeights() {
                        kIOSPopularSitesImprovedSuggestionsControlID] = 25;
       break;
     case version_info::Channel::STABLE:
+      weight_by_id[field_trial_constants::
+                       kIOSPopularSitesImprovedSuggestionsWithAppsEnabledID] =
+          1;
+      weight_by_id
+          [field_trial_constants::
+               kIOSPopularSitesImprovedSuggestionsWithoutAppsEnabledID] = 1;
+      weight_by_id[field_trial_constants::
+                       kIOSPopularSitesImprovedSuggestionsControlID] = 1;
+
       break;
   }
 
