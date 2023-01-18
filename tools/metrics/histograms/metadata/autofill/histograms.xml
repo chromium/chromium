@@ -4060,6 +4060,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.TouchToFill.CreditCard.PerfectFilling" enum="Boolean"
+    expires_after="2023-06-01">
+  <owner>atsvirhckova@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    For credit card forms, logs at submission time if the filling experience was
+    perfect or not. In a perfect filling experience, all non-empty fields have
+    been autofilled without subsequent corrections. The metric is logged only if
+    the filled suggestion comes from the payments bottom sheet.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TouchToFill.CreditCard.SelectedIndex" units="index"
     expires_after="2023-06-01">
   <owner>atsvirhckova@google.com</owner>
