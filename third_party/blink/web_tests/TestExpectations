@@ -6799,10 +6799,6 @@ crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cr
 # Missing priority hints interfaces.
 crbug.com/1345601 external/wpt/priority-hints/iframe-attr-fetchpriority.tentative.html [ Failure ]
 
-# Sheriff 2022-11-31
-crbug.com/1383527 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
-crbug.com/1385483 [ Linux ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
-
 # Sheriff 2022-11-15
 crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
 crbug.com/1383989 [ Mac ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Skip ]
@@ -6925,9 +6921,6 @@ crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.htt
 crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.sharedworker.html [ Failure Pass ]
 crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.html [ Failure Pass ]
 crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.serviceworker.html [ Failure Pass ]
-
-
-crbug.com/1406950 [ Win10.20h2 ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 
 # These tests test aspects of document.domain setting, which will (& should)
 # fail once document.domain setting is default-disabled (by enabling

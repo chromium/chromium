@@ -73,8 +73,11 @@
     ApplicationTestRunner.dumpIndexedDBTree();
     TestRunner.addResult('Navigating to another security origin.');
     const dbRemoval = indexedDBModel.once(Resources.IndexedDBModel.Events.DatabaseRemoved);
-    const navigation = TestRunner.navigatePromise(withoutIndexedDBURL);
-    await Promise.all([dbRemoval, navigation]);
+    const navigationPromise = new Promise(resolve =>
+      TestRunner.deprecatedRunAfterPendingDispatches(() =>
+        TestRunner.navigatePromise(withoutIndexedDBURL).then(resolve))
+    );
+    await Promise.all([dbRemoval, navigationPromise]);
     navigatedAway();
   }
 
@@ -83,7 +86,7 @@
     indexedDBModel.removeEventListener(Resources.IndexedDBModel.Events.DatabaseRemoved);
     ApplicationTestRunner.dumpIndexedDBTree();
     TestRunner.addResult('Navigating back.');
-    TestRunner.navigate(originalURL, navigatedBack);
+    TestRunner.deprecatedRunAfterPendingDispatches(() => TestRunner.navigate(originalURL, navigatedBack));
   }
 
   function navigatedBack() {
