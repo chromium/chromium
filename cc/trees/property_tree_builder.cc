@@ -788,6 +788,10 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
     return;
   }
 
+  // Must outlive `data_for_recursion`.
+  bool subtree_has_rounded_corner;
+  bool subtree_has_gradient_mask;
+
   DataForRecursion data_for_recursion;
   data_for_recursion.transform_tree_parent = kInvalidPropertyNodeId;
   data_for_recursion.clip_tree_parent = kRootPropertyNodeId;
@@ -816,9 +820,7 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   data_for_recursion.clip_tree_parent =
       clip_tree_->Insert(root_clip, kRootPropertyNodeId);
 
-  bool subtree_has_rounded_corner;
   data_for_recursion.subtree_has_rounded_corner = &subtree_has_rounded_corner;
-  bool subtree_has_gradient_mask;
   data_for_recursion.subtree_has_gradient_mask = &subtree_has_gradient_mask;
 
   BuildPropertyTreesInternal(root_layer_, data_for_recursion);
