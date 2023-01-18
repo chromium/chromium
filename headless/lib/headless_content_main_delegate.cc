@@ -30,11 +30,13 @@
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/profiling.h"
 #include "gpu/config/gpu_switches.h"
+#include "headless/lib/browser/command_line_handler.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_content_browser_client.h"
 #include "headless/lib/headless_crash_reporter_client.h"
 #include "headless/lib/renderer/headless_content_renderer_client.h"
 #include "headless/lib/utility/headless_content_utility_client.h"
+#include "headless/public/switches.h"
 #include "sandbox/policy/switches.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/switches.h"
@@ -176,8 +178,8 @@ absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
 
   // Use software rendering by default, but don't mess with gl and angle
   // switches if user is overriding them.
-  if (!command_line->HasSwitch(switches::kUseGL) &&
-      !command_line->HasSwitch(switches::kUseANGLE)) {
+  if (!command_line->HasSwitch(::switches::kUseGL) &&
+      !command_line->HasSwitch(::switches::kUseANGLE)) {
     command_line->AppendSwitchASCII(::switches::kUseGL,
                                     gl::kGLImplementationANGLEName);
     command_line->AppendSwitchASCII(
@@ -252,9 +254,10 @@ void HeadlessContentMainDelegate::InitLogging(
 
 // In release builds we should log into the user profile directory.
 #ifdef NDEBUG
-  if (!options()->user_data_dir.empty()) {
-    log_path = options()->user_data_dir;
-    log_path = log_path.Append(kDefaultProfileName);
+  base::FilePath user_data_dir =
+      command_line.GetSwitchValuePath(switches::kUserDataDir);
+  if (!user_data_dir.empty()) {
+    log_path = user_data_dir.Append(kDefaultProfileName);
     base::CreateDirectory(log_path);
     log_path = log_path.Append(log_filename);
   }
@@ -296,11 +299,19 @@ void HeadlessContentMainDelegate::InitLogging(
 
 void HeadlessContentMainDelegate::InitCrashReporter(
     const base::CommandLine& command_line) {
-  if (!options()->enable_crash_reporter
+  const std::string process_type =
+      command_line.GetSwitchValueASCII(::switches::kProcessType);
+  bool enable_crash_reporter =
+      process_type.empty() &&
+      command_line.HasSwitch(switches::kEnableCrashReporter) &&
+      !command_line.HasSwitch(switches::kDisableCrashReporter);
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-      && !command_line.HasSwitch(crash_reporter::switches::kCrashpadHandlerPid)
+  enable_crash_reporter |=
+      command_line.HasSwitch(crash_reporter::switches::kCrashpadHandlerPid);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  ) {
+
+  if (!enable_crash_reporter) {
     return;
   }
 
@@ -312,11 +323,9 @@ void HeadlessContentMainDelegate::InitCrashReporter(
   crash_reporter::SetCrashReporterClient(g_headless_crash_client.Pointer());
   crash_reporter::InitializeCrashKeys();
 
-  const std::string process_type =
-      command_line.GetSwitchValueASCII(::switches::kProcessType);
-  if (process_type != switches::kZygoteProcess) {
+  if (process_type != ::switches::kZygoteProcess) {
     g_headless_crash_client.Pointer()->set_crash_dumps_dir(
-        options()->crash_dumps_dir);
+        command_line.GetSwitchValuePath(switches::kCrashDumpsDir));
 #if !BUILDFLAG(IS_WIN)
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
 #endif  // !BUILDFLAG(IS_WIN)
@@ -419,14 +428,19 @@ HeadlessContentMainDelegate* HeadlessContentMainDelegate::GetInstance() {
   return g_current_headless_content_main_delegate;
 }
 
-const HeadlessBrowser::Options* HeadlessContentMainDelegate::options() {
-  if (browser_) {
-    return browser_->options();
+absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
+  HeadlessBrowser::Options::Builder builder;
+
+  if (!HandleCommandLineSwitches(*base::CommandLine::ForCurrentProcess(),
+                                 builder)) {
+    return EXIT_FAILURE;
   }
-  // TODO(caseq): get rid of this.
-  static base::NoDestructor<HeadlessBrowser::Options>
-      s_dummy_for_child_processes(HeadlessBrowser::Options::Builder().Build());
-  return s_dummy_for_child_processes.get();
+  browser_->SetOptions(builder.Build());
+
+#if BUILDFLAG(IS_MAC)
+  PlatformPreBrowserMain();
+#endif
+  return absl::nullopt;
 }
 
 content::ContentClient* HeadlessContentMainDelegate::CreateContentClient() {

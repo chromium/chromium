@@ -106,16 +106,6 @@ Builder& Builder::SetBlockNewWebContents(bool block) {
   return *this;
 }
 
-Builder& Builder::SetCrashReporterEnabled(bool enabled) {
-  options_.enable_crash_reporter = enabled;
-  return *this;
-}
-
-Builder& Builder::SetCrashDumpsDir(const base::FilePath& dir) {
-  options_.crash_dumps_dir = dir;
-  return *this;
-}
-
 Builder& Builder::SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting) {
   options_.font_render_hinting = hinting;
   return *this;
@@ -131,15 +121,14 @@ std::string HeadlessBrowser::GetProductNameAndVersion() {
 }
 
 HeadlessBrowserImpl::HeadlessBrowserImpl(
-    base::OnceCallback<void(HeadlessBrowser*)> on_start_callback,
-    HeadlessBrowser::Options options)
-    : on_start_callback_(std::move(on_start_callback)),
-      options_(std::move(options)),
-      browser_main_parts_(nullptr),
-      default_browser_context_(nullptr),
-      agent_host_(nullptr) {}
+    base::OnceCallback<void(HeadlessBrowser*)> on_start_callback)
+    : on_start_callback_(std::move(on_start_callback)) {}
 
 HeadlessBrowserImpl::~HeadlessBrowserImpl() = default;
+
+void HeadlessBrowserImpl::SetOptions(HeadlessBrowser::Options options) {
+  options_ = std::move(options);
+}
 
 HeadlessBrowserContext::Builder
 HeadlessBrowserImpl::CreateBrowserContextBuilder() {

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -756,9 +757,10 @@ HEADLESS_DEVTOOLED_TEST_F(BlockWebContentsOpenTest);
 // Regression test for crbug.com/1385982.
 class BlockDevToolsEmbedding : public HeadlessDevTooledBrowserTest {
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    HeadlessDevTooledBrowserTest::SetUpInProcessBrowserTestFixture();
-    options()->devtools_endpoint = net::HostPortPair("localhost", port_);
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessDevTooledBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kRemoteDebuggingPort,
+                                    base::NumberToString(port_));
   }
 
   void RunDevTooledTest() override {

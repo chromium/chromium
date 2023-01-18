@@ -23,10 +23,12 @@
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/policy/headless_mode_policy.h"
 #include "headless/public/headless_browser.h"
+#include "headless/public/switches.h"
 #include "headless/test/capture_std_stream.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
@@ -67,25 +69,16 @@ class HeadlessBrowserTestWithPolicy : public HeadlessBrowserTest {
     HeadlessBrowserTest::SetUp();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    HeadlessBrowserTest::SetUpInProcessBrowserTestFixture();
-    CreateTempUserDir();
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    command_line->AppendSwitchPath(switches::kUserDataDir,
+                                   user_data_dir_.GetPath());
   }
 
   void TearDown() override {
     HeadlessBrowserTest::TearDown();
     mock_provider_->Shutdown();
     policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(nullptr);
-  }
-
-  void CreateTempUserDir() {
-    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
-    EXPECT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
-    options()->user_data_dir = user_data_dir();
-  }
-
-  const base::FilePath& user_data_dir() const {
-    return user_data_dir_.GetPath();
   }
 
   PrefService* GetPrefs() {
@@ -180,9 +173,13 @@ class HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy
     mock_provider_->UpdateChromePolicy(policy);
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessBrowserTestWithPolicy::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(::switches::kRemoteDebuggingPort, "0");
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     HeadlessBrowserTestWithPolicy::SetUpInProcessBrowserTestFixture();
-    options()->devtools_endpoint = net::HostPortPair("localhost", 0);
     capture_stderr_.StartCapture();
   }
 

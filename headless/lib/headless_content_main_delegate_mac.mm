@@ -8,7 +8,7 @@
 
 namespace headless {
 
-absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
+void HeadlessContentMainDelegate::PlatformPreBrowserMain() {
   // Force the NSApplication subclass to be used.
   [HeadlessShellCrApplication sharedApplication];
 
@@ -17,8 +17,6 @@ absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
   // NSApplication. This is undesirable and we must enforce that this doesn't
   // happen.
   CHECK([NSApp isKindOfClass:[HeadlessShellCrApplication class]]);
-
-  return absl::nullopt;
 }
 
 }  // namespace headless

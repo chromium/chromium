@@ -403,13 +403,12 @@ class CrashReporterTest : public HeadlessBrowserTest,
   CrashReporterTest() {}
   ~CrashReporterTest() override = default;
 
-  void SetUp() override {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
     base::CreateNewTempDirectory(FILE_PATH_LITERAL("CrashReporterTest"),
                                  &crash_dumps_dir_);
-    EXPECT_FALSE(options()->enable_crash_reporter);
-    options()->enable_crash_reporter = true;
-    options()->crash_dumps_dir = crash_dumps_dir_;
-    HeadlessBrowserTest::SetUp();
+    command_line->AppendSwitch(switches::kEnableCrashReporter);
+    command_line->AppendSwitchPath(switches::kCrashDumpsDir, crash_dumps_dir_);
+    HeadlessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void TearDown() override {

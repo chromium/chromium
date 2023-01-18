@@ -54,9 +54,8 @@ extern const base::FilePath::CharType kDefaultProfileName[];
 class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
                                             public HeadlessDevToolsTarget {
  public:
-  HeadlessBrowserImpl(
-      base::OnceCallback<void(HeadlessBrowser*)> on_start_callback,
-      HeadlessBrowser::Options options);
+  explicit HeadlessBrowserImpl(
+      base::OnceCallback<void(HeadlessBrowser*)> on_start_callback);
 
   HeadlessBrowserImpl(const HeadlessBrowserImpl&) = delete;
   HeadlessBrowserImpl& operator=(const HeadlessBrowserImpl&) = delete;
@@ -91,7 +90,8 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
 
   void RunOnStartCallback();
 
-  HeadlessBrowser::Options* options() { return &options_; }
+  void SetOptions(HeadlessBrowser::Options options);
+  HeadlessBrowser::Options* options() { return &options_.value(); }
 
   HeadlessBrowserContext* CreateBrowserContext(
       HeadlessBrowserContext::Builder* builder);
@@ -123,20 +123,20 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
 
   bool did_shutdown() const { return did_shutdown_; }
 
- protected:
+ private:
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<display::ScopedNativeScreen> screen_;
 #endif
 
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
-  HeadlessBrowser::Options options_;
-  raw_ptr<HeadlessBrowserMainParts, DanglingUntriaged>
-      browser_main_parts_;  // Not owned.
+  absl::optional<HeadlessBrowser::Options> options_;
+  raw_ptr<HeadlessBrowserMainParts, DanglingUntriaged> browser_main_parts_ =
+      nullptr;
 
   base::flat_map<std::string, std::unique_ptr<HeadlessBrowserContextImpl>>
       browser_contexts_;
-  raw_ptr<HeadlessBrowserContext, DanglingUntriaged>
-      default_browser_context_;  // Not owned.
+  raw_ptr<HeadlessBrowserContext, DanglingUntriaged> default_browser_context_ =
+      nullptr;
   bool did_shutdown_ = false;  // TODO(1342152): remove once the bug is fixed.
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<HeadlessRequestContextManager>

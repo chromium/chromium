@@ -24,10 +24,9 @@ namespace {
 
 class HeadlessBrowserImplForTest : public HeadlessBrowserImpl {
  public:
-  explicit HeadlessBrowserImplForTest(HeadlessBrowser::Options options)
+  explicit HeadlessBrowserImplForTest()
       : HeadlessBrowserImpl(base::BindOnce(&HeadlessBrowserImplForTest::OnStart,
-                                           base::Unretained(this)),
-                            std::move(options)) {}
+                                           base::Unretained(this))) {}
 
   HeadlessBrowserImplForTest(const HeadlessBrowserImplForTest&) = delete;
   HeadlessBrowserImplForTest& operator=(const HeadlessBrowserImplForTest&) =
@@ -56,12 +55,8 @@ class HeadlessTestLauncherDelegate : public content::TestLauncherDelegate {
 
  protected:
   content::ContentMainDelegate* CreateContentMainDelegate() override {
-    // Use HeadlessBrowserTest::options() or HeadlessBrowserContextOptions to
-    // modify these defaults.
-    HeadlessBrowser::Options::Builder options_builder;
-    std::unique_ptr<HeadlessBrowserImpl> browser(
-        new HeadlessBrowserImplForTest(options_builder.Build()));
-    return new HeadlessContentMainDelegate(std::move(browser));
+    return new HeadlessContentMainDelegate(
+        std::make_unique<HeadlessBrowserImplForTest>());
   }
 };
 

@@ -141,12 +141,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // (experimental).
   bool enable_begin_frame_control = false;
 
-  // Minidump crash reporter settings. Crash reporting is disabled by default.
-  // By default crash dumps are written to the directory containing the
-  // executable.
-  bool enable_crash_reporter = false;
-  base::FilePath crash_dumps_dir;
-
   // Font render hinting value to override any default settings
   gfx::FontRenderParams::Hinting font_render_hinting;
 

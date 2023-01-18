@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/app/headless_shell_command_line.h"
+#include "headless/lib/browser/command_line_handler.h"
 
 #include <cstdio>
 
@@ -136,71 +136,60 @@ bool HandleFontRenderHinting(base::CommandLine& command_line,
 
 bool HandleCommandLineSwitches(base::CommandLine& command_line,
                                HeadlessBrowser::Options::Builder& builder) {
-  if (command_line.HasSwitch(switches::kDeterministicMode))
+  if (command_line.HasSwitch(switches::kDeterministicMode)) {
     HandleDeterministicModeSwitch(command_line);
+  }
 
-  if (command_line.HasSwitch(switches::kEnableBeginFrameControl))
+  if (command_line.HasSwitch(switches::kEnableBeginFrameControl)) {
     builder.SetEnableBeginFrameControl(true);
-
-  if (command_line.HasSwitch(switches::kEnableCrashReporter))
-    builder.SetCrashReporterEnabled(true);
-  if (command_line.HasSwitch(switches::kDisableCrashReporter))
-    builder.SetCrashReporterEnabled(false);
-  if (command_line.HasSwitch(switches::kCrashDumpsDir)) {
-    builder.SetCrashDumpsDir(
-        command_line.GetSwitchValuePath(switches::kCrashDumpsDir));
   }
 
   if (command_line.HasSwitch(::switches::kRemoteDebuggingPort)) {
-    if (!HandleRemoteDebuggingPort(command_line, builder))
+    if (!HandleRemoteDebuggingPort(command_line, builder)) {
       return false;
+    }
   }
-
-  if (command_line.HasSwitch(::switches::kRemoteDebuggingPort)) {
-    if (!HandleRemoteDebuggingPort(command_line, builder))
-      return false;
-  }
-  if (command_line.HasSwitch(::switches::kRemoteDebuggingPipe))
+  if (command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) {
     builder.EnableDevToolsPipe();
+  }
 
-  if (command_line.HasSwitch(switches::kProxyServer))
+  if (command_line.HasSwitch(switches::kProxyServer)) {
     HandleProxyServer(command_line, builder);
+  }
 
   if (command_line.HasSwitch(switches::kUserDataDir)) {
     builder.SetUserDataDir(
         command_line.GetSwitchValuePath(switches::kUserDataDir));
-    if (!command_line.HasSwitch(switches::kIncognito))
+    if (!command_line.HasSwitch(switches::kIncognito)) {
       builder.SetIncognitoMode(false);
+    }
   }
 
   if (command_line.HasSwitch(switches::kWindowSize)) {
-    if (!HandleWindowSize(command_line, builder))
+    if (!HandleWindowSize(command_line, builder)) {
       return false;
+    }
   }
 
   if (command_line.HasSwitch(switches::kUserAgent)) {
     std::string user_agent =
         command_line.GetSwitchValueASCII(switches::kUserAgent);
-    if (net::HttpUtil::IsValidHeaderValue(user_agent))
+    if (net::HttpUtil::IsValidHeaderValue(user_agent)) {
       builder.SetUserAgent(user_agent);
+    }
   }
 
   if (command_line.HasSwitch(switches::kFontRenderHinting)) {
-    if (!HandleFontRenderHinting(command_line, builder))
+    if (!HandleFontRenderHinting(command_line, builder)) {
       return false;
+    }
   }
 
-  if (command_line.HasSwitch(switches::kBlockNewWebContents))
+  if (command_line.HasSwitch(switches::kBlockNewWebContents)) {
     builder.SetBlockNewWebContents(true);
+  }
 
   return true;
-}
-
-bool IsRemoteDebuggingEnabled() {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  return command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
-         command_line.HasSwitch(::switches::kRemoteDebuggingPipe);
 }
 
 }  // namespace headless

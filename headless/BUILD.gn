@@ -303,6 +303,8 @@ static_library("backend_cdp_bindings") {
 # Code that is not needed in a renderer process.
 component("headless_non_renderer") {
   sources = [
+    "lib/browser/command_line_handler.cc",
+    "lib/browser/command_line_handler.h",
     "lib/browser/directory_enumerator.cc",
     "lib/browser/directory_enumerator.h",
     "lib/browser/headless_browser_context_impl.cc",
@@ -831,8 +833,6 @@ if (is_win) {
   static_library("headless_shell_browser_lib") {
     sources = [
       "app/headless_shell.cc",
-      "app/headless_shell_command_line.cc",
-      "app/headless_shell_command_line.h",
       "public/headless_shell.h",
     ]
     deps = [
@@ -869,8 +869,6 @@ if (is_win) {
 static_library("headless_shell_lib") {
   sources = [
     "app/headless_shell.cc",
-    "app/headless_shell_command_line.cc",
-    "app/headless_shell_command_line.h",
     "public/headless_shell.h",
   ]
   defines = []

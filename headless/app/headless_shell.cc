@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
-#include "headless/app/headless_shell_command_line.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
@@ -114,12 +113,17 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   HeadlessBrowserContext* browser_context = context_builder.Build();
   browser_->SetDefaultBrowserContext(browser_context);
 
+  const bool devtools_enabled = static_cast<HeadlessBrowserImpl*>(browser)
+                                    ->options()
+                                    ->DevtoolsServerEnabled();
+
   // If no explicit URL is present navigate to about:blank unless we're being
   // driven by a debugger.
   base::CommandLine::StringVector args =
       base::CommandLine::ForCurrentProcess()->GetArgs();
-  if (args.empty() && !IsRemoteDebuggingEnabled())
+  if (args.empty() && !devtools_enabled) {
     args.push_back(kAboutBlank);
+  }
 
   if (args.empty()) {
     return;
@@ -131,7 +135,7 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
 
   // If driven by a debugger just open the target page and
   // leave expecting the debugger will do what they need.
-  if (IsRemoteDebuggingEnabled()) {
+  if (devtools_enabled) {
     HeadlessWebContents* web_contents =
         builder.SetInitialURL(target_url).Build();
     if (!web_contents) {
@@ -193,10 +197,6 @@ int HeadlessBrowserMain(content::ContentMainParams params) {
   // Child processes should not end up here.
   DCHECK(!command_line.HasSwitch(::switches::kProcessType));
 #endif
-  HeadlessShell shell;
-
-  HeadlessBrowser::Options::Builder builder;
-
 #if defined(HEADLESS_ENABLE_COMMANDS)
   if ((command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
        command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) &&
@@ -206,13 +206,9 @@ int HeadlessBrowserMain(content::ContentMainParams params) {
   }
 #endif
 
-  if (!HandleCommandLineSwitches(command_line, builder)) {
-    return EXIT_FAILURE;
-  }
-
+  HeadlessShell shell;
   auto browser = std::make_unique<HeadlessBrowserImpl>(
-      base::BindOnce(&HeadlessShell::OnBrowserStart, base::Unretained(&shell)),
-      builder.Build());
+      base::BindOnce(&HeadlessShell::OnBrowserStart, base::Unretained(&shell)));
   HeadlessContentMainDelegate delegate(std::move(browser));
   params.delegate = &delegate;
   return content::ContentMain(std::move(params));

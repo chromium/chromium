@@ -47,4 +47,7 @@ specific_include_rules = {
   "headless_select_file_dialog_factory.*": [
     "+ui/shell_dialogs",
   ],
+  "command_line_handler.cc": [
+    "+third_party/blink/public/common/switches.h",
+  ]
 }

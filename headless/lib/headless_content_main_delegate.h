@@ -45,15 +45,16 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
-#if BUILDFLAG(IS_MAC)
   absl::optional<int> PreBrowserMain() override;
-#endif
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
 
   absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
+#if BUILDFLAG(IS_MAC)
+  void PlatformPreBrowserMain();
+#endif
 
   // TODO(caseq): get rid of this method and GetInstance(), tests should get
   // browser through other means.
@@ -65,8 +66,6 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
 #endif
 
   friend class HeadlessBrowserTest;
-
-  const HeadlessBrowser::Options* options();
 
   static HeadlessContentMainDelegate* GetInstance();
 
