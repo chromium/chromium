@@ -77,10 +77,7 @@ class OsSettingsEditDictionaryPageElement extends
       },
 
       /** @private {!Array<string>} */
-      words_: {
-        type: Array,
-        value: [],
-      },
+      words_: Array,
 
       /** @private */
       hasWords_: {
@@ -108,6 +105,8 @@ class OsSettingsEditDictionaryPageElement extends
   /** @override */
   constructor() {
     super();
+
+    this.words_ = [];
 
     /** @private {!LanguageSettingsPrivate} */
     this.languageSettingsPrivate_ =
