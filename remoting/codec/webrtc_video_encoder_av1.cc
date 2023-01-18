@@ -93,8 +93,8 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
     error = aom_codec_control(codec.get(), AV1E_SET_ROW_MT, 1);
     DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_ROW_MT";
 
-    // Use a smaller superblock size when allocating > 16 threads.
-    if (config_.g_threads > 16) {
+    // Use a smaller superblock size for 5k, 4k, and 2k displays.
+    if (config_.g_threads > 4) {
       // The default value for AV1E_SET_SUPERBLOCK_SIZE is
       // AOM_SUPERBLOCK_SIZE_DYNAMIC which uses 64x64 blocks for resolutions of
       // 720px or lower and 128x128 for resolutions above that. When testing
@@ -104,6 +104,8 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
       // and suggested adjusting the superblock size down to 64x64 to increase
       // the amount of parallelism.  This solution increased performance for 5K
       // displays and put it around the level of what we see for a 4K display.
+      // Additional testing with 4K and 2K displays showed that a smaller
+      // superblock size increased performance there as well.
       // See https://crbug.com/aomedia/3363 for more info.
       error = aom_codec_control(codec.get(), AV1E_SET_SUPERBLOCK_SIZE,
                                 AOM_SUPERBLOCK_SIZE_64X64);
