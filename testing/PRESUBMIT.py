@@ -40,7 +40,8 @@ def CommonChecks(input_api, output_api):
           r'buildbot.*', r'merge_scripts.*', r'trigger_scripts.*',
           r'unexpected_passes_common.*',
           r'clusterfuzz.*',
-          r'libfuzzer.*']))
+          r'libfuzzer.*'],
+      version='1.5'))
   # Pylint2.7 is run on subdirs whose presubmit checks are migrated to Python3
   output.extend(input_api.canned_checks.RunPylint(
       input_api,
