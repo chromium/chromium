@@ -153,9 +153,9 @@ void TabInteractionRecorderAndroid::DidGetUserInteraction(
 
 void TabInteractionRecorderAndroid::SetHasFormInteractions(
     GlobalRenderFrameHostId id) {
-  if (RenderFrameHost::FromID(id) &&
-      FormInteractionData::GetForCurrentDocument(RenderFrameHost::FromID(id))) {
-    FormInteractionData::GetForCurrentDocument(RenderFrameHost::FromID(id))
+  if (RenderFrameHost::FromID(id)) {
+    FormInteractionData::GetOrCreateForCurrentDocument(
+        RenderFrameHost::FromID(id))
         ->SetHasFormInteractionData();
   }
 
@@ -174,8 +174,6 @@ void TabInteractionRecorderAndroid::StartObservingFrame(
                              : GetAutofillManager(render_frame_host);
   if (!autofill_manager)
     return;
-
-  FormInteractionData::CreateForCurrentDocument(render_frame_host);
 
   rfh_observer_map_[render_frame_host->GetGlobalId()] =
       std::make_unique<AutofillObserverImpl>(
