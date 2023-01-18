@@ -10615,7 +10615,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetrics_FieldType) {
        Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
       {UFIT::kHeuristicTypeName, heuristic_types[i]},
       {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
       {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
       {UFIT::kHeuristicTypeExperimentalName, heuristic_types[i]},
       {UFIT::kHeuristicTypeNextGenName, heuristic_types[i]},

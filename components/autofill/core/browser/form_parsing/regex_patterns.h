@@ -70,7 +70,7 @@ class MatchPatternRef {
 // The different sets of patterns that are available.
 // Each enum constant corresponds to a JSON file.
 enum class PatternSource {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   // Patterns whose stability is above suspicion.
   kLegacy,
   kMaxValue = kLegacy

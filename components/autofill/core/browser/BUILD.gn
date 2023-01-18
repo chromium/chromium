@@ -32,7 +32,7 @@ declare_args() {
 
 buildflag_header("buildflags") {
   header = "form_parsing/buildflags.h"
-  flags = [ "USE_INTERNAL_AUTOFILL_HEADERS=$use_internal_autofill_patterns" ]
+  flags = [ "USE_INTERNAL_AUTOFILL_PATTERNS=$use_internal_autofill_patterns" ]
 }
 
 action("regex_patterns_inl_h") {

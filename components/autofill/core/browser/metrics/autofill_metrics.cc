@@ -2567,7 +2567,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
     if (auto* event =
             absl::get_if<HeuristicPredictionFieldLogEvent>(&log_event)) {
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
       switch (event->pattern_source) {
         case PatternSource::kLegacy:
           heuristic_legacy_type = event->field_type;

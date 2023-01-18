@@ -5337,7 +5337,7 @@ class BrowserAutofillManagerWithLogEventsTest
   std::vector<AutofillField::FieldLogEventType> ToHeuristicFieldTypes(
       ServerFieldType heuristic_type) {
     std::vector<AutofillField::FieldLogEventType> expected_events;
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     // Default pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,

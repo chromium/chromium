@@ -12,7 +12,7 @@ std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
   return {
     {.enable = false, .active_source = nullptr},
         {.enable = true, .active_source = "legacy"},
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         {.enable = true, .active_source = "default"},
         {.enable = true, .active_source = "experimental"},
         {.enable = true, .active_source = "nextgen"},

@@ -74,7 +74,7 @@ void LogShadowPredictionComparison(const AutofillField& field) {
       GetShadowPrediction(field.heuristic_type(), field.server_type(),
                           submitted_types));
 
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   base::UmaHistogramSparse(
       "Autofill.ShadowPredictions.ExperimentalToDefault",
       GetShadowPrediction(field.heuristic_type(PatternSource::kDefault),

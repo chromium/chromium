@@ -29,7 +29,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(
   if (!language_code.empty() && it == kPatternMap.end())
     it = kPatternMap.find(std::make_pair(name, ""));
   CHECK(it != kPatternMap.end());
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   switch (pattern_source) {
     case PatternSource::kDefault:
       return it->second[0];
@@ -53,7 +53,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 }  // namespace
 
 PatternSource GetActivePatternSource() {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   return PatternSource::kLegacy;
 #else
   if (!base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider))
@@ -71,7 +71,7 @@ PatternSource GetActivePatternSource() {
 }
 
 DenseSet<PatternSource> GetNonActivePatternSources() {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   return {};
 #else
   if (!base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider))

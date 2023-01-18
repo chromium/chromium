@@ -118,7 +118,7 @@ class RegexPatternsTest : public testing::TestWithParam<PatternSource> {
 INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
                          RegexPatternsTest,
                          ::testing::Values(
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                              PatternSource::kLegacy
 #else
                              PatternSource::kLegacy,
@@ -296,7 +296,7 @@ INSTANTIATE_TEST_SUITE_P(
     RegexPatternsTest,
     RegexPatternsTestWithSamples,
     testing::Values(
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         PatternTestCase{
             .pattern_source = PatternSource::kLegacy,
             .pattern_name = "PATTERN_SOURCE_DUMMY",
@@ -396,7 +396,7 @@ INSTANTIATE_TEST_SUITE_P(
                              "Zip code", "postal code",
                              // Specifically added for "de":
                              "postleitzahl"}}
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         ,
         PatternTestCase{
             .pattern_source = PatternSource::kExperimental,

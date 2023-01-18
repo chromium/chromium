@@ -116,7 +116,7 @@ FormStructureTestApi test_api(FormStructure* form_structure) {
 }
 
 constexpr DenseSet<PatternSource> kAllPatternSources {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   PatternSource::kLegacy
 #else
   PatternSource::kLegacy, PatternSource::kDefault, PatternSource::kExperimental,
@@ -188,7 +188,7 @@ class FormStructureTest_ForPatternSource
     switch (pattern_source()) {
       case PatternSource::kLegacy:
         return "legacy";
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
       case PatternSource::kDefault:
         return "default";
       case PatternSource::kExperimental:
