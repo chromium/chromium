@@ -11,8 +11,10 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
@@ -35,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -58,6 +61,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8-primitive.h"
+#include "v8/include/v8-value.h"
 
 namespace blink {
 
@@ -243,6 +247,14 @@ String ErrorInvalidAdRequestConfig(const AdRequestConfig& config,
                         error.Utf8().c_str());
 }
 
+String ErrorInvalidAuctionConfigUint128(const AuctionAdConfig& config,
+                                        const String& field_name,
+                                        const String& error) {
+  return String::Format("%s for AuctionAdConfig with seller '%s': %s",
+                        field_name.Utf8().c_str(),
+                        config.seller().Utf8().c_str(), error.Utf8().c_str());
+}
+
 String WarningPermissionsPolicy(const String& feature, const String& api) {
   return String::Format(
       "In the future, Permissions Policy feature %s will not be enabled by "
@@ -278,6 +290,34 @@ bool Jsonify(const ScriptState& script_state,
   // Check for this, and consider it a failure (since we didn't properly
   // serialize a value, and v8::JSON::Parse() rejects "undefined").
   return output != "undefined";
+}
+
+base::expected<absl::uint128, String> CopyBigIntToUint128(
+    const ScriptValue& script_value) {
+  v8::Local<v8::Value> value = script_value.V8Value();
+  DCHECK(!value.IsEmpty());
+  if (!value->IsBigInt()) {
+    return base::unexpected("Not a BigInt");
+  }
+  v8::Local<v8::BigInt> bigint = value.As<v8::BigInt>();
+  if (bigint->WordCount() > 2) {
+    return base::unexpected(String::Format(
+        "Too large BigInt; 64-bit words: %d, expected 2 or fewer",
+        bigint->WordCount()));
+  }
+
+  // Signals the size of the `words` array to `ToWordsArray()`. The number of
+  // elements actually used is then written here by the function.
+  int word_count = 2;
+  int sign_bit = 0;
+
+  uint64_t words[2] = {0, 0};  // Least significant to most significant.
+  bigint->ToWordsArray(&sign_bit, &word_count, words);
+  if (sign_bit) {
+    return base::unexpected("Negative BigInt cannot be converted to uint128");
+  }
+
+  return absl::MakeUint128(words[1], words[0]);
 }
 
 // Returns nullptr if |origin_string| couldn't be parsed into an acceptable
@@ -1297,6 +1337,75 @@ bool CopyPerBuyerPrioritySignalsFromIdlToMojo(
   return true;
 }
 
+bool CopyAuctionReportBuyerKeysFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasAuctionReportBuyerKeys()) {
+    return true;
+  }
+
+  output.auction_ad_config_non_shared_params->auction_report_buyer_keys
+      .emplace();
+  for (const ScriptValue& value : input.auctionReportBuyerKeys()) {
+    base::expected<absl::uint128, String> maybe_bucket =
+        CopyBigIntToUint128(value);
+    if (!maybe_bucket.has_value()) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint128(
+          input, "auctionReportBuyerKeys", maybe_bucket.error()));
+      return false;
+    }
+    output.auction_ad_config_non_shared_params->auction_report_buyer_keys
+        ->push_back(*maybe_bucket);
+  }
+
+  return true;
+}
+
+bool CopyAuctionReportBuyersFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasAuctionReportBuyers()) {
+    return true;
+  }
+
+  output.auction_ad_config_non_shared_params->auction_report_buyers.emplace();
+  for (const auto& [report_type_string, report_config] :
+       input.auctionReportBuyers()) {
+    mojom::blink::AuctionAdConfigNonSharedParams::BuyerReportType report_type;
+    if (report_type_string == "interestGroupCount") {
+      report_type = mojom::blink::AuctionAdConfigNonSharedParams::
+          BuyerReportType::kInterestGroupCount;
+    } else if (report_type_string == "bidCount") {
+      report_type = mojom::blink::AuctionAdConfigNonSharedParams::
+          BuyerReportType::kBidCount;
+    } else if (report_type_string == "totalGenerateBidLatency") {
+      report_type = mojom::blink::AuctionAdConfigNonSharedParams::
+          BuyerReportType::kTotalGenerateBidLatency;
+    } else if (report_type_string == "totalSignalsFetchLatency") {
+      report_type = mojom::blink::AuctionAdConfigNonSharedParams::
+          BuyerReportType::kTotalSignalsFetchLatency;
+    } else {
+      // Don't throw an error if an unknown type is provided to provide forward
+      // compatibility with new fields added later.
+      continue;
+    }
+    base::expected<absl::uint128, String> maybe_bucket =
+        CopyBigIntToUint128(report_config->bucket());
+    if (!maybe_bucket.has_value()) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint128(
+          input, "auctionReportBuyers", maybe_bucket.error()));
+      return false;
+    }
+    output.auction_ad_config_non_shared_params->auction_report_buyers->insert(
+        report_type, mojom::blink::AuctionReportBuyersConfig::New(
+                         *maybe_bucket, report_config->scale()));
+  }
+
+  return true;
+}
+
 // Attempts to convert the AuctionAdConfig `config`, passed in via Javascript,
 // to a `mojom::blink::AuctionAdConfig`. Throws a Javascript exception and
 // return null on failure. `auction_handle` is used for promise handling;
@@ -1347,7 +1456,11 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyPerBuyerGroupLimitsFromIdlToMojo(script_state, exception_state,
                                             config, *mojo_config) ||
       !CopyPerBuyerPrioritySignalsFromIdlToMojo(exception_state, config,
-                                                *mojo_config)) {
+                                                *mojo_config) ||
+      !CopyAuctionReportBuyerKeysFromIdlToMojo(exception_state, config,
+                                               *mojo_config) ||
+      !CopyAuctionReportBuyersFromIdlToMojo(exception_state, config,
+                                            *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 

@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/origin.mojom";
@@ -221,6 +222,22 @@ union AuctionAdConfigMaybePromiseBuyerTimeouts {
   AuctionAdConfigBuyerTimeouts value;
 };
 
+// For each report type, provides the bucket offset and scalar multiplier for
+// that report.
+//
+// See blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig.
+struct AuctionReportBuyersConfig {
+  // The bucket offset, added to the base per-buyer bucket value to obtain the
+  // actual bucket number used for reporting.
+  mojo_base.mojom.Uint128 bucket;
+
+  // A scalar multiplier multiplied by the reported value, to control the amount
+  // of noise added by the aggregation service. (Reading aggreaged reported
+  // values is subject to a privacy budget, so this controls how much budget is
+  // spent on each report).
+  double scale;
+};
+
 // Subset of AuctionAdConfig that is not shared by all auctions that are
 // using the same SellerWorklet object (so it's "not shared" between
 // AuctionConfigs that share the same SellerWorklet). Other AuctionAdConfig
@@ -228,6 +245,21 @@ union AuctionAdConfigMaybePromiseBuyerTimeouts {
 // otherwise be parameters that don't need to be resent to each seller worklet
 // method invocation.
 struct AuctionAdConfigNonSharedParams {
+  // For each report requested by the seller, this enum specifies the type of
+  // the report.
+  enum BuyerReportType {
+    // The number of interest groups owned by buyers in `interest_group_buyers`,
+    // unconstrained by `per_buyer_group_limits`.
+    kInterestGroupCount,
+    // The total number of bids made at auction.
+    kBidCount,
+    // The total time in milliseconds spent executing generateBid().
+    kTotalGenerateBidLatency,
+    // The toal time in milliseconds spent fetching trusted bidding signals over
+    // the network.
+    kTotalSignalsFetchLatency,
+  };
+
   // Owners of interest groups allowed to participate in the auction.
   // Must all be HTTPS.
   array<url.mojom.Origin>? interest_group_buyers;
@@ -274,6 +306,17 @@ struct AuctionAdConfigNonSharedParams {
   // greater than 0. Defaults to the largest uint16 value, which is fine
   // in our case since the backend storage applies a lower limit.
   uint16 all_buyers_group_limit = 65535;
+
+  // For each buyer in `interest_group_buyers`, specifies the aggregation base
+  // bucket ID number for that buyer. To be used in conjunction with
+  // `auction_report_buyers`; for each buyer, for each report type, the base
+  // bucket ID is added to the `auction_report_buyers` bucket offset to obtain
+  // the actual bucket numbers used for reporting.
+  array<mojo_base.mojom.Uint128>? auction_report_buyer_keys;
+
+  // For each type of buyer extended private aggregation reporting event,
+  // provides the bucket offset and scalar multiplier for that event.
+  map<BuyerReportType, AuctionReportBuyersConfig>? auction_report_buyers;
 
   // Nested auctions whose results will also be fed to `seller`. Only the top
   // level auction config can have component auctions.

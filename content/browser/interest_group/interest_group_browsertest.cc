@@ -3968,6 +3968,97 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionAuctionReportBuyerKeysNotBigInt) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "auctionReportBuyerKeys for AuctionAdConfig with seller "
+                "'%s': Not a BigInt",
+                url::Origin::Create(test_url).Serialize().c_str()),
+            RunAuctionAndWait(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    auctionReportBuyerKeys: [3],
+                         })",
+                url::Origin::Create(test_url),
+                https_server_->GetURL("a.test",
+                                      "/interest_group/decision_logic.js"))));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionAuctionReportBuyerKeysTooLargeBigInt) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "auctionReportBuyerKeys for AuctionAdConfig with seller '%s': "
+                "Too large BigInt; 64-bit words: 3, expected 2 or fewer",
+                url::Origin::Create(test_url).Serialize().c_str()),
+            RunAuctionAndWait(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    auctionReportBuyerKeys: [1n << 129n],
+                         })",
+                url::Origin::Create(test_url),
+                https_server_->GetURL("a.test",
+                                      "/interest_group/decision_logic.js"))));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionAuctionReportBuyerKeysNegativeBigInt) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "auctionReportBuyerKeys for AuctionAdConfig with seller '%s': "
+                "Negative BigInt cannot be converted to uint128",
+                url::Origin::Create(test_url).Serialize().c_str()),
+            RunAuctionAndWait(JsReplace(
+                R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    auctionReportBuyerKeys: [-1n],
+                         })",
+                url::Origin::Create(test_url),
+                https_server_->GetURL("a.test",
+                                      "/interest_group/decision_logic.js"))));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionAuctionReportBuyersUnknownReportTypeIgnored) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
+                         R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      unknownReportType: { bucket: 0n, scale: 1 },
+    }
+                         })",
+                         url::Origin::Create(test_url),
+                         https_server_->GetURL(
+                             "a.test", "/interest_group/decision_logic.js"))));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionPrivacySandboxDisabled) {
   // Successful join at a.test
   GURL test_url_a = https_server_->GetURL("a.test", "/echo");

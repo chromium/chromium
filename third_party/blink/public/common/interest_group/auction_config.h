@@ -14,9 +14,11 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -220,6 +222,27 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   //
   // Typemapped to blink::mojom::AuctionAdConfigNonSharedParams.
   struct BLINK_COMMON_EXPORT NonSharedParams {
+    // For each report requested by the seller, this enum specifies the type of
+    // the report.
+    using BuyerReportType =
+        blink::mojom::AuctionAdConfigNonSharedParams_BuyerReportType;
+
+    // For each report type, provides the bucket offset and scalar multiplier
+    // for that report.
+    //
+    // Typemapped to blink::mojom::AuctionReportBuyersConfig.
+    struct BLINK_COMMON_EXPORT AuctionReportBuyersConfig {
+      // The bucket offset, added to the base per-buyer bucket value to obtain
+      // the actual bucket number used for reporting.
+      absl::uint128 bucket;
+
+      // A scalar multiplier multiplied by the reported value, to control the
+      // amount of noise added by the aggregation service. (Reading aggreaged
+      // reported values is subject to a privacy budget, so this controls how
+      // much budget is spent on each report).
+      double scale;
+    };
+
     NonSharedParams();
     NonSharedParams(const NonSharedParams&);
     NonSharedParams(NonSharedParams&&);
@@ -275,6 +298,18 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // same key, the entry in `per_buyer_priority_signals` takes precedence.
     absl::optional<base::flat_map<std::string, double>>
         all_buyers_priority_signals;
+
+    // For each buyer in `interest_group_buyers`, specifies the base bucket ID
+    // number for that buyer. To be used in conjunction with
+    // `auction_report_buyers`; for each buyer, for each report type, the
+    // base bucket ID is added to the `auction_report_buyers` bucket offset to
+    // obtain the actual bucket numbers used for reporting.
+    absl::optional<std::vector<absl::uint128>> auction_report_buyer_keys;
+
+    // For each type of bidder extended private aggregation reporting event,
+    // provides the bucket offset and scalar multiplier for that event.
+    absl::optional<base::flat_map<BuyerReportType, AuctionReportBuyersConfig>>
+        auction_report_buyers;
 
     // Nested auctions whose results will also be fed to `seller`. Only the top
     // level auction config can have component auctions.

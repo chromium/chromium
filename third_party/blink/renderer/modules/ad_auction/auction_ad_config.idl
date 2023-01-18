@@ -5,6 +5,13 @@
 // Configuration that is passed to navigator.runAdAuction().
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
 
+dictionary AuctionReportBuyersConfig {
+  // TODO(crbug.com/1402467): Use `bigint` instead of `any` when supported by
+  // WebIDL parser.
+  any bucket;
+  double scale;
+};
+
 dictionary AuctionAdConfig {
   required USVString seller;
   required USVString decisionLogicUrl;
@@ -23,6 +30,13 @@ dictionary AuctionAdConfig {
   record<USVString, unsigned short> perBuyerGroupLimits;
   record<USVString, unsigned short> perBuyerExperimentGroupIds;
   record<USVString, record<USVString, double>> perBuyerPrioritySignals;
+  // `auctionReportBuyerKeys` and `auctionReportBuyers` are described in:
+  // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
+
+  // TODO(crbug.com/1402467): Use `bigint` instead of `any` when supported by
+  // WebIDL parser.
+  sequence<any> auctionReportBuyerKeys;
+  record<USVString, AuctionReportBuyersConfig> auctionReportBuyers;
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
   boolean resolveToConfig;

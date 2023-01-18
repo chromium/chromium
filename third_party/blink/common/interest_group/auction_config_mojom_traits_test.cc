@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -20,6 +21,12 @@
 #include "url/origin.h"
 
 namespace blink {
+
+bool operator==(
+    const AuctionConfig::NonSharedParams::AuctionReportBuyersConfig& a,
+    const AuctionConfig::NonSharedParams::AuctionReportBuyersConfig& b) {
+  return std::tie(a.bucket, a.scale) == std::tie(b.bucket, b.scale);
+}
 
 bool operator==(const DirectFromSellerSignals& a,
                 const DirectFromSellerSignals& b) {
@@ -58,11 +65,13 @@ bool operator==(const AuctionConfig::NonSharedParams& a,
                   a.seller_timeout, a.per_buyer_signals, a.buyer_timeouts,
                   a.per_buyer_group_limits, a.all_buyers_group_limit,
                   a.per_buyer_priority_signals, a.all_buyers_priority_signals,
+                  a.auction_report_buyer_keys, a.auction_report_buyers,
                   a.component_auctions) ==
          std::tie(b.interest_group_buyers, b.auction_signals, b.seller_signals,
                   b.seller_timeout, b.per_buyer_signals, b.buyer_timeouts,
                   b.per_buyer_group_limits, b.all_buyers_group_limit,
                   b.per_buyer_priority_signals, b.all_buyers_priority_signals,
+                  b.auction_report_buyer_keys, b.auction_report_buyers,
                   b.component_auctions);
 }
 
@@ -145,6 +154,14 @@ AuctionConfig CreateFullConfig() {
       {"hats", 1.5}, {"for", 0}, {"sale", -2}};
   non_shared_params.all_buyers_priority_signals = {
       {"goats", -1.5}, {"for", 5}, {"sale", 0}};
+  non_shared_params.auction_report_buyer_keys = {absl::MakeUint128(1, 1),
+                                                 absl::MakeUint128(1, 2)};
+  non_shared_params.auction_report_buyers = {
+      {AuctionConfig::NonSharedParams::BuyerReportType::kInterestGroupCount,
+       {absl::MakeUint128(0, 0), 1.0}},
+      {AuctionConfig::NonSharedParams::BuyerReportType::
+           kTotalSignalsFetchLatency,
+       {absl::MakeUint128(0, 1), 2.0}}};
 
   DirectFromSellerSignalsSubresource
       direct_from_seller_signals_per_buyer_signals_buyer;

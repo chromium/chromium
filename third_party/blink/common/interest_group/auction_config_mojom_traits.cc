@@ -157,6 +157,19 @@ bool UnionTraits<blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView,
   return false;
 }
 
+bool StructTraits<
+    blink::mojom::AuctionReportBuyersConfigDataView,
+    blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig>::
+    Read(
+        blink::mojom::AuctionReportBuyersConfigDataView data,
+        blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig* out) {
+  if (!data.ReadBucket(&out->bucket)) {
+    return false;
+  }
+  out->scale = data.scale();
+  return true;
+}
+
 bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
                   blink::AuctionConfig::NonSharedParams>::
     Read(blink::mojom::AuctionAdConfigNonSharedParamsDataView data,
@@ -170,6 +183,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadPerBuyerGroupLimits(&out->per_buyer_group_limits) ||
       !data.ReadPerBuyerPrioritySignals(&out->per_buyer_priority_signals) ||
       !data.ReadAllBuyersPrioritySignals(&out->all_buyers_priority_signals) ||
+      !data.ReadAuctionReportBuyerKeys(&out->auction_report_buyer_keys) ||
+      !data.ReadAuctionReportBuyers(&out->auction_report_buyers) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
   }

@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
@@ -206,6 +207,27 @@ struct BLINK_COMMON_EXPORT
 };
 
 template <>
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::AuctionReportBuyersConfigDataView,
+    blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig> {
+  static absl::uint128 bucket(
+      const blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig&
+          params) {
+    return params.bucket;
+  }
+
+  static double scale(
+      const blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig&
+          params) {
+    return params.scale;
+  }
+
+  static bool Read(
+      blink::mojom::AuctionReportBuyersConfigDataView data,
+      blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig* out);
+};
+
+template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
                  blink::AuctionConfig::NonSharedParams> {
@@ -260,6 +282,19 @@ struct BLINK_COMMON_EXPORT
   all_buyers_priority_signals(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.all_buyers_priority_signals;
+  }
+
+  static const absl::optional<std::vector<absl::uint128>>&
+  auction_report_buyer_keys(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.auction_report_buyer_keys;
+  }
+
+  static const absl::optional<base::flat_map<
+      blink::AuctionConfig::NonSharedParams::BuyerReportType,
+      blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig>>&
+  auction_report_buyers(const blink::AuctionConfig::NonSharedParams& params) {
+    return params.auction_report_buyers;
   }
 
   static const std::vector<blink::AuctionConfig>& component_auctions(
