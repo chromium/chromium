@@ -87,11 +87,6 @@ class ASH_EXPORT WallpaperControllerImpl
       public ui::NativeThemeObserver,
       public ColorModeObserver {
  public:
-  enum WallpaperResolution {
-    WALLPAPER_RESOLUTION_LARGE,
-    WALLPAPER_RESOLUTION_SMALL
-  };
-
   // Directory names of custom wallpapers.
   static const char kSmallWallpaperSubDir[];
   static const char kLargeWallpaperSubDir[];

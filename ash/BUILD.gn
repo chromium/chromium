@@ -2048,6 +2048,7 @@ component("ash") {
     "wallpaper/wallpaper_utils/wallpaper_resizer.cc",
     "wallpaper/wallpaper_utils/wallpaper_resizer.h",
     "wallpaper/wallpaper_utils/wallpaper_resizer_observer.h",
+    "wallpaper/wallpaper_utils/wallpaper_resolution.h",
     "wallpaper/wallpaper_view.cc",
     "wallpaper/wallpaper_view.h",
     "wallpaper/wallpaper_widget_controller.cc",
