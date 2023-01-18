@@ -116,11 +116,17 @@ void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
   auto it = commit_thread_runners_.find(widget);
   if (it == commit_thread_runners_.end())
     return;
-  it->second->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WaylandBufferManagerGpu::SubmitSwapResultOnOriginThread,
-                     base::Unretained(this), widget, buffer_id, swap_result,
-                     std::move(release_fence)));
+
+  if (it->second->BelongsToCurrentThread()) {
+    SubmitSwapResultOnOriginThread(widget, buffer_id, swap_result,
+                                   std::move(release_fence));
+  } else {
+    it->second->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandBufferManagerGpu::SubmitSwapResultOnOriginThread,
+                       base::Unretained(this), widget, buffer_id, swap_result,
+                       std::move(release_fence)));
+  }
 }
 
 void WaylandBufferManagerGpu::OnPresentation(
