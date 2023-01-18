@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <title>Tests for PaymentRequestEvent.changeShippingOption()</title>
+<link
+  rel="help"
+  href="https://w3c.github.io/payment-handler/#changeshippingoption-method"
+/>
 
-<link rel="manifest" href="/payment-handler/manifest.json" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="register-and-activate-service-worker.js"></script>
 <p>If the payment sheet is shown, please authorize the mock payment.</p>
 <script>
-  const methodName = window.location.origin + '/payment-handler/payment-app/';
+  const methodName = window.location.origin
+      + '/payment-handler/change-shipping-option-manual-manifest.json';
   function createRequest() {
     return new PaymentRequest([{supportedMethods: methodName}], {
         total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
@@ -35,18 +38,6 @@
       }, {requestShipping: true});
   }
 
-  async function completeAppSetUp(registration) {
-    await registration.paymentManager.instruments.clear();
-    await registration.paymentManager.instruments.set('instrument-key', {
-      name: 'Instrument Name',
-      method: methodName,
-    });
-    await navigator.serviceWorker.ready;
-    await registration.paymentManager.enableDelegations(['shippingAddress']);
-  }
-
-  async function runTests(registration) {
-    await completeAppSetUp(registration);
     promise_test(async (t) => {
       const request = createRequest();
       // Intentionally do not respond to the 'shippingoptionchange' event.
@@ -150,11 +141,4 @@
 
       return complete_promise;
     }, 'The changeShippingOption() returns some details from the "shippingoptionchange" event\'s updateWith(details) call.');
-  }
-
-  registerAndActiveServiceWorker(
-    'app-change-shipping-option.js',
-    'payment-app/',
-    runTests
-  );
 </script>
