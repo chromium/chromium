@@ -38,12 +38,12 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings_js__generator",
-    "//components/commerce/core/mojom:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings_ts__generator",
+    "//components/commerce/core/mojom:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/components/commerce/core/mojom/shopping_list.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom-webui.ts",
+    "$root_gen_dir/components/commerce/core/mojom/shopping_list.mojom-webui.ts",
   ]
 
   ts_composite = true

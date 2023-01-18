@@ -18,8 +18,8 @@ build_webui("build") {
 
   non_web_component_files = [ "user_notes_api_proxy.ts" ]
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings_js__generator" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom-webui.js" ]
+  mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom-webui.ts" ]
 
   ts_composite = true
   ts_deps = [
