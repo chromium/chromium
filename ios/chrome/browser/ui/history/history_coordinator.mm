@@ -128,21 +128,11 @@ history::WebHistoryService* WebHistoryServiceGetter(
   self.historyTableViewController.presentationDelegate =
       self.presentationDelegate;
 
-  BOOL useCustomPresentation = YES;
-      [self.historyNavigationController
-          setModalPresentationStyle:UIModalPresentationFormSheet];
-      self.historyNavigationController.presentationController.delegate =
-          self.historyTableViewController;
-      useCustomPresentation = NO;
+  [self.historyNavigationController
+      setModalPresentationStyle:UIModalPresentationFormSheet];
+  self.historyNavigationController.presentationController.delegate =
+      self.historyTableViewController;
 
-  if (useCustomPresentation) {
-    self.historyTransitioningDelegate =
-        [[HistoryTransitioningDelegate alloc] init];
-    self.historyNavigationController.transitioningDelegate =
-        self.historyTransitioningDelegate;
-    [self.historyNavigationController
-        setModalPresentationStyle:UIModalPresentationCustom];
-  }
   [self.baseViewController
       presentViewController:self.historyNavigationController
                    animated:YES

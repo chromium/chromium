@@ -109,28 +109,17 @@
       initWithTable:self.recentTabsTableViewController];
   self.recentTabsNavigationController.toolbarHidden = YES;
 
-  BOOL useCustomPresentation = YES;
       [self.recentTabsNavigationController
           setModalPresentationStyle:UIModalPresentationFormSheet];
       self.recentTabsNavigationController.presentationController.delegate =
           self.recentTabsTableViewController;
-      useCustomPresentation = NO;
 
-  if (useCustomPresentation) {
-    self.recentTabsTransitioningDelegate =
-        [[RecentTabsTransitioningDelegate alloc] init];
-    self.recentTabsNavigationController.transitioningDelegate =
-        self.recentTabsTransitioningDelegate;
-    [self.recentTabsNavigationController
-        setModalPresentationStyle:UIModalPresentationCustom];
-  }
+      self.recentTabsTableViewController.preventUpdates = NO;
 
-  self.recentTabsTableViewController.preventUpdates = NO;
-
-  [self.baseViewController
-      presentViewController:self.recentTabsNavigationController
-                   animated:YES
-                 completion:nil];
+      [self.baseViewController
+          presentViewController:self.recentTabsNavigationController
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)stop {

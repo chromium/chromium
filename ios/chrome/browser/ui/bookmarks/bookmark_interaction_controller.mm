@@ -686,23 +686,7 @@ enum class PresentedState {
       [[BookmarkNavigationControllerDelegate alloc] init];
   navController.delegate = self.bookmarkNavigationControllerDelegate;
 
-  BOOL useCustomPresentation = YES;
   [navController setModalPresentationStyle:UIModalPresentationFormSheet];
-  useCustomPresentation = NO;
-
-  if (useCustomPresentation) {
-    self.bookmarkTransitioningDelegate =
-        [[BookmarkTransitioningDelegate alloc] init];
-    self.bookmarkTransitioningDelegate.presentationControllerModalDelegate =
-        self;
-    navController.transitioningDelegate = self.bookmarkTransitioningDelegate;
-    navController.modalPresentationStyle = UIModalPresentationCustom;
-    TableViewPresentationController* presentationController =
-        base::mac::ObjCCastStrict<TableViewPresentationController>(
-            navController.presentationController);
-    self.bookmarkNavigationControllerDelegate.modalController =
-        presentationController;
-  }
 
   [_parentController presentViewController:navController
                                   animated:YES

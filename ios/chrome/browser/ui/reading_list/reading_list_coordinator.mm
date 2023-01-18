@@ -134,18 +134,10 @@
   // everything correctly.
   [self readingListHasItems:self.mediator.hasElements];
 
-  BOOL useCustomPresentation = YES;
-      [self.navigationController
-          setModalPresentationStyle:UIModalPresentationFormSheet];
-      self.navigationController.presentationController.delegate =
-          self.tableViewController;
-      useCustomPresentation = NO;
-
-  if (useCustomPresentation) {
-    self.navigationController.transitioningDelegate = self;
-    self.navigationController.modalPresentationStyle =
-        UIModalPresentationCustom;
-  }
+  [self.navigationController
+      setModalPresentationStyle:UIModalPresentationFormSheet];
+  self.navigationController.presentationController.delegate =
+      self.tableViewController;
 
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
