@@ -1460,6 +1460,10 @@ BASE_FEATURE(kSimulateClickOnAXFocus,
 #endif
 );
 
+BASE_FEATURE(kSerializeAccessibilityPostLifecycle,
+             "SerializeAccessibilityPostLifeycle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kThreadedPreloadScanner,
              "ThreadedPreloadScanner",
              base::FEATURE_DISABLED_BY_DEFAULT);

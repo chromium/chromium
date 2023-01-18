@@ -715,6 +715,11 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // See https://crbug.com/1326622 for more info.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSimulateClickOnAXFocus);
 
+// When enabled, the serialization of accessibility information for the browser
+// process will be done during LocalFrameView::RunPostLifecycleSteps, rather
+// than from a stand-alone task.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSerializeAccessibilityPostLifecycle);
+
 // If enabled, the HTMLPreloadScanner will run on a worker thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedPreloadScanner);
 

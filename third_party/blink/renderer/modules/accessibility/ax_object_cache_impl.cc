@@ -2354,9 +2354,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     if (GetPopupDocumentIfShowing())
       agent->AXReadyCallback(*GetPopupDocumentIfShowing());
   }
-
-  // TODO(chrishtr): Accessibility serializations should happen now, on the
-  // condition that enough time has passed since the last serialization.
 }
 
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
