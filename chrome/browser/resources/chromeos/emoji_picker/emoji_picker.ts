@@ -599,14 +599,14 @@ export class EmojiPicker extends PolymerElement {
   }
 
   private onGroupsScroll() {
-    // GIF group tabs movement isn't affected by scrolling.
+    this.updateChevrons();
+
     // This stops the GIF group tabs bar from bouncing back
     // when clicking on left/right chevron.
     if (this.category === CategoryEnum.GIF) {
       return;
     }
 
-    this.updateChevrons();
     this.groupTabsMoving = true;
 
     if (this.groupButtonScrollTimeout) {
