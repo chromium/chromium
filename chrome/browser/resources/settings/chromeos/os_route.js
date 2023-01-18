@@ -366,6 +366,9 @@ function createOSSettingsRoutes() {
     r.SMB_SHARES = createSubpage(
         r.FILES, routesMojomWebui.NETWORK_FILE_SHARES_SUBPAGE_PATH,
         Subpage.kNetworkFileShares);
+    r.OFFICE = createSubpage(
+        r.FILES, routesMojomWebui.OFFICE_FILES_SUBPAGE_PATH,
+        Subpage.kOfficeFiles);
   }
 
   // Printing section.

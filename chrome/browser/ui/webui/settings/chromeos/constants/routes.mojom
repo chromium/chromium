@@ -145,6 +145,7 @@ enum Subpage {
 
   // Files section.
   kNetworkFileShares = 1300,
+  kOfficeFiles = 1301,
 
   // Printing section.
   kPrintingDetails = 1400,
@@ -280,6 +281,7 @@ const string kJapaneseManageUserDictionarySubpagePath =
 // Files section.
 const string kFilesSectionPath = "files";
 const string kNetworkFileSharesSubpagePath = "smbShares";
+const string kOfficeFilesSubpagePath = "officeFiles";
 
 // Printing section.
 const string kPrintingSectionPath = "osPrinting";

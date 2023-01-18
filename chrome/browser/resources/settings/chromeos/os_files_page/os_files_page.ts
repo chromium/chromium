@@ -11,8 +11,10 @@ import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
+import './office_page.js';
 import './smb_shares_page.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -63,6 +65,14 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
           return map;
         },
       },
+
+      /** @private */
+      showOfficeSettings_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showOfficeSettings');
+        },
+      },
     };
   }
 
@@ -80,6 +90,10 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
 
   private onTapSmbShares_() {
     Router.getInstance().navigateTo(routes.SMB_SHARES);
+  }
+
+  private onTapOffice_() {
+    Router.getInstance().navigateTo(routes.OFFICE);
   }
 }
 

@@ -155,6 +155,7 @@ web_component_files = [
   "chromeos/os_bluetooth_page/os_saved_devices_list.ts",
   "chromeos/os_bluetooth_page/os_saved_devices_list_item.ts",
   "chromeos/os_bluetooth_page/settings_fast_pair_toggle.ts",
+  "chromeos/os_files_page/office_page.ts",
   "chromeos/os_files_page/os_files_page.ts",
   "chromeos/os_files_page/smb_shares_page.ts",
   "chromeos/os_languages_page/add_input_methods_dialog.js",

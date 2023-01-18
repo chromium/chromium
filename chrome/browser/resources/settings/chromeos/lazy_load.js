@@ -45,6 +45,7 @@ import './os_a11y_page/switch_access_setup_guide_dialog.js';
 import './os_a11y_page/switch_access_setup_guide_warning_dialog.js';
 import './os_a11y_page/switch_access_subpage.js';
 import './os_a11y_page/tts_subpage.js';
+import './os_files_page/office_page.js';
 import './os_files_page/os_files_page.js';
 import './os_languages_page/input_method_options_page.js';
 import './os_languages_page/input_page.js';

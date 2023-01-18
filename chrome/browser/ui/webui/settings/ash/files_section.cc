@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/files_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -23,6 +24,7 @@ namespace ash::settings {
 namespace mojom {
 using ::chromeos::settings::mojom::kFilesSectionPath;
 using ::chromeos::settings::mojom::kNetworkFileSharesSubpagePath;
+using ::chromeos::settings::mojom::kOfficeFilesSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -56,6 +58,17 @@ const std::vector<SearchConcept>& GetFilesSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetFilesOfficeSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_FILES_OFFICE,
+        mojom::kOfficeFilesSubpagePath,
+        mojom::SearchResultIcon::kFolder,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kOfficeFiles}}});
+  return *tags;
+}
+
 }  // namespace
 
 FilesSection::FilesSection(Profile* profile,
@@ -63,6 +76,9 @@ FilesSection::FilesSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetFilesSearchConcepts());
+  if (ash::features::IsUploadOfficeToCloudEnabled()) {
+    updater.AddSearchTags(GetFilesOfficeSearchConcepts());
+  }
 }
 
 FilesSection::~FilesSection() = default;
@@ -100,6 +116,9 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("smbSharesLearnMoreURL",
                          GetHelpUrlWithBoard(chrome::kSmbSharesLearnMoreURL));
+
+  html_source->AddBoolean("showOfficeSettings",
+                          ash::features::IsUploadOfficeToCloudEnabled());
 
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile());
@@ -139,6 +158,13 @@ void FilesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Network file shares.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_DOWNLOADS_SMB_SHARES, mojom::Subpage::kNetworkFileShares,
+      mojom::SearchResultIcon::kFolder, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kNetworkFileSharesSubpagePath);
+
+  // Office.
+  // TODO(b:264314789): Correct string (not smb).
+  generator->RegisterTopLevelSubpage(
+      IDS_SETTINGS_DOWNLOADS_SMB_SHARES, mojom::Subpage::kOfficeFiles,
       mojom::SearchResultIcon::kFolder, mojom::SearchResultDefaultRank::kMedium,
       mojom::kNetworkFileSharesSubpagePath);
 }

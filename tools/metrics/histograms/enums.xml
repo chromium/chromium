@@ -76304,6 +76304,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1206" label="Customize spell check"/>
   <int value="1207" label="Manage user dictionary"/>
   <int value="1300" label="Network File Shares"/>
+  <int value="1301" label="Office Files"/>
   <int value="1400" label="Printing Details"/>
   <int value="1500" label="Manage Accessibility"/>
   <int value="1502" label="Text-To-Speech"/>

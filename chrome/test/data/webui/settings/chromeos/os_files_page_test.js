@@ -17,6 +17,9 @@ suite('FilesPageTests', function() {
   let filesPage = null;
 
   setup(function() {
+    loadTimeData.overrideValues({
+      showOfficeSettings: false,
+    });
     PolymerTest.clearBody();
     filesPage = document.createElement('os-settings-files-page');
     document.body.appendChild(filesPage);
@@ -47,6 +50,10 @@ suite('FilesPageTests', function() {
     assertEquals(Router.getInstance().getCurrentRoute(), routes.SMB_SHARES);
   });
 
+  test('Office row is hidden when showOfficeSettings is false', async () => {
+    assertEquals(null, filesPage.shadowRoot.querySelector('#office'));
+  });
+
   test('Deep link to disconnect Google Drive', async () => {
     const params = new URLSearchParams();
     params.append('settingId', '1300');
@@ -61,5 +68,30 @@ suite('FilesPageTests', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Disconnect Drive toggle should be focused for settingId=1300.');
+  });
+
+  suite('with showOfficeSettings enabled', () => {
+    setup(function() {
+      loadTimeData.overrideValues({
+        showOfficeSettings: true,
+      });
+      PolymerTest.clearBody();
+      filesPage = document.createElement('os-settings-files-page');
+      document.body.appendChild(filesPage);
+      flush();
+    });
+
+    teardown(function() {
+      filesPage.remove();
+      Router.getInstance().resetRouteForTesting();
+    });
+
+    test('Navigates to OFFICE route on click', async () => {
+      const officeRow = assert(filesPage.shadowRoot.querySelector('#office'));
+
+      officeRow.click();
+      flush();
+      assertEquals(Router.getInstance().getCurrentRoute(), routes.OFFICE);
+    });
   });
 });

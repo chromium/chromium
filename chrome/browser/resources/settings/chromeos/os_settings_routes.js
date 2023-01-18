@@ -73,6 +73,7 @@ import {Route} from './router.js';
  *   MULTIDEVICE_FEATURES: !Route,
  *   NEARBY_SHARE: !Route,
  *   NETWORK_DETAIL: !Route,
+ *   OFFICE: !Route,
  *   ON_STARTUP: !Route,
  *   OS_ACCESSIBILITY: !Route,
  *   OS_LANGUAGES: !Route,

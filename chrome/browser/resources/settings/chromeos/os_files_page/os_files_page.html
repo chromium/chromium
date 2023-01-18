@@ -12,11 +12,26 @@
         label="$i18n{smbSharesTitle}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
+    <template is="dom-if" if="[[showOfficeSettings_]]">
+      <!-- TODO(b:254586358): Move label string to a resource file and i18n -->
+      <cr-link-row id="office" class="hr" on-click="onTapOffice_"
+          label="Office"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
   </div>
   <template is="dom-if" route-path="/smbShares">
     <os-settings-subpage page-title="$i18n{smbSharesTitle}">
       <settings-smb-shares-page prefs="[[prefs]]">
       </settings-smb-shares-page>
     </os-settings-subpage>
+  </template>
+  <template is="dom-if" if="[[showOfficeSettings_]]">
+    <template is="dom-if" route-path="/officeFiles">
+      <os-settings-subpage page-title="Office Files">
+        <settings-office-page prefs="{{prefs}}">
+        </settings-office-page>
+      </os-settings-subpage>
+    </template>
   </template>
 </os-settings-animated-pages>
