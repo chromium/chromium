@@ -22,6 +22,8 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resource
 
 import {getTemplate} from './add_items_dialog.html.js';
 
+const ITEMS_ADDED_EVENT_NAME = 'items-added';
+
 /**
  * `id` must unique.
  * `name` is the displayed name to the user.
@@ -206,11 +208,12 @@ class OsSettingsAddItemsDialogElement extends
    * @private
    */
   onActionButtonClick_() {
-    this.dispatchEvent(new CustomEvent('items-added', {
+    const event = new CustomEvent(ITEMS_ADDED_EVENT_NAME, {
       bubbles: true,
       composed: true,
       detail: this.itemIdsToAdd_,
-    }));
+    });
+    this.dispatchEvent(event);
     this.$.dialog.close();
   }
 
@@ -275,7 +278,8 @@ class OsSettingsAddItemsDialogElement extends
    */
   getSuggestedItems_() {
     return this.suggestedItemIds.map(id => this.itemIdsToItems_.get(id))
-        .filter(item => item !== undefined && !item.disabledByPolicy);
+        .filter(item => item !== undefined)
+        .filter(item => !item.disabledByPolicy);
   }
 
   /**
@@ -310,10 +314,10 @@ class OsSettingsAddItemsDialogElement extends
       if (!this.showSuggestedList_) {
         return;
       }
-      // Because #suggestedItemsList is not statically created (as it is
+      // Because #suggested-items-list is not statically created (as it is
       // within a <template is="dom-if">), we can't use this.$ here.
       const list = /** @type {!IronListElement|null} */ (
-          this.shadowRoot.getElementById('suggested-items-list'));
+          this.shadowRoot.querySelector('#suggested-items-list'));
       if (list === null) {
         return;
       }
@@ -330,7 +334,7 @@ class OsSettingsAddItemsDialogElement extends
         return;
       }
       const list = /** @type {!IronListElement|null} */ (
-          this.shadowRoot.getElementById('filtered-items-list'));
+          this.shadowRoot.querySelector('#filtered-items-list'));
       if (list === null) {
         return;
       }

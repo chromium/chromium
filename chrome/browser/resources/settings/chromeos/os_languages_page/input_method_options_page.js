@@ -19,6 +19,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../os_route.js';
+import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {Route, Router} from '../router.js';
@@ -26,6 +27,11 @@ import {Route, Router} from '../router.js';
 import {getTemplate} from './input_method_options_page.html.js';
 import {AUTOCORRECT_OPTION_MAP_OVERRIDE, generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
+
+/**
+ * The root path of input method options in Prefs.
+ */
+const PREFS_PATH = 'settings.language.input_method_specific_settings';
 
 /**
  * @constructor
@@ -89,17 +95,6 @@ class SettingsInputMethodOptionsPageElement extends
     };
   }
 
-  constructor() {
-    super();
-
-    /**
-     * The root path of input method options in Prefs.
-     * @const {string}
-     * @private
-     */
-    this.PREFS_PATH = 'settings.language.input_method_specific_settings';
-  }
-
   /**
    * RouteObserverBehavior
    * @param {!Route} route
@@ -109,30 +104,35 @@ class SettingsInputMethodOptionsPageElement extends
   currentRouteChanged(route, oldRoute) {
     if (route !== routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS) {
       this.id_ = '';
-      this.parentNode.pageTitle = '';
+      // During tests, the parent node is not a <os-settings-subpage>.
+      if (this.parentNode instanceof OsSettingsSubpageElement) {
+        this.parentNode.pageTitle = '';
+      }
       this.optionSections_ = [];
       return;
     }
 
     const queryParams = Router.getInstance().getQueryParameters();
     this.id_ = queryParams.get('id') || '';
-    this.parentNode.pageTitle =
-        this.languageHelper.getInputMethodDisplayName(this.id_);
-    assert(
-        this.parentNode.pageTitle !== '',
-        `Input method ID '${this.id_}' is invalid`);
+    const displayName = this.languageHelper.getInputMethodDisplayName(this.id_);
+    // During tests, the parent node is not a <os-settings-subpage>.
+    if (this.parentNode instanceof OsSettingsSubpageElement) {
+      this.parentNode.pageTitle = displayName;
+    }
+    assert(displayName !== '', `Input method ID '${this.id_}' is invalid`);
     this.engineId_ = getFirstPartyInputMethodEngineId(this.id_);
     this.populateOptionSections_();
   }
 
   onSubmenuButtonClick_(e) {
-    if (e.target.getAttribute('submenu-button-type') ===
+    const submenuButtonType = e.target.getAttribute('submenu-button-type');
+    if (submenuButtonType ===
         SubmenuButton.JAPANESE_CLEAR_PERSONALIZATION_DATA) {
       this.showClearPersonalizedData_ = true;
       return;
     }
-    console.error(`SubmenuButton with invalid type clicked : ${
-        e.target.getAttribute('submenu-button-type')}`);
+    console.error(
+        `SubmenuButton with invalid type clicked : ${submenuButtonType}`);
   }
 
   onClearPersonalizedDataClose_() {
@@ -156,10 +156,11 @@ class SettingsInputMethodOptionsPageElement extends
    */
   getMenuItems(name, value) {
     return getOptionMenuItems(name).map(menuItem => {
-      menuItem['selected'] = menuItem['value'] === value;
-      menuItem['label'] =
-          menuItem['name'] ? this.i18n(menuItem['name']) : menuItem['value'];
-      return menuItem;
+      return {
+        ...menuItem,
+        selected: menuItem.value === value,
+        label: menuItem.name ? this.i18n(menuItem.name) : menuItem.value,
+      };
     });
   }
 
@@ -172,7 +173,7 @@ class SettingsInputMethodOptionsPageElement extends
         this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
         loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
         loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
-    const inputMethodSpecificSettings = this.getPref(this.PREFS_PATH).value;
+    const inputMethodSpecificSettings = this.getPref(PREFS_PATH).value;
     // The settings for Japanese for both engine nacl_mozc_us and nacl_mozc_jp
     // types will be stored in nacl_mozc_us. See:
     // https://crsrc.org/c/chrome/browser/ash/input_method/input_method_settings.cc;drc=5b784205e8043fb7d1c11e3d80521e80704947ca;l=25
@@ -247,7 +248,7 @@ class SettingsInputMethodOptionsPageElement extends
     }
     const enabledByDefaultKey =
         PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT;
-    const prefBlob = this.getPref(this.PREFS_PATH).value;
+    const prefBlob = this.getPref(PREFS_PATH).value;
     const isAutocorrectDefaultEnabled =
         prefBlob?.[engineId]?.[enabledByDefaultKey];
     return !isAutocorrectDefaultEnabled ? {} : {
@@ -291,7 +292,7 @@ class SettingsInputMethodOptionsPageElement extends
       return true;
     }
     const menuItems = getOptionMenuItems(name);
-    return menuItems.find((item) => item.value === value);
+    return !!menuItems.find((item) => item.value === value);
   }
 
   /**
@@ -306,7 +307,7 @@ class SettingsInputMethodOptionsPageElement extends
     // of variable has changed, so we need to copy the current content into a
     // new variable.
     const updatedSettings = {};
-    Object.assign(updatedSettings, this.getPref(this.PREFS_PATH)['value']);
+    Object.assign(updatedSettings, this.getPref(PREFS_PATH)['value']);
 
     const engineId = this.getStorageEngineId_();
     if (updatedSettings[engineId] === undefined) {
@@ -321,7 +322,7 @@ class SettingsInputMethodOptionsPageElement extends
     }
     updatedSettings[engineId][optionName] = newValue;
 
-    this.setPrefValue(this.PREFS_PATH, updatedSettings);
+    this.setPrefValue(PREFS_PATH, updatedSettings);
   }
 
   /**

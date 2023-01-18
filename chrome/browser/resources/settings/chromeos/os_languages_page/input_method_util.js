@@ -461,20 +461,21 @@ export function generateOptions(
       isJapaneseSettingsEnabled);
   const engineSettings = inputMethodSettings[engineId];
   if (engineSettings) {
-    const pushedOptions = {};
+    const pushedOptions = new Map();
 
     engineSettings.forEach((settingType) => {
       const settings = Settings[settingType];
       for (const {title, optionNames} of settings) {
         if (optionNames) {
-          if (pushedOptions[title] === undefined) {
-            pushedOptions[title] = options.length;
+          const optionsIndex = pushedOptions.get(title);
+          if (optionsIndex === undefined) {
+            pushedOptions.set(title, options.length);
             options.push({
               title,
               optionNames: [...optionNames],
             });
           } else {
-            options[pushedOptions[title]].optionNames.push(...optionNames);
+            options[optionsIndex].optionNames.push(...optionNames);
           }
         }
       }

@@ -55,7 +55,6 @@ const ACCESSIBILITY_COMMON_IME_ID =
 
 /**
  * @typedef {{
- *   initialized: boolean,
  *   supportedLanguages: !Array<!chrome.languageSettingsPrivate.Language>,
  *   translateTarget: string,
  *   alwaysTranslateCodes: !Array<string>,
@@ -256,7 +255,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
      * @type {!ModelArgs}
      */
     const args = {
-      initialized: false,
       supportedLanguages: [],
       translateTarget: '',
       alwaysTranslateCodes: [],
@@ -316,7 +314,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
               prospectiveUILanguage || window.navigator.language;
         }));
 
-    Promise.all(promises).then(results => {
+    Promise.all(promises).then(() => {
       if (!this.isConnected) {
         // Return early if this element was detached from the DOM before
         // this async callback executes (can happen during testing).
@@ -757,7 +755,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
     const collectionNames =
         ['enabled', 'spellCheckOnLanguages', 'spellCheckOffLanguages'];
-    collectionNames.forEach(collectionName => {
+    for (const collectionName of collectionNames) {
       this.languages[collectionName].forEach((languageState, index) => {
         const status = statusMap.get(languageState.language.code);
         if (!status) {
@@ -778,7 +776,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
           this.set(failureCountKey, 0);
         }
       });
-    });
+    }
   }
 
   /**
@@ -1145,10 +1143,11 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         if (!this.supportedLanguageMap_.has(languageCode)) {
           continue;
         }
-        if (!this.languageInputMethods_.has(languageCode)) {
+        const inputMethods = this.languageInputMethods_.get(languageCode);
+        if (inputMethods === undefined) {
           this.languageInputMethods_.set(languageCode, [inputMethod]);
         } else {
-          this.languageInputMethods_.get(languageCode).push(inputMethod);
+          inputMethods.push(inputMethod);
         }
       }
     }
@@ -1173,10 +1172,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     // (Accessibility Common) input method.
     return enabledInputMethodIds
         .map(id => this.supportedInputMethodMap_.get(id))
-        .filter(function(inputMethod) {
-          return !!inputMethod &&
-              inputMethod.id !== ACCESSIBILITY_COMMON_IME_ID;
-        });
+        .filter(inputMethod => !!inputMethod)
+        .filter(inputMethod => inputMethod.id !== ACCESSIBILITY_COMMON_IME_ID);
   }
 
   /** @private */

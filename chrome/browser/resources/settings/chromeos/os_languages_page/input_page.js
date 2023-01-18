@@ -518,8 +518,10 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
               a.language.displayName.localeCompare(b.language.displayName));
       return languages;
     }
+    /** @type {!Array<!LanguageState|!SpellCheckLanguageState>} */
+    const enabledLanguages = this.languages.enabled;
     const combinedLanguages =
-        this.languages.enabled.concat(this.languages.spellCheckOnLanguages);
+        enabledLanguages.concat(this.languages.spellCheckOnLanguages);
     const supportedSpellcheckLanguagesSet = new Set();
     const supportedSpellcheckLanguages = [];
 
@@ -627,7 +629,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
    */
   isEnableSpellcheckingDisabled_() {
     return !this.languageSettingsV2Update2Enabled_ &&
-        (this.spellCheckLanguages_ && this.spellCheckLanguages_.length === 0);
+        (!!this.spellCheckLanguages_ && this.spellCheckLanguages_.length === 0);
   }
 
   /**
