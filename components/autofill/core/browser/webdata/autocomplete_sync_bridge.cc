@@ -221,9 +221,7 @@ class SyncDifferenceTracker {
                               metadata_change_list.get());
       }
     }
-    return static_cast<syncer::SyncMetadataStoreChangeList*>(
-               metadata_change_list.get())
-        ->TakeError();
+    return change_processor->GetError();
   }
 
  private:

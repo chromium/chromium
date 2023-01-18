@@ -691,9 +691,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
     web_data_backend_->NotifyOfMultipleAutofillChanges();
   }
 
-  return static_cast<syncer::SyncMetadataStoreChangeList*>(
-             metadata_change_list.get())
-      ->TakeError();
+  return change_processor()->GetError();
 }
 
 template <class DataType>

@@ -180,10 +180,7 @@ absl::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // All metadata changes have been already written, return early for an error.
-  absl::optional<syncer::ModelError> error =
-      static_cast<syncer::SyncMetadataStoreChangeList*>(
-          metadata_change_list.get())
-          ->TakeError();
+  absl::optional<syncer::ModelError> error = change_processor()->GetError();
   if (error) {
     return error;
   }

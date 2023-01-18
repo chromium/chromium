@@ -90,10 +90,7 @@ absl::optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // All metadata changes have been already written, return early for an error.
-  absl::optional<syncer::ModelError> error =
-      static_cast<syncer::SyncMetadataStoreChangeList*>(
-          metadata_change_list.get())
-          ->TakeError();
+  absl::optional<syncer::ModelError> error = change_processor()->GetError();
   if (error) {
     return error;
   }

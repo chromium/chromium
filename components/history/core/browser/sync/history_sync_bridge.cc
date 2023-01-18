@@ -591,12 +591,8 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
 
   id_remapper.RemapIDs();
 
-  // `metadata_change_list` must have been created via
-  // CreateMetadataChangeList(), so downcasting is safe.
   absl::optional<syncer::ModelError> metadata_error =
-      static_cast<syncer::SyncMetadataStoreChangeList*>(
-          metadata_change_list.get())
-          ->TakeError();
+      change_processor()->GetError();
   if (metadata_error) {
     RecordDatabaseError(
         SyncHistoryDatabaseError::kApplySyncChangesWriteMetadata);

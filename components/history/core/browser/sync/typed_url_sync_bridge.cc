@@ -193,9 +193,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
   }
 
   absl::optional<syncer::ModelError> metadata_error =
-      static_cast<syncer::SyncMetadataStoreChangeList*>(
-          metadata_change_list.get())
-          ->TakeError();
+      change_processor()->GetError();
   if (metadata_error) {
     RecordDatabaseError(SyncTypedUrlDatabaseError::kMergeSyncDataWriteMetadata);
   }
@@ -276,9 +274,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::ApplySyncChanges(
   }
 
   absl::optional<syncer::ModelError> metadata_error =
-      static_cast<syncer::SyncMetadataStoreChangeList*>(
-          metadata_change_list.get())
-          ->TakeError();
+      change_processor()->GetError();
   if (metadata_error) {
     RecordDatabaseError(
         SyncTypedUrlDatabaseError::kApplySyncChangesWriteMetadata);

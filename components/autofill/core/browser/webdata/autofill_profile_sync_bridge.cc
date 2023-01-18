@@ -263,9 +263,7 @@ absl::optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(
     change_processor()->Delete(storage_key, metadata_change_list.get());
   }
 
-  return static_cast<syncer::SyncMetadataStoreChangeList*>(
-             metadata_change_list.get())
-      ->TakeError();
+  return change_processor()->GetError();
 }
 
 void AutofillProfileSyncBridge::LoadMetadata() {
