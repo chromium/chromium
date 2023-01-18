@@ -40,6 +40,7 @@ action("compile_src") {
   inputs = [
              "//third_party/node/node_modules/typescript/lib/tsc.js",
              "//third_party/node/node.py",
+             "//third_party/node/node_modules.tar.gz.sha1",
              "scripts/tsc_ignore_errors.py",
 
              # If the only change is that a file is deleted, we still need to
