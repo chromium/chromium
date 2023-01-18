@@ -520,7 +520,7 @@ TEST_F(SyncAuthManagerTest, FetchesNewAccessTokenWithBackoffOnServerError) {
             GoogleServiceAuthError::AuthErrorNone());
 }
 
-TEST_F(SyncAuthManagerTest, ExposesServerError) {
+TEST_F(SyncAuthManagerTest, DoesNotExposeServerError) {
   CoreAccountId account_id =
       identity_env()
           ->MakePrimaryAccountAvailable("test@email.com",
@@ -539,11 +539,9 @@ TEST_F(SyncAuthManagerTest, ExposesServerError) {
   // Now a server error happens.
   auth_manager->ConnectionStatusChanged(syncer::CONNECTION_SERVER_ERROR);
 
-  // The error should be reported.
-  EXPECT_NE(auth_manager->GetLastAuthError(),
+  // The error should not be reported as it is transient.
+  EXPECT_EQ(auth_manager->GetLastAuthError(),
             GoogleServiceAuthError::AuthErrorNone());
-  // But the access token should still be there - this might just be some
-  // non-auth-related problem with the server.
   EXPECT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 }
 
@@ -563,17 +561,23 @@ TEST_F(SyncAuthManagerTest, ClearsServerErrorOnSyncDisable) {
       "access_token", base::Time::Now() + base::Hours(1));
   ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
 
-  // A server error happens.
-  auth_manager->ConnectionStatusChanged(syncer::CONNECTION_SERVER_ERROR);
+  // The server returns an auth error.
+  GoogleServiceAuthError auth_error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+  auth_manager->ConnectionStatusChanged(syncer::CONNECTION_AUTH_ERROR);
+  identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      auth_error);
+
   ASSERT_NE(auth_manager->GetLastAuthError(),
             GoogleServiceAuthError::AuthErrorNone());
 
   // Now Sync gets turned off, e.g. because the user disabled it.
   auth_manager->ConnectionClosed();
 
-  // This should have cleared the auth error, because it was due to a server
-  // error which is now not meaningful anymore.
-  EXPECT_EQ(auth_manager->GetLastAuthError(),
+  // This should not have cleared the auth error.
+  EXPECT_NE(auth_manager->GetLastAuthError(),
             GoogleServiceAuthError::AuthErrorNone());
 }
 

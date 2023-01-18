@@ -16,8 +16,8 @@ class SyncService;
 // histograms, entries must not be removed or reordered.
 enum class UploadState {
   // Syncing is enabled in principle, but the sync service is not actually
-  // active yet. Either it's still initializing (in which case we e.g. don't
-  // know about any auth errors yet), or it's in a transient auth error state.
+  // active yet. This is because initialization hasn't completed and hence the
+  // auth error state isn't known yet.
   INITIALIZING,
   // We are not syncing to Google, and the caller should assume that we do not
   // have consent to do so. This can have a number of reasons, e.g.: sync as a

@@ -8,6 +8,7 @@
 
 #include <ostream>
 
+#include "base/check_is_test.h"
 #include "base/metrics/histogram.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -93,8 +94,10 @@ HttpResponse HttpResponse::ForHttpStatusCode(int http_status_code) {
 
 // static
 HttpResponse HttpResponse::ForSuccess() {
+  CHECK_IS_TEST();
   HttpResponse response;
   response.server_status = SERVER_CONNECTION_OK;
+  response.http_status_code = net::HTTP_OK;
   return response;
 }
 

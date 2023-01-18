@@ -44,6 +44,9 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
               SyncService::TransportState::PAUSED);
   }
 
+  // SyncService never reports transient errors.
+  DCHECK(!sync_service->GetAuthError().IsTransientError());
+
   switch (sync_service->GetTransportState()) {
     case SyncService::TransportState::DISABLED:
     case SyncService::TransportState::PAUSED:
@@ -60,9 +63,6 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
       // something must have gone wrong with that data type.
       if (!sync_service->GetActiveDataTypes().Has(type)) {
         return UploadState::NOT_ACTIVE;
-      }
-      if (sync_service->GetAuthError().IsTransientError()) {
-        return UploadState::INITIALIZING;
       }
       // TODO(crbug.com/831579): We only know if the refresh token is actually
       // valid (no auth error) after we've tried talking to the Sync server.

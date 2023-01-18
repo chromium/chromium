@@ -112,15 +112,6 @@ SyncAccountInfo SyncAuthManager::GetActiveAccountInfo() const {
 }
 
 GoogleServiceAuthError SyncAuthManager::GetLastAuthError() const {
-  // TODO(crbug.com/921553): Which error should take precedence?
-  if (partial_token_status_.connection_status == CONNECTION_SERVER_ERROR) {
-    // TODO(crbug.com/921553): Verify whether CONNECTION_FAILED is really an
-    // appropriate auth error here; maybe SERVICE_ERROR would be better? Or
-    // maybe we shouldn't expose this case as an auth error at all?
-    return GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
-  }
-  // |last_auth_error_| is never a transient error, but note that the
-  // CONNECTION_FAILED case returned above is.
   DCHECK(!last_auth_error_.IsTransientError());
   return last_auth_error_;
 }
@@ -134,7 +125,8 @@ base::Time SyncAuthManager::GetLastAuthErrorTime() const {
 }
 
 bool SyncAuthManager::IsSyncPaused() const {
-  return GetLastAuthError().IsPersistentError();
+  DCHECK(!GetLastAuthError().IsTransientError());
+  return GetLastAuthError() != GoogleServiceAuthError::AuthErrorNone();
 }
 
 SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
@@ -232,9 +224,7 @@ void SyncAuthManager::ConnectionStatusChanged(ConnectionStatus status) {
       }
       break;
     case CONNECTION_SERVER_ERROR:
-      // Note: This case will be exposed as an auth error, due to the
-      // |connection_status| in |partial_token_status_|.
-      DCHECK(GetLastAuthError().IsTransientError());
+      // Not an auth error, nothing to do.
       break;
     case CONNECTION_NOT_ATTEMPTED:
       // The connection status should never change to "not attempted".

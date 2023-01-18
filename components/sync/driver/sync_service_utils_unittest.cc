@@ -145,12 +145,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
   ASSERT_EQ(UploadState::ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 
-  // On a transient error, uploading goes back to INITIALIZING.
-  service.SetTransientAuthError();
-
-  EXPECT_EQ(UploadState::INITIALIZING,
-            GetUploadToGoogleState(&service, syncer::BOOKMARKS));
-
   // On a persistent error, uploading is not considered active anymore (even
   // though Sync may still be considered active).
   service.SetPersistentAuthErrorOtherThanWebSignout();
