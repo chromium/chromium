@@ -243,6 +243,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.CommitResponseForUnknownEntity" enum="SyncModelTypes"
+    expires_after="2023-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Emitted when a Commit entity response is received for an unknown entity
+    (i.e. for a client tag hash that doesn't correspond to a tracked entity).
+  </summary>
+</histogram>
+
 <histogram name="Sync.CommitResponse{SyncModelType}" enum="SyncerErrorValues"
     expires_after="2023-04-10">
   <owner>rushans@google.com</owner>
