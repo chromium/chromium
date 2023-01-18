@@ -108898,6 +108898,11 @@ Called by update_scheduler_enums.py.-->
   <int value="8" label="Reject leaving ESS"/>
 </enum>
 
+<enum name="WiFiCiscoAdaptiveFTSupport">
+  <int value="0" label="Does not support Adaptive FT"/>
+  <int value="1" label="Supports Adaptive FT"/>
+</enum>
+
 <enum name="WiFiConnectionStatusAfterWake">
   <int value="0" label="Connected (Wake On WiFi enabled)"/>
   <int value="1" label="Not connected (Wake On WiFi enabled)"/>

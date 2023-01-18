@@ -2689,6 +2689,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.WiFi.CiscoAdaptiveFTSupport"
+    enum="WiFiCiscoAdaptiveFTSupport" expires_after="2023-12-01">
+  <owner>matthewmwang@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS network metric sampling the number of Wireless Access Points that
+    support Cisco's Adaptive FT feature, sampled on successful connections to an
+    AP.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.WiFi.ClientDisconnectReason"
     enum="WiFiReasonCode" expires_after="2023-06-18">
   <owner>norvez@chromium.org</owner>
