@@ -297,8 +297,8 @@ void ViewTransition::SkipTransitionInternal(
     }
 
     // If we haven't run the dom change callback yet, schedule a task to do so.
-    // The finished promise will propagate the result of the domUpdated promise
-    // when this callback runs.
+    // The finished promise will propagate the result of the updateCallbackDone
+    // promise when this callback runs.
     if (static_cast<int>(state_) <
         static_cast<int>(State::kDOMCallbackRunning)) {
       DCHECK(!dom_callback_succeeded_);
@@ -311,7 +311,7 @@ void ViewTransition::SkipTransitionInternal(
     } else if (static_cast<int>(state_) >=
                static_cast<int>(State::kDOMCallbackFinished)) {
       // If the DOM callback finished and there was a failure then the finished
-      // promise should have been rejected with domUpdated.
+      // promise should have been rejected with updateCallbackDone.
       if (!dom_callback_succeeded_) {
         DCHECK_EQ(script_bound_state_->finished_promise_property->GetState(),
                   PromiseProperty::State::kRejected);
@@ -364,7 +364,7 @@ ScriptPromise ViewTransition::ready() const {
       script_bound_state_->script_state->World());
 }
 
-ScriptPromise ViewTransition::domUpdated() const {
+ScriptPromise ViewTransition::updateCallbackDone() const {
   DCHECK(script_bound_state_);
   return script_bound_state_->dom_updated_promise_property->Promise(
       script_bound_state_->script_state->World());
@@ -765,13 +765,13 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success,
   } else {
     script_bound_state_->dom_updated_promise_property->Reject(value.V8Value());
 
-    // The ready promise rejects with the value of domUpdated callback if it's
-    // skipped because of an error in the callback.
+    // The ready promise rejects with the value of updateCallbackDone callback
+    // if it's skipped because of an error in the callback.
     if (!IsDone())
       script_bound_state_->ready_promise_property->Reject(value.V8Value());
 
     // If the domUpdate callback fails the transition is skipped. The finish
-    // promise should mirror the result of domUpdated.
+    // promise should mirror the result of updateCallbackDone.
     script_bound_state_->finished_promise_property->Reject(value.V8Value());
   }
 

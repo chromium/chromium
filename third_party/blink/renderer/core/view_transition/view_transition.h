@@ -89,7 +89,7 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   void skipTransition();
   ScriptPromise finished() const;
   ScriptPromise ready() const;
-  ScriptPromise domUpdated() const;
+  ScriptPromise updateCallbackDone() const;
 
   // GC functionality.
   void Trace(Visitor* visitor) const override;

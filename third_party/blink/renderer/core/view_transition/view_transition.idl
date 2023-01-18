@@ -26,5 +26,5 @@
   // The following promise indicates that the callback given to the document
   // has successfully run. Note that if the callback promise rejects, then this
   // promise is rejected as well.
-  readonly attribute Promise<void> domUpdated;
+  readonly attribute Promise<void> updateCallbackDone;
 };
