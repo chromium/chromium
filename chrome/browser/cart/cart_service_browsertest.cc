@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(CartServiceBrowserDiscountTest,
   added_discount->set_rule_id("fake_id");
   added_discount->set_percent_off(5);
   added_discount->set_raw_merchant_offer_id("fake_offer_id");
-  service_->AddCart(kFakeMerchantA, absl::nullopt, merchant_proto);
+  service_->AddCart(GURL(kFakeMerchantURLA), absl::nullopt, merchant_proto);
 
   GURL foo_url("https://www.foo.com/cart.html");
   GURL bar_url("https://www.bar.com/cart.html");

@@ -773,12 +773,13 @@ IN_PROC_BROWSER_TEST_F(CommerceHintNoRateControlTest, DISABLED_CartPriority) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
+  GURL example_url = GURL("https://www.guitarcenter.com/");
 #if !BUILDFLAG(IS_ANDROID)
-  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
+  service_->AddCart(example_url, absl::nullopt, kMockExampleProto);
   WaitForCartCount(kExpectedExampleFallbackCart);
 #endif
 
-  NavigateToURL("https://www.guitarcenter.com/");
+  NavigateToURL(example_url.spec());
   NavigateToURL("https://www.guitarcenter.com/123/checkout/456");
   // URL is checked against checkout twice.
   WaitForUmaCount("Commerce.Carts.VisitCheckout", 2);
@@ -788,12 +789,13 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
+  GURL amazon_url = GURL("https://www.amazon.com/");
 #if !BUILDFLAG(IS_ANDROID)
-  service_->AddCart(kMockAmazon, absl::nullopt, kMockAmazonProto);
+  service_->AddCart(amazon_url, absl::nullopt, kMockAmazonProto);
   WaitForCartCount(kExpectedAmazon);
 #endif
 
-  NavigateToURL("http://amazon.com/");
+  NavigateToURL(amazon_url.spec());
   NavigateToURL(
       "http://amazon.com/gp/buy/spc/handlers/static-submit-decoupled.html");
   WaitForUmaCount("Commerce.Carts.PurchaseByURL", 1);
@@ -803,8 +805,9 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
+  GURL example_url = GURL("https://www.guitarcenter.com/");
 #if !BUILDFLAG(IS_ANDROID)
-  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
+  service_->AddCart(example_url, absl::nullopt, kMockExampleProto);
   WaitForCartCount(kExpectedExampleFallbackCart);
 #endif
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -27,6 +28,8 @@
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
+#include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -130,7 +133,9 @@ CartService::CartService(Profile* profile)
       discount_link_fetcher_(std::make_unique<CartDiscountLinkFetcher>()),
       metrics_tracker_(std::make_unique<CartMetricsTracker>(
           chrome::FindTabbedBrowser(profile, false))),
-      coupon_service_(CouponServiceFactory::GetForProfile(profile)) {
+      coupon_service_(CouponServiceFactory::GetForProfile(profile)),
+      shopping_service_(
+          commerce::ShoppingServiceFactory::GetForBrowserContext(profile)) {
   history_service_observation_.Observe(HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS));
   coupon_service_->MaybeFeatureStatusChanged(IsCartAndDiscountEnabled());
@@ -203,12 +208,13 @@ void CartService::LoadAllActiveCarts(CartDB::LoadCallback callback) {
                                         std::move(callback)));
 }
 
-void CartService::AddCart(const std::string& domain,
+void CartService::AddCart(const GURL& navigation_url,
                           const absl::optional<GURL>& cart_url,
                           const cart_db::ChromeCartContentProto& proto) {
-  cart_db_->LoadCart(domain, base::BindOnce(&CartService::OnAddCart,
-                                            weak_ptr_factory_.GetWeakPtr(),
-                                            domain, cart_url, proto));
+  cart_db_->LoadCart(
+      eTLDPlusOne(navigation_url),
+      base::BindOnce(&CartService::OnAddCart, weak_ptr_factory_.GetWeakPtr(),
+                     navigation_url, cart_url, proto));
 }
 
 void CartService::DeleteCart(const GURL& url, bool ignore_remove_status) {
@@ -908,7 +914,7 @@ void CartService::SetCartRemovedStatus(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CartService::OnAddCart(const std::string& domain,
+void CartService::OnAddCart(const GURL& navigation_url,
                             const absl::optional<GURL>& cart_url,
                             cart_db::ChromeCartContentProto proto,
                             bool success,
@@ -918,6 +924,7 @@ void CartService::OnAddCart(const std::string& domain,
   }
   // Restore module visibility anytime a cart-related action happens.
   RestoreHidden();
+  std::string domain = eTLDPlusOne(navigation_url);
   absl::optional<std::string> merchant_name_from_component =
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
           .GetMerchantName(domain);
@@ -961,7 +968,24 @@ void CartService::OnAddCart(const std::string& domain,
     return;
   }
 
+  bool has_product_image = proto.product_image_urls().size();
+  absl::optional<GURL> cached_image_url;
+  // When this cart addition is caused by AddToCart detection and there
+  // is no product image detected on the renderer side, try to get cached
+  // product image from ShoppingService using navigation_url which could be PDP
+  // URL.
+  if (!has_product_image && commerce::kAddToCartProductImage.Get()) {
+    absl::optional<commerce::ProductInfo> info =
+        shopping_service_->GetAvailableProductInfoForUrl(navigation_url);
+    if (info.has_value() && info.value().image_url.is_valid()) {
+      cached_image_url = info.value().image_url;
+    }
+  }
+
   if (proto_pairs.size() == 0) {
+    if (cached_image_url.has_value()) {
+      proto.add_product_image_urls(cached_image_url.value().spec());
+    }
     cart_db_->AddCart(domain, std::move(proto),
                       base::BindOnce(&CartService::OnOperationFinished,
                                      weak_ptr_factory_.GetWeakPtr()));
@@ -974,14 +998,12 @@ void CartService::OnAddCart(const std::string& domain,
     return;
   }
 
-  bool has_product_image = false;
   // If the new proto has product images, we can copy the product images to the
   // existing proto without worrying about overwriting as it reflects the latest
   // state.
-  if (proto.product_image_urls().size()) {
+  if (has_product_image) {
     *(existing_proto.mutable_product_image_urls()) =
         std::move(proto.product_image_urls());
-    has_product_image = true;
   }
   existing_proto.set_is_hidden(false);
   existing_proto.set_timestamp(proto.timestamp());
@@ -1020,6 +1042,18 @@ void CartService::OnAddCart(const std::string& domain,
           std::move(proto.product_infos());
     }
   }
+
+  // Add the cached product image from ShoppingService to the existing proto if
+  // it's not already included.
+  if (!has_product_image && cached_image_url.has_value()) {
+    std::string url_string = cached_image_url.value().spec();
+    auto existing_images = existing_proto.product_image_urls();
+    if (std::find(existing_images.begin(), existing_images.end(), url_string) ==
+        existing_images.end()) {
+      existing_proto.add_product_image_urls(url_string);
+    }
+  }
+
   cart_db_->AddCart(domain, std::move(existing_proto),
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));

@@ -33,6 +33,10 @@
 class DiscountURLLoader;
 class FetchDiscountWorker;
 
+namespace commerce {
+class ShoppingService;
+}
+
 // Service to maintain and read/write data for chrome cart module.
 // TODO(crbug.com/1253633) Make this BrowserContext-based and get rid of Profile
 // usage so that we can modularize this.
@@ -61,7 +65,7 @@ class CartService : public history::HistoryServiceObserver,
   // Load all active carts in this service.
   void LoadAllActiveCarts(CartDB::LoadCallback callback);
   // Add a cart to the cart service.
-  void AddCart(const std::string& domain,
+  void AddCart(const GURL& navigation_url,
                const absl::optional<GURL>& cart_url,
                const cart_db::ChromeCartContentProto& proto);
   // Delete the cart from the same domain as |url| in the cart service. When not
@@ -195,7 +199,7 @@ class CartService : public history::HistoryServiceObserver,
                             bool success,
                             std::vector<CartDB::KeyAndValue> proto_pairs);
   // A callback to handle adding a cart.
-  void OnAddCart(const std::string& domain,
+  void OnAddCart(const GURL& navigation_url,
                  const absl::optional<GURL>& cart_url,
                  cart_db::ChromeCartContentProto proto,
                  bool success,
@@ -256,6 +260,7 @@ class CartService : public history::HistoryServiceObserver,
   std::unique_ptr<DiscountURLLoader> discount_url_loader_;
   raw_ptr<CouponService> coupon_service_;
   PrefChangeRegistrar pref_change_registrar_;
+  raw_ptr<commerce::ShoppingService> shopping_service_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 

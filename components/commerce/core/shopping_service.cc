@@ -381,7 +381,8 @@ void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
 }
 
 bool ShoppingService::IsProductInfoApiEnabled() {
-  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList);
+  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList) ||
+                      commerce::kAddToCartProductImage.Get();
   bool region_launched =
       base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
       IsEnabledForCountryAndLocale(country_on_startup_, locale_on_startup_);

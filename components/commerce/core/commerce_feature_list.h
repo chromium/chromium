@@ -223,6 +223,9 @@ constexpr base::FeatureParam<base::TimeDelta> kAddToCartButtonActiveTime{
     &kChromeCartDomBasedHeuristics, "add-to-cart-button-active-time",
     base::Seconds(5)};
 
+constexpr base::FeatureParam<bool> kAddToCartProductImage{
+    &kChromeCartDomBasedHeuristics, "add-to-cart-product-image", false};
+
 constexpr base::FeatureParam<std::string> kSkipHeuristicsDomainPattern{
     &kChromeCartDomBasedHeuristics, "skip-heuristics-domain-pattern",
     // This regex does not match anything.

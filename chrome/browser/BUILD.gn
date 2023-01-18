@@ -4401,6 +4401,7 @@ static_library("browser") {
       "//components/app_constants",
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:coupon_db_content_proto",
+      "//components/commerce/core:proto",
       "//components/commerce/core:public",
       "//components/commerce/core/mojom:mojo_bindings",
       "//components/constrained_window",
