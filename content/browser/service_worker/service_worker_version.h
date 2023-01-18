@@ -952,11 +952,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
                                  GetClientCallback callback,
                                  bool success);
 
-  // When ServiceWorkerTerminationOnNoControlle is enabled and there's no
-  // controllee, update the idle delay if the worker is running and we don't
-  // have to terminate the worker ASAP (e.g. for activation).
-  void MaybeUpdateIdleDelayForTerminationOnNoControllee(base::TimeDelta delay);
-
   const int64_t version_id_;
   const int64_t registration_id_;
   const GURL script_url_;
@@ -1186,12 +1181,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // the browser process beforehand. This is valid only when it's a new worker
   // that is going to be registered from now on.
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params_;
-
-  // Callback to stop service worker small seconds after all controllees are
-  // gone. This callback can be canceled when the service worker starts to
-  // control another client and we know the worker needs to be used more.
-  // Used only when ServiceWorkerTerminationOnNoControllee is on.
-  base::CancelableOnceClosure stop_on_no_controllee_callback_;
 
   mojo::PendingReceiver<blink::mojom::ReportingObserver>
       reporting_observer_receiver_;
