@@ -360,4 +360,13 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_POINTER_COMPRESSION() 0
 #endif
 
+// PA_CONFIG(IS_NONCLANG_MSVC): mimics the compound condition used by
+// Chromium's `//base/compiler_specific.h` to detect true (non-Clang)
+// MSVC.
+#if defined(COMPILER_MSVC) && !defined(__clang__)
+#define PA_CONFIG_IS_NONCLANG_MSVC() 1
+#else
+#define PA_CONFIG_IS_NONCLANG_MSVC() 0
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

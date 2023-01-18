@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/random.h"
@@ -28,7 +29,7 @@ namespace partition_alloc::internal {
 // This is a `memset` that resists being optimized away. Adapted from
 // boringssl/src/crypto/mem.c. (Copying and pasting is bad, but //base can't
 // depend on //third_party, and this is small enough.)
-#if defined(COMPILER_MSVC) && !defined(__clang__)
+#if PA_CONFIG(IS_NONCLANG_MSVC)
 // MSVC only supports inline assembly on x86. This preprocessor directive
 // is intended to be a replacement for the same.
 //
@@ -39,14 +40,14 @@ namespace partition_alloc::internal {
 PA_ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
   memset(ptr, value, size);
 
-#if !defined(COMPILER_MSVC) || defined(__clang__)
+#if !PA_CONFIG(IS_NONCLANG_MSVC)
   // As best as we can tell, this is sufficient to break any optimisations that
   // might try to eliminate "superfluous" memsets. If there's an easy way to
   // detect memset_s, it would be better to use that.
   __asm__ __volatile__("" : : "r"(ptr) : "memory");
-#endif  // !defined(COMPILER_MSVC) || defined(__clang__)
+#endif  // !PA_CONFIG(IS_NONCLANG_MSVC)
 }
-#if defined(COMPILER_MSVC) && !defined(__clang__)
+#if PA_CONFIG(IS_NONCLANG_MSVC)
 #pragma optimize("", on)
 #endif
 

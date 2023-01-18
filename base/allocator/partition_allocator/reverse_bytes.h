@@ -12,28 +12,29 @@
 
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
 
 constexpr uint32_t ReverseFourBytes(uint32_t value) {
-#if defined(COMPILER_MSVC) && !defined(__clang__)
+#if PA_CONFIG(IS_NONCLANG_MSVC)
   return value >> 24 | (value >> 8 & 0xff00) | (value & 0xff00) << 8 |
          value << 24;
 #else
   return __builtin_bswap32(value);
-#endif  // defined(COMPILER_MSVC) && !defined(__clang__)
+#endif  // PA_CONFIG(IS_NONCLANG_MSVC)
 }
 
 constexpr uint64_t ReverseEightBytes(uint64_t value) {
-#if defined(COMPILER_MSVC) && !defined(__clang__)
+#if PA_CONFIG(IS_NONCLANG_MSVC)
   return value >> 56 | (value >> 40 & 0xff00) | (value >> 24 & 0xff0000) |
          (value >> 8 & 0xff000000) | (value & 0xff000000) << 8 |
          (value & 0xff0000) << 24 | (value & 0xff00) << 40 |
          (value & 0xff) << 56;
 #else
   return __builtin_bswap64(value);
-#endif  // defined(COMPILER_MSVC) && !defined(__clang__)
+#endif  // PA_CONFIG(IS_NONCLANG_MSVC)
 }
 
 constexpr uintptr_t ReverseBytes(uintptr_t value) {
