@@ -69,13 +69,14 @@ class MediaRouterDialogControllerViews
   // MediaRouterUIService::Observer:
   void OnServiceDisabled() override;
 
-  // Initializes |ui_|.
+  // Initializes and destroys |ui_| respectively.
   void InitializeMediaRouterUI();
+  void DestroyMediaRouterUI();
 
   // If there exists a media button, show the GMC dialog anchored to the media
   // button. Otherwise, show the dialog anchored to the top center of the web
   // contents.
-  void ShowGlobalMeidaControlsDialog(
+  void ShowGlobalMediaControlsDialog(
       std::unique_ptr<StartPresentationContext> context);
 
   // Returns the media button from the browser that initiates the request to

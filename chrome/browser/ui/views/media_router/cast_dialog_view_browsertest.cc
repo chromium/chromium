@@ -70,6 +70,7 @@ class MockCastDialogController : public media_router::CastDialogController {
       override {
     return nullptr;
   }
+  void RegisterDestructor(base::OnceClosure destructor) override {}
 };
 
 }  // namespace

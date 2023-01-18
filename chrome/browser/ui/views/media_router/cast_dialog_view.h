@@ -66,7 +66,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // CastDialogController::Observer:
   void OnModelUpdated(const CastDialogModel& model) override;
-  void OnControllerInvalidated() override;
+  void OnControllerDestroying() override;
 
   // views::BubbleDialogDelegateView:
   void OnPaint(gfx::Canvas* canvas) override;

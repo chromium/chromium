@@ -125,9 +125,9 @@ void CastDialogView::OnModelUpdated(const CastDialogModel& model) {
     observer.OnDialogModelUpdated(this);
 }
 
-void CastDialogView::OnControllerInvalidated() {
+void CastDialogView::OnControllerDestroying() {
   controller_ = nullptr;
-  // We don't destroy the dialog here because if the invalidation was caused by
+  // We don't destroy the dialog here because if the destruction was caused by
   // activating the toolbar icon in order to close the dialog, then it would
   // cause the dialog to immediately open again.
 }

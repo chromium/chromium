@@ -80,11 +80,11 @@ class MockControllerObserver : public CastDialogController::Observer {
   }
 
   MOCK_METHOD1(OnModelUpdated, void(const CastDialogModel& model));
-  void OnControllerInvalidated() override {
+  void OnControllerDestroying() override {
     controller_ = nullptr;
-    OnControllerInvalidatedInternal();
+    OnControllerDestroyingInternal();
   }
-  MOCK_METHOD0(OnControllerInvalidatedInternal, void());
+  MOCK_METHOD0(OnControllerDestroyingInternal, void());
 
  private:
   raw_ptr<CastDialogController> controller_ = nullptr;
@@ -295,7 +295,7 @@ TEST_F(MediaRouterViewsUITest, NotifyObserver) {
           })));
   NotifyUiOnRoutesUpdated({route});
 
-  EXPECT_CALL(observer, OnControllerInvalidatedInternal());
+  EXPECT_CALL(observer, OnControllerDestroyingInternal());
   ui_.reset();
 }
 

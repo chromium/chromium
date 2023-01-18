@@ -100,8 +100,10 @@ class MediaRouterUI : public CastDialogController,
   void StopCasting(const std::string& route_id) override;
   void ClearIssue(const Issue::Id& issue_id) override;
   // Note that |MediaRouterUI| should not be used after |TakeMediaRouteStarter|
-  // is called.
+  // is called. To enforce that, |TakeMediaRouteStarter| calls the destructor
+  // callback given to |RegisterDestructor| to destroy itself.
   std::unique_ptr<MediaRouteStarter> TakeMediaRouteStarter() override;
+  void RegisterDestructor(base::OnceClosure destructor) override;
 
   // Requests a route be created from the source mapped to
   // |cast_mode|, to the sink given by |sink_id|.
@@ -336,6 +338,8 @@ class MediaRouterUI : public CastDialogController,
 
   raw_ptr<MediaRouter> router_;
   raw_ptr<LoggerImpl> logger_;
+
+  base::OnceClosure destructor_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   // Therefore |weak_factory_| must be placed at the end.

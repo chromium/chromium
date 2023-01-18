@@ -51,7 +51,7 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
         std::move(context));
   }
 
-  ShowGlobalMeidaControlsDialog(std::move(context));
+  ShowGlobalMediaControlsDialog(std::move(context));
   return true;
 }
 
@@ -155,9 +155,20 @@ void MediaRouterDialogControllerViews::InitializeMediaRouterUI() {
                   initiator(), std::move(start_presentation_context_))
             : MediaRouterUI::CreateWithDefaultMediaSourceAndMirroring(
                   initiator());
+  ui_->RegisterDestructor(
+      base::BindOnce(&MediaRouterDialogControllerViews::DestroyMediaRouterUI,
+                     // Safe to use base::Unretained here: the callback being
+                     // bound is held by the MediaRouterUI we are creating and
+                     // owning, and ownership of |ui_| is never transferred
+                     // away from this object.
+                     base::Unretained(this)));
 }
 
-void MediaRouterDialogControllerViews::ShowGlobalMeidaControlsDialog(
+void MediaRouterDialogControllerViews::DestroyMediaRouterUI() {
+  ui_.reset();
+}
+
+void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog(
     std::unique_ptr<StartPresentationContext> context) {
   // Show the WebContents requesting a dialog.
   initiator()->GetDelegate()->ActivateContents(initiator());

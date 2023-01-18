@@ -83,6 +83,9 @@ MediaRouterUI::MediaRouterUI(
 MediaRouterUI::~MediaRouterUI() {
   if (media_route_starter_)
     DetachFromMediaRouteStarter();
+  for (CastDialogController::Observer& observer : observers_) {
+    observer.OnControllerDestroying();
+  }
 }
 
 // static
@@ -145,9 +148,6 @@ MediaRouterUI::CreateWithMediaSessionRemotePlayback(
 }
 
 void MediaRouterUI::DetachFromMediaRouteStarter() {
-  for (CastDialogController::Observer& observer : observers_)
-    observer.OnControllerInvalidated();
-
   media_route_starter()->RemovePresentationRequestSourceObserver(this);
   media_route_starter()->RemoveMediaSinkWithCastModesObserver(this);
 }
@@ -181,8 +181,16 @@ void MediaRouterUI::ClearIssue(const Issue::Id& issue_id) {
 
 std::unique_ptr<MediaRouteStarter> MediaRouterUI::TakeMediaRouteStarter() {
   DCHECK(media_route_starter_) << "MediaRouteStarter already taken!";
-  DetachFromMediaRouteStarter();
-  return std::move(media_route_starter_);
+  auto starter = std::move(media_route_starter_);
+  if (destructor_) {
+    std::move(destructor_).Run();  // May destroy `this`.
+  }
+  return starter;
+}
+
+void MediaRouterUI::RegisterDestructor(base::OnceClosure destructor) {
+  DCHECK(!destructor_);
+  destructor_ = std::move(destructor);
 }
 
 bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,

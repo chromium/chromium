@@ -24,10 +24,12 @@ class CastDialogController {
    public:
     virtual ~Observer() = default;
 
-    virtual void OnModelUpdated(const CastDialogModel& model) = 0;
+    virtual void OnModelUpdated(const CastDialogModel& model) {}
 
-    // Observer should drop its reference to the controller when this is called.
-    virtual void OnControllerInvalidated() = 0;
+    // Notifies observers that the observed object is being destroyed. Observers
+    // MUST NOT try to destroy the observed object in response - to manage the
+    // lifetime of a CastDialogController, use RegisterDestructor() below.
+    virtual void OnControllerDestroying() {}
   };
 
   virtual ~CastDialogController() = default;
@@ -55,6 +57,16 @@ class CastDialogController {
   // intended that this API should only be used to transfer ownership to some
   // new component that will want to start casting on this dialog box's behalf.
   virtual std::unique_ptr<MediaRouteStarter> TakeMediaRouteStarter() = 0;
+
+  // Registers a callback for when the CastDialogController has given up
+  // ownership of its MediaRouteStarter and is no longer safe to use. The
+  // provided closure must destroy |this| or otherwise ensure it is never used
+  // again. This method can only be called once.
+  //
+  // TODO(https://crbug.com/1408494): It's awkward that CastDialogController has
+  // a state where it exists but is unsafe to use, and doubly awkward that we
+  // have to paper over that with this callback. Can that be fixed?
+  virtual void RegisterDestructor(base::OnceClosure destructor) = 0;
 };
 
 }  // namespace media_router

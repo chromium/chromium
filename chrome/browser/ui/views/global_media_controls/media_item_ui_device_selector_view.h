@@ -81,7 +81,6 @@ class MediaItemUIDeviceSelectorView
 
   //  media_router::CastDialogController::Observer
   void OnModelUpdated(const media_router::CastDialogModel& model) override;
-  void OnControllerInvalidated() override;
 
   // MediaItemUIFooterView::Delegate
   void OnDeviceSelected(int tag) override;
@@ -121,6 +120,7 @@ class MediaItemUIDeviceSelectorView
   void RecordCastDeviceCount();
   DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;
   void RegisterAudioDeviceCallbacks();
+  void DestroyCastController();
 
   bool has_expand_button_been_shown_ = false;
   bool have_devices_been_shown_ = false;

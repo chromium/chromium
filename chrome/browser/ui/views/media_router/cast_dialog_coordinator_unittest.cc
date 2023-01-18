@@ -40,6 +40,7 @@ class MockCastDialogController : public CastDialogController {
   MOCK_METHOD(void, StopCasting, (const std::string& route_id));
   MOCK_METHOD(void, ClearIssue, (const Issue::Id& issue_id));
   MOCK_METHOD(std::unique_ptr<MediaRouteStarter>, TakeMediaRouteStarter, ());
+  MOCK_METHOD(void, RegisterDestructor, (base::OnceClosure));
 };
 
 class CastDialogCoordinatorTest : public TestWithBrowserView {
