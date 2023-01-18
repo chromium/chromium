@@ -641,11 +641,15 @@ void UpdateMatchingTimeline(const ScopedCSSName& target_name,
   if (target_name.GetName() != candidate_name.GetName()) {
     return;
   }
-  size_t distance = TreeScopeDistance(candidate_name.GetTreeScope(),
-                                      target_name.GetTreeScope());
-  if (distance < matching_distance) {
+  if (RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()) {
+    size_t distance = TreeScopeDistance(candidate_name.GetTreeScope(),
+                                        target_name.GetTreeScope());
+    if (distance < matching_distance) {
+      matching_timeline = candidate;
+      matching_distance = distance;
+    }
+  } else {
     matching_timeline = candidate;
-    matching_distance = distance;
   }
 }
 
@@ -686,10 +690,12 @@ CSSScrollTimeline* CSSAnimations::FindScrollTimelineForElement(
     return nullptr;
   }
 
-  if (TreeScopeDistance(pending_aware_timeline->Name().GetTreeScope(),
-                        target_name.GetTreeScope()) ==
-      std::numeric_limits<size_t>::max()) {
-    return nullptr;
+  if (RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()) {
+    if (TreeScopeDistance(pending_aware_timeline->Name().GetTreeScope(),
+                          target_name.GetTreeScope()) ==
+        std::numeric_limits<size_t>::max()) {
+      return nullptr;
+    }
   }
   return pending_aware_timeline;
 }
@@ -755,11 +761,15 @@ ScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
     }
   }
 
-  Node* parent = node->ParentOrShadowHostElement();
-  if (!parent)
+  Element* parent_element =
+      RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()
+          ? node->ParentOrShadowHostElement()
+          : LayoutTreeBuilderTraversal::ParentElement(*node);
+  if (!parent_element) {
     return nullptr;
+  }
   return FindPreviousSiblingAncestorTimeline(
-      name, parent, GetPendingAnimationUpdate(*parent));
+      name, parent_element, GetPendingAnimationUpdate(*parent_element));
 }
 
 namespace {

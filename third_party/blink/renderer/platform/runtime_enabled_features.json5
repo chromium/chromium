@@ -908,6 +908,13 @@
       status: "experimental",
     },
     {
+      // Support for tree-scoped [1] timeline names (e.g. produced by
+      // scroll-timeline).
+      //
+      // [1] https://drafts.csswg.org/css-scoping-1/#shadow-names
+      name: "CSSTreeScopedTimelines",
+    },
+    {
       // Explainer: https://github.com/DevSDK/css-trigonometric-functions
       name: "CSSTrigonometricFunctions",
       status: "stable",
