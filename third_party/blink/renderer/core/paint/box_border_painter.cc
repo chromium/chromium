@@ -479,8 +479,6 @@ void DrawDoubleBoxSide(GraphicsContext& context,
   DCHECK_GT(third_of_thickness, 0);
 
   if (!adjacent_width1 && !adjacent_width2) {
-    StrokeStyle old_stroke_style = context.GetStrokeStyle();
-    context.SetStrokeStyle(kNoStroke);
     context.SetFillColor(color);
 
     bool was_antialiased = context.ShouldAntialias();
@@ -489,24 +487,23 @@ void DrawDoubleBoxSide(GraphicsContext& context,
     switch (side) {
       case BoxSide::kTop:
       case BoxSide::kBottom:
-        context.DrawRect(gfx::Rect(x1, y1, length, third_of_thickness),
+        context.FillRect(gfx::Rect(x1, y1, length, third_of_thickness),
                          auto_dark_mode);
-        context.DrawRect(
+        context.FillRect(
             gfx::Rect(x1, y2 - third_of_thickness, length, third_of_thickness),
             auto_dark_mode);
         break;
       case BoxSide::kLeft:
       case BoxSide::kRight:
-        context.DrawRect(gfx::Rect(x1, y1, third_of_thickness, length),
+        context.FillRect(gfx::Rect(x1, y1, third_of_thickness, length),
                          auto_dark_mode);
-        context.DrawRect(
+        context.FillRect(
             gfx::Rect(x2 - third_of_thickness, y1, third_of_thickness, length),
             auto_dark_mode);
         break;
     }
 
     context.SetShouldAntialias(was_antialiased);
-    context.SetStrokeStyle(old_stroke_style);
     return;
   }
 
@@ -1436,9 +1433,8 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
       break;
   }
 
-  context_.SetStrokeStyle(kNoStroke);
   context_.SetFillColor(color);
-  context_.DrawRect(gfx::ToRoundedRect(outer_.Rect()),
+  context_.FillRect(gfx::ToRoundedRect(outer_.Rect()),
                     PaintAutoDarkMode(style_, element_role_));
 }
 
