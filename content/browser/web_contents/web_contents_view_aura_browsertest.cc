@@ -830,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
       gfx::Point(bounds.right() - 10, bounds.y() + 10),
       gfx::Point(bounds.x() + 2, bounds.y() + 10), base::Milliseconds(2000),
       10);
-  nav_watcher.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_watcher.WaitForNavigationFinished());
 
   generator.GestureScrollSequence(
       gfx::Point(bounds.x() + 2, bounds.y() + 10),

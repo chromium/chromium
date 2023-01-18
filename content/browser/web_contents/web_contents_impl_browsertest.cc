@@ -416,13 +416,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Let B finish and wait for another load stop.  A will still be loading due
   // to D.
   LoadFinishedWaiter load_waiter_b(web_contents, url_b);
-  delayer_b.WaitForNavigationFinished();
+  ASSERT_TRUE(delayer_b.WaitForNavigationFinished());
   load_waiter_b.Wait();
   EXPECT_TRUE(web_contents->IsLoading());
 
   // Let D finish.  We should get a load stop in the main frame.
   LoadFinishedWaiter load_waiter_d(web_contents, url_d);
-  delayer_d.WaitForNavigationFinished();
+  ASSERT_TRUE(delayer_d.WaitForNavigationFinished());
   load_waiter_d.Wait();
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_FALSE(web_contents->IsLoading());
@@ -1466,7 +1466,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Have the cross-site navigation commit. The main RenderFrameHost should
   // still be loading after that.
-  cross_site_delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(cross_site_delayer.WaitForNavigationFinished());
   EXPECT_TRUE(shell()->web_contents()->IsLoading());
 }
 
@@ -5869,7 +5869,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanBrowserTest,
   EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 
   // Wait for navigation to finish and check that PCScan is disabled.
-  navigation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_FALSE(partition_alloc::internal::PCScan::IsEnabled());
 
   // Complete load and check that PCScan is enabled again.
