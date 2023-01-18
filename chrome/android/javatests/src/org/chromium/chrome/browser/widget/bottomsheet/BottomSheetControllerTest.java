@@ -184,6 +184,7 @@ public class BottomSheetControllerTest {
         expandSheet();
         assertEquals("The bottom sheet should be expanded.", SheetState.HALF,
                 mSheetController.getSheetState());
+        assertEquals("Back press event should be consumed", Boolean.TRUE, getBackPressState());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTestSupport.handleBackPress();
             mTestSupport.endAllAnimations();
@@ -200,6 +201,7 @@ public class BottomSheetControllerTest {
         expandSheet();
         assertEquals("The bottom sheet should be expanded.", SheetState.HALF,
                 mSheetController.getSheetState());
+        assertEquals("Back press event should be consumed", Boolean.TRUE, getBackPressState());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTestSupport.handleBackPress();
             mTestSupport.endAllAnimations();
@@ -515,6 +517,9 @@ public class BottomSheetControllerTest {
                     mTestSupport.handleBackPress());
             mTestSupport.endAllAnimations();
         });
+
+        assertEquals("The sheet should be in the peeking state.", SheetState.PEEK,
+                mSheetController.getSheetState());
     }
 
     /**
@@ -535,16 +540,12 @@ public class BottomSheetControllerTest {
             assertEquals("The sheet should be in the peeking state.", SheetState.PEEK,
                     mSheetController.getSheetState());
             assertTrue("Bottom sheet controller should be ready for handling back press.",
-                    mSheetController.getCurrentSheetContent()
-                            .getBackPressStateChangedSupplier()
-                            .get());
+                    getBackPressState());
         });
         Espresso.pressBack();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertFalse("Bottom sheet controller should have handled back press.",
-                    mSheetController.getBottomSheetBackPressHandler()
-                            .getHandleBackPressChangedSupplier()
-                            .get());
+            assertFalse(
+                    "Bottom sheet controller should have handled back press.", getBackPressState());
             assertEquals(BackPressHandler.Type.BOTTOM_SHEET,
                     mActivity.getBackPressManagerForTesting().getLastCalledHandlerForTesting());
             mTestSupport.endAllAnimations();
@@ -584,18 +585,14 @@ public class BottomSheetControllerTest {
             assertEquals("The sheet should be in the half state.", SheetState.HALF,
                     mSheetController.getSheetState());
             assertTrue("Bottom sheet controller should be ready for handling back press.",
-                    mSheetController.getCurrentSheetContent()
-                            .getBackPressStateChangedSupplier()
-                            .get());
+                    getBackPressState());
         });
 
         Espresso.pressBack();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertTrue("The sheet should still be ready for back press if content handled it",
-                    mSheetController.getBottomSheetBackPressHandler()
-                            .getHandleBackPressChangedSupplier()
-                            .get());
+                    getBackPressState());
             assertEquals(BackPressHandler.Type.BOTTOM_SHEET,
                     mActivity.getBackPressManagerForTesting().getLastCalledHandlerForTesting());
             mTestSupport.endAllAnimations();
@@ -636,9 +633,7 @@ public class BottomSheetControllerTest {
             assertEquals("The sheet should be in the peeking state.", SheetState.PEEK,
                     mSheetController.getSheetState());
             assertFalse("Bottom sheet controller should not be ready for handling back press.",
-                    mSheetController.getCurrentSheetContent()
-                            .getBackPressStateChangedSupplier()
-                            .get());
+                    getBackPressState());
         });
     }
 
@@ -682,15 +677,30 @@ public class BottomSheetControllerTest {
             assertFalse("The back event should not be handled by the content.",
                     mBackInterceptingContent.getBackPressStateChangedSupplier().get());
             assertTrue("Bottom sheet controller should be ready for handling back press.",
-                    mSheetController.getBottomSheetBackPressHandler()
-                            .getHandleBackPressChangedSupplier()
-                            .get());
+                    getBackPressState());
             mSheetController.getBottomSheetBackPressHandler().handleBackPress();
             mTestSupport.endAllAnimations();
         });
 
         assertEquals("The sheet should be peeking if the content didn't handle the back event.",
                 SheetState.PEEK, mSheetController.getSheetState());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"BottomSheetController"})
+    public void testHandleBackPress_withCustomScrimLifecycle() {
+        mPeekableContent.setHasCustomScrimLifecycle(true);
+        requestContentInSheet(mPeekableContent, true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mPeekableContent.setHandleBackPress(true); });
+        expandSheet();
+        assertEquals("The bottom sheet should be expanded.", SheetState.HALF,
+                mSheetController.getSheetState());
+        assertEquals("Back press event should be consumed", Boolean.TRUE, getBackPressState());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTestSupport.handleBackPress();
+            mTestSupport.endAllAnimations();
+        });
     }
 
     @Test
@@ -838,5 +848,14 @@ public class BottomSheetControllerTest {
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(), mActivity, "about:blank", false);
         TestThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
+    }
+
+    /**
+     * Whether back press will be consumed by bottom sheet.
+     */
+    private Boolean getBackPressState() {
+        return mSheetController.getBottomSheetBackPressHandler()
+                .getHandleBackPressChangedSupplier()
+                .get();
     }
 }
