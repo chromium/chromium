@@ -11,7 +11,6 @@
 ] interface GPUCanvasContext {
     [ImplementedAs=getHTMLOrOffscreenCanvas] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
 
-    [CallWith=ExecutionContext] GPUTextureFormat getPreferredFormat(GPUAdapter adapter);
     [RaisesException] void configure(GPUCanvasConfiguration descriptor);
     void unconfigure();
     [RaisesException] GPUTexture getCurrentTexture();

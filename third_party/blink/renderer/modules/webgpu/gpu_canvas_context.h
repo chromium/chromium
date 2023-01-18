@@ -16,7 +16,6 @@
 
 namespace blink {
 
-class GPUAdapter;
 class GPUDevice;
 class GPUCanvasConfiguration;
 class GPUSwapChain;
@@ -105,8 +104,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
   void configure(const GPUCanvasConfiguration* descriptor, ExceptionState&);
   void unconfigure();
-  String getPreferredFormat(ExecutionContext* execution_context,
-                            GPUAdapter* adapter);
   GPUTexture* getCurrentTexture(ExceptionState&);
 
   // WebGPUSwapBufferProvider::Client implementation
@@ -145,9 +142,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
 
   bool new_texture_required_ = true;
   bool stopped_ = false;
-
-  // TODO(crbug.com/1326473): Remove after deprecation period.
-  gfx::Size configured_size_;
 
   // Matches [[configuration]] != null in the WebGPU specification.
   bool configured_ = false;

@@ -101,13 +101,6 @@ void GPUCanvasContext::Reshape(int width, int height) {
     return;
   }
 
-  // If an explicit size was given during the last call to configure() use that
-  // size instead. This is deprecated behavior.
-  // TODO(crbug.com/1326473): Remove after deprecation period.
-  if (!configured_size_.IsZero()) {
-    return;
-  }
-
   ResizeSwapbuffers(gfx::Size(width, height));
 }
 
@@ -367,21 +360,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       return;
   }
 
-  alpha_mode_ = V8GPUCanvasAlphaMode::Enum::kPremultiplied;
-  if (descriptor->hasCompositingAlphaMode()) {
-    alpha_mode_ = descriptor->compositingAlphaMode().AsEnum();
-    device_->AddConsoleWarning(
-        "compositingAlphaMode is deprecated and will soon be removed. Please "
-        "set alphaMode instead.");
-  } else if (descriptor->hasAlphaMode()) {
-    alpha_mode_ = descriptor->alphaMode().AsEnum();
-  } else {
-    device_->AddConsoleWarning(
-        "The default GPUCanvasAlphaMode will change from "
-        "\"premultiplied\" to \"opaque\". "
-        "Please explicitly set alphaMode to \"premultiplied\" if you would "
-        "like to continue using that compositing mode.");
-  }
+  alpha_mode_ = descriptor->alphaMode().AsEnum();
 
   if (!ValidateAndConvertColorSpace(descriptor->colorSpace(), color_space_,
                                     exception_state)) {
@@ -414,37 +393,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       break;
   }
 
-  // Set the size while configuring.
-  if (descriptor->hasSize()) {
-    // TODO(crbug.com/1326473): Remove this branch after deprecation period.
-    device_->AddConsoleWarning(
-        "Setting an explicit size when calling configure() on a "
-        "GPUCanvasContext has been deprecated, and will soon be removed. "
-        "Please set the canvas width and height attributes instead. Note that "
-        "after the initial call to configure() changes to the canvas width and "
-        "height will now take effect without the need to call configure() "
-        "again.");
-
-    WGPUExtent3D dawn_extent = AsDawnType(descriptor->size());
-    configured_size_ = gfx::Size(dawn_extent.width, dawn_extent.height);
-
-    if (dawn_extent.depthOrArrayLayers != 1) {
-      device_->InjectError(
-          WGPUErrorType_Validation,
-          "swap chain size must have depthOrArrayLayers set to 1");
-      return;
-    }
-    if (configured_size_.IsEmpty()) {
-      device_->InjectError(WGPUErrorType_Validation,
-                           "context width and height must be greater than 0");
-      return;
-    }
-
-    ResizeSwapbuffers(configured_size_);
-  } else {
-    configured_size_.SetSize(0, 0);
-    ResizeSwapbuffers(host_size);
-  }
+  ResizeSwapbuffers(host_size);
 }
 
 void GPUCanvasContext::ResizeSwapbuffers(gfx::Size size) {
@@ -486,20 +435,6 @@ void GPUCanvasContext::DetachSwapBuffers() {
     swap_buffers_ = nullptr;
   }
   texture_ = nullptr;
-}
-
-String GPUCanvasContext::getPreferredFormat(ExecutionContext* execution_context,
-                                            GPUAdapter* adapter) {
-  adapter->AddConsoleWarning(
-      execution_context,
-      "Calling getPreferredFormat() on a GPUCanvasContext is deprecated and "
-      "will soon be removed. Call navigator.gpu.getPreferredCanvasFormat() "
-      "instead, which no longer requires an adapter.");
-#if BUILDFLAG(IS_ANDROID)
-  return "rgba8unorm";
-#else
-  return "bgra8unorm";
-#endif
 }
 
 GPUTexture* GPUCanvasContext::getCurrentTexture(
