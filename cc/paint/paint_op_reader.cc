@@ -1026,10 +1026,17 @@ void PaintOpReader::ReadMatrixConvolutionPaintFilter(
   sk_sp<PaintFilter> input;
 
   ReadSimple(&kernel_size);
-  if (!valid_)
+  if (!valid_) {
     return;
-  auto size =
-      static_cast<size_t>(sk_64_mul(kernel_size.width(), kernel_size.height()));
+  }
+  if (kernel_size.isEmpty()) {
+    SetInvalid(
+        DeserializationError::
+            kInsufficientRemainingBytes_ReadMatrixConvolutionPaintFilter);
+    return;
+  }
+  auto size = static_cast<size_t>(kernel_size.width()) *
+              static_cast<size_t>(kernel_size.height());
   if (size > remaining_bytes_) {
     SetInvalid(
         DeserializationError::
@@ -1037,8 +1044,9 @@ void PaintOpReader::ReadMatrixConvolutionPaintFilter(
     return;
   }
   std::vector<SkScalar> kernel(size);
-  for (size_t i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; ++i) {
     Read(&kernel[i]);
+  }
   Read(&gain);
   Read(&bias);
   ReadSimple(&kernel_offset);

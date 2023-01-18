@@ -23,8 +23,9 @@
 #include "cc/paint/scoped_raster_flags.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkMath.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkString.h"
+#include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
 #include "third_party/skia/include/effects/SkPerlinNoiseShader.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
@@ -565,8 +566,9 @@ MatrixConvolutionPaintFilter::MatrixConvolutionPaintFilter(
       tile_mode_(tile_mode),
       convolve_alpha_(convolve_alpha),
       input_(std::move(input)) {
-  auto len = static_cast<size_t>(
-      sk_64_mul(kernel_size_.width(), kernel_size_.height()));
+  DCHECK(kernel_size_.width() >= 0 && kernel_size_.height() >= 0);
+  auto len = static_cast<size_t>(kernel_size_.width()) *
+             static_cast<size_t>(kernel_size_.height());
   kernel_->reserve(len);
   for (size_t i = 0; i < len; ++i)
     kernel_->push_back(kernel[i]);

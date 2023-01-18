@@ -764,10 +764,13 @@ void PaintOpWriter::Write(const ArithmeticPaintFilter& filter,
 void PaintOpWriter::Write(const MatrixConvolutionPaintFilter& filter,
                           const SkM44& current_ctm) {
   WriteSimple(filter.kernel_size());
-  auto size = static_cast<size_t>(
-      sk_64_mul(filter.kernel_size().width(), filter.kernel_size().height()));
-  for (size_t i = 0; i < size; ++i)
+  auto kernel_size = filter.kernel_size();
+  DCHECK(!kernel_size.isEmpty());
+  auto size = static_cast<size_t>(kernel_size.width()) *
+              static_cast<size_t>(kernel_size.height());
+  for (size_t i = 0; i < size; ++i) {
     WriteSimple(filter.kernel_at(i));
+  }
   WriteSimple(filter.gain());
   WriteSimple(filter.bias());
   WriteSimple(filter.kernel_offset());
