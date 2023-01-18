@@ -73,9 +73,9 @@ void RemoveEntryUnless(base::Value* dict,
                        const std::string& path,
                        bool condition) {
   DCHECK(dict->is_dict());
-  if (!condition && dict->FindKey(path)) {
+  if (!condition && dict->GetDict().contains(path)) {
     NET_LOG(ERROR) << "onc::Normalizer:Removing: " << path;
-    dict->RemoveKey(path);
+    dict->GetDict().Remove(path);
   }
 }
 
@@ -264,13 +264,15 @@ void Normalizer::NormalizeStaticIPConfigForNetwork(base::Value* network) {
   bool all_ip_fields_exist = false;
   bool name_servers_exist = false;
   if (static_ip_config) {
+    const base::Value::Dict& static_ip_config_dict =
+        static_ip_config->GetDict();
     all_ip_fields_exist =
-        static_ip_config->FindKey(::onc::ipconfig::kIPAddress) &&
-        static_ip_config->FindKey(::onc::ipconfig::kGateway) &&
-        static_ip_config->FindKey(::onc::ipconfig::kRoutingPrefix);
+        static_ip_config_dict.contains(::onc::ipconfig::kIPAddress) &&
+        static_ip_config_dict.contains(::onc::ipconfig::kGateway) &&
+        static_ip_config_dict.contains(::onc::ipconfig::kRoutingPrefix);
 
     name_servers_exist =
-        static_ip_config->FindKey(::onc::ipconfig::kNameServers);
+        static_ip_config_dict.contains(::onc::ipconfig::kNameServers);
 
     RemoveEntryUnless(static_ip_config, ::onc::ipconfig::kIPAddress,
                       all_ip_fields_exist && ip_config_type_is_static);
