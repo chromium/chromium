@@ -657,9 +657,10 @@ void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
   if (reset_subresource_loader_params)
     subresource_loader_params_.reset();
 
-  uint32_t options = network::mojom::kURLLoadOptionNone;
   scoped_refptr<network::SharedURLLoaderFactory> factory =
-      PrepareForNonInterceptedRequest(&options);
+      PrepareForNonInterceptedRequest();
+  uint32_t options =
+      GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
   if (url_loader_) {
     // `url_loader_` is using the factory for the interceptor that decided to
     // fallback, so restart it with the non-interceptor factory.
@@ -679,8 +680,7 @@ void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
-    uint32_t* out_options) {
+NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
   // TODO(https://crbug.com/796425): We temporarily wrap raw
   // mojom::URLLoaderFactory pointers into SharedURLLoaderFactory. Need to
   // further refactor the factory getters to avoid this.
@@ -765,8 +765,6 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
   }
   url_chain_.push_back(resource_request_->url);
 
-  *out_options =
-      GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
   return factory;
 }
 

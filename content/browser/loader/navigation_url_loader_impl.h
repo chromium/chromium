@@ -140,7 +140,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void FallbackToNonInterceptedRequest(bool reset_subresource_loader_params);
 
   scoped_refptr<network::SharedURLLoaderFactory>
-  PrepareForNonInterceptedRequest(uint32_t* out_options);
+  PrepareForNonInterceptedRequest();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   void CheckPluginAndContinueOnReceiveResponse(
