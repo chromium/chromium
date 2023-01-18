@@ -20,6 +20,7 @@ void AddSysColorMixer(ColorProvider* provider,
       key.color_mode == ColorProviderManager::ColorMode::kDark;
   ColorMixer& mixer = provider->AddMixer();
 
+  // Core sys tokens.
   mixer[kColorSysPrimary] = {dark_mode ? kColorRefPrimary80
                                        : kColorRefPrimary40};
   mixer[kColorSysOnPrimary] = {dark_mode ? kColorRefPrimary20
@@ -60,15 +61,14 @@ void AddSysColorMixer(ColorProvider* provider,
                                               : kColorRefNeutralVariant90};
   mixer[kColorSysOnSurfaceVariant] = {dark_mode ? kColorRefNeutralVariant80
                                                 : kColorRefNeutralVariant30};
-
   mixer[kColorSysOutline] = {dark_mode ? kColorRefNeutralVariant60
                                        : kColorRefNeutralVariant50};
-  mixer[kColorSysScrim] = {dark_mode
-                               ? SetAlpha({kColorRefNeutralVariant10}, 0x99)
-                               : SetAlpha({kColorRefNeutralVariant60}, 0x99)};
-  mixer[kColorSysSeparator] = {dark_mode
-                                   ? SetAlpha({kColorRefNeutral90}, 0x23)
-                                   : SetAlpha({kColorRefNeutral10}, 0x23)};
+  mixer[kColorSysInversePrimary] = {dark_mode ? kColorRefPrimary40
+                                              : kColorRefPrimary80};
+  mixer[kColorSysInverseOnSurface] = {dark_mode ? kColorRefNeutral10
+                                                : kColorRefNeutral95};
+
+  // Base and surface tokens.
   mixer[kColorSysSurface] = {dark_mode ? kColorRefNeutral10
                                        : kColorRefNeutral99};
   mixer[kColorSysSurface1] = {
@@ -96,6 +96,34 @@ void AddSysColorMixer(ColorProvider* provider,
                                          {kColorRefNeutral10})
                 : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x23),
                                          {kColorRefNeutral99})};
+  mixer[kColorSysDisabledContainer] = ui::SetAlpha({kColorSysOnSurface}, 0x60);
+
+  // On-color tokens for any bases.
+  mixer[kColorSysOnSurface] = {dark_mode ? kColorRefNeutral90
+                                         : kColorRefNeutral10};
+  mixer[kColorSysOnSurfaceDisabled] = {
+      dark_mode ? SetAlpha({kColorRefNeutral80}, 0x60)
+                : SetAlpha({kColorRefNeutral30}, 0x60)};
+  mixer[kColorSysOnSurfacePrimary] = {dark_mode ? kColorRefPrimary90
+                                                : kColorRefPrimary10};
+  mixer[kColorSysOnSurfaceSecondary] = {dark_mode ? kColorRefNeutral80
+                                                  : kColorRefNeutral30};
+  mixer[kColorSysOnSurfaceSubtle] = {dark_mode ? kColorRefNeutral80
+                                               : kColorRefNeutral30};
+
+  // Effect tokens.
+  mixer[kColorSysStateHover] = {dark_mode
+                                    ? SetAlpha({kColorRefNeutral90}, 0x14)
+                                    : SetAlpha({kColorRefNeutral10}, 0x14)};
+  mixer[kColorSysStateFocus] = {dark_mode
+                                    ? SetAlpha({kColorRefNeutral90}, 0x1E)
+                                    : SetAlpha({kColorRefNeutral10}, 0x1E)};
+  mixer[kColorSysStatePressed] = {dark_mode
+                                      ? SetAlpha({kColorRefNeutral90}, 0x1E)
+                                      : SetAlpha({kColorRefNeutral10}, 0x1E)};
+  mixer[kColorSysStateDrag] = {dark_mode
+                                   ? SetAlpha({kColorRefNeutral90}, 0x29)
+                                   : SetAlpha({kColorRefNeutral10}, 0x29)};
 }
 
 }  // namespace ui

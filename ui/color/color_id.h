@@ -103,7 +103,8 @@
   E_CPONLY(kColorRefNeutralVariant99) \
   E_CPONLY(kColorRefNeutralVariant100) \
   \
-  /* UI system color tokens */ \
+  /* UI material system color tokens */ \
+  /* Core sys tokens */ \
   E_CPONLY(kColorSysPrimary) \
   E_CPONLY(kColorSysOnPrimary) \
   E_CPONLY(kColorSysPrimaryContainer) \
@@ -123,14 +124,27 @@
   E_CPONLY(kColorSysSurfaceVariant) \
   E_CPONLY(kColorSysOnSurfaceVariant) \
   E_CPONLY(kColorSysOutline) \
-  E_CPONLY(kColorSysScrim) \
-  E_CPONLY(kColorSysSeparator) \
+  E_CPONLY(kColorSysInversePrimary) \
+  E_CPONLY(kColorSysInverseOnSurface) \
+  /* Base and surface tokens */ \
   E_CPONLY(kColorSysSurface) \
   E_CPONLY(kColorSysSurface1) \
   E_CPONLY(kColorSysSurface2) \
   E_CPONLY(kColorSysSurface3) \
   E_CPONLY(kColorSysSurface4) \
   E_CPONLY(kColorSysSurface5) \
+  E_CPONLY(kColorSysDisabledContainer) \
+  /* On-color tokens for any bases */ \
+  E_CPONLY(kColorSysOnSurface) \
+  E_CPONLY(kColorSysOnSurfaceDisabled) \
+  E_CPONLY(kColorSysOnSurfacePrimary) \
+  E_CPONLY(kColorSysOnSurfaceSecondary) \
+  E_CPONLY(kColorSysOnSurfaceSubtle) \
+  /* Effect tokens */ \
+  E_CPONLY(kColorSysStateHover) \
+  E_CPONLY(kColorSysStateFocus) \
+  E_CPONLY(kColorSysStatePressed) \
+  E_CPONLY(kColorSysStateDrag) \
   /* Core color concepts */ \
   /* kColorAccent is used in color_provider_css_colors_test.ts. */ \
   /* If changing the variable name, the variable name in the test needs to */ \
