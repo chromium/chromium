@@ -186,6 +186,7 @@ DIPSService* DIPSService::Get(content::BrowserContext* context) {
 }
 
 void DIPSService::Shutdown() {
+  cached_should_block_3pcs_ = cookie_settings_->ShouldBlockThirdPartyCookies();
   cookie_settings_.reset();
 }
 
@@ -195,9 +196,17 @@ scoped_refptr<base::SequencedTaskRunner> DIPSService::CreateTaskRunner() {
        base::ThreadPolicy::PREFER_BACKGROUND});
 }
 
+bool DIPSService::ShouldBlockThirdPartyCookies() const {
+  if (!cookie_settings_) {
+    return cached_should_block_3pcs_.value();
+  }
+
+  return cookie_settings_->ShouldBlockThirdPartyCookies();
+}
+
 DIPSCookieMode DIPSService::GetCookieMode() const {
   return GetDIPSCookieMode(browser_context_->IsOffTheRecord(),
-                           cookie_settings_->ShouldBlockThirdPartyCookies());
+                           ShouldBlockThirdPartyCookies());
 }
 
 void DIPSService::RemoveEvents(const base::Time& delete_begin,
@@ -334,8 +343,7 @@ void DIPSService::DeleteDIPSEligibleState(
     return;
   }
 
-  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      dips::kDeletionEnabled.Get()) {
+  if (ShouldBlockThirdPartyCookies() && dips::kDeletionEnabled.Get()) {
     // TODO: Check for site-specific third-party cookie exceptions here and
     // exclude sites with them from 'sites_to_clear' then call
     // 'DIPSStorage::RemoveRows' to remove the DIPS entries for the excluded

@@ -91,9 +91,14 @@ class DIPSService : public KeyedService {
                                std::vector<std::string> sites_to_clear);
   void RunDeletionTaskOnUIThread(std::vector<std::string> sites_to_clear,
                                  base::OnceClosure callback);
+  bool ShouldBlockThirdPartyCookies() const;
 
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  // The return value of CookieSettings::ShouldBlockThirdPartyCookies(), cached
+  // by Shutdown() (since we release our CookieSettings but may need the value
+  // later).
+  absl::optional<bool> cached_should_block_3pcs_;
   // The persisted timer controlling how often incidental state is cleared.
   // This timer is null if the DIPS feature isn't enabled with a valid TimeDelta
   // given for its `timer_delay` parameter.
