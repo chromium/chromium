@@ -18,7 +18,8 @@ export const FilesSafeMedia = Polymer({
   is: 'files-safe-media',
 
   properties: {
-    /* Source content accessible from the sandboxed environment.
+    /**
+     * Source content accessible from the sandboxed environment.
      * @type {!FilePreviewContent}
      */
     src: {
@@ -27,7 +28,8 @@ export const FilesSafeMedia = Polymer({
       reflectToAttribute: true,
     },
 
-    /* <files-safe-media> media type: e.g. audio, image, video, html.
+    /**
+     * <files-safe-media> media type: e.g. audio, image, video, html.
      * @const {string}
      */
     type: {
@@ -126,7 +128,7 @@ export const FilesSafeMedia = Polymer({
     this.addEventListener('focus', (event) => {
       if (this.type === 'audio' || this.type === 'video') {
         // Avoid setting the focus on the files-safe-media itself, rather sends
-        // it down to its webview element.
+        // it down to its untrusted iframe element.
         if (this.contentsNode_) {
           this.contentsNode_.focus();
         }
