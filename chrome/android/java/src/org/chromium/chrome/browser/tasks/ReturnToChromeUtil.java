@@ -84,6 +84,8 @@ public final class ReturnToChromeUtil {
 
     private static boolean sGTSFirstMeaningfulPaintRecorded;
     private static boolean sIsHomepagePolicyManagerInitializedRecorded;
+    // Whether to skip the check of the initialization of HomepagePolicyManager.
+    private static boolean sSkipInitializationCheckForTesting;
 
     private ReturnToChromeUtil() {}
 
@@ -342,7 +344,8 @@ public final class ReturnToChromeUtil {
     public static boolean useChromeHomepage() {
         String homePageUrl = HomepageManager.getHomepageUri();
         return HomepageManager.isHomepageEnabled()
-                && (HomepagePolicyManager.isInitializedWithNative()
+                && ((HomepagePolicyManager.isInitializedWithNative()
+                            || sSkipInitializationCheckForTesting)
                         && (TextUtils.isEmpty(homePageUrl)
                                 || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl)));
     }
@@ -455,7 +458,11 @@ public final class ReturnToChromeUtil {
                 RecordHistogram.recordBooleanHistogram(
                         "Startup.Android.IsHomepagePolicyManagerInitialized", initialized);
             }
-            if (initialized && useChromeHomepage()) return true;
+            if (!initialized && !sSkipInitializationCheckForTesting) {
+                return false;
+            } else {
+                return useChromeHomepage();
+            }
         }
 
         // Checks whether to show the Start surface due to feature flag TAB_SWITCHER_ON_RETURN_MS.
@@ -904,5 +911,9 @@ public final class ReturnToChromeUtil {
      */
     public static void recordBackNavigationToStart(String from) {
         RecordUserAction.record(SHOWN_FROM_BACK_NAVIGATION_UMA + from);
+    }
+
+    public static void setSkipInitializationCheckForTesting(boolean skipInitializationCheck) {
+        sSkipInitializationCheckForTesting = skipInitializationCheck;
     }
 }

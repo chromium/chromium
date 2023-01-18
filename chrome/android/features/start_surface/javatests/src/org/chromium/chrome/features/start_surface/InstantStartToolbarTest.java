@@ -23,6 +23,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +77,11 @@ public class InstantStartToolbarTest {
                     .setRevision(1)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
                     .build();
+
+    @Before
+    public void setUp() {
+        ReturnToChromeUtil.setSkipInitializationCheckForTesting(true);
+    }
 
     @After
     public void tearDown() {
