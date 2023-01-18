@@ -133,12 +133,18 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   return evaluator->EvalAndAdd(query, change, match_result);
 }
 
-double ContainerQueryEvaluator::Width() const {
-  return size_.width.ToDouble();
+absl::optional<double> ContainerQueryEvaluator::Width() const {
+  if (!media_query_evaluator_) {
+    return absl::nullopt;
+  }
+  return media_query_evaluator_->GetMediaValues().Width();
 }
 
-double ContainerQueryEvaluator::Height() const {
-  return size_.height.ToDouble();
+absl::optional<double> ContainerQueryEvaluator::Height() const {
+  if (!media_query_evaluator_) {
+    return absl::nullopt;
+  }
+  return media_query_evaluator_->GetMediaValues().Height();
 }
 
 ContainerQueryEvaluator::Result ContainerQueryEvaluator::Eval(

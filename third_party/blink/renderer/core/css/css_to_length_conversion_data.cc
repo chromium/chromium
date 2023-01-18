@@ -46,21 +46,30 @@ namespace {
 
 absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
                                                 Element* context_element) {
-  Element* container = ContainerQueryEvaluator::FindContainer(
-      context_element, ContainerSelector(requested_axis));
-  if (!container) {
-    return absl::nullopt;
+  DCHECK(requested_axis == kPhysicalAxisHorizontal ||
+         requested_axis == kPhysicalAxisVertical);
+
+  ContainerSelector selector(requested_axis);
+
+  for (Element* container =
+           ContainerQueryEvaluator::FindContainer(context_element, selector);
+       container; container = ContainerQueryEvaluator::FindContainer(
+                      container->ParentOrShadowHostElement(), selector)) {
+    auto* evaluator = container->GetContainerQueryEvaluator();
+    if (!evaluator) {
+      continue;
+    }
+    evaluator->SetReferencedByUnit();
+    absl::optional<double> size = requested_axis == kPhysicalAxisHorizontal
+                                      ? evaluator->Width()
+                                      : evaluator->Height();
+    if (!size.has_value()) {
+      continue;
+    }
+    return size;
   }
-  auto* evaluator = container->GetContainerQueryEvaluator();
-  if (!evaluator) {
-    return absl::nullopt;
-  }
-  evaluator->SetReferencedByUnit();
-  if (requested_axis == kPhysicalAxisHorizontal) {
-    return evaluator->Width();
-  }
-  DCHECK_EQ(requested_axis, kPhysicalAxisVertical);
-  return evaluator->Height();
+
+  return absl::nullopt;
 }
 
 }  // namespace
