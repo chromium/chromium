@@ -1950,7 +1950,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R109-15236.35.0",
+        "cros_img": "eve-release/R110-15278.29.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
