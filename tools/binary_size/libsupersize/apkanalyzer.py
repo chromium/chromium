@@ -541,7 +541,7 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
         models.Symbol(
             models.SECTION_DEX,
             unattributed_dex,
-            full_name='** .dex (unattributed - includes string literals)'))
+            full_name='** .dex (unattributed)'))
 
   # We can't meaningfully track section size of dex methods vs other, so
   # just fake the size of dex methods as the sum of symbols, and make

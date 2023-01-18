@@ -298,7 +298,7 @@ Section .other: has 100.0% of 1050418 bytes accounted for from 3 symbols. 0 byte
 <test.apk>.dex@0(size_without_padding=0,padding=0,full_name=java.lang.Math,object_path=$APK/java/lang/Math,source_path=,flags={},num_aliases=1,component=)
 <test.apk>.dex@0(size_without_padding=0,padding=0,full_name=java.lang.Object,object_path=$APK/java/lang/Object,source_path=,flags={},num_aliases=1,component=)
 <test.apk>.dex@0(size_without_padding=0,padding=0,full_name=java.lang.StringBuilder,object_path=$APK/java/lang/StringBuilder,source_path=,flags={},num_aliases=1,component=)
-<test.apk>.dex@0(size_without_padding=1260,padding=0,full_name=** .dex (unattributed - includes string literals),object_path=,source_path=,flags={},num_aliases=1,component=)
+<test.apk>.dex@0(size_without_padding=1260,padding=0,full_name=** .dex (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
 <test.apk>.dex.method@0(size_without_padding=42,padding=0,full_name=AuxClass#<init>(int),object_path=$APK/AuxClass,source_path=,flags={},num_aliases=1,component=)
 <test.apk>.dex.method@0(size_without_padding=90,padding=0,full_name=AuxClass#repeatString(java.lang.String): java.lang.String,object_path=$APK/AuxClass,source_path=,flags={},num_aliases=1,component=)
 <test.apk>.dex.method@0(size_without_padding=62,padding=0,full_name=AuxClass#reverse(int[]): int[],object_path=$APK/AuxClass,source_path=,flags={},num_aliases=1,component=)
