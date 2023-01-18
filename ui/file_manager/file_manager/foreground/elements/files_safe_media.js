@@ -6,10 +6,11 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {toSandboxedURL} from '../../common/js/url_constants.js';
 
 /**
- * Polymer element to render a media securely inside a webview or a
- * chrome-untrusted:// iframe. When tapped, files-safe-media-tap-inside or
- * files-safe-media-tap-outside events are fired depending on the position
- * of the tap.
+ * Polymer element to render media securely in a chrome-untrusted:// <iframe>
+ * element.
+ *
+ * When tapped, 'files-safe-media-tap-inside', 'files-safe-media-tap-outside'
+ * events are fired depending on the position of the tap.
  */
 const FilesSafeMedia = Polymer({
   _template: html`{__html_template__}`,
@@ -17,12 +18,18 @@ const FilesSafeMedia = Polymer({
   is: 'files-safe-media',
 
   properties: {
-    // Source content accessible from the sandboxed environment.
+    /* Source content accessible from the sandboxed environment.
+     * @type {!FilePreviewContent}
+     */
     src: {
       type: Object,
       observer: 'onSrcChange_',
       reflectToAttribute: true,
     },
+
+    /* <files-safe-media> media type: e.g. audio, image, video, html.
+     * @const {string}
+     */
     type: {
       type: String,
       readonly: true,
@@ -80,7 +87,7 @@ const FilesSafeMedia = Polymer({
 
   createUntrustedContents_: function() {
     const node =
-        /** @type {!HTMLElement} */ (document.createElement('iframe'));
+        /** @type {!HTMLIFrameElement} */ (document.createElement('iframe'));
     this.contentsNode_ = node;
     node.style.width = '100%';
     node.style.height = '100%';
@@ -96,8 +103,8 @@ const FilesSafeMedia = Polymer({
 
   created: function() {
     /**
-     * @private {?HTMLElement} Holds the untrusted frame when a source to
-     *     preview is set. Set to null otherwise.
+     * @private {?HTMLIFrameElement} Holds the untrusted iframe when a source
+     *     to preview is set. Set to null otherwise.
      */
     this.contentsNode_ = null;
   },
@@ -112,6 +119,7 @@ const FilesSafeMedia = Polymer({
         }
       }
     });
+
     window.addEventListener('message', event => {
       if (event.origin !== toSandboxedURL().origin) {
         console.warn('Unknown origin: ' + event.origin);
