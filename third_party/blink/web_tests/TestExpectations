@@ -2990,6 +2990,11 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-presentation-request.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
+# Disable temporarily while updating WebRTC
+crbug.com/webrtc/10567 external/wpt/webrtc-extensions/RTCRtpParameters-maxFramerate.html [ Pass Failure ]
+crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Pass Failure ]
+crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Pass Failure ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/csp-urn.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webcodecs/videoFrame-serialization.crossAgentCluster.https.html [ Timeout ]
