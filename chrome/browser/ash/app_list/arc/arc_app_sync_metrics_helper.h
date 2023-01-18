@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_APP_SYNC_METRICS_HELPER_H_
 
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -20,9 +21,9 @@ class ArcAppSyncMetricsHelper {
   // Sets `time_sync_started_` to current time.
   void SetTimeSyncStarted();
 
-  // When an app is installed, count of installed apps is incremented and
-  // the current time is recorded.
-  void OnAppInstalled();
+  // When an app is installed, count of installed apps is incremented,
+  // the current time is saved, and app size is recorded in UMA.
+  void OnAppInstalled(absl::optional<uint64_t> app_size_in_bytes);
 
   // Sets `num_expected_apps_` and records the count in UMA.
   void SetAndRecordNumExpectedApps(uint64_t num_expected_apps);

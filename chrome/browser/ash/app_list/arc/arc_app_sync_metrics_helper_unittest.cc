@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -18,6 +19,13 @@ constexpr char kInstalledAppHistogramName[] =
     "Arc.AppSync.InitialSession.NumAppsInstalled";
 constexpr char kNotInstalledAppHistogramName[] =
     "Arc.AppSync.InitialSession.NumAppsNotInstalled";
+constexpr char kInstalledAppSizeHistogramName[] =
+    "Arc.AppSync.InitialSession.InstalledAppSize";
+
+constexpr uint64_t kTestAppSizeInBytes = 2048000;
+constexpr uint64_t kTestAppSizeInMB = kTestAppSizeInBytes / (1000 * 1000);
+constexpr absl::optional<uint64_t> kTestAppSizeOptional =
+    absl::optional<uint64_t>{kTestAppSizeInBytes};
 
 }  // namespace
 
@@ -35,19 +43,19 @@ class ArcAppSyncMetricsHelperTest : public testing::Test {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ArcAppSyncMetricsHelper metrics_helper_;
-  base::HistogramTester tester;
+  base::HistogramTester tester_;
 };
 
 TEST_F(ArcAppSyncMetricsHelperTest,
-       OneAppExpectedAndNotDownloaded_ThenDontRecordLatency) {
+       OneAppExpectedAndNotDownloadedThenDontRecordLatency) {
   metrics_helper_.SetTimeSyncStarted();
   metrics_helper_.SetAndRecordNumExpectedApps(1);
   metrics_helper_.RecordMetrics();
 
-  tester.ExpectUniqueSample(kNotInstalledAppHistogramName, 1, 1);
-  tester.ExpectUniqueSample(kInstalledAppHistogramName, 0, 1);
-  tester.ExpectUniqueSample(kExpectedAppHistogramName, 1, 1);
-  tester.ExpectTotalCount(kLatencyHistogramName, 0);
+  tester_.ExpectUniqueSample(kNotInstalledAppHistogramName, 1, 1);
+  tester_.ExpectUniqueSample(kInstalledAppHistogramName, 0, 1);
+  tester_.ExpectUniqueSample(kExpectedAppHistogramName, 1, 1);
+  tester_.ExpectTotalCount(kLatencyHistogramName, 0);
 }
 
 TEST_F(ArcAppSyncMetricsHelperTest, OneAppExpectedAndDownloaded) {
@@ -55,14 +63,14 @@ TEST_F(ArcAppSyncMetricsHelperTest, OneAppExpectedAndDownloaded) {
   metrics_helper_.SetTimeSyncStarted();
   metrics_helper_.SetAndRecordNumExpectedApps(1);
   task_environment.AdvanceClock(expected_latency);
-  metrics_helper_.OnAppInstalled();
+  metrics_helper_.OnAppInstalled(kTestAppSizeOptional);
   metrics_helper_.RecordMetrics();
 
-  tester.ExpectUniqueSample(kNotInstalledAppHistogramName, 0, 1);
-  tester.ExpectUniqueSample(kInstalledAppHistogramName, 1, 1);
-  tester.ExpectUniqueSample(kExpectedAppHistogramName, 1, 1);
-  tester.ExpectUniqueSample(kLatencyHistogramName, expected_latency.InSeconds(),
-                            1);
+  tester_.ExpectUniqueSample(kNotInstalledAppHistogramName, 0, 1);
+  tester_.ExpectUniqueSample(kInstalledAppHistogramName, 1, 1);
+  tester_.ExpectUniqueSample(kExpectedAppHistogramName, 1, 1);
+  tester_.ExpectUniqueSample(kLatencyHistogramName,
+                             expected_latency.InSeconds(), 1);
 }
 
 TEST_F(ArcAppSyncMetricsHelperTest, TwoAppsExpectedAndOneDownloaded) {
@@ -70,34 +78,57 @@ TEST_F(ArcAppSyncMetricsHelperTest, TwoAppsExpectedAndOneDownloaded) {
   metrics_helper_.SetTimeSyncStarted();
   metrics_helper_.SetAndRecordNumExpectedApps(2);
   task_environment.AdvanceClock(expected_latency);
-  metrics_helper_.OnAppInstalled();
+  metrics_helper_.OnAppInstalled(kTestAppSizeOptional);
   metrics_helper_.RecordMetrics();
 
-  tester.ExpectUniqueSample(kNotInstalledAppHistogramName, 1, 1);
-  tester.ExpectUniqueSample(kInstalledAppHistogramName, 1, 1);
-  tester.ExpectUniqueSample(kExpectedAppHistogramName, 2, 1);
-  tester.ExpectUniqueSample(kLatencyHistogramName, expected_latency.InSeconds(),
-                            1);
+  tester_.ExpectUniqueSample(kNotInstalledAppHistogramName, 1, 1);
+  tester_.ExpectUniqueSample(kInstalledAppHistogramName, 1, 1);
+  tester_.ExpectUniqueSample(kExpectedAppHistogramName, 2, 1);
+  tester_.ExpectUniqueSample(kLatencyHistogramName,
+                             expected_latency.InSeconds(), 1);
 }
 
 TEST_F(ArcAppSyncMetricsHelperTest,
-       ThreeAppsExpectedAndDownloaded_ThenRecordTotalLatency) {
+       ThreeAppsExpectedAndDownloadedThenRecordTotalLatency) {
   int32_t num_expected_apps = 3;
   base::TimeDelta latency_per_app = base::Minutes(1);
   metrics_helper_.SetTimeSyncStarted();
   metrics_helper_.SetAndRecordNumExpectedApps(num_expected_apps);
   for (int i = 0; i < num_expected_apps; i++) {
     task_environment.AdvanceClock(latency_per_app);
-    metrics_helper_.OnAppInstalled();
+    metrics_helper_.OnAppInstalled(kTestAppSizeOptional);
   }
   metrics_helper_.RecordMetrics();
   base::TimeDelta expected_latency = latency_per_app * num_expected_apps;
 
-  tester.ExpectUniqueSample(kNotInstalledAppHistogramName, 0, 1);
-  tester.ExpectUniqueSample(kInstalledAppHistogramName, 3, 1);
-  tester.ExpectUniqueSample(kExpectedAppHistogramName, 3, 1);
-  tester.ExpectUniqueSample(kLatencyHistogramName, expected_latency.InSeconds(),
-                            1);
+  tester_.ExpectUniqueSample(kNotInstalledAppHistogramName, 0, 1);
+  tester_.ExpectUniqueSample(kInstalledAppHistogramName, 3, 1);
+  tester_.ExpectUniqueSample(kExpectedAppHistogramName, 3, 1);
+  tester_.ExpectUniqueSample(kLatencyHistogramName,
+                             expected_latency.InSeconds(), 1);
+}
+
+TEST_F(ArcAppSyncMetricsHelperTest, DoNotRecordInstalledAppSize) {
+  metrics_helper_.OnAppInstalled(absl::optional<uint64_t>());
+  tester_.ExpectTotalCount(kInstalledAppSizeHistogramName, 0);
+}
+
+TEST_F(ArcAppSyncMetricsHelperTest, RecordInstalledAppSizeForOneApp) {
+  metrics_helper_.OnAppInstalled(kTestAppSizeOptional);
+  tester_.ExpectUniqueSample(kInstalledAppSizeHistogramName, kTestAppSizeInMB,
+                             1);
+}
+
+TEST_F(ArcAppSyncMetricsHelperTest, RecordInstalledAppSizeForTwoApps) {
+  const uint64_t test_app_size_bytes = 2048000000;
+  metrics_helper_.OnAppInstalled(kTestAppSizeOptional);
+  tester_.ExpectUniqueSample(kInstalledAppSizeHistogramName, kTestAppSizeInMB,
+                             1);
+
+  metrics_helper_.OnAppInstalled(absl::optional<uint64_t>{test_app_size_bytes});
+  tester_.ExpectBucketCount(kInstalledAppSizeHistogramName,
+                            test_app_size_bytes / (1000 * 1000), 1);
+  tester_.ExpectTotalCount(kInstalledAppSizeHistogramName, 2);
 }
 
 }  // namespace arc

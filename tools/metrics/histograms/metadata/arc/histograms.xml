@@ -539,6 +539,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.AppSync.InitialSession.InstalledAppSize" units="MB"
+    expires_after="2023-07-20">
+  <owner>batoon@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the app size of apps installed during the initial session of app
+    sync. Metrics are emitted when an app sync install is completed IFF it is
+    the first session after opting in during the sync consent screen.
+  </summary>
+</histogram>
+
 <histogram name="Arc.AppSync.InitialSession.Latency" units="seconds"
     expires_after="2023-06-20">
   <owner>batoon@google.com</owner>

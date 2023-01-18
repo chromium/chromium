@@ -112,6 +112,9 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   // use cases.
   bool ShouldSyncPackage(const std::string& package_name) const;
 
+  // Maybe updates installation info for app sync metrics.
+  void MaybeUpdateInstallMetrics(const mojom::ArcPackageInfo& package_info);
+
   Profile* const profile_;
   base::OnceClosure wait_until_ready_to_sync_cb_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/arc/arc_app_sync_metrics_helper.h"
 
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 
@@ -12,6 +11,7 @@ namespace {
 
 constexpr char kHistogramNameBase[] = "Arc.AppSync.InitialSession.";
 constexpr int kAppCountUmaExclusiveMax = 101;
+constexpr int kUmaNumBuckets = 50;
 
 }  // namespace
 
@@ -26,9 +26,17 @@ void ArcAppSyncMetricsHelper::SetTimeSyncStarted() {
   time_last_install_finished_ = time_sync_started_;
 }
 
-void ArcAppSyncMetricsHelper::OnAppInstalled() {
+void ArcAppSyncMetricsHelper::OnAppInstalled(
+    absl::optional<uint64_t> app_size_in_bytes) {
   time_last_install_finished_ = base::TimeTicks::Now();
   num_installed_apps_++;
+
+  if (app_size_in_bytes.has_value()) {
+    base::UmaHistogramCustomCounts(
+        base::StrCat({kHistogramNameBase, "InstalledAppSize"}),
+        /*convert to MB*/ app_size_in_bytes.value() / (1000 * 1000), /*min=*/1,
+        /*exclusive_max=4GB*/ 4 * 1000, kUmaNumBuckets);
+  }
 }
 
 void ArcAppSyncMetricsHelper::SetAndRecordNumExpectedApps(
@@ -47,7 +55,8 @@ void ArcAppSyncMetricsHelper::RecordMetrics() {
     // underflow bucket will be created
     base::UmaHistogramCustomCounts(
         base::StrCat({kHistogramNameBase, "Latency"}), latency.InSeconds(),
-        /*min=*/30, /*max=*/base::Hours(3).InSeconds(), /*buckets=*/50);
+        /*min=*/30, /*exclusive_max=*/base::Hours(3).InSeconds(),
+        kUmaNumBuckets);
   }
 
   base::UmaHistogramExactLinear(

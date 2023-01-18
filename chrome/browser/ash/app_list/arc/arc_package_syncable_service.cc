@@ -318,7 +318,7 @@ void ArcPackageSyncableService::OnPackageInstalled(
 
     sync_items_[package_name] = std::move(install_iter->second);
     pending_install_items_.erase(install_iter);
-    metrics_helper_.OnAppInstalled();
+    MaybeUpdateInstallMetrics(package_info);
     return;
   }
 
@@ -494,6 +494,19 @@ void ArcPackageSyncableService::OnArcSessionStopped(ArcStopReason stop_reason) {
     metrics_helper_.RecordMetrics();
   }
   profile_->GetPrefs()->ClearPref(ash::prefs::kRecordArcAppSyncMetrics);
+}
+
+void ArcPackageSyncableService::MaybeUpdateInstallMetrics(
+    const mojom::ArcPackageInfo& package_info) {
+  if (profile_->GetPrefs()->GetBoolean(ash::prefs::kRecordArcAppSyncMetrics)) {
+    const std::string app_id =
+        prefs_->GetAppIdByPackageName(package_info.package_name);
+    const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+        prefs_->GetApp(app_id);
+    absl::optional<uint64_t> app_size =
+        app_info ? app_info->app_size_in_bytes : absl::nullopt;
+    metrics_helper_.OnAppInstalled(app_size);
+  }
 }
 
 }  // namespace arc
