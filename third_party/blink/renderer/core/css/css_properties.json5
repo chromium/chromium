@@ -1076,6 +1076,7 @@
       inherited: true,
       font: true,
       name_for_methods: "Kerning",
+      converter: "ConvertFontKerning",
       type_name: "FontDescription::Kerning",
       priority: "High",
       keywords: ["auto", "normal", "none"],
@@ -1092,6 +1093,7 @@
       inherited: true,
       font: true,
       name_for_methods: "FontOpticalSizing",
+      converter: "ConvertFontOpticalSizing",
       type_name: "OpticalSizing",
       priority: "High",
       keywords: ["auto", "none"],
@@ -6839,16 +6841,16 @@
         "font-style", "font-variant-ligatures", "font-variant-caps",
         "font-variant-numeric", "font-variant-east-asian", "font-variant-alternates",
         "font-variant-position", "font-weight", "font-stretch", "font-size",
-        "line-height", "font-family"
+        "line-height", "font-family", "font-optical-sizing", "font-size-adjust",
+        "font-kerning", "font-feature-settings", "font-variation-settings"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
       name: "font-variant",
       longhands: [
-        "font-variant-ligatures", "font-variant-caps",
-        "font-variant-alternates", "font-variant-numeric",
-        "font-variant-east-asian", "font-variant-position"
+        "font-variant-ligatures", "font-variant-caps", "font-variant-alternates",
+        "font-variant-numeric", "font-variant-east-asian", "font-variant-position"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       is_descriptor: true,

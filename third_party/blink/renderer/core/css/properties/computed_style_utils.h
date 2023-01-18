@@ -125,6 +125,10 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForFontVariantEastAsian(const ComputedStyle&);
   static CSSValue* ValueForFontVariantAlternates(const ComputedStyle&);
   static CSSIdentifierValue* ValueForFontVariantPosition(const ComputedStyle&);
+  static CSSIdentifierValue* ValueForFontKerning(const ComputedStyle&);
+  static CSSIdentifierValue* ValueForFontOpticalSizing(const ComputedStyle&);
+  static CSSValue* ValueForFontFeatureSettings(const ComputedStyle&);
+  static CSSValue* ValueForFontVariationSettings(const ComputedStyle&);
   static CSSValue* SpecifiedValueForGridTrackSize(const GridTrackSize&,
                                                   const ComputedStyle&);
   static CSSValue* ValueForGridAutoTrackList(GridTrackSizingDirection,

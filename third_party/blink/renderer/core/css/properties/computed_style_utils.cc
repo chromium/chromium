@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_alternate_value.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
+#include "third_party/blink/renderer/core/css/css_font_feature_value.h"
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
@@ -55,6 +58,8 @@
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
+#include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/perspective_transform_operation.h"
@@ -1089,6 +1094,35 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontVariantPosition(
   }
 }
 
+CSSIdentifierValue* ComputedStyleUtils::ValueForFontKerning(
+    const ComputedStyle& style) {
+  FontDescription::Kerning kerning = style.GetFontDescription().GetKerning();
+  switch (kerning) {
+    case FontDescription::kAutoKerning:
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+    case FontDescription::kNormalKerning:
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    case FontDescription::kNoneKerning:
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    default:
+      NOTREACHED();
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+}
+
+CSSIdentifierValue* ComputedStyleUtils::ValueForFontOpticalSizing(
+    const ComputedStyle& style) {
+  OpticalSizing optical_sizing = style.GetFontDescription().FontOpticalSizing();
+  switch (optical_sizing) {
+    case kAutoOpticalSizing:
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+    case kNoneOpticalSizing:
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    default:
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+}
+
 CSSIdentifierValue* ValueForFontStretchAsKeyword(const ComputedStyle& style) {
   FontSelectionValue stretch_value = style.GetFontDescription().Stretch();
   CSSValueID value_id = CSSValueID::kInvalid;
@@ -1181,6 +1215,41 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantEastAsian(
   return value_list;
 }
 
+CSSValue* ComputedStyleUtils::ValueForFontFeatureSettings(
+    const ComputedStyle& style) {
+  const blink::FontFeatureSettings* feature_settings =
+      style.GetFontDescription().FeatureSettings();
+  if (!feature_settings || !feature_settings->size()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (wtf_size_t i = 0; i < feature_settings->size(); ++i) {
+    const FontFeature& feature = feature_settings->at(i);
+    auto* feature_value = MakeGarbageCollected<cssvalue::CSSFontFeatureValue>(
+        feature.TagString(), feature.Value());
+    list->Append(*feature_value);
+  }
+  return list;
+}
+
+CSSValue* ComputedStyleUtils::ValueForFontVariationSettings(
+    const ComputedStyle& style) {
+  const blink::FontVariationSettings* variation_settings =
+      style.GetFontDescription().VariationSettings();
+  if (!variation_settings || !variation_settings->size()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (wtf_size_t i = 0; i < variation_settings->size(); ++i) {
+    const FontVariationAxis& variation_axis = variation_settings->at(i);
+    cssvalue::CSSFontVariationValue* variation_value =
+        MakeGarbageCollected<cssvalue::CSSFontVariationValue>(
+            variation_axis.TagString(), variation_axis.Value());
+    list->Append(*variation_value);
+  }
+  return list;
+}
+
 CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   auto AppendIfNotNormal = [](CSSValueList* list, const CSSValue& value) {
     auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
@@ -1193,6 +1262,7 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   };
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
   AppendIfNotNormal(list, *ValueForFontStyle(style));
 
   // Check that non-initial font-variant subproperties are not conflicting with
@@ -1200,6 +1270,9 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   CSSValue* ligatures_value = ValueForFontVariantLigatures(style);
   CSSValue* numeric_value = ValueForFontVariantNumeric(style);
   CSSValue* east_asian_value = ValueForFontVariantEastAsian(style);
+  CSSValue* feature_settings = ValueForFontFeatureSettings(style);
+  CSSValue* variation_settings = ValueForFontVariationSettings(style);
+  CSSValue* variant_alternative = ValueForFontVariantAlternates(style);
   // FIXME: Use DataEquivalent<CSSValue>(...) once http://crbug.com/729447 is
   // resolved.
   if (!base::ValuesEquivalent(ligatures_value,
@@ -1210,7 +1283,33 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
                                   CSSValueID::kNormal))) ||
       !base::ValuesEquivalent(east_asian_value,
                               static_cast<CSSValue*>(CSSIdentifierValue::Create(
-                                  CSSValueID::kNormal)))) {
+                                  CSSValueID::kNormal))) ||
+      !base::ValuesEquivalent(feature_settings,
+                              static_cast<CSSValue*>(CSSIdentifierValue::Create(
+                                  CSSValueID::kNormal))) ||
+      !base::ValuesEquivalent(variation_settings,
+                              static_cast<CSSValue*>(CSSIdentifierValue::Create(
+                                  CSSValueID::kNormal))) ||
+      (RuntimeEnabledFeatures::FontVariantAlternatesEnabled() &&
+       !base::ValuesEquivalent(
+           variant_alternative,
+           static_cast<CSSValue*>(
+               CSSIdentifierValue::Create(CSSValueID::kNormal))))) {
+    return nullptr;
+  }
+
+  FontDescription::Kerning kerning = style.GetFontDescription().GetKerning();
+  float size_adjust = style.GetFontDescription().SizeAdjust();
+  FontDescription::FontVariantPosition variant_position =
+      style.GetFontDescription().VariantPosition();
+  OpticalSizing optical_sizing = style.GetFontDescription().FontOpticalSizing();
+
+  if (kerning != FontDescription::kAutoKerning ||
+      optical_sizing != kAutoOpticalSizing ||
+      (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled() &&
+       size_adjust != -1) ||
+      (RuntimeEnabledFeatures::FontVariantPositionEnabled() &&
+       variant_position != FontDescription::kNormalVariantPosition)) {
     return nullptr;
   }
 

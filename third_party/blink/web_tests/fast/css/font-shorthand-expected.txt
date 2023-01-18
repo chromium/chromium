@@ -5,6 +5,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: normal
 font-stretch: normal
@@ -19,6 +24,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: normal
 font-stretch: normal
@@ -33,6 +43,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: normal
 font-stretch: normal
@@ -47,6 +62,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: normal
 font-stretch: normal
@@ -61,6 +81,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: normal
 font-stretch: normal
@@ -75,6 +100,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: normal
 font-stretch: normal
@@ -89,6 +119,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: bold
 font-stretch: normal
@@ -103,6 +138,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: bold
 font-stretch: normal
@@ -117,6 +157,11 @@ font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-east-asian: normal
 font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
 font-variant-position: normal
 font-weight: bold
 font-stretch: normal
@@ -137,6 +182,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: icon
 font-style: 
@@ -151,6 +201,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: menu
 font-style: 
@@ -165,6 +220,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: message-box
 font-style: 
@@ -179,6 +239,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: small-caption
 font-style: 
@@ -193,6 +258,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: status-bar
 font-style: 
@@ -207,6 +277,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: -webkit-mini-control
 font-style: 
@@ -221,6 +296,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: -webkit-small-control
 font-style: 
@@ -235,6 +315,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: -webkit-control
 font-style: 
@@ -249,6 +334,11 @@ font-stretch:
 font-size: 
 line-height: 
 font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
 
 Longhands for font: italic small-caps bold 12px/24px
 

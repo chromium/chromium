@@ -582,6 +582,9 @@ All changes to this list should go through Blink's feature review process: http:
         flex-wrap
     font
         font-family
+        font-feature-settings
+        font-kerning
+        font-optical-sizing
         font-size
         font-stretch
         font-style
@@ -590,6 +593,7 @@ All changes to this list should go through Blink's feature review process: http:
         font-variant-east-asian
         font-variant-ligatures
         font-variant-numeric
+        font-variation-settings
         font-weight
         line-height
     font-synthesis

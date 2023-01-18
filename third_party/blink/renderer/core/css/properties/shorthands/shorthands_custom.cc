@@ -1455,6 +1455,12 @@ bool ConsumeFont(bool important,
                         : *CSSIdentifierValue::Create(CSSValueID::kNormal),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
+
+  // All subproperties of the font, i.e. font-size-adjust, font-kerning, all
+  // subproperties of font-variant, font-feature-settings,
+  // font-language-override, font-optical-sizing and font-variation-settings
+  // property should be reset to their initial values, compare
+  // https://drafts.csswg.org/css-fonts-4/#font-prop
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFontVariantLigatures, CSSPropertyID::kFont,
       *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
@@ -1473,6 +1479,28 @@ bool ConsumeFont(bool important,
         *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   }
+  if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontSizeAdjust, CSSPropertyID::kFont,
+        *CSSIdentifierValue::Create(CSSValueID::kNone), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontKerning, CSSPropertyID::kFont,
+      *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontOpticalSizing, CSSPropertyID::kFont,
+      *CSSIdentifierValue::Create(CSSValueID::kAuto), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontFeatureSettings, CSSPropertyID::kFont,
+      *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontVariationSettings, CSSPropertyID::kFont,
+      *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kFontVariantPosition, CSSPropertyID::kFont,
@@ -1531,10 +1559,6 @@ bool ConsumeFont(bool important,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
 
-  // FIXME: http://www.w3.org/TR/2011/WD-css3-fonts-20110324/#font-prop requires
-  // that "font-stretch", "font-size-adjust", and "font-kerning" be reset to
-  // their initial values but we don't seem to support them at the moment. They
-  // should also be added here once implemented.
   return range.AtEnd();
 }
 

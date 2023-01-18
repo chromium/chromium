@@ -67,6 +67,11 @@ shouldBe("computedStyle.font", "'italic small-caps 700 20px / 40px sans-serif'")
 shouldBe("computedStyle.lineHeight", "'40px'");
 
 style.fontStretch = "ultra-expanded";
+style.fontKerning = "auto";
+style.fontOpticalSizing = "auto";
+style.fontSizeAdjust = "none";
+style.fontFeatureSettings = "normal";
+style.fontVariationSettings = "normal";
 // All font longhands are set, therefore shorthand is built
 shouldBe("style.font", "'italic small-caps bold ultra-expanded 20px / 40px sans-serif'");
 shouldBe("computedStyle.font", "'italic small-caps 700 ultra-expanded 20px / 40px sans-serif'");

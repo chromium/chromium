@@ -42,6 +42,11 @@ body { (<style>)
     /-- overloaded --/     font-variant-numeric: normal;
     /-- overloaded --/     font-variant-east-asian: normal;
         font-variant-alternates: normal;
+        font-size-adjust: none;
+        font-kerning: auto;
+        font-optical-sizing: auto;
+        font-feature-settings: normal;
+        font-variation-settings: normal;
         font-variant-position: normal;
     /-- overloaded --/     font-weight: normal;
     /-- overloaded --/     font-stretch: normal;

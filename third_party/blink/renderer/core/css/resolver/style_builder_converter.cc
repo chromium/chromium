@@ -340,6 +340,32 @@ FontDescription::FamilyDescription StyleBuilderConverter::ConvertFontFamily(
       &state.GetDocument());
 }
 
+FontDescription::Kerning StyleBuilderConverter::ConvertFontKerning(
+    StyleResolverState&,
+    const CSSValue& value) {
+  // When the font shorthand is specified, font-kerning property should
+  // be reset to it's initial value.In this case, the CSS parser uses a special
+  // value CSSPendingSystemFontValue to defer resolution of system font
+  // properties. The auto generated converter does not handle this incoming
+  // value.
+  if (value.IsPendingSystemFontValue()) {
+    return FontDescription::kAutoKerning;
+  }
+
+  CSSValueID value_id = To<CSSIdentifierValue>(value).GetValueID();
+  switch (value_id) {
+    case CSSValueID::kAuto:
+      return FontDescription::kAutoKerning;
+    case CSSValueID::kNormal:
+      return FontDescription::kNormalKerning;
+    case CSSValueID::kNone:
+      return FontDescription::kNoneKerning;
+    default:
+      NOTREACHED();
+      return FontDescription::kAutoKerning;
+  }
+}
+
 FontDescription::FontVariantPosition
 StyleBuilderConverter::ConvertFontVariantPosition(StyleResolverState&,
                                                   const CSSValue& value) {
@@ -366,12 +392,40 @@ StyleBuilderConverter::ConvertFontVariantPosition(StyleResolverState&,
   }
 }
 
+OpticalSizing StyleBuilderConverter::ConvertFontOpticalSizing(
+    StyleResolverState&,
+    const CSSValue& value) {
+  // When the font shorthand is specified, font-optical-sizing property should
+  // be reset to it's initial value. In this case, the CSS parser uses a special
+  // value CSSPendingSystemFontValue to defer resolution of system font
+  // properties. The auto generated converter does not handle this incoming
+  // value.
+  if (value.IsPendingSystemFontValue()) {
+    return kAutoOpticalSizing;
+  }
+
+  CSSValueID value_id = To<CSSIdentifierValue>(value).GetValueID();
+  switch (value_id) {
+    case CSSValueID::kAuto:
+      return kAutoOpticalSizing;
+    case CSSValueID::kNone:
+      return kNoneOpticalSizing;
+    default:
+      NOTREACHED();
+      return kAutoOpticalSizing;
+  }
+}
+
 scoped_refptr<FontFeatureSettings>
 StyleBuilderConverter::ConvertFontFeatureSettings(StyleResolverState& state,
                                                   const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kNormal) {
+    return FontBuilder::InitialFeatureSettings();
+  }
+
+  if (value.IsPendingSystemFontValue()) {
     return FontBuilder::InitialFeatureSettings();
   }
 
@@ -396,6 +450,10 @@ StyleBuilderConverter::ConvertFontVariationSettings(
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kNormal) {
+    return FontBuilder::InitialVariationSettings();
+  }
+
+  if (value.IsPendingSystemFontValue()) {
     return FontBuilder::InitialVariationSettings();
   }
 
@@ -583,6 +641,10 @@ float StyleBuilderConverter::ConvertFontSizeAdjust(StyleResolverState& state,
                                                    const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
+    return FontBuilder::InitialSizeAdjust();
+  }
+
+  if (value.IsPendingSystemFontValue()) {
     return FontBuilder::InitialSizeAdjust();
   }
 

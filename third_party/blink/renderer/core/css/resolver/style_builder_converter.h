@@ -166,6 +166,10 @@ class StyleBuilderConverter {
   static FontDescription::FontVariantPosition ConvertFontVariantPosition(
       StyleResolverState&,
       const CSSValue&);
+  static FontDescription::Kerning ConvertFontKerning(StyleResolverState&,
+                                                     const CSSValue&);
+  static OpticalSizing ConvertFontOpticalSizing(StyleResolverState&,
+                                                const CSSValue&);
   static StyleSelfAlignmentData ConvertSelfOrDefaultAlignmentData(
       StyleResolverState&,
       const CSSValue&);

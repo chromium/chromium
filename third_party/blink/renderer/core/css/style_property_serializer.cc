@@ -46,6 +46,9 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+#include "base/logging.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
 namespace blink {
 
 StylePropertySerializer::CSSPropertyValueSetForSerializer::
@@ -1014,12 +1017,24 @@ String StylePropertySerializer::FontValue() const {
       property_set_.FindPropertyIndex(GetCSSPropertyFontVariantNumeric());
   int font_variant_east_asian_property_index =
       property_set_.FindPropertyIndex(GetCSSPropertyFontVariantEastAsian());
+  int font_kerning_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontKerning());
+  int font_optical_sizing_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontOpticalSizing());
+  int font_variation_settings_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontVariationSettings());
+  int font_feature_settings_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontFeatureSettings());
   DCHECK_NE(font_size_property_index, -1);
   DCHECK_NE(font_family_property_index, -1);
   DCHECK_NE(font_variant_caps_property_index, -1);
   DCHECK_NE(font_variant_ligatures_property_index, -1);
   DCHECK_NE(font_variant_numeric_property_index, -1);
   DCHECK_NE(font_variant_east_asian_property_index, -1);
+  DCHECK_NE(font_kerning_property_index, -1);
+  DCHECK_NE(font_optical_sizing_property_index, -1);
+  DCHECK_NE(font_variation_settings_property_index, -1);
+  DCHECK_NE(font_feature_settings_property_index, -1);
 
   PropertyValueForSerializer font_size_property =
       property_set_.PropertyAt(font_size_property_index);
@@ -1033,34 +1048,99 @@ String StylePropertySerializer::FontValue() const {
       property_set_.PropertyAt(font_variant_numeric_property_index);
   PropertyValueForSerializer font_variant_east_asian_property =
       property_set_.PropertyAt(font_variant_east_asian_property_index);
+  PropertyValueForSerializer font_kerning_property =
+      property_set_.PropertyAt(font_kerning_property_index);
+  PropertyValueForSerializer font_optical_sizing_property =
+      property_set_.PropertyAt(font_optical_sizing_property_index);
+  PropertyValueForSerializer font_variation_settings_property =
+      property_set_.PropertyAt(font_variation_settings_property_index);
+  PropertyValueForSerializer font_feature_settings_property =
+      property_set_.PropertyAt(font_feature_settings_property_index);
 
   // Check that non-initial font-variant subproperties are not conflicting with
   // this serialization.
   const CSSValue* ligatures_value = font_variant_ligatures_property.Value();
   const CSSValue* numeric_value = font_variant_numeric_property.Value();
   const CSSValue* east_asian_value = font_variant_east_asian_property.Value();
+  const CSSValue* feature_settings_value =
+      font_feature_settings_property.Value();
+  const CSSValue* variation_settings_value =
+      font_variation_settings_property.Value();
 
-  auto* ligatures_identifier_value =
-      DynamicTo<CSSIdentifierValue>(ligatures_value);
-  if ((ligatures_identifier_value &&
-       ligatures_identifier_value->GetValueID() != CSSValueID::kNormal) ||
+  auto IsPropertyNonInitial = [](const CSSValue& value,
+                                 const CSSValueID initial_value_id) {
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+    return (identifier_value &&
+            identifier_value->GetValueID() != initial_value_id);
+  };
+
+  if (IsPropertyNonInitial(*ligatures_value, CSSValueID::kNormal) ||
       ligatures_value->IsValueList()) {
     return g_empty_string;
   }
 
-  auto* numeric_identifier_value = DynamicTo<CSSIdentifierValue>(numeric_value);
-  if ((numeric_identifier_value &&
-       numeric_identifier_value->GetValueID() != CSSValueID::kNormal) ||
+  if (IsPropertyNonInitial(*numeric_value, CSSValueID::kNormal) ||
       numeric_value->IsValueList()) {
     return g_empty_string;
   }
 
-  auto* east_asian_identifier_value =
-      DynamicTo<CSSIdentifierValue>(east_asian_value);
-  if ((east_asian_identifier_value &&
-       east_asian_identifier_value->GetValueID() != CSSValueID::kNormal) ||
+  if (IsPropertyNonInitial(*east_asian_value, CSSValueID::kNormal) ||
       east_asian_value->IsValueList()) {
     return g_empty_string;
+  }
+
+  if (IsPropertyNonInitial(*font_kerning_property.Value(), CSSValueID::kAuto) ||
+      IsPropertyNonInitial(*font_optical_sizing_property.Value(),
+                           CSSValueID::kAuto)) {
+    return g_empty_string;
+  }
+
+  if (IsPropertyNonInitial(*variation_settings_value, CSSValueID::kNormal) ||
+      variation_settings_value->IsValueList()) {
+    return g_empty_string;
+  }
+
+  if (IsPropertyNonInitial(*feature_settings_value, CSSValueID::kNormal) ||
+      feature_settings_value->IsValueList()) {
+    return g_empty_string;
+  }
+
+  if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
+    int font_variant_alternates_property_index =
+        property_set_.FindPropertyIndex(GetCSSPropertyFontVariantAlternates());
+    DCHECK_NE(font_variant_alternates_property_index, -1);
+    PropertyValueForSerializer font_variant_alternates_property =
+        property_set_.PropertyAt(font_variant_alternates_property_index);
+    const CSSValue* alternates_value = font_variant_alternates_property.Value();
+    if (IsPropertyNonInitial(*alternates_value, CSSValueID::kNormal) ||
+        alternates_value->IsValueList()) {
+      return g_empty_string;
+    }
+  }
+
+  if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
+    int font_variant_position_property_index =
+        property_set_.FindPropertyIndex(GetCSSPropertyFontVariantPosition());
+    DCHECK_NE(font_variant_position_property_index, -1);
+    PropertyValueForSerializer font_variant_position_property =
+        property_set_.PropertyAt(font_variant_position_property_index);
+    if (IsPropertyNonInitial(*font_variant_position_property.Value(),
+                             CSSValueID::kNormal)) {
+      return g_empty_string;
+    }
+  }
+
+  if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
+    int font_size_adjust_property_index =
+        property_set_.FindPropertyIndex(GetCSSPropertyFontSizeAdjust());
+    DCHECK_NE(font_size_adjust_property_index, -1);
+    PropertyValueForSerializer font_size_adjust_property =
+        property_set_.PropertyAt(font_size_adjust_property_index);
+    const CSSValue* size_adjust_value = font_size_adjust_property.Value();
+    if (IsPropertyNonInitial(*size_adjust_value, CSSValueID::kNone) ||
+        size_adjust_value->IsNumericLiteralValue()) {
+      return g_empty_string;
+    }
   }
 
   const StylePropertyShorthand& shorthand = fontShorthand();
