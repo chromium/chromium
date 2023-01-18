@@ -1119,13 +1119,12 @@ TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
 
 class MediaQueryEvaluatorIdentifiabilityTest : public PageTestBase {
  public:
-  MediaQueryEvaluatorIdentifiabilityTest() {
-    CallCounts counts{.response_for_is_active = true,
-                      .response_for_is_anything_blocked = false,
-                      .response_for_is_allowed = true};
-
+  MediaQueryEvaluatorIdentifiabilityTest()
+      : counts_{.response_for_is_active = true,
+                .response_for_is_anything_blocked = false,
+                .response_for_is_allowed = true} {
     IdentifiabilityStudySettings::SetGlobalProvider(
-        std::make_unique<CountingSettingsProvider>(&counts));
+        std::make_unique<CountingSettingsProvider>(&counts_));
   }
   ~MediaQueryEvaluatorIdentifiabilityTest() override {
     IdentifiabilityStudySettings::ResetStateForTesting();
@@ -1136,6 +1135,7 @@ class MediaQueryEvaluatorIdentifiabilityTest : public PageTestBase {
   }
 
  protected:
+  CallCounts counts_;
   test::ScopedIdentifiabilityTestSampleCollector collector_;
   void UpdateAllLifecyclePhases() {
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
