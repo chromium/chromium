@@ -22,7 +22,6 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/shell.h"
@@ -56,9 +55,6 @@ namespace {
 // The size of app info dialog in fullscreen app list.
 constexpr int kAppInfoDialogWidth = 512;
 constexpr int kAppInfoDialogHeight = 384;
-
-// The duration of app list animations when they should run immediately.
-constexpr int kAppListAnimationDurationImmediateMs = 0;
 
 // The number of minutes that must pass for the current app list page to reset
 // to the first page.
@@ -523,12 +519,10 @@ gfx::Insets AppListView::GetMainViewInsetsForShelf() const {
 }
 
 void AppListView::UpdateWidget() {
-  // The widget's initial position will be off the bottom of the display.
   // Set native view's bounds directly to avoid screen position controller
   // setting bounds in the display where the widget has the largest
   // intersection.
-  GetWidget()->GetNativeView()->SetBounds(
-      GetPreferredWidgetBoundsForState(AppListViewState::kClosed));
+  GetWidget()->GetNativeView()->SetBounds(GetPreferredWidgetBounds());
   ResetSubpixelPositionOffset(GetWidget()->GetNativeView()->layer());
 }
 
@@ -615,8 +609,7 @@ void AppListView::MaybeCreateAccessibilityEvent(AppListViewState new_state) {
 }
 
 void AppListView::EnsureWidgetBoundsMatchCurrentState() {
-  const gfx::Rect new_target_bounds =
-      GetPreferredWidgetBoundsForState(target_app_list_state_);
+  const gfx::Rect new_target_bounds = GetPreferredWidgetBounds();
   aura::Window* window = GetWidget()->GetNativeView();
   if (new_target_bounds == window->GetTargetBounds())
     return;
@@ -823,7 +816,8 @@ void AppListView::SetState(AppListViewState new_state) {
   // Prepare state transition notifier for the new state transition.
   state_transition_notifier_->Reset(new_state);
 
-  StartAnimationForState(new_state);
+  app_list_main_view_->contents_view()->OnAppListViewTargetStateChanged(
+      new_state);
   RecordStateTransitionForUma(new_state);
   app_list_state_ = new_state;
   if (delegate_)
@@ -883,39 +877,9 @@ void AppListView::OnAppListVisibilityChanged(bool shown) {
   GetAppsContainerView()->OnAppListVisibilityChanged(shown);
 }
 
-base::TimeDelta AppListView::GetStateTransitionAnimationDuration(
-    AppListViewState target_state) {
-  if (target_state == AppListViewState::kClosed &&
-      delegate_->ShouldDismissImmediately()) {
-    return base::Milliseconds(kAppListAnimationDurationImmediateMs);
-  }
-
-  if (is_fullscreen() || target_state == AppListViewState::kFullscreenAllApps ||
-      target_state == AppListViewState::kFullscreenSearch) {
-    // Animate over more time to or from a fullscreen state, to maintain a
-    // similar speed.
-    return base::Milliseconds(kAppListAnimationDurationFromFullscreenMs);
-  }
-
-  return base::Milliseconds(kAppListAnimationDurationMs);
-}
-
-void AppListView::StartAnimationForState(AppListViewState target_state) {
-  base::TimeDelta animation_duration =
-      GetStateTransitionAnimationDuration(target_state);
-
-  if (!app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled())
-    ApplyBoundsAnimation(target_state, animation_duration);
-
-  app_list_main_view_->contents_view()->OnAppListViewTargetStateChanged(
-      target_state);
-  app_list_main_view_->contents_view()->AnimateToViewState(target_state,
-                                                           animation_duration);
-}
-
 void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
                                        base::TimeDelta duration_ms) {
-  gfx::Rect target_bounds = GetPreferredWidgetBoundsForState(target_state);
+  gfx::Rect target_bounds = GetPreferredWidgetBounds();
 
   // When closing the view should animate to the shelf bounds. The workspace
   // area will not reflect an autohidden shelf so ask for the proper bounds.
@@ -944,7 +908,7 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
   //     layer has non-identity ransform.
   bool report_animation_throughput =
       layer->transform() == gfx::Transform() &&
-      layer->bounds() == GetPreferredWidgetBoundsForState(app_list_state_);
+      layer->bounds() == GetPreferredWidgetBounds();
 
   // Schedule the animation; set to the target bounds, and make the transform
   // to make this appear in the original location. Then set an empty transform
@@ -1035,16 +999,6 @@ void AppListView::SelectInitialAppsPage() {
   if (GetAppsPaginationModel()->total_pages() > 0 &&
       GetAppsPaginationModel()->selected_page() != 0) {
     GetAppsPaginationModel()->SelectPage(0, false /* animate */);
-  }
-}
-
-int AppListView::GetHeightForState(AppListViewState state) const {
-  switch (app_list_state_) {
-    case AppListViewState::kFullscreenAllApps:
-    case AppListViewState::kFullscreenSearch:
-      return GetFullscreenStateHeight();
-    case AppListViewState::kClosed:
-      return 0;
   }
 }
 
@@ -1190,7 +1144,13 @@ bool AppListView::ShouldIgnoreScrollEvents() {
          GetRootAppsGridView()->pagination_model()->has_transition();
 }
 
-int AppListView::GetPreferredWidgetYForState(AppListViewState state) const {
+gfx::Rect AppListView::GetPreferredWidgetBounds() {
+  // Use parent's width instead of display width to avoid 1 px gap (See
+  // https://crbug.com/884889).
+  CHECK(GetWidget());
+  aura::Window* parent = GetWidget()->GetNativeView()->parent();
+  CHECK(parent);
+
   // Note that app list container fills the screen, so we can treat the
   // container's y as the top of display.
   const display::Display display = GetDisplayNearestView();
@@ -1199,34 +1159,10 @@ int AppListView::GetPreferredWidgetYForState(AppListViewState state) const {
   // The ChromeVox panel as well as the Docked Magnifier viewport affect the
   // workarea of the display. We need to account for that when applist is in
   // fullscreen to avoid being shown below them.
-  const int fullscreen_height = work_area_bounds.y() - display.bounds().y();
+  const int preferred_widget_y = work_area_bounds.y() - display.bounds().y();
 
-  // Force fullscreen height if onscreen keyboard is shown to match the UI state
-  // that's set by default when the onscreen keyboard is first shown.
-  if (onscreen_keyboard_shown_ && state != AppListViewState::kClosed)
-    return fullscreen_height;
-
-  switch (state) {
-    case AppListViewState::kFullscreenAllApps:
-    case AppListViewState::kFullscreenSearch:
-      return fullscreen_height;
-    case AppListViewState::kClosed:
-      if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled())
-        return fullscreen_height;
-      // Align the widget y with shelf y to avoid flicker in show animation.
-      return work_area_bounds.bottom() - display.bounds().y();
-  }
-}
-
-gfx::Rect AppListView::GetPreferredWidgetBoundsForState(
-    AppListViewState state) {
-  // Use parent's width instead of display width to avoid 1 px gap (See
-  // https://crbug.com/884889).
-  CHECK(GetWidget());
-  aura::Window* parent = GetWidget()->GetNativeView()->parent();
-  CHECK(parent);
   return delegate_->SnapBoundsToDisplayEdge(
-      gfx::Rect(0, GetPreferredWidgetYForState(state), parent->bounds().width(),
+      gfx::Rect(0, preferred_widget_y, parent->bounds().width(),
                 GetFullscreenStateHeight()));
 }
 

@@ -16,8 +16,6 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -259,42 +257,38 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
 
   auto* layer = view_->GetWidget()->GetNativeWindow()->layer();
 
-  float initial_opacity = 1.0f;
   bool has_aborted_animation = false;
-  if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
-    if (layer->GetAnimator()->is_animating()) {
-      layer->GetAnimator()->AbortAllAnimations();
-      // Mark that animation was aborted in order to keep initial opacity and
-      // scale values in sync.
-      has_aborted_animation = true;
-    }
-    // `0.01f` prevents a DCHECK error (widgets cannot be shown when visible and
-    // fully transparent at the same time).
-    initial_opacity = layer->opacity() == 0.0f ? 0.01f : layer->opacity();
+  if (layer->GetAnimator()->is_animating()) {
+    layer->GetAnimator()->AbortAllAnimations();
+    // Mark that animation was aborted in order to keep initial opacity and
+    // scale values in sync.
+    has_aborted_animation = true;
   }
+  // `0.01f` prevents a DCHECK error (widgets cannot be shown when visible and
+  // fully transparent at the same time).
+  const float initial_opacity =
+      layer->opacity() == 0.0f ? 0.01f : layer->opacity();
   layer->SetOpacity(initial_opacity);
 
   view_->Show(preferred_state);
 
-  if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
-    // If there was no aborted dismiss animation before - set the initial value,
-    // otherwise smoothly continue where it was aborted.
-    if (!has_aborted_animation) {
-      layer->SetTransform(
-          gfx::GetScaleTransform(gfx::Rect(layer->size()).CenterPoint(),
-                                 kFullscreenLauncherFadeAnimationScale));
-    }
-    FullscreenLauncherAnimationObserver::AnimationCompleteCallback
-        animation_complete_callback = base::BindOnce(
-            &AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone,
-            weak_ptr_factory_.GetWeakPtr(), /*target_visibility=*/true);
-    auto* animation_observer = new FullscreenLauncherAnimationObserver(
-        layer, std::move(animation_complete_callback));
-    UpdateScaleAndOpacityForHomeLauncher(
-        1.0f, 1.0f, absl::nullopt,
-        base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
-                            animation_observer));
+  // If there was no aborted dismiss animation before - set the initial value,
+  // otherwise smoothly continue where it was aborted.
+  if (!has_aborted_animation) {
+    layer->SetTransform(
+        gfx::GetScaleTransform(gfx::Rect(layer->size()).CenterPoint(),
+                               kFullscreenLauncherFadeAnimationScale));
   }
+  FullscreenLauncherAnimationObserver::AnimationCompleteCallback
+      animation_complete_callback = base::BindOnce(
+          &AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone,
+          weak_ptr_factory_.GetWeakPtr(), /*target_visibility=*/true);
+  auto* animation_observer = new FullscreenLauncherAnimationObserver(
+      layer, std::move(animation_complete_callback));
+  UpdateScaleAndOpacityForHomeLauncher(
+      1.0f, 1.0f, absl::nullopt,
+      base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
+                          animation_observer));
 
   SnapAppListBoundsToDisplayEdge();
 
@@ -367,21 +361,19 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
 
   if (!view_->GetWidget()->GetNativeWindow()->is_destroying()) {
     auto* const layer = view_->GetWidget()->GetNativeWindow()->layer();
-    if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
-      FullscreenLauncherAnimationObserver::AnimationCompleteCallback
-          animation_complete_callback = base::BindOnce(
-              &AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone,
-              weak_ptr_factory_.GetWeakPtr(), /*target_visibility=*/false);
-      auto* animation_observer = new FullscreenLauncherAnimationObserver(
-          layer, std::move(animation_complete_callback));
-      // Aborts show animation (if it's running, noop otherwise). This helps to
-      // run dismiss animation smoothly from the aborted scale/opacity points.
-      layer->GetAnimator()->AbortAllAnimations();
-      UpdateScaleAndOpacityForHomeLauncher(
-          kFullscreenLauncherFadeAnimationScale, 0.0f, absl::nullopt,
-          base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
-                              animation_observer));
-    }
+    FullscreenLauncherAnimationObserver::AnimationCompleteCallback
+        animation_complete_callback = base::BindOnce(
+            &AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone,
+            weak_ptr_factory_.GetWeakPtr(), /*target_visibility=*/false);
+    auto* animation_observer = new FullscreenLauncherAnimationObserver(
+        layer, std::move(animation_complete_callback));
+    // Aborts show animation (if it's running, noop otherwise). This helps to
+    // run dismiss animation smoothly from the aborted scale/opacity points.
+    layer->GetAnimator()->AbortAllAnimations();
+    UpdateScaleAndOpacityForHomeLauncher(
+        kFullscreenLauncherFadeAnimationScale, 0.0f, absl::nullopt,
+        base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
+                            animation_observer));
     view_->SetState(AppListViewState::kClosed);
   }
 

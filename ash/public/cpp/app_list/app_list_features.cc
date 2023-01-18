@@ -35,9 +35,6 @@ BASE_FEATURE(kDynamicSearchUpdateAnimation,
 BASE_FEATURE(kLauncherPlayStoreSearch,
              "LauncherPlayStoreSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAnimateScaleOnTabletModeTransition,
-             "AnimateScaleOnTabletModeTransition",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDragAndDropRefactor,
              "AppListDragAndDropRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -80,10 +77,6 @@ bool IsForceShowContinueSectionEnabled() {
 
 bool IsLauncherPlayStoreSearchEnabled() {
   return base::FeatureList::IsEnabled(kLauncherPlayStoreSearch);
-}
-
-bool IsAnimateScaleOnTabletModeTransitionEnabled() {
-  return base::FeatureList::IsEnabled(kAnimateScaleOnTabletModeTransition);
 }
 
 bool IsDragAndDropRefactorEnabled() {

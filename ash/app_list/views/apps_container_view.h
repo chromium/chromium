@@ -216,9 +216,8 @@ class ASH_EXPORT AppsContainerView
     return app_list_nudge_controller_.get();
   }
 
-  // Updates recent apps from app list model. `needs_layout` indicates whether
-  // the apps container relaid out when the recent apps results are updated.
-  void UpdateRecentApps(bool needs_layout);
+  // Updates recent apps from app list model.
+  void UpdateRecentApps();
 
   // Gets the height of the `separator_` including its vertical margin.
   int GetSeparatorHeight();
@@ -313,6 +312,9 @@ class ASH_EXPORT AppsContainerView
 
   // Called after sort to handle focus.
   void HandleFocusAfterSort();
+
+  // Called when the zero state search completes in order to update recent apps.
+  void OnZeroStateSearchDone();
 
   // While true, the gradient mask will not be removed as a mask layer until
   // cardified state ends.

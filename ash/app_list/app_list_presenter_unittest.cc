@@ -38,12 +38,10 @@
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -75,7 +73,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -4175,16 +4172,9 @@ TEST_P(AppListPresenterTest, SearchBoxTextfieldGestureTap) {
   EXPECT_LT(textfield->GetCursorPosition(), initial_cursor_position);
 }
 
-// Temporary class to test `kAnimateScaleOnTabletModeTransition` related
-// animations.
+// Tests tablet <-> clamshell mode transition.
 class AppListPresenterWithScaleAnimationOnTabletModeTransitionTest
     : public AppListPresenterTest {
- public:
-  AppListPresenterWithScaleAnimationOnTabletModeTransitionTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        app_list_features::kAnimateScaleOnTabletModeTransition);
-  }
-
  protected:
   void EnsureAppListViewIsCached() {
     ASSERT_FALSE(GetAppListTestHelper()->GetAppListView());
@@ -4200,8 +4190,6 @@ class AppListPresenterWithScaleAnimationOnTabletModeTransitionTest
     // Entering and exiting from tablet mode should keep `AppListView` cached.
     ASSERT_TRUE(GetAppListTestHelper()->GetAppListView());
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
@@ -4303,20 +4291,7 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
   EXPECT_EQ(layer->GetTargetTransform(), no_transform);
 }
 
-class AppListPresenterAnimationMigrationTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  AppListPresenterAnimationMigrationTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kAnimateScaleOnTabletModeTransition, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(AppListPresenterAnimationMigrationTest,
+TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
        AbortedHideAnimationDoesNotChangeVisibility) {
   // Configure test observer.
   auto visibility_observer = std::make_unique<TestAppListControllerObserver>();
@@ -4333,10 +4308,5 @@ TEST_P(AppListPresenterAnimationMigrationTest,
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(visibility_observer->visibility_changed_to_hidden_times(), 0);
 }
-
-// Runs tests for `kAnimateScaleOnTabletModeTransition` enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListPresenterAnimationMigrationTest,
-                         testing::Bool());
 
 }  // namespace ash
