@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lookalikes/safety_tip_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
@@ -56,7 +56,7 @@ void LookalikeUrlControllerClient::GoBack() {
 }
 
 void LookalikeUrlControllerClient::Proceed() {
-  SafetyTipService::Get(
+  LookalikeUrlService::Get(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
       ->SetUserIgnore(request_url_);
   Reload();

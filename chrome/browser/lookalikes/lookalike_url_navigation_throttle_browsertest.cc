@@ -19,7 +19,6 @@
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
-#include "chrome/browser/lookalikes/safety_tip_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -962,8 +961,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   // Matches 1234.com but is too short.
   TestInterstitialNotShown(browser(), GetURL("123.com"));
 
-  test_helper()->CheckInterstitialUkmCount(0);
-  test_helper()->CheckSafetyTipUkmCount(1);
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Test that the heuristics are not triggered with net errors.
@@ -1861,7 +1859,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottlePrerenderBrowserTest,
   LoadAndCheckInterstitialAt(browser(), kNavigateUrl);
   SendInterstitialCommandSync(browser(),
                               SecurityInterstitialCommand::CMD_PROCEED);
-  SafetyTipService::Get(browser()->profile())
+  LookalikeUrlService::Get(browser()->profile())
       ->ResetWarningDismissedETLDPlusOnesForTesting();
 
   // Start a prerender.

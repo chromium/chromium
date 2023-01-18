@@ -16,7 +16,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
-#include "chrome/browser/lookalikes/safety_tip_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
@@ -265,7 +265,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
     LookalikeTestHelper::TearDownLookalikeTestParams();
-    SafetyTipService::Get(browser()->profile())
+    LookalikeUrlService::Get(browser()->profile())
         ->ResetWarningDismissedETLDPlusOnesForTesting();
   }
 
@@ -679,7 +679,6 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                                ->tab_strip_model()
                                ->GetActiveWebContents()
                                ->GetLastCommittedURL());
-
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kLookalike,
       GURL("https://google.com")));
@@ -961,10 +960,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
 
   histograms.ExpectTotalCount(kInterstitialHistogramName, 0);
-
-  // TODO(crbug.com/1401102): This shouldn't record metrics.
-  test_helper()->CheckSafetyTipUkmCount(1);
-  test_helper()->CheckInterstitialUkmCount(0);
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // Navigate to a domain within a character swap of 1 to a top domain,

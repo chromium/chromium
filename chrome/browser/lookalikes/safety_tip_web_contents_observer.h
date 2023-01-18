@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/lookalikes/safety_tip_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/navigation_handle.h"

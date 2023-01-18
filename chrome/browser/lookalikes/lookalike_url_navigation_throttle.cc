@@ -26,7 +26,6 @@
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_tab_storage.h"
-#include "chrome/browser/lookalikes/safety_tip_service.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -74,6 +73,29 @@ void RecordPerformCheckLatenciesForAllowedNavigation(
   UMA_HISTOGRAM_TIMES(
       "NavigationSuggestion.GetDomainInfoDelayBeforeAllowingNavigation",
       get_domain_info_duration);
+}
+
+// Returns true if the given `url` is a lookalike URL. If the url is allowlisted
+// or previously dismissed by the user, immediately returns false without
+// running any heuristics.
+bool IsLookalikeUrl(Profile* profile,
+                    const GURL& url,
+                    const std::vector<DomainInfo>& engaged_sites,
+                    LookalikeUrlMatchType* match_type,
+                    GURL* suggested_url,
+                    base::TimeDelta* get_domain_info_duration) {
+  DCHECK(get_domain_info_duration->is_zero());
+  LookalikeUrlService::LookalikeUrlCheckResult result =
+      LookalikeUrlService::Get(profile)->CheckUrlForLookalikes(
+          url, engaged_sites,
+          /*stop_checking_on_allowlist_or_ignore=*/true);
+  if (result.action_type == LookalikeActionType::kNone) {
+    return false;
+  }
+  *match_type = result.match_type;
+  *suggested_url = result.suggested_url;
+  *get_domain_info_duration = result.get_domain_info_duration;
+  return true;
 }
 
 }  // namespace
@@ -164,9 +186,8 @@ void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckForURL(
   GURL suggested_url;
   base::TimeDelta get_domain_info_duration;
 
-  bool is_lookalike = IsLookalikeUrl(url, engaged_sites, &match_type,
+  bool is_lookalike = IsLookalikeUrl(profile_, url, engaged_sites, &match_type,
                                      &suggested_url, &get_domain_info_duration);
-
   lookalike_cache_[host] =
       std::make_tuple(is_lookalike, match_type, suggested_url);
 }
@@ -387,7 +408,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
     first_match_type = std::get<1>(tuple);
     first_suggested_url = std::get<2>(tuple);
   } else {
-    first_is_lookalike = IsLookalikeUrl(first_url, engaged_sites,
+    first_is_lookalike = IsLookalikeUrl(profile_, first_url, engaged_sites,
                                         &first_match_type, &first_suggested_url,
                                         &first_url_get_domain_info_duration);
   }
@@ -406,7 +427,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
     last_suggested_url = std::get<2>(tuple);
   } else {
     last_is_lookalike =
-        IsLookalikeUrl(last_url, engaged_sites, &last_match_type,
+        IsLookalikeUrl(profile_, last_url, engaged_sites, &last_match_type,
                        &last_suggested_url, &last_url_get_domain_info_duration);
   }
 
@@ -506,92 +527,4 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
         first_is_lookalike);
   }
   return NavigationThrottle::PROCEED;
-}
-
-bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
-    const GURL& url,
-    const std::vector<DomainInfo>& engaged_sites,
-    LookalikeUrlMatchType* match_type,
-    GURL* suggested_url,
-    base::TimeDelta* get_domain_info_duration) {
-  DCHECK(get_domain_info_duration->is_zero());
-
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    return false;
-  }
-
-  // Don't warn on non-public domains.
-  if (net::HostStringIsLocalhost(url.host()) ||
-      net::IsHostnameNonUnique(url.host()) ||
-      GetETLDPlusOne(url.host()).empty() || lookalikes::IsSafeTLD(url.host())) {
-    return false;
-  }
-
-  // Fetch the component allowlist.
-  const auto* proto = lookalikes::GetSafetyTipsRemoteConfigProto();
-
-  // When there's no proto (like at browser start), fail-safe and don't block.
-  if (!proto) {
-    return false;
-  }
-
-  // If the URL is in the local temporary allowlist, don't show any warning.
-  if (SafetyTipService::Get(profile_)->IsIgnored(url)) {
-    return false;
-  }
-
-  // If the host is allowlisted by policy, don't show any warning.
-  if (lookalikes::IsAllowedByEnterprisePolicy(profile_->GetPrefs(), url)) {
-    return false;
-  }
-
-  // GetDomainInfo() is expensive, so do possible early-abort checks first.
-  base::TimeTicks get_domain_info_start = base::TimeTicks::Now();
-  const DomainInfo navigated_domain = lookalikes::GetDomainInfo(url);
-  *get_domain_info_duration = base::TimeTicks::Now() - get_domain_info_start;
-
-  if (IsTopDomain(navigated_domain)) {
-    return false;
-  }
-
-  // Ensure that this URL is not already engaged. We can't use the synchronous
-  // SiteEngagementService::IsEngagementAtLeast as it has side effects. We check
-  // in PerformChecks to ensure we have up-to-date engaged_sites. This check
-  // ignores the scheme which is okay since it's more conservative: If the user
-  // is engaged with http://domain.test, not showing the warning on
-  // https://domain.test is acceptable.
-  if (base::Contains(engaged_sites, navigated_domain.domain_and_registry,
-                     &DomainInfo::domain_and_registry)) {
-    return false;
-  }
-
-  const lookalikes::LookalikeTargetAllowlistChecker in_target_allowlist =
-      base::BindRepeating(
-          &lookalikes::IsTargetHostAllowlistedBySafetyTipsComponent, proto);
-  std::string matched_domain;
-  if (GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
-                        proto, &matched_domain, match_type)) {
-    DCHECK(!matched_domain.empty());
-    *suggested_url = GetSuggestedURL(*match_type, url, matched_domain);
-
-    // Only flag the URL if its not allowed to spoof the suggested URL.
-    if (!lookalikes::IsUrlAllowlistedBySafetyTipsComponent(
-            proto, url.GetWithEmptyPath(), *suggested_url)) {
-      return true;
-    }
-  }
-
-  if (ShouldBlockBySpoofCheckResult(navigated_domain)) {
-    *match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
-    *suggested_url = GURL();
-
-    // Only flag the URL if its not allowed to spoof itself (which is how we
-    // indicate spoof-check-specific allowlisting).
-    if (!lookalikes::IsUrlAllowlistedBySafetyTipsComponent(
-            proto, url.GetWithEmptyPath(), url.GetWithEmptyPath())) {
-      return true;
-    }
-  }
-
-  return false;
 }

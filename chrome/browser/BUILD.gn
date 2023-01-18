@@ -660,8 +660,6 @@ static_library("browser") {
     "lookalikes/lookalike_url_service.h",
     "lookalikes/lookalike_url_tab_storage.cc",
     "lookalikes/lookalike_url_tab_storage.h",
-    "lookalikes/safety_tip_service.cc",
-    "lookalikes/safety_tip_service.h",
     "lookalikes/safety_tip_ui.h",
     "lookalikes/safety_tip_ui_helper.cc",
     "lookalikes/safety_tip_ui_helper.h",

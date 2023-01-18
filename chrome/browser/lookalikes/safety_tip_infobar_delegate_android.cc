@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/lookalikes/safety_tip_service.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"

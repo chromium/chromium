@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
-#include "chrome/browser/lookalikes/safety_tip_service.h"
 #include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
@@ -29,8 +28,15 @@ namespace {
 void RecordHeuristicsUKMData(SafetyTipCheckResult result,
                              ukm::SourceId navigation_source_id,
                              SafetyTipInteraction action) {
-  // If we didn't trigger any heuristics at all, we don't want to record UKM
-  // data.
+  DCHECK(
+      result.safety_tip_status == security_state::SafetyTipStatus::kNone ||
+      result.safety_tip_status == security_state::SafetyTipStatus::kUnknown ||
+      result.safety_tip_status == security_state::SafetyTipStatus::kLookalike ||
+      result.safety_tip_status ==
+          security_state::SafetyTipStatus::kLookalikeIgnored);
+
+  // If we didn't trigger any lookalike heuristics at all, we don't want to
+  // record UKM data.
   if (!result.lookalike_heuristic_triggered) {
     return;
   }
@@ -38,14 +44,12 @@ void RecordHeuristicsUKMData(SafetyTipCheckResult result,
   ukm::builders::Security_SafetyTip(navigation_source_id)
       .SetSafetyTipStatus(static_cast<int64_t>(result.safety_tip_status))
       .SetSafetyTipInteraction(static_cast<int64_t>(action))
-      .SetTriggeredLookalikeHeuristics(result.lookalike_heuristic_triggered)
+      .SetTriggeredLookalikeHeuristics(true)
       .SetTriggeredServerSideBlocklist(false) /* Deprecated */
       .SetTriggeredKeywordsHeuristics(false)  /* Deprecated */
       .SetUserPreviouslyIgnored(
           result.safety_tip_status ==
-              security_state::SafetyTipStatus::kBadReputationIgnored ||
-          result.safety_tip_status ==
-              security_state::SafetyTipStatus::kLookalikeIgnored)
+          security_state::SafetyTipStatus::kLookalikeIgnored)
       .Record(ukm::UkmRecorder::Get());
 }
 
@@ -59,7 +63,7 @@ void OnSafetyTipClosed(SafetyTipCheckResult result,
   if (action == SafetyTipInteraction::kDismissWithEsc ||
       action == SafetyTipInteraction::kDismissWithClose ||
       action == SafetyTipInteraction::kDismissWithIgnore) {
-    SafetyTipService::Get(profile)->SetUserIgnore(url);
+    LookalikeUrlService::Get(profile)->SetUserIgnore(url);
 
     // Record that the user dismissed the safety tip. kDismiss is recorded in
     // all dismiss-like cases, which makes it easier to track overall dismissals
@@ -231,8 +235,7 @@ void SafetyTipWebContentsObserver::MaybeShowSafetyTip(
     return;
   }
 
-  SafetyTipService* service = SafetyTipService::Get(profile_);
-  service->GetSafetyTipStatus(
+  LookalikeUrlService::Get(profile_)->CheckSafetyTipStatus(
       url, web_contents(),
       base::BindOnce(&SafetyTipWebContentsObserver::HandleSafetyTipCheckResult,
                      weak_factory_.GetWeakPtr(), navigation_source_id,
