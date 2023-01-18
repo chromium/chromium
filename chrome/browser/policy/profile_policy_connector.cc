@@ -9,8 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -103,6 +105,7 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
       return;
     }
 
+    ReportTimeUma();
     std::move(proxied_policies_propagated_callback_).Run();
   }
 
@@ -110,15 +113,22 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
     if (!proxied_policies_propagated_callback_)
       return;
     LOG(WARNING) << "Waiting for proxied policies to propagate timed out.";
+    ReportTimeUma();
     std::move(proxied_policies_propagated_callback_).Run();
   }
 
  private:
   static constexpr int kProxiedPoliciesPropagationTimeoutInSeconds = 5;
 
+  void ReportTimeUma() const {
+    UmaHistogramTimes("Enterprise.TimeToUnthrottlePolicyInit",
+                      base::TimeTicks::Now() - construction_time_);
+  }
+
   PolicyService* const device_wide_policy_service_;
   const ProxyPolicyProvider* const proxy_policy_provider_;
   const ConfigurationPolicyProvider* const source_policy_provider_;
+  const base::TimeTicks construction_time_ = base::TimeTicks::Now();
   base::OnceClosure proxied_policies_propagated_callback_;
   base::OneShotTimer timeout_timer_;
 };
@@ -259,7 +269,7 @@ void ProfilePolicyConnector::Init(
   //     users, |user_policy_delegate_candidate| will be nullptr.
   // (*) The ProxyPolicyProvider is actually used by the device-wide policy
   //     service. This may not be the case  e.g. in tests that use
-  //     bBrowserPolicyConnectorBase::SetPolicyProviderForTesting.
+  //     BrowserPolicyConnectorBase::SetPolicyProviderForTesting.
   if (is_primary_user_ && user_policy_delegate_candidate &&
       GetDeviceWidePolicyService()->HasProvider(GetProxyPolicyProvider())) {
     GetProxyPolicyProvider()->SetDelegate(user_policy_delegate_candidate);
