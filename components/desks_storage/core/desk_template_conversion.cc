@@ -27,6 +27,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 using SyncWindowOpenDisposition =
@@ -217,16 +221,19 @@ std::string GetJsonAppId(const base::Value& app) {
 
   if (app_type == kAppTypeBrowser) {
     // Return the primary browser's known app ID.
-    // Note that we will launch the browser as lacros if it is enabled,
-    // even if it was saved as a non-lacros window, during template launch
-    // (and vice-versa). `crosapi::lacros_startup_state::IsLacrosEnabled()` &&
-    // `crosapi::lacros_startup_state::IsLacrosPrimaryEnabled()` cannot be used
-    // to determine lacros state at start up since the values are set and
-    // propagated until later. We will determine the chrome app type during
-    // template launch instead. As such, we will default to ash chrome for now.
+    const bool is_lacros =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        true;
+#else
+        // Note that this will launch the browser as lacros if it is enabled,
+        // even if it was saved as a non-lacros window (and vice-versa).
+        crosapi::lacros_startup_state::IsLacrosEnabled() &&
+        crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Browser app has a known app ID.
-    return std::string(app_constants::kChromeAppId);
+    return std::string(is_lacros ? app_constants::kLacrosAppId
+                                 : app_constants::kChromeAppId);
   } else if (app_type == kAppTypeChrome || app_type == kAppTypeProgressiveWeb ||
              app_type == kAppTypeArc) {
     // Read the provided app ID
@@ -1174,18 +1181,19 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
       // Return an empty string to indicate this app is unsupported.
       return std::string();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow: {
-      // Return the primary browser's known app ID.
-      // Note that we will launch the browser as lacros if it is enabled,
-      // even if it was saved as a non-lacros window, during template launch
-      // (and vice-versa). `crosapi::lacros_startup_state::IsLacrosEnabled()` &&
-      // `crosapi::lacros_startup_state::IsLacrosPrimaryEnabled()` cannot be
-      // used to determine lacros state at start up since the values are set and
-      // propagated until later. We will determine the chrome app type during
-      // template launch instead. As such, we will default to ash chrome for
-      // now.
+      const bool is_lacros =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          true;
+#else
+          // Note that this will launch the browser as lacros if it is enabled,
+          // even if it was saved as a non-lacros window (and vice-versa).
+          crosapi::lacros_startup_state::IsLacrosEnabled() &&
+          crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
       // Browser app has a known app ID.
-      return std::string(app_constants::kChromeAppId);
+      return std::string(is_lacros ? app_constants::kLacrosAppId
+                                   : app_constants::kChromeAppId);
     }
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
       return app.app().chrome_app().app_id();
