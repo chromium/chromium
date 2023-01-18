@@ -170,7 +170,7 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerRenderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerUITest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTest.java",
   ]

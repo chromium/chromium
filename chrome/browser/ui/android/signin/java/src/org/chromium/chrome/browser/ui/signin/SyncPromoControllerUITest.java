@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.not;
+
 import android.app.Activity;
 import android.support.test.runner.lifecycle.Stage;
 import android.view.LayoutInflater;
@@ -50,7 +58,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class SyncPromoControllerRenderTest {
+public class SyncPromoControllerUITest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -60,7 +68,7 @@ public class SyncPromoControllerRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(8)
+                    .setRevision(0)
                     .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
 
@@ -94,121 +102,126 @@ public class SyncPromoControllerRenderTest {
     /**
      * @param nightModeEnabled A nitght mode flag injected by @ParameterAnnotations.ClassParameter.
      */
-    public SyncPromoControllerRenderTest(boolean nightModeEnabled) {
+    public SyncPromoControllerUITest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testBookmarkSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
         ProfileDataCache profileDataCache = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                     mActivityTestRule.getActivity());
         });
-        View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
+        setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.sync_promo_view_bookmarks);
-        mRenderTestRule.render(
-                view, "bookmark_sync_promo_view_signed_out_and_no_account_available");
+        onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
+        setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.sync_promo_view_bookmarks);
-        mRenderTestRule.render(view, "bookmark_sync_promo_view_signed_out_and_account_available");
+        onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testBookmarkSyncPromoViewSignedInAndNotSyncing() throws Throwable {
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
+        setUpSyncPromoView(SigninAccessPoint.BOOKMARK_MANAGER, profileDataCache,
                 R.layout.sync_promo_view_bookmarks);
-        mRenderTestRule.render(view, "bookmark_sync_promo_view_signed_in_and_not_syncing");
+        onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testSettingsSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
         ProfileDataCache profileDataCache = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                     mActivityTestRule.getActivity());
         });
-        View view = setUpSyncPromoView(
+        setUpSyncPromoView(
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
-        mRenderTestRule.render(
-                view, "settings_sync_promo_view_signed_out_and_no_account_available");
+        onView(withText(R.string.sync_promo_title_settings)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_settings)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testSettingsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(
+        setUpSyncPromoView(
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
-        mRenderTestRule.render(view, "settings_sync_promo_view_signed_out_and_account_available");
+        onView(withText(R.string.sync_promo_title_settings)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_settings)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testSettingsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(
+        setUpSyncPromoView(
                 SigninAccessPoint.SETTINGS, profileDataCache, R.layout.sync_promo_view_settings);
-        mRenderTestRule.render(view, "settings_sync_promo_view_signed_in_and_not_syncing");
+        onView(withText(R.string.sync_promo_title_settings)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_settings)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testRecentTabsSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
         ProfileDataCache profileDataCache = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                     mActivityTestRule.getActivity());
         });
-        View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
+        setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.sync_promo_view_recent_tabs);
-        mRenderTestRule.render(
-                view, "recent_tabs_sync_promo_view_signed_out_and_no_account_available");
+        onView(withText(R.string.sync_promo_title_recent_tabs)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_recent_tabs)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testRecentTabsSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
+        setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.sync_promo_view_recent_tabs);
-        mRenderTestRule.render(
-                view, "recent_tabs_sync_promo_view_signed_out_and_account_available");
+        onView(withText(R.string.sync_promo_title_recent_tabs)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_recent_tabs)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
     @MediumTest
-    @Feature("RenderTest")
     public void testRecentTabsSyncPromoViewSignedInAndNotSyncing() throws Throwable {
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
-        View view = setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
+        setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
                 R.layout.sync_promo_view_recent_tabs);
-        mRenderTestRule.render(view, "recent_tabs_sync_promo_view_signed_in_and_not_syncing");
+        onView(withText(R.string.sync_promo_title_recent_tabs)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_description_recent_tabs)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
