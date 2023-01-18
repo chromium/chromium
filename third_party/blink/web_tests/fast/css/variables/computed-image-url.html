@@ -5,15 +5,17 @@
 <div id="target"></div>
 
 <script>
-function testImageVar(property, value) {
+function testImageVar(property, value, expectedValue) {
+  if(expectedValue == undefined) expectedValue = value;
+
   test(() => {
     target.style.setProperty('--test', value);
     target.style[property] = 'var(--test)';
-    var actual = getComputedStyle(target)[property];
+    const actual = getComputedStyle(target)[property];
 
     target.style[property] = value;
-    assert_equals(target.style[property], value, value + ' must be valid for ' + property);
-    var expected = getComputedStyle(target)[property];
+    assert_equals(target.style[property], expectedValue, value + ' must be valid for ' + property);
+    const expected = getComputedStyle(target)[property];
 
     assert_equals(actual, expected);
   }, property + ' should resolve ' + value + ' the same whether via var() or not.');
@@ -21,9 +23,24 @@ function testImageVar(property, value) {
 
 testImageVar('background-image', 'url("image.png")');
 testImageVar('background-image', 'image-set(url("image.png") 1x)');
-testImageVar('background-image', '-webkit-image-set(url("image.png") 1x)');
+
+// The '-webkit-' prefixed 'image-set' is expected to serialize to the same
+// value as standard 'image-set'.
+// https://drafts.csswg.org/css-images-4/#deprecated
+// "Implementations must accept -webkit-image-set() as a parse-time alias of
+// image-set(). (It’s a valid value, with identical arguments to image-set(),
+// and is turned into image-set() during parsing.)"
+testImageVar(
+  'background-image',
+  '-webkit-image-set(url("image.png") 1x)',
+  'image-set(url("image.png") 1x)'
+);
 
 testImageVar('background', 'url("image.png")');
 testImageVar('background', 'image-set(url("image.png") 1x)');
-testImageVar('background', '-webkit-image-set(url("image.png") 1x)');
+testImageVar(
+  'background',
+  '-webkit-image-set(url("image.png") 1x)',
+  'image-set(url("image.png") 1x)'
+);
 </script>

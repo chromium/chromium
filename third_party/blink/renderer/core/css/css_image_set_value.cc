@@ -123,7 +123,7 @@ StyleImage* CSSImageSetValue::CacheImage(
 String CSSImageSetValue::CustomCSSText() const {
   StringBuilder result;
 
-  if (is_webkit_prefixed_) {
+  if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
     result.Append("-webkit-");
   }
 
@@ -177,10 +177,6 @@ CSSImageSetValue* CSSImageSetValue::ValueWithURLsMadeAbsolute() {
     auto* image_value = DynamicTo<CSSImageValue>(item.Get());
     image_value ? value->Append(*image_value->ValueWithURLMadeAbsolute())
                 : value->Append(*item);
-  }
-
-  if (is_webkit_prefixed_) {
-    value->MarkWebkitPrefixed();
   }
 
   return value;

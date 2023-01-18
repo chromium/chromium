@@ -3,17 +3,25 @@ description('Test the parsing of the image-set functions.');
 var result;
 
 function testImageSetRule(description, property, rule, isPrefixed) {
-  rule = `${isPrefixed ? '-webkit-' : ''}image-set(${rule})`;
+  // The '-webkit-' prefixed 'image-set' is expected to serialize to the same
+  // value as standard 'image-set'.
+  // https://drafts.csswg.org/css-images-4/#deprecated
+  // "Implementations must accept -webkit-image-set() as a parse-time alias of
+  // image-set(). (It’s a valid value, with identical arguments to image-set(),
+  // and is turned into image-set() during parsing.)"
+  const expected = `image-set(${rule})`;
+
+  rule = `${isPrefixed ? '-webkit-' : ''}${expected}`;
 
   debug('');
   debug(`${description} : ${rule}`);
 
-  var div = document.createElement('div');
+  const div = document.createElement('div');
   div.style[property] = rule;
   document.body.appendChild(div);
 
   result = div.style[property].replace(/url\("[^#]*#/g, 'url("#');
-  shouldBeEqualToString('result', rule);
+  shouldBeEqualToString('result', expected);
 
   document.body.removeChild(div);
 }

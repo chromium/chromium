@@ -12,13 +12,21 @@ function testComputedStyle(property, rule) {
 }
 
 function testImageSetRule(description, rule, isPrefixed) {
-  var rule = `${isPrefixed ? '-webkit-' : ''}image-set(${rule})`;
+  // The '-webkit-' prefixed 'image-set' is expected to serialize to the same
+  // value as standard 'image-set'.
+  // https://drafts.csswg.org/css-images-4/#deprecated
+  // "Implementations must accept -webkit-image-set() as a parse-time alias of
+  // image-set(). (It’s a valid value, with identical arguments to image-set(),
+  // and is turned into image-set() during parsing.)"
+  const expected = `image-set(${rule})`;
+
+  rule = `${isPrefixed ? '-webkit-' : ''}${expected}`;
 
   debug('');
   debug(`${description} : ${rule}`);
 
-  var call = 'testComputedStyle(`background-image`, `' + rule + '`)';
-  shouldBeEqualToString(call, rule);
+  const call = 'testComputedStyle(`background-image`, `' + rule + '`)';
+  shouldBeEqualToString(call, expected);
 }
 
 function testImageSetRules(description, rule) {

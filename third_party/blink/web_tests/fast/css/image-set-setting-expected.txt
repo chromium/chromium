@@ -9,7 +9,7 @@ PASS testComputedStyle(`background-image`, `image-set(url("http://www.webkit.org
 
 
 Single value for background-image : -webkit-image-set(url("http://www.webkit.org/a") 1x)
-PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/a") 1x)`) is "-webkit-image-set(url(\"http://www.webkit.org/a\") 1x)"
+PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/a") 1x)`) is "image-set(url(\"http://www.webkit.org/a\") 1x)"
 
 
 Multiple values for background-image : image-set(url("http://www.webkit.org/a") 1x, url("http://www.webkit.org/b") 2x)
@@ -17,7 +17,7 @@ PASS testComputedStyle(`background-image`, `image-set(url("http://www.webkit.org
 
 
 Multiple values for background-image : -webkit-image-set(url("http://www.webkit.org/a") 1x, url("http://www.webkit.org/b") 2x)
-PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/a") 1x, url("http://www.webkit.org/b") 2x)`) is "-webkit-image-set(url(\"http://www.webkit.org/a\") 1x, url(\"http://www.webkit.org/b\") 2x)"
+PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/a") 1x, url("http://www.webkit.org/b") 2x)`) is "image-set(url(\"http://www.webkit.org/a\") 1x, url(\"http://www.webkit.org/b\") 2x)"
 
 
 Multiple values for background-image, out of order : image-set(url("http://www.webkit.org/c") 3x, url("http://www.webkit.org/b") 2x, url("http://www.webkit.org/a") 1x)
@@ -25,7 +25,7 @@ PASS testComputedStyle(`background-image`, `image-set(url("http://www.webkit.org
 
 
 Multiple values for background-image, out of order : -webkit-image-set(url("http://www.webkit.org/c") 3x, url("http://www.webkit.org/b") 2x, url("http://www.webkit.org/a") 1x)
-PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/c") 3x, url("http://www.webkit.org/b") 2x, url("http://www.webkit.org/a") 1x)`) is "-webkit-image-set(url(\"http://www.webkit.org/c\") 3x, url(\"http://www.webkit.org/b\") 2x, url(\"http://www.webkit.org/a\") 1x)"
+PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/c") 3x, url("http://www.webkit.org/b") 2x, url("http://www.webkit.org/a") 1x)`) is "image-set(url(\"http://www.webkit.org/c\") 3x, url(\"http://www.webkit.org/b\") 2x, url(\"http://www.webkit.org/a\") 1x)"
 
 
 Duplicate values for background-image : image-set(url("http://www.webkit.org/c") 1x, url("http://www.webkit.org/b") 2x, url("http://www.webkit.org/a") 1x)
@@ -33,7 +33,7 @@ PASS testComputedStyle(`background-image`, `image-set(url("http://www.webkit.org
 
 
 Duplicate values for background-image : -webkit-image-set(url("http://www.webkit.org/c") 1x, url("http://www.webkit.org/b") 2x, url("http://www.webkit.org/a") 1x)
-PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/c") 1x, url("http://www.webkit.org/b") 2x, url("http://www.webkit.org/a") 1x)`) is "-webkit-image-set(url(\"http://www.webkit.org/c\") 1x, url(\"http://www.webkit.org/b\") 2x, url(\"http://www.webkit.org/a\") 1x)"
+PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/c") 1x, url("http://www.webkit.org/b") 2x, url("http://www.webkit.org/a") 1x)`) is "image-set(url(\"http://www.webkit.org/c\") 1x, url(\"http://www.webkit.org/b\") 2x, url(\"http://www.webkit.org/a\") 1x)"
 
 
 Fractional values for background-image : image-set(url("http://www.webkit.org/c") 0.2x, url("http://www.webkit.org/b") 2.3x, url("http://www.webkit.org/a") 12.3456x)
@@ -41,7 +41,7 @@ PASS testComputedStyle(`background-image`, `image-set(url("http://www.webkit.org
 
 
 Fractional values for background-image : -webkit-image-set(url("http://www.webkit.org/c") 0.2x, url("http://www.webkit.org/b") 2.3x, url("http://www.webkit.org/a") 12.3456x)
-PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/c") 0.2x, url("http://www.webkit.org/b") 2.3x, url("http://www.webkit.org/a") 12.3456x)`) is "-webkit-image-set(url(\"http://www.webkit.org/c\") 0.2x, url(\"http://www.webkit.org/b\") 2.3x, url(\"http://www.webkit.org/a\") 12.3456x)"
+PASS testComputedStyle(`background-image`, `-webkit-image-set(url("http://www.webkit.org/c") 0.2x, url("http://www.webkit.org/b") 2.3x, url("http://www.webkit.org/a") 12.3456x)`) is "image-set(url(\"http://www.webkit.org/c\") 0.2x, url(\"http://www.webkit.org/b\") 2.3x, url(\"http://www.webkit.org/a\") 12.3456x)"
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -14,7 +14,13 @@ function testImageSetSerialization(isPrefixed) {
   const url = location.href;
   const path = url.substring(0, url.lastIndexOf('/')+1);
 
-  const expected = `${prefix}image-set(url("${path}test1.png") 1x, url("${path}test2.png") 2x)`;
+  // The '-webkit-' prefixed 'image-set' is expected to serialize to the same
+  // value as standard 'image-set'.
+  // https://drafts.csswg.org/css-images-4/#deprecated
+  // "Implementations must accept -webkit-image-set() as a parse-time alias of
+  // image-set(). (It’s a valid value, with identical arguments to image-set(),
+  // and is turned into image-set() during parsing.)"
+  const expected = `image-set(url("${path}test1.png") 1x, url("${path}test2.png") 2x)`;
 
   assert_equals(
     getComputedStyle(target).backgroundImage,
@@ -23,7 +29,7 @@ function testImageSetSerialization(isPrefixed) {
 
   assert_equals(
     target.style.backgroundImage,
-    `${prefix}image-set(url("test1.png") 1x, url("test2.png") 2x)`
+    `image-set(url("test1.png") 1x, url("test2.png") 2x)`
   );
 }
 

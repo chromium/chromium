@@ -58,8 +58,6 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
-  void MarkWebkitPrefixed() { is_webkit_prefixed_ = true; }
-
  protected:
   struct ImageWithScale {
     DISALLOW_NEW();
@@ -80,8 +78,6 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
   float cached_scale_factor_;
 
   Vector<ImageWithScale> images_in_set_;
-
-  bool is_webkit_prefixed_ = false;
 };
 
 template <>

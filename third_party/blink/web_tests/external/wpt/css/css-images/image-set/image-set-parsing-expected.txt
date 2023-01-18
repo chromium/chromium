@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
-Found 60 tests; 27 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 60 tests; 34 PASS, 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value
-FAIL e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"example.png\") 1x)" but got "-webkit-image-set(url(\"example.png\") 1x)"
+PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set(url(\"example.png\") 1x)" should set the property value
-FAIL e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 1x)" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"example.png\") 1x)" but got "-webkit-image-set(url(\"example.png\") 1x)"
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 1x)" should set the property value
 FAIL e.style['background-image'] = "image-set('example.jpg' 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "-webkit-image-set('example.jpg' 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "image-set(url(example.png) 1x, 'example.png' 2x)" should set the property value assert_not_equals: property should be set got disallowed value ""
@@ -51,14 +51,14 @@ PASS e.style['background-image'] = "-webkit-image-set(type('image/png') url(exam
 PASS e.style['cursor'] = "image-set(linear-gradient(black, white) 1x)" should not set the property value
 PASS e.style['cursor'] = "-webkit-image-set(linear-gradient(black, white) 1x)" should not set the property value
 PASS e.style['background-image'] = "image-set(url(foo))" should set the property value
-FAIL e.style['background-image'] = "-webkit-image-set(url(foo))" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"foo\") 1x)" but got "-webkit-image-set(url(\"foo\") 1x)"
+PASS e.style['background-image'] = "-webkit-image-set(url(foo))" should set the property value
 PASS e.style['background-image'] = "image-set(url(foo), url(bar) 1x)" should set the property value
-FAIL e.style['background-image'] = "-webkit-image-set(url(foo), url(bar) 1x)" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"foo\") 1x, url(\"bar\") 1x)" but got "-webkit-image-set(url(\"foo\") 1x, url(\"bar\") 1x)"
+PASS e.style['background-image'] = "-webkit-image-set(url(foo), url(bar) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set(url(foo) 1x, url(bar))" should set the property value
-FAIL e.style['background-image'] = "-webkit-image-set(url(foo) 1x, url(bar))" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"foo\") 1x, url(\"bar\") 1x)" but got "-webkit-image-set(url(\"foo\") 1x, url(\"bar\") 1x)"
+PASS e.style['background-image'] = "-webkit-image-set(url(foo) 1x, url(bar))" should set the property value
 PASS e.style['background-image'] = "image-set(url(foo), url(bar))" should set the property value
-FAIL e.style['background-image'] = "-webkit-image-set(url(foo), url(bar))" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"foo\") 1x, url(\"bar\") 1x)" but got "-webkit-image-set(url(\"foo\") 1x, url(\"bar\") 1x)"
+PASS e.style['background-image'] = "-webkit-image-set(url(foo), url(bar))" should set the property value
 PASS e.style['background-image'] = "image-set(url(foo) 1x, url(bar), url(baz) 2x)" should set the property value
-FAIL e.style['background-image'] = "-webkit-image-set(url(foo) 1x, url(bar), url(baz) 2x)" should set the property value assert_equals: serialization should be canonical expected "image-set(url(\"foo\") 1x, url(\"bar\") 1x, url(\"baz\") 2x)" but got "-webkit-image-set(url(\"foo\") 1x, url(\"bar\") 1x, url(\"baz\") 2x)"
+PASS e.style['background-image'] = "-webkit-image-set(url(foo) 1x, url(bar), url(baz) 2x)" should set the property value
 Harness: the test ran to completion.
 

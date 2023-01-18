@@ -3350,7 +3350,6 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
   switch (range.Peek().FunctionId()) {
     case CSSValueID::kWebkitImageSet:
       context.Count(WebFeature::kWebkitImageSet);
-      image_set->MarkWebkitPrefixed();
       break;
 
     case CSSValueID::kImageSet:
