@@ -1,25 +1,14 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <title>Tests for Delegation of shipping and contact collection to PH</title>
-<link rel="manifest" href="/payment-handler/manifest.json" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="register-and-activate-service-worker.js"></script>
 <p>If the payment sheet is shown, please authorize the mock payment.</p>
 <script>
-  async function runTests(registration) {
-    const methodName = window.location.origin + '/payment-handler/payment-app/';
-    await registration.paymentManager.instruments.clear();
-    await registration.paymentManager.instruments.set('instrument-key', {
-      name: 'Instrument Name',
-      method: methodName,
-    });
-    await navigator.serviceWorker.ready;
-    await registration.paymentManager.enableDelegations(
-        ['shippingAddress', 'payerName', 'payerPhone', 'payerEmail']);
-
+    const methodName = window.location.origin + '/payment-handler/'
+        + 'supports-shipping-contact-delegation-manual-manifest.json';
     promise_test(async (t) => {
       const request = new PaymentRequest([{supportedMethods: methodName}], {
         total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
@@ -78,11 +67,4 @@
 
       return complete_promise;
     }, 'Payment handler response should include payer\'s contact information.');
-  }
-
-  registerAndActiveServiceWorker(
-    'app-supports-shipping-contact-delegation.js',
-    'payment-app/',
-    runTests
-  );
 </script>
