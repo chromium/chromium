@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INITIALIZERS_INPUT_DEVICE_TRACKER_IMPL_H_
-#define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INITIALIZERS_INPUT_DEVICE_TRACKER_IMPL_H_
+#ifndef ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_TRACKER_IMPL_H_
+#define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_TRACKER_IMPL_H_
 
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/system/input_device_settings/initializers/input_device_tracker.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "components/prefs/pref_member.h"
 
 class PrefService;
@@ -42,4 +42,4 @@ class ASH_EXPORT InputDeviceTrackerImpl : public InputDeviceTracker {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INITIALIZERS_INPUT_DEVICE_TRACKER_IMPL_H_
+#endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_TRACKER_IMPL_H_

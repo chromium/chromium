@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/initializers/fake_input_device_tracker.h"
+#include "ash/system/input_device_settings/fake_input_device_tracker.h"
 
 #include "base/containers/contains.h"
 
