@@ -205,7 +205,7 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
 
   // The |isSubdomain| flag is optional. If found, ensure it is a valid boolean.
   bool is_subdomain = false;
-  base::Value* is_subdomain_value = datadict->FindKey("isSubdomain");
+  base::Value* is_subdomain_value = datadict->GetDict().Find("isSubdomain");
   if (is_subdomain_value) {
     if (!is_subdomain_value->is_bool()) {
       return nullptr;
@@ -232,7 +232,8 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
   if (version == kVersion3) {
     // The |isThirdParty| flag is optional. If found, ensure it is a valid
     // boolean.
-    base::Value* is_third_party_value = datadict->FindKey("isThirdParty");
+    base::Value* is_third_party_value =
+        datadict->GetDict().Find("isThirdParty");
     if (is_third_party_value) {
       if (!is_third_party_value->is_bool()) {
         return nullptr;
