@@ -1707,7 +1707,7 @@ TEST_F(SyncSchedulerImplTest, PollFromCanaryAfterAuthError) {
       .WillOnce(
           DoAll(Invoke(SimulatePollSuccess), RecordSyncShare(&times, true)));
   scheduler()->OnCredentialsUpdated();
-  connection()->SetServerResponse(HttpResponse::ForSuccess());
+  connection()->SetServerResponse(HttpResponse::ForSuccessForTest());
   RunLoop();
   StopSyncScheduler();
 }

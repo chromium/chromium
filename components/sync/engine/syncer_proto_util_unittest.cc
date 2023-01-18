@@ -183,13 +183,13 @@ class DummyConnectionManager : public ServerConnectionManager {
                           bool allow_batching,
                           std::string* buffer_out) override {
     if (send_error_) {
-      return HttpResponse::ForIoError();
+      return HttpResponse::ForIoErrorForTest();
     }
 
     sync_pb::ClientToServerResponse client_to_server_response;
     client_to_server_response.SerializeToString(buffer_out);
 
-    return HttpResponse::ForSuccess();
+    return HttpResponse::ForSuccessForTest();
   }
 
   void set_send_error(bool send) { send_error_ = send; }

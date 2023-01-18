@@ -65,13 +65,6 @@ HttpResponse HttpResponse::ForNetError(int net_error_code) {
 }
 
 // static
-HttpResponse HttpResponse::ForIoError() {
-  HttpResponse response;
-  response.server_status = IO_ERROR;
-  return response;
-}
-
-// static
 HttpResponse HttpResponse::ForUnspecifiedError() {
   HttpResponse response;
   response.server_status = CONNECTION_UNAVAILABLE;
@@ -93,11 +86,19 @@ HttpResponse HttpResponse::ForHttpStatusCode(int http_status_code) {
 }
 
 // static
-HttpResponse HttpResponse::ForSuccess() {
+HttpResponse HttpResponse::ForSuccessForTest() {
   CHECK_IS_TEST();
   HttpResponse response;
   response.server_status = SERVER_CONNECTION_OK;
   response.http_status_code = net::HTTP_OK;
+  return response;
+}
+
+// static
+HttpResponse HttpResponse::ForIoErrorForTest() {
+  CHECK_IS_TEST();
+  HttpResponse response;
+  response.server_status = IO_ERROR;
   return response;
 }
 

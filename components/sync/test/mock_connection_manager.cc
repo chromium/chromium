@@ -73,21 +73,21 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
   ClientToServerMessage post;
   if (!post.ParseFromString(buffer_in)) {
     ADD_FAILURE();
-    // Note: Here and below, ForIoError() is chosen somewhat arbitrarily, since
-    // HttpResponse doesn't have any better-fitting type of error.
-    return HttpResponse::ForIoError();
+    // Note: Here and below, ForIoErrorForTest() is chosen somewhat arbitrarily,
+    // since HttpResponse doesn't have any better-fitting type of error.
+    return HttpResponse::ForIoErrorForTest();
   }
   if (!post.has_protocol_version()) {
     ADD_FAILURE();
-    return HttpResponse::ForIoError();
+    return HttpResponse::ForIoErrorForTest();
   }
   if (!post.has_api_key()) {
     ADD_FAILURE();
-    return HttpResponse::ForIoError();
+    return HttpResponse::ForIoErrorForTest();
   }
   if (!post.has_bag_of_chips()) {
     ADD_FAILURE();
-    return HttpResponse::ForIoError();
+    return HttpResponse::ForIoErrorForTest();
   }
 
   requests_.push_back(post);
@@ -124,7 +124,7 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
     client_to_server_response.set_error_message("Merry Unbirthday!");
     client_to_server_response.SerializeToString(buffer_out);
     store_birthday_sent_ = true;
-    return HttpResponse::ForSuccess();
+    return HttpResponse::ForSuccessForTest();
   }
   EXPECT_TRUE(!store_birthday_sent_ || post.has_store_birthday() ||
               post.message_contents() ==
@@ -133,21 +133,21 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
 
   if (post.message_contents() == ClientToServerMessage::COMMIT) {
     if (!ProcessCommit(&post, &client_to_server_response)) {
-      return HttpResponse::ForIoError();
+      return HttpResponse::ForIoErrorForTest();
     }
 
   } else if (post.message_contents() == ClientToServerMessage::GET_UPDATES) {
     if (!ProcessGetUpdates(&post, &client_to_server_response)) {
-      return HttpResponse::ForIoError();
+      return HttpResponse::ForIoErrorForTest();
     }
   } else if (post.message_contents() ==
              ClientToServerMessage::CLEAR_SERVER_DATA) {
     if (!ProcessClearServerData(&post, &client_to_server_response)) {
-      return HttpResponse::ForIoError();
+      return HttpResponse::ForIoErrorForTest();
     }
   } else {
     EXPECT_TRUE(false) << "Unknown/unsupported ClientToServerMessage";
-    return HttpResponse::ForIoError();
+    return HttpResponse::ForIoErrorForTest();
   }
 
   {
@@ -184,7 +184,7 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
     mid_commit_observer_->Observe();
   }
 
-  return HttpResponse::ForSuccess();
+  return HttpResponse::ForSuccessForTest();
 }
 
 sync_pb::GetUpdatesResponse* MockConnectionManager::GetUpdateResponse() {
@@ -695,7 +695,7 @@ void MockConnectionManager::SetServerNotReachable() {
 
 void MockConnectionManager::UpdateConnectionStatus() {
   SetServerResponse(server_reachable_
-                        ? HttpResponse::ForSuccess()
+                        ? HttpResponse::ForSuccessForTest()
                         : HttpResponse::ForNetError(net::ERR_FAILED));
 }
 
