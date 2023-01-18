@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
@@ -204,7 +205,7 @@ class TabSharingUIViewsBrowserTest
   }
 
   struct UiExpectations {
-    Browser* browser;
+    raw_ptr<Browser> browser;
     int capturing_tab;
     int captured_tab;
     size_t infobar_count = 1;

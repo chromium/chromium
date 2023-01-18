@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
@@ -291,10 +292,10 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   testing::NiceMock<MockPage> mock_page_;
   NtpBackgroundServiceObserver* ntp_background_service_observer_;
-  MockThemeService* mock_theme_service_;
+  raw_ptr<MockThemeService> mock_theme_service_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<CustomizeChromePageHandler> handler_;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -136,12 +137,12 @@ class MediaDialogViewWithRemotePlaybackTest : public ChromeViewsTestBase {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<MediaNotificationService> notification_service_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  MediaDialogView* view_ = nullptr;
+  raw_ptr<MediaDialogView> view_ = nullptr;
   media_session::test::TestMediaController controller_;
   testing::NiceMock<
       global_media_controls::test::MockMediaSessionNotificationItemDelegate>
       delegate_;
-  media_router::MockMediaRouter* media_router_;
+  raw_ptr<media_router::MockMediaRouter> media_router_;
   std::unique_ptr<speech::SodaInstallerImpl> soda_installer_impl_;
 };
 

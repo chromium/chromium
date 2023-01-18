@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -139,7 +140,7 @@ class ReadingListSyncBridgeTest : public testing::Test {
   base::SimpleTestClock clock_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   // ModelTypeStore is owned by |model_|.
-  syncer::ModelTypeStore* underlying_in_memory_store_ = nullptr;
+  raw_ptr<syncer::ModelTypeStore> underlying_in_memory_store_ = nullptr;
   std::unique_ptr<ReadingListModelImpl> model_;
 };
 

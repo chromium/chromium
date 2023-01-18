@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -189,7 +190,7 @@ class SearchController {
   // If set, called when results set by a provider change. Only set by tests.
   ResultsChangedCallback results_changed_callback_for_test_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   std::unique_ptr<BurnInController> burn_in_controller_;
   std::unique_ptr<RankerManager> ranker_manager_;
@@ -202,9 +203,9 @@ class SearchController {
 
   std::vector<std::unique_ptr<SearchProvider>> providers_;
 
-  AppListModelUpdater* const model_updater_;
-  AppListControllerDelegate* const list_controller_;
-  ash::AppListNotifier* const notifier_;
+  const raw_ptr<AppListModelUpdater> model_updater_;
+  const raw_ptr<AppListControllerDelegate> list_controller_;
+  const raw_ptr<ash::AppListNotifier> notifier_;
 
   base::ObserverList<Observer> observer_list_;
 };

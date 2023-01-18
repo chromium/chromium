@@ -91,7 +91,7 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   void LoadExtensionIcon();
 
   raw_ptr<Browser> browser_;
-  const Extension* extension_;
+  raw_ptr<const Extension> extension_;
 
   // The current URL set for the extension's global side panel. This is set in
   // the constructor or during OnPanelOptionsChanged.

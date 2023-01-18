@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -79,7 +80,7 @@ class RequestHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<Config> config_;
-  MockResultProvider* result_provider_ = nullptr;
+  raw_ptr<MockResultProvider> result_provider_ = nullptr;
   std::unique_ptr<RequestHandler> request_handler_;
 };
 

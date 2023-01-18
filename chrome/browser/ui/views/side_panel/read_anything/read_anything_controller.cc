@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
@@ -60,7 +61,7 @@ class ReadAnythingWebContentsObserver
         content::WebContentsUserData<ReadAnythingWebContentsObserver>(
             *web_contents) {}
 
-  ReadAnythingController* controller_ = nullptr;
+  raw_ptr<ReadAnythingController> controller_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

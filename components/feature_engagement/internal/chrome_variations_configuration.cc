@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -470,17 +471,17 @@ bool ParseGroups(const base::StringPiece& definition,
 // parsed.
 struct ConfigParseOutput {
   uint32_t& parse_errors;
-  Comparator* session_rate = nullptr;
-  SessionRateImpact* session_rate_impact = nullptr;
-  Blocking* blocking = nullptr;
-  BlockedBy* blocked_by = nullptr;
-  EventConfig* trigger = nullptr;
-  EventConfig* used = nullptr;
-  std::set<EventConfig>* event_configs = nullptr;
-  bool* tracking_only = nullptr;
-  Comparator* availability = nullptr;
-  SnoozeParams* snooze_params = nullptr;
-  std::vector<std::string>* groups = nullptr;
+  raw_ptr<Comparator> session_rate = nullptr;
+  raw_ptr<SessionRateImpact> session_rate_impact = nullptr;
+  raw_ptr<Blocking> blocking = nullptr;
+  raw_ptr<BlockedBy> blocked_by = nullptr;
+  raw_ptr<EventConfig> trigger = nullptr;
+  raw_ptr<EventConfig> used = nullptr;
+  raw_ptr<std::set<EventConfig>> event_configs = nullptr;
+  raw_ptr<bool> tracking_only = nullptr;
+  raw_ptr<Comparator> availability = nullptr;
+  raw_ptr<SnoozeParams> snooze_params = nullptr;
+  raw_ptr<std::vector<std::string>> groups = nullptr;
 
   explicit ConfigParseOutput(uint32_t& parse_errors)
       : parse_errors(parse_errors) {}

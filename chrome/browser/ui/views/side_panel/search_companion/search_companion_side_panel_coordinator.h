@@ -84,7 +84,7 @@ class SearchCompanionSidePanelCoordinator
       const GURL url,
       data_decoder::DataDecoder::ValueOrError result);
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   base::RepeatingTimer fetch_images_timer_;
 

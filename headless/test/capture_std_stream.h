@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace headless {
@@ -24,7 +25,7 @@ class CaptureStdStream {
   std::string TakeCapturedData();
 
  private:
-  FILE* stream_;
+  raw_ptr<FILE> stream_;
 
   int fileno_ = -1;
   int pipes_[2] = {-1, -1};

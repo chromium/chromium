@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/power_bookmarks/common/power_bookmark_observer.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
@@ -94,7 +95,7 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
 
   // Observer that serves the frontend of power bookmarks.
   // Needs to be called on the frontend task runner.
-  PowerBookmarkObserver* service_observer_;
+  raw_ptr<PowerBookmarkObserver> service_observer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

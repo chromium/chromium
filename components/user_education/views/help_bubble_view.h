@@ -42,7 +42,7 @@ namespace internal {
 // classes derived from HelpBubbleFactory (or in tests).
 struct HelpBubbleAnchorParams {
   // This is the View to be anchored to (mandatory).
-  views::View* view = nullptr;
+  raw_ptr<views::View> view = nullptr;
 
   // This is an optional override of the anchor rect in screen coordinates.
   // If unspecified, the bubble is anchored as normal to `view`.

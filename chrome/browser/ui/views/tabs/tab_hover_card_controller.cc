@@ -694,8 +694,9 @@ bool TabHoverCardController::TargetTabIsValid() const {
 
 void TabHoverCardController::OnCardFullyVisible() {
   DCHECK(target_tab_);
-  if (target_tab_ == hover_card_last_seen_on_tab_)
+  if (target_tab_ == hover_card_last_seen_on_tab_.get()) {
     return;
+  }
   hover_card_last_seen_on_tab_ = target_tab_;
   ++hover_cards_seen_count_;
 }

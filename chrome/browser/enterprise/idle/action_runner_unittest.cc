@@ -334,7 +334,7 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   uint64_t origin_type_mask_ = 0;
   uint64_t failed_data_types_ = 0;
 
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 };
 
 class IdleActionRunnerClearDataTest : public testing::Test {

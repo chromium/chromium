@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -83,7 +84,7 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  PictureInPictureBrowserFrameView* pip_frame_view_ = nullptr;
+  raw_ptr<PictureInPictureBrowserFrameView> pip_frame_view_ = nullptr;
 };
 
 #if BUILDFLAG(IS_WIN)

@@ -138,7 +138,7 @@ class TabHoverCardController : public views::ViewObserver {
   // These are used to track when a hover card is shown on a new tab for
   // testing purposes. Counts cards seen from the time the first card is shown
   // to a tab is selected, or the hover card is shown from scratch again.
-  const void* hover_card_last_seen_on_tab_ = nullptr;
+  raw_ptr<const void> hover_card_last_seen_on_tab_ = nullptr;
   size_t hover_cards_seen_count_ = 0;
 
   // Fade animations interfere with browser tests so we disable them in tests.

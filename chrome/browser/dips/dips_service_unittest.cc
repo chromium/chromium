@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dips/dips_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -155,8 +156,8 @@ class DIPSServiceStateRemovalTest : public testing::Test {
  private:
   base::SimpleTestClock clock_;
   std::unique_ptr<TestingProfile> base_profile_;
-  TestingProfile* incognito_profile_ = nullptr;
-  DIPSService* service_ = nullptr;
+  raw_ptr<TestingProfile> incognito_profile_ = nullptr;
+  raw_ptr<DIPSService> service_ = nullptr;
 };
 
 // NOTE: The use of a MockBrowsingDataRemoverDelegate in this test fixture

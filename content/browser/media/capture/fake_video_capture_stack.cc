@@ -314,7 +314,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
   // Needed to create `gfx::GpuMemoryBuffers` from
   // `gfx::GpuMemoryBufferHandle`s. Will be populated at construction time. Must
   // be obtained on the UI thread.
-  gpu::GpuMemoryBufferManager* gmb_manager_
+  raw_ptr<gpu::GpuMemoryBufferManager> gmb_manager_
       GUARDED_BY_CONTEXT(receiver_sequence_checker_) = nullptr;
 
   // Needed to create `gfx::GpuMemoryBuffers` from

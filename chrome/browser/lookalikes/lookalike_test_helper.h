@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LOOKALIKES_LOOKALIKE_TEST_HELPER_H_
 #define CHROME_BROWSER_LOOKALIKES_LOOKALIKE_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/ukm/test_ukm_recorder.h"
 
 // Helper class for lookalike browser tests.
@@ -27,7 +28,7 @@ class LookalikeTestHelper {
   void CheckNoLookalikeUkm() const;
 
  private:
-  ukm::TestUkmRecorder* ukm_recorder_;
+  raw_ptr<ukm::TestUkmRecorder> ukm_recorder_;
 };
 
 #endif
