@@ -36,7 +36,8 @@ namespace {
 struct SyncConfirmationTestParam {
   PixelTestParam pixel_test_param;
   bool use_tangible_sync = false;
-  bool use_managed_account = false;
+  AccountManagementStatus account_management_status =
+      AccountManagementStatus::kNonManaged;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
 };
 
@@ -58,7 +59,7 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
     {.pixel_test_param = {.test_suffix = "LegacySyncSmallWindow",
                           .use_small_window = true}},
     {.pixel_test_param = {.test_suffix = "LegacySyncManagedAccount"},
-     .use_managed_account = true},
+     .account_management_status = AccountManagementStatus::kManaged},
     {.pixel_test_param = {.test_suffix = "TangibleSync"},
      .use_tangible_sync = true},
     {.pixel_test_param = {.test_suffix = "TangibleSyncDarkTheme",
@@ -72,7 +73,7 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
      .use_tangible_sync = true},
     {.pixel_test_param = {.test_suffix = "TangibleSyncManagedAccount"},
      .use_tangible_sync = true,
-     .use_managed_account = true},
+     .account_management_status = AccountManagementStatus::kManaged},
 };
 
 const SyncConfirmationTestParam kDialogTestParams[] = {
@@ -87,7 +88,7 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
                           .use_right_to_left_language = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
     {.pixel_test_param = {.test_suffix = "LegacySyncManagedAccount"},
-     .use_managed_account = true,
+     .account_management_status = AccountManagementStatus::kManaged,
      .sync_style = SyncConfirmationStyle::kSigninInterceptModal},
     {.pixel_test_param = {.test_suffix = "TangibleSync"},
      .use_tangible_sync = true,
@@ -105,7 +106,7 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
      .sync_style = SyncConfirmationStyle::kDefaultModal},
     {.pixel_test_param = {.test_suffix = "TangibleSyncManagedAccount"},
      .use_tangible_sync = true,
-     .use_managed_account = true,
+     .account_management_status = AccountManagementStatus::kManaged,
      .sync_style = SyncConfirmationStyle::kDefaultModal},
 };
 
@@ -191,7 +192,7 @@ class SyncConfirmationUIWindowPixelTest
     DCHECK(browser());
 
     SignInWithPrimaryAccount(browser()->profile(),
-                             GetParam().use_managed_account);
+                             GetParam().account_management_status);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -259,7 +260,7 @@ class SyncConfirmationUIDialogPixelTest
     DCHECK(browser());
 
     SignInWithPrimaryAccount(browser()->profile(),
-                             GetParam().use_managed_account);
+                             GetParam().account_management_status);
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     if (GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
       url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style);

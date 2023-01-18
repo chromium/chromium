@@ -17,7 +17,7 @@
 
 namespace {
 AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
-                            bool is_managed_account) {
+                            AccountManagementStatus management_status) {
   const char kHostedDomain[] = "example.com";
   AccountInfo account_info;
 
@@ -29,24 +29,28 @@ AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
   account_info.full_name = "Test Full Name";
   account_info.given_name = "Joe";
   account_info.hosted_domain =
-      is_managed_account ? kHostedDomain : kNoHostedDomainFound;
+      management_status == AccountManagementStatus::kManaged
+          ? kHostedDomain
+          : kNoHostedDomainFound;
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
   return account_info;
 }
 }  // namespace
 
-AccountInfo SignInWithPrimaryAccount(Profile* profile,
-                                     bool is_managed_account) {
+AccountInfo SignInWithPrimaryAccount(
+    Profile* profile,
+    AccountManagementStatus management_status) {
   DCHECK(profile);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto core_account_info = signin::MakePrimaryAccountAvailable(
       identity_manager,
-      is_managed_account ? "joe.consumer@example.com"
-                         : "joe.consumer@gmail.com",
+      management_status == AccountManagementStatus::kManaged
+          ? "joe.consumer@example.com"
+          : "joe.consumer@gmail.com",
       signin::ConsentLevel::kSignin);
-  auto account_info = FillAccountInfo(core_account_info, is_managed_account);
+  auto account_info = FillAccountInfo(core_account_info, management_status);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   return account_info;

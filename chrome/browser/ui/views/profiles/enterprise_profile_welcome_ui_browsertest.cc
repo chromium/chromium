@@ -12,7 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
@@ -20,6 +21,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -30,30 +32,73 @@
 // and not in the webui directory because they manipulate views.
 
 namespace {
+struct EnterpriseWelcomeTestParam {
+  PixelTestParam pixel_test_param;
+  bool profile_creation_required_by_policy = false;
+  bool show_link_data_checkbox = false;
+};
+
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
 // to be named like `<TestClassName>.InvokeUi_default/<TestSuffix>` instead
 // of using the index of the param in `TestParam` as suffix.
 std::string ParamToTestSuffix(
-    const ::testing::TestParamInfo<PixelTestParam>& info) {
-  return info.param.test_suffix;
+    const ::testing::TestParamInfo<EnterpriseWelcomeTestParam>& info) {
+  return info.param.pixel_test_param.test_suffix;
 }
 
 // Permutations of supported parameters.
-const PixelTestParam testParams[] = {
-    {.test_suffix = "EnterpriseWelcome"},
-    {.test_suffix = "EnterpriseWelcomeDarkTheme", .use_dark_theme = true},
-    {.test_suffix = "EnterpriseWelcomeRtl", .use_right_to_left_language = true},
-    {.test_suffix = "EnterpriseWelcomeSmallWindow", .use_small_window = true},
-    {.test_suffix = "EnterpriseWelcomeFre", .use_fre_style = true},
-    {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
-     .use_dark_theme = true,
-     .use_fre_style = true},
-    {.test_suffix = "EnterpriseWelcomeFreRtl",
-     .use_right_to_left_language = true,
-     .use_fre_style = true},
-    {.test_suffix = "EnterpriseWelcomeFreSmallWindow",
-     .use_small_window = true,
-     .use_fre_style = true},
+const EnterpriseWelcomeTestParam kWindowTestParams[] = {
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcome"}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeDarkTheme",
+                          .use_dark_theme = true}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeRtl",
+                          .use_right_to_left_language = true}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeSmallWindow",
+                          .use_small_window = true}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre",
+                          .use_fre_style = true}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
+                          .use_dark_theme = true,
+                          .use_fre_style = true}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
+                          .use_right_to_left_language = true,
+                          .use_fre_style = true}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreSmallWindow",
+                          .use_small_window = true,
+                          .use_fre_style = true}},
+};
+
+const EnterpriseWelcomeTestParam kDialogTestParams[] = {
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcome"}},
+    {.pixel_test_param = {.test_suffix =
+                              "EnterpriseWelcomeWithLinkDataCheckbox"},
+     .show_link_data_checkbox = true},
+    {.pixel_test_param = {.test_suffix =
+                              "EnterpriseWelcomeWithProfileCreationRequired"},
+     .profile_creation_required_by_policy = true},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeDarkTheme",
+                          .use_dark_theme = true},
+     .show_link_data_checkbox = true},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeRtl",
+                          .use_right_to_left_language = true},
+     .show_link_data_checkbox = true},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre",
+                          .use_fre_style = true}},
+    {.pixel_test_param = {.test_suffix =
+                              "EnterpriseWelcomeFreWithLinkDataCheckbox",
+                          .use_fre_style = true},
+     .show_link_data_checkbox = true},
+    {.pixel_test_param =
+         {.test_suffix = "EnterpriseWelcomeFreWithProfileCreationRequired"},
+     .profile_creation_required_by_policy = true},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
+                          .use_dark_theme = true,
+                          .use_fre_style = true},
+     .show_link_data_checkbox = true},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
+                          .use_right_to_left_language = true,
+                          .use_fre_style = true},
+     .show_link_data_checkbox = true},
 };
 
 // Creates a step to represent the enterprise-profile-welcome
@@ -92,9 +137,11 @@ class EnterpriseWelcomeStepControllerForTest
         host()->GetPickerContents()->GetWebUI()->GetController());
 
     enterprise_welcome_ui->Initialize(
-        nullptr,
+        /*browser=*/nullptr,
         EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
-        *account_info_, false, false, absl::nullopt, base::DoNothing());
+        *account_info_, /*profile_creation_required_by_policy=*/false,
+        /*show_link_data_option=*/false, /*profile_color=*/absl::nullopt,
+        /*proceed_callback*/ base::DoNothing());
 
     if (step_shown_callback) {
       std::move(step_shown_callback).Run(/*success=*/true);
@@ -112,17 +159,18 @@ class EnterpriseWelcomeStepControllerForTest
 
 class EnterpriseWelcomeUIWindowPixelTest
     : public UiBrowserTest,
-      public testing::WithParamInterface<PixelTestParam> {
+      public testing::WithParamInterface<EnterpriseWelcomeTestParam> {
  public:
   EnterpriseWelcomeUIWindowPixelTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-    InitPixelTestFeatures(GetParam(), scoped_feature_list_, enabled_features,
-                          disabled_features);
+    InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
+                          enabled_features, disabled_features);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam(), scoped_env_override_, command_line);
+    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
+                              command_line);
   }
 
   void ShowUi(const std::string& name) override {
@@ -130,7 +178,8 @@ class EnterpriseWelcomeUIWindowPixelTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
-    auto account_info = SignInWithPrimaryAccount(browser()->profile(), true);
+    auto account_info = SignInWithPrimaryAccount(
+        browser()->profile(), AccountManagementStatus::kManaged);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -143,7 +192,7 @@ class EnterpriseWelcomeUIWindowPixelTest
                   host, browser()->profile(), account_info);
             }));
     profile_picker_view_->ShowAndWait(
-        GetParam().use_small_window
+        GetParam().pixel_test_param.use_small_window
             ? absl::optional<gfx::Size>(gfx::Size(750, 590))
             : absl::nullopt);
   }
@@ -181,5 +230,57 @@ IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIWindowPixelTest, InvokeUi_default) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          EnterpriseWelcomeUIWindowPixelTest,
-                         testing::ValuesIn(testParams),
+                         testing::ValuesIn(kWindowTestParams),
+                         &ParamToTestSuffix);
+
+class EnterpriseWelcomeUIDialogPixelTest
+    : public DialogBrowserTest,
+      public testing::WithParamInterface<EnterpriseWelcomeTestParam> {
+ public:
+  EnterpriseWelcomeUIDialogPixelTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
+                          enabled_features, disabled_features);
+  }
+
+  ~EnterpriseWelcomeUIDialogPixelTest() override = default;
+
+  void ShowUi(const std::string& name) override {
+    DCHECK(browser());
+
+    auto account_info = SignInWithPrimaryAccount(
+        browser()->profile(), AccountManagementStatus::kManaged);
+    auto url = GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL);
+
+    // Wait for the web content to load to be able to properly render the
+    // modal dialog.
+    content::TestNavigationObserver observer(url);
+    observer.StartWatchingNewWebContents();
+
+    auto* controller = browser()->signin_view_controller();
+    controller->ShowModalEnterpriseConfirmationDialog(
+        account_info, GetParam().profile_creation_required_by_policy,
+        GetParam().show_link_data_checkbox,
+        GetDefaultProfileThemeColors().profile_highlight_color,
+        base::DoNothing());
+    observer.Wait();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
+                              command_line);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
+};
+
+IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIDialogPixelTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         EnterpriseWelcomeUIDialogPixelTest,
+                         testing::ValuesIn(kDialogTestParams),
                          &ParamToTestSuffix);

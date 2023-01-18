@@ -33,9 +33,15 @@ struct PixelTestParam {
   bool use_fre_style = false;
 };
 
+enum class AccountManagementStatus {
+  kManaged = 0,
+  kNonManaged,
+};
+
 // Used to create a dummy account and sign it it as a primary account.
 AccountInfo SignInWithPrimaryAccount(Profile* profile,
-                                     bool is_managed_account = false);
+                                     AccountManagementStatus management_status =
+                                         AccountManagementStatus::kNonManaged);
 
 // Sets up the parameters that are passed to the command line. For example,
 // to enable dark mode, we need to pass `kForceDarkMode` to the command line.
