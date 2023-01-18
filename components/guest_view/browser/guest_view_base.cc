@@ -76,17 +76,20 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
 
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override {
+    if (!IsGuestInitialized()) {
+      return;
+    }
+
     is_fullscreen_ = entered_fullscreen;
     guest_->EmbedderFullscreenToggled(is_fullscreen_);
   }
 
   void PrimaryMainFrameWasResized(bool width_changed) override {
-    if (!web_contents()->GetDelegate())
+    if (!IsGuestInitialized()) {
       return;
+    }
 
-    bool current_fullscreen =
-        web_contents()->GetDelegate()->IsFullscreenForTabOrPending(
-            web_contents());
+    bool current_fullscreen = web_contents()->IsFullscreen();
     if (is_fullscreen_ && !current_fullscreen) {
       is_fullscreen_ = false;
       guest_->EmbedderFullscreenToggled(is_fullscreen_);
@@ -94,10 +97,14 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   }
 
   void DidUpdateAudioMutingState(bool muted) override {
-    guest_->web_contents()->SetAudioMuted(muted);
+    if (IsGuestInitialized()) {
+      guest_->web_contents()->SetAudioMuted(muted);
+    }
   }
 
  private:
+  bool IsGuestInitialized() { return guest_->web_contents(); }
+
   bool is_fullscreen_ = false;
   const base::SafeRef<GuestViewBase> guest_;
 };
@@ -133,6 +140,8 @@ GuestViewBase::GuestViewBase(WebContents* owner_web_contents)
     : owner_web_contents_(owner_web_contents),
       browser_context_(owner_web_contents->GetBrowserContext()),
       guest_instance_id_(GetGuestViewManager()->GetNextInstanceID()) {
+  owner_contents_observer_ = std::make_unique<OwnerContentsObserver>(
+      weak_ptr_factory_.GetSafeRef(), owner_web_contents_);
   SetOwnerHost();
 }
 
@@ -184,11 +193,6 @@ void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
   // zoom mode on this event, GuestViewBase would need to do so after
   // ZoomController::DidFinishNavigation has completed.
   zoom::ZoomController::CreateForWebContents(guest_web_contents);
-
-  // At this point, we have just created the guest WebContents, we need to add
-  // an observer to the owner WebContents.
-  owner_contents_observer_ = std::make_unique<OwnerContentsObserver>(
-      weak_ptr_factory_.GetSafeRef(), owner_web_contents_);
 
   WebContentsObserver::Observe(guest_web_contents);
   guest_web_contents->SetDelegate(this);

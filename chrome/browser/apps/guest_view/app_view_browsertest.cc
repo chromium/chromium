@@ -92,6 +92,28 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
     return test_guest_view_manager_;
   }
 
+  void CloseAppWindow() {
+    content::WebContents* embedder_web_contents =
+        GetFirstAppWindowWebContents();
+    content::WebContentsDestroyedWatcher destroyed_watcher(
+        embedder_web_contents);
+    EXPECT_TRUE(content::ExecJs(embedder_web_contents, "window.close()"));
+    destroyed_watcher.Wait();
+  }
+
+  // Completes an onEmbedRequested request in `app`. Assumes the app has a
+  // `continueEmbedding` function which does this.
+  void ContinueEmbedding(const extensions::Extension* app, bool allow_request) {
+    content::WebContents* host_contents =
+        extensions::ProcessManager::Get(browser()->profile())
+            ->GetBackgroundHostForExtension(app->id())
+            ->host_contents();
+    ASSERT_TRUE(content::WaitForLoadStop(host_contents));
+    ASSERT_TRUE(content::ExecJs(
+        host_contents,
+        content::JsReplace("continueEmbedding($1);", allow_request)));
+  }
+
  private:
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
@@ -168,6 +190,24 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewEmbedSelfShouldFail) {
              NO_TEST_SERVER);
 }
 
+IN_PROC_BROWSER_TEST_F(AppViewTest, TestCloseWithPendingEmbedRequestDeny) {
+  const extensions::Extension* skeleton_app =
+      InstallPlatformApp("app_view/shim/skeleton");
+  TestHelper("testCloseWithPendingEmbedRequest", "app_view/shim",
+             skeleton_app->id(), NO_TEST_SERVER);
+  CloseAppWindow();
+  ContinueEmbedding(skeleton_app, false);
+}
+
+IN_PROC_BROWSER_TEST_F(AppViewTest, TestCloseWithPendingEmbedRequestAllow) {
+  const extensions::Extension* skeleton_app =
+      InstallPlatformApp("app_view/shim/skeleton");
+  TestHelper("testCloseWithPendingEmbedRequest", "app_view/shim",
+             skeleton_app->id(), NO_TEST_SERVER);
+  CloseAppWindow();
+  ContinueEmbedding(skeleton_app, true);
+}
+
 IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
   const extensions::Extension* bad_app =
       LoadAndLaunchPlatformApp("app_view/bad_app", "AppViewTest.LAUNCHED");
@@ -239,9 +279,5 @@ IN_PROC_BROWSER_TEST_F(AppViewTest,
   bad_app_obs.Wait();
   EXPECT_FALSE(bad_app_obs.did_exit_normally());
   // Now ask the guest to continue embedding.
-  ASSERT_TRUE(
-      ExecuteScript(extensions::ProcessManager::Get(browser()->profile())
-                        ->GetBackgroundHostForExtension(guest_app->id())
-                        ->web_contents(),
-                    "continueEmbedding();"));
+  ContinueEmbedding(guest_app, true);
 }
