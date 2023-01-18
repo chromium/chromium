@@ -3825,7 +3825,9 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
       // like glClear.
       // TODO(piman): allow empty framebuffers, similar to
       // EGL_KHR_surfaceless_context / GL_OES_surfaceless_context.
-      initial_size = gfx::Size(1, 1);
+      // Use 64x64 instead of 1x1 to handle minimum framebuffer size
+      // requirement on some platforms: b/265847440.
+      initial_size = gfx::Size(64, 64);
     }
 
     state_.viewport_width = initial_size.width();
