@@ -44,7 +44,7 @@
 #endif
 
 #if defined(HEADLESS_ENABLE_COMMANDS)
-#include "components/headless/command_handler/headless_command_handler.h"
+#include "components/headless/command_handler/headless_command_handler.h"  // nogncheck
 #endif
 
 namespace headless {
