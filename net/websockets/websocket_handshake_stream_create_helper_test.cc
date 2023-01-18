@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -23,6 +24,15 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/address_utils.h"
+#include "net/quic/mock_crypto_client_stream_factory.h"
+#include "net/quic/mock_quic_data.h"
+#include "net/quic/quic_chromium_alarm_factory.h"
+#include "net/quic/quic_chromium_connection_helper.h"
+#include "net/quic/quic_server_info.h"
+#include "net/quic/quic_test_packet_maker.h"
+#include "net/quic/test_quic_crypto_client_config_handle.h"
+#include "net/quic/test_task_runner.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
@@ -38,6 +48,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_basic_handshake_stream.h"
 #include "net/websockets/websocket_stream.h"
@@ -60,7 +71,11 @@ using ::testing::_;
 namespace net {
 namespace {
 
-enum HandshakeStreamType { BASIC_HANDSHAKE_STREAM, HTTP2_HANDSHAKE_STREAM };
+enum HandshakeStreamType {
+  BASIC_HANDSHAKE_STREAM,
+  HTTP2_HANDSHAKE_STREAM,
+  HTTP3_HANDSHAKE_STREAM
+};
 
 // This class encapsulates the details of creating a mock ClientSocketHandle.
 class MockClientSocketHandleFactory {
@@ -150,6 +165,8 @@ class MockWebSocketStreamRequestAPI : public WebSocketStreamRequestAPI {
                void(WebSocketBasicHandshakeStream* handshake_stream));
   MOCK_METHOD1(OnHttp2HandshakeStreamCreated,
                void(WebSocketHttp2HandshakeStream* handshake_stream));
+  MOCK_METHOD1(OnHttp3HandshakeStreamCreated,
+               void(WebSocketHttp3HandshakeStream* handshake_stream));
   MOCK_METHOD3(OnFailure,
                void(const std::string& message,
                     int net_error,
@@ -179,6 +196,10 @@ class WebSocketHandshakeStreamCreateHelperTest
 
       case HTTP2_HANDSHAKE_STREAM:
         EXPECT_CALL(stream_request_, OnHttp2HandshakeStreamCreated(_)).Times(1);
+        break;
+
+      case HTTP3_HANDSHAKE_STREAM:
+        EXPECT_CALL(stream_request_, OnHttp3HandshakeStreamCreated(_)).Times(1);
         break;
 
       default:
@@ -357,6 +378,211 @@ TEST_P(WebSocketHandshakeStreamCreateHelperTest, ExtensionParameters) {
       " client_max_window_bits=14; server_max_window_bits=14;"
       " server_no_context_takeover; client_no_context_takeover",
       stream->GetExtensions());
+}
+
+// Temporary test class to test the creation of WebSocketHttp3HandshakeStream.
+// TODO(momoka): Move this function inside
+// HandshakeStreamCreateHelperTest::CreateAndInitializeStream() once
+// implementation of WebSocketHttp3HandshakeStream is done.
+class TemporaryHttp3WebSocketHandshakeStreamCreateHelperTest
+    : public TestWithTaskEnvironment {
+ protected:
+  void CreateAndInitializeStream(
+      const std::vector<std::string>& sub_protocols,
+      const WebSocketExtraHeaders& extra_request_headers,
+      const WebSocketExtraHeaders& extra_response_headers) {
+    const char kPath[] = "/";
+    const char kOrigin[] = "http://origin.example.org";
+    const GURL url("wss://www.example.org/");
+    NetLogWithSource net_log;
+
+    WebSocketHandshakeStreamCreateHelper create_helper(
+        &connect_delegate_, sub_protocols, &stream_request_);
+
+    EXPECT_CALL(stream_request_, OnHttp3HandshakeStreamCreated(_));
+
+    EXPECT_CALL(stream_request_, OnFailure(_, _, _)).Times(0);
+
+    HttpRequestInfo request_info;
+    request_info.url = url;
+    request_info.method = "GET";
+    request_info.load_flags = LOAD_DISABLE_CACHE;
+    request_info.traffic_annotation =
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    auto headers = WebSocketCommonTestHeaders();
+
+    quic::ParsedQuicVersion quic_version = quic::ParsedQuicVersion(
+        quic::HandshakeProtocol::PROTOCOL_TLS1_3,
+        quic::QuicTransportVersion::QUIC_VERSION_IETF_RFC_V1);
+    test::MockQuicData mock_quic_data(quic_version);
+    const quic::QuicStreamId client_data_stream_id1(
+        quic::QuicUtils::GetFirstBidirectionalStreamId(
+            quic_version.transport_version, quic::Perspective::IS_CLIENT));
+    quic::QuicCryptoClientConfig crypto_config(
+        quic::test::crypto_test_utils::ProofVerifierForTesting());
+
+    const quic::QuicConnectionId connection_id(quic::test::TestConnectionId(2));
+    test::QuicTestPacketMaker client_maker(
+        quic_version, connection_id, &clock_, "mail.example.org",
+        quic::Perspective::IS_CLIENT,
+        /*client_headers_include_h2_stream_dependency_=*/false);
+    test::QuicTestPacketMaker server_maker(
+        quic_version, connection_id, &clock_, "mail.example.org",
+        quic::Perspective::IS_SERVER,
+        /*client_headers_include_h2_stream_dependency_=*/false);
+    IPEndPoint peer_addr(IPAddress(192, 0, 2, 23), 443);
+    quic::test::MockConnectionIdGenerator connection_id_generator;
+
+    testing::StrictMock<quic::test::MockQuicConnectionVisitor> visitor;
+    ProofVerifyDetailsChromium verify_details;
+    MockCryptoClientStreamFactory crypto_client_stream_factory;
+    TransportSecurityState transport_security_state;
+    quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate;
+
+    FLAGS_quic_enable_http3_grease_randomness = false;
+    clock_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
+    quic::QuicEnableVersion(quic_version);
+    quic::test::MockRandom random_generator{0};
+
+    spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+        kPath, "www.example.org", kOrigin, extra_request_headers);
+
+    int packet_number = 1;
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS, client_maker.MakeInitialSettingsPacket(packet_number++));
+
+    mock_quic_data.AddWrite(
+        ASYNC, client_maker.MakeRequestHeadersPacket(
+                   packet_number++, client_data_stream_id1,
+                   /*should_include_version=*/true,
+                   /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
+                   std::move(request_header_block), 0, nullptr));
+
+    spdy::Http2HeaderBlock response_header_block =
+        WebSocketHttp2Response(extra_response_headers);
+
+    mock_quic_data.AddRead(ASYNC,
+                           server_maker.MakeResponseHeadersPacket(
+                               /*packet_number=*/1, client_data_stream_id1,
+                               /*should_include_version=*/true, /*fin=*/false,
+                               std::move(response_header_block),
+                               /*spdy_headers_frame_length=*/nullptr));
+
+    mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS, client_maker.MakeRstPacket(
+                         packet_number++, /*include_version=*/false,
+                         client_data_stream_id1, quic::QUIC_STREAM_CANCELLED,
+                         /*include_stop_sending_if_v99=*/true));
+    auto socket = std::make_unique<MockUDPClientSocket>(
+        mock_quic_data.InitializeAndGetSequencedSocketData(), NetLog::Get());
+    socket->Connect(peer_addr);
+
+    scoped_refptr<test::TestTaskRunner> runner =
+        base::MakeRefCounted<test::TestTaskRunner>(&clock_);
+    auto helper = std::make_unique<QuicChromiumConnectionHelper>(
+        &clock_, &random_generator);
+    auto alarm_factory =
+        std::make_unique<QuicChromiumAlarmFactory>(runner.get(), &clock_);
+    // Ownership of 'writer' is passed to 'QuicConnection'.
+    QuicChromiumPacketWriter* writer = new QuicChromiumPacketWriter(
+        socket.get(), base::SingleThreadTaskRunner::GetCurrentDefault().get());
+    quic::QuicConnection* connection = new quic::QuicConnection(
+        connection_id, quic::QuicSocketAddress(),
+        net::ToQuicSocketAddress(peer_addr), helper.get(), alarm_factory.get(),
+        writer, true /* owns_writer */, quic::Perspective::IS_CLIENT,
+        quic::test::SupportedVersions(quic_version), connection_id_generator);
+    connection->set_visitor(&visitor);
+
+    // Load a certificate that is valid for *.example.org
+    scoped_refptr<X509Certificate> test_cert(
+        ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+    EXPECT_TRUE(test_cert.get());
+
+    verify_details.cert_verify_result.verified_cert = test_cert;
+    verify_details.cert_verify_result.is_issued_by_known_root = true;
+    crypto_client_stream_factory.AddProofVerifyDetails(&verify_details);
+
+    base::TimeTicks dns_end = base::TimeTicks::Now();
+    base::TimeTicks dns_start = dns_end - base::Milliseconds(1);
+
+    auto session = std::make_unique<QuicChromiumClientSession>(
+        connection, std::move(socket),
+        /*stream_factory=*/nullptr, &crypto_client_stream_factory, &clock_,
+        &transport_security_state, /*ssl_config_service=*/nullptr,
+        /*server_info=*/nullptr,
+        QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                       SocketTag(), NetworkAnonymizationKey(),
+                       SecureDnsPolicy::kAllow,
+                       /*require_dns_https_alpn=*/false),
+        /*require_confirmation=*/false,
+        /*migrate_session_early_v2=*/false,
+        /*migrate_session_on_network_change_v2=*/false,
+        /*default_network=*/handles::kInvalidNetworkHandle,
+        quic::QuicTime::Delta::FromMilliseconds(
+            kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
+        /*migrate_idle_session=*/true, /*allow_port_migration=*/false,
+        kDefaultIdleSessionMigrationPeriod, kMaxTimeOnNonDefaultNetwork,
+        kMaxMigrationsToNonDefaultNetworkOnWriteError,
+        kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
+        kQuicYieldAfterPacketsRead,
+        quic::QuicTime::Delta::FromMilliseconds(
+            kQuicYieldAfterDurationMilliseconds),
+        /*client_headers_include_h2_stream_dependency_=*/false,
+        /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
+        std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config),
+        "CONNECTION_UNKNOWN", dns_start, dns_end,
+        std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
+        base::DefaultTickClock::GetInstance(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        /*socket_performance_watcher=*/nullptr, NetLog::Get());
+
+    session->Initialize();
+
+    // Blackhole QPACK decoder stream instead of constructing mock writes.
+    session->qpack_decoder()->set_qpack_stream_sender_delegate(
+        &noop_qpack_stream_sender_delegate);
+    TestCompletionCallback callback;
+    EXPECT_THAT(session->CryptoConnect(callback.callback()), IsOk());
+    EXPECT_TRUE(session->OneRttKeysAvailable());
+    std::unique_ptr<QuicChromiumClientSession::Handle> session_handle =
+        session->CreateHandle(
+            url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 80));
+
+    std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
+        create_helper.CreateHttp3Stream(std::move(session_handle),
+                                        {} /* dns_aliases */);
+    ASSERT_TRUE(handshake);
+
+    handshake->RegisterRequest(&request_info);
+    int rv = handshake->InitializeStream(true, DEFAULT_PRIORITY, net_log,
+                                         CompletionOnceCallback());
+    EXPECT_THAT(rv, IsOk());
+
+    HttpResponseInfo response;
+    TestCompletionCallback request_callback;
+    rv =
+        handshake->SendRequest(headers, &response, request_callback.callback());
+    EXPECT_THAT(rv, IsOk());
+
+    // TODO(momoka): Add functions handshake->ReadResponseHeaders(),
+    // handshake->Upgrade() after implementing them in
+    // WebSocketHttp3HandshakeStream.
+    handshake->Close(true);
+  }
+
+ private:
+  quic::MockClock clock_;
+  MockClientSocketHandleFactory socket_handle_factory_;
+  TestConnectDelegate connect_delegate_;
+  StrictMock<MockWebSocketStreamRequestAPI> stream_request_;
+  WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
+};
+
+TEST_F(TemporaryHttp3WebSocketHandshakeStreamCreateHelperTest, BasicStream) {
+  CreateAndInitializeStream({}, {}, {});
 }
 
 }  // namespace

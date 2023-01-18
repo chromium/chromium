@@ -713,6 +713,12 @@ class FakeWebSocketHandshakeStreamCreateHelper
     NOTREACHED();
     return nullptr;
   }
+  std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
+      std::unique_ptr<QuicChromiumClientSession::Handle> session,
+      std::set<std::string> dns_aliases) override {
+    NOTREACHED();
+    return nullptr;
+  }
 };
 
 // Returns true if |entry| is not one of the log types paid attention to in this

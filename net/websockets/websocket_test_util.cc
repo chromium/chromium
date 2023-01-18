@@ -291,4 +291,6 @@ void TestWebSocketStreamRequestAPI::OnBasicHandshakeStreamCreated(
 void TestWebSocketStreamRequestAPI::OnHttp2HandshakeStreamCreated(
     WebSocketHttp2HandshakeStream* handshake_stream) {}
 
+void TestWebSocketStreamRequestAPI::OnHttp3HandshakeStreamCreated(
+    WebSocketHttp3HandshakeStream* handshake_stream) {}
 }  // namespace net

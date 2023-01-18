@@ -7,7 +7,6 @@
 
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
 
 namespace net {
 class NET_EXPORT_PRIVATE WebSocketQuicSpdyStream : public quic::QuicSpdyStream {

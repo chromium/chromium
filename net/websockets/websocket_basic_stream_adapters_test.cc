@@ -290,9 +290,12 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, AsyncReadAndWrite) {
 class MockDelegate : public WebSocketSpdyStreamAdapter::Delegate {
  public:
   ~MockDelegate() override = default;
-  MOCK_METHOD0(OnHeadersSent, void());
-  MOCK_METHOD1(OnHeadersReceived, void(const spdy::Http2HeaderBlock&));
-  MOCK_METHOD1(OnClose, void(int));
+  MOCK_METHOD(void, OnHeadersSent, (), (override));
+  MOCK_METHOD(void,
+              OnHeadersReceived,
+              (const spdy::Http2HeaderBlock&),
+              (override));
+  MOCK_METHOD(void, OnClose, (int), (override));
 };
 
 class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
@@ -1075,9 +1078,12 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
 class MockQuicDelegate : public WebSocketQuicStreamAdapter::Delegate {
  public:
   ~MockQuicDelegate() override = default;
-  MOCK_METHOD(void, OnBodyAvailable, (), (override));
-  MOCK_METHOD(void, Reset, ());
-  MOCK_METHOD(void, ClearStream, ());
+  MOCK_METHOD(void, OnHeadersSent, (), (override));
+  MOCK_METHOD(void,
+              OnHeadersReceived,
+              (const spdy::Http2HeaderBlock&),
+              (override));
+  MOCK_METHOD(void, OnClose, (int), (override));
 };
 
 class WebSocketQuicStreamAdapterTest

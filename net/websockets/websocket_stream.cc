@@ -33,6 +33,7 @@
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_handshake_stream_create_helper.h"
 #include "net/websockets/websocket_http2_handshake_stream.h"
+#include "net/websockets/websocket_http3_handshake_stream.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -146,6 +147,14 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
       WebSocketHttp2HandshakeStream* handshake_stream) override {
     if (api_delegate_) {
       api_delegate_->OnHttp2HandshakeStreamCreated(handshake_stream);
+    }
+    OnHandshakeStreamCreated(handshake_stream);
+  }
+
+  void OnHttp3HandshakeStreamCreated(
+      WebSocketHttp3HandshakeStream* handshake_stream) override {
+    if (api_delegate_) {
+      api_delegate_->OnHttp3HandshakeStreamCreated(handshake_stream);
     }
     OnHandshakeStreamCreated(handshake_stream);
   }
@@ -271,10 +280,10 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
 
   // This is owned by the caller of
   // WebsocketHandshakeStreamCreateHelper::CreateBasicStream() or
-  // CreateHttp2Stream().  Both the stream and this object will be destroyed
-  // during the destruction of the URLRequest object associated with the
-  // handshake. This is only guaranteed to be a valid pointer if the handshake
-  // succeeded.
+  // CreateHttp2Stream() or CreateHttp3Stream().  Both the stream and this
+  // object will be destroyed during the destruction of the URLRequest object
+  // associated with the handshake. This is only guaranteed to be a valid
+  // pointer if the handshake succeeded.
   base::WeakPtr<WebSocketHandshakeStreamBase> handshake_stream_;
 
   // The failure information supplied by WebSocketBasicHandshakeStream, if any.

@@ -158,14 +158,32 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
     : public WebSocketBasicStream::Adapter,
       public WebSocketQuicSpdyStream::Delegate {
  public:
+  // The Delegate interface is implemented by WebSocketHttp3HandshakeStream the
+  // user of the WebSocketQuicStreamAdapter to receive events related to the
+  // lifecycle of the Adapter.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void OnHeadersSent() = 0;
+    virtual void OnHeadersReceived(
+        const spdy::Http2HeaderBlock& response_headers) = 0;
+    virtual void OnClose(int status) = 0;
+  };
+
   explicit WebSocketQuicStreamAdapter(
-      WebSocketQuicSpdyStream* websocket_quic_spdy_stream);
+      WebSocketQuicSpdyStream* websocket_quic_spdy_stream,
+      Delegate* delegate);
 
   WebSocketQuicStreamAdapter(const WebSocketQuicStreamAdapter&) = delete;
   WebSocketQuicStreamAdapter& operator=(const WebSocketQuicStreamAdapter&) =
       delete;
 
   ~WebSocketQuicStreamAdapter() override;
+
+  // Called by WebSocketQuicStreamAdapter::Delegate before it is destroyed.
+  void clear_delegate() { delegate_ = nullptr; }
+
+  size_t WriteHeaders(spdy::Http2HeaderBlock header_block, bool fin);
 
   // WebSocketBasicStream::Adapter methods.
   // TODO(momoka): Add functions that are needed to implement
@@ -181,13 +199,15 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   bool is_initialized() const override;
 
   // WebSocketQuicSpdyStream::Delegate methods.
-  void ClearStream() override;
   void OnBodyAvailable() override;
+  void ClearStream() override;
 
  private:
   //  `websocket_quic_spdy_stream_` notifies this object of its destruction,
   //  because they may be destroyed in any order.
   raw_ptr<WebSocketQuicSpdyStream> websocket_quic_spdy_stream_;
+
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace net

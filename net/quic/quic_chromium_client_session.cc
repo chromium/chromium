@@ -4026,8 +4026,7 @@ QuicChromiumClientSession::CreateWebSocketQuicStreamAdapter(
       GetNextOutgoingBidirectionalStreamId(), this, quic::BIDIRECTIONAL);
 
   auto adapter = std::make_unique<WebSocketQuicStreamAdapter>(
-      websocket_quic_spdy_stream.get());
-
+      websocket_quic_spdy_stream.get(), delegate);
   ActivateStream(std::move(websocket_quic_spdy_stream));
 
   ++num_total_streams_;

@@ -45,6 +45,7 @@ class URLRequestContext;
 struct WebSocketFrame;
 class WebSocketBasicHandshakeStream;
 class WebSocketHttp2HandshakeStream;
+class WebSocketHttp3HandshakeStream;
 struct NetworkTrafficAnnotationTag;
 
 // WebSocketStreamRequest is the caller's handle to the process of creation of a
@@ -66,6 +67,8 @@ class NET_EXPORT_PRIVATE WebSocketStreamRequestAPI
       WebSocketBasicHandshakeStream* handshake_stream) = 0;
   virtual void OnHttp2HandshakeStreamCreated(
       WebSocketHttp2HandshakeStream* handshake_stream) = 0;
+  virtual void OnHttp3HandshakeStreamCreated(
+      WebSocketHttp3HandshakeStream* handshake_stream) = 0;
   virtual void OnFailure(const std::string& message,
                          int net_error,
                          absl::optional<int> response_code) = 0;

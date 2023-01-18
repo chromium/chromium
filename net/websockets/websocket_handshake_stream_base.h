@@ -18,6 +18,7 @@
 #include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/http/http_stream.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_stream.h"
 
@@ -111,6 +112,13 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
     // has been opened.  This cannot be called more than once.
     virtual std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
         base::WeakPtr<SpdySession> session,
+        std::set<std::string> dns_aliases) = 0;
+
+    // Create a WebSocketHttp3HandshakeStream. This is called after the
+    // underlying HTTP/3 connection has been established but before the stream
+    // has been opened.  This cannot be called more than once.
+    virtual std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
+        std::unique_ptr<QuicChromiumClientSession::Handle> session,
         std::set<std::string> dns_aliases) = 0;
   };
 

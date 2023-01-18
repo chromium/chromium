@@ -223,6 +223,8 @@ class TestWebSocketStreamRequestAPI : public WebSocketStreamRequestAPI {
       WebSocketBasicHandshakeStream* handshake_stream) override;
   void OnHttp2HandshakeStreamCreated(
       WebSocketHttp2HandshakeStream* handshake_stream) override;
+  void OnHttp3HandshakeStreamCreated(
+      WebSocketHttp3HandshakeStream* handshake_stream) override;
   void OnFailure(const std::string& message,
                  int net_error,
                  absl::optional<int> response_code) override {}

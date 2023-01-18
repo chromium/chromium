@@ -57,6 +57,10 @@ class NET_EXPORT_PRIVATE WebSocketHandshakeStreamCreateHelper
       base::WeakPtr<SpdySession> session,
       std::set<std::string> dns_aliases) override;
 
+  std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
+      std::unique_ptr<QuicChromiumClientSession::Handle> session,
+      std::set<std::string> dns_aliases) override;
+
  private:
   const raw_ptr<WebSocketStream::ConnectDelegate, DanglingUntriaged>
       connect_delegate_;
