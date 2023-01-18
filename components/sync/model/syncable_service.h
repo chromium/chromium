@@ -18,7 +18,6 @@
 namespace syncer {
 
 class SyncChangeProcessor;
-class SyncErrorFactory;
 
 // TODO(zea): remove SupportsWeakPtr in favor of having all SyncableService
 // implementers provide a way of getting a weak pointer to themselves.
@@ -62,8 +61,7 @@ class SyncableService : public base::SupportsWeakPtr<SyncableService> {
   virtual absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       ModelType type,
       const SyncDataList& initial_sync_data,
-      std::unique_ptr<SyncChangeProcessor> sync_processor,
-      std::unique_ptr<SyncErrorFactory> error_handler) = 0;
+      std::unique_ptr<SyncChangeProcessor> sync_processor) = 0;
 
   // Stop syncing the specified type and reset state.
   virtual void StopSyncing(ModelType type) = 0;

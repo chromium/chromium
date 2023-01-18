@@ -21,7 +21,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
@@ -227,14 +226,12 @@ absl::optional<syncer::ModelError>
 PrefModelAssociator::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
-    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-    std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) {
+    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK_EQ(type_, type);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pref_service_);
   DCHECK(!sync_processor_.get());
   DCHECK(sync_processor.get());
-  DCHECK(sync_error_factory.get());
   sync_processor_ = std::move(sync_processor);
 
   syncer::SyncChangeList new_changes;

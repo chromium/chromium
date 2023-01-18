@@ -27,7 +27,6 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 
@@ -244,8 +243,7 @@ class AppListSyncableService : public syncer::SyncableService,
   absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
-      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-      std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
+      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting() const;
   absl::optional<syncer::ModelError> ProcessSyncChanges(
@@ -427,7 +425,6 @@ class AppListSyncableService : public syncer::SyncableService,
 
   std::unique_ptr<AppServiceAppModelBuilder> app_service_apps_builder_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
-  std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler_;
   SyncItemMap sync_items_;
   // Map that keeps pending request to transfer attributes from one app to
   // another.

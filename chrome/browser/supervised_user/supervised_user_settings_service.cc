@@ -20,13 +20,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 #include "content/public/browser/browser_thread.h"
@@ -43,7 +41,6 @@ using syncer::SyncChangeList;
 using syncer::SyncChangeProcessor;
 using syncer::SyncData;
 using syncer::SyncDataList;
-using syncer::SyncErrorFactory;
 
 const char kAtomicSettings[] = "atomic_settings";
 const char kSupervisedUserInternalItemPrefix[] = "X-";
@@ -281,11 +278,9 @@ absl::optional<syncer::ModelError>
 SupervisedUserSettingsService::MergeDataAndStartSyncing(
     ModelType type,
     const SyncDataList& initial_sync_data,
-    std::unique_ptr<SyncChangeProcessor> sync_processor,
-    std::unique_ptr<SyncErrorFactory> error_handler) {
+    std::unique_ptr<SyncChangeProcessor> sync_processor) {
   DCHECK_EQ(SUPERVISED_USER_SETTINGS, type);
   sync_processor_ = std::move(sync_processor);
-  error_handler_ = std::move(error_handler);
 
   std::set<std::string> seen_keys;
   for (const auto it : *GetAtomicSettings()) {
@@ -364,7 +359,6 @@ SupervisedUserSettingsService::MergeDataAndStartSyncing(
 void SupervisedUserSettingsService::StopSyncing(ModelType type) {
   DCHECK_EQ(syncer::SUPERVISED_USER_SETTINGS, type);
   sync_processor_.reset();
-  error_handler_.reset();
 }
 
 SyncDataList SupervisedUserSettingsService::GetAllSyncDataForTesting(

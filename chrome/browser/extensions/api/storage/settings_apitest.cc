@@ -27,11 +27,9 @@
 #include "components/policy/core/common/schema_registry.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
@@ -142,8 +140,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
             ->MergeDataAndStartSyncing(
                 kModelType, syncer::SyncDataList(),
                 std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-                    sync_processor),
-                std::make_unique<NiceMock<syncer::SyncErrorFactoryMock>>())
+                    sync_processor))
             .has_value());
   }
 

@@ -15,8 +15,6 @@
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
-#include "components/sync/model/sync_error.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
 
 class Profile;
@@ -77,8 +75,7 @@ class ThemeSyncableService : public syncer::SyncableService,
   absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
-      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-      std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
+      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
   absl::optional<syncer::ModelError> ProcessSyncChanges(
@@ -127,7 +124,6 @@ class ThemeSyncableService : public syncer::SyncableService,
   base::ObserverList<Observer> observer_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
-  std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler_;
 
   // Persist use_system_theme_by_default for platforms that use it, even if
   // we're not on one.

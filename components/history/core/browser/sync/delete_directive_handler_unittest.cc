@@ -20,7 +20,6 @@
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
@@ -185,8 +184,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest,
           ->MergeDataAndStartSyncing(
               syncer::HISTORY_DELETE_DIRECTIVES, syncer::SyncDataList(),
               std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
-                  &change_processor),
-              std::unique_ptr<syncer::SyncErrorFactory>())
+                  &change_processor))
           .has_value());
 
   absl::optional<syncer::ModelError> err =
@@ -243,8 +241,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessGlobalIdDeleteDirective) {
                        syncer::HISTORY_DELETE_DIRECTIVES, directives,
                        std::unique_ptr<syncer::SyncChangeProcessor>(
                            new syncer::SyncChangeProcessorWrapperForTest(
-                               &change_processor)),
-                       std::unique_ptr<syncer::SyncErrorFactory>())
+                               &change_processor)))
                    .has_value());
 
   // Inject a task to check status and keep message loop filled before directive
@@ -309,8 +306,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessTimeRangeDeleteDirective) {
                        syncer::HISTORY_DELETE_DIRECTIVES, directives,
                        std::unique_ptr<syncer::SyncChangeProcessor>(
                            new syncer::SyncChangeProcessorWrapperForTest(
-                               &change_processor)),
-                       std::unique_ptr<syncer::SyncErrorFactory>())
+                               &change_processor)))
                    .has_value());
 
   // Inject a task to check status and keep message loop filled before
@@ -375,8 +371,7 @@ TEST_F(HistoryDeleteDirectiveHandlerTest, ProcessUrlDeleteDirective) {
                        syncer::HISTORY_DELETE_DIRECTIVES, directives,
                        std::unique_ptr<syncer::SyncChangeProcessor>(
                            new syncer::SyncChangeProcessorWrapperForTest(
-                               &change_processor)),
-                       std::unique_ptr<syncer::SyncErrorFactory>())
+                               &change_processor)))
                    .has_value());
 
   // Inject a task to check status and keep message loop filled before

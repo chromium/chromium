@@ -17,7 +17,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 
 namespace app_list {
 
@@ -418,8 +417,7 @@ TEST_F(TemporaryAppListSortTest, ReparentingItemToRootResetsSortOrder) {
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Sort with name alphabetical order.
@@ -556,8 +554,7 @@ TEST_F(TemporaryAppListSortTest, ReparentingItemToFolderDoesNotResetSortOrder) {
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Sort with name alphabetical order.
@@ -698,8 +695,7 @@ TEST_F(TemporaryAppListSortTest, HandlePositionSyncUpdate) {
   // Start syncing.
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, syncer::SyncDataList(),
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
   RemoveAllExistingItems();
 
@@ -846,8 +842,7 @@ TEST_F(TemporaryAppListSortTest, HandleFolderRename) {
       kItemId2, "B", kFolderItemId, child_position.ToInternalValue(), kUnset));
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Install four apps.
@@ -939,8 +934,7 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItemToFolder) {
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Install three apps.
@@ -1014,8 +1008,7 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItemToRootGrid) {
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Install test apps that were added to the folder.
@@ -1142,8 +1135,7 @@ TEST_F(TemporaryAppListSortTest, InstallAppRemotely) {
   // Start syncing.
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, syncer::SyncDataList(),
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
   RemoveAllExistingItems();
 
@@ -1221,8 +1213,7 @@ TEST_F(TemporaryAppListSortTest, RemoveItemRemotely) {
   // Start syncing.
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, syncer::SyncDataList(),
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
   RemoveAllExistingItems();
 
@@ -1390,8 +1381,7 @@ TEST_F(TemporaryAppListSortTest, AlphabeticalEphemeralAppFirstSort) {
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
       syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
   // Verify the default order.

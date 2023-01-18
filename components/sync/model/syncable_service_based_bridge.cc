@@ -14,11 +14,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
@@ -206,25 +205,6 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   const raw_ptr<SyncableServiceBasedBridge::InMemoryStore> in_memory_store_;
   const raw_ptr<ModelTypeChangeProcessor> other_;
   SEQUENCE_CHECKER(sequence_checker_);
-};
-
-class SyncErrorFactoryImpl : public SyncErrorFactory {
- public:
-  explicit SyncErrorFactoryImpl(ModelType type) : type_(type) {}
-
-  SyncErrorFactoryImpl(const SyncErrorFactoryImpl&) = delete;
-  SyncErrorFactoryImpl& operator=(const SyncErrorFactoryImpl&) = delete;
-
-  ~SyncErrorFactoryImpl() override = default;
-
-  SyncError CreateAndUploadError(const base::Location& location,
-                                 const std::string& message) override {
-    // Uploading is not supported, we simply return the error.
-    return SyncError(location, SyncError::DATATYPE_ERROR, message, type_);
-  }
-
- private:
-  const ModelType type_;
 };
 
 }  // namespace
@@ -502,8 +482,7 @@ absl::optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
 
   const absl::optional<ModelError> merge_error =
       syncable_service_->MergeDataAndStartSyncing(
-          type_, initial_sync_data, std::move(local_change_processor),
-          std::make_unique<SyncErrorFactoryImpl>(type_));
+          type_, initial_sync_data, std::move(local_change_processor));
 
   if (!merge_error) {
     syncable_service_started_ = true;

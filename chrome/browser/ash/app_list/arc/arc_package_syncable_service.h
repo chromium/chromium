@@ -18,7 +18,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/arc_package_specifics.pb.h"
 
@@ -65,8 +64,7 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
-      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-      std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
+      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
@@ -117,7 +115,6 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   Profile* const profile_;
   base::OnceClosure wait_until_ready_to_sync_cb_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
-  std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler_;
 
   // Items which are synced.
   SyncItemMap sync_items_;

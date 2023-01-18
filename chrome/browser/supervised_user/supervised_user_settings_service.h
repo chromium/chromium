@@ -162,8 +162,7 @@ class SupervisedUserSettingsService : public KeyedService,
   absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
-      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-      std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
+      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
   absl::optional<syncer::ModelError> ProcessSyncChanges(
@@ -217,7 +216,6 @@ class SupervisedUserSettingsService : public KeyedService,
   ShutdownCallbackList shutdown_callback_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
-  std::unique_ptr<syncer::SyncErrorFactory> error_handler_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_H_

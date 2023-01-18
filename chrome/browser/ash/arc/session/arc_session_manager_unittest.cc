@@ -70,7 +70,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -358,8 +357,7 @@ class ArcSessionManagerTestBase : public testing::Test {
         ->GetSyncableService(syncer::PREFERENCES)
         ->MergeDataAndStartSyncing(
             syncer::PREFERENCES, syncer::SyncDataList(),
-            std::make_unique<syncer::FakeSyncChangeProcessor>(),
-            std::make_unique<syncer::SyncErrorFactoryMock>());
+            std::make_unique<syncer::FakeSyncChangeProcessor>());
   }
 
   content::BrowserTaskEnvironment task_environment_;

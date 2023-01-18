@@ -51,7 +51,6 @@
 #include "components/history/core/browser/visit_delegate.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 

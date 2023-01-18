@@ -82,7 +82,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
@@ -310,9 +309,7 @@ void TestingProfile::Init(bool is_supervised_profile) {
     settings_service->MergeDataAndStartSyncing(
         syncer::SUPERVISED_USER_SETTINGS, syncer::SyncDataList(),
         std::unique_ptr<syncer::SyncChangeProcessor>(
-            new syncer::FakeSyncChangeProcessor),
-        std::unique_ptr<syncer::SyncErrorFactory>(
-            new syncer::SyncErrorFactoryMock));
+            new syncer::FakeSyncChangeProcessor));
 
     supervised_user_pref_store_->SetInitializationCompleted();
   }

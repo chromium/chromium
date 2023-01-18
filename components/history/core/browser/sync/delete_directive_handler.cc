@@ -20,7 +20,6 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -436,8 +435,7 @@ absl::optional<syncer::ModelError>
 DeleteDirectiveHandler::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
-    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-    std::unique_ptr<syncer::SyncErrorFactory> error_handler) {
+    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK_EQ(type, syncer::HISTORY_DELETE_DIRECTIVES);
   DCHECK(thread_checker_.CalledOnValidThread());
 

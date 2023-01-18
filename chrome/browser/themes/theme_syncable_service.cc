@@ -95,18 +95,15 @@ absl::optional<syncer::ModelError>
 ThemeSyncableService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
-    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-    std::unique_ptr<syncer::SyncErrorFactory> error_handler) {
+    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!sync_processor_.get());
   DCHECK(sync_processor.get());
-  DCHECK(error_handler.get());
 
   sync_processor_ = std::move(sync_processor);
-  sync_error_handler_ = std::move(error_handler);
 
   if (initial_sync_data.size() > 1) {
-    sync_error_handler_->CreateAndUploadError(
+    return syncer::ModelError(
         FROM_HERE,
         base::StringPrintf("Received %d theme specifics.",
                            static_cast<int>(initial_sync_data.size())));
@@ -147,7 +144,6 @@ void ThemeSyncableService::StopSyncing(syncer::ModelType type) {
   DCHECK_EQ(type, syncer::THEMES);
 
   sync_processor_.reset();
-  sync_error_handler_.reset();
 }
 
 syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
@@ -185,14 +181,12 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
     for (size_t i = 0; i < change_list.size(); ++i) {
       base::StringAppendF(&err_msg, "[%s] ", change_list[i].ToString().c_str());
     }
-    sync_error_handler_->CreateAndUploadError(FROM_HERE, err_msg);
-  } else if (change_list.begin()->change_type() !=
-          syncer::SyncChange::ACTION_ADD
-      && change_list.begin()->change_type() !=
-          syncer::SyncChange::ACTION_UPDATE) {
-    sync_error_handler_->CreateAndUploadError(
-        FROM_HERE,
-        "Invalid theme change: " + change_list.begin()->ToString());
+    return syncer::ModelError(FROM_HERE, err_msg);
+  }
+  if (change_list.begin()->change_type() != syncer::SyncChange::ACTION_ADD &&
+      change_list.begin()->change_type() != syncer::SyncChange::ACTION_UPDATE) {
+    return syncer::ModelError(
+        FROM_HERE, "Invalid theme change: " + change_list.begin()->ToString());
   }
 
   sync_pb::ThemeSpecifics current_specifics;

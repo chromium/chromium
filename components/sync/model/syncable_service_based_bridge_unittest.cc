@@ -18,7 +18,6 @@
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
@@ -70,8 +69,7 @@ class MockSyncableService : public SyncableService {
               MergeDataAndStartSyncing,
               (ModelType type,
                const SyncDataList& initial_sync_data,
-               std::unique_ptr<SyncChangeProcessor> sync_processor,
-               std::unique_ptr<SyncErrorFactory> sync_error_factory),
+               std::unique_ptr<SyncChangeProcessor> sync_processor),
               (override));
   MOCK_METHOD(void, StopSyncing, (ModelType type), (override));
   MOCK_METHOD(absl::optional<ModelError>,
@@ -98,8 +96,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
     ON_CALL(syncable_service_, MergeDataAndStartSyncing)
         .WillByDefault(
             [&](ModelType type, const SyncDataList& initial_sync_data,
-                std::unique_ptr<SyncChangeProcessor> sync_processor,
-                std::unique_ptr<SyncErrorFactory> sync_error_factory) {
+                std::unique_ptr<SyncChangeProcessor> sync_processor) {
               start_syncing_sync_processor_ = std::move(sync_processor);
               return absl::nullopt;
             });
@@ -194,9 +191,8 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   // Once the initial data is fetched from the server,
   // MergeDataAndStartSyncing() should be exercised.
-  EXPECT_CALL(
-      syncable_service_,
-      MergeDataAndStartSyncing(kModelType, IsEmpty(), NotNull(), NotNull()));
+  EXPECT_CALL(syncable_service_,
+              MergeDataAndStartSyncing(kModelType, IsEmpty(), NotNull()));
   worker_->UpdateFromServer();
   EXPECT_THAT(GetAllData(), IsEmpty());
 }
@@ -208,10 +204,10 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   // Once the initial data is fetched from the server,
   // MergeDataAndStartSyncing() should be exercised.
-  EXPECT_CALL(syncable_service_,
-              MergeDataAndStartSyncing(kModelType,
-                                       ElementsAre(SyncDataMatches("name1")),
-                                       NotNull(), NotNull()));
+  EXPECT_CALL(
+      syncable_service_,
+      MergeDataAndStartSyncing(
+          kModelType, ElementsAre(SyncDataMatches("name1")), NotNull()));
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash.value(), _)));
 }
@@ -337,10 +333,10 @@ TEST_F(SyncableServiceBasedBridgeTest,
   ShutdownBridge();
   InitializeBridge();
 
-  EXPECT_CALL(syncable_service_,
-              MergeDataAndStartSyncing(kModelType,
-                                       ElementsAre(SyncDataMatches("name1")),
-                                       NotNull(), NotNull()));
+  EXPECT_CALL(
+      syncable_service_,
+      MergeDataAndStartSyncing(
+          kModelType, ElementsAre(SyncDataMatches("name1")), NotNull()));
   StartSyncing();
 }
 
@@ -353,9 +349,8 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldSupportDisableReenableSequence) {
 
   EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing).Times(0);
   StartSyncing();
-  EXPECT_CALL(
-      syncable_service_,
-      MergeDataAndStartSyncing(kModelType, IsEmpty(), NotNull(), NotNull()));
+  EXPECT_CALL(syncable_service_,
+              MergeDataAndStartSyncing(kModelType, IsEmpty(), NotNull()));
   worker_->UpdateFromServer();
 }
 
@@ -363,8 +358,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
        ShouldPropagateLocalEntitiesDuringMerge) {
   ON_CALL(syncable_service_, MergeDataAndStartSyncing)
       .WillByDefault([&](ModelType type, const SyncDataList& initial_sync_data,
-                         std::unique_ptr<SyncChangeProcessor> sync_processor,
-                         std::unique_ptr<SyncErrorFactory> sync_error_factory) {
+                         std::unique_ptr<SyncChangeProcessor> sync_processor) {
         SyncChangeList change_list;
         change_list.emplace_back(
             FROM_HERE, SyncChange::ACTION_ADD,

@@ -94,7 +94,6 @@
 #include "components/sync/protocol/arc_package_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
@@ -1652,8 +1651,7 @@ TEST_P(ArcAppModelBuilderTest, IsUnknownSyncTest) {
   ASSERT_NE(nullptr, sync_service);
   sync_service->MergeDataAndStartSyncing(
       syncer::ARC_PACKAGE, data_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
 
   EXPECT_FALSE(prefs->IsUnknownPackage(sync_package_name));
 }

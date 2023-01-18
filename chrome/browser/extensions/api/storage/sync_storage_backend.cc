@@ -13,7 +13,6 @@
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"
 #include "chrome/browser/extensions/api/storage/syncable_settings_storage.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/value_store_util.h"
 
@@ -154,16 +153,13 @@ syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
 absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
-    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-    std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) {
+    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK(IsOnBackendSequence());
   DCHECK_EQ(sync_type_, type);
   DCHECK(!sync_processor_.get());
   DCHECK(sync_processor.get());
-  DCHECK(sync_error_factory.get());
 
   sync_processor_ = std::move(sync_processor);
-  sync_error_factory_ = std::move(sync_error_factory);
 
   // Group the initial sync data by extension id.
   std::map<std::string, base::Value::Dict> grouped_sync_data;
@@ -252,7 +248,6 @@ void SyncStorageBackend::StopSyncing(syncer::ModelType type) {
   }
 
   sync_processor_.reset();
-  sync_error_factory_.reset();
 }
 
 std::unique_ptr<SettingsSyncProcessor>

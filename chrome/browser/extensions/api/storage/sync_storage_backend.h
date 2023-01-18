@@ -17,10 +17,6 @@
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
 
-namespace syncer {
-class SyncErrorFactory;
-}
-
 namespace value_store {
 class ValueStoreFactory;
 }
@@ -58,8 +54,7 @@ class SyncStorageBackend : public syncer::SyncableService {
   absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
-      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-      std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) override;
+      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
@@ -96,9 +91,6 @@ class SyncStorageBackend : public syncer::SyncableService {
 
   // Current sync processor, if any.
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
-
-  // Current sync error handler if any.
-  std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory_;
 
   syncer::SyncableService::StartSyncFlare flare_;
 };

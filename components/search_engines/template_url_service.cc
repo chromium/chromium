@@ -35,7 +35,6 @@
 #include "components/search_engines/util.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/url_formatter/url_fixer.h"
@@ -1204,7 +1203,7 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       &dsp_change_origin_, DSP_CHANGE_SYNC_UNINTENTIONAL);
 
   syncer::SyncChangeList new_changes;
-  syncer::SyncError error;
+  absl::optional<syncer::ModelError> error;
   for (auto iter = change_list.begin(); iter != change_list.end(); ++iter) {
     DCHECK_EQ(syncer::SEARCH_ENGINES, iter->sync_data().GetDataType());
 
@@ -1224,7 +1223,7 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       if (!existing_turl) {
         // Can't DELETE a non-existent engine, although we log it.
         LogSearchTemplateURLEvent(SYNC_DELETE_FAIL_NONEXISTENT_ENGINE);
-        error = sync_error_factory_->CreateAndUploadError(FROM_HERE, error_msg);
+        error = syncer::ModelError(FROM_HERE, error_msg);
         continue;
       }
 
@@ -1300,8 +1299,9 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
 
   // If something went wrong, we want to prematurely exit to avoid pushing
   // inconsistent data to Sync. We return the last error we received.
-  if (error.IsSet())
-    return ConvertToModelError(error);
+  if (error) {
+    return error;
+  }
 
   return sync_processor_->ProcessSyncChanges(from_here, new_changes);
 }
@@ -1309,13 +1309,11 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
 absl::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
-    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-    std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) {
+    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK(loaded_);
   DCHECK_EQ(type, syncer::SEARCH_ENGINES);
   DCHECK(!sync_processor_);
   DCHECK(sync_processor);
-  DCHECK(sync_error_factory);
 
   // Disable sync if we failed to load.
   if (load_failed_) {
@@ -1323,7 +1321,6 @@ absl::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
   }
 
   sync_processor_ = std::move(sync_processor);
-  sync_error_factory_ = std::move(sync_error_factory);
 
   // We do a lot of calls to Add/Remove/ResetTemplateURL here, so ensure we
   // don't step on our own toes.
@@ -1432,7 +1429,6 @@ void TemplateURLService::StopSyncing(syncer::ModelType type) {
   DCHECK_EQ(type, syncer::SEARCH_ENGINES);
   models_associated_ = false;
   sync_processor_.reset();
-  sync_error_factory_.reset();
 }
 
 void TemplateURLService::ProcessTemplateURLChange(

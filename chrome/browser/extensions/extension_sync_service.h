@@ -60,8 +60,7 @@ class ExtensionSyncService : public syncer::SyncableService,
   absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
-      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-      std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) override;
+      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
   absl::optional<syncer::ModelError> ProcessSyncChanges(

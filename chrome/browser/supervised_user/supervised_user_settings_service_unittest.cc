@@ -19,43 +19,9 @@
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace {
-
-class MockSyncErrorFactory : public syncer::SyncErrorFactory {
- public:
-  explicit MockSyncErrorFactory(syncer::ModelType type);
-
-  MockSyncErrorFactory(const MockSyncErrorFactory&) = delete;
-  MockSyncErrorFactory& operator=(const MockSyncErrorFactory&) = delete;
-
-  ~MockSyncErrorFactory() override;
-
-  // SyncErrorFactory implementation:
-  syncer::SyncError CreateAndUploadError(const base::Location& location,
-                                         const std::string& message) override;
-
- private:
-  syncer::ModelType type_;
-};
-
-MockSyncErrorFactory::MockSyncErrorFactory(syncer::ModelType type)
-    : type_(type) {}
-
-MockSyncErrorFactory::~MockSyncErrorFactory() {}
-
-syncer::SyncError MockSyncErrorFactory::CreateAndUploadError(
-    const base::Location& location,
-    const std::string& message) {
-  return syncer::SyncError(location, syncer::SyncError::DATATYPE_ERROR, message,
-                           type_);
-}
-
-}  // namespace
 
 const char kAtomicItemName[] = "X-Wombat";
 const char kSettingsName[] = "TestingSetting";
@@ -74,12 +40,10 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   }
 
   void StartSyncing(const syncer::SyncDataList& initial_sync_data) {
-    std::unique_ptr<syncer::SyncErrorFactory> error_handler(
-        new MockSyncErrorFactory(syncer::SUPERVISED_USER_SETTINGS));
     absl::optional<syncer::ModelError> error =
         settings_service_.MergeDataAndStartSyncing(
             syncer::SUPERVISED_USER_SETTINGS, initial_sync_data,
-            CreateSyncProcessor(), std::move(error_handler));
+            CreateSyncProcessor());
     EXPECT_FALSE(error.has_value());
   }
 

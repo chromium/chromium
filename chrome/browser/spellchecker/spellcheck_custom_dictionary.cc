@@ -29,7 +29,6 @@
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -330,16 +329,12 @@ absl::optional<syncer::ModelError>
 SpellcheckCustomDictionary::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
-    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-    std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler) {
+    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!sync_processor_.get());
-  DCHECK(!sync_error_handler_.get());
   DCHECK(sync_processor.get());
-  DCHECK(sync_error_handler.get());
   DCHECK_EQ(syncer::DICTIONARY, type);
   sync_processor_ = std::move(sync_processor);
-  sync_error_handler_ = std::move(sync_error_handler);
 
   // Build a list of words to add locally.
   std::unique_ptr<Change> to_change_locally(new Change);
@@ -366,7 +361,6 @@ void SpellcheckCustomDictionary::StopSyncing(syncer::ModelType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(syncer::DICTIONARY, type);
   sync_processor_.reset();
-  sync_error_handler_.reset();
 }
 
 syncer::SyncDataList SpellcheckCustomDictionary::GetAllSyncDataForTesting(
@@ -402,11 +396,10 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
         dictionary_change->RemoveWord(word);
         break;
       case syncer::SyncChange::ACTION_UPDATE:
-        return syncer::ConvertToModelError(
-            sync_error_handler_->CreateAndUploadError(
-                FROM_HERE, "Processing sync changes failed on change type " +
-                               syncer::SyncChange::ChangeTypeToString(
-                                   change.change_type())));
+        return syncer::ModelError(
+            FROM_HERE,
+            "Processing sync changes failed on change type " +
+                syncer::SyncChange::ChangeTypeToString(change.change_type()));
     }
   }
 

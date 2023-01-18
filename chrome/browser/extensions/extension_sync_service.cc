@@ -22,7 +22,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -158,8 +157,7 @@ absl::optional<syncer::ModelError>
 ExtensionSyncService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
-    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-    std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) {
+    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   CHECK(sync_processor.get());
   LOG_IF(FATAL, type != syncer::EXTENSIONS && type != syncer::APPS)
       << "Got " << type << " ModelType";

@@ -27,7 +27,6 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -243,8 +242,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
 
   sync_service->MergeDataAndStartSyncing(
       syncer::EXTENSIONS, syncer::SyncDataList(),
-      base::WrapUnique(new syncer::FakeSyncChangeProcessor()),
-      base::WrapUnique(new syncer::SyncErrorFactoryMock()));
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   extensions::TestExtensionRegistryObserver install_observer(
       extension_registry());
   sync_service->ProcessSyncChanges(
@@ -301,8 +299,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
   ExtensionSyncService* sync_service = ExtensionSyncService::Get(profile());
   sync_service->MergeDataAndStartSyncing(
       syncer::EXTENSIONS, syncer::SyncDataList(),
-      base::WrapUnique(new syncer::FakeSyncChangeProcessor()),
-      base::WrapUnique(new syncer::SyncErrorFactoryMock()));
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
   extensions::TestExtensionRegistryObserver install_observer(
       extension_registry());
   sync_service->ProcessSyncChanges(

@@ -38,12 +38,10 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
-#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -212,8 +210,7 @@ class FullRestoreServiceTest : public testing::Test {
     if (!maybe_restore_apps_and_pages_value.has_value()) {
       sync_service->MergeDataAndStartSyncing(
           syncer::PREFERENCES, sync_data_list,
-          std::make_unique<syncer::FakeSyncChangeProcessor>(),
-          std::make_unique<syncer::SyncErrorFactoryMock>());
+          std::make_unique<syncer::FakeSyncChangeProcessor>());
 
       // OS_PREFERENCES sync should be started separately.
       syncer::SyncableService* os_sync_service =
@@ -221,8 +218,7 @@ class FullRestoreServiceTest : public testing::Test {
               syncer::OS_PREFERENCES);
       os_sync_service->MergeDataAndStartSyncing(
           syncer::OS_PREFERENCES, syncer::SyncDataList(),
-          std::make_unique<syncer::FakeSyncChangeProcessor>(),
-          std::make_unique<syncer::SyncErrorFactoryMock>());
+          std::make_unique<syncer::FakeSyncChangeProcessor>());
       return;
     }
 
@@ -234,13 +230,11 @@ class FullRestoreServiceTest : public testing::Test {
             syncer::OS_PREFERENCES);
     os_sync_service->MergeDataAndStartSyncing(
         syncer::OS_PREFERENCES, os_sync_data_list,
-        std::make_unique<syncer::FakeSyncChangeProcessor>(),
-        std::make_unique<syncer::SyncErrorFactoryMock>());
+        std::make_unique<syncer::FakeSyncChangeProcessor>());
 
     sync_service->MergeDataAndStartSyncing(
         syncer::PREFERENCES, sync_data_list,
-        std::make_unique<syncer::FakeSyncChangeProcessor>(),
-        std::make_unique<syncer::SyncErrorFactoryMock>());
+        std::make_unique<syncer::FakeSyncChangeProcessor>());
   }
 
   void ProcessSyncChanges(

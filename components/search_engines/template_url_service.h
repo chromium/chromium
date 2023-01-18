@@ -48,7 +48,6 @@ class TemplateUrlServiceAndroid;
 
 namespace syncer {
 class SyncData;
-class SyncErrorFactory;
 }
 
 namespace user_prefs {
@@ -450,8 +449,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
-      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
-      std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) override;
+      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
 
   // Processes a local TemplateURL change for Sync. |turl| is the TemplateURL
@@ -855,9 +853,6 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Sync's syncer::SyncChange handler. We push all our changes through this.
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
-
-  // Sync's error handler. We use it to create a sync error.
-  std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory_;
 
   // A set of sync GUIDs denoting TemplateURLs that have been removed from this
   // model or the underlying KeywordWebDataService prior to

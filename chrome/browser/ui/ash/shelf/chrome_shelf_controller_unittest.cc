@@ -152,7 +152,6 @@
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -679,8 +678,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   void StartAppSyncService(const syncer::SyncDataList& init_sync_list) {
     app_list_syncable_service_->MergeDataAndStartSyncing(
         syncer::APP_LIST, init_sync_list,
-        std::make_unique<syncer::FakeSyncChangeProcessor>(),
-        std::make_unique<syncer::SyncErrorFactoryMock>());
+        std::make_unique<syncer::FakeSyncChangeProcessor>());
     EXPECT_EQ(init_sync_list.size(),
               app_list_syncable_service_->sync_items().size());
   }
@@ -702,8 +700,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     absl::optional<syncer::ModelError> error =
         GetPrefSyncService()->MergeDataAndStartSyncing(
             syncer::OS_PREFERENCES, init_sync_list,
-            std::make_unique<syncer::FakeSyncChangeProcessor>(),
-            std::make_unique<syncer::SyncErrorFactoryMock>());
+            std::make_unique<syncer::FakeSyncChangeProcessor>());
     EXPECT_FALSE(error.has_value());
   }
 
