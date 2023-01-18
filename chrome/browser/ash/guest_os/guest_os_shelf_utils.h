@@ -23,14 +23,18 @@ namespace guest_os {
 //
 // As the |window_app_id| is derived from fields set by the app itself, it is
 // possible for an app to masquerade as a different app.
-std::string GetGuestShelfAppId(const Profile* profile,
-                               const std::string* window_app_id,
-                               const std::string* window_startup_id);
+std::string GetGuestOsShelfAppId(Profile* profile,
+                                 const std::string* window_app_id,
+                                 const std::string* window_startup_id);
 
 // Returns whether the app_id belongs to an unregistered/generic Crostini app.
 bool IsUnregisteredCrostiniShelfAppId(base::StringPiece shelf_app_id);
 
-// Returns whether the app_id is a Crostini app id.
+// Returns whether the app_id belongs to an unregistered/generic GuestOS app.
+bool IsUnregisteredGuestOsShelfAppId(base::StringPiece shelf_app_id);
+
+// Returns whether the app_id is a Crostini app id. This includes both
+// registered and unregistered Crostini apps.
 bool IsCrostiniShelfAppId(const Profile* profile,
                           base::StringPiece shelf_app_id);
 

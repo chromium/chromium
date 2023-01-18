@@ -32,6 +32,10 @@ extern const char kFullscreenClientShellId[];
 // Base64-encoded application id suffix for borealis client windows.
 extern const char kBorealisClientSuffix[];
 
+// Anonymous apps do not have a CrOS-standard app_id (i.e. one registered with
+// the GuestOsRegistryService), so to identify them we prepend this.
+extern const char kBorealisAnonymousPrefix[];
+
 // The borealis window manager keeps track of the association of windows to
 // borealis apps. This includes determining which windows belong to a borealis
 // app, what the lifetime of the app is relative to its windows, and the

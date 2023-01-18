@@ -110,7 +110,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
       ash::ProfileHelper::Get()->GetProfileByAccountId(primary_account_id);
 
   // Windows without an application id set will get filtered out here.
-  const std::string& crostini_shelf_app_id = guest_os::GetGuestShelfAppId(
+  const std::string& crostini_shelf_app_id = guest_os::GetGuestOsShelfAppId(
       primary_account_profile, exo::GetShellApplicationId(window),
       exo::GetShellStartupId(window));
   if (crostini_shelf_app_id.empty())
@@ -220,7 +220,7 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   Profile* primary_account_profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
-  std::string shelf_app_id = guest_os::GetGuestShelfAppId(
+  std::string shelf_app_id = guest_os::GetGuestOsShelfAppId(
       primary_account_profile, exo::GetShellApplicationId(window),
       exo::GetShellStartupId(window));
 

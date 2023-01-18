@@ -672,7 +672,7 @@ TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
 TEST_F(ShelfContextMenuTest, CrostiniUnregisteredApps) {
   const std::string fake_window_app_id = "foo";
   const std::string fake_window_startup_id = "bar";
-  const std::string app_id = guest_os::GetGuestShelfAppId(
+  const std::string app_id = guest_os::GetGuestOsShelfAppId(
       profile(), &fake_window_app_id, &fake_window_startup_id);
   PinAppWithIDToShelf(app_id);
   const ash::ShelfItem* item = controller()->GetItem(ash::ShelfID(app_id));

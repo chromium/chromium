@@ -238,8 +238,9 @@ void ShelfSpinnerController::CloseCrostiniSpinners() {
   const Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(current_account_id_);
   for (const auto& app_id_controller_pair : app_controller_map_) {
-    if (guest_os::IsCrostiniShelfAppId(profile, app_id_controller_pair.first))
+    if (guest_os::IsCrostiniShelfAppId(profile, app_id_controller_pair.first)) {
       app_ids_to_close.push_back(app_id_controller_pair.first);
+    }
   }
   for (const auto& app_id : app_ids_to_close)
     CloseSpinner(app_id);

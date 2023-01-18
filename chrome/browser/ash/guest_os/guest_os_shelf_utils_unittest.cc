@@ -10,6 +10,7 @@
 #include "base/types/optional_util.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,9 +21,12 @@ namespace guest_os {
 
 namespace {
 
+constexpr char container_token[] = "test_container_token";
+constexpr char container_name[] = "container";
+
 struct App {
   std::string desktop_file_id;
-  std::string vm_name = "vm";
+  std::string vm_name = crostini::kCrostiniDefaultVmName;
   std::string container_name = "container";
   std::string app_name;
   absl::optional<std::string> startup_wm_class;
@@ -40,18 +44,28 @@ std::string GenAppId(const App& app) {
       app.desktop_file_id, app.vm_name, app.container_name);
 }
 
+std::string TestWaylandWindowIdWithToken(
+    const std::string& app_suffix,
+    const std::string& token = container_token) {
+  return "org.chromium.guest_os." + token + ".wayland." + app_suffix;
+}
+
+std::string TestXWindowIdWithToken(const std::string& app_suffix,
+                                   const std::string& token = container_token) {
+  return "org.chromium.guest_os." + token + ".wmclass." + app_suffix;
+}
 }  // namespace
 
 class GuestOsShelfUtilsTest : public testing::Test {
  public:
-  std::string GetShelfAppIdUsingProfile(const Profile* profile,
-                                        WindowIds window_ids) const {
-    return GetGuestShelfAppId(profile, base::OptionalToPtr(window_ids.app_id),
-                              base::OptionalToPtr(window_ids.startup_id));
+  std::string GetGuestOsShelfAppIdUsingProfile(Profile* profile,
+                                               WindowIds window_ids) const {
+    return GetGuestOsShelfAppId(profile, base::OptionalToPtr(window_ids.app_id),
+                                base::OptionalToPtr(window_ids.startup_id));
   }
 
-  std::string GetShelfAppId(WindowIds window_ids) const {
-    return GetShelfAppIdUsingProfile(&testing_profile_, window_ids);
+  std::string GetShelfAppId(WindowIds window_ids) {
+    return GetGuestOsShelfAppIdUsingProfile(&testing_profile_, window_ids);
   }
 
   void SetGuestOsRegistry(std::vector<App> apps) {
@@ -86,9 +100,17 @@ class GuestOsShelfUtilsTest : public testing::Test {
     }
   }
 
-  const Profile* GetOffTheRecordProfile() {
+  Profile* GetOffTheRecordProfile() {
     return testing_profile_.GetOffTheRecordProfile(
         Profile::OTRProfileID::CreateUniqueForTesting(), true);
+  }
+
+  void SetUp() override {
+    guest_os::GuestOsSessionTracker::GetForProfile(&testing_profile_)
+        ->AddGuestForTesting(
+            guest_os::GuestId{guest_os::VmType::TERMINA,
+                              crostini::kCrostiniDefaultVmName, container_name},
+            container_token);
   }
 
  private:
@@ -97,60 +119,127 @@ class GuestOsShelfUtilsTest : public testing::Test {
 };
 
 TEST_F(GuestOsShelfUtilsTest,
-       GetGuestShelfAppIdReturnsEmptyIdWhenCalledWithoutAnyParametersSet) {
+       GetGuestOsShelfAppIdReturnsEmptyIdWhenCalledWithoutAnyParametersSet) {
   SetGuestOsRegistry({});
 
   EXPECT_EQ(GetShelfAppId(WindowIds()), "");
 }
 
 TEST_F(GuestOsShelfUtilsTest,
-       GetGuestShelfAppIdReturnsEmptyIdForIneligibleProfile) {
-  EXPECT_EQ(GetShelfAppIdUsingProfile(GetOffTheRecordProfile(), WindowIds()),
-            "");
+       GetGuestOsShelfAppIdReturnsEmptyIdForIneligibleProfile) {
+  EXPECT_EQ(
+      GetGuestOsShelfAppIdUsingProfile(GetOffTheRecordProfile(), WindowIds()),
+      "");
 }
 
 TEST_F(GuestOsShelfUtilsTest,
-       GetGuestShelfAppIdFindsAppWithEitherWindowIdOrAppId) {
+       GetGuestOsShelfAppIdFindsAppWithEitherWindowIdOrAppId) {
   SetGuestOsRegistry({
       {.desktop_file_id = "cool.app"},
   });
 
   // App is found using wm app_id.
+  // Legacy format
+  // TODO(b/244651040): Remove legacy tests when sommelier changes are complete.
   EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.cool.app"}),
             GenAppId({.desktop_file_id = "cool.app"}));
 
-  // App is found using app_id.
+  // New format
+  EXPECT_EQ(GetShelfAppId({.app_id = TestXWindowIdWithToken("cool.app")}),
+            GenAppId({.desktop_file_id = "cool.app"}));
+
+  // App is found using app_id (For native Wayland apps).
+  // Legacy format
   EXPECT_EQ(GetShelfAppId({.app_id = "cool.app"}),
+            GenAppId({.desktop_file_id = "cool.app"}));
+
+  // New format
+  EXPECT_EQ(GetShelfAppId({.app_id = TestWaylandWindowIdWithToken("cool.app")}),
             GenAppId({.desktop_file_id = "cool.app"}));
 }
 
-TEST_F(GuestOsShelfUtilsTest, GetGuestShelfAppIdIgnoresWindowAppIdsCase) {
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestOsShelfAppIdFindsAppForDefaultContainerToken) {
+  SetGuestOsRegistry({
+      {.desktop_file_id = "cool.app"},
+  });
+
+  // App is found using wm app_id.
+  EXPECT_EQ(
+      GetShelfAppId({.app_id = TestXWindowIdWithToken("cool.app", "termina")}),
+      GenAppId({.desktop_file_id = "cool.app"}));
+
+  // App is found using app_id (For native Wayland apps).
+  EXPECT_EQ(GetShelfAppId({.app_id = TestWaylandWindowIdWithToken("cool.app",
+                                                                  "termina")}),
+            GenAppId({.desktop_file_id = "cool.app"}));
+}
+
+TEST_F(GuestOsShelfUtilsTest,
+       GetGuestOsShelfAppIdCantFindAppWhenTokenIsInvalid) {
+  EXPECT_EQ(GetShelfAppId({.app_id = TestXWindowIdWithToken("cool.app",
+                                                            "invalid_token")}),
+            "crostini:" + TestXWindowIdWithToken("cool.app", "invalid_token"));
+}
+
+TEST_F(GuestOsShelfUtilsTest, GetGuestOsShelfAppIdIgnoresWindowAppIdsCase) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app"},
   });
 
   // App is found using capitalized App.
+  // Legacy format
   EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.App"}),
+            GenAppId({.desktop_file_id = "app"}));
+
+  // New format
+  // App is found using capitalized App.
+  EXPECT_EQ(GetShelfAppId({.app_id = TestXWindowIdWithToken("App")}),
             GenAppId({.desktop_file_id = "app"}));
 }
 
 TEST_F(
     GuestOsShelfUtilsTest,
-    GetGuestShelfAppIdCantFindAppWhenMultipleAppsInDifferentVmsShareDesktopFileIds) {
+    GetGuestOsShelfAppIdCantFindAppWhenMultipleAppsInDifferentVmsShareDesktopFileIdsLegacy) {
   SetGuestOsRegistry({
-      {.desktop_file_id = "super"},
-      {.desktop_file_id = "super", .vm_name = "vm 2"},
+      {.desktop_file_id = "duplicate"},
+      {.desktop_file_id = "duplicate", .vm_name = "vm 2"},
   });
 
   // Neither app is found, as they can't be disambiguated.
-  EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.super"}),
-            "crostini:org.chromium.termina.wmclass.super");
+  EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.duplicate"}),
+            "crostini:org.chromium.termina.wmclass.duplicate");
+}
+
+TEST_F(
+    GuestOsShelfUtilsTest,
+    GetGuestOsShelfAppIdFindsAppWhenMultipleAppsInDifferentVmsShareDesktopFileIds) {
+  SetGuestOsRegistry({
+      {.desktop_file_id = "duplicate"},
+      {.desktop_file_id = "duplicate", .vm_name = "vm 2"},
+  });
+
+  EXPECT_EQ(GetShelfAppId({.app_id = TestXWindowIdWithToken("duplicate")}),
+            GenAppId({.desktop_file_id = "duplicate"}));
+}
+
+TEST_F(
+    GuestOsShelfUtilsTest,
+    GetGuestOsShelfAppIdFindsAppWhenMultipleAppsInDifferentContainersShareDesktopFileIds) {
+  SetGuestOsRegistry({
+      {.desktop_file_id = "duplicate"},
+      {.desktop_file_id = "duplicate", .container_name = "container 2"},
+  });
+
+  EXPECT_EQ(GetShelfAppId({.app_id = TestXWindowIdWithToken("duplicate")}),
+            GenAppId({.desktop_file_id = "duplicate"}));
 }
 
 TEST_F(GuestOsShelfUtilsTest,
-       GetGuestShelfAppIdDoesntFindAppWhenGivenUnregisteredAppIds) {
+       GetGuestOsShelfAppIdDoesntFindAppWhenGivenUnregisteredAppIds) {
   SetGuestOsRegistry({});
 
+  // Legacy format
   EXPECT_EQ(
       GetShelfAppId({.app_id = "org.chromium.termina.wmclientleader.1234"}),
       "crostini:org.chromium.termina.wmclientleader.1234");
@@ -159,33 +248,63 @@ TEST_F(GuestOsShelfUtilsTest,
             "crostini:org.chromium.termina.xid.654321");
 
   EXPECT_EQ(GetShelfAppId({.app_id = "fancy.app"}), "crostini:fancy.app");
+
+  // New format
+  EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.guest_os.test_container_"
+                                     "token.wmclientleader.1234"}),
+            "crostini:org.chromium.guest_os.test_container_token."
+            "wmclientleader.1234");
+
+  EXPECT_EQ(
+      GetShelfAppId(
+          {.app_id = "org.chromium.guest_os.test_container_token.xid.654321"}),
+      "crostini:org.chromium.guest_os.test_container_token.xid.654321");
+
+  EXPECT_EQ(GetShelfAppId({.app_id = "fancy.app"}), "crostini:fancy.app");
 }
 
 TEST_F(GuestOsShelfUtilsTest,
-       GetGuestShelfAppIdCanFindAppUsingItsStartupWmClass) {
+       GetGuestOsShelfAppIdCanFindAppUsingItsStartupWmClass) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app", .startup_wm_class = "app_start"},
   });
 
   // App is found using it's startup_wm_class.
+  // Legacy format
   EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.app_start"}),
             GenAppId({.desktop_file_id = "app"}));
+
+  // New format
+  EXPECT_EQ(
+      GetShelfAppId(
+          {.app_id =
+               "org.chromium.guest_os.test_container_token.wmclass.app_start"}),
+      GenAppId({.desktop_file_id = "app"}));
 }
 
-TEST_F(GuestOsShelfUtilsTest,
-       GetGuestShelfAppIdCantFindAppIfMultipleAppsStartupWmClassesAreTheSame) {
+TEST_F(
+    GuestOsShelfUtilsTest,
+    GetGuestOsShelfAppIdCantFindAppIfMultipleAppsStartupWmClassesAreTheSame) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app2", .startup_wm_class = "app2"},
       {.desktop_file_id = "app3", .startup_wm_class = "app2"},
   });
 
   // Neither app is found, as they can't be disambiguated.
+  // Legacy format
   EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.app2"}),
             "crostini:org.chromium.termina.wmclass.app2");
+
+  // New format
+  EXPECT_EQ(
+      GetShelfAppId(
+          {.app_id =
+               "org.chromium.guest_os.test_container_token.wmclass.app2"}),
+      "crostini:org.chromium.guest_os.test_container_token.wmclass.app2");
 }
 
 TEST_F(GuestOsShelfUtilsTest,
-       GetGuestShelfAppIdCanFindAppUsingStartupIdIfStartupNotifyIsTrue) {
+       GetGuestOsShelfAppIdCanFindAppUsingStartupIdIfStartupNotifyIsTrue) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app", .startup_notify = true},
       {.desktop_file_id = "app2", .startup_notify = false},
@@ -206,18 +325,26 @@ TEST_F(GuestOsShelfUtilsTest,
             "crostini:unknown_app_id");
 }
 
-TEST_F(GuestOsShelfUtilsTest, GetGuestShelfAppIdCanFindAppsByName) {
+TEST_F(GuestOsShelfUtilsTest, GetGuestOsShelfAppIdCanFindAppsByName) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app", .app_name = "name"},
   });
 
   // App found by app_name: "name".
+  // Legacy format
   EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.name"}),
             GenAppId({.desktop_file_id = "app"}));
+
+  // New format
+  EXPECT_EQ(
+      GetShelfAppId(
+          {.app_id =
+               "org.chromium.guest_os.test_container_token.wmclass.name"}),
+      GenAppId({.desktop_file_id = "app"}));
 }
 
 TEST_F(GuestOsShelfUtilsTest,
-       GetGuestShelfAppIdDoesntFindAppsByNameIfTheyHaveNoDisplaySet) {
+       GetGuestOsShelfAppIdDoesntFindAppsByNameIfTheyHaveNoDisplaySet) {
   // One no_display app.
   SetGuestOsRegistry({
       {.desktop_file_id = "another_app",
@@ -226,8 +353,16 @@ TEST_F(GuestOsShelfUtilsTest,
   });
 
   // No app is found.
+  // Legacy format
   EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.name"}),
             "crostini:org.chromium.termina.wmclass.name");
+
+  // New format
+  EXPECT_EQ(
+      GetShelfAppId(
+          {.app_id =
+               "org.chromium.guest_os.test_container_token.wmclass.name"}),
+      "crostini:org.chromium.guest_os.test_container_token.wmclass.name");
 
   // Two apps with the same name, where one is no_display.
   SetGuestOsRegistry({
@@ -238,8 +373,16 @@ TEST_F(GuestOsShelfUtilsTest,
   });
 
   // The app without no_display set is found.
+  // Legacy format
   EXPECT_EQ(GetShelfAppId({.app_id = "org.chromium.termina.wmclass.name"}),
             GenAppId({.desktop_file_id = "app"}));
+
+  // New format
+  EXPECT_EQ(
+      GetShelfAppId(
+          {.app_id =
+               "org.chromium.guest_os.test_container_token.wmclass.name"}),
+      GenAppId({.desktop_file_id = "app"}));
 }
 
 }  // namespace guest_os

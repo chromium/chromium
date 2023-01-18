@@ -294,11 +294,13 @@ base::CallbackListSubscription GuestOsSessionTracker::RunOnceContainerStarted(
 
 void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id,
                                                const GuestInfo& info,
-                                               bool notify) {
+                                               bool notify,
+                                               const std::string& token) {
   vm_tools::concierge::VmInfo vm_info;
   vm_info.set_cid(info.cid);
   vms_.insert_or_assign(id.vm_name, vm_info);
   guests_.insert_or_assign(id, info);
+  tokens_to_guests_.insert_or_assign(token, id);
   if (notify) {
     for (auto& observer : container_started_observers_) {
       observer.OnContainerStarted(id);
@@ -306,8 +308,9 @@ void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id,
   }
 }
 
-void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id) {
-  AddGuestForTesting(id, GuestInfo{id, {}, {}, {}, {}, {}});
+void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id,
+                                               const std::string& token) {
+  AddGuestForTesting(id, GuestInfo{id, {}, {}, {}, {}, {}}, false, token);
 }
 
 base::CallbackListSubscription GuestOsSessionTracker::RunOnShutdown(
