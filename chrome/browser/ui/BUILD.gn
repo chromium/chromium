@@ -2301,6 +2301,8 @@ static_library("ui") {
       "ash/global_media_controls/cast_media_notification_producer_keyed_service.h",
       "ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.cc",
       "ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h",
+      "ash/global_media_controls/media_notification_provider_impl.cc",
+      "ash/global_media_controls/media_notification_provider_impl.h",
       "ash/google_one_offer_iph_tab_helper.cc",
       "ash/google_one_offer_iph_tab_helper.h",
       "ash/google_one_offer_iph_tab_helper_constants.h",

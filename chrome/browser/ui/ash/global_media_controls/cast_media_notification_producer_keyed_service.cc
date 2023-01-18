@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service.h"
 
 #include "ash/shell.h"
-#include "ash/system/media/media_notification_provider_impl.h"
+#include "ash/system/media/media_notification_provider.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 
 namespace {
@@ -16,7 +16,9 @@ global_media_controls::MediaItemManager* GetItemManager() {
   if (!ash::Shell::HasInstance())
     return nullptr;
 
-  return ash::Shell::Get()->media_notification_provider()->item_manager();
+  return ash::Shell::Get()
+      ->media_notification_provider()
+      ->GetMediaItemManager();
 }
 
 }  // namespace

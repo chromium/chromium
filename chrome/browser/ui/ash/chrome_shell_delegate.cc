@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 #include "chrome/browser/ui/ash/glanceables/chrome_glanceables_delegate.h"
+#include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/ash/system_sounds_delegate_impl.h"
@@ -133,6 +134,12 @@ std::unique_ptr<ash::BackGestureContextualNudgeDelegate>
 ChromeShellDelegate::CreateBackGestureContextualNudgeDelegate(
     ash::BackGestureContextualNudgeController* controller) {
   return std::make_unique<BackGestureContextualNudgeDelegate>(controller);
+}
+
+std::unique_ptr<ash::MediaNotificationProvider>
+ChromeShellDelegate::CreateMediaNotificationProvider() {
+  return std::make_unique<ash::MediaNotificationProviderImpl>(
+      GetMediaSessionService());
 }
 
 std::unique_ptr<ash::NearbyShareDelegate>

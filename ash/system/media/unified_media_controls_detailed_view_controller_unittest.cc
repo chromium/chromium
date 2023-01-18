@@ -38,12 +38,16 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   }
 
   // MediaNotificationProvider implementations.
-  MOCK_METHOD2(GetMediaNotificationListView,
-               std::unique_ptr<views::View>(int, bool));
-  MOCK_METHOD0(OnBubbleClosing, void());
+  MOCK_METHOD((std::unique_ptr<views::View>),
+              GetMediaNotificationListView,
+              (int, bool));
+  MOCK_METHOD(void, OnBubbleClosing, ());
   std::unique_ptr<views::View> GetActiveMediaNotificationView() override {
     return std::make_unique<views::View>();
   }
+  MOCK_METHOD(global_media_controls::MediaItemManager*,
+              GetMediaItemManager,
+              ());
   void AddObserver(MediaNotificationProviderObserver* observer) override {}
   void RemoveObserver(MediaNotificationProviderObserver* observer) override {}
   bool HasActiveNotifications() override { return true; }

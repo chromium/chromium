@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/media/media_notification_provider_impl.h"
+#include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/media_notification_provider_observer.h"
@@ -25,9 +25,9 @@ MediaNotificationProviderImpl::MediaNotificationProviderImpl(
 
   item_manager_->AddObserver(this);
 
-  if (!service)
+  if (!service) {
     return;
-
+  }
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
   mojo::Remote<media_session::mojom::MediaControllerManager>
       controller_manager_remote;
@@ -67,14 +67,16 @@ void MediaNotificationProviderImpl::RemoveObserver(
 }
 
 bool MediaNotificationProviderImpl::HasActiveNotifications() {
-  if (!item_manager_)
+  if (!item_manager_) {
     return false;
+  }
   return item_manager_->HasActiveItems();
 }
 
 bool MediaNotificationProviderImpl::HasFrozenNotifications() {
-  if (!item_manager_)
+  if (!item_manager_) {
     return false;
+  }
   return item_manager_->HasFrozenItems();
 }
 
@@ -111,13 +113,18 @@ void MediaNotificationProviderImpl::SetColorTheme(
   color_theme_ = color_theme;
 }
 
+global_media_controls::MediaItemManager*
+MediaNotificationProviderImpl::GetMediaItemManager() {
+  return item_manager_.get();
+}
+
 global_media_controls::MediaItemUI*
 MediaNotificationProviderImpl::ShowMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  if (!active_session_view_)
+  if (!active_session_view_) {
     return nullptr;
-
+  }
   auto item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
       id, item, /*footer_view=*/nullptr, /*device_selector_view=*/nullptr,
       color_theme_);
@@ -125,29 +132,32 @@ MediaNotificationProviderImpl::ShowMediaItem(
   item_ui_observer_set_.Observe(id, item_ui_ptr);
 
   active_session_view_->ShowItem(id, std::move(item_ui));
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
-
+  }
   return item_ui_ptr;
 }
 
 void MediaNotificationProviderImpl::HideMediaItem(const std::string& id) {
-  if (!active_session_view_)
+  if (!active_session_view_) {
     return;
-
+  }
   active_session_view_->HideItem(id);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
+  }
 }
 
 void MediaNotificationProviderImpl::OnItemListChanged() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnNotificationListChanged();
+  }
 }
 
 void MediaNotificationProviderImpl::OnMediaItemUISizeChanged() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
+  }
 }
 
 void MediaNotificationProviderImpl::OnMediaItemUIDestroyed(

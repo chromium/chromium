@@ -10,6 +10,10 @@
 #include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace global_media_controls {
+class MediaItemManager;
+}  // namespace global_media_controls
+
 namespace media_message_center {
 struct NotificationTheme;
 }  // namespace media_message_center
@@ -25,6 +29,8 @@ class MediaNotificationProviderObserver;
 // Interface used to send media notification info from browser to ash.
 class ASH_EXPORT MediaNotificationProvider {
  public:
+  virtual ~MediaNotificationProvider() = default;
+
   // Get the global instance.
   static MediaNotificationProvider* Get();
 
@@ -59,8 +65,7 @@ class ASH_EXPORT MediaNotificationProvider {
   virtual void SetColorTheme(
       const media_message_center::NotificationTheme& color_theme) = 0;
 
- protected:
-  virtual ~MediaNotificationProvider() = default;
+  virtual global_media_controls::MediaItemManager* GetMediaItemManager() = 0;
 };
 
 }  // namespace ash

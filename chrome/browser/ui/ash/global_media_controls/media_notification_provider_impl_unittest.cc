@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/media/media_notification_provider_impl.h"
+#include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/test/ash_test_base.h"
@@ -54,14 +54,19 @@ class FakeMediaSessionService : public media_session::MediaSessionService {
           receiver) override {}
 };
 
-class MediaSessionShellDelegate : public TestShellDelegate {
+class MediaTestShellDelegate : public TestShellDelegate {
  public:
-  MediaSessionShellDelegate() = default;
-  ~MediaSessionShellDelegate() override = default;
+  MediaTestShellDelegate() = default;
+  ~MediaTestShellDelegate() override = default;
 
   // ShellDelegate:
   media_session::MediaSessionService* GetMediaSessionService() override {
     return &media_session_service_;
+  }
+  std::unique_ptr<MediaNotificationProvider> CreateMediaNotificationProvider()
+      override {
+    return std::make_unique<MediaNotificationProviderImpl>(
+        GetMediaSessionService());
   }
 
  private:
@@ -76,7 +81,7 @@ class MediaNotificationProviderImplTest : public AshTestBase {
   ~MediaNotificationProviderImplTest() override {}
 
   void SetUp() override {
-    AshTestBase::SetUp(std::make_unique<MediaSessionShellDelegate>());
+    AshTestBase::SetUp(std::make_unique<MediaTestShellDelegate>());
 
     provider_ = static_cast<MediaNotificationProviderImpl*>(
         MediaNotificationProvider::Get());

@@ -43,6 +43,8 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<BackGestureContextualNudgeDelegate>
   CreateBackGestureContextualNudgeDelegate(
       BackGestureContextualNudgeController* controller) override;
+  std::unique_ptr<MediaNotificationProvider> CreateMediaNotificationProvider()
+      override;
   std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const override;
   std::unique_ptr<SavedDeskDelegate> CreateSavedDeskDelegate() const override;

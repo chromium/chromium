@@ -48,6 +48,11 @@ TestShellDelegate::CreateBackGestureContextualNudgeDelegate(
   return std::make_unique<TestBackGestureContextualNudgeDelegate>(controller);
 }
 
+std::unique_ptr<MediaNotificationProvider>
+TestShellDelegate::CreateMediaNotificationProvider() {
+  return nullptr;
+}
+
 std::unique_ptr<NearbyShareDelegate>
 TestShellDelegate::CreateNearbyShareDelegate(
     NearbyShareController* controller) const {

@@ -37,6 +37,7 @@ class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
 class GlanceablesController;
 class GlanceablesDelegate;
+class MediaNotificationProvider;
 class NearbyShareController;
 class NearbyShareDelegate;
 class SavedDeskDelegate;
@@ -67,6 +68,9 @@ class ASH_EXPORT ShellDelegate {
   virtual std::unique_ptr<BackGestureContextualNudgeDelegate>
   CreateBackGestureContextualNudgeDelegate(
       BackGestureContextualNudgeController* controller) = 0;
+
+  virtual std::unique_ptr<MediaNotificationProvider>
+  CreateMediaNotificationProvider() = 0;
 
   virtual std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const = 0;
