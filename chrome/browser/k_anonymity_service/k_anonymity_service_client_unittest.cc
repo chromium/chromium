@@ -397,6 +397,9 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
           request->resource_url.spec(),
           "https://chromekanonymityquery-pa.googleapis.com/v1:query"));
     }
+    ASSERT_TRUE(request->padding_params);
+    EXPECT_FALSE(request->padding_params->add_exponential_pad);
+    EXPECT_TRUE(request->padding_params->pad_to_next_power_of_two);
     pending_request_ = std::move(request);
   }
 

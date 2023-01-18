@@ -329,6 +329,12 @@ void KAnonymityServiceClient::JoinSetSendRequest(
   request->request_body = network::mojom::ObliviousHttpRequestBody::New(
       payload, /*content_type=*/"application/json");
 
+  // Add padding to reduce the exposure through traffic analysis.
+  request->padding_params =
+      network::mojom::ObliviousHttpPaddingParameters::New();
+  request->padding_params->add_exponential_pad = false;
+  request->padding_params->pad_to_next_power_of_two = true;
+
   // We want to send the redemption request to the join_origin, but the tokens
   // are scoped to auth_origin. That means we need to specify auth_origin as the
   // issuer.
@@ -538,6 +544,12 @@ void KAnonymityServiceClient::QuerySetsSendRequest(
 
   request->request_body = network::mojom::ObliviousHttpRequestBody::New(
       request_body, /*content_type=*/"application/json");
+
+  // Add padding to reduce the exposure through traffic analysis.
+  request->padding_params =
+      network::mojom::ObliviousHttpPaddingParameters::New();
+  request->padding_params->add_exponential_pad = false;
+  request->padding_params->pad_to_next_power_of_two = true;
 
   mojo::PendingReceiver<network::mojom::ObliviousHttpClient> pending_receiver;
   profile_->GetDefaultStoragePartition()
