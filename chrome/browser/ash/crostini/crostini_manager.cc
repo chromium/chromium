@@ -2316,13 +2316,22 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
     return kUninitializedRestartId;
   }
 
+  // Initialize create_options which contains the stored CreateOptions.
   RestartOptions create_options;
+
+  // Clone flags which we care about from the freshly given options.
   create_options.start_vm_only = options.start_vm_only;
   create_options.stop_after_lxd_available = options.stop_after_lxd_available;
+
   bool obsolete_create_options = true;
   AddNewLxdContainerToPrefs(profile_, container_id);
   RegisterContainer(container_id);
   if (!RegisterCreateOptions(container_id, options)) {
+    // Do the path cloning only if we have to since this is more expensive than
+    // setting a boolean flag.
+    for (auto path : options.share_paths) {
+      create_options.share_paths.emplace_back(path);
+    }
     obsolete_create_options = FetchCreateOptions(container_id, &create_options);
   }
 
