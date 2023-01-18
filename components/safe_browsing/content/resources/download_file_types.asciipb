@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 56
+version_id: 57
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -2900,6 +2900,17 @@ file_types {
   # Windows troubleshooting component
   extension: "diagpkg"
   uma_value: 401
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  # Can lead to code execution if BGINFO is installed, which is fairly common.
+  extension: "bgi"
+  uma_value: 403
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_TYPE_WINDOWS
