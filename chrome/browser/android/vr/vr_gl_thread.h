@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/vr/browser_renderer_factory.h"
 #include "chrome/browser/android/vr/gl_browser_interface.h"
-#include "chrome/browser/android/vr/gvr_keyboard_delegate.h"
 #include "chrome/browser/vr/browser_renderer_browser_interface.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/vr/text_input_delegate.h"
 #include "chrome/browser/vr/ui_browser_interface.h"
 #include "chrome/browser/vr/ui_test_input.h"
+#include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr_types.h"
 
 namespace base {
 class Version;
@@ -34,12 +34,9 @@ class GvrApi;
 
 namespace vr {
 
-class VrInputConnection;
 class VrShell;
-struct KeyboardTestInput;
 
 class VrGLThread : public base::android::JavaHandlerThread,
-                   public PlatformInputHandler,
                    public BrowserRendererBrowserInterface,
                    public GlBrowserInterface,
                    public UiBrowserInterface,
@@ -52,8 +49,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
       const UiInitialState& ui_initial_state,
       bool reprojected_rendering,
       bool daydream_support,
-      bool pause_content,
-      bool low_density,
       base::WaitableEvent* gl_surface_created_event,
       base::OnceCallback<gfx::AcceleratedWidget()> surface_callback);
 
@@ -62,17 +57,10 @@ class VrGLThread : public base::android::JavaHandlerThread,
 
   ~VrGLThread() override;
   base::WeakPtr<BrowserRenderer> GetBrowserRenderer();
-  void SetInputConnection(VrInputConnection* input_connection);
 
   // GlBrowserInterface implementation (GL calling to VrShell).
-  void ContentSurfaceCreated(jobject surface,
-                             gl::SurfaceTexture* texture) override;
-  void ContentOverlaySurfaceCreated(jobject surface,
-                                    gl::SurfaceTexture* texture) override;
   void GvrDelegateReady() override;
   void SendRequestPresentReply(device::mojom::XRSessionPtr) override;
-  void DialogSurfaceCreated(jobject surface,
-                            gl::SurfaceTexture* texture) override;
   void ToggleCardboardGamepad(bool enabled) override;
 
   // BrowserRendererBrowserInterface implementation (BrowserRenderer calling to
@@ -81,15 +69,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
   void ReportUiOperationResultForTesting(
       const UiTestOperationType& action_type,
       const UiTestOperationResult& result) override;
-
-  // PlatformInputHandler
-  void ForwardEventToPlatformUi(std::unique_ptr<InputEvent> event) override;
-  void ForwardEventToContent(std::unique_ptr<InputEvent> event,
-                             int content_id) override;
-  void ClearFocusedElement() override;
-  void OnWebInputEdited(const TextEdits& edits) override;
-  void SubmitWebInput() override;
-  void RequestWebInputText(TextStateUpdateCallback callback) override;
 
   // UiBrowserInterface implementation (UI calling to VrShell).
   void ExitPresent() override;
@@ -111,7 +90,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
   void OnUnsupportedMode(UiUnsupportedMode mode) override;
   void OnExitVrPromptResult(ExitVrPromptChoice choice,
                             UiUnsupportedMode reason) override;
-  void OnContentScreenBoundsChanged(const gfx::SizeF& bounds) override;
   void SetVoiceSearchActive(bool active) override;
   void StartAutocomplete(const AutocompleteRequest& request) override;
   void StopAutocomplete() override;
@@ -149,14 +127,10 @@ class VrGLThread : public base::android::JavaHandlerThread,
                              int selection_end,
                              int composition_start,
                              int composition_end) override;
-  void OnSwapContents(int new_content_id) override;
   void SetDialogLocation(float x, float y) override;
   void SetDialogFloating(bool floating) override;
   void ShowPlatformToast(const std::u16string& text) override;
   void CancelPlatformToast() override;
-  void OnContentBoundsChanged(int width, int height) override;
-  void PerformKeyboardInputForTesting(
-      KeyboardTestInput keyboard_input) override;
   void SetVisibleExternalPromptNotification(
       ExternalPromptNotificationType prompt) override;
 
@@ -170,11 +144,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
 
   base::WeakPtr<VrShell> weak_vr_shell_;
   base::WeakPtr<BrowserUiInterface> weak_browser_ui_;
-  base::WeakPtr<VrInputConnection> weak_input_connection_;
-  // Both VrInputConnection and VrGlThread are owned by VrShell. In VrShell, we
-  // made sure that this input_connection_ is up to date and destroyed after
-  // VrGlThread. So it is safe to use raw pointer here.
-  raw_ptr<VrInputConnection> input_connection_ = nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 

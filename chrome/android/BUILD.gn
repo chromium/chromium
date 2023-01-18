@@ -901,7 +901,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/vr/vrcore_install_helper.h",
       "//chrome/browser/vr/text_edit_action.h",
       "//chrome/browser/vr/ui_test_input.h",
-      "//chrome/browser/vr/ui_unsupported_mode.h",
     ]
   }
 
@@ -1968,17 +1967,14 @@ if (current_toolchain == default_toolchain) {
           "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTabTest.java",
           "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTestFramework.java",
           "javatests/src/org/chromium/chrome/browser/vr/WebXrVrTransitionTest.java",
-          "javatests/src/org/chromium/chrome/browser/vr/mock/MockBrowserKeyboardInterface.java",
           "javatests/src/org/chromium/chrome/browser/vr/mock/MockVrCoreVersionChecker.java",
           "javatests/src/org/chromium/chrome/browser/vr/mock/MockVrDaydreamApi.java",
           "javatests/src/org/chromium/chrome/browser/vr/rules/ChromeTabbedActivityVrTestRule.java",
           "javatests/src/org/chromium/chrome/browser/vr/rules/CustomTabActivityVrTestRule.java",
-          "javatests/src/org/chromium/chrome/browser/vr/rules/VrActivityRestrictionRule.java",
           "javatests/src/org/chromium/chrome/browser/vr/rules/VrModuleNotInstalled.java",
           "javatests/src/org/chromium/chrome/browser/vr/rules/VrTestRule.java",
           "javatests/src/org/chromium/chrome/browser/vr/rules/WebappActivityVrTestRule.java",
           "javatests/src/org/chromium/chrome/browser/vr/util/NativeUiUtils.java",
-          "javatests/src/org/chromium/chrome/browser/vr/util/RenderTestUtils.java",
           "javatests/src/org/chromium/chrome/browser/vr/util/VrMessageUtils.java",
           "javatests/src/org/chromium/chrome/browser/vr/util/VrShellDelegateUtils.java",
           "javatests/src/org/chromium/chrome/browser/vr/util/VrTestRuleUtils.java",
@@ -4030,10 +4026,6 @@ generate_jni("chrome_jni_headers") {
   # Used for testing only, should not be shipped to end users.
   if (enable_offline_pages_harness) {
     sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
-  }
-
-  if (enable_vr) {
-    sources += [ "java/src/org/chromium/chrome/browser/component_updater/VrAssetsComponentInstaller.java" ]
   }
 }
 

@@ -15,10 +15,6 @@ import org.chromium.chrome.browser.modules.ModuleInstallUi;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.module_installer.engine.InstallListener;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.vr.VrModeObserver;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Instantiates the VR delegates. If the VR module is not available this provider will
@@ -27,7 +23,6 @@ import java.util.List;
 @JNINamespace("vr")
 public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
     private static VrDelegateProvider sDelegateProvider;
-    private static final List<VrModeObserver> sVrModeObservers = new ArrayList<>();
     private static boolean sAlwaysUseFallbackDelegate;
 
     private long mNativeVrModuleProvider;
@@ -59,36 +54,6 @@ public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
 
     public static VrDelegate getDelegate() {
         return getDelegateProvider().getDelegate();
-    }
-
-    public static VrIntentDelegate getIntentDelegate() {
-        return getDelegateProvider().getIntentDelegate();
-    }
-
-    /**
-     * Registers the given {@link VrModeObserver}.
-     *
-     * @param observer The VrModeObserver to register.
-     */
-    public static void registerVrModeObserver(VrModeObserver observer) {
-        sVrModeObservers.add(observer);
-    }
-
-    /**
-     * Unregisters the given {@link VrModeObserver}.
-     *
-     * @param observer The VrModeObserver to remove.
-     */
-    public static void unregisterVrModeObserver(VrModeObserver observer) {
-        sVrModeObservers.remove(observer);
-    }
-
-    public static void onEnterVr() {
-        for (VrModeObserver observer : sVrModeObservers) observer.onEnterVr();
-    }
-
-    public static void onExitVr() {
-        for (VrModeObserver observer : sVrModeObservers) observer.onExitVr();
     }
 
     /* package */ static void installModule(InstallListener listener) {

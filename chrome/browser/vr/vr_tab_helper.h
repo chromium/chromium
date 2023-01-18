@@ -35,10 +35,6 @@ class VrTabHelper : public content::WebContentsUserData<VrTabHelper> {
   static void SetIsContentDisplayedInHeadset(content::WebContents* contents,
                                              bool state);
 
-  // If suppressed, this function will log a UMA stat.
-  static bool IsUiSuppressedInVr(content::WebContents* contents,
-                                 UiSuppressedElement element);
-
   static void ExitVrPresentation();
 
  private:

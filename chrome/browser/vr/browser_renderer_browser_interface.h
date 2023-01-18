@@ -21,5 +21,4 @@ class BrowserRendererBrowserInterface {
 };
 
 }  // namespace vr
-
 #endif  // CHROME_BROWSER_VR_BROWSER_RENDERER_BROWSER_INTERFACE_H_

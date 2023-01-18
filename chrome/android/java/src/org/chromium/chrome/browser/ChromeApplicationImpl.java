@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser;
 
 import android.app.Application;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
@@ -27,8 +25,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
-import org.chromium.chrome.browser.vr.OnExitVrRequestListener;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
 import org.chromium.components.module_installer.util.ModuleUtil;
@@ -96,28 +92,6 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             GlobalDiscardableReferencePool.getReferencePool().drain();
         }
         CustomTabsConnection.onTrimMemory(level);
-    }
-
-    @Override
-    public void startActivity(Intent intent, Bundle options) {
-        if (VrModuleProvider.getDelegate().canLaunch2DIntents()
-                || VrModuleProvider.getIntentDelegate().isVrIntent(intent)) {
-            super.startActivity(intent, options);
-            return;
-        }
-
-        VrModuleProvider.getDelegate().requestToExitVr(new OnExitVrRequestListener() {
-            @Override
-            public void onSucceeded() {
-                if (!VrModuleProvider.getDelegate().canLaunch2DIntents()) {
-                    throw new IllegalStateException("Still in VR after having exited VR.");
-                }
-                startActivity(intent, options);
-            }
-
-            @Override
-            public void onDenied() {}
-        });
     }
 
     @Override

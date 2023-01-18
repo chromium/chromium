@@ -7470,8 +7470,6 @@ static_library("browser") {
     }
 
     sources += [
-      "component_updater/vr_assets_component_installer.cc",
-      "component_updater/vr_assets_component_installer.h",
       "vr/chrome_xr_integration_client.cc",
       "vr/chrome_xr_integration_client.h",
     ]

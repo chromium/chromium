@@ -179,8 +179,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
   bool RequestRepaintForTesting() override;
-  void SetIsInVR(bool is_in_vr) override;
-  bool IsInVR() const override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override;
   void DidStopFlinging() override;
   bool CanSynchronizeVisualProperties() override;
@@ -555,10 +553,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool is_window_activity_started_;
 
   PageVisibilityState page_visibility_ = PageVisibilityState::kHidden;
-
-  // Used to customize behavior for virtual reality mode, such as the
-  // appearance of overscroll glow and the keyboard.
-  bool is_in_vr_;
 
   // Specifies whether touch selection handles are hidden due to stylus.
   bool handles_hidden_by_stylus_ = false;

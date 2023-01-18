@@ -26,7 +26,7 @@ class MockSchedulerUi : public SchedulerUiInterface {
 class ConcreteSchedulerDelegate : public BaseSchedulerDelegate {
  public:
   explicit ConcreteSchedulerDelegate(SchedulerUiInterface* ui)
-      : BaseSchedulerDelegate(ui, true, 2, 5) {}
+      : BaseSchedulerDelegate(ui, 2, 5) {}
   ~ConcreteSchedulerDelegate() override = default;
 
   void ScheduleWebXrFrameTimeout() {
@@ -37,7 +37,6 @@ class ConcreteSchedulerDelegate : public BaseSchedulerDelegate {
  private:
   void OnPause() override {}
   void OnResume() override {}
-  void SetShowingVrDialog(bool showing) override {}
   void SetBrowserRenderer(
       SchedulerBrowserRendererInterface* browser_renderer) override {}
   void SubmitDrawnFrame(FrameType frame_type,
@@ -108,17 +107,6 @@ TEST_F(SchedulerDelegateTest, NoTimeoutIfExitPresent) {
   EXPECT_CALL(ui, OnWebXrTimeoutImminent()).Times(0);
   EXPECT_CALL(ui, OnWebXrTimedOut()).Times(0);
   scheduler_delegate.OnExitPresent();
-  FastForwardBy(base::Seconds(10));
-}
-
-TEST_F(SchedulerDelegateTest, NoTimeoutIfUnsetWebXrMode) {
-  MockSchedulerUi ui;
-  ConcreteSchedulerDelegate scheduler_delegate(&ui);
-  scheduler_delegate.ScheduleWebXrFrameTimeout();
-
-  EXPECT_CALL(ui, OnWebXrTimeoutImminent()).Times(0);
-  EXPECT_CALL(ui, OnWebXrTimedOut()).Times(0);
-  scheduler_delegate.SetWebXrMode(false);
   FastForwardBy(base::Seconds(10));
 }
 

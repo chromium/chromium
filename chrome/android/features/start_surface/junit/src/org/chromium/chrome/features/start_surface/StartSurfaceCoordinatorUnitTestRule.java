@@ -250,16 +250,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 }, mContainerView, Color.WHITE);
 
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
-        BrowserControlsManager browserControlsManager = new BrowserControlsManager(mActivity, 0) {
-            @Override
-            protected boolean isInVr() {
-                return false;
-            }
-            @Override
-            protected void rawTopContentOffsetChangedForVr() {
-                // Intentional noop
-            }
-        };
+        BrowserControlsManager browserControlsManager = new BrowserControlsManager(mActivity, 0);
         SnackbarManager snackbarManager =
                 new SnackbarManager(mActivity, mContainerView, windowAndroid);
         TabContentManager tabContentManager = new TabContentManager(mActivity, null, false, null);

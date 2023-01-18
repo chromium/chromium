@@ -41,12 +41,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
-import org.chromium.ui.vr.VrModeObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -54,8 +52,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * A class that manages browser control visibility and positioning.
  */
-public class BrowserControlsManager
-        implements ActivityStateListener, VrModeObserver, BrowserControlsSizer {
+public class BrowserControlsManager implements ActivityStateListener, BrowserControlsSizer {
     // The amount of time to delay the control show request after returning to a once visible
     // activity.  This delay is meant to allow Android to run its Activity focusing animation and
     // have the controls scroll back in smoothly once that has finished.
@@ -188,8 +185,6 @@ public class BrowserControlsManager
         mBrowserVisibilityDelegate.addObserver((constraints) -> {
             if (constraints == BrowserControlsState.SHOWN) setPositionsForTabToNonFullscreen();
         });
-        VrModuleProvider.registerVrModeObserver(this);
-        if (isInVr()) onEnterVr();
     }
 
     /**
@@ -682,22 +677,7 @@ public class BrowserControlsManager
     private void updateBrowserControlsOffsets(boolean toNonFullscreen, int topControlsOffset,
             int bottomControlsOffset, int topContentOffset, int topControlsMinHeightOffset,
             int bottomControlsMinHeightOffset) {
-        if (isInVr()) {
-            rawTopContentOffsetChangedForVr();
-            // The dip scale of java UI and WebContents are different while in VR, leading to a
-            // mismatch in size in pixels when converting from dips. Since we hide the controls in
-            // VR anyways, just set the offsets to what they're supposed to be with the controls
-            // hidden.
-            // TODO(mthiesse): Should we instead just set the top controls height to be 0 while in
-            // VR?
-            topControlsOffset = -getTopControlsHeight();
-            bottomControlsOffset = getBottomControlsHeight();
-            topContentOffset = 0;
-            topControlsMinHeightOffset = 0;
-            bottomControlsMinHeightOffset = 0;
-            setPositionsForTab(topControlsOffset, bottomControlsOffset, topContentOffset,
-                    topControlsMinHeightOffset, bottomControlsMinHeightOffset);
-        } else if (toNonFullscreen) {
+        if (toNonFullscreen) {
             setPositionsForTabToNonFullscreen();
         } else {
             setPositionsForTab(topControlsOffset, bottomControlsOffset, topContentOffset,
@@ -805,36 +785,6 @@ public class BrowserControlsManager
         return tab != null && tab.isUserInteractable() && !tab.isNativePage();
     }
 
-    // VR-related methods to make this class test-friendly. These are overridden in unit tests.
-
-    protected boolean isInVr() {
-        return VrModuleProvider.getDelegate().isInVr();
-    }
-
-    protected void rawTopContentOffsetChangedForVr() {
-        // TODO(https://crbug.com/1055619): VR wants to wait until the controls are fully hidden, as
-        // otherwise there may be a brief race where the omnibox is rendered over the webcontents.
-        // However, something seems to be happening in the case where the browser is launched on the
-        // NTP, such that the top content offset is never set to 0. If we can figure out what that
-        // is, we should be passing the TopContentOffset into this method again.
-        VrModuleProvider.getDelegate().rawTopContentOffsetChanged(0);
-    }
-
-    @Override
-    public void onEnterVr() {
-        restoreControlsPositions();
-    }
-
-    @Override
-    public void onExitVr() {
-        // Clear the VR-specific overrides for controls height.
-        restoreControlsPositions();
-
-        // Show the Controls explicitly because under some situations, like when we're showing a
-        // Native Page, the renderer won't send any new offsets.
-        showAndroidControls(false);
-    }
-
     /**
      * Destroys the BrowserControlsManager
      */
@@ -844,7 +794,6 @@ public class BrowserControlsManager
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         mBrowserVisibilityDelegate.destroy();
         if (mTabControlsObserver != null) mTabControlsObserver.destroy();
-        VrModuleProvider.unregisterVrModeObserver(this);
     }
 
     @VisibleForTesting

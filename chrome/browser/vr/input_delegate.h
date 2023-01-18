@@ -18,7 +18,6 @@ class Transform;
 namespace vr {
 
 class InputEvent;
-struct ControllerModel;
 
 using InputEventList = std::vector<std::unique_ptr<InputEvent>>;
 
@@ -32,8 +31,6 @@ class InputDelegate {
   virtual void UpdateController(const gfx::Transform& head_pose,
                                 base::TimeTicks current_time,
                                 bool is_webxr_frame) = 0;
-  virtual ControllerModel GetControllerModel(
-      const gfx::Transform& head_pose) = 0;
   virtual InputEventList GetGestures(base::TimeTicks current_time) = 0;
   virtual device::mojom::XRInputSourceStatePtr GetInputSourceState() = 0;
   virtual void OnResume() = 0;

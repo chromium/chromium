@@ -10,15 +10,9 @@ package org.chromium.chrome.browser.vr;
  */
 /* package */ class VrDelegateProviderFallback implements VrDelegateProvider {
     private final VrDelegateFallback mDelegate = new VrDelegateFallback();
-    private final VrIntentDelegateFallback mIntentDelegate = new VrIntentDelegateFallback();
 
     @Override
     public VrDelegate getDelegate() {
         return mDelegate;
-    }
-
-    @Override
-    public VrIntentDelegate getIntentDelegate() {
-        return mIntentDelegate;
     }
 }

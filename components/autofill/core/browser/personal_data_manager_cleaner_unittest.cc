@@ -426,7 +426,7 @@ TEST_F(PersonalDataManagerCleanerTest,
   std::vector<AutofillProfile*> profiles =
       personal_data_->GetProfilesToSuggest();
   std::vector<CreditCard*> credit_cards =
-      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+      personal_data_->GetCreditCardsToSuggest();
 
   // |profile1| should have been merged into |profile2| which should then have
   // been merged into |profile3|. |profile4| should have been merged into
@@ -1275,14 +1275,11 @@ TEST_F(PersonalDataManagerCleanerTest, ClearCreditCardNonSettingsOrigins) {
 
   // The first three profiles' origin should be cleared and the fourth one still
   // be the settings origin.
-  EXPECT_TRUE(
-      personal_data_->GetCreditCardsToSuggest(false)[0]->origin().empty());
-  EXPECT_TRUE(
-      personal_data_->GetCreditCardsToSuggest(false)[1]->origin().empty());
-  EXPECT_TRUE(
-      personal_data_->GetCreditCardsToSuggest(false)[2]->origin().empty());
+  EXPECT_TRUE(personal_data_->GetCreditCardsToSuggest()[0]->origin().empty());
+  EXPECT_TRUE(personal_data_->GetCreditCardsToSuggest()[1]->origin().empty());
+  EXPECT_TRUE(personal_data_->GetCreditCardsToSuggest()[2]->origin().empty());
   EXPECT_EQ(kSettingsOrigin,
-            personal_data_->GetCreditCardsToSuggest(false)[3]->origin());
+            personal_data_->GetCreditCardsToSuggest()[3]->origin());
 }
 
 }  // namespace autofill

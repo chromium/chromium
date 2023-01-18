@@ -40,7 +40,6 @@ public abstract class PageInfoControllerDelegate {
     }
 
     private final AutocompleteSchemeClassifier mAutocompleteSchemeClassifier;
-    private final VrHandler mVrHandler;
     private final boolean mIsSiteSettingsAvailable;
     private final boolean mCookieControlsShown;
     protected @OfflinePageState int mOfflinePageState;
@@ -48,9 +47,8 @@ public abstract class PageInfoControllerDelegate {
     protected String mOfflinePageUrl;
 
     public PageInfoControllerDelegate(AutocompleteSchemeClassifier autocompleteSchemeClassifier,
-            VrHandler vrHandler, boolean isSiteSettingsAvailable, boolean cookieControlsShown) {
+            boolean isSiteSettingsAvailable, boolean cookieControlsShown) {
         mAutocompleteSchemeClassifier = autocompleteSchemeClassifier;
-        mVrHandler = vrHandler;
         mIsSiteSettingsAvailable = isSiteSettingsAvailable;
         mCookieControlsShown = cookieControlsShown;
         mIsHttpsImageCompressionApplied = false;
@@ -83,13 +81,6 @@ public abstract class PageInfoControllerDelegate {
      */
     public boolean isHttpsImageCompressionApplied() {
         return mIsHttpsImageCompressionApplied;
-    }
-
-    /**
-     * Returns a VrHandler for Page Info UI.
-     */
-    public VrHandler getVrHandler() {
-        return mVrHandler;
     }
 
     /**

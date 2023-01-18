@@ -5,7 +5,6 @@
 package org.chromium.chrome.test;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 
@@ -147,10 +146,6 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
             }
         }
 
-        private boolean isOnStandaloneVrDevice() {
-            return Build.DEVICE.equals("vega");
-        }
-
         private boolean isVrDonEnabled() {
             // We can't directly check whether the VR DON flow is enabled since we don't have
             // permission to read the VrCore settings file. Instead, pass a flag.
@@ -189,24 +184,13 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
                 boolean daydreamViewPaired = isDaydreamViewPaired();
                 if (TextUtils.equals(
                             restriction, ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM)
-                        && (!daydreamViewPaired || isOnStandaloneVrDevice())) {
+                        && !daydreamViewPaired) {
                     return true;
                 } else if (TextUtils.equals(restriction,
                                    ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM)
                         && daydreamViewPaired) {
                     return true;
                 }
-            }
-            if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_STANDALONE)) {
-                return !isOnStandaloneVrDevice();
-            }
-            if (TextUtils.equals(restriction,
-                        ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)) {
-                // Standalone devices are considered to have Daydream View paired.
-                return !isDaydreamViewPaired();
-            }
-            if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_SVR)) {
-                return isOnStandaloneVrDevice();
             }
             if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_VR_DON_ENABLED)) {
                 return !isVrDonEnabled();

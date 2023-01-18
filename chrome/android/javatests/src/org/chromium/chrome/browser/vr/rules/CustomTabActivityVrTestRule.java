@@ -31,10 +31,9 @@ public class CustomTabActivityVrTestRule extends CustomTabActivityTestRule imple
                 VrTestRuleUtils.evaluateVrTestRuleImpl(
                         base, desc, CustomTabActivityVrTestRule.this, () -> {
                             startCustomTabActivityWithIntent(
-                                    VrTestRuleUtils.maybeAddStandaloneIntentData(
-                                            CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                                                    InstrumentationRegistry.getTargetContext(),
-                                                    "about:blank")));
+                                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                                            InstrumentationRegistry.getTargetContext(),
+                                            "about:blank"));
                             TestVrShellDelegate.createTestVrShellDelegate(getActivity());
                         });
             }

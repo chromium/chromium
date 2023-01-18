@@ -14,12 +14,8 @@ static_library("vr_android") {
   defines = []
 
   sources = [
-    "android_ui_gesture_target.cc",
-    "android_ui_gesture_target.h",
     "android_vsync_helper.cc",
     "android_vsync_helper.h",
-    "autocomplete_controller.cc",
-    "autocomplete_controller.h",
     "browser_renderer_factory.cc",
     "browser_renderer_factory.h",
     "cardboard_input_delegate.cc",
@@ -31,9 +27,6 @@ static_library("vr_android") {
     "gvr_input_delegate.h",
     "gvr_install_helper.cc",
     "gvr_install_helper.h",
-    "gvr_keyboard_delegate.cc",
-    "gvr_keyboard_delegate.h",
-    "gvr_keyboard_shim.cc",
     "gvr_scheduler_delegate.cc",
     "gvr_scheduler_delegate.h",
     "gvr_util.cc",
@@ -49,8 +42,6 @@ static_library("vr_android") {
     "vr_controller.h",
     "vr_gl_thread.cc",
     "vr_gl_thread.h",
-    "vr_input_connection.cc",
-    "vr_input_connection.h",
     "vr_module_provider.cc",
     "vr_module_provider.h",
     "vr_shell.cc",
@@ -113,10 +104,7 @@ static_library("vr_android") {
 
   libs = [ "android" ]
 
-  configs += [
-    "//third_party/gvr-android-keyboard:kb_config",
-    "//third_party/gvr-android-sdk:libgvr_config",
-  ]
+  configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
 }
 
 # The VR UI module factory interface.

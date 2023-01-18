@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_UI_RENDERER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/vr/ui_input_manager.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/geometry/rect_f.h"
 

@@ -329,10 +329,6 @@ bool AwAutofillClient::ShouldShowSigninPromo() {
   return false;
 }
 
-bool AwAutofillClient::AreServerCardsSupported() const {
-  return true;
-}
-
 void AwAutofillClient::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }

@@ -11,10 +11,6 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/gfx/geometry/transform.h"
 
-namespace gl {
-class SurfaceTexture;
-}
-
 namespace vr {
 
 // BrowserRenderer and its delegates talk to VrShell through this interface.
@@ -23,15 +19,9 @@ class GlBrowserInterface {
   virtual ~GlBrowserInterface() {}
 
   virtual void ForceExitVr() = 0;
-  virtual void ContentSurfaceCreated(jobject surface,
-                                     gl::SurfaceTexture* texture) = 0;
-  virtual void ContentOverlaySurfaceCreated(jobject surface,
-                                            gl::SurfaceTexture* texture) = 0;
   virtual void GvrDelegateReady() = 0;
   // XRSessionPtr is optional, if null, the request failed.
   virtual void SendRequestPresentReply(device::mojom::XRSessionPtr) = 0;
-  virtual void DialogSurfaceCreated(jobject surface,
-                                    gl::SurfaceTexture* texture) = 0;
   virtual void ToggleCardboardGamepad(bool enabled) = 0;
 };
 

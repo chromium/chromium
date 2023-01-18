@@ -143,8 +143,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // PersonalDataManager::GetCreditCardsToSuggest for more details.
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDsToSuggest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      bool include_server_cards);
+      const base::android::JavaParamRef<jobject>& unused_obj);
 
   // Returns the credit card with the specified |jguid|, or NULL if there is
   // no credit card with the specified |jguid|.

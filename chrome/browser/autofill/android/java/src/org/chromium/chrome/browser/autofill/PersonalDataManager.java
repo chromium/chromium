@@ -1009,12 +1009,11 @@ public class PersonalDataManager {
     /**
      * Gets the credit cards to suggest when filling a form or completing a transaction. The cards
      * will have been processed to be more relevant to the user.
-     * @param includeServerCards Whether server cards should be included in the response.
      */
-    public ArrayList<CreditCard> getCreditCardsToSuggest(boolean includeServerCards) {
+    public ArrayList<CreditCard> getCreditCardsToSuggest() {
         ThreadUtils.assertOnUiThread();
         return getCreditCards(PersonalDataManagerJni.get().getCreditCardGUIDsToSuggest(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, includeServerCards));
+                mPersonalDataManagerAndroid, PersonalDataManager.this));
     }
 
     private ArrayList<CreditCard> getCreditCards(String[] creditCardGUIDs) {
@@ -1387,7 +1386,7 @@ public class PersonalDataManager {
 
     // TODO (crbug.com/1384128): Add icon dimensions to card art URL.
     private void fetchCreditCardArtImages() {
-        for (CreditCard card : getCreditCardsToSuggest(/*includeServerCards= */ true)) {
+        for (CreditCard card : getCreditCardsToSuggest()) {
             // Fetch the image using the ImageFetcher only if it is not present in the cache.
             if (card.getCardArtUrl() != null && card.getCardArtUrl().isValid()
                     && !mCreditCardArtImages.containsKey(card.getCardArtUrl().getSpec())) {
@@ -1474,8 +1473,8 @@ public class PersonalDataManager {
                 PersonalDataManager caller, AutofillProfile profile);
         String[] getCreditCardGUIDsForSettings(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
-        String[] getCreditCardGUIDsToSuggest(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, boolean includeServerCards);
+        String[] getCreditCardGUIDsToSuggest(
+                long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         CreditCard getCreditCardByGUID(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         CreditCard getCreditCardForNumber(long nativePersonalDataManagerAndroid,

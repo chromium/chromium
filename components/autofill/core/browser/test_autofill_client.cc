@@ -375,10 +375,6 @@ bool TestAutofillClient::ShouldShowSigninPromo() {
   return false;
 }
 
-bool TestAutofillClient::AreServerCardsSupported() const {
-  return true;
-}
-
 void TestAutofillClient::ExecuteCommand(int id) {}
 
 void TestAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {}

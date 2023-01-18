@@ -14,7 +14,6 @@ chrome_java_resources = [
   "java/res/anim/decelerate_quart.xml",
   "java/res/anim/fast_out_slow_in_interpolator.xml",
   "java/res/anim/slide_in_up.xml",
-  "java/res/anim/stay_hidden.xml",
   "java/res/drawable-hdpi/bg_tabstrip_background_tab_outline.9.png",
   "java/res/drawable-hdpi/bg_tabstrip_tab.9.png",
   "java/res/drawable-hdpi/bg_tabstrip_tab_detached.9.png",

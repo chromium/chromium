@@ -197,14 +197,6 @@ ui::TextInputClient* RenderWidgetHostViewBase::GetTextInputClient() {
   return nullptr;
 }
 
-void RenderWidgetHostViewBase::SetIsInVR(bool is_in_vr) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-bool RenderWidgetHostViewBase::IsInVR() const {
-  return false;
-}
-
 viz::FrameSinkId RenderWidgetHostViewBase::GetRootFrameSinkId() {
   return viz::FrameSinkId();
 }

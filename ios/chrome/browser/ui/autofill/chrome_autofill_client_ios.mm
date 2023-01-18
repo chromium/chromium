@@ -485,10 +485,6 @@ bool ChromeAutofillClientIOS::ShouldShowSigninPromo() {
   return false;
 }
 
-bool ChromeAutofillClientIOS::AreServerCardsSupported() const {
-  return true;
-}
-
 void ChromeAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }

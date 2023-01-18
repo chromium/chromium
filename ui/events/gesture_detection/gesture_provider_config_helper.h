@@ -14,10 +14,9 @@
 namespace ui {
 
 enum class GestureProviderConfigType {
-  CURRENT_PLATFORM,     // Parameters tailored for the current platform.
-  CURRENT_PLATFORM_VR,  // Parameters tailored for the current platform in VR.
-  GENERIC_DESKTOP,      // Parameters typical for a desktop machine.
-  GENERIC_MOBILE  // Parameters typical for a mobile device (phone/tablet).
+  CURRENT_PLATFORM,  // Parameters tailored for the current platform.
+  GENERIC_DESKTOP,   // Parameters typical for a desktop machine.
+  GENERIC_MOBILE     // Parameters typical for a mobile device (phone/tablet).
 };
 
 GESTURE_DETECTION_EXPORT GestureProvider::Config GetGestureProviderConfig(

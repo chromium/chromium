@@ -8,9 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.junit.Assert;
 
-import org.chromium.chrome.browser.vr.rules.VrTestRule;
 import org.chromium.chrome.browser.vr.util.PermissionUtils;
-import org.chromium.chrome.browser.vr.util.VrShellDelegateUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 
@@ -35,9 +33,7 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
 
     public WebXrVrTestFramework(ChromeActivityTestRule rule) {
         super(rule);
-        if (!TestVrShellDelegate.isOnStandalone()) {
-            Assert.assertFalse("Test started in VR", VrShellDelegate.isInVr());
-        }
+        Assert.assertFalse("Test started in VR", VrShellDelegate.isInVr());
     }
 
     /**
@@ -57,13 +53,6 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
      */
     @Override
     public void enterSessionWithUserGesture(WebContents webContents) {
-        // TODO(https://crbug.com/762724): Remove this workaround when the issue with being resumed
-        // before receiving the VR broadcast is fixed on VrCore's end.
-        // However, we don't want to enable the workaround if the DON flow is enabled, as that
-        // causes issues.
-        if (!((VrTestRule) getRule()).isDonEnabled()) {
-            VrShellDelegateUtils.getDelegateInstance().setExpectingBroadcast();
-        }
         super.enterSessionWithUserGesture(webContents);
 
         if (!shouldExpectPermissionPrompt()) return;
@@ -111,8 +100,6 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
 
         pollJavaScriptBooleanOrFail("sessionInfos[sessionTypes.IMMERSIVE].currentSession != null",
                 POLL_TIMEOUT_LONG_MS, webContents);
-        Assert.assertTrue("Immersive session started, but VR Shell not in presentation mode",
-                TestVrShellDelegate.getVrShellForTesting().getWebVrModeEnabled());
     }
 
     /**

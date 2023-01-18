@@ -98,10 +98,7 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
        NoValidCreditCards_HasValidCreditCards_ReturnsFalse) {
   personal_data_helper()->GetPersonalDataManager()->AddCreditCard(kCreditCard);
 
-  EXPECT_FALSE(personal_data_helper()
-                   ->GetValidCreditCards(
-                       /*include_server_cards=*/false)
-                   .empty());
+  EXPECT_FALSE(personal_data_helper()->GetValidCreditCards().empty());
 }
 
 TEST_F(FastCheckoutPersonalDataHelperTest,
@@ -109,10 +106,7 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
   personal_data_helper()->GetPersonalDataManager()->AddCreditCard(
       kEmptyCreditCard);
 
-  EXPECT_TRUE(personal_data_helper()
-                  ->GetValidCreditCards(
-                      /*include_server_cards=*/false)
-                  .empty());
+  EXPECT_TRUE(personal_data_helper()->GetValidCreditCards().empty());
 }
 
 TEST_F(FastCheckoutPersonalDataHelperTest,
@@ -121,10 +115,7 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
   personal_data_helper()->GetPersonalDataManager()->AddCreditCard(
       kEmptyCreditCard);
 
-  EXPECT_FALSE(personal_data_helper()
-                   ->GetValidCreditCards(
-                       /*include_server_cards=*/false)
-                   .empty());
+  EXPECT_FALSE(personal_data_helper()->GetValidCreditCards().empty());
 }
 
 TEST_F(FastCheckoutPersonalDataHelperTest,
@@ -134,8 +125,7 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
       kEmptyCreditCard);
 
   std::vector<autofill::CreditCard*> cards =
-      personal_data_helper()->GetCreditCardsToSuggest(
-          /*include_server_cards=*/false);
+      personal_data_helper()->GetCreditCardsToSuggest();
 
   EXPECT_EQ(cards.size(), 1UL);
   EXPECT_EQ(*cards.front(), kCreditCard);

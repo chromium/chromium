@@ -33,7 +33,6 @@
 #include "chrome/browser/vr/elements/full_screen_rect.h"
 #include "chrome/browser/vr/elements/indicator_spec.h"
 #include "chrome/browser/vr/elements/invisible_hit_target.h"
-#include "chrome/browser/vr/elements/keyboard.h"
 #include "chrome/browser/vr/elements/laser.h"
 #include "chrome/browser/vr/elements/linear_layout.h"
 #include "chrome/browser/vr/elements/omnibox_formatting.h"
@@ -58,7 +57,6 @@
 #include "chrome/browser/vr/elements/url_text.h"
 #include "chrome/browser/vr/elements/vector_icon.h"
 #include "chrome/browser/vr/elements/viewport_aware_root.h"
-#include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/model/model.h"
 #include "chrome/browser/vr/model/platform_toast.h"
 #include "chrome/browser/vr/platform_ui_input_delegate.h"
@@ -1121,7 +1119,6 @@ UiSceneCreator::UiSceneCreator(UiBrowserInterface* browser,
                                UiScene* scene,
                                Ui* ui,
                                ContentInputDelegate* content_input_delegate,
-                               KeyboardDelegate* keyboard_delegate,
                                TextInputDelegate* text_input_delegate,
                                AudioDelegate* audio_delegate,
                                Model* model)
@@ -1129,7 +1126,6 @@ UiSceneCreator::UiSceneCreator(UiBrowserInterface* browser,
       scene_(scene),
       ui_(ui),
       content_input_delegate_(content_input_delegate),
-      keyboard_delegate_(keyboard_delegate),
       text_input_delegate_(text_input_delegate),
       audio_delegate_(audio_delegate),
       model_(model) {}
@@ -1141,20 +1137,8 @@ void UiSceneCreator::CreateScene() {
   CreateWebVrRoot();
   CreateBackground();
   CreateViewportAwareRoot();
-  CreateContentQuad();
   Create2dBrowsingHostedUi();
-  CreatePrompts();
-  CreateSystemIndicators();
-  CreateUrlBar();
-  CreateOverflowMenu();
-  CreateOmnibox();
-  CreateCloseButton();
-  CreateToasts();
-  CreateVoiceSearchUiGroup();
-  CreateContentRepositioningAffordance();
   CreateWebVrSubtree();
-  CreateKeyboard();
-  CreateControllers();
 }
 
 void UiSceneCreator::Create2dBrowsingHostedUi() {
@@ -1394,10 +1378,7 @@ void UiSceneCreator::CreateContentQuad() {
       bool, Model, model_, model->primary_controller().touching_touchpad,
       Resizer, resizer.get(), SetTouchingTouchpad));
 
-  auto main_content = std::make_unique<ContentElement>(
-      content_input_delegate_,
-      base::BindRepeating(&UiBrowserInterface::OnContentScreenBoundsChanged,
-                          base::Unretained(browser_)));
+  auto main_content = std::make_unique<ContentElement>(content_input_delegate_);
   EventHandlers event_handlers;
   event_handlers.focus_change = base::BindRepeating(
       [](Model* model, ContentElement* e, ContentInputDelegate* delegate,
@@ -2123,52 +2104,6 @@ void UiSceneCreator::CreateControllers() {
   reticle_laser_group->AddChild(std::move(reticle));
 
   scene_->AddUiElement(kControllerGroup, std::move(reticle_laser_group));
-}
-
-void UiSceneCreator::CreateKeyboard() {
-  auto scaler = std::make_unique<ScaledDepthAdjuster>(kKeyboardDistance);
-  scaler->SetName(kKeyboardDmmRoot);
-
-  auto keyboard = std::make_unique<Keyboard>();
-  keyboard->SetKeyboardDelegate(keyboard_delegate_);
-  keyboard->SetDrawPhase(kPhaseForeground);
-  keyboard->SetTranslate(0.0, kKeyboardVerticalOffsetDMM, 0.0);
-  keyboard->AddBinding(std::make_unique<Binding<std::pair<bool, gfx::PointF>>>(
-      VR_BIND_LAMBDA(
-          [](Model* m) {
-            return std::pair<bool, gfx::PointF>(
-                m->primary_controller().touching_touchpad,
-                m->primary_controller().touchpad_touch_position);
-          },
-          base::Unretained(model_)),
-      VR_BIND_LAMBDA(
-          [](Keyboard* keyboard, const std::pair<bool, gfx::PointF>& value) {
-            keyboard->OnTouchStateUpdated(value.first, value.second);
-          },
-          base::Unretained(keyboard.get()))));
-  keyboard->AddBinding(std::make_unique<Binding<bool>>(
-      VR_BIND_LAMBDA([](Model* m) { return m->editing_web_input; },
-                     base::Unretained(model_)),
-      VR_BIND_LAMBDA(
-          [](UiElement* e, const bool& enabled) {
-            if (enabled) {
-              e->SetTranslate(
-                  0.0, kKeyboardVerticalOffsetDMM * kKeyboardWebInputOffset,
-                  0.0);
-            } else {
-              e->SetTranslate(0.0, kKeyboardVerticalOffsetDMM, 0.0);
-            }
-          },
-          base::Unretained(keyboard.get()))));
-  VR_BIND_VISIBILITY(keyboard, (model->editing_input ||
-                                (model->editing_web_input &&
-                                 (model->get_mode() == kModeBrowsing ||
-                                  model->get_mode() == kModeFullscreen))));
-  scene_->AddPerFrameCallback(base::BindRepeating(
-      [](Keyboard* keyboard) { keyboard->AdvanceKeyboardFrameIfNeeded(); },
-      base::Unretained(keyboard.get())));
-  scaler->AddChild(std::move(keyboard));
-  scene_->AddUiElement(k2dBrowsingRepositioner, std::move(scaler));
 }
 
 void UiSceneCreator::CreateUrlBar() {

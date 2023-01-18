@@ -145,7 +145,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -173,7 +172,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
-import org.chromium.ui.vr.VrModeObserver;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -300,10 +298,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             new ObservableSupplierImpl<>();
 
     private TabGroupUi mTabGroupUi;
-
-    private final VrModeObserver mVrModeObserver;
-    private ObservableSupplierImpl<Boolean> mIsProgressBarVisibleSupplier =
-            new ObservableSupplierImpl<>();
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
@@ -492,20 +486,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mSnackbarManager = snackbarManager;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
-
-        mIsProgressBarVisibleSupplier.set(!VrModuleProvider.getDelegate().isInVr());
-        mVrModeObserver = new VrModeObserver() {
-            @Override
-            public void onEnterVr() {
-                mIsProgressBarVisibleSupplier.set(false);
-            }
-
-            @Override
-            public void onExitVr() {
-                mIsProgressBarVisibleSupplier.set(true);
-            }
-        };
-        VrModuleProvider.registerVrModeObserver(mVrModeObserver);
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
@@ -1128,7 +1108,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mLayoutStateProvider == null ? LayoutType.NONE
                                              : mLayoutStateProvider.getActiveLayoutType()),
                 mCompositorViewHolder::getResourceManager,
-                mIsProgressBarVisibleSupplier, IncognitoUtils::isIncognitoModeEnabled,
+                IncognitoUtils::isIncognitoModeEnabled,
                 isGridTabSwitcherEnabled, isTabletGtsPolishEnabled, isTabToGtsAnimationEnabled,
                 isStartSurfaceEnabled, isTabGroupsAndroidContinuationEnabled,
                 HistoryManagerUtils::showHistoryManager,
@@ -1494,8 +1474,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             omnibox.removeUrlFocusChangeListener(mStatusBarColorController);
             omnibox.removeUrlFocusChangeListener(mLocationBarFocusHandler);
         }
-
-        VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
 
         if (mInitializedWithNative) {
             mFindToolbarManager.removeObserver(mFindToolbarObserver);

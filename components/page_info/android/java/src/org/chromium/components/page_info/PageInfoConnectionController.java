@@ -29,7 +29,6 @@ public class PageInfoConnectionController
     private final WebContents mWebContents;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
-    private final VrHandler mVrHandler;
     private final String mContentPublisher;
     private final boolean mIsInternalPage;
     private String mTitle;
@@ -43,7 +42,6 @@ public class PageInfoConnectionController
         mRowView = view;
         mWebContents = webContents;
         mDelegate = delegate;
-        mVrHandler = mDelegate.getVrHandler();
         mContentPublisher = publisher;
         mIsInternalPage = isInternalPage;
     }
@@ -61,8 +59,7 @@ public class PageInfoConnectionController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         mContainer = new FrameLayout(mRowView.getContext());
-        mInfoView =
-                ConnectionInfoView.create(mRowView.getContext(), mWebContents, this, mVrHandler);
+        mInfoView = ConnectionInfoView.create(mRowView.getContext(), mWebContents, this);
         return mContainer;
     }
 

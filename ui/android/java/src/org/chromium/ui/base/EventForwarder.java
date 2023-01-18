@@ -90,15 +90,6 @@ public class EventForwarder {
         mNativeEventForwarder = 0;
     }
 
-    // Returns the scaling being applied to the event's source. Typically only used for VR when
-    // drawing Android UI to a texture.
-    private float getEventSourceScaling() {
-        return EventForwarderJni.get()
-                .getJavaWindowAndroid(mNativeEventForwarder, EventForwarder.this)
-                .getDisplay()
-                .getAndroidUIScaling();
-    }
-
     private boolean hasTouchEventOffset() {
         return mCurrentTouchOffsetX != 0.0f || mCurrentTouchOffsetY != 0.0f;
     }
@@ -189,8 +180,6 @@ public class EventForwarder {
             float secondPointerX = pointerCount > 1 ? event.getX(1) : 0;
             float secondPointerY = pointerCount > 1 ? event.getY(1) : 0;
 
-            float scale = getEventSourceScaling();
-
             int gestureClassification = 0;
             if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                 gestureClassification = ApiHelperForQ.getClassification(event);
@@ -198,15 +187,14 @@ public class EventForwarder {
 
             final boolean consumed = EventForwarderJni.get().onTouchEvent(mNativeEventForwarder,
                     EventForwarder.this, event, oldestEventTime, eventAction, pointerCount,
-                    event.getHistorySize(), event.getActionIndex(), event.getX() / scale,
-                    event.getY() / scale, secondPointerX / scale, secondPointerY / scale,
-                    event.getPointerId(0), pointerCount > 1 ? event.getPointerId(1) : -1,
-                    touchMajor[0] / scale, touchMajor[1] / scale, touchMinor[0] / scale,
-                    touchMinor[1] / scale, event.getOrientation(),
+                    event.getHistorySize(), event.getActionIndex(), event.getX(), event.getY(),
+                    secondPointerX, secondPointerY, event.getPointerId(0),
+                    pointerCount > 1 ? event.getPointerId(1) : -1, touchMajor[0], touchMajor[1],
+                    touchMinor[0], touchMinor[1], event.getOrientation(),
                     pointerCount > 1 ? event.getOrientation(1) : 0,
                     event.getAxisValue(MotionEvent.AXIS_TILT),
                     pointerCount > 1 ? event.getAxisValue(MotionEvent.AXIS_TILT, 1) : 0,
-                    event.getRawX() / scale, event.getRawY() / scale, event.getToolType(0),
+                    event.getRawX(), event.getRawY(), event.getToolType(0),
                     pointerCount > 1 ? event.getToolType(1) : MotionEvent.TOOL_TYPE_UNKNOWN,
                     gestureClassification, event.getButtonState(), event.getMetaState(),
                     isTouchHandleEvent);
@@ -278,12 +266,10 @@ public class EventForwarder {
             int eventAction = event.getActionMasked();
             if (eventAction == MotionEvent.ACTION_HOVER_ENTER) {
                 if (mLastMouseButtonState == MotionEvent.BUTTON_PRIMARY) {
-                    float scale = getEventSourceScaling();
                     EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
-                            event.getEventTime(), MotionEvent.ACTION_BUTTON_RELEASE,
-                            event.getX() / scale, event.getY() / scale, event.getPointerId(0),
-                            event.getPressure(0), event.getOrientation(0),
-                            event.getAxisValue(MotionEvent.AXIS_TILT, 0),
+                            event.getEventTime(), MotionEvent.ACTION_BUTTON_RELEASE, event.getX(),
+                            event.getY(), event.getPointerId(0), event.getPressure(0),
+                            event.getOrientation(0), event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                             MotionEvent.BUTTON_PRIMARY, event.getButtonState(),
                             event.getMetaState(), event.getToolType(0));
                 }
@@ -334,10 +320,8 @@ public class EventForwarder {
             return true;
         }
 
-        float scale = getEventSourceScaling();
-
         EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
-                event.getEventTime(), eventAction, event.getX() / scale, event.getY() / scale,
+                event.getEventTime(), eventAction, event.getX(), event.getY(),
                 event.getPointerId(0), event.getPressure(0), event.getOrientation(0),
                 event.getAxisValue(MotionEvent.AXIS_TILT, 0), getMouseEventActionButton(event),
                 event.getButtonState(), event.getMetaState(), event.getToolType(0));
@@ -416,11 +400,8 @@ public class EventForwarder {
         float screenX = x + locationOnScreen[0];
         float screenY = y + locationOnScreen[1];
 
-        float scale = getEventSourceScaling();
-
         EventForwarderJni.get().onDragEvent(mNativeEventForwarder, EventForwarder.this,
-                event.getAction(), x / scale, y / scale, screenX / scale, screenY / scale,
-                mimeTypes, content);
+                event.getAction(), x, y, screenX, screenY, mimeTypes, content);
         return true;
     }
 

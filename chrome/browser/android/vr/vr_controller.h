@@ -104,8 +104,6 @@ class VrController : public PlatformController {
 
   raw_ptr<gvr::GvrApi> gvr_api_;
 
-  std::unique_ptr<GestureDetector> gesture_detector_;
-
   float last_qx_;
   bool pinch_started_;
   // TODO(https://crbug.com/824194): Remove this and associated logic once the

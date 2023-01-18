@@ -72,8 +72,8 @@ public class CompositorView
     private boolean mPreloadedResources;
     private Runnable mDrawingFinishedCallback;
 
-    // True while the compositor view is in VR Browser mode (obsolescent), or in a WebXR
-    // "immersive-ar" session with DOM Overlay enabled. This disables SurfaceControl while active.
+    // True while in a WebXR "immersive-ar" session with DOM Overlay enabled. This disables
+    // SurfaceControl while active.
     private boolean mIsInXr;
 
     private boolean mIsSurfaceControlEnabled;
@@ -694,43 +694,6 @@ public class CompositorView
             runnable.run();
         }
         updateNeedsDidSwapBuffersCallback();
-    }
-
-    /**
-     * Replaces the surface manager and swaps the window the compositor is attached to as tab
-     * reparenting doesn't handle replacing of the window the compositor uses.
-     *
-     * @param vrCompositorSurfaceManager The surface manager for VR.
-     * @param window The VR WindowAndroid to switch to.
-     */
-    public void replaceSurfaceManagerForVr(
-            CompositorSurfaceManager vrCompositorSurfaceManager, WindowAndroid window) {
-        mIsInXr = true;
-
-        mCompositorSurfaceManager.shutDown();
-        CompositorViewJni.get().setCompositorWindow(
-                mNativeCompositorView, CompositorView.this, window);
-        mCompositorSurfaceManager = vrCompositorSurfaceManager;
-        mCompositorSurfaceManager.requestSurface(PixelFormat.OPAQUE);
-        CompositorViewJni.get().setNeedsComposite(mNativeCompositorView, CompositorView.this);
-        setWindowAndroid(window);
-    }
-
-    /**
-     * Restores the non-VR surface manager and passes back control over the surface(s) to it.
-     * Also restores the non-VR WindowAndroid.
-     *
-     * @param windowToRestore The non-VR WindowAndroid to restore.
-     */
-    public void onExitVr(WindowAndroid windowToRestore) {
-        mIsInXr = false;
-
-        if (mNativeCompositorView == 0) return;
-        setWindowAndroid(windowToRestore);
-        mCompositorSurfaceManager.shutDown();
-        CompositorViewJni.get().setCompositorWindow(
-                mNativeCompositorView, CompositorView.this, mWindowAndroid);
-        createCompositorSurfaceManager();
     }
 
     private void createCompositorSurfaceManager() {

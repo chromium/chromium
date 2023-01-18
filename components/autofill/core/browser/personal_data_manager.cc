@@ -1444,13 +1444,13 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   return unique_suggestions;
 }
 
-const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest(
-    bool include_server_cards) const {
+const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()
+    const {
   if (!IsAutofillCreditCardEnabled())
     return std::vector<CreditCard*>{};
 
   std::vector<CreditCard*> credit_cards;
-  if (include_server_cards && ShouldSuggestServerCards()) {
+  if (ShouldSuggestServerCards()) {
     credit_cards = GetCreditCards();
   } else {
     credit_cards = GetLocalCreditCards();

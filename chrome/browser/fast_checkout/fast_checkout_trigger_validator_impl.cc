@@ -157,9 +157,7 @@ bool FastCheckoutTriggerValidatorImpl::HasValidPersonalData() const {
   }
 
   // Trigger only if there is at least 1 complete valid credit card on file.
-  if (personal_data_helper_
-          ->GetValidCreditCards(autofill_client_->AreServerCardsSupported())
-          .empty()) {
+  if (personal_data_helper_->GetValidCreditCards().empty()) {
     LogUmaTriggerOutcome(FastCheckoutTriggerOutcome::kFailureNoValidCreditCard);
     LogAutofillInternals(
         "not triggered because the client does not have at least one "

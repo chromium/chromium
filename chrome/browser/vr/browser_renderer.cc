@@ -59,21 +59,14 @@ void BrowserRenderer::Draw(FrameType frame_type,
       graphics_delegate_->GetRenderInfo(frame_type, head_pose);
   UpdateUi(render_info, current_time, frame_type);
   ui_->OnProjMatrixChanged(render_info.left_eye_model.proj_matrix);
-  bool use_quad_layer = ui_->IsContentVisibleAndOpaque() &&
-                        graphics_delegate_->IsContentQuadReady();
-  ui_->SetContentUsesQuadLayer(use_quad_layer);
 
   graphics_delegate_->InitializeBuffers();
-  graphics_delegate_->SetFrameDumpFilepathBase(
-      frame_buffer_dump_filepath_base_);
   if (frame_type == kWebXrFrame) {
-    DCHECK(!use_quad_layer);
     DrawWebXr();
-    if (ui_->HasWebXrOverlayElementsToDraw())
+    if (ui_->HasWebXrOverlayElementsToDraw()) {
       DrawWebXrOverlay(render_info);
+    }
   } else {
-    if (use_quad_layer)
-      DrawContentQuad();
     DrawBrowserUi(render_info);
   }
 
@@ -82,7 +75,6 @@ void BrowserRenderer::Draw(FrameType frame_type,
                  "controller",
                  ui_controller_update_time_.GetAverage().InMicroseconds());
 
-  ReportFrameBufferDumpForTesting();
   scheduler_delegate_->SubmitDrawnFrame(frame_type, head_pose);
 }
 
@@ -110,20 +102,6 @@ void BrowserRenderer::DrawWebXrOverlay(const RenderInfo& render_info) {
 
   graphics_delegate_->PrepareBufferForWebXrOverlayElements();
   ui_->DrawWebVrOverlayForeground(webxr_overlay_render_info);
-  graphics_delegate_->OnFinishedDrawingBuffer();
-}
-
-void BrowserRenderer::DrawContentQuad() {
-  TRACE_EVENT0("gpu", __func__);
-  graphics_delegate_->PrepareBufferForContentQuadLayer(
-      ui_->GetContentWorldSpaceTransform());
-
-  GraphicsDelegate::Transform uv_transform;
-  float border_x;
-  float border_y;
-  graphics_delegate_->GetContentQuadDrawParams(&uv_transform, &border_x,
-                                               &border_y);
-  ui_->DrawContent(uv_transform, border_x, border_y);
   graphics_delegate_->OnFinishedDrawingBuffer();
 }
 
@@ -155,65 +133,6 @@ void BrowserRenderer::OnTriggerEvent(bool pressed) {
   input_delegate_->OnTriggerEvent(pressed);
 }
 
-void BrowserRenderer::SetWebXrMode(bool enabled) {
-  scheduler_delegate_->SetWebXrMode(enabled);
-}
-
-void BrowserRenderer::EnableAlertDialog(PlatformInputHandler* input_handler,
-                                        float width,
-                                        float height) {
-  scheduler_delegate_->SetShowingVrDialog(true);
-  vr_dialog_input_delegate_ =
-      std::make_unique<PlatformUiInputDelegate>(input_handler);
-  vr_dialog_input_delegate_->SetSize(width, height);
-  if (ui_->IsContentVisibleAndOpaque()) {
-    auto content_width = graphics_delegate_->GetContentBufferWidth();
-    DCHECK(content_width);
-    ui_->SetContentOverlayAlertDialogEnabled(
-        true, vr_dialog_input_delegate_.get(), width / content_width,
-        height / content_width);
-  } else {
-    ui_->SetAlertDialogEnabled(true, vr_dialog_input_delegate_.get(), width,
-                               height);
-  }
-}
-
-void BrowserRenderer::DisableAlertDialog() {
-  ui_->SetAlertDialogEnabled(false, nullptr, 0, 0);
-  vr_dialog_input_delegate_ = nullptr;
-  scheduler_delegate_->SetShowingVrDialog(false);
-}
-
-void BrowserRenderer::SetAlertDialogSize(float width, float height) {
-  if (vr_dialog_input_delegate_)
-    vr_dialog_input_delegate_->SetSize(width, height);
-  // If not floating, dialogs are rendered with a fixed width, so that only the
-  // ratio matters. But, if they are floating, its size should be relative to
-  // the contents. During a WebXR presentation, the contents are not present
-  // but, in this case, the dialogs are never floating.
-  if (ui_->IsContentVisibleAndOpaque()) {
-    auto content_width = graphics_delegate_->GetContentBufferWidth();
-    DCHECK(content_width);
-    ui_->SetContentOverlayAlertDialogEnabled(
-        true, vr_dialog_input_delegate_.get(), width / content_width,
-        height / content_width);
-  } else {
-    ui_->SetAlertDialogEnabled(true, vr_dialog_input_delegate_.get(), width,
-                               height);
-  }
-}
-
-void BrowserRenderer::ResumeContentRendering() {
-  graphics_delegate_->ResumeContentRendering();
-}
-
-void BrowserRenderer::BufferBoundsChanged(
-    const gfx::Size& content_buffer_size,
-    const gfx::Size& overlay_buffer_size) {
-  graphics_delegate_->BufferBoundsChanged(content_buffer_size,
-                                          overlay_buffer_size);
-}
-
 base::WeakPtr<BrowserUiInterface> BrowserRenderer::GetBrowserUiWeakPtr() {
   return ui_->GetBrowserUiWeakPtr();
 }
@@ -225,11 +144,6 @@ void BrowserRenderer::SetUiExpectingActivityForTesting(
   ui_test_state_ = std::make_unique<UiTestState>();
   ui_test_state_->quiescence_timeout_ms =
       base::Milliseconds(ui_expectation.quiescence_timeout_ms);
-}
-
-void BrowserRenderer::SaveNextFrameBufferToDiskForTesting(
-    std::string filepath_base) {
-  frame_buffer_dump_filepath_base_ = filepath_base;
 }
 
 void BrowserRenderer::WatchElementForVisibilityStatusForTesting(
@@ -244,10 +158,6 @@ void BrowserRenderer::WatchElementForVisibilityStatusForTesting(
   ui_visibility_state_->expected_visibile = visibility_expectation.visibility;
 }
 
-void BrowserRenderer::AcceptDoffPromptForTesting() {
-  ui_->AcceptDoffPromptForTesting();
-}
-
 void BrowserRenderer::SetBrowserRendererBrowserInterfaceForTesting(
     BrowserRendererBrowserInterface* interface_ptr) {
   browser_ = interface_ptr;
@@ -260,12 +170,7 @@ void BrowserRenderer::UpdateUi(const RenderInfo& render_info,
 
   // Update the render position of all UI elements.
   base::TimeTicks timing_start = base::TimeTicks::Now();
-  bool ui_updated = ui_->OnBeginFrame(current_time, render_info.head_pose);
-
-  // WebXR handles controller input in OnVsync.
-  base::TimeDelta controller_time;
-  if (frame_type == kUiFrame)
-    controller_time = ProcessControllerInput(render_info, current_time);
+  ui_->OnBeginFrame(current_time, render_info.head_pose);
 
   if (ui_->SceneHasDirtyTextures()) {
     if (!graphics_delegate_->RunInSkiaContext(base::BindOnce(
@@ -273,14 +178,12 @@ void BrowserRenderer::UpdateUi(const RenderInfo& render_info,
       browser_->ForceExitVr();
       return;
     }
-    ui_updated = true;
   }
-  ReportUiStatusForTesting(timing_start, ui_updated);
   ReportElementVisibilityStatusForTesting(timing_start);
 
   base::TimeDelta scene_time = base::TimeTicks::Now() - timing_start;
   // Don't double-count the controller time that was part of the scene time.
-  ui_processing_time_.AddSample(scene_time - controller_time);
+  ui_processing_time_.AddSample(scene_time);
 }
 
 void BrowserRenderer::ProcessControllerInputForWebXr(
@@ -306,103 +209,8 @@ void BrowserRenderer::ConnectPresentingService(
   scheduler_delegate_->ConnectPresentingService(std::move(options));
 }
 
-base::TimeDelta BrowserRenderer::ProcessControllerInput(
-    const RenderInfo& render_info,
-    base::TimeTicks current_time) {
-  TRACE_EVENT0("gpu", "Vr.ProcessControllerInput");
-  DCHECK(input_delegate_);
-  DCHECK(ui_);
-  base::TimeTicks timing_start = base::TimeTicks::Now();
-
-  input_delegate_->UpdateController(render_info.head_pose, current_time, false);
-  auto input_event_list = input_delegate_->GetGestures(current_time);
-  ReticleModel reticle_model;
-  ControllerModel controller_model =
-      input_delegate_->GetControllerModel(render_info.head_pose);
-  ui_->HandleInput(current_time, render_info, controller_model, &reticle_model,
-                   &input_event_list);
-  std::vector<ControllerModel> controller_models;
-  controller_models.push_back(controller_model);
-  ui_->OnControllersUpdated(controller_models, reticle_model);
-
-  auto controller_time = base::TimeTicks::Now() - timing_start;
-  ui_controller_update_time_.AddSample(controller_time);
-  return controller_time;
-}
-
-void BrowserRenderer::PerformControllerActionForTesting(
-    ControllerTestInput controller_input) {
-  DCHECK(input_delegate_);
-  if (controller_input.action == VrControllerTestAction::kRevertToRealInput) {
-    if (using_input_delegate_for_testing_) {
-      DCHECK(static_cast<InputDelegateForTesting*>(input_delegate_.get())
-                 ->IsQueueEmpty())
-          << "Attempted to revert to using real controller with actions still "
-             "queued";
-      using_input_delegate_for_testing_ = false;
-      input_delegate_for_testing_.swap(input_delegate_);
-      ui_->SetUiInputManagerForTesting(false);
-    }
-    return;
-  }
-  if (!using_input_delegate_for_testing_) {
-    using_input_delegate_for_testing_ = true;
-    if (!input_delegate_for_testing_)
-      input_delegate_for_testing_ =
-          std::make_unique<InputDelegateForTesting>(ui_.get());
-    input_delegate_for_testing_.swap(input_delegate_);
-    ui_->SetUiInputManagerForTesting(true);
-  }
-  if (controller_input.action != VrControllerTestAction::kEnableMockedInput) {
-    static_cast<InputDelegateForTesting*>(input_delegate_.get())
-        ->QueueControllerActionForTesting(controller_input);
-  }
-}
-
-void BrowserRenderer::ReportUiStatusForTesting(
-    const base::TimeTicks& current_time,
-    bool ui_updated) {
-  if (ui_test_state_ == nullptr)
-    return;
-  base::TimeDelta time_since_start = current_time - ui_test_state_->start_time;
-  if (ui_updated) {
-    ui_test_state_->activity_started = true;
-    if (time_since_start > ui_test_state_->quiescence_timeout_ms) {
-      // The UI is being updated, but hasn't reached a stable state in the
-      // given time -> report timeout.
-      ReportUiActivityResultForTesting(UiTestOperationResult::kTimeoutNoEnd);
-    }
-  } else {
-    if (ui_test_state_->activity_started) {
-      // The UI has been updated since the test requested notification of
-      // quiescence, but wasn't this frame -> report that the UI is quiescent.
-      ReportUiActivityResultForTesting(UiTestOperationResult::kQuiescent);
-    } else if (time_since_start > ui_test_state_->quiescence_timeout_ms) {
-      // The UI has never been updated and we've reached the timeout.
-      ReportUiActivityResultForTesting(UiTestOperationResult::kTimeoutNoStart);
-    }
-  }
-}
-
 base::WeakPtr<BrowserRenderer> BrowserRenderer::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-void BrowserRenderer::ReportUiActivityResultForTesting(
-    UiTestOperationResult result) {
-  ui_test_state_ = nullptr;
-  browser_->ReportUiOperationResultForTesting(
-      UiTestOperationType::kUiActivityResult, result);
-}
-
-void BrowserRenderer::ReportFrameBufferDumpForTesting() {
-  if (frame_buffer_dump_filepath_base_.empty())
-    return;
-
-  frame_buffer_dump_filepath_base_.clear();
-  browser_->ReportUiOperationResultForTesting(
-      UiTestOperationType::kFrameBufferDumped,
-      UiTestOperationResult::kQuiescent /* unused */);
 }
 
 void BrowserRenderer::ReportElementVisibilityStatusForTesting(

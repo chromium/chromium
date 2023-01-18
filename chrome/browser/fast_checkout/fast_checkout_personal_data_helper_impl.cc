@@ -29,10 +29,9 @@ FastCheckoutPersonalDataHelperImpl::GetProfilesToSuggest() const {
 }
 
 std::vector<autofill::CreditCard*>
-FastCheckoutPersonalDataHelperImpl::GetCreditCardsToSuggest(
-    bool include_server_cards) const {
+FastCheckoutPersonalDataHelperImpl::GetCreditCardsToSuggest() const {
   std::vector<autofill::CreditCard*> cards_to_suggest =
-      GetPersonalDataManager()->GetCreditCardsToSuggest(include_server_cards);
+      GetPersonalDataManager()->GetCreditCardsToSuggest();
   // Do not offer cards with empty number.
   base::EraseIf(cards_to_suggest, [](const autofill::CreditCard* card) {
     return !card->HasRawInfo(autofill::CREDIT_CARD_NUMBER);
@@ -59,10 +58,9 @@ bool FastCheckoutPersonalDataHelperImpl::IsCompleteAddressProfile(
 }
 
 std::vector<autofill::CreditCard*>
-FastCheckoutPersonalDataHelperImpl::GetValidCreditCards(
-    bool include_server_cards) const {
+FastCheckoutPersonalDataHelperImpl::GetValidCreditCards() const {
   std::vector<autofill::CreditCard*> cards =
-      GetPersonalDataManager()->GetCreditCardsToSuggest(include_server_cards);
+      GetPersonalDataManager()->GetCreditCardsToSuggest();
   base::EraseIf(cards,
                 base::not_fn(&autofill::CreditCard::IsCompleteValidCard));
   return cards;

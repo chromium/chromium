@@ -10,5 +10,4 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
 @ModuleInterface(module = "vr", impl = "org.chromium.chrome.browser.vr.VrDelegateProviderImpl")
 public interface VrDelegateProvider {
     VrDelegate getDelegate();
-    VrIntentDelegate getIntentDelegate();
 }

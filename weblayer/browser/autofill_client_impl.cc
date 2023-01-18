@@ -351,11 +351,6 @@ bool AutofillClientImpl::ShouldShowSigninPromo() {
   return false;
 }
 
-bool AutofillClientImpl::AreServerCardsSupported() const {
-  NOTREACHED();
-  return false;
-}
-
 void AutofillClientImpl::ExecuteCommand(int id) {
   NOTREACHED();
 }

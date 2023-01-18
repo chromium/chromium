@@ -34,12 +34,8 @@ gfx::Vector3dF GetNormalFromTransform(const gfx::Transform& transform) {
 
 }  // namespace
 
-ContentElement::ContentElement(
-    ContentInputDelegate* delegate,
-    ContentElement::ScreenBoundsChangedCallback bounds_changed_callback)
-    : PlatformUiElement(),
-      bounds_changed_callback_(bounds_changed_callback),
-      content_delegate_(delegate) {
+ContentElement::ContentElement(ContentInputDelegate* delegate)
+    : content_delegate_(delegate) {
   DCHECK(delegate);
   SetDelegate(delegate);
 }
@@ -184,7 +180,6 @@ bool ContentElement::OnBeginFrame(const gfx::Transform& head_pose) {
           kContentBoundsPropagationThreshold ||
       std::abs(aspect_ratio - last_content_aspect_ratio_) >
           kContentAspectRatioPropagationThreshold) {
-    bounds_changed_callback_.Run(screen_bounds);
     last_content_screen_bounds_.set_width(screen_bounds.width());
     last_content_screen_bounds_.set_height(screen_bounds.height());
     last_content_aspect_ratio_ = aspect_ratio;

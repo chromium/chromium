@@ -210,7 +210,6 @@ class OnDemandUpdater {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class CrOSComponentInstaller;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  friend class VrAssetsComponentInstallerPolicy;
 
   // Triggers an update check for a component. |id| is a value
   // returned by GetCrxComponentID(). If an update for this component is already

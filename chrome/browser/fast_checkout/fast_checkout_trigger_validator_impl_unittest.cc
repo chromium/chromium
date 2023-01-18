@@ -31,7 +31,6 @@ class MockContentAutofillDriver : public autofill::ContentAutofillDriver {
 
 class MockAutofillClient : public autofill::TestAutofillClient {
  public:
-  MOCK_METHOD(bool, AreServerCardsSupported, (), (const override));
   MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const override));
   MOCK_METHOD(bool, IsContextSecure, (), (const override));
 };
@@ -53,7 +52,7 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
 
   MOCK_METHOD(std::vector<autofill::CreditCard*>,
               GetValidCreditCards,
-              (bool include_server_cards),
+              (),
               (const));
   MOCK_METHOD(std::vector<autofill::AutofillProfile*>,
               GetValidAddressProfiles,
@@ -69,7 +68,7 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
               (const));
   MOCK_METHOD(std::vector<autofill::CreditCard*>,
               GetCreditCardsToSuggest,
-              (bool include_server_cards),
+              (),
               (const));
 };
 

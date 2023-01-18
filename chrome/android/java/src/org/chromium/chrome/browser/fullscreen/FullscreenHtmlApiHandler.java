@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -669,13 +668,6 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         if (mTabInFullscreen == null) return false;
 
         if (mTab == null) return false;
-
-        // The toast tells user how to leave fullscreen by touching the screen. Currently
-        // we do not show the toast when we're browsing in VR, since VR doesn't have
-        // touchscreen and the toast doesn't have any useful information.
-        if (VrModuleProvider.getDelegate().isInVr() || VrModuleProvider.getDelegate().bootsToVr()) {
-            return false;
-        }
 
         final ViewGroup parent = mTab.getContentView();
         if (parent == null) return false;

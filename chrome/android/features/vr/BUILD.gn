@@ -33,38 +33,16 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/vr/AndroidUiGestureTarget.java",
     "java/src/org/chromium/chrome/browser/vr/AndroidVSyncHelper.java",
-    "java/src/org/chromium/chrome/browser/vr/EmptySniffingVrViewContainer.java",
-    "java/src/org/chromium/chrome/browser/vr/NoopCanvas.java",
     "java/src/org/chromium/chrome/browser/vr/OnDispatchTouchEventCallback.java",
-    "java/src/org/chromium/chrome/browser/vr/VrAlertDialog.java",
-    "java/src/org/chromium/chrome/browser/vr/VrCancelAnimationActivity.java",
-    "java/src/org/chromium/chrome/browser/vr/VrCompositorSurfaceManager.java",
     "java/src/org/chromium/chrome/browser/vr/VrCoreInstallUtils.java",
     "java/src/org/chromium/chrome/browser/vr/VrCoreVersionChecker.java",
     "java/src/org/chromium/chrome/browser/vr/VrDaydreamApi.java",
     "java/src/org/chromium/chrome/browser/vr/VrDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/vr/VrDelegateProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/VrDialog.java",
-    "java/src/org/chromium/chrome/browser/vr/VrDialogManager.java",
-    "java/src/org/chromium/chrome/browser/vr/VrFeedbackStatus.java",
-    "java/src/org/chromium/chrome/browser/vr/VrFirstRunActivity.java",
-    "java/src/org/chromium/chrome/browser/vr/VrInputConnection.java",
-    "java/src/org/chromium/chrome/browser/vr/VrIntentDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/VrModalPresenter.java",
-    "java/src/org/chromium/chrome/browser/vr/VrPopupWindow.java",
     "java/src/org/chromium/chrome/browser/vr/VrShell.java",
     "java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java",
-    "java/src/org/chromium/chrome/browser/vr/VrToast.java",
-    "java/src/org/chromium/chrome/browser/vr/VrToastManager.java",
-    "java/src/org/chromium/chrome/browser/vr/VrUiWidgetFactory.java",
-    "java/src/org/chromium/chrome/browser/vr/VrViewContainer.java",
     "java/src/org/chromium/chrome/browser/vr/VrWindowAndroid.java",
-    "java/src/org/chromium/chrome/browser/vr/keyboard/BuildConstants.java",
-    "java/src/org/chromium/chrome/browser/vr/keyboard/GvrKeyboardLoaderClient.java",
-    "java/src/org/chromium/chrome/browser/vr/keyboard/TextEditAction.java",
-    "java/src/org/chromium/chrome/browser/vr/keyboard/VrInputMethodManagerWrapper.java",
   ]
 
   deps = [
@@ -98,7 +76,6 @@ android_library("java") {
     "//device/vr:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
-    "//third_party/gvr-android-keyboard:kb_java",
     "//third_party/gvr-android-sdk:gvr_common_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
@@ -111,14 +88,10 @@ android_library("java") {
 
 generate_jni("split_jni_headers") {
   sources = [
-    "java/src/org/chromium/chrome/browser/vr/AndroidUiGestureTarget.java",
     "java/src/org/chromium/chrome/browser/vr/AndroidVSyncHelper.java",
     "java/src/org/chromium/chrome/browser/vr/VrCoreInstallUtils.java",
-    "java/src/org/chromium/chrome/browser/vr/VrInputConnection.java",
     "java/src/org/chromium/chrome/browser/vr/VrShell.java",
     "java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java",
-    "java/src/org/chromium/chrome/browser/vr/keyboard/GvrKeyboardLoaderClient.java",
-    "java/src/org/chromium/chrome/browser/vr/keyboard/TextEditAction.java",
   ]
   split_name = "vr"
 }

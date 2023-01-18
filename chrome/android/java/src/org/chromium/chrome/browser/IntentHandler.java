@@ -285,6 +285,7 @@ public class IntentHandler {
     private static final String YOUTUBE_LINK_PREFIX_HTTP = "http://www.youtube.com/redirect?";
     private static final String BRING_TAB_TO_FRONT_EXTRA = "BRING_TAB_TO_FRONT";
     public static final String BRING_TAB_TO_FRONT_SOURCE_EXTRA = "BRING_TAB_TO_FRONT_SOURCE";
+    public static final String DAYDREAM_CATEGORY = "com.google.intent.category.DAYDREAM";
 
     /**
      * Represents popular external applications that can load a page in Chrome via intent.
@@ -973,6 +974,10 @@ public class IntentHandler {
                     && !isAllowedIncognitoIntent(isFromChrome, isCustomTab, intent)) {
                 return true;
             }
+
+            // Ignore Daydream intents as these would cause us to re-navigate after the Device ON
+            // flow. This can be removed once we migrate to the cardboard library.
+            if (intent.hasCategory(DAYDREAM_CATEGORY)) return true;
 
             // Now if we have an empty URL and the intent was ACTION_MAIN,
             // we are pretty sure it is the launcher calling us to show up.

@@ -30,7 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
@@ -230,19 +229,9 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
 }
 
 // static
-bool PasswordAccessoryController::AllowedForWebContents(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
-  // TODO(crbug.com/902305): Re-enable if possible.
-  return !vr::VrTabHelper::IsInVr(web_contents);
-}
-
-// static
 PasswordAccessoryController* PasswordAccessoryController::GetOrCreate(
     content::WebContents* web_contents,
     password_manager::CredentialCache* credential_cache) {
-  DCHECK(PasswordAccessoryController::AllowedForWebContents(web_contents));
-
   PasswordAccessoryControllerImpl::CreateForWebContents(web_contents,
                                                         credential_cache);
   return PasswordAccessoryControllerImpl::FromWebContents(web_contents);

@@ -37,11 +37,6 @@ class PasswordGenerationController {
 
   virtual ~PasswordGenerationController() = default;
 
-  // Returns true if the generation controller may exist for |web_contents|.
-  // Otherwise (e.g. if the keyboard accessory is not allowed),
-  // it returns false.
-  static bool AllowedForWebContents(content::WebContents* web_contents);
-
   // Returns a reference to the unique PasswordGenerationController associated
   // with |web_contents|. A new instance is created if the first time this
   // function is called.

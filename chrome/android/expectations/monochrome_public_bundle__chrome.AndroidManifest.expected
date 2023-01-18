@@ -21,7 +21,7 @@
     </activity>  # DIFF-ANCHOR: 93d41352
     <activity  # DIFF-ANCHOR: 61b2c776
         android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
         android:exported="true"
         android:hardwareAccelerated="false"
         android:launchMode="singleTask"
@@ -38,7 +38,7 @@
     </activity>  # DIFF-ANCHOR: 61b2c776
     <activity  # DIFF-ANCHOR: 610e8ccf
         android:name="org.chromium.chrome.browser.ChromeTabbedActivity2"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
         android:exported="false"
         android:hardwareAccelerated="false"
         android:launchMode="singleTask"
@@ -170,7 +170,7 @@
     </activity>  # DIFF-ANCHOR: 2b0ee4cd
     <activity  # DIFF-ANCHOR: 44266a6a
         android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
         android:exported="false"
         android:hardwareAccelerated="false"
         android:resizeableActivity="true"
@@ -185,7 +185,7 @@
     </activity>  # DIFF-ANCHOR: 44266a6a
     <activity  # DIFF-ANCHOR: 4d923622
         android:name="org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
         android:exported="false"
         android:hardwareAccelerated="false"
         android:resizeableActivity="true"
@@ -282,7 +282,7 @@
     </activity>  # DIFF-ANCHOR: d706d96e
     <activity  # DIFF-ANCHOR: 9023f153
         android:name="org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
         android:exported="false"
         android:hardwareAccelerated="false"
         android:theme="@style/Theme.Chromium.TabbedMode"
@@ -405,7 +405,7 @@
     </activity>  # DIFF-ANCHOR: 9bb1f409
     <activity  # DIFF-ANCHOR: f1dc024a
         android:name="org.chromium.chrome.browser.webapps.SameTaskWebApkActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
         android:exported="false"
         android:hardwareAccelerated="false"
         android:label="@string/webapp_activity_title"
@@ -422,7 +422,7 @@
     </activity>  # DIFF-ANCHOR: f1dc024a
     <activity  # DIFF-ANCHOR: 5e467d8a
         android:name="org.chromium.chrome.browser.webapps.WebappActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
         android:documentLaunchMode="intoExisting"
         android:exported="false"
         android:hardwareAccelerated="false"

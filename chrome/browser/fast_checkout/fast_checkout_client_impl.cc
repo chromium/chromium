@@ -74,8 +74,7 @@ bool FastCheckoutClientImpl::TryToStart(
 void FastCheckoutClientImpl::ShowFastCheckoutUI() {
   fast_checkout_controller_->Show(
       personal_data_helper_->GetProfilesToSuggest(),
-      personal_data_helper_->GetCreditCardsToSuggest(
-          autofill_client_->AreServerCardsSupported()));
+      personal_data_helper_->GetCreditCardsToSuggest());
 }
 
 void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {

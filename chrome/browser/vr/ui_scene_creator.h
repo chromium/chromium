@@ -10,7 +10,6 @@
 #include "chrome/browser/vr/elements/content_element.h"
 #include "chrome/browser/vr/elements/text_input.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
-#include "chrome/browser/vr/keyboard_delegate.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace vr {
@@ -28,7 +27,6 @@ class UiSceneCreator {
                  UiScene* scene,
                  Ui* ui,
                  ContentInputDelegate* content_input_delegate,
-                 KeyboardDelegate* keyboard_delegate,
                  TextInputDelegate* text_input_delegate,
                  AudioDelegate* audio_delegate,
                  Model* model);
@@ -59,7 +57,6 @@ class UiSceneCreator {
   void CreateWebVrOverlayElements();
   void CreateWebVrTimeoutScreen();
   void CreateControllers();
-  void CreateKeyboard();
   void Create2dBrowsingHostedUi();
   void CreateExternalPromptNotifcationOverlay();
 
@@ -67,7 +64,6 @@ class UiSceneCreator {
   raw_ptr<UiScene> scene_;
   raw_ptr<Ui> ui_;
   raw_ptr<ContentInputDelegate> content_input_delegate_;
-  raw_ptr<KeyboardDelegate> keyboard_delegate_;
   raw_ptr<TextInputDelegate> text_input_delegate_;
   raw_ptr<AudioDelegate> audio_delegate_;
   raw_ptr<Model> model_;

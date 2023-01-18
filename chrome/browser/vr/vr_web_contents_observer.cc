@@ -4,69 +4,17 @@
 
 #include "chrome/browser/vr/vr_web_contents_observer.h"
 
-#include "chrome/browser/vr/location_bar_helper.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_view.h"
-
 namespace vr {
 
 VrWebContentsObserver::VrWebContentsObserver(content::WebContents* web_contents,
-                                             BrowserUiInterface* ui_interface,
-                                             LocationBarHelper* toolbar,
                                              base::OnceClosure on_destroy)
-    : WebContentsObserver(web_contents),
-      ui_interface_(ui_interface),
-      toolbar_(toolbar),
-      on_destroy_(std::move(on_destroy)) {
-  toolbar_->Update();
-}
+    : WebContentsObserver(web_contents), on_destroy_(std::move(on_destroy)) {}
 
 VrWebContentsObserver::~VrWebContentsObserver() {}
-
-void VrWebContentsObserver::DidStartLoading() {
-  ui_interface_->SetLoading(true);
-}
-
-void VrWebContentsObserver::DidStopLoading() {
-  ui_interface_->SetLoading(false);
-}
-
-void VrWebContentsObserver::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  toolbar_->Update();
-}
-
-void VrWebContentsObserver::DidRedirectNavigation(
-    content::NavigationHandle* navigation_handle) {
-  toolbar_->Update();
-}
-
-void VrWebContentsObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  toolbar_->Update();
-}
-
-void VrWebContentsObserver::DidChangeVisibleSecurityState() {
-  toolbar_->Update();
-}
-
-void VrWebContentsObserver::DidToggleFullscreenModeForTab(
-    bool entered_fullscreen,
-    bool will_cause_resize) {
-  ui_interface_->SetFullscreen(entered_fullscreen);
-}
 
 void VrWebContentsObserver::WebContentsDestroyed() {
   DCHECK(on_destroy_);
   std::move(on_destroy_).Run();
-}
-
-void VrWebContentsObserver::RenderFrameHostChanged(
-    content::RenderFrameHost* old_host,
-    content::RenderFrameHost* new_host) {
-  if (new_host->IsInPrimaryMainFrame())
-    new_host->GetRenderWidgetHost()->GetView()->SetIsInVR(true);
 }
 
 }  // namespace vr

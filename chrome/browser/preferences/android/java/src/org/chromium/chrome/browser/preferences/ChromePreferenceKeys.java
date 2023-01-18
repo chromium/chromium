@@ -954,15 +954,6 @@ public final class ChromePreferenceKeys {
     public static final String VERIFIED_DIGITAL_ASSET_LINKS = "verified_digital_asset_links";
 
     public static final String VIDEO_TUTORIALS_SHARE_URL_SET = "Chrome.VideoTutorials.ShareUrls";
-    public static final String VR_EXIT_TO_2D_COUNT = "VR_EXIT_TO_2D_COUNT";
-    public static final String VR_FEEDBACK_OPT_OUT = "VR_FEEDBACK_OPT_OUT";
-
-    /**
-     * Whether VR assets component should be registered on startup.
-     * Default value is false.
-     */
-    public static final String VR_SHOULD_REGISTER_ASSETS_COMPONENT_ON_STARTUP =
-            "should_register_vr_assets_component_on_startup";
 
     /** Key for deferred recording of list of uninstalled WebAPK packages. */
     public static final String WEBAPK_UNINSTALLED_PACKAGES = "webapk_uninstalled_packages";

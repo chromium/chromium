@@ -1983,10 +1983,6 @@
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
   },
-  "vr_pixeltests": {
-    "label": "//chrome/browser/vr:vr_pixeltests",
-    "type": "console_test_launcher",
-  },
   "vrcore_fps_test": {
     "args": [
       "-v",

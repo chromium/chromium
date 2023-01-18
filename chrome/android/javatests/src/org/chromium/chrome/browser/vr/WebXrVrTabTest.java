@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S;
-import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_SVR;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE;
 
 import androidx.test.filters.MediumTest;
 
@@ -22,10 +19,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.vr.util.NativeUiUtils;
-import org.chromium.chrome.browser.vr.util.PermissionUtils;
 import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -68,7 +62,6 @@ public class WebXrVrTabTest {
      */
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_SVR)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     public void testPoseDataUnfocusedTab_WebXr() {
         testPoseDataUnfocusedTabImpl("webxr_test_pose_data_unfocused_tab", mWebXrVrTestFramework);
@@ -84,62 +77,5 @@ public class WebXrVrTabTest {
         WebXrVrTestFramework.executeStepAndWait(
                 "stepCheckFrameDataWhileNonFocusedTab()", firstTabContents);
         WebXrVrTestFramework.endTest(firstTabContents);
-    }
-
-    /**
-     * Tests that permissions in use by other tabs are shown while in a WebXR for VR immersive
-     * session.
-     */
-    @Test
-    @MediumTest
-    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
-    @CommandLineFlags.Add({"enable-features=WebXR"})
-    public void testPermissionsInOtherTab() throws InterruptedException {
-        testPermissionsInOtherTabImpl(false /* incognito */);
-    }
-
-    @Test
-    @MediumTest
-    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            public void testPermissionsInOtherTabIncognito() throws InterruptedException {
-        testPermissionsInOtherTabImpl(true /* incognito */);
-    }
-
-    private void testPermissionsInOtherTabImpl(boolean incognito) throws InterruptedException {
-        mWebXrVrTestFramework.loadFileAndAwaitInitialization(
-                "generic_webxr_permission_page", PAGE_LOAD_TIMEOUT_S);
-        // Be sure to store the stream we're given so that the permission is actually in use, as
-        // otherwise the toast doesn't show up since another tab isn't actually using the
-        // permission.
-        mWebXrVrTestFramework.runJavaScriptOrFail(
-                "requestPermission({audio:true}, true /* storeValue */)", POLL_TIMEOUT_SHORT_MS);
-
-        // Accept the permission prompt. Standalone devices need to be special cased since they
-        // will be in the VR Browser.
-        if (TestVrShellDelegate.isOnStandalone()) {
-            NativeUiUtils.enableMockedInput();
-            NativeUiUtils.performActionAndWaitForVisibilityStatus(
-                    UserFriendlyElementName.BROWSING_DIALOG, true /* visible */, () -> {});
-            NativeUiUtils.waitForUiQuiescence();
-            NativeUiUtils.clickFallbackUiPositiveButton();
-        } else {
-            PermissionUtils.waitForPermissionPrompt();
-            PermissionUtils.acceptPermissionPrompt();
-        }
-
-        mWebXrVrTestFramework.waitOnJavaScriptStep();
-
-        if (incognito) {
-            mWebXrVrTestFramework.openIncognitoTab("about:blank");
-        } else {
-            mTestRule.loadUrlInNewTab("about:blank");
-        }
-
-        mWebXrVrTestFramework.loadFileAndAwaitInitialization(
-                "generic_webxr_page", PAGE_LOAD_TIMEOUT_S);
-        mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
-        NativeUiUtils.performActionAndWaitForVisibilityStatus(
-                UserFriendlyElementName.WEB_XR_AUDIO_INDICATOR, true /* visible */, () -> {});
     }
 }

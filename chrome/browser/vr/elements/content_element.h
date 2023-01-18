@@ -23,10 +23,7 @@ class TextInputDelegate;
 // the UI.
 class VR_UI_EXPORT ContentElement : public PlatformUiElement {
  public:
-  typedef typename base::RepeatingCallback<void(const gfx::SizeF&)>
-      ScreenBoundsChangedCallback;
-
-  ContentElement(ContentInputDelegate* delegate, ScreenBoundsChangedCallback);
+  explicit ContentElement(ContentInputDelegate* delegate);
 
   ContentElement(const ContentElement&) = delete;
   ContentElement& operator=(const ContentElement&) = delete;
@@ -62,7 +59,6 @@ class VR_UI_EXPORT ContentElement : public PlatformUiElement {
 
  private:
   raw_ptr<TextInputDelegate> text_input_delegate_ = nullptr;
-  ScreenBoundsChangedCallback bounds_changed_callback_;
   unsigned int overlay_texture_id_ = 0;
   bool overlay_texture_non_empty_ = false;
   GlTextureLocation overlay_texture_location_ = kGlTextureLocationExternal;

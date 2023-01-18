@@ -54,12 +54,6 @@ public class ContentUiEventHandler implements UserData {
         return mWebContents.getEventForwarder();
     }
 
-    // Returns the scaling being applied to the event's source. Typically only used for VR when
-    // drawing Android UI to a texture.
-    private float getEventSourceScaling() {
-        return mWebContents.getTopLevelNativeWindow().getDisplay().getAndroidUIScaling();
-    }
-
     @CalledByNative
     private boolean onGenericMotionEvent(MotionEvent event) {
         if (Gamepad.from(mWebContents).onGenericMotionEvent(event)) return true;
@@ -83,10 +77,9 @@ public class ContentUiEventHandler implements UserData {
 
     private void onMouseWheelEvent(MotionEvent event) {
         assert mNativeContentUiEventHandler != 0;
-        float scale = getEventSourceScaling();
         ContentUiEventHandlerJni.get().sendMouseWheelEvent(mNativeContentUiEventHandler,
-                ContentUiEventHandler.this, event.getEventTime(), event.getX() / scale,
-                event.getY() / scale, event.getAxisValue(MotionEvent.AXIS_HSCROLL),
+                ContentUiEventHandler.this, event.getEventTime(), event.getX(), event.getY(),
+                event.getAxisValue(MotionEvent.AXIS_HSCROLL),
                 event.getAxisValue(MotionEvent.AXIS_VSCROLL));
     }
 
@@ -99,12 +92,10 @@ public class ContentUiEventHandler implements UserData {
             didOffsetEvent = true;
             event = newEvent;
         }
-        float scale = getEventSourceScaling();
         ContentUiEventHandlerJni.get().sendMouseEvent(mNativeContentUiEventHandler,
                 ContentUiEventHandler.this, event.getEventTime(), event.getActionMasked(),
-                event.getX() / scale, event.getY() / scale, event.getPointerId(0),
-                event.getPressure(0), event.getOrientation(0),
-                event.getAxisValue(MotionEvent.AXIS_TILT, 0),
+                event.getX(), event.getY(), event.getPointerId(0), event.getPressure(0),
+                event.getOrientation(0), event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                 EventForwarder.getMouseEventActionButton(event), event.getButtonState(),
                 event.getMetaState(), event.getToolType(0));
         if (didOffsetEvent) event.recycle();

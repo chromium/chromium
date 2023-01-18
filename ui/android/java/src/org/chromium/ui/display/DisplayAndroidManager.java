@@ -88,7 +88,6 @@ public class DisplayAndroidManager {
     private int mMainSdkDisplayId;
     private final SparseArray<DisplayAndroid> mIdMap = new SparseArray<>();
     private DisplayListenerBackend mBackend = new DisplayListenerBackend();
-    private int mNextVirtualDisplayId = VIRTUAL_DISPLAY_ID_BEGIN;
 
     /* package */ static DisplayAndroidManager getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -189,29 +188,6 @@ public class DisplayAndroidManager {
         mIdMap.put(sdkDisplayId, displayAndroid);
         displayAndroid.updateFromDisplay(display);
         return displayAndroid;
-    }
-
-    private int getNextVirtualDisplayId() {
-        return mNextVirtualDisplayId++;
-    }
-
-    /* package */ VirtualDisplayAndroid addVirtualDisplay() {
-        VirtualDisplayAndroid display = new VirtualDisplayAndroid(getNextVirtualDisplayId());
-        assert mIdMap.get(display.getDisplayId()) == null;
-        mIdMap.put(display.getDisplayId(), display);
-        updateDisplayOnNativeSide(display);
-        return display;
-    }
-
-    /* package */ void removeVirtualDisplay(VirtualDisplayAndroid display) {
-        DisplayAndroid displayAndroid = mIdMap.get(display.getDisplayId());
-        assert displayAndroid == display;
-
-        if (mNativePointer != 0) {
-            DisplayAndroidManagerJni.get().removeDisplay(
-                    mNativePointer, DisplayAndroidManager.this, display.getDisplayId());
-        }
-        mIdMap.remove(display.getDisplayId());
     }
 
     /* package */ void updateDisplayOnNativeSide(DisplayAndroid displayAndroid) {

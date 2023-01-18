@@ -278,9 +278,6 @@ void CreditCardAccessoryControllerImpl::OnToggleChanged(
 bool CreditCardAccessoryController::AllowedForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
-  if (vr::VrTabHelper::IsInVr(web_contents)) {
-    return false;  // TODO(crbug.com/902305): Re-enable if possible.
-  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableManualFallbackForVirtualCards)) {
     PersonalDataManager* personal_data_manager =
@@ -288,8 +285,7 @@ bool CreditCardAccessoryController::AllowedForWebContents(
             web_contents->GetBrowserContext());
     if (personal_data_manager) {
       std::vector<CreditCard*> cards =
-          personal_data_manager->GetCreditCardsToSuggest(
-              /*include_server_cards=*/true);
+          personal_data_manager->GetCreditCardsToSuggest();
       bool has_virtual_card = base::ranges::any_of(cards, [](const auto& card) {
         return card->virtual_card_enrollment_state() ==
                CreditCard::VirtualCardEnrollmentState::ENROLLED;
@@ -412,8 +408,8 @@ CreditCardAccessoryControllerImpl::GetAllCreditCards() const {
     return std::vector<CardOrVirtualCard>();
 
   std::vector<CardOrVirtualCard> cards;
-  for (const CreditCard* card : personal_data_manager_->GetCreditCardsToSuggest(
-           /*include_server_cards=*/true)) {
+  for (const CreditCard* card :
+       personal_data_manager_->GetCreditCardsToSuggest()) {
     // If any of cards is enrolled for virtual cards and the feature is active,
     // then insert a virtual card suggestion right before the actual card.
     if (ShouldCreateVirtualCard(card)) {

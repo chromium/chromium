@@ -25,12 +25,11 @@ class FastCheckoutPersonalDataHelper {
       const = 0;
 
   // Returns credit cards to suggest that have a number.
-  virtual std::vector<autofill::CreditCard*> GetCreditCardsToSuggest(
-      bool include_server_cards) const = 0;
+  virtual std::vector<autofill::CreditCard*> GetCreditCardsToSuggest()
+      const = 0;
 
   // Returns unexpired credit cards with valid number and name.
-  virtual std::vector<autofill::CreditCard*> GetValidCreditCards(
-      bool include_server_cards) const = 0;
+  virtual std::vector<autofill::CreditCard*> GetValidCreditCards() const = 0;
 
   // Returns profiles with name, address, country, email and phone number.
   virtual std::vector<autofill::AutofillProfile*> GetValidAddressProfiles()

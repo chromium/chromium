@@ -107,7 +107,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   void Show() final;
   void WasUnOccluded() override {}
   void WasOccluded() override {}
-  void SetIsInVR(bool is_in_vr) override;
   std::u16string GetSelectedText() override;
   bool IsMouseLocked() override;
   bool GetIsMouseLockedUnadjustedMovementForTesting() override;
@@ -360,9 +359,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // a more generic term -- in which case, static casts to RWHVChildFrame will
   // need to also be resolved.
   virtual bool IsRenderWidgetHostViewChildFrame();
-
-  // Returns true if the current view is in virtual reality mode.
-  virtual bool IsInVR() const;
 
   // Obtains the root window FrameSinkId.
   virtual viz::FrameSinkId GetRootFrameSinkId();

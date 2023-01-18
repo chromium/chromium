@@ -11,7 +11,6 @@
 #include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/browser_renderer.h"
 #include "chrome/browser/vr/content_input_delegate.h"
-#include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/model/location_bar_state.h"
 #include "chrome/browser/vr/text_input_delegate.h"
 #include "chrome/browser/vr/ui.h"
@@ -279,7 +278,6 @@ class VRUiBrowserInterface : public UiBrowserInterface {
   void OnUnsupportedMode(UiUnsupportedMode mode) override {}
   void OnExitVrPromptResult(ExitVrPromptChoice choice,
                             UiUnsupportedMode reason) override {}
-  void OnContentScreenBoundsChanged(const gfx::SizeF& bounds) override {}
   void SetVoiceSearchActive(bool active) override {}
   void StartAutocomplete(const AutocompleteRequest& request) override {}
   void StopAutocomplete() override {}
@@ -308,15 +306,9 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   ui_initial_state.in_web_vr = true;
   ui_initial_state.browsing_disabled = true;
   ui_initial_state.supports_selection = false;
-  std::unique_ptr<Ui> ui = std::make_unique<Ui>(
-      ui_browser_interface_.get(), nullptr /*input*/,
-      nullptr /*keyboard_delegate*/, nullptr /*text_input_delegate*/,
-      nullptr /*audio_delegate*/, ui_initial_state);
-  static_cast<UiInterface*>(ui.get())->OnGlInitialized(
-      kGlTextureLocationLocal,
-      0 /* content_texture_id - we don't support content */,
-      0 /* content_overlay_texture_id - we don't support content overlays */,
-      0 /* platform_ui_texture_id - we don't support platform UI */);
+  std::unique_ptr<Ui> ui =
+      std::make_unique<Ui>(ui_browser_interface_.get(), ui_initial_state);
+  static_cast<UiInterface*>(ui.get())->OnGlInitialized();
   ui_ = static_cast<BrowserUiInterface*>(ui.get());
   ui_->SetWebVrMode(true);
   scheduler_ui_ = static_cast<UiInterface*>(ui.get())->GetSchedulerUiPtr();

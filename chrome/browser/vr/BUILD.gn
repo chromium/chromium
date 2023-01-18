@@ -51,8 +51,6 @@ component("vr_ui") {
     "elements/indicator_spec.h",
     "elements/invisible_hit_target.cc",
     "elements/invisible_hit_target.h",
-    "elements/keyboard.cc",
-    "elements/keyboard.h",
     "elements/laser.cc",
     "elements/laser.h",
     "elements/linear_layout.cc",
@@ -145,8 +143,6 @@ component("vr_ui") {
     "ui.h",
     "ui_element_renderer.cc",
     "ui_element_renderer.h",
-    "ui_input_manager.cc",
-    "ui_input_manager.h",
     "ui_renderer.cc",
     "ui_renderer.h",
     "ui_scene.cc",
@@ -154,11 +150,6 @@ component("vr_ui") {
     "ui_scene_creator.cc",
     "ui_scene_creator.h",
     "vr_ui_export.h",
-  ]
-
-  sources += [
-    "ui_input_manager_for_testing.cc",
-    "ui_input_manager_for_testing.h",
   ]
 
   deps = [
@@ -314,8 +305,6 @@ component("vr_base") {
     "gl_texture_location.h",
     "input_event.cc",
     "input_event.h",
-    "keyboard_delegate.h",
-    "keyboard_ui_interface.h",
     "macros.h",
     "model/assets.cc",
     "model/assets.h",
@@ -360,11 +349,6 @@ component("vr_base") {
     "vr_geometry_util.h",
   ]
 
-  sources += [
-    "keyboard_delegate_for_testing.cc",
-    "keyboard_delegate_for_testing.h",
-  ]
-
   defines = [ "VR_BASE_IMPLEMENTATION" ]
 
   public_deps = [
@@ -403,7 +387,6 @@ test("vr_common_unittests") {
     "databinding/binding_unittest.cc",
     "databinding/vector_binding_unittest.cc",
     "elements/button_unittest.cc",
-    "elements/content_element_unittest.cc",
     "elements/disc_button_unittest.cc",
     "elements/linear_layout_unittest.cc",
     "elements/omnibox_formatting_unittest.cc",
@@ -416,7 +399,6 @@ test("vr_common_unittests") {
     "elements/scrollable_element_unittest.cc",
     "elements/shadow_unittest.cc",
     "elements/spinner_unittest.cc",
-    "elements/text_input_unittest.cc",
     "elements/text_unittest.cc",
     "elements/throbber_unittest.cc",
     "elements/transient_element_unittest.cc",
@@ -433,7 +415,6 @@ test("vr_common_unittests") {
     "test/run_all_unittests.cc",
     "test/ui_test.cc",
     "test/ui_test.h",
-    "ui_input_manager_unittest.cc",
     "ui_scene_unittest.cc",
     "ui_unittest.cc",
     "vr_geometry_util_unittest.cc",
@@ -461,26 +442,6 @@ test("vr_common_unittests") {
   }
   if (is_win) {
     configs += [ "//build/config/win:delayloads" ]
-  }
-}
-
-test("vr_pixeltests") {
-  testonly = true
-
-  sources = [
-    "test/run_all_pixeltests.cc",
-    "test/ui_pixel_test.cc",
-    "test/ui_pixel_test.h",
-    "ui_pixeltest.cc",
-  ]
-
-  deps = [
-    ":vr_gl_test_support",
-    ":vr_test_support",
-    "//components/vector_icons",
-  ]
-  if (is_android) {
-    deps += [ "//ui/android:ui_java" ]
   }
 }
 
@@ -514,8 +475,6 @@ source_set("vr_test_support") {
     "test/mock_browser_ui_interface.h",
     "test/mock_content_input_delegate.cc",
     "test/mock_content_input_delegate.h",
-    "test/mock_keyboard_delegate.cc",
-    "test/mock_keyboard_delegate.h",
     "test/mock_render_text.cc",
     "test/mock_render_text.h",
     "test/mock_text_input_delegate.cc",

@@ -50,13 +50,6 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
   if (!rfhi->IsRenderFrameLive())
     return 0;
 
-  // TODO(http://crbug.com/673886): Support overlay surfaces in VR using GVR
-  // reprojection video surface.
-  RenderWidgetHostViewBase* rwhvb =
-      static_cast<RenderWidgetHostViewBase*>(rfhi->GetView());
-  if (!rwhvb || rwhvb->IsInVR())
-    return 0;
-
   WebContentsImpl* web_contents_impl = static_cast<WebContentsImpl*>(
       content::WebContents::FromRenderFrameHost(rfhi));
 

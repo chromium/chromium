@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurface.StateObserver;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -38,7 +37,6 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
-import org.chromium.ui.vr.VrModeObserver;
 import org.chromium.url.GURL;
 
 /**
@@ -51,9 +49,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
     /** An observer of the omnibox that suppresses the sheet when the omnibox is focused. */
     private final Callback<Boolean> mOmniboxFocusObserver;
-
-    /** A {@link VrModeObserver} that observers events of entering and exiting VR mode. */
-    private final VrModeObserver mVrModeObserver;
 
     /** A listener for browser controls offset changes. */
     private final BrowserControlsVisibilityManager.Observer mBrowserControlsObserver;
@@ -181,22 +176,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
         mTabProvider.addObserver(this::setActivityTab);
         setActivityTab(mTabProvider.get());
-
-        mVrModeObserver = new VrModeObserver() {
-            /** A token held while this object is suppressing the bottom sheet. */
-            private int mToken;
-
-            @Override
-            public void onEnterVr() {
-                mToken = controller.suppressSheet(StateChangeReason.VR);
-            }
-
-            @Override
-            public void onExitVr() {
-                controller.unsuppressSheet(mToken);
-            }
-        };
-        VrModuleProvider.registerVrModeObserver(mVrModeObserver);
 
         mBrowserControlsObserver = new BrowserControlsVisibilityManager.Observer() {
             @Override
@@ -444,7 +423,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mSheetController.removeObserver(this);
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
-        VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
         if (mStartSurfaceSupplier.get() != null) {
             mStartSurfaceSupplier.get().removeStateChangeObserver(mStartSurfaceStateObserver);
         }

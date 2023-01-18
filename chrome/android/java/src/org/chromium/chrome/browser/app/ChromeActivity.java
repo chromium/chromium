@@ -479,8 +479,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.performPreInflationStartup();
 
-        VrModuleProvider.getDelegate().doPreInflationStartup(this, getSavedInstanceState());
-
         // Force a partner customizations refresh if it has yet to be initialized.  This can happen
         // if Chrome is killed and you refocus a previous activity from Android recents, which does
         // not go through ChromeLauncherActivity that would have normally triggered this.
@@ -613,9 +611,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             super.performPostInflationStartup();
 
             Intent intent = getIntent();
-            if (getSavedInstanceState() == null) {
-                VrModuleProvider.getDelegate().maybeHandleVrIntentPreNative(this, intent);
-            }
             if (0 != (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
                 getLaunchCauseMetrics().onLaunchFromRecents();
             } else {
@@ -1168,7 +1163,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (mFullscreenVideoPictureInPictureController != null) {
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
-        VrModuleProvider.getDelegate().maybeRegisterVrEntryHook(this);
 
         getManualFillingComponent().onResume();
     }
@@ -1232,7 +1226,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (tab != null) getTabContentManager().cacheTabThumbnail(tab);
         getManualFillingComponent().onPause();
 
-        VrModuleProvider.getDelegate().maybeUnregisterVrEntryHook();
         markSessionEnd();
 
         super.onPauseWithNative();
@@ -1256,14 +1249,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     @Override
-    public void onNewIntent(Intent intent) {
-        // This should be called before the call to super so that the needed VR flags are set as
-        // soon as the VR intent is received.
-        VrModuleProvider.getDelegate().maybeHandleVrIntentPreNative(this, intent);
-        super.onNewIntent(intent);
-    }
-
-    @Override
     public void onNewIntentWithNative(Intent intent) {
         if (mFullscreenVideoPictureInPictureController != null) {
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
@@ -1275,9 +1260,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return;
         }
 
-        // We send this intent so that we can enter WebVr presentation mode if needed. This
-        // call doesn't consume the intent because it also has the url that we need to load.
-        VrModuleProvider.getDelegate().onNewIntentWithNative(this, intent);
         mIntentHandler.onNewIntent(intent);
     }
 
@@ -1501,7 +1483,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        VrModuleProvider.getDelegate().onSaveInstanceState(outState);
     }
 
     /**
@@ -1701,10 +1682,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         VrModuleProvider.getDelegate().onNativeLibraryAvailable();
 
         PowerMonitor.create();
-
-        if (getSavedInstanceState() == null && getIntent() != null) {
-            VrModuleProvider.getDelegate().onNewIntentWithNative(this, getIntent());
-        }
 
         // The first launch of the screenshot feature benefits from this DFM being installed
         // proactively. However without the isolated split feature there are performance regressions
@@ -2135,14 +2112,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         mConfig.uiMode, newConfig.uiMode, Configuration.UI_MODE_TYPE_TELEVISION)) {
                 recreate();
                 return;
-            }
-
-            if (newConfig.densityDpi != mConfig.densityDpi) {
-                if (!VrModuleProvider.getDelegate().onDensityChanged(
-                            mConfig.densityDpi, newConfig.densityDpi)) {
-                    recreate();
-                    return;
-                }
             }
 
             if (newConfig.orientation != mConfig.orientation) {
@@ -2799,64 +2768,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             assert false : "View " + v.toString() + extraInfo + " was not a ControlContainer. "
                            + " If you can reproduce, post in crbug.com/1236981";
         }
-    }
-
-    @Override
-    public void startActivity(Intent intent) {
-        startActivity(intent, null);
-    }
-
-    @Override
-    public void startActivity(Intent intent, Bundle options) {
-        if (VrModuleProvider.getDelegate().canLaunch2DIntents()
-                || VrModuleProvider.getIntentDelegate().isVrIntent(intent)) {
-            if (VrModuleProvider.getDelegate().isInVr()) {
-                VrModuleProvider.getIntentDelegate().setupVrIntent(intent);
-            }
-            super.startActivity(intent, options);
-            return;
-        }
-        VrModuleProvider.getDelegate().requestToExitVrAndRunOnSuccess(() -> {
-            if (!VrModuleProvider.getDelegate().canLaunch2DIntents()) {
-                throw new IllegalStateException("Still in VR after having exited VR.");
-            }
-            super.startActivity(intent, options);
-        });
-    }
-
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode) {
-        startActivityForResult(intent, requestCode, null);
-    }
-
-    @Override
-    public void startActivityForResult(Intent intent, int requestCode, Bundle options) {
-        if (VrModuleProvider.getDelegate().canLaunch2DIntents()
-                || VrModuleProvider.getIntentDelegate().isVrIntent(intent)) {
-            super.startActivityForResult(intent, requestCode, options);
-            return;
-        }
-        VrModuleProvider.getDelegate().requestToExitVrAndRunOnSuccess(() -> {
-            if (!VrModuleProvider.getDelegate().canLaunch2DIntents()) {
-                throw new IllegalStateException("Still in VR after having exited VR.");
-            }
-            super.startActivityForResult(intent, requestCode, options);
-        });
-    }
-
-    @Override
-    public boolean startActivityIfNeeded(Intent intent, int requestCode) {
-        return startActivityIfNeeded(intent, requestCode, null);
-    }
-
-    @Override
-    public boolean startActivityIfNeeded(Intent intent, int requestCode, Bundle options) {
-        // Avoid starting Activities when possible while in VR.
-        if (VrModuleProvider.getDelegate().isInVr()
-                && !VrModuleProvider.getIntentDelegate().isVrIntent(intent)) {
-            return false;
-        }
-        return super.startActivityIfNeeded(intent, requestCode, options);
     }
 
     /**

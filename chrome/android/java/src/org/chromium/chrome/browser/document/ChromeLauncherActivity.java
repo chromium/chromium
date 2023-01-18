@@ -11,7 +11,6 @@ import com.google.android.material.color.DynamicColors;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 
 /**
  * Dispatches incoming intents to the appropriate activity based on the current configuration and
@@ -27,12 +26,6 @@ public class ChromeLauncherActivity extends Activity {
         // TODO(https://crbug.com/1225066): Figure out a scalable way to apply overlays to
         // activities like this.
         applyThemeOverlays();
-
-        if (VrModuleProvider.getIntentDelegate().isVrIntent(getIntent())) {
-            // We need to turn VR mode on as early as possible in the intent handling flow to
-            // avoid brightness flickering when handling VR intents.
-            VrModuleProvider.getDelegate().setVrModeEnabled(this, true);
-        }
 
         @LaunchIntentDispatcher.Action
         int dispatchAction = LaunchIntentDispatcher.dispatch(this, getIntent());

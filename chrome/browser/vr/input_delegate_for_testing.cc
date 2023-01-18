@@ -146,11 +146,6 @@ void InputDelegateForTesting::UpdateController(const gfx::Transform& head_pose,
   }
 }
 
-ControllerModel InputDelegateForTesting::GetControllerModel(
-    const gfx::Transform& head_pose) {
-  return cached_controller_model_;
-}
-
 InputEventList InputDelegateForTesting::GetGestures(
     base::TimeTicks current_time) {
   PlatformControllerForTesting controller(&previous_controller_model_,

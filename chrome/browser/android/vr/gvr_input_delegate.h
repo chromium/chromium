@@ -34,7 +34,6 @@ class GvrInputDelegate : public InputDelegate {
   void UpdateController(const gfx::Transform& head_pose,
                         base::TimeTicks current_time,
                         bool is_webxr_frame) override;
-  ControllerModel GetControllerModel(const gfx::Transform& head_pose) override;
   InputEventList GetGestures(base::TimeTicks current_time) override;
   device::mojom::XRInputSourceStatePtr GetInputSourceState() override;
   void OnResume() override;

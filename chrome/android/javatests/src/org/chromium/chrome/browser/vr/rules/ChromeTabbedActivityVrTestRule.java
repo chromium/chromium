@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.vr.rules;
 
-import android.content.Intent;
-
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
@@ -46,11 +44,5 @@ public class ChromeTabbedActivityVrTestRule
     @Override
     public boolean isDonEnabled() {
         return CommandLine.getInstance().hasSwitch("vr-don-enabled");
-    }
-
-    @Override
-    public Intent prepareUrlIntent(Intent intent, String url) {
-        super.prepareUrlIntent(intent, url);
-        return VrTestRuleUtils.maybeAddStandaloneIntentData(intent);
     }
 }

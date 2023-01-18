@@ -3112,7 +3112,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_LocalCardsRanking) {
   // Sublabel is card number when filling name (exact format depends on
   // the platform, but the last 4 digits should appear).
   std::vector<CreditCard*> card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+      personal_data_->GetCreditCardsToSuggest();
   ASSERT_EQ(3U, card_to_suggest.size());
 
   // Ordered as expected.
@@ -3152,7 +3152,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
 
   std::vector<CreditCard*> card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+      personal_data_->GetCreditCardsToSuggest();
   ASSERT_EQ(5U, card_to_suggest.size());
 
   // All cards should be ordered as expected.
@@ -3200,12 +3200,10 @@ TEST_F(PersonalDataManagerTest,
   // Check that profiles were saved.
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
   // Expect no autofilled values or suggestions.
-  EXPECT_EQ(
-      0U, personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true)
-              .size());
+  EXPECT_EQ(0U, personal_data_->GetCreditCardsToSuggest().size());
 
   std::vector<CreditCard*> card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+      personal_data_->GetCreditCardsToSuggest();
   ASSERT_EQ(0U, card_to_suggest.size());
 }
 
@@ -3244,12 +3242,10 @@ TEST_F(PersonalDataManagerTest,
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // Expect no credit card values or suggestions were loaded.
-  EXPECT_EQ(
-      0U, personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true)
-              .size());
+  EXPECT_EQ(0U, personal_data_->GetCreditCardsToSuggest().size());
 
   std::vector<CreditCard*> card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+      personal_data_->GetCreditCardsToSuggest();
   ASSERT_EQ(0U, card_to_suggest.size());
 }
 
@@ -3307,8 +3303,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
 
   std::vector<CreditCard*> card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest(
-          /*include_server_cards=*/true);
+      personal_data_->GetCreditCardsToSuggest();
   ASSERT_EQ(3U, card_to_suggest.size());
   EXPECT_EQ(u"John Dillinger",
             card_to_suggest[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));
@@ -3343,8 +3338,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(4U, personal_data_->GetCreditCards().size());
 
   std::vector<CreditCard*> card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest(
-          /*include_server_cards=*/true);
+      personal_data_->GetCreditCardsToSuggest();
   ASSERT_EQ(3U, card_to_suggest.size());
 
   // Add a second dupe local card to make sure a full server card can be a dupe
@@ -3356,8 +3350,7 @@ TEST_F(PersonalDataManagerTest,
 
   WaitForOnPersonalDataChanged();
 
-  card_to_suggest =
-      personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true);
+  card_to_suggest = personal_data_->GetCreditCardsToSuggest();
   ASSERT_EQ(3U, card_to_suggest.size());
 }
 
@@ -5020,22 +5013,6 @@ TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NotActiveSyncService) {
 }
 #endif  // !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(PersonalDataManagerTest, ExcludeServerSideCards) {
-  SetUpThreeCardTypes();
-
-  // include_server_cards is set to false, therefore no server cards should be
-  // available for suggestion, but that the other calls to get the credit cards
-  // are unaffected.
-  EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(1U, personal_data_
-                    ->GetCreditCardsToSuggest(/*include_server_cards=*/false)
-                    .size());
-  EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
-  EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // Sync Transport mode is only for Win, Mac, and Linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -5053,9 +5030,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
 
   // Check that the server cards are available for suggestion.
   EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(
-      3U, personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true)
-              .size());
+  EXPECT_EQ(3U, personal_data_->GetCreditCardsToSuggest().size());
   EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
   EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
 
@@ -5066,9 +5041,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
 
   // Check that server cards are unavailable.
   EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(
-      1U, personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true)
-              .size());
+  EXPECT_EQ(1U, personal_data_->GetCreditCardsToSuggest().size());
   EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
   EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
 }
@@ -5086,9 +5059,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   // The server cards should not be available at first. The user needs to
   // accept the opt-in offer.
   EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(
-      1U, personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true)
-              .size());
+  EXPECT_EQ(1U, personal_data_->GetCreditCardsToSuggest().size());
   EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
   EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
 
@@ -5098,9 +5069,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
 
   // Check that the server cards are available for suggestion.
   EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(
-      3U, personal_data_->GetCreditCardsToSuggest(/*include_server_cards=*/true)
-              .size());
+  EXPECT_EQ(3U, personal_data_->GetCreditCardsToSuggest().size());
   EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
   EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
 }
@@ -5183,13 +5152,8 @@ TEST_F(PersonalDataManagerTest, UsePersistentServerStorage) {
   ASSERT_TRUE(sync_service_.HasSyncConsent());
   SetUpThreeCardTypes();
 
-  // include_server_cards is set to false, therefore no server cards should be
-  // available for suggestion, but that the other calls to get the credit cards
-  // are unaffected.
   EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(1U, personal_data_
-                    ->GetCreditCardsToSuggest(/*include_server_cards=*/false)
-                    .size());
+  EXPECT_EQ(3U, personal_data_->GetCreditCardsToSuggest().size());
   EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
   EXPECT_EQ(2U, personal_data_->GetServerCreditCards().size());
 }

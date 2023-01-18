@@ -371,10 +371,8 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
-  // vector. If |include_server_cards| is false, server side cards should not
-  // be included.
-  const std::vector<CreditCard*> GetCreditCardsToSuggest(
-      bool include_server_cards) const;
+  // vector.
+  const std::vector<CreditCard*> GetCreditCardsToSuggest() const;
 
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase
   // asynchronously. In the general case, this is a no-op and will re-create

@@ -29,7 +29,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -72,10 +71,7 @@ public class ToolbarProgressBarTest {
                     new FrameLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT, heightPx * 2));
 
-            ObservableSupplierImpl<Boolean> isVisibleSupplier = new ObservableSupplierImpl<>();
-            isVisibleSupplier.set(true);
-            mProgressBar =
-                    new ToolbarProgressBar(activity, heightPx, anchor, false, isVisibleSupplier);
+            mProgressBar = new ToolbarProgressBar(activity, heightPx, anchor, false);
             final @ColorInt int toolbarColor =
                     SemanticColorUtils.getToolbarBackgroundPrimary(activity);
             mProgressBar.setThemeColor(toolbarColor, false);

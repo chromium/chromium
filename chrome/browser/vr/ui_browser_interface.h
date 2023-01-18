@@ -46,7 +46,6 @@ class VR_BASE_EXPORT UiBrowserInterface {
   virtual void OnUnsupportedMode(UiUnsupportedMode mode) = 0;
   virtual void OnExitVrPromptResult(ExitVrPromptChoice choice,
                                     UiUnsupportedMode reason) = 0;
-  virtual void OnContentScreenBoundsChanged(const gfx::SizeF& bounds) = 0;
   virtual void SetVoiceSearchActive(bool active) = 0;
   virtual void StartAutocomplete(const AutocompleteRequest& request) = 0;
   virtual void StopAutocomplete() = 0;

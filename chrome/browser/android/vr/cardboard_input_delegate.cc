@@ -34,13 +34,6 @@ void CardboardInputDelegate::UpdateController(const gfx::Transform& head_pose,
                                               base::TimeTicks current_time,
                                               bool is_webxr_frame) {}
 
-ControllerModel CardboardInputDelegate::GetControllerModel(
-    const gfx::Transform& head_pose) {
-  // On cardboard, we have some UI frames, such as when no WebXR frame have
-  // arrived. But in this case, we don't have any elements that react to input.
-  return {};
-}
-
 InputEventList CardboardInputDelegate::GetGestures(
     base::TimeTicks current_time) {
   return {};

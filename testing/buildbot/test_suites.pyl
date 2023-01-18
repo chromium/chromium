@@ -5044,7 +5044,6 @@
       # Only run on platforms that intend to support WebVR in the near
       # future.
       'vr_common_unittests': {},
-      'vr_pixeltests': {},
     },
 
     'vulkan_swiftshader_isolated_scripts': {

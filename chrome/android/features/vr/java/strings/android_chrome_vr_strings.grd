@@ -172,14 +172,6 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-        <!-- Chrome VR feedback infobar -->
-        <message name="IDS_VR_SHELL_FEEDBACK_INFOBAR_DESCRIPTION" desc="Description for infobar prompting the user for feedback on their VR browsing experience.">
-          Help improve the VR experience in Chrome
-        </message>
-        <message name="IDS_VR_SHELL_FEEDBACK_INFOBAR_FEEDBACK_BUTTON" desc="Brief button text asking the user to provide feedback in the VR feedback infobar.">
-          Provide feedback
-        </message>
-
         <!-- VR services check message -->
         <message name="IDS_VR_SERVICES_CHECK_MESSAGE_INSTALL_TITLE" desc="Title to be displayed in the VR Services check message. When a WebVR page is loaded if the VR services that are needed to display WebVR don't exist a message will be shown to the user prompting them to install VR services.">
           Install Google VR Services?

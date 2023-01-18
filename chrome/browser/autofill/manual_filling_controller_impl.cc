@@ -329,12 +329,10 @@ void ManualFillingControllerImpl::Initialize() {
 ManualFillingControllerImpl::ManualFillingControllerImpl(
     content::WebContents* web_contents)
     : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents) {
-  if (PasswordAccessoryController::AllowedForWebContents(web_contents)) {
-    pwd_controller_ = ChromePasswordManagerClient::FromWebContents(web_contents)
-                          ->GetOrCreatePasswordAccessory()
-                          ->AsWeakPtr();
-    DCHECK(pwd_controller_);
-  }
+  pwd_controller_ = ChromePasswordManagerClient::FromWebContents(web_contents)
+                        ->GetOrCreatePasswordAccessory()
+                        ->AsWeakPtr();
+  DCHECK(pwd_controller_);
   if (AddressAccessoryController::AllowedForWebContents(web_contents)) {
     address_controller_ =
         AddressAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();

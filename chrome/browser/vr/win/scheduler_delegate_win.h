@@ -26,8 +26,6 @@ class SchedulerDelegateWin : public SchedulerDelegate {
   void OnResume() override;
 
   void OnExitPresent() override;
-  void SetWebXrMode(bool enabled) override;
-  void SetShowingVrDialog(bool showing) override;
   void SetBrowserRenderer(
       SchedulerBrowserRendererInterface* browser_renderer) override;
   void SubmitDrawnFrame(FrameType frame_type,

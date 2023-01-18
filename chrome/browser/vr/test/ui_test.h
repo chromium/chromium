@@ -45,9 +45,7 @@ class UiTest : public testing::Test {
   void CreateScene(InWebVr in_web_vr);
 
  protected:
-  void CreateSceneInternal(
-      const UiInitialState& state,
-      std::unique_ptr<MockContentInputDelegate> content_input_delegate);
+  void CreateSceneInternal(const UiInitialState& state);
 
   void SetIncognito(bool incognito);
 
@@ -95,15 +93,9 @@ class UiTest : public testing::Test {
 
   void GetBackgroundColor(SkColor* background_color) const;
 
-  // Synthesize a controller orientation that intersects the element, and cycle
-  // the controller button.  This offers a reasonably correct means of testing
-  // clicks on elements, that's true to hit testability, visbility, etc.
-  void ClickElement(UiElement* element);
-
   std::unique_ptr<Ui> ui_instance_;
   raw_ptr<UiInterface> ui_ = nullptr;
   std::unique_ptr<MockUiBrowserInterface> browser_;
-  raw_ptr<MockContentInputDelegate> content_input_delegate_ = nullptr;
   raw_ptr<Model> model_ = nullptr;
   raw_ptr<UiScene> scene_ = nullptr;
 

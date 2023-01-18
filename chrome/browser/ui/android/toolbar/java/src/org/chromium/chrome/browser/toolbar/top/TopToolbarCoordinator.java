@@ -142,7 +142,6 @@ public class TopToolbarCoordinator implements Toolbar {
      *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
-     * @param isProgressBarVisibleSupplier A supplier of whether the progress bar is visible.
      * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled via a feature flag.
      * @param isTabToGtsAnimationEnabled Whether Tab-to-GTS animation is enabled via a feature flag.
      * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
@@ -177,7 +176,6 @@ public class TopToolbarCoordinator implements Toolbar {
             ButtonDataProvider identityDiscController, Callback<Runnable> invalidatorCallback,
             Supplier<ButtonData> identityDiscButtonSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
-            ObservableSupplier<Boolean> isProgressBarVisibleSupplier,
             BooleanSupplier isIncognitoModeEnabledSupplier, boolean isGridTabSwitcherEnabled,
             boolean isTabletGtsPolishEnabled, boolean isTabToGtsAnimationEnabled,
             boolean isStartSurfaceEnabled, boolean isTabGroupsAndroidContinuationEnabled,
@@ -220,8 +218,7 @@ public class TopToolbarCoordinator implements Toolbar {
                 constraintsSupplier, toolbarDataProvider::getTab, compositorInMotionSupplier,
                 browserStateBrowserControlsVisibilityDelegate);
         mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator,
-                isProgressBarVisibleSupplier, historyDelegate, partnerHomepageEnabledSupplier,
-                offlineDownloader);
+                historyDelegate, partnerHomepageEnabledSupplier, offlineDownloader);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);

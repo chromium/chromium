@@ -137,8 +137,7 @@ bool CreditCardAccessManager::ShouldClearPreviewedForm() {
 void CreditCardAccessManager::PrepareToFetchCreditCard() {
 #if !BUILDFLAG(IS_IOS)
   // No need to fetch details if there are no server cards.
-  if (!base::ranges::any_of(personal_data_manager_->GetCreditCardsToSuggest(
-                                client_->AreServerCardsSupported()),
+  if (!base::ranges::any_of(personal_data_manager_->GetCreditCardsToSuggest(),
                             base::not_fn(&CreditCard::IsLocalCard))) {
     return;
   }

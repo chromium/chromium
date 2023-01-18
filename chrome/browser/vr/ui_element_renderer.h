@@ -13,7 +13,6 @@
 #include "chrome/browser/vr/elements/environment/background.h"
 #include "chrome/browser/vr/elements/environment/grid.h"
 #include "chrome/browser/vr/elements/environment/stars.h"
-#include "chrome/browser/vr/elements/keyboard.h"
 #include "chrome/browser/vr/elements/laser.h"
 #include "chrome/browser/vr/elements/reticle.h"
 #include "chrome/browser/vr/elements/shadow.h"
@@ -122,9 +121,6 @@ class UiElementRenderer {
       float incognito_factor,
       float fullscreen_factor);
 
-  VIRTUAL_FOR_MOCKS void DrawKeyboard(const CameraModel& camera_model,
-                                      KeyboardDelegate* delegate);
-
   void Flush();
 
  protected:
@@ -149,7 +145,6 @@ class UiElementRenderer {
   std::unique_ptr<Shadow::Renderer> shadow_renderer_;
   std::unique_ptr<Stars::Renderer> stars_renderer_;
   std::unique_ptr<Background::Renderer> background_renderer_;
-  std::unique_ptr<Keyboard::Renderer> keyboard_renderer_;
 };
 
 }  // namespace vr

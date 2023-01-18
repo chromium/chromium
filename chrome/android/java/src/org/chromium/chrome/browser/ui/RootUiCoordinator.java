@@ -135,7 +135,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -165,7 +164,6 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.vr.VrModeObserver;
 import org.chromium.url.GURL;
 
 import java.io.Serializable;
@@ -229,8 +227,6 @@ public class RootUiCoordinator
     protected ToolbarManager mToolbarManager;
     protected Supplier<Boolean> mCanAnimateBrowserControls;
     private ModalDialogManagerObserver mModalDialogManagerObserver;
-
-    private VrModeObserver mVrModeObserver;
 
     private BottomSheetManager mBottomSheetManager;
     private ManagedBottomSheetController mBottomSheetController;
@@ -583,8 +579,6 @@ public class RootUiCoordinator
 
         if (mFindToolbarManager != null) mFindToolbarManager.removeObserver(mFindToolbarObserver);
 
-        if (mVrModeObserver != null) VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
-
         if (mModalDialogManagerObserver != null && mModalDialogManagerSupplier.hasValue()) {
             mModalDialogManagerSupplier.get().removeObserver(mModalDialogManagerObserver);
         }
@@ -699,16 +693,6 @@ public class RootUiCoordinator
                             generateUrlParamsForSearch(tab, query),
                             TabLaunchType.FROM_LONGPRESS_FOREGROUND, tab, tab.isIncognito());
                 }, mShareDelegateSupplier);
-        mVrModeObserver = new VrModeObserver() {
-            @Override
-            public void onEnterVr() {
-                mFindToolbarManager.hideToolbar();
-            }
-
-            @Override
-            public void onExitVr() {}
-        };
-        VrModuleProvider.registerVrModeObserver(mVrModeObserver);
 
         mCaptureController = new MediaCaptureOverlayController(
                 mWindowAndroid, mActivity.findViewById(R.id.capture_overlay));

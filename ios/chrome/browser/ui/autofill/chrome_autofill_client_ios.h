@@ -138,7 +138,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
                              const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
   bool ShouldShowSigninPromo() override;
-  bool AreServerCardsSupported() const override;
   void ExecuteCommand(int id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;

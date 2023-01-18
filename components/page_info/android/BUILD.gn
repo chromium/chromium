@@ -79,7 +79,6 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/PageInfoView.java",
     "java/src/org/chromium/components/page_info/PermissionParamsListBuilder.java",
     "java/src/org/chromium/components/page_info/SystemSettingsActivityRequiredListener.java",
-    "java/src/org/chromium/components/page_info/VrHandler.java",
   ]
 
   deps = [

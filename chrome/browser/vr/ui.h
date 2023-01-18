@@ -15,7 +15,6 @@
 #include "base/version.h"
 #include "chrome/browser/vr/assets_load_status.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
-#include "chrome/browser/vr/keyboard_ui_interface.h"
 #include "chrome/browser/vr/scheduler_ui_interface.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_initial_state.h"
@@ -27,16 +26,10 @@
 
 namespace vr {
 
-class AudioDelegate;
 class ContentElement;
-class ContentInputDelegate;
-class PlatformInputHandler;
-class KeyboardDelegate;
 class PlatformUiInputDelegate;
 class SkiaSurfaceProvider;
-class TextInputDelegate;
 class UiBrowserInterface;
-class UiInputManager;
 class UiRenderer;
 struct Assets;
 struct ControllerModel;
@@ -48,22 +41,9 @@ struct ReticleModel;
 // It is not threadsafe and must only be used on the GL thread.
 class VR_UI_EXPORT Ui : public UiInterface,
                         public BrowserUiInterface,
-                        public KeyboardUiInterface,
                         public SchedulerUiInterface {
  public:
-  Ui(UiBrowserInterface* browser,
-     PlatformInputHandler* content_input_forwarder,
-     std::unique_ptr<KeyboardDelegate> keyboard_delegate,
-     std::unique_ptr<TextInputDelegate> text_input_delegate,
-     std::unique_ptr<AudioDelegate> audio_delegate,
-     const UiInitialState& ui_initial_state);
-
-  Ui(UiBrowserInterface* browser,
-     std::unique_ptr<ContentInputDelegate> content_input_delegate,
-     std::unique_ptr<KeyboardDelegate> keyboard_delegate,
-     std::unique_ptr<TextInputDelegate> text_input_delegate,
-     std::unique_ptr<AudioDelegate> audio_delegate,
-     const UiInitialState& ui_initial_state);
+  Ui(UiBrowserInterface* browser, const UiInitialState& ui_initial_state);
 
   Ui(const Ui&) = delete;
   Ui& operator=(const Ui&) = delete;
@@ -73,12 +53,8 @@ class VR_UI_EXPORT Ui : public UiInterface,
   void OnUiRequestedNavigation();
 
   void ReinitializeForTest(const UiInitialState& ui_initial_state);
-  ContentInputDelegate* GetContentInputDelegateForTest() {
-    return content_input_delegate_.get();
-  }
   bool GetElementVisibilityForTesting(
       UserFriendlyElementName element_name) override;
-  void SetUiInputManagerForTesting(bool enabled) override;
 
   void Dump(bool include_bindings);
   // TODO(crbug.com/767957): Refactor to hide these behind the UI interface.
@@ -86,7 +62,6 @@ class VR_UI_EXPORT Ui : public UiInterface,
   UiElementRenderer* ui_element_renderer() {
     return ui_element_renderer_.get();
   }
-  UiInputManager* input_manager() { return input_manager_.get(); }
   Model* model_for_test() { return model_.get(); }
 
  private:
@@ -123,18 +98,13 @@ class VR_UI_EXPORT Ui : public UiInterface,
                              int selection_end,
                              int composition_start,
                              int composition_end) override;
-  void PerformKeyboardInputForTesting(
-      KeyboardTestInput keyboard_input) override;
   void SetVisibleExternalPromptNotification(
       ExternalPromptNotificationType prompt) override;
 
   // UiInterface
   base::WeakPtr<BrowserUiInterface> GetBrowserUiWeakPtr() override;
   SchedulerUiInterface* GetSchedulerUiPtr() override;
-  void OnGlInitialized(GlTextureLocation textures_location,
-                       unsigned int content_texture_id,
-                       unsigned int content_overlay_texture_id,
-                       unsigned int platform_ui_texture_id) override;
+  void OnGlInitialized() override;
   void SetAlertDialogEnabled(bool enabled,
                              PlatformUiInputDelegate* delegate,
                              float width,
@@ -153,24 +123,16 @@ class VR_UI_EXPORT Ui : public UiInterface,
       const std::vector<ControllerModel>& controller_models,
       const ReticleModel& reticle_model) override;
   void OnProjMatrixChanged(const gfx::Transform& proj_matrix) override;
-  void OnSwapContents(int new_content_id) override;
-  void OnContentBoundsChanged(int width, int height) override;
 
-  void AcceptDoffPromptForTesting() override;
   gfx::Point3F GetTargetPointForTesting(UserFriendlyElementName element_name,
                                         const gfx::PointF& position) override;
   bool IsContentVisibleAndOpaque() override;
-  void SetContentUsesQuadLayer(bool uses_quad_buffers) override;
-  gfx::Transform GetContentWorldSpaceTransform() override;
 
   bool OnBeginFrame(base::TimeTicks current_time,
                     const gfx::Transform& head_pose) override;
   bool SceneHasDirtyTextures() const override;
   void UpdateSceneTextures() override;
   void Draw(const RenderInfo& render_info) override;
-  void DrawContent(const float (&uv_transform)[16],
-                   float xborder,
-                   float yborder) override;
   void DrawWebXr(int texture_data_handle,
                  const float (&uv_transform)[16]) override;
   void DrawWebVrOverlayForeground(const RenderInfo& render_info) override;
@@ -178,7 +140,6 @@ class VR_UI_EXPORT Ui : public UiInterface,
 
   void HandleInput(base::TimeTicks current_time,
                    const RenderInfo& render_info,
-                   const ControllerModel& controller_model,
                    ReticleModel* reticle_model,
                    InputEventList* input_event_list) override;
 
@@ -196,17 +157,10 @@ class VR_UI_EXPORT Ui : public UiInterface,
   void OnWebXrTimedOut() override;
   void OnWebXrTimeoutImminent() override;
 
-  // KeyboardUiInterface
-  void OnInputEdited(const EditedText& info) override;
-  void OnInputCommitted(const EditedText& info) override;
-  void OnKeyboardHidden() override;
-
  private:
   void SetAlertDialogSize(float width, float height);
   void SetContentOverlayAlertDialogSize(float width_percentage,
                                         float height_percentage);
-  void RequestFocus(int element_id);
-  void RequestUnfocus(int element_id);
   void OnMenuButtonClicked();
   void OnSpeechRecognitionEnded();
   void InitializeModel(const UiInitialState& ui_initial_state);
@@ -220,22 +174,13 @@ class VR_UI_EXPORT Ui : public UiInterface,
   // This state may be further abstracted into a SkiaUi object.
   std::unique_ptr<UiScene> scene_;
   std::unique_ptr<Model> model_;
-  std::unique_ptr<ContentInputDelegate> content_input_delegate_;
   std::unique_ptr<UiElementRenderer> ui_element_renderer_;
-  std::unique_ptr<UiInputManager> input_manager_;
-  std::unique_ptr<UiInputManager> input_manager_for_testing_;
   std::unique_ptr<UiRenderer> ui_renderer_;
   std::unique_ptr<SkiaSurfaceProvider> provider_;
 
   // Cache the content element so we don't have to get it multiple times per
   // frame.
   raw_ptr<ContentElement> content_element_ = nullptr;
-
-  std::unique_ptr<KeyboardDelegate> keyboard_delegate_;
-  std::unique_ptr<KeyboardDelegate> keyboard_delegate_for_testing_;
-  bool using_keyboard_delegate_for_testing_ = false;
-  std::unique_ptr<TextInputDelegate> text_input_delegate_;
-  std::unique_ptr<AudioDelegate> audio_delegate_;
 
   base::WeakPtrFactory<Ui> weak_ptr_factory_{this};
 };

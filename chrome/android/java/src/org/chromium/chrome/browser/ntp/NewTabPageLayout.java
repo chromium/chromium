@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracker;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -63,13 +62,12 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.vr.VrModeObserver;
 
 /**
  * Layout for the new tab page. This positions the page elements in the correct vertical positions.
  * There are no separate phone and tablet UIs; this layout adapts based on the available space.
  */
-public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
+public class NewTabPageLayout extends LinearLayout {
     private static final String TAG = "NewTabPageLayout";
 
     // Used to signify the cached resource value is unset.
@@ -207,9 +205,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
             mQueryTileSection = new QueryTileSection(
                     findViewById(R.id.query_tiles), profile, mManager::performSearchQuery);
         }
-
-        VrModuleProvider.registerVrModeObserver(this);
-        if (VrModuleProvider.getDelegate().isInVr()) onEnterVr();
 
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
         mInitialized = true;
@@ -757,23 +752,11 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
                 }));
     }
 
-    @Override
-    public void onEnterVr() {
-        mSearchBoxCoordinator.setVisibility(false);
-    }
-
-    @Override
-    public void onExitVr() {
-        mSearchBoxCoordinator.setVisibility(true);
-    }
-
     private void onDestroy() {
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
         }
-
-        VrModuleProvider.unregisterVrModeObserver(this);
 
         if (mLogoCoordinator != null) {
             mLogoCoordinator.destroy();

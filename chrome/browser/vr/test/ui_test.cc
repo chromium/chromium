@@ -73,13 +73,8 @@ void UiTest::SetUp() {
   browser_ = std::make_unique<testing::NiceMock<MockUiBrowserInterface>>();
 }
 
-void UiTest::CreateSceneInternal(
-    const UiInitialState& state,
-    std::unique_ptr<MockContentInputDelegate> content_input_delegate) {
-  content_input_delegate_ = content_input_delegate.get();
-  ui_instance_ = std::make_unique<Ui>(std::move(browser_.get()),
-                                      std::move(content_input_delegate),
-                                      nullptr, nullptr, nullptr, state);
+void UiTest::CreateSceneInternal(const UiInitialState& state) {
+  ui_instance_ = std::make_unique<Ui>(std::move(browser_.get()), state);
   ui_ = ui_instance_.get();
   scene_ = ui_instance_->scene();
   model_ = ui_instance_->model_for_test();
@@ -92,9 +87,7 @@ void UiTest::CreateSceneInternal(
 }
 
 void UiTest::CreateScene(const UiInitialState& state) {
-  auto content_input_delegate =
-      std::make_unique<testing::NiceMock<MockContentInputDelegate>>();
-  CreateSceneInternal(state, std::move(content_input_delegate));
+  CreateSceneInternal(state);
 }
 
 void UiTest::CreateScene(InWebVr in_web_vr) {
@@ -207,34 +200,6 @@ void UiTest::GetBackgroundColor(SkColor* background_color) const {
   ASSERT_NE(nullptr, background);
   EXPECT_EQ(background->center_color(), background->edge_color());
   *background_color = background->edge_color();
-}
-
-void UiTest::ClickElement(UiElement* element) {
-  // Synthesize a controller vector targeting the element.
-  gfx::Point3F origin;
-  gfx::Point3F target =
-      element->ComputeTargetWorldSpaceTransform().MapPoint(origin);
-  gfx::Vector3dF direction(target - origin);
-  direction.GetNormalized(&direction);
-
-  RenderInfo render_info;
-  ReticleModel reticle_model;
-  InputEventList input_event_list;
-  ControllerModel controller_model;
-  controller_model.laser_direction = direction;
-  controller_model.laser_origin = origin;
-
-  controller_model.touchpad_button_state = ControllerModel::ButtonState::kDown;
-  ui_instance_->input_manager()->HandleInput(current_time_, render_info,
-                                             controller_model, &reticle_model,
-                                             &input_event_list);
-  OnBeginFrame();
-
-  controller_model.touchpad_button_state = ControllerModel::ButtonState::kUp;
-  ui_instance_->input_manager()->HandleInput(current_time_, render_info,
-                                             controller_model, &reticle_model,
-                                             &input_event_list);
-  OnBeginFrame();
 }
 
 bool UiTest::RunFor(base::TimeDelta delta) {

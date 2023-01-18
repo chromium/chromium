@@ -54,14 +54,10 @@ class MockBrowserUiInterface : public BrowserUiInterface {
   MOCK_METHOD1(SetOverlayTextureEmpty, void(bool));
   MOCK_METHOD1(ShowSoftInput, void(bool));
   MOCK_METHOD4(UpdateWebInputIndices, void(int, int, int, int));
-  MOCK_METHOD1(OnSwapContents, void(int));
   MOCK_METHOD2(SetDialogLocation, void(float, float));
   MOCK_METHOD1(SetDialogFloating, void(bool));
   MOCK_METHOD1(ShowPlatformToast, void(const std::u16string&));
   MOCK_METHOD0(CancelPlatformToast, void());
-  MOCK_METHOD2(OnContentBoundsChanged, void(int, int));
-  MOCK_METHOD0(RemoveAllTabs, void());
-  MOCK_METHOD1(PerformKeyboardInputForTesting, void(KeyboardTestInput));
   MOCK_METHOD1(SetVisibleExternalPromptNotification,
                void(ExternalPromptNotificationType));
 };

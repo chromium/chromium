@@ -10122,8 +10122,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
     credit_card_with_cvc_ = {
         .credit_card = *autofill_manager()
                             .personal_data_manager_for_test()
-                            .GetCreditCardsToSuggest(
-                                autofill_client_->AreServerCardsSupported())
+                            .GetCreditCardsToSuggest()
                             .front(),
         .cvc = u"123"};
 

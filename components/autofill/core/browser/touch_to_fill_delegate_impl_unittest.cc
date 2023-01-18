@@ -402,7 +402,7 @@ TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillShowsExpiredCards) {
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
   autofill_client_.GetPersonalDataManager()->AddCreditCard(expired_card);
   std::vector<autofill::CreditCard*> credit_cards =
-      autofill_client_.GetPersonalDataManager()->GetCreditCardsToSuggest(false);
+      autofill_client_.GetPersonalDataManager()->GetCreditCardsToSuggest();
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(autofill_client_,
               ShowTouchToFillCreditCard(_, ElementsAreArray(credit_cards)));
@@ -484,7 +484,7 @@ TEST_F(TouchToFillDelegateImplUnitTest, PassTheCreditCardsToTheClient) {
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card1);
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card2);
   std::vector<autofill::CreditCard*> credit_cards =
-      autofill_client_.GetPersonalDataManager()->GetCreditCardsToSuggest(false);
+      autofill_client_.GetPersonalDataManager()->GetCreditCardsToSuggest();
 
   EXPECT_CALL(autofill_client_,
               ShowTouchToFillCreditCard(_, ElementsAreArray(credit_cards)));

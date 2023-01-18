@@ -67,7 +67,6 @@ VrController::VrController(gvr::GvrApi* gvr_api)
 
   handedness_ = gvr_api_->GetUserPrefs().GetControllerHandedness();
 
-  gesture_detector_ = std::make_unique<GestureDetector>();
   last_timestamp_nanos_ =
       gvr::GvrApi::GetTimePointNow().monotonic_system_time_nanos;
 }
@@ -286,14 +285,6 @@ void VrController::UpdateState(const gfx::Transform& head_pose) {
   UpdateTimestamps();
   last_timestamp_nanos_ =
       gvr::GvrApi::GetTimePointNow().monotonic_system_time_nanos;
-}
-
-InputEventList VrController::DetectGestures() {
-  if (controller_state_->GetConnectionState() != gvr::kControllerConnected) {
-    return {};
-  }
-
-  return gesture_detector_->DetectGestures(*this, base::TimeTicks::Now());
 }
 
 void VrController::UpdateTimestamps() {

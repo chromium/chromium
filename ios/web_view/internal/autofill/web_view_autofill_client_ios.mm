@@ -357,10 +357,6 @@ bool WebViewAutofillClientIOS::ShouldShowSigninPromo() {
   return false;
 }
 
-bool WebViewAutofillClientIOS::AreServerCardsSupported() const {
-  return true;
-}
-
 void WebViewAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }

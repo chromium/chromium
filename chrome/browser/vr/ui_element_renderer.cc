@@ -49,7 +49,6 @@ void UiElementRenderer::Init() {
   shadow_renderer_ = std::make_unique<Shadow::Renderer>();
   stars_renderer_ = std::make_unique<Stars::Renderer>();
   background_renderer_ = std::make_unique<Background::Renderer>();
-  keyboard_renderer_ = std::make_unique<Keyboard::Renderer>();
 }
 
 void UiElementRenderer::DrawTexturedQuad(
@@ -181,13 +180,6 @@ void UiElementRenderer::DrawBackground(
                              fullscreen_gradient_texture_data_handle,
                              normal_factor, incognito_factor,
                              fullscreen_factor);
-}
-
-void UiElementRenderer::DrawKeyboard(const CameraModel& camera_model,
-                                     KeyboardDelegate* delegate) {
-  TRACE_EVENT0("gpu", "UiElementRenderer::DrawKeyboard");
-  FlushIfNecessary(keyboard_renderer_.get());
-  keyboard_renderer_->Draw(camera_model, delegate);
 }
 
 void UiElementRenderer::Flush() {

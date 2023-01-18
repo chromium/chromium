@@ -141,9 +141,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.TWA_DISCLOSURE_ACCEPTED_PACKAGES,
                 ChromePreferenceKeys.UI_THEME_SETTING,
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS,
-                ChromePreferenceKeys.VR_EXIT_TO_2D_COUNT,
-                ChromePreferenceKeys.VR_FEEDBACK_OPT_OUT,
-                ChromePreferenceKeys.VR_SHOULD_REGISTER_ASSETS_COMPONENT_ON_STARTUP,
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE
         );

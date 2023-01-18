@@ -36,8 +36,6 @@ enum UiElementName {
   kRepositionCursor,
   kReticle,
   kReticleLaserGroup,
-  kKeyboardDmmRoot,
-  kKeyboard,
   kBackplane,
   kCeiling,
   kFloor,

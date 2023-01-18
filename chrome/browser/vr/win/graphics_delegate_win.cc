@@ -322,12 +322,6 @@ void GraphicsDelegateWin::PrepareBufferForWebXrOverlayElements() {
   prepared_drawing_buffer_ = DrawingBufferMode::kWebXrOverlayElements;
 }
 
-void GraphicsDelegateWin::PrepareBufferForContentQuadLayer(
-    const gfx::Transform& quad_transform) {
-  // Content quad is never ready - unused on desktop.
-  NOTREACHED();
-}
-
 void GraphicsDelegateWin::PrepareBufferForBrowserUi() {
   gl_->ClearColor(0, 0, 0, 0);
   gl_->Clear(GL_COLOR_BUFFER_BIT);
@@ -347,35 +341,6 @@ void GraphicsDelegateWin::GetWebXrDrawParams(int* texture_id,
   *texture_id = 0;
 }
 
-bool GraphicsDelegateWin::IsContentQuadReady() {
-  // The content quad is not used.  If we integrate with the views framework at
-  // some point, we may return true later.
-  return false;
-}
-
-void GraphicsDelegateWin::ResumeContentRendering() {
-  NOTREACHED();
-}
-
-void GraphicsDelegateWin::BufferBoundsChanged(
-    const gfx::Size& content_buffer_size,
-    const gfx::Size& overlay_buffer_size) {
-  // Allows the browser to specify size, but we just use headset default always.
-  NOTREACHED();
-}
-
-void GraphicsDelegateWin::GetContentQuadDrawParams(Transform* uv_transform,
-                                                   float* border_x,
-                                                   float* border_y) {
-  NOTREACHED();
-}
-
-int GraphicsDelegateWin::GetContentBufferWidth() {
-  // Called when rendering AlertDialogs, which we don't do.
-  NOTREACHED();
-  return 0;
-}
-
 // These methods return true when succeeded.
 bool GraphicsDelegateWin::Initialize(
     const scoped_refptr<gl::GLSurface>& surface) {
@@ -391,11 +356,6 @@ bool GraphicsDelegateWin::RunInSkiaContext(base::OnceClosure callback) {
   // share one context.
   std::move(callback).Run();
   return true;
-}
-
-void GraphicsDelegateWin::SetFrameDumpFilepathBase(std::string& filepath_base) {
-  // We don't support saving filepaths currently.
-  // TODO(billorr): Support this if/when needed for tests.
 }
 
 }  // namespace vr

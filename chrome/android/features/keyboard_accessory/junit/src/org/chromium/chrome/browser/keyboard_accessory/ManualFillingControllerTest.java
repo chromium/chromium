@@ -311,15 +311,8 @@ public class ManualFillingControllerTest {
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
         when(mMockActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
-        BrowserControlsManager browserControlsManager = new BrowserControlsManager(
-                mMockActivity, 0) {
-            @Override
-            protected boolean isInVr() {
-                return false;
-            }
-            @Override
-            protected void rawTopContentOffsetChangedForVr() {}
-        };
+        BrowserControlsManager browserControlsManager =
+                new BrowserControlsManager(mMockActivity, 0);
         when(mMockActivity.getBrowserControlsManager()).thenReturn(browserControlsManager);
         when(mMockActivity.getFullscreenManager()).thenReturn(mMockFullscreenManager);
         ObservableSupplierImpl<CompositorViewHolder> compositorViewHolderSupplier =

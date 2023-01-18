@@ -33,14 +33,9 @@ class PasswordAccessoryController
 
   ~PasswordAccessoryController() override = default;
 
-  // Returns true if the accessory controller may exist for |web_contents|.
-  // Otherwise (e.g. if VR is enabled), it returns false.
-  static bool AllowedForWebContents(content::WebContents* web_contents);
-
   // Returns a reference to the unique PasswordAccessoryController associated
   // with |web_contents|. A new instance is created if the first time this
-  // function is called. Only valid to be called if
-  // |PasswordAccessoryController::AllowedForWebContents(web_contents)|.
+  // function is called.
   static PasswordAccessoryController* GetOrCreate(
       content::WebContents* web_contents,
       password_manager::CredentialCache* credential_cache);

@@ -1461,15 +1461,6 @@ void RenderWidgetHostImpl::DidNavigate() {
 }
 
 void RenderWidgetHostImpl::ForwardMouseEvent(const WebMouseEvent& mouse_event) {
-  // VrController moves the pointer during the scrolling and fling. To ensure
-  // that scroll performance is not affected we drop mouse events during
-  // scroll/fling.
-  if (GetView()->IsInVR() && (is_in_gesture_scroll_[static_cast<int>(
-                                  blink::WebGestureDevice::kTouchpad)] ||
-                              is_in_touchpad_gesture_fling_)) {
-    return;
-  }
-
   ForwardMouseEventWithLatencyInfo(mouse_event,
                                    ui::LatencyInfo(ui::SourceEventType::MOUSE));
   if (owner_delegate_)
@@ -1629,24 +1620,6 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
     NotifyUISchedulerOfScrollStateUpdate(
         BrowserUIThreadScheduler::ScrollState::kFlingActive);
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
-      // TODO(crbug.com/797322): Remove the VR specific case when motion events
-      // are used for Android VR event processing and VR touchpad scrolling is
-      // handled by sending wheel events rather than directly injecting Gesture
-      // Scroll Events.
-      if (GetView()->IsInVR()) {
-        // Regardless of the state of the wheel scroll latching
-        // WebContentsEventForwarder doesn't inject any GSE events before GFS.
-        DCHECK(is_in_gesture_scroll_[static_cast<int>(
-            gesture_event.SourceDevice())]);
-
-        // Reset the is_in_gesture_scroll since while scrolling in Android VR
-        // the first wheel event sent by the FlingController will cause a GSB
-        // generation in MouseWheelEventQueue. This is because GSU events before
-        // the GFS are directly injected to RWHI rather than being generated
-        // from wheel events in MouseWheelEventQueue.
-        is_in_gesture_scroll_[static_cast<int>(gesture_event.SourceDevice())] =
-            false;
-      }
       // a GSB event is generated from the first wheel event in a sequence after
       // the event is acked as not consumed by the renderer. Sometimes when the
       // main thread is busy/slow (e.g ChromeOS debug builds) a GFS arrives

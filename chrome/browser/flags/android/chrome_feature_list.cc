@@ -303,7 +303,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kVoiceSearchAudioCapturePolicy,
     &kVoiceButtonInTopToolbar,
-    &kVrBrowsingFeedback,
     &kWebOtpCrossDeviceSimpleString,
     &content_creation::kWebNotesDynamicTemplates,
     &content_creation::kWebNotesStylizeEnabled,
@@ -1009,10 +1008,6 @@ BASE_FEATURE(kVoiceSearchAudioCapturePolicy,
 BASE_FEATURE(kVoiceButtonInTopToolbar,
              "VoiceButtonInTopToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kVrBrowsingFeedback,
-             "VrBrowsingFeedback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Shows only the remote device name on the Android notification instead of
 // a descriptive text.

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.vr.rules;
 
-import android.content.Intent;
-
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
@@ -44,10 +42,5 @@ public class WebappActivityVrTestRule extends WebappActivityTestRule implements 
     @Override
     public boolean isDonEnabled() {
         return CommandLine.getInstance().hasSwitch("vr-don-enabled");
-    }
-
-    @Override
-    public Intent createIntent() {
-        return VrTestRuleUtils.maybeAddStandaloneIntentData(super.createIntent());
     }
 }

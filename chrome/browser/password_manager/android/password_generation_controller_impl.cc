@@ -33,16 +33,8 @@ using password_manager::metrics_util::GenerationDialogChoice;
 PasswordGenerationControllerImpl::~PasswordGenerationControllerImpl() = default;
 
 // static
-bool PasswordGenerationController::AllowedForWebContents(
-    content::WebContents* web_contents) {
-  return PasswordAccessoryController::AllowedForWebContents(web_contents);
-}
-
-// static
 PasswordGenerationController* PasswordGenerationController::GetOrCreate(
     content::WebContents* web_contents) {
-  DCHECK(PasswordGenerationController::AllowedForWebContents(web_contents));
-
   PasswordGenerationControllerImpl::CreateForWebContents(web_contents);
   return PasswordGenerationControllerImpl::FromWebContents(web_contents);
 }

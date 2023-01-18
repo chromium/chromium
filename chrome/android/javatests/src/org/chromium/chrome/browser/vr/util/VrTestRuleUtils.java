@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.vr.util;
 
-import android.content.Intent;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 
@@ -20,11 +19,7 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.test.BundleTestRule;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
-import org.chromium.chrome.browser.vr.VrFeedbackStatus;
-import org.chromium.chrome.browser.vr.VrIntentDelegate;
 import org.chromium.chrome.browser.vr.rules.ChromeTabbedActivityVrTestRule;
-import org.chromium.chrome.browser.vr.rules.CustomTabActivityVrTestRule;
-import org.chromium.chrome.browser.vr.rules.VrActivityRestrictionRule;
 import org.chromium.chrome.browser.vr.rules.VrTestRule;
 import org.chromium.chrome.browser.vr.rules.WebappActivityVrTestRule;
 
@@ -60,17 +55,6 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
         VrTestRuleUtils.ensureNoVrActivitiesDisplayed();
         launcher.launch();
 
-        // Reset the VR feedback shared preferences if they're not currently the default because
-        // otherwise we can run into issues with VrFeedbackInfoBarTest#* erroneously failing due to
-        // tests being non-hermetic. Only set if not the default instead of unconditionally in order
-        // to avoid unnecessary disk writes.
-        if (VrFeedbackStatus.getFeedbackOptOut()) {
-            VrFeedbackStatus.setFeedbackOptOut(false);
-        }
-        if (VrFeedbackStatus.getUserExitedAndEntered2DCount() != 0) {
-            VrFeedbackStatus.setUserExitedAndEntered2DCount(0);
-        }
-
         base.evaluate();
     }
 
@@ -91,15 +75,16 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
                                    }
                                })
                                .name("ChromeTabbedActivity"));
-
-        parameters.add(new ParameterSet()
-                               .value(new Callable<CustomTabActivityVrTestRule>() {
-                                   @Override
-                                   public CustomTabActivityVrTestRule call() {
-                                       return new CustomTabActivityVrTestRule();
-                                   }
-                               })
-                               .name("CustomTabActivity"));
+        // TODO(https://crbug.com/989117): Re-enable testing in CCT once we've migrated to using
+        //    cardboard libraries instead of Daydream.
+        // parameters.add(new ParameterSet()
+        //                        .value(new Callable<CustomTabActivityVrTestRule>() {
+        //                            @Override
+        //                            public CustomTabActivityVrTestRule call() {
+        //                                return new CustomTabActivityVrTestRule();
+        //                            }
+        //                        })
+        //                        .name("CustomTabActivity"));
 
         parameters.add(new ParameterSet()
                                .value(new Callable<WebappActivityVrTestRule>() {
@@ -114,21 +99,17 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
     }
 
     /**
-     * Creates a RuleChain that applies the XrActivityRestrictionRule and VrActivityRestrictionRule
-     * before the given VrTestRule.
+     * Creates a RuleChain that applies the XrActivityRestrictionRule before the given VrTestRule.
      *
      * Also enforces that {@link BundleUtils#isBundle()} returns true for vr to be initialized.
      *
-     * @param rule The TestRule to wrap in an XrActivityRestrictionRule and
-     *        VrActivityRestrictionRule.
-     * @return A RuleChain that ensures an XrActivityRestrictionRule and VrActivityRestrictionRule
-     *         is applied before the provided TestRule.
+     * @param rule The TestRule to wrap in an XrActivityRestrictionRule.
+     * @return A RuleChain that ensures an XrActivityRestrictionRule is applied before the provided
+     *         TestRule.
      */
     public static RuleChain wrapRuleInActivityRestrictionRule(TestRule rule) {
         Assert.assertTrue("Given rule is not an VrTestRule", rule instanceof VrTestRule);
-        return RuleChain
-                .outerRule(new VrActivityRestrictionRule(((VrTestRule) rule).getRestriction()))
-                .around(new BundleTestRule())
+        return RuleChain.outerRule(new BundleTestRule())
                 .around(XrTestRuleUtils.wrapRuleInActivityRestrictionRule(rule));
     }
 
@@ -141,8 +122,6 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
      * for other reasons as well.
      */
     public static void ensureNoVrActivitiesDisplayed() {
-        // This will always be hit on standalones, but we're expected to be in VR in that case.
-        if (TestVrShellDelegate.isOnStandalone()) return;
         UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         String currentPackageName = uiDevice.getCurrentPackageName();
         if (currentPackageName != null && currentPackageName.contains("vr")) {
@@ -151,19 +130,5 @@ public class VrTestRuleUtils extends XrTestRuleUtils {
             // to be sure since this will be hit relatively infrequently.
             SystemClock.sleep(VRCORE_UNREGISTER_DELAY_MS);
         }
-    }
-
-    /**
-     * Helper method to add additional data to a Chrome startup intent that makes it usable on a
-     * standalone VR device.
-     */
-    public static Intent maybeAddStandaloneIntentData(Intent intent) {
-        if (TestVrShellDelegate.isOnStandalone()) {
-            // Tell VrShellDelegate that it should create a TestVrShellDelegate on startup
-            TestVrShellDelegate.enableTestVrShellDelegateOnStartupForTesting();
-            intent.addCategory(VrIntentDelegate.DAYDREAM_CATEGORY);
-            intent.putExtra("android.intent.extra.VR_LAUNCH", true);
-        }
-        return intent;
     }
 }

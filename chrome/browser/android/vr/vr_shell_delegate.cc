@@ -13,7 +13,6 @@
 #include "chrome/browser/android/vr/vr_shell.h"
 #include "chrome/browser/android/vr/vrcore_install_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/vr_assets_component_installer.h"
 #include "chrome/browser/vr/assets_loader.h"
 #include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/xr_runtime_manager.h"
@@ -223,11 +222,6 @@ jlong JNI_VrShellDelegate_Init(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 static void JNI_VrShellDelegate_OnLibraryAvailable(JNIEnv* env) {
   device::GvrDelegateProviderFactory::Install(
       std::make_unique<VrShellDelegateProviderFactory>());
-}
-
-static void JNI_VrShellDelegate_RegisterVrAssetsComponent(JNIEnv* env) {
-  component_updater::RegisterVrAssetsComponent(
-      g_browser_process->component_updater());
 }
 
 }  // namespace vr

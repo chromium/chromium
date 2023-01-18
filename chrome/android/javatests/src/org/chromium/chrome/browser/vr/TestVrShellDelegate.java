@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.vr;
 
-import android.graphics.PointF;
-import android.os.Build;
-
 import org.junit.runner.Description;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -48,14 +45,6 @@ public class TestVrShellDelegate extends VrShellDelegate {
         return TestVrShellDelegate.getInstance().getVrShell();
     }
 
-    public static boolean isDisplayingUrlForTesting() {
-        return TestVrShellDelegate.getInstance().getVrShell().isDisplayingUrlForTesting();
-    }
-
-    public static boolean isOnStandalone() {
-        return Build.DEVICE.equals("vega");
-    }
-
     public static void enableTestVrShellDelegateOnStartupForTesting() {
         VrShellDelegate.enableTestVrShellDelegateOnStartupForTesting();
     }
@@ -68,48 +57,9 @@ public class TestVrShellDelegate extends VrShellDelegate {
         super.overrideDaydreamApi(api);
     }
 
-    public void setFeedbackFrequencyForTesting(int frequency) {
-        super.setFeedbackFrequency(frequency);
-    }
-
-    @Override
-    public boolean isBlackOverlayVisible() {
-        return super.isBlackOverlayVisible();
-    }
-
     @Override
     public boolean isVrEntryComplete() {
         return super.isVrEntryComplete();
-    }
-
-    @Override
-    public boolean isShowingDoff() {
-        return super.isShowingDoff();
-    }
-
-    public void acceptDoffPromptForTesting() {
-        getVrShell().acceptDoffPromptForTesting();
-    }
-
-    public void performControllerActionForTesting(
-            int elementName, int actionType, PointF position) {
-        getVrShell().performControllerActionForTesting(elementName, actionType, position);
-    }
-
-    public void performKeyboardInputForTesting(int inputType, String inputString) {
-        getVrShell().performKeyboardInputForTesting(inputType, inputString);
-    }
-
-    public void registerUiOperationCallbackForTesting(VrShell.UiOperationData operationData) {
-        getVrShell().registerUiOperationCallbackForTesting(operationData);
-    }
-
-    public void saveNextFrameBufferToDiskForTesting(String filepathBase) {
-        getVrShell().saveNextFrameBufferToDiskForTesting(filepathBase);
-    }
-
-    public int getLastUiOperationResultForTesting(int actionType) {
-        return getVrShell().getLastUiOperationResultForTesting(actionType);
     }
 
     public void setVrShellOnVSyncPausedCallback(Runnable callback) {
@@ -130,24 +80,6 @@ public class TestVrShellDelegate extends VrShellDelegate {
         mTestWorkaroundDontCancelVrEntryOnResume = false;
     }
 
-    @Override
-    protected void setExpectingIntent(boolean expectingIntent) {
-        mExpectingIntent = expectingIntent;
-    }
-
-    @Override
-    protected void onBroadcastReceived() {
-        mExpectingBroadcast = false;
-    }
-
-    public void setExpectingBroadcast() {
-        mExpectingBroadcast = true;
-    }
-
-    public boolean isExpectingBroadcast() {
-        return mExpectingBroadcast;
-    }
-
     /**
      * If we need to know when the normal VSync gets paused, we have a small window between when
      * the VrShell is created and we actually enter VR to set the callback. So, do it immediately
@@ -160,15 +92,5 @@ public class TestVrShellDelegate extends VrShellDelegate {
             getVrShellForTesting().setOnVSyncPausedForTesting(mOnVSyncPausedCallback);
         }
         return result;
-    }
-
-    @Override
-    protected boolean canLaunch2DIntentsInternal() {
-        if (mAllow2dIntents == null) return super.canLaunch2DIntentsInternal();
-        return mAllow2dIntents;
-    }
-
-    public void setAllow2dIntents(boolean allow) {
-        mAllow2dIntents = allow;
     }
 }

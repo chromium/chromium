@@ -34,13 +34,6 @@ group("vr_perf_tests_base") {
     ]
 
     data_deps += [ "//chrome/android:chrome_modern_public_bundle" ]
-
-    # We'll only ever use the assets if it's a Chrome-branded build. We don't have
-    # a way of checking whether the files are actually present to copy, but the
-    # script will deal with that.
-    if (use_vr_assets_component) {
-      data_deps += [ ":generate_vr_assets_profile" ]
-    }
   }
 
   if (is_win) {
@@ -76,24 +69,4 @@ if (!is_android) {
       telemetry_target_suffix = _target_suffix
     }
   }
-}
-
-# Copies files to the gen/ directory and creates a manifest so that the VR
-# assets component can be used during Telemetry tests.
-action("generate_vr_assets_profile") {
-  script = "generate_vr_assets_profile.py"
-
-  # We should re-run anytime the version or any related files change.
-  inputs = [
-    "//chrome/browser/resources/vr/assets/google_chrome",
-    "//chrome/browser/resources/vr/assets/VERSION",
-    "//chrome/browser/resources/vr/assets/vr_assets_component_files.json",
-  ]
-  outputs = [ "$target_gen_dir/vr_assets_profile" ]
-  args = [
-    "--output",
-    rebase_path(target_gen_dir, root_build_dir),
-    "--asset-dir",
-    rebase_path("//chrome/browser/resources/vr/assets", root_build_dir),
-  ]
 }

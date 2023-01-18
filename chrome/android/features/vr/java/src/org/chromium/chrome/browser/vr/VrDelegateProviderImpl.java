@@ -7,17 +7,11 @@ package org.chromium.chrome.browser.vr;
 /** {@link VrDelegateProvider} implementation if the VR module is available. */
 public class VrDelegateProviderImpl implements VrDelegateProvider {
     private final VrDelegateImpl mDelegate = new VrDelegateImpl();
-    private final VrIntentDelegateImpl mIntentDelegate = new VrIntentDelegateImpl();
 
     public VrDelegateProviderImpl() {}
 
     @Override
     public VrDelegate getDelegate() {
         return mDelegate;
-    }
-
-    @Override
-    public VrIntentDelegate getIntentDelegate() {
-        return mIntentDelegate;
     }
 }

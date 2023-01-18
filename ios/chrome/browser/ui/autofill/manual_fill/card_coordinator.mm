@@ -140,7 +140,7 @@
 
 - (void)onPersonalDataChanged {
   std::vector<autofill::CreditCard*> cards =
-      _personalDataManager->GetCreditCardsToSuggest(true);
+      _personalDataManager->GetCreditCardsToSuggest();
 
   [self.cardMediator reloadWithCards:cards];
 }

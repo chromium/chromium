@@ -92,9 +92,6 @@ found in the LICENSE file.
     <!-- Menu item IDs for FullscreenActivities -->
     <item type="id" name="contextmenu_open_in_chrome" />
 
-    <!-- VR constants -->
-    <item type="id" name="vr_overlay_view" />
-
     <!-- Tags -->
     <item type="id" name="highlight_color" />
     <item type="id" name="context_menu_delegate" />

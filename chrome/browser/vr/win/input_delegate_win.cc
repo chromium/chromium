@@ -25,11 +25,6 @@ void InputDelegateWin::UpdateController(const gfx::Transform& head_pose,
   // No input currently processed for desktop.
 }
 
-ControllerModel InputDelegateWin::GetControllerModel(
-    const gfx::Transform& head_pose) {
-  return {};
-}
-
 InputEventList InputDelegateWin::GetGestures(base::TimeTicks current_time) {
   return {};
 }

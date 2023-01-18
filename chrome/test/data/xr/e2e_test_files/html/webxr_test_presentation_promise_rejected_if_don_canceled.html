@@ -16,12 +16,14 @@ the DON flow is canceled.
       function onImmersiveRequestWithDon() {
         console.log('Requesting immersive session');
         navigator.xr.requestSession('immersive-vr').then( (session) => {
-          assert_unreached("requestPresent promise resolved");
+          // Do nothing when the promise is automatically accepted.
+          console.log('Promise accepted as expected');
+          session.addEventListener("end", (event) => {
+              // Wait for the session to be ended due to failed DON.
+              done();
+          });
         }, () => {
-          // Do nothing when the promise is rejected
-          console.log('Promise rejected as expected');
-        }).then( () => {
-          done();
+          assert_unreached("requestPresent promise rejected");
         });
       }
       webglCanvas.onclick = onImmersiveRequestWithDon;

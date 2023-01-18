@@ -35,14 +35,6 @@ void SchedulerDelegateWin::OnExitPresent() {
   NOTREACHED();
 }
 
-void SchedulerDelegateWin::SetWebXrMode(bool enabled) {
-  NOTREACHED();
-}
-
-void SchedulerDelegateWin::SetShowingVrDialog(bool showing) {
-  NOTREACHED();
-}
-
 void SchedulerDelegateWin::SetBrowserRenderer(
     SchedulerBrowserRendererInterface* browser_renderer) {
   browser_renderer_ = browser_renderer;

@@ -21,15 +21,6 @@ public final class ChromeRestriction {
     public static final String RESTRICTION_TYPE_VIEWER_DAYDREAM = "Daydream_View";
     /** Specifies the test is only valid if the current VR viewer is not Daydream View */
     public static final String RESTRICTION_TYPE_VIEWER_NON_DAYDREAM = "Non_Daydream_View";
-    /** Specifies the test is only valid if run on a standalone VR device */
-    public static final String RESTRICTION_TYPE_STANDALONE = "Standalone_VR";
-    /** Specifies the test is valid if run on either a standalone VR device or a smartphone with
-     *  Daydream View paired. */
-    public static final String RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE =
-            "Daydream_View_Or_Standalone_VR";
-    /** Specifies the test is valid only if run via SVR (smartphone VR), i.e. not on a standalone
-     *  VR device. */
-    public static final String RESTRICTION_TYPE_SVR = "Smartphone_VR";
     /** Specifies the test is only valid if the VR DON flow is enabled */
     public static final String RESTRICTION_TYPE_VR_DON_ENABLED = "VR_DON_Enabled";
 }

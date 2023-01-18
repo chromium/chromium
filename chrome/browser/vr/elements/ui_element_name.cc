@@ -34,8 +34,6 @@ static const char* g_ui_element_name_strings[] = {
     "kRepositionCursor",
     "kReticle",
     "kReticleLaserGroup",
-    "kKeyboardDmmRoot",
-    "kKeyboard",
     "kBackplane",
     "kCeiling",
     "kFloor",

@@ -36,7 +36,6 @@
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/download/content/public/context_menu_download.h"
 #include "components/download/public/common/auto_resumption_handler.h"
@@ -306,12 +305,6 @@ void DownloadController::AcquireFileAccessPermission(
         StoragePermissionType::STORAGE_PERMISSION_NO_ACTION_NEEDED);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), true));
-    return;
-  } else if (vr::VrTabHelper::IsUiSuppressedInVr(
-                 web_contents,
-                 vr::UiSuppressedElement::kFileAccessPermission)) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(cb), false));
     return;
   }
 
