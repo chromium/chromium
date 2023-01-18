@@ -2976,6 +2976,8 @@ source_set("ash") {
     "sync/sync_mojo_service_factory_ash.h",
     "sync/sync_user_settings_client_ash.cc",
     "sync/sync_user_settings_client_ash.h",
+    "sync/synced_session_client_ash.cc",
+    "sync/synced_session_client_ash.h",
     "system/automatic_reboot_manager.cc",
     "system/automatic_reboot_manager.h",
     "system/automatic_reboot_manager_observer.h",

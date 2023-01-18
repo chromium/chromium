@@ -89,6 +89,7 @@ mojom("mojom") {
     "speech_recognition.mojom",
     "structured_metrics_service.mojom",
     "sync.mojom",
+    "synced_session_client.mojom",
     "system_display.mojom",
     "task_manager.mojom",
     "test_controller.mojom",

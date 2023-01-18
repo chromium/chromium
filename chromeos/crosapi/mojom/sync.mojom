@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/account_manager.mojom";
+import "chromeos/crosapi/mojom/synced_session_client.mojom";
 
 // A mojo representation of syncer::Nigori. Should only be obtained by using
 // Nigori::ExportKeys() or direct mapping from other Nigori representations,
@@ -79,8 +80,8 @@ interface SyncUserSettingsClient {
 
 // Defines a Sync API that lives in ash-chrome and is accessed from
 // lacros-chrome. To be extended in the future.
-// Next version: 2
-// Next ordinal value: 2
+// Next version: 3
+// Next ordinal value: 3
 [Stable, Uuid="4499c528-4578-466d-a97d-d66217323f48"]
 interface SyncService {
   // Binds SyncExplicitPassphraseClient, that lives in ash-chrome.
@@ -90,4 +91,8 @@ interface SyncService {
   // Binds SyncUserSettings, that lives in ash-chrome.
   [MinVersion = 1]
   BindUserSettingsClient@1(pending_receiver<SyncUserSettingsClient> receiver);
+
+  // Binds SyncedSessionClient, that lives in ash-chrome.
+  [MinVersion = 2]
+  BindSyncedSessionClient@2(pending_receiver<SyncedSessionClient> receiver);
 };

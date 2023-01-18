@@ -177,6 +177,8 @@ static_library("test_support") {
       "test/fake_sync_mojo_service.h",
       "test/fake_sync_user_settings_client_ash.cc",
       "test/fake_sync_user_settings_client_ash.h",
+      "test/fake_synced_session_client_ash.cc",
+      "test/fake_synced_session_client_ash.h",
     ]
 
     public_deps += [

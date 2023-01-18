@@ -28,6 +28,11 @@ void FakeSyncMojoService::BindUserSettingsClient(
   fake_sync_user_settings_client_ash_.BindReceiver(std::move(receiver));
 }
 
+void FakeSyncMojoService::BindSyncedSessionClient(
+    mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver) {
+  fake_synced_session_client_ash_.BindReceiver(std::move(receiver));
+}
+
 void FakeSyncMojoService::BindReceiver(
     mojo::PendingReceiver<crosapi::mojom::SyncService> receiver) {
   receivers_.Add(this, std::move(receiver));

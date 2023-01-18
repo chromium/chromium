@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromeos/crosapi/mojom/sync.mojom.h"
+#include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -20,6 +21,7 @@ namespace ash {
 
 class SyncExplicitPassphraseClientAsh;
 class SyncUserSettingsClientAsh;
+class SyncedSessionClientAsh;
 
 // Implements Crosapi SyncService interface, that allows interaction of Lacros
 // and Ash SyncServices.
@@ -48,6 +50,10 @@ class SyncMojoServiceAsh : public KeyedService,
       mojo::PendingReceiver<crosapi::mojom::SyncUserSettingsClient> receiver)
       override;
 
+  void BindSyncedSessionClient(
+      mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver)
+      override;
+
  private:
   // Members below destroyed after Shutdown().
 
@@ -58,6 +64,10 @@ class SyncMojoServiceAsh : public KeyedService,
   // |user_settings_client_| is null if kSyncChromeOSAppsToggleSharing is
   // disabled.
   std::unique_ptr<SyncUserSettingsClientAsh> user_settings_client_;
+
+  // |synced_session_client_| is null if kChromeOSSyncedSessionClient is
+  // disabled.
+  std::unique_ptr<SyncedSessionClientAsh> synced_session_client_;
 
   mojo::ReceiverSet<crosapi::mojom::SyncService> receivers_;
 };
