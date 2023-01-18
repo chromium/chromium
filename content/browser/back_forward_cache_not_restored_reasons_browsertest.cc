@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
   auto* reasons_after_redirect =
       navigation_request->commit_params().not_restored_reasons.get();
   EXPECT_THAT(reasons_after_redirect, nullptr);
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // Eviction reasons should be recorded internally.
   ExpectNotRestored({NotRestoredReason::kJavaScriptExecution}, {}, {}, {}, {},

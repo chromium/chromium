@@ -2479,7 +2479,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(NavigateToURL(tab2, isolated_origin_url));
 
   // Now commit the non-isolated navigation.
-  non_isolated_delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(non_isolated_delayer.WaitForNavigationFinished());
 
   FrameTreeNode* tab1_root = web_contents()->GetPrimaryFrameTree().root();
   SiteInstanceImpl* tab1_site_instance =
@@ -3162,7 +3162,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
     TestNavigationManager manager(new_shell->web_contents(), isolated_url);
     EXPECT_TRUE(ExecJs(
         child, "window.w.location.href = '" + isolated_url.spec() + "';"));
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
   }
 
   // Simulate the isolated origin in the popup navigating back to bar.com.
@@ -3171,7 +3171,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
     TestNavigationManager manager(new_shell->web_contents(), bar_url2);
     EXPECT_TRUE(
         ExecJs(new_shell, "location.href = '" + bar_url2.spec() + "';"));
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
   }
 
   // Check that the popup ended up in the same SiteInstance as its same-site
@@ -3217,7 +3217,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
     TestNavigationManager manager(new_shell->web_contents(), isolated_url);
     EXPECT_TRUE(ExecJs(
         root, "window.w.location.href = '" + isolated_url.spec() + "';"));
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
   }
 
   // Simulate the isolated origin in the popup navigating to bar.com.
@@ -3225,7 +3225,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   {
     TestNavigationManager manager(new_shell->web_contents(), bar_url);
     EXPECT_TRUE(ExecJs(new_shell, "location.href = '" + bar_url.spec() + "';"));
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
   }
 
   const SiteInstanceImpl* const root_site_instance_impl =
@@ -3251,7 +3251,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   {
     TestNavigationManager manager(new_shell->web_contents(), foo_url);
     EXPECT_TRUE(ExecJs(new_shell, "location.href = '" + foo_url.spec() + "';"));
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
   }
 
   // The popup should now be in the same SiteInstance as its same-site opener.
@@ -3470,10 +3470,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   // Now, proceed with the response and commit the non-isolated URL.  This
   // should notice that the process that was picked for this navigation is not
   // suitable anymore, as it should have been locked to isolated.foo.com.
-  foo_delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(foo_delayer.WaitForNavigationFinished());
 
   // Commit the isolated origin.
-  isolated_delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(isolated_delayer.WaitForNavigationFinished());
 
   // Ensure that the isolated origin did not share a process with the first
   // tab.
@@ -3522,7 +3522,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   // process is no longer suitable for the final destination (which is an
   // unisolated URL) and transfer to another process.  In
   // https://crbug.com/773809, this led to a CHECK due to origin lock mismatch.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   // Ensure that the isolated origin did not share a process with the first
   // tab.
@@ -3574,7 +3574,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   // Wait for response in the first tab.  This should notice that the first
   // process is no longer suitable for the isolated origin because it should
   // already be marked as used, and transfer to another process.
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   // Ensure that the isolated origin did not share a process with the second
   // tab.
@@ -3613,7 +3613,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   EXPECT_TRUE(NavigateToURL(new_shell, isolated_url));
 
   // Finish loading the foo.com URL.
-  foo_delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(foo_delayer.WaitForNavigationFinished());
 
   // Ensure that the isolated origin did not share a process with the first
   // tab.
@@ -5675,7 +5675,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
     TestNavigationManager manager(new_shell->web_contents(), isolated_url);
     EXPECT_TRUE(ExecJs(
         root, "window.w.location.href = '" + isolated_url.spec() + "';"));
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
   }
 
   // The popup and the opener should not share a SiteInstance, but should

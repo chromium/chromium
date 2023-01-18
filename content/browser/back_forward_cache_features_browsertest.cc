@@ -2315,7 +2315,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(rfh_receiving.get()->GetBackForwardCacheDisablingFeatures().Has(
       tracked_feature));
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   ASSERT_TRUE(queue_sending_version_change.WaitForMessage(
       &message_sending_version_change));
@@ -2400,7 +2400,7 @@ IN_PROC_BROWSER_TEST_P(
       tracked_feature));
 
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   ASSERT_TRUE(queue_sending_version_change.WaitForMessage(
       &message_sending_version_change));

@@ -84,7 +84,7 @@ class CrossSiteTransferTest : public ContentBrowserTest {
     if (should_wait_for_navigation) {
       EXPECT_TRUE(navigation_manager->WaitForRequestStart());
       EXPECT_TRUE(navigation_manager->WaitForResponse());
-      navigation_manager->WaitForNavigationFinished();
+      ASSERT_TRUE(navigation_manager->WaitForNavigationFinished());
       EXPECT_TRUE(navigation_manager->was_successful());
     }
   }

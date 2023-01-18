@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     crash_observer.reset();
 
     // Finish the navigation to the COOP page.
-    coop_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(coop_navigation.WaitForNavigationFinished());
     EXPECT_TRUE(coop_navigation.was_successful());
     EXPECT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -1178,7 +1178,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     crash_observer.reset();
 
     // Finish the navigation to the non COOP page.
-    non_coop_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(non_coop_navigation.WaitForNavigationFinished());
     EXPECT_TRUE(non_coop_navigation.was_successful());
     EXPECT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -1277,7 +1277,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     crash_observer.reset();
 
     // Finish the navigation to the COOP page.
-    coop_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(coop_navigation.WaitForNavigationFinished());
     EXPECT_TRUE(coop_navigation.was_successful());
     EXPECT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -1434,7 +1434,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        "iframe.src = $1;"
                        "document.body.appendChild(iframe);",
                        cross_site_iframe)));
-  iframe_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(iframe_navigation.WaitForNavigationFinished());
   EXPECT_EQ(web_contents()
                 ->GetPrimaryMainFrame()
                 ->browsing_context_state()
@@ -1548,7 +1548,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                      ->render_manager()
                      ->speculative_frame_host());
 
-    non_coop_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(non_coop_navigation.WaitForNavigationFinished());
 
     EXPECT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -1582,7 +1582,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       EXPECT_FALSE(speculative_rfh);
     }
 
-    coop_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(coop_navigation.WaitForNavigationFinished());
 
     EXPECT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -1617,7 +1617,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       EXPECT_FALSE(speculative_rfh);
     }
 
-    non_coop_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(non_coop_navigation.WaitForNavigationFinished());
 
     EXPECT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -1646,7 +1646,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                      ->render_manager()
                      ->speculative_frame_host());
 
-    coop_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(coop_navigation.WaitForNavigationFinished());
 
     EXPECT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -2959,7 +2959,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                          "document.body.appendChild(iframe);",
                          isolated_page)));
 
-    same_origin_iframe_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(same_origin_iframe_navigation.WaitForNavigationFinished());
     EXPECT_TRUE(same_origin_iframe_navigation.was_successful());
     RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
@@ -2979,7 +2979,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                          "document.body.appendChild(iframe);",
                          isolated_page_b)));
 
-    cross_origin_iframe_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(cross_origin_iframe_navigation.WaitForNavigationFinished());
     EXPECT_TRUE(cross_origin_iframe_navigation.was_successful());
     RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(1)->current_frame_host();
@@ -3085,7 +3085,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                          "document.body.appendChild(iframe);",
                          invalid_url)));
 
-    iframe_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(iframe_navigation.WaitForNavigationFinished());
     EXPECT_FALSE(iframe_navigation.was_successful());
     RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
@@ -3109,7 +3109,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                          "document.body.appendChild(iframe);",
                          error_url)));
 
-    iframe_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(iframe_navigation.WaitForNavigationFinished());
     EXPECT_FALSE(iframe_navigation.was_successful());
     RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
@@ -3134,7 +3134,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                          "document.body.appendChild(iframe);",
                          non_coep_page)));
 
-    iframe_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(iframe_navigation.WaitForNavigationFinished());
     EXPECT_FALSE(iframe_navigation.was_successful());
     RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
@@ -3424,7 +3424,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        "document.body.appendChild(iframe);",
                        isolated_page_b)));
 
-  cross_origin_iframe_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(cross_origin_iframe_navigation.WaitForNavigationFinished());
   EXPECT_TRUE(cross_origin_iframe_navigation.was_successful());
   RenderFrameHostImpl* iframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();

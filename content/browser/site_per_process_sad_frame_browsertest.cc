@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
                                   1);
 
     // Ensure no new metrics are logged after the reload completes.
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
     EXPECT_TRUE(manager.was_successful());
     EXPECT_FALSE(controller.NeedsReload());
     EXPECT_EQ(1, controller.GetEntryCount());
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
                                   1);
 
     // Ensure no new metrics are logged after the navigation completes.
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
     EXPECT_TRUE(manager.was_successful());
     histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
                                   CrashVisibility::kShownWhileAncestorIsLoading,
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(
                                   1);
 
     // Ensure no new metrics are logged after the navigation completes.
-    manager.WaitForNavigationFinished();
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
     EXPECT_TRUE(manager.was_successful());
     histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
                                   CrashVisibility::kShownWhileAncestorIsLoading,

@@ -3500,7 +3500,7 @@ class SitePerProcessFencedFrameTest : public SitePerProcessBrowserTestBase {
         document.body.appendChild(fenced_frame);
     })";
     EXPECT_TRUE(ExecJs(parent, content::JsReplace(kAddFencedFrameScript, url)));
-    navigation.WaitForNavigationFinished();
+    EXPECT_TRUE(navigation.WaitForNavigationFinished());
 
     return ChildFrameAt(parent, 0);
   }
@@ -6601,11 +6601,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Now have the cross-process navigation commit and mark the current RFH as
   // pending deletion.
-  cross_site_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(cross_site_manager.WaitForNavigationFinished());
 
   // Resume the navigation in the previous RFH that has just been marked as
   // pending deletion. We should not crash.
-  transfer_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(transfer_manager.WaitForNavigationFinished());
 }
 
 class NavigationHandleWatcher : public WebContentsObserver {
@@ -8226,7 +8226,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(child_proxy->is_render_frame_proxy_live());
 
   // Now let the main frame commit.
-  manager1.WaitForNavigationFinished();
+  ASSERT_TRUE(manager1.WaitForNavigationFinished());
 
   // Make sure the process is live and at the new URL.
   EXPECT_TRUE(b_root_site_instance->GetProcess()->IsInitializedAndNotDead());
@@ -8236,7 +8236,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // The subframe should be gone, so the second navigation should have no
   // effect.
-  manager2.WaitForNavigationFinished();
+  ASSERT_TRUE(manager2.WaitForNavigationFinished());
 
   // The new commit should have detached the old child frame.
   EXPECT_EQ(0U, root->child_count());
@@ -8329,7 +8329,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
 
   // Now let the subframe commit.
-  manager2.WaitForNavigationFinished();
+  ASSERT_TRUE(manager2.WaitForNavigationFinished());
 
   // Make sure the process is live and at the new URL.
   EXPECT_TRUE(b_site_instance->GetProcess()->IsInitializedAndNotDead());
@@ -8529,7 +8529,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   NavigationCanceller canceller(
       web_contents(), *first_child->render_manager()->current_frame_host());
 
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // The navigation should be committed if and only if it committed in a new
   // RFH (i.e. if the navigation used a speculative RFH).
   EXPECT_EQ(using_speculative_rfh, nav_manager.was_committed());
@@ -8588,7 +8588,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(using_speculative_rfh,
             GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
 
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // There should be no commit...
   EXPECT_FALSE(nav_manager.was_committed());
   // .. and the navigation should have been aborted.
@@ -8634,7 +8634,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Cross-site navigations always force a speculative RFH to be created.
   EXPECT_TRUE(first_child->render_manager()->speculative_frame_host());
 
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // There should be no commit...
   EXPECT_FALSE(nav_manager.was_committed());
   // .. and the navigation should have been aborted.
@@ -8715,7 +8715,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(using_speculative_rfh,
             GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
 
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // There should be no commit...
   EXPECT_FALSE(nav_manager.was_committed());
   // .. and the navigation should have been aborted.
@@ -8797,7 +8797,7 @@ IN_PROC_BROWSER_TEST_P(
   // Cross-site navigations always force a speculative RFH to be created.
   EXPECT_TRUE(first_child->render_manager()->speculative_frame_host());
 
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // There should be no commit...
   EXPECT_FALSE(nav_manager.was_committed());
   // .. and the navigation should have been aborted.
@@ -8849,7 +8849,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the URLLoaderInterceptor forces a network error.
   EXPECT_FALSE(nav_manager.WaitForResponse());
 
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   EXPECT_FALSE(nav_manager.was_committed());
 
   // Make sure that the speculative RFH has been cleaned up, if needed.
@@ -8887,7 +8887,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the URLLoaderInterceptor forces a network error.
   EXPECT_FALSE(nav_manager.WaitForResponse());
 
-  nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   EXPECT_FALSE(nav_manager.was_committed());
 
   // Make sure that the speculative RFH has been cleaned up, if needed.
@@ -11674,7 +11674,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Resume and finish the cross-process navigation.
   cross_site_navigation.ResumeNavigation();
-  cross_site_navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(cross_site_navigation.WaitForNavigationFinished());
   EXPECT_TRUE(cross_site_navigation.was_successful());
   EXPECT_EQ(url2, web_contents()->GetLastCommittedURL());
 }
@@ -12443,7 +12443,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             rfh_b->lifecycle_state());
 
   // The navigation has been canceled.
-  navigation_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
   EXPECT_FALSE(navigation_observer.was_successful());
 
   // |rfh_b| will complete its deletion at some point:
@@ -12507,7 +12507,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             rfh_c->GetLifecycleState());
 
   // The navigation has been canceled.
-  navigation_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
   EXPECT_FALSE(navigation_observer.was_successful());
 
   // |rfh_b| and |rfh_c| will complete their deletion at some point:
@@ -12659,7 +12659,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Resume the cross-site navigation and ensure it commits in a new
   // SiteInstance and process.
-  delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(delayer.WaitForNavigationFinished());
   EXPECT_TRUE(web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_NE(web_contents()->GetPrimaryMainFrame()->GetProcess(), first_process);
   EXPECT_NE(web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
@@ -12841,7 +12841,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     TestNavigationManager navigation_manager(web_contents(),
                                              GURL("about:blank"));
     EXPECT_TRUE(ExecJs(b2_rfh, "location.href = 'about:blank';"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     RenderFrameHostImpl* b3_rfh = a1_rfh->child_at(0)->current_frame_host();
     DCHECK_EQ(b3_rfh->GetSiteInstance(), b2_site_instance);
@@ -12855,7 +12855,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     EXPECT_TRUE(ExecJs(a1_rfh, R"(
       document.querySelector("iframe").src = "about:blank";
     )"));
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     RenderFrameHostImpl* b4_rfh = a1_rfh->child_at(0)->current_frame_host();
     DCHECK_EQ(a1_rfh->GetSiteInstance(), b4_rfh->GetSiteInstance());

@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, EnabledByDocumentPolicy) {
 
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   WaitForPageLoad(main_contents);
   frame_observer.WaitForScrollOffsetAtTop(
@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
 
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   WaitForPageLoad(main_contents);
   // Wait a short amount of time to ensure the page does not scroll.
@@ -808,7 +808,7 @@ class ForceLoadAtTopBrowserTest : public TextFragmentAnchorBrowserTest {
 
     ASSERT_TRUE(navigation_manager.WaitForResponse());
     navigation_manager.ResumeNavigation();
-    navigation_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
     WaitForPageLoad(shell()->web_contents());
   }

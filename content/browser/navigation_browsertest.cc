@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SanitizeReferrer) {
 
   // The navigation should commit without being blocked.
   EXPECT_TRUE(manager.WaitForResponse());
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(kInsecureUrl, web_contents()->GetLastCommittedURL());
 }
 
@@ -733,7 +733,7 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestReferrerPolicy, ReferrerPolicy) {
 
   // The navigation should commit without being blocked.
   EXPECT_TRUE(manager.WaitForResponse());
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(kDestination, web_contents()->GetLastCommittedURL());
 }
 
@@ -869,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
 
   // The renderer commits the navigation and the browser deletes its
   // NavigationRequest.
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_FALSE(main_frame()->navigation_request());
 
   // The NavigationURLLoader has been deleted by now. Check that the renderer
@@ -1334,10 +1334,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     // begins and ends.
     TestNavigationManager push_state_navigation(web_contents(), main_url);
     ExecuteScriptAsync(shell(), "window.history.pushState({}, null);");
-    push_state_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(push_state_navigation.WaitForNavigationFinished());
 
     // The iframe navigation is resumed.
-    iframe_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(iframe_navigation.WaitForNavigationFinished());
   }
 
   // 3) history.back() must work.
@@ -1601,7 +1601,7 @@ IN_PROC_BROWSER_TEST_F(NavigationGoToEntryAtOffsetBrowserTest,
   shell()->LoadURL(url_2);
   run_loop.Run();
 
-  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());
 
   EXPECT_TRUE(navigation.was_successful());
 }
@@ -1626,7 +1626,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // 3) The first pending navigation is not canceled and can continue.
-  navigation.WaitForNavigationFinished();  // Resume navigation.
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());  // Resume navigation.
   EXPECT_TRUE(navigation.was_successful());
 }
 
@@ -1649,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                      "history.back();"));
 
   // 3) Check the first pending navigation has been canceled.
-  navigation.WaitForNavigationFinished();  // Resume navigation.
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());  // Resume navigation.
   EXPECT_FALSE(navigation.was_successful());
 }
 
@@ -1776,7 +1776,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   TestNavigationManager manager(web_contents(), data_url);
   EXPECT_TRUE(ExecJs(popup, base::StringPrintf("window.opener.location ='%s'",
                                                data_url.spec().c_str())));
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   EXPECT_FALSE(manager.was_successful());
 
@@ -2142,7 +2142,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, WebViewRendererKillReload) {
 
   // Wait for navigation in new WebContents to finish.
   NewWebContentsData data = crash_observer.TakeNewWebContentsData();
-  data.manager->WaitForNavigationFinished();
+  ASSERT_TRUE(data.manager->WaitForNavigationFinished());
 
   // Test passes if renderer is still alive.
   EXPECT_TRUE(ExecJs(data.new_web_contents.get(), "true;"));
@@ -2326,7 +2326,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       let subwindow = document.querySelector('iframe').contentWindow;
       subwindow.location.search = "1";
     )"));
-    commit_waiter.WaitForNavigationFinished();
+    ASSERT_TRUE(commit_waiter.WaitForNavigationFinished());
   }
 
   //  3) Cross-document navigation to about:srcdoc?2.
@@ -2336,7 +2336,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       let subwindow = document.querySelector('iframe').contentWindow;
       subwindow.location.search = "2";
     )"));
-    commit_waiter.WaitForNavigationFinished();
+    ASSERT_TRUE(commit_waiter.WaitForNavigationFinished());
   }
 
   // Inspect the session history.
@@ -2628,7 +2628,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       main_frame()->navigation_request()->GetNextPageUkmSourceId();
 
   EXPECT_TRUE(manager.WaitForResponse());
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_EQ(current_frame_host()->GetPageUkmSourceId(), nav_request_id);
 }
 
@@ -2653,7 +2653,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       subframe->navigation_request()->GetNextPageUkmSourceId();
 
   EXPECT_TRUE(manager.WaitForResponse());
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   // Should have the same page UKM ID in navigation as page post commit, and as
   // the top-level frame.
@@ -4068,7 +4068,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
 
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
@@ -4124,7 +4124,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
 
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
 
@@ -4179,7 +4179,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
 
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
@@ -4226,7 +4226,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPolicyBrowserTest,
 
   EXPECT_TRUE(navigation_manager.WaitForResponse());
   navigation_manager.ResumeNavigation();
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_TRUE(WaitForRenderFrameReady(current_frame_host()));
@@ -4247,7 +4247,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitBasic) {
   absl::optional<url::Origin> origin_to_commit =
       navigation->GetOriginToCommit();
   ASSERT_TRUE(origin_to_commit.has_value());
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   url::Origin origin_committed = current_frame_host()->GetLastCommittedOrigin();
 
   EXPECT_FALSE(origin_to_commit->opaque());
@@ -4265,7 +4265,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommit204) {
   absl::optional<url::Origin> origin_to_commit =
       navigation->GetOriginToCommit();
   EXPECT_FALSE(origin_to_commit.has_value());
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
@@ -4277,7 +4277,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_TRUE(manager.WaitForResponse());
   NavigationRequest* navigation = main_frame()->navigation_request();
   url::Origin origin_to_commit = navigation->GetOriginToCommit().value();
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   url::Origin origin_committed = current_frame_host()->GetLastCommittedOrigin();
 
   EXPECT_TRUE(origin_to_commit.opaque());
@@ -4302,7 +4302,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   FrameTreeNode* iframe = current_frame_host()->child_at(0);
   NavigationRequest* navigation = iframe->navigation_request();
   url::Origin origin_to_commit = navigation->GetOriginToCommit().value();
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   url::Origin origin_committed =
       iframe->current_frame_host()->GetLastCommittedOrigin();
 
@@ -4329,7 +4329,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromCspSandboxResponse) {
       "a.com", "/set-header?Content-Security-Policy: sandbox");
   TestNavigationManager manager(web_contents(), url);
   shell()->LoadURL(url);
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   // An error page committed. It doesn't have any sandbox flags, despite the
   // original response headers.
@@ -4464,7 +4464,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromInSandboxedIframe) {
     iframe.sandbox = "allow-orientation-lock";
     document.body.appendChild(iframe);
   )");
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
 
   RenderFrameHostImpl* child_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
@@ -4488,7 +4488,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitSandboxFromFrame) {
   FrameTreeNode* iframe = current_frame_host()->child_at(0);
   NavigationRequest* navigation = iframe->navigation_request();
   url::Origin origin_to_commit = navigation->GetOriginToCommit().value();
-  manager.WaitForNavigationFinished();
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
   url::Origin origin_committed =
       iframe->current_frame_host()->GetLastCommittedOrigin();
 
@@ -4514,8 +4514,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   TestNavigationManager manager_1(popup_contents, url_b);
   TestNavigationManager manager_2(popup_contents, GURL("about:blank"));
 
-  manager_1.WaitForNavigationFinished();
-  manager_2.WaitForNavigationFinished();
+  ASSERT_TRUE(manager_1.WaitForNavigationFinished());
+  ASSERT_TRUE(manager_2.WaitForNavigationFinished());
 
   EXPECT_EQ(popup_contents->GetLastCommittedURL(), "about:blank");
 }

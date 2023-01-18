@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
                                        screen_info.orientation_type);
 
   // Let the navigation finish and make sure it succeeded.
-  delayer.WaitForNavigationFinished();
+  ASSERT_TRUE(delayer.WaitForNavigationFinished());
   EXPECT_EQ(second_url,
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
