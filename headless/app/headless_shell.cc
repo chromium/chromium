@@ -187,7 +187,6 @@ void HeadlessChildMain(content::ContentMainParams params) {
 }
 
 int HeadlessBrowserMain(content::ContentMainParams params) {
-  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
 #if DCHECK_IS_ON()
   // The browser can only be initialized once.
   static bool browser_was_initialized;
@@ -195,9 +194,11 @@ int HeadlessBrowserMain(content::ContentMainParams params) {
   browser_was_initialized = true;
 
   // Child processes should not end up here.
-  DCHECK(!command_line.HasSwitch(::switches::kProcessType));
+  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kProcessType));
 #endif
 #if defined(HEADLESS_ENABLE_COMMANDS)
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   if ((command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
        command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) &&
       HeadlessCommandHandler::HasHeadlessCommandSwitches(command_line)) {
