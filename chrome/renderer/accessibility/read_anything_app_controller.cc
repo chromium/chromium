@@ -291,8 +291,32 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     new_tree->AddObserver(this);
     trees_[tree_id] = std::move(new_tree);
   }
-  ui::AXSerializableTree* tree = trees_[tree_id].get();
+  // If a tree update on the active tree is received while distillation is in
+  // progress, cache updates that are received but do not yet unserialize them.
+  // Drawing must be done on the same tree that was sent to the distiller,
+  // so it’s critical that updates are not unserialized until drawing is
+  // complete.
+  if (tree_id == active_tree_id_ && distillation_in_progress_) {
+    DCHECK(pending_updates_.empty() ||
+           tree_id == pending_updates_.back().tree_data.tree_id);
+    pending_updates_.insert(pending_updates_.end(),
+                            std::make_move_iterator(updates.begin()),
+                            std::make_move_iterator(updates.end()));
+    return;
+  }
+  UnserializeUpdates(std::move(updates), tree_id);
+}
 
+void ReadAnythingAppController::UnserializeUpdates(
+    std::vector<ui::AXTreeUpdate> updates,
+    const ui::AXTreeID& tree_id) {
+  if (updates.empty()) {
+    return;
+  }
+  DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
+  DCHECK(base::Contains(trees_, tree_id));
+  ui::AXSerializableTree* tree = trees_[tree_id].get();
+  DCHECK(tree);
   // Try to merge updates. If the updates are mergeable, MergeAXTreeUpdates will
   // return true and merge_updates_out will contain the updates. Otherwise, if
   // the updates are not mergeable, merge_updates_out will be empty.
@@ -310,7 +334,15 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     const ui::AXTreeID& tree_id) {
+  if (tree_id == active_tree_id_) {
+    return;
+  }
+  ui::AXTreeID previous_active_tree_id = active_tree_id_;
   active_tree_id_ = tree_id;
+  // Unserialize all pending updates on the formerly active AXTree.
+  // TODO(crbug.com/1266555): If distillation is in progress, cancel the
+  // distillation request.
+  UnserializeUpdates(std::move(pending_updates_), previous_active_tree_id);
   // When the UI first constructs, this function may be called before tree_id
   // has been added to trees_ in AccessibilityEventReceived. In that case, do
   // not distill.
@@ -322,6 +354,8 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   if (active_tree_id_ == tree_id) {
+    // TODO(crbug.com/1266555): If distillation is in progress, cancel the
+    // distillation request.
     active_tree_id_ = ui::AXTreeIDUnknown();
   }
   // Under rare circumstances, an accessibility tree is not constructed in a
@@ -335,7 +369,7 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     return;
   }
   auto child_tree_ids = trees_[tree_id]->GetAllChildTreeIds();
-  for (auto child_tree_id : child_tree_ids) {
+  for (const auto& child_tree_id : child_tree_ids) {
     OnAXTreeDestroyed(child_tree_id);
   }
   trees_.erase(tree_id);
@@ -385,6 +419,7 @@ void ReadAnythingAppController::Distill() {
   ui::AXTreeSerializer<const ui::AXNode*> serializer(tree_source.get());
   ui::AXTreeUpdate snapshot;
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
+  distillation_in_progress_ = true;
   distiller_->Distill(tree, snapshot);
 }
 
@@ -397,6 +432,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   start_offset_ = -1;
   end_offset_ = -1;
   content_node_ids_ = content_node_ids;
+  distillation_in_progress_ = false;
 
   DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
   DCHECK(base::Contains(trees_, active_tree_id_));
@@ -417,6 +453,9 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   }
 
   Draw();
+  // Once drawing is complete, unserialize all of the pending updates on the
+  // active tree and send out a new distillation request.
+  UnserializeUpdates(std::move(pending_updates_), active_tree_id_);
 }
 
 void ReadAnythingAppController::Draw() {
@@ -722,6 +761,12 @@ void ReadAnythingAppController::SetContentForTesting(
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
   OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id);
   OnAXTreeDistilled(content_node_ids);
+}
+
+AXTreeDistiller* ReadAnythingAppController::SetDistillerForTesting(
+    std::unique_ptr<AXTreeDistiller> distiller) {
+  distiller_ = std::move(distiller);
+  return distiller_.get();
 }
 
 double ReadAnythingAppController::GetLetterSpacingValue(
