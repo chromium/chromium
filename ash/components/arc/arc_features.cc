@@ -40,6 +40,13 @@ BASE_FEATURE(kEnableArcIdleManager,
              "ArcIdleManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+
+// For test purposes, ignore battery status changes, allowing Doze mode to
+// kick in even if we do not receive powerd changes related to battery.
+const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT{
+    &kEnableArcIdleManager, "ignore_battery_for_test", false};
+
+
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of the default method (through a temporary path
 // managed by file manager).

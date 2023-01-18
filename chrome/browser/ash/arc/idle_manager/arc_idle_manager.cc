@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/idle_manager/arc_idle_manager.h"
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/power/arc_power_bridge.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -79,7 +80,11 @@ ArcIdleManager::ArcIdleManager(content::BrowserContext* context,
       delegate_(std::make_unique<DefaultDelegateImpl>()),
       bridge_(bridge) {
   AddObserver(std::make_unique<ArcCpuThrottleObserver>());
-  AddObserver(std::make_unique<ArcOnBatteryObserver>());
+  if (kEnableArcIdleManagerIgnoreBatteryForPLT.Get()) {
+    LOG(WARNING) << "Doze will be enabled regardless of battery status";
+  } else {
+    AddObserver(std::make_unique<ArcOnBatteryObserver>());
+  }
   AddObserver(std::make_unique<ArcDisplayPowerObserver>());
 
   auto* const power_bridge = ArcPowerBridge::GetForBrowserContext(context);
