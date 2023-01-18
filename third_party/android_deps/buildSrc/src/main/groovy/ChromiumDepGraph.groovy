@@ -180,6 +180,9 @@ class ChromiumDepGraph {
         org_checkerframework_dataflow_errorprone: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),
+        org_conscrypt_conscrypt_openjdk_uber: new PropertyOverride(
+            licenseUrl: 'https://raw.githubusercontent.com/google/conscrypt/master/LICENSE',
+            licenseName: 'Apache 2.0'),
         org_hamcrest_hamcrest: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE.txt',
             licenseName: 'BSD'),
