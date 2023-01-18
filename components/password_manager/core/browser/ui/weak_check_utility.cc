@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/time_estimates.hpp"
@@ -41,6 +42,7 @@ constexpr int kLowSeverityScore = 2;
 
 // Returns the |password| score.
 int PasswordWeakCheck(base::StringPiece16 password16) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   // zxcvbn's computation time explodes for long passwords, so cap at that
   // number.
   std::string password =
@@ -50,6 +52,8 @@ int PasswordWeakCheck(base::StringPiece16 password16) {
       zxcvbn::most_guessable_match_sequence(password, matches);
 
   int score = zxcvbn::estimate_attack_times(result.guesses).score;
+  base::UmaHistogramTimes("PasswordManager.WeakCheck.SingleCheckTime",
+                          base::TimeTicks::Now() - start_time);
   base::UmaHistogramEnumeration("PasswordManager.WeakCheck.PasswordScore",
                                 static_cast<PasswordWeaknessScore>(score));
   return score;

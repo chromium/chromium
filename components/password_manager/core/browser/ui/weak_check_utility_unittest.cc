@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +29,19 @@ TEST(WeakCheckUtilityTest, IsWeak) {
   EXPECT_TRUE(IsWeak(kWeakLongPassword));
   EXPECT_FALSE(IsWeak(kStrongShortPassword));
   EXPECT_FALSE(IsWeak(kStrongLongPassword));
+}
+
+TEST(WeakCheckUtilityTest, IsWeakRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_TRUE(IsWeak(kWeakLongPassword));
+  EXPECT_FALSE(IsWeak(kStrongShortPassword));
+
+  histogram_tester.ExpectTotalCount("PasswordManager.WeakCheck.SingleCheckTime",
+                                    2u);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("PasswordManager.WeakCheck.PasswordScore"),
+      base::BucketsAre(base::Bucket(0, 1), base::Bucket(4, 1)));
 }
 
 TEST(WeakCheckUtilityTest, WeakPasswordsNotFound) {

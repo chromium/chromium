@@ -3646,6 +3646,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.WeakCheck.SingleCheckTime" units="ms"
+    expires_after="2024-01-17">
+  <owner>jkeitel@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time taken to perform a weakness check for a single password. Recorded
+    whenever a password weakness score is computed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.WeakCheck.Time" units="ms"
     expires_after="2023-09-01">
   <owner>kazinova@google.com</owner>
