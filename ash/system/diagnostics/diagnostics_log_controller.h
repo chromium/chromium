@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_DIAGNOSTICS_DIAGNOSTICS_LOG_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/login_status.h"
@@ -42,6 +43,10 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
   // Check if DiagnosticsLogController is ready for use.
   static bool IsInitialized();
   static void Initialize(std::unique_ptr<DiagnosticsBrowserDelegate> delegate);
+
+  // GenerateSessionStringOnBlockingPool needs to be run on blocking thread.
+  // Generates a string of the combined Diagnostics logs.
+  std::string GenerateSessionStringOnBlockingPool() const;
 
   // GenerateSessionLogOnBlockingPool needs to be run on blocking
   // thread. Stores combined log at |save_file_path| and returns

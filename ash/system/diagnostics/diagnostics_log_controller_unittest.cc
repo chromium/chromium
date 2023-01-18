@@ -154,6 +154,42 @@ TEST_F(DiagnosticsLogControllerTest, IsInitializedAfterDelegateProvided) {
   EXPECT_TRUE(DiagnosticsLogController::IsInitialized());
 }
 
+TEST_F(DiagnosticsLogControllerTest, GenerateSessionString) {
+  base::ScopedTempDir scoped_diagnostics_log_dir;
+
+  EXPECT_TRUE(scoped_diagnostics_log_dir.CreateUniqueTempDir());
+  const base::FilePath expected_path_regular_user =
+      base::FilePath(scoped_diagnostics_log_dir.GetPath().Append(kFakeUserDir));
+  SimulateUserLogin(kTestUserEmail);
+  DiagnosticsLogController::Initialize(
+      std::make_unique<FakeDiagnosticsBrowserDelegate>(
+          expected_path_regular_user));
+
+  // Create keyboard input log.
+  KeyboardInputLog* keyboard_input_log =
+      DiagnosticsLogController::Get()->GetKeyboardInputLog();
+  keyboard_input_log->AddKeyboard(/*id=*/1, "internal keyboard");
+  keyboard_input_log->CreateLogAndRemoveKeyboard(/*id=*/1);
+  task_environment()->RunUntilIdle();
+
+  const std::string contents =
+      DiagnosticsLogController::Get()->GenerateSessionStringOnBlockingPool();
+  const std::vector<std::string> log_lines = GetLogLines(contents);
+  EXPECT_EQ(10u, log_lines.size());
+
+  EXPECT_EQ(kSystemLogSectionHeader, log_lines[0]);
+  EXPECT_EQ(kRoutineLogSubsectionHeader, log_lines[1]);
+  const std::string expected_no_routine_msg =
+      "No routines of this type were run in the session.";
+  EXPECT_EQ(expected_no_routine_msg, log_lines[2]);
+  EXPECT_EQ(kNetworkingLogSectionHeader, log_lines[3]);
+  EXPECT_EQ(kNetworkingLogNetworkInfoHeader, log_lines[4]);
+  EXPECT_EQ(kRoutineLogSubsectionHeader, log_lines[5]);
+  EXPECT_EQ(expected_no_routine_msg, log_lines[6]);
+  EXPECT_EQ(kNetworkingLogNetworkEventsHeader, log_lines[7]);
+  EXPECT_EQ(kKeyboardLogSectionHeader, log_lines[8]);
+}
+
 TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
   base::ScopedTempDir scoped_diagnostics_log_dir;
 

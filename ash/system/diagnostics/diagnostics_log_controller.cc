@@ -132,9 +132,8 @@ void DiagnosticsLogController::Initialize(
                      g_instance->log_base_path_));
 }
 
-bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
-    const base::FilePath& save_file_path) {
-  DCHECK(!save_file_path.empty());
+std::string DiagnosticsLogController::GenerateSessionStringOnBlockingPool()
+    const {
   std::vector<std::string> log_pieces;
 
   // Fetch system data from TelemetryLog.
@@ -172,7 +171,13 @@ bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
     }
   }
 
-  return base::WriteFile(save_file_path, base::JoinString(log_pieces, "\n"));
+  return base::JoinString(log_pieces, "\n");
+}
+
+bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
+    const base::FilePath& save_file_path) {
+  DCHECK(!save_file_path.empty());
+  return base::WriteFile(save_file_path, GenerateSessionStringOnBlockingPool());
 }
 
 void DiagnosticsLogController::ResetAndInitializeLogWriters() {
