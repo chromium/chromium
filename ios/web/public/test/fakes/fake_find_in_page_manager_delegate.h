@@ -26,10 +26,12 @@ class FakeFindInPageManagerDelegate : public FindInPageManagerDelegate {
   ~FakeFindInPageManagerDelegate() override;
 
   // FindInPageManagerDelegate override
-  void DidHighlightMatches(WebState* web_state,
+  void DidHighlightMatches(AbstractFindInPageManager* manager,
+                           WebState* web_state,
                            int match_count,
                            NSString* query) override;
-  void DidSelectMatch(WebState* web_state,
+  void DidSelectMatch(AbstractFindInPageManager* manager,
+                      WebState* web_state,
                       int index,
                       NSString* context_string) override;
 

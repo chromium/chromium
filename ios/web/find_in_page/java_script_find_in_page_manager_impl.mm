@@ -71,7 +71,7 @@ void JavaScriptFindInPageManagerImpl::WebFrameWillBecomeUnavailable(
 
   // Only notify the delegate if the match count has changed.
   if (delegate_ && last_find_request_.GetRequestQuery() && match_count > 0) {
-    delegate_->DidHighlightMatches(web_state_,
+    delegate_->DidHighlightMatches(this, web_state_,
                                    last_find_request_.GetTotalMatchCount(),
                                    last_find_request_.GetRequestQuery());
   }
@@ -148,7 +148,7 @@ void JavaScriptFindInPageManagerImpl::StopFinding() {
     FindInPageJavaScriptFeature::GetInstance()->Stop(frame);
   }
   if (delegate_) {
-    delegate_->DidHighlightMatches(web_state_,
+    delegate_->DidHighlightMatches(this, web_state_,
                                    last_find_request_.GetTotalMatchCount(),
                                    last_find_request_.GetRequestQuery());
   }
@@ -198,7 +198,7 @@ void JavaScriptFindInPageManagerImpl::ProcessFindInPageResult(
 
 void JavaScriptFindInPageManagerImpl::LastFindRequestCompleted() {
   if (delegate_) {
-    delegate_->DidHighlightMatches(web_state_,
+    delegate_->DidHighlightMatches(this, web_state_,
                                    last_find_request_.GetTotalMatchCount(),
                                    last_find_request_.GetRequestQuery());
   }
@@ -224,7 +224,7 @@ void JavaScriptFindInPageManagerImpl::SelectDidFinish(
         last_find_request_.SetMatchCountForSelectedFrame(match_count);
         if (delegate_) {
           delegate_->DidHighlightMatches(
-              web_state_, last_find_request_.GetTotalMatchCount(),
+              this, web_state_, last_find_request_.GetTotalMatchCount(),
               last_find_request_.GetRequestQuery());
         }
       }
@@ -245,7 +245,7 @@ void JavaScriptFindInPageManagerImpl::SelectDidFinish(
   }
   if (delegate_) {
     delegate_->DidSelectMatch(
-        web_state_, last_find_request_.GetCurrentSelectedMatchPageIndex(),
+        this, web_state_, last_find_request_.GetCurrentSelectedMatchPageIndex(),
         base::SysUTF8ToNSString(match_context_string));
   }
 }

@@ -32,7 +32,8 @@ class FindInPageManagerDelegateBridgeTest : public PlatformTest {
 // Tests that CRWFindInPageManagerDelegate properly receives values from
 // DidHighlightMatches().
 TEST_F(FindInPageManagerDelegateBridgeTest, DidHighlightMatches) {
-  bridge_->DidHighlightMatches(&fake_web_state_, 1, @"foo");
+  auto* manager = JavaScriptFindInPageManager::FromWebState(&fake_web_state_);
+  bridge_->DidHighlightMatches(manager, &fake_web_state_, 1, @"foo");
   EXPECT_EQ(1, delegate_.matchCount);
   EXPECT_EQ(@"foo", delegate_.query);
   EXPECT_EQ(&fake_web_state_, delegate_.webState);
@@ -41,7 +42,8 @@ TEST_F(FindInPageManagerDelegateBridgeTest, DidHighlightMatches) {
 // Tests that CRWFindInPageManagerDelegate properly receives values from
 // DidSelectMatch().
 TEST_F(FindInPageManagerDelegateBridgeTest, DidSelectMatch) {
-  bridge_->DidSelectMatch(&fake_web_state_, 1, @"match context");
+  auto* manager = JavaScriptFindInPageManager::FromWebState(&fake_web_state_);
+  bridge_->DidSelectMatch(manager, &fake_web_state_, 1, @"match context");
   EXPECT_EQ(1, delegate_.index);
   EXPECT_EQ(&fake_web_state_, delegate_.webState);
   EXPECT_EQ(@"match context", delegate_.contextString);

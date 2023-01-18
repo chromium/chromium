@@ -9,6 +9,7 @@
 
 namespace web {
 
+class AbstractFindInPageManager;
 class WebState;
 
 class FindInPageManagerDelegate {
@@ -28,7 +29,8 @@ class FindInPageManagerDelegate {
   // Client should check `query` to ensure that it is processing `match_count`
   // for the correct find. `query` will be nil if responding to
   // FindInPageManager::StopFinding().
-  virtual void DidHighlightMatches(WebState* web_state,
+  virtual void DidHighlightMatches(AbstractFindInPageManager* manager,
+                                   WebState* web_state,
                                    int match_count,
                                    NSString* query) = 0;
 
@@ -40,7 +42,8 @@ class FindInPageManagerDelegate {
   // triggered by calling FindInPageManager::Find() with any FindInPageOptions
   // to indicate the new match number that was selected. This method is not
   // called if `FindInPageManager::Find` did not find any matches.
-  virtual void DidSelectMatch(WebState* web_state,
+  virtual void DidSelectMatch(AbstractFindInPageManager* manager,
+                              WebState* web_state,
                               int index,
                               NSString* context_string) = 0;
 

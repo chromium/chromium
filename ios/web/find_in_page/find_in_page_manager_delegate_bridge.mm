@@ -18,28 +18,30 @@ FindInPageManagerDelegateBridge::FindInPageManagerDelegateBridge(
 
 FindInPageManagerDelegateBridge::~FindInPageManagerDelegateBridge() {}
 
-void FindInPageManagerDelegateBridge::DidHighlightMatches(WebState* web_state,
-                                                          int match_count,
-                                                          NSString* query) {
+void FindInPageManagerDelegateBridge::DidHighlightMatches(
+    AbstractFindInPageManager* manager,
+    WebState* web_state,
+    int match_count,
+    NSString* query) {
   if ([delegate_ respondsToSelector:@selector
                  (findInPageManager:
                      didHighlightMatchesOfQuery:withMatchCount:forWebState:)]) {
-    [delegate_ findInPageManager:web::JavaScriptFindInPageManager::FromWebState(
-                                     web_state)
+    [delegate_ findInPageManager:manager
         didHighlightMatchesOfQuery:query
                     withMatchCount:match_count
                        forWebState:web_state];
   }
 }
 
-void FindInPageManagerDelegateBridge::DidSelectMatch(WebState* web_state,
-                                                     int index,
-                                                     NSString* context_string) {
+void FindInPageManagerDelegateBridge::DidSelectMatch(
+    AbstractFindInPageManager* manager,
+    WebState* web_state,
+    int index,
+    NSString* context_string) {
   if ([delegate_ respondsToSelector:@selector
                  (findInPageManager:
                      didSelectMatchAtIndex:withContextString:forWebState:)]) {
-    [delegate_ findInPageManager:web::JavaScriptFindInPageManager::FromWebState(
-                                     web_state)
+    [delegate_ findInPageManager:manager
            didSelectMatchAtIndex:index
                withContextString:context_string
                      forWebState:web_state];

@@ -198,7 +198,7 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
 
 #pragma mark - CRWFindInPageManagerDelegate
 
-- (void)findInPageManager:(web::JavaScriptFindInPageManager*)manager
+- (void)findInPageManager:(web::AbstractFindInPageManager*)manager
     didHighlightMatchesOfQuery:(NSString*)query
                 withMatchCount:(NSInteger)matchCount
                    forWebState:(web::WebState*)webState {
@@ -212,7 +212,7 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 
-- (void)findInPageManager:(web::JavaScriptFindInPageManager*)manager
+- (void)findInPageManager:(web::AbstractFindInPageManager*)manager
     didSelectMatchAtIndex:(NSInteger)index
         withContextString:(NSString*)contextString
               forWebState:(web::WebState*)webState {
