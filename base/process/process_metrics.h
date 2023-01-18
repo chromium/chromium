@@ -19,6 +19,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -45,8 +46,6 @@
 #endif
 
 namespace base {
-
-class Value;
 
 // Full declaration is in process_metrics_iocounters.h.
 struct IoCounters;
@@ -334,7 +333,7 @@ struct BASE_EXPORT SystemMemoryInfoKB {
   SystemMemoryInfoKB& operator=(const SystemMemoryInfoKB& other);
 
   // Serializes the platform specific fields to value.
-  Value ToValue() const;
+  Value::Dict ToDict() const;
 
   int total = 0;
 
@@ -428,7 +427,7 @@ BASE_EXPORT bool ParseProcMeminfo(StringPiece input,
 // Data from /proc/vmstat.
 struct BASE_EXPORT VmStatInfo {
   // Serializes the platform specific fields to value.
-  Value ToValue() const;
+  Value::Dict ToDict() const;
 
   uint64_t pswpin = 0;
   uint64_t pswpout = 0;
@@ -452,7 +451,7 @@ struct BASE_EXPORT SystemDiskInfo {
   SystemDiskInfo& operator=(const SystemDiskInfo&);
 
   // Serializes the platform specific fields to value.
-  Value ToValue() const;
+  Value::Dict ToDict() const;
 
   uint64_t reads = 0;
   uint64_t reads_merged = 0;
@@ -494,7 +493,7 @@ struct BASE_EXPORT SwapInfo {
   }
 
   // Serializes the platform specific fields to value.
-  Value ToValue() const;
+  Value::Dict ToDict() const;
 
   uint64_t num_reads = 0;
   uint64_t num_writes = 0;
@@ -523,7 +522,7 @@ BASE_EXPORT bool GetSwapInfo(SwapInfo* swap_info);
 // Data about GPU memory usage. These fields will be -1 if not supported.
 struct BASE_EXPORT GraphicsMemoryInfoKB {
   // Serializes the platform specific fields to value.
-  Value ToValue() const;
+  Value::Dict ToDict() const;
 
   int gpu_objects = -1;
   int64_t gpu_memory_size = -1;
@@ -543,7 +542,7 @@ struct BASE_EXPORT SystemPerformanceInfo {
   SystemPerformanceInfo& operator=(const SystemPerformanceInfo& other);
 
   // Serializes the platform specific fields to value.
-  Value ToValue() const;
+  Value::Dict ToDict() const;
 
   // Total idle time of all processes in the system (units of 100 ns).
   uint64_t idle_time = 0;
@@ -586,7 +585,7 @@ class BASE_EXPORT SystemMetrics {
   static SystemMetrics Sample();
 
   // Serializes the system metrics to value.
-  Value ToValue() const;
+  Value::Dict ToDict() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SystemMetricsTest, SystemMetrics);

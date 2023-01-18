@@ -69,23 +69,22 @@ SystemMetrics SystemMetrics::Sample() {
   return system_metrics;
 }
 
-Value SystemMetrics::ToValue() const {
-  Value res(Value::Type::DICTIONARY);
+Value::Dict SystemMetrics::ToDict() const {
+  Value::Dict res;
 
-  res.SetIntKey("committed_memory", static_cast<int>(committed_memory_));
+  res.Set("committed_memory", static_cast<int>(committed_memory_));
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  Value meminfo = memory_info_.ToValue();
-  Value vmstat = vmstat_info_.ToValue();
-  meminfo.MergeDictionary(&vmstat);
-  res.SetKey("meminfo", std::move(meminfo));
-  res.SetKey("diskinfo", disk_info_.ToValue());
+  Value::Dict meminfo = memory_info_.ToDict();
+  meminfo.Merge(vmstat_info_.ToDict());
+  res.Set("meminfo", std::move(meminfo));
+  res.Set("diskinfo", disk_info_.ToDict());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  res.SetKey("swapinfo", swap_info_.ToValue());
-  res.SetKey("gpu_meminfo", gpu_memory_info_.ToValue());
+  res.Set("swapinfo", swap_info_.ToDict());
+  res.Set("gpu_meminfo", gpu_memory_info_.ToDict());
 #endif
 #if BUILDFLAG(IS_WIN)
-  res.SetKey("perfinfo", performance_.ToValue());
+  res.Set("perfinfo", performance_.ToDict());
 #endif
 
   return res;

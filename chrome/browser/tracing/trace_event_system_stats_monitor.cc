@@ -35,7 +35,7 @@ class SystemStatsHolder : public base::trace_event::ConvertableToTraceFormat {
   // base::trace_event::ConvertableToTraceFormat overrides:
   void AppendAsTraceFormat(std::string* out) const override {
     std::string tmp;
-    base::JSONWriter::Write(system_metrics_.ToValue(), &tmp);
+    base::JSONWriter::Write(system_metrics_.ToDict(), &tmp);
     *out += tmp;
   }
 

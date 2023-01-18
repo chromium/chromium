@@ -258,31 +258,27 @@ SystemPerformanceInfo::SystemPerformanceInfo(
 SystemPerformanceInfo& SystemPerformanceInfo::operator=(
     const SystemPerformanceInfo& other) = default;
 
-Value SystemPerformanceInfo::ToValue() const {
-  Value result(Value::Type::DICTIONARY);
+Value::Dict SystemPerformanceInfo::ToDict() const {
+  Value::Dict result;
 
   // Write out uint64_t variables as doubles.
   // Note: this may discard some precision, but for JS there's no other option.
-  result.SetDoubleKey("idle_time", strict_cast<double>(idle_time));
-  result.SetDoubleKey("read_transfer_count",
-                      strict_cast<double>(read_transfer_count));
-  result.SetDoubleKey("write_transfer_count",
-                      strict_cast<double>(write_transfer_count));
-  result.SetDoubleKey("other_transfer_count",
-                      strict_cast<double>(other_transfer_count));
-  result.SetDoubleKey("read_operation_count",
-                      strict_cast<double>(read_operation_count));
-  result.SetDoubleKey("write_operation_count",
-                      strict_cast<double>(write_operation_count));
-  result.SetDoubleKey("other_operation_count",
-                      strict_cast<double>(other_operation_count));
-  result.SetDoubleKey("pagefile_pages_written",
-                      strict_cast<double>(pagefile_pages_written));
-  result.SetDoubleKey("pagefile_pages_write_ios",
-                      strict_cast<double>(pagefile_pages_write_ios));
-  result.SetDoubleKey("available_pages", strict_cast<double>(available_pages));
-  result.SetDoubleKey("pages_read", strict_cast<double>(pages_read));
-  result.SetDoubleKey("page_read_ios", strict_cast<double>(page_read_ios));
+  result.Set("idle_time", strict_cast<double>(idle_time));
+  result.Set("read_transfer_count", strict_cast<double>(read_transfer_count));
+  result.Set("write_transfer_count", strict_cast<double>(write_transfer_count));
+  result.Set("other_transfer_count", strict_cast<double>(other_transfer_count));
+  result.Set("read_operation_count", strict_cast<double>(read_operation_count));
+  result.Set("write_operation_count",
+             strict_cast<double>(write_operation_count));
+  result.Set("other_operation_count",
+             strict_cast<double>(other_operation_count));
+  result.Set("pagefile_pages_written",
+             strict_cast<double>(pagefile_pages_written));
+  result.Set("pagefile_pages_write_ios",
+             strict_cast<double>(pagefile_pages_write_ios));
+  result.Set("available_pages", strict_cast<double>(available_pages));
+  result.Set("pages_read", strict_cast<double>(pages_read));
+  result.Set("page_read_ios", strict_cast<double>(page_read_ios));
 
   return result;
 }
