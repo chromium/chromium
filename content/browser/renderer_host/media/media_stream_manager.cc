@@ -697,6 +697,25 @@ const blink::MediaStreamDevice* GetStreamDevice(
   return nullptr;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+static void NotifyMultiCaptureStopped(const std::string& label) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* const service = chromeos::LacrosService::Get();
+  if (!service->IsRegistered<crosapi::mojom::MultiCaptureService>() ||
+      !service->IsAvailable<crosapi::mojom::MultiCaptureService>()) {
+    LOG(ERROR) << "chrome.MultiCaptureService is not available in Lacros.";
+    return;
+  }
+  crosapi::mojom::MultiCaptureService* const multi_capture_service =
+      service->GetRemote<crosapi::mojom::MultiCaptureService>().get();
+  multi_capture_service->MultiCaptureStopped(label);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  content::GetMultiCaptureService().NotifyMultiCaptureStopped(label);
+#endif
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 // MediaStreamManager::DeviceRequest represents a request to either enumerate
@@ -1045,25 +1064,6 @@ class MediaStreamManager::DeviceRequest {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
-  static void NotifyMultiCaptureStopped(const std::string& label) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* const service = chromeos::LacrosService::Get();
-    if (!service->IsRegistered<crosapi::mojom::MultiCaptureService>() ||
-        !service->IsAvailable<crosapi::mojom::MultiCaptureService>()) {
-      LOG(ERROR) << "chrome.MultiCaptureService is not available in Lacros.";
-      return;
-    }
-    crosapi::mojom::MultiCaptureService* const multi_capture_service =
-        service->GetRemote<crosapi::mojom::MultiCaptureService>().get();
-    multi_capture_service->MultiCaptureStopped(label);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    content::GetMultiCaptureService().NotifyMultiCaptureStopped(label);
-#else
-    // TOOD(crbug.com/1404185): Implement usage indicators for linux.
-    NOT_REACHED();
-#endif
-  }
-
   void NotifyMultiCaptureStateChanged(MediaRequestState new_state) {
     if (!IsGetDisplayMediaSet()) {
       return;
@@ -1074,11 +1074,11 @@ class MediaStreamManager::DeviceRequest {
             FROM_HERE, base::BindOnce(NotifyMultiCaptureStarted, label_,
                                       salt_and_origin.origin));
         break;
-      case MediaRequestState::MEDIA_REQUEST_STATE_CLOSING:
       case MediaRequestState::MEDIA_REQUEST_STATE_ERROR:
         GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(NotifyMultiCaptureStopped, label_));
         break;
+      case MediaRequestState::MEDIA_REQUEST_STATE_CLOSING:
       case MediaRequestState::MEDIA_REQUEST_STATE_NOT_REQUESTED:
       case MediaRequestState::MEDIA_REQUEST_STATE_REQUESTED:
       case MediaRequestState::MEDIA_REQUEST_STATE_PENDING_APPROVAL:
@@ -2406,6 +2406,13 @@ void MediaStreamManager::DeleteRequest(
 
   SendLogMessage(base::StringPrintf("DeleteRequest([label=%s])",
                                     request_it->first.c_str()));
+#if BUILDFLAG(IS_CHROMEOS)
+  if (request_it->second->IsGetDisplayMediaSet()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(NotifyMultiCaptureStopped, request_it->first));
+  }
+#endif
 
   // Clean up permission controller subscription.
   GetUIThreadTaskRunner({})->PostTask(
