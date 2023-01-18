@@ -9,6 +9,7 @@ import 'chrome://apps/app_item.js';
 import {AppInfo, PageRemote} from 'chrome://apps/app_home.mojom-webui.js';
 import {AppListElement} from 'chrome://apps/app_list.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -37,10 +38,10 @@ suite('AppListTest', () => {
             url:
                 'chrome://extension-icon/ahfgeienlihckogmohjhadlkjgocpleb/128/1',
           },
-          mayShowRunOnOsLoginMode: false,
+          mayShowRunOnOsLoginMode: true,
           mayToggleRunOnOsLoginMode: false,
           runOnOsLoginMode: 0 /*kNotRun*/,
-          mayShowOpenInWindow: false,
+          mayShowOpenInWindow: true,
           openInWindow: false,
         },
         {
@@ -86,9 +87,25 @@ suite('AppListTest', () => {
   test('app list present', () => {
     assertTrue(!!appListElement);
 
-    const elementLength =
-        appListElement.shadowRoot!.querySelectorAll('app-item').length;
-    assertEquals(apps.appList.length, elementLength);
+    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    assertTrue(!!appItems);
+    assertEquals(apps.appList.length, appItems.length);
+
+    assertEquals(
+        appItems[0]!.shadowRoot!.querySelector('.text-container')!.textContent,
+        apps.appList[0]!.name);
+    assertEquals(
+        appItems[0]!.shadowRoot!
+            .querySelector<HTMLImageElement>('.icon-container img')!.src,
+        apps.appList[0]!.iconUrl.url);
+
+    assertEquals(
+        appItems[1]!.shadowRoot!.querySelector('.text-container')!.textContent,
+        apps.appList[1]!.name);
+    assertEquals(
+        appItems[1]!.shadowRoot!
+            .querySelector<HTMLImageElement>('.icon-container img')!.src,
+        apps.appList[1]!.iconUrl.url);
   });
 
   test('add/remove app', async () => {
@@ -114,4 +131,73 @@ suite('AppListTest', () => {
                                           '.text-container')!.textContent ===
             testAppInfo.name));
   });
+
+  test('context menu', () => {
+    // Get the first app item.
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    const contextMenu =
+        appListElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
+    assertTrue(contextMenu!.hidden);
+
+    appItem!.dispatchEvent(new CustomEvent('contextmenu'));
+    assertFalse(contextMenu!.hidden);
+
+    const appInfo = apps.appList[0]!;
+
+    const openInWindow =
+        contextMenu!.querySelector<HTMLElement>('#open-in-window');
+    assertTrue(!!openInWindow);
+    assertEquals(openInWindow!.hidden, !appInfo.mayShowOpenInWindow);
+    assertEquals(
+        openInWindow!.querySelector<CrCheckboxElement>('cr-checkbox')!.checked,
+        appInfo.openInWindow);
+
+    const launchOnStartup =
+        contextMenu!.querySelector<HTMLElement>('#launch-on-startup');
+    assertTrue(!!launchOnStartup);
+    assertEquals(launchOnStartup!.hidden, !appInfo.mayShowRunOnOsLoginMode);
+
+    assertEquals(
+        launchOnStartup!.querySelector<CrCheckboxElement>(
+                            'cr-checkbox')!.checked,
+        (appInfo.runOnOsLoginMode !== 0));
+    assertEquals(
+        launchOnStartup!.querySelector<CrCheckboxElement>(
+                            'cr-checkbox')!.disabled,
+        !appInfo.mayToggleRunOnOsLoginMode);
+
+    assertTrue(!!contextMenu!.querySelector('#create-shortcut'));
+    assertTrue(!!contextMenu!.querySelector('#uninstall'));
+    assertTrue(!!contextMenu!.querySelector('#app-settings'));
+  });
+
+  test('toggle open in window', () => {
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    appItem!.dispatchEvent(new CustomEvent('contextmenu'));
+
+    const appInfo = apps.appList[0]!;
+    const openInWindow = appListElement.shadowRoot!.querySelector<HTMLElement>(
+        '#open-in-window');
+    assertTrue(!!openInWindow);
+
+    assertFalse(
+        openInWindow!.querySelector<CrCheckboxElement>('cr-checkbox')!.checked);
+    assertFalse(appInfo.openInWindow);
+    openInWindow!.click();
+    appItem!.dispatchEvent(new CustomEvent('contextmenu'));
+    assertTrue(
+        openInWindow!.querySelector<CrCheckboxElement>('cr-checkbox')!.checked);
+    assertTrue(appInfo.openInWindow);
+    openInWindow!.click();
+    appItem!.dispatchEvent(new CustomEvent('contextmenu'));
+    assertFalse(
+        openInWindow!.querySelector<CrCheckboxElement>('cr-checkbox')!.checked);
+    assertFalse(appInfo.openInWindow);
+  });
+
 });

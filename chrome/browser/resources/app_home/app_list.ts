@@ -112,6 +112,24 @@ export class AppListElement extends PolymerElement {
     }
   }
 
+  private isOpenInWindowHidden_(selectedActionMenuModel: ActionMenuModel) {
+    return selectedActionMenuModel ?
+        !selectedActionMenuModel.appInfo.mayShowOpenInWindow :
+        true;
+  }
+
+  private isLaunchOnStartupHidden_(selectedActionMenuModel: ActionMenuModel) {
+    return selectedActionMenuModel ?
+        !selectedActionMenuModel.appInfo.mayShowRunOnOsLoginMode :
+        true;
+  }
+
+  private isLaunchOnStartupDisabled_(selectedActionMenuModel: ActionMenuModel) {
+    return selectedActionMenuModel ?
+        !selectedActionMenuModel.appInfo.mayToggleRunOnOsLoginMode :
+        true;
+  }
+
   private onOpenInWindowItemClick_() {
     if (this.selectedActionMenuModel_) {
       const appInfo = this.selectedActionMenuModel_.appInfo;

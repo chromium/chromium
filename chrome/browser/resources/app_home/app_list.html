@@ -38,11 +38,10 @@
   </template>
 </div>
 
-<cr-action-menu id="menu">
-  <div tabindex="0" class="dropdown-item"
+<cr-action-menu id="menu" hidden="{{!selectedActionMenuModel_}}">
+  <div id="open-in-window" tabindex="0" class="dropdown-item"
       on-click="onOpenInWindowItemClick_"
-      hidden="{{!selectedActionMenuModel_.appInfo.mayShowOpenInWindow}}"
-      >
+      hidden="[[isOpenInWindowHidden_(selectedActionMenuModel_)]]">
     <div class="dropdown-item-label">
       Open in window
     </div>
@@ -50,28 +49,30 @@
         Enable opening app in window
     </cr-checkbox>
   </div>
-  <div tabindex="0" class="dropdown-item"
+  <div id="launch-on-startup" tabindex="0" class="dropdown-item"
       on-click="onLaunchOnStartupItemClick_"
-      hidden="{{!selectedActionMenuModel_.appInfo.mayShowRunOnOsLoginMode}}"
-      disabled=
-        "{{!selectedActionMenuModel_.appInfo.mayToggleRunOnOsLoginMode}}">
+      hidden="[[isLaunchOnStartupHidden_(selectedActionMenuModel_)]]">
     <div class="dropdown-item-label">
       Launch on startup
     </div>
-    <cr-checkbox 
+    <cr-checkbox
       checked="{{selectedActionMenuModel_.runOnOsLoginModeChecked}}"
+      disabled="[[isLaunchOnStartupDisabled_(selectedActionMenuModel_)]]"
       on-change="onLaunchOnStartupItemClick_">
         Enable launching app on startup
-      </cr-checkbox>
+    </cr-checkbox>
   </div>
-  <button class="dropdown-item" on-click="onCreateShortcutItemClick_">
+  <button id="create-shortcut" class="dropdown-item"
+      on-click="onCreateShortcutItemClick_">
     Create a shortcut
   </button>
   <hr>
-  <button class="dropdown-item" on-click="onUninstallItemClick_">
+  <button id="uninstall" class="dropdown-item"
+      on-click="onUninstallItemClick_">
     Uninstall
   </button>
-  <button class="dropdown-item" on-click="onAppSettingsItemClick_">
+  <button id="app-settings" class="dropdown-item"
+      on-click="onAppSettingsItemClick_">
     App settings
   </button>
 </cr-action-menu>

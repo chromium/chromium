@@ -11,9 +11,11 @@ interface AppList {
 
 export class FakePageHandler implements PageHandlerInterface {
   private apps_: AppList;
+  private callbackRouterRemote_: PageRemote;
 
-  constructor(apps: AppList) {
+  constructor(apps: AppList, callbackRouterRemote: PageRemote) {
     this.apps_ = apps;
+    this.callbackRouterRemote_ = callbackRouterRemote;
   }
 
   getApps() {
@@ -36,7 +38,15 @@ export class FakePageHandler implements PageHandlerInterface {
 
   installAppLocally(_appId: string) {}
 
-  setUserDisplayMode(_appId: string, _userDisplayMode: UserDisplayMode) {}
+  setUserDisplayMode(appId: string, userDisplayMode: UserDisplayMode) {
+    for (const app of this.apps_.appList) {
+      if (app.id === appId) {
+        app.openInWindow = (userDisplayMode !== UserDisplayMode.kBrowser);
+        this.callbackRouterRemote_.addApp(app);
+        break;
+      }
+    }
+  }
 }
 
 export class TestAppHomeBrowserProxy implements BrowserProxy {
@@ -51,7 +61,7 @@ export class TestAppHomeBrowserProxy implements BrowserProxy {
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    this.fakeHandler = new FakePageHandler(app);
+    this.fakeHandler = new FakePageHandler(app, this.callbackRouterRemote);
     this.handler = this.fakeHandler;
   }
 
