@@ -6942,9 +6942,3 @@ http/tests/security/cross-frame-access-parent-explicit-domain.html [ Failure Pas
 http/tests/security/cross-frame-access-port-explicit-domain.html [ Failure Pass ]
 http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure Pass ]
 http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure Pass ]
-
-crbug.com/1407166 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
-crbug.com/1407166 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
-crbug.com/1407166 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
-crbug.com/1407166 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-crbug.com/1407166 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
