@@ -89,12 +89,10 @@ crc32c_t MemcpyCrc32c(void* dest, const void* src, size_t count,
 // This operation has a runtime cost of O(log(`suffix_len`))
 crc32c_t RemoveCrc32cSuffix(crc32c_t full_string_crc, crc32c_t suffix_crc,
                             size_t suffix_len) {
-  crc32c_t crc_with_suffix_zeroed = crc32c_t{
-      static_cast<uint32_t>(suffix_crc) ^
-      static_cast<uint32_t>(full_string_crc) ^
-      static_cast<uint32_t>(ExtendCrc32cByZeroes(crc32c_t{0}, suffix_len))};
-  return crc_internal::UnextendCrc32cByZeroes(
-    crc_with_suffix_zeroed, suffix_len);
+  uint32_t result = static_cast<uint32_t>(full_string_crc) ^
+                    static_cast<uint32_t>(suffix_crc);
+  CrcEngine()->UnextendByZeroes(&result, suffix_len);
+  return crc32c_t{result};
 }
 
 ABSL_NAMESPACE_END

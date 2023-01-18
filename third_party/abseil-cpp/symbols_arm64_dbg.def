@@ -2549,9 +2549,9 @@ EXPORTS
     ?Guard@?$NullGuard@M@log_internal@absl@@SAAEBMAEBM@Z
     ?Guard@?$NullGuard@N@log_internal@absl@@SAAEBNAEBN@Z
     ?Guard@?$NullGuard@PEAX@log_internal@absl@@SAAEBQEAXAEBQEAX@Z
-    ?Guard@?$NullGuard@PEBC@log_internal@absl@@SAAEBQEBCAEBQEBC@Z
+    ?Guard@?$NullGuard@PEBC@log_internal@absl@@SAPEBCPEBC@Z
     ?Guard@?$NullGuard@PEBD@log_internal@absl@@SAPEBDPEBD@Z
-    ?Guard@?$NullGuard@PEBE@log_internal@absl@@SAAEBQEBEAEBQEBE@Z
+    ?Guard@?$NullGuard@PEBE@log_internal@absl@@SAPEBEPEBE@Z
     ?Guard@?$NullGuard@PEBX@log_internal@absl@@SAAEBQEBXAEBQEBX@Z
     ?Guard@?$NullGuard@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@log_internal@absl@@SAAEBV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBV456@@Z
     ?Guard@?$NullGuard@Vstring_view@absl@@@log_internal@absl@@SAAEBVstring_view@3@AEBV43@@Z

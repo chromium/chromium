@@ -226,11 +226,13 @@ cc_library(
 
 cc_library(
     name = "nullguard",
+    srcs = ["nullguard.cc"],
     hdrs = ["nullguard.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:config",
+        "//absl/base:core_headers",
     ],
 )
 

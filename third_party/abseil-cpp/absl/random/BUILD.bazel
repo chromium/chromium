@@ -494,18 +494,6 @@ cc_test(
     ],
 )
 
-BENCHMARK_TAGS = [
-    "benchmark",
-    "no_test_android_arm",
-    "no_test_android_arm64",
-    "no_test_android_x86",
-    "no_test_darwin_x86_64",
-    "no_test_ios_x86_64",
-    "no_test_loonix",
-    "no_test_msvc_x64",
-    "no_test_wasm",
-]
-
 # Benchmarks for various methods / test utilities
 cc_binary(
     name = "benchmarks",
@@ -515,7 +503,7 @@ cc_binary(
     ],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    tags = BENCHMARK_TAGS,
+    tags = ["benchmark"],
     deps = [
         ":distributions",
         ":random",

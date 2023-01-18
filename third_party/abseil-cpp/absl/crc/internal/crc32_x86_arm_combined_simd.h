@@ -40,7 +40,7 @@
 #define ABSL_CRC_INTERNAL_HAVE_X86_SIMD
 
 #elif defined(__aarch64__) && defined(__LITTLE_ENDIAN__) && \
-    defined(__ARM_FEATURE_CRC32) && defined(__ARM_NEON) &&  \
+    defined(__ARM_FEATURE_CRC32) && defined(ABSL_INTERNAL_HAVE_ARM_NEON) &&  \
     defined(__ARM_FEATURE_CRYPTO)
 
 #include <arm_acle.h>

@@ -393,7 +393,7 @@ ABSL_RANDOM_NONPORTABLE_TAGS = [
     "no_test_darwin_x86_64",
     "no_test_ios_x86_64",
     "no_test_loonix",
-    "no_test_msvc_x64",
+    "no_test_lexan",
     "no_test_wasm",
 ]
 

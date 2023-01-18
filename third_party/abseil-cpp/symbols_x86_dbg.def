@@ -2539,9 +2539,9 @@ EXPORTS
     ?Guard@?$NullGuard@M@log_internal@absl@@SAABMABM@Z
     ?Guard@?$NullGuard@N@log_internal@absl@@SAABNABN@Z
     ?Guard@?$NullGuard@PAX@log_internal@absl@@SAABQAXABQAX@Z
-    ?Guard@?$NullGuard@PBC@log_internal@absl@@SAABQBCABQBC@Z
+    ?Guard@?$NullGuard@PBC@log_internal@absl@@SAPBCPBC@Z
     ?Guard@?$NullGuard@PBD@log_internal@absl@@SAPBDPBD@Z
-    ?Guard@?$NullGuard@PBE@log_internal@absl@@SAABQBEABQBE@Z
+    ?Guard@?$NullGuard@PBE@log_internal@absl@@SAPBEPBE@Z
     ?Guard@?$NullGuard@PBX@log_internal@absl@@SAABQBXABQBX@Z
     ?Guard@?$NullGuard@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@log_internal@absl@@SAABV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@ABV456@@Z
     ?Guard@?$NullGuard@Vstring_view@absl@@@log_internal@absl@@SAABVstring_view@3@ABV43@@Z

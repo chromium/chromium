@@ -249,6 +249,7 @@ absl_cc_library(
   NAME
     log_internal_nullguard
   SRCS
+    "internal/nullguard.cc"
   HDRS
     "internal/nullguard.h"
   COPTS
@@ -257,6 +258,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::config
+    absl::core_headers
 )
 
 absl_cc_library(

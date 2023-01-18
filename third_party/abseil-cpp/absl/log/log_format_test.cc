@@ -665,11 +665,15 @@ TYPED_TEST(VoidPtrLogFormatTest, NonNull) {
 }
 
 template <typename T>
-class VolatileVoidPtrLogFormatTest : public testing::Test {};
-using VolatileVoidPtrTypes = Types<volatile void *, const volatile void *>;
-TYPED_TEST_SUITE(VolatileVoidPtrLogFormatTest, VolatileVoidPtrTypes);
+class VolatilePtrLogFormatTest : public testing::Test {};
+using VolatilePtrTypes =
+    Types<volatile void*, const volatile void*, volatile char*,
+          const volatile char*, volatile signed char*,
+          const volatile signed char*, volatile unsigned char*,
+          const volatile unsigned char*>;
+TYPED_TEST_SUITE(VolatilePtrLogFormatTest, VolatilePtrTypes);
 
-TYPED_TEST(VolatileVoidPtrLogFormatTest, Null) {
+TYPED_TEST(VolatilePtrLogFormatTest, Null) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   const TypeParam value = nullptr;
@@ -687,7 +691,7 @@ TYPED_TEST(VolatileVoidPtrLogFormatTest, Null) {
   LOG(INFO) << value;
 }
 
-TYPED_TEST(VolatileVoidPtrLogFormatTest, NonNull) {
+TYPED_TEST(VolatilePtrLogFormatTest, NonNull) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   const TypeParam value = reinterpret_cast<TypeParam>(0xdeadbeefLL);
@@ -707,7 +711,8 @@ TYPED_TEST(VolatileVoidPtrLogFormatTest, NonNull) {
 
 template <typename T>
 class CharPtrLogFormatTest : public testing::Test {};
-using CharPtrTypes = Types<char *, const char *>;
+using CharPtrTypes = Types<char, const char, signed char, const signed char,
+                           unsigned char, const unsigned char>;
 TYPED_TEST_SUITE(CharPtrLogFormatTest, CharPtrTypes);
 
 TYPED_TEST(CharPtrLogFormatTest, Null) {
@@ -717,7 +722,7 @@ TYPED_TEST(CharPtrLogFormatTest, Null) {
   // standard library implementations choose to crash.  We take measures to log
   // something useful instead of crashing, even when that differs from the
   // standard library in use (and thus the behavior of `std::ostream`).
-  const TypeParam value = nullptr;
+  TypeParam* const value = nullptr;
 
   EXPECT_CALL(
       test_sink,
@@ -733,8 +738,8 @@ TYPED_TEST(CharPtrLogFormatTest, Null) {
 TYPED_TEST(CharPtrLogFormatTest, NonNull) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
-  char data[] = "value";
-  const TypeParam value = data;
+  TypeParam data[] = {'v', 'a', 'l', 'u', 'e', '\0'};
+  TypeParam* const value = data;
   auto comparison_stream = ComparisonStream();
   comparison_stream << value;
 

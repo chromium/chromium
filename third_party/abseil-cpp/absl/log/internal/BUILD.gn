@@ -155,8 +155,12 @@ absl_source_set("log_sink_set") {
 }
 
 absl_source_set("nullguard") {
+  sources = [ "nullguard.cc" ]
   public = [ "nullguard.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+  ]
 }
 
 absl_source_set("nullstream") {

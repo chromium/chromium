@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <deque>
 #include <functional>
+#include <iostream>
 #include <iterator>
 #include <list>
 #include <map>
@@ -2286,14 +2287,20 @@ TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
     t.insert(i);
     EXPECT_EQ(*it, 0);
   }
+  // ptr will become invalidated on rehash.
+  const int64_t* ptr = &*it;
+
   // erase decreases size but does not decrease reserved growth so the next
   // insertion still invalidates iterators.
   t.erase(0);
-  // Unreserved growth can rehash.
+  // The first insert after reserved growth is 0 is guaranteed to rehash when
+  // generations are enabled.
   t.insert(10);
   EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
   EXPECT_DEATH_IF_SUPPORTED(void(it == t.begin()),
                             kInvalidIteratorDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(std::cout << *ptr,
+                            "heap-use-after-free|use-of-uninitialized-value");
 }
 
 TEST(Table, ReservedGrowthUpdatesWhenTableDoesntGrow) {

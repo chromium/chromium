@@ -24,13 +24,19 @@
 #ifndef ABSL_LOG_INTERNAL_NULLGUARD_H_
 #define ABSL_LOG_INTERNAL_NULLGUARD_H_
 
+#include <array>
 #include <cstddef>
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace log_internal {
+
+ABSL_CONST_INIT extern const std::array<char, 7> kCharNull;
+ABSL_CONST_INIT extern const std::array<signed char, 7> kSignedCharNull;
+ABSL_CONST_INIT extern const std::array<unsigned char, 7> kUnsignedCharNull;
 
 template <typename T>
 struct NullGuard final {
@@ -38,15 +44,39 @@ struct NullGuard final {
 };
 template <>
 struct NullGuard<char*> final {
-  static const char* Guard(const char* v) { return v ? v : "(null)"; }
+  static const char* Guard(const char* v) { return v ? v : kCharNull.data(); }
 };
 template <>
 struct NullGuard<const char*> final {
-  static const char* Guard(const char* v) { return v ? v : "(null)"; }
+  static const char* Guard(const char* v) { return v ? v : kCharNull.data(); }
+};
+template <>
+struct NullGuard<signed char*> final {
+  static const signed char* Guard(const signed char* v) {
+    return v ? v : kSignedCharNull.data();
+  }
+};
+template <>
+struct NullGuard<const signed char*> final {
+  static const signed char* Guard(const signed char* v) {
+    return v ? v : kSignedCharNull.data();
+  }
+};
+template <>
+struct NullGuard<unsigned char*> final {
+  static const unsigned char* Guard(const unsigned char* v) {
+    return v ? v : kUnsignedCharNull.data();
+  }
+};
+template <>
+struct NullGuard<const unsigned char*> final {
+  static const unsigned char* Guard(const unsigned char* v) {
+    return v ? v : kUnsignedCharNull.data();
+  }
 };
 template <>
 struct NullGuard<std::nullptr_t> final {
-  static const char* Guard(const std::nullptr_t&) { return "(null)"; }
+  static const char* Guard(const std::nullptr_t&) { return kCharNull.data(); }
 };
 
 }  // namespace log_internal

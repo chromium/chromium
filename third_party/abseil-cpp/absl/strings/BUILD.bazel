@@ -792,8 +792,8 @@ cc_test(
         "no_test_android_arm64",
         "no_test_android_x86",
         "no_test_ios_x86_64",
+        "no_test_lexan",
         "no_test_loonix",
-        "no_test_msvc_x64",
     ],
     visibility = ["//visibility:private"],
     deps = [

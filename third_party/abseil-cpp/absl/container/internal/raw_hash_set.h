@@ -750,6 +750,13 @@ using Group = GroupPortableImpl;
 #endif
 
 class CommonFieldsGenerationInfoEnabled {
+  // A sentinel value for reserved_growth_ indicating that we just ran out of
+  // reserved growth on the last insertion. When reserve is called and then
+  // insertions take place, reserved_growth_'s state machine is N, ..., 1,
+  // kReservedGrowthJustRanOut, 0.
+  static constexpr size_t kReservedGrowthJustRanOut =
+      (std::numeric_limits<size_t>::max)();
+
  public:
   CommonFieldsGenerationInfoEnabled() = default;
   CommonFieldsGenerationInfoEnabled(CommonFieldsGenerationInfoEnabled&& that)
@@ -760,9 +767,19 @@ class CommonFieldsGenerationInfoEnabled {
   CommonFieldsGenerationInfoEnabled& operator=(
       CommonFieldsGenerationInfoEnabled&&) = default;
 
+  // Whether we should rehash on insert in order to detect bugs of using invalid
+  // references. We rehash on the first insertion after reserved_growth_ reaches
+  // 0 after a call to reserve.
+  // TODO(b/254649633): we could potentially do a rehash with low probability
+  // whenever reserved_growth_ is zero.
+  bool should_rehash_for_bug_detection_on_insert() const {
+    return reserved_growth_ == kReservedGrowthJustRanOut;
+  }
   void maybe_increment_generation_on_insert() {
+    if (reserved_growth_ == kReservedGrowthJustRanOut) reserved_growth_ = 0;
+
     if (reserved_growth_ > 0) {
-      --reserved_growth_;
+      if (--reserved_growth_ == 0) reserved_growth_ = kReservedGrowthJustRanOut;
     } else {
       ++*generation_;
     }
@@ -782,12 +799,6 @@ class CommonFieldsGenerationInfoEnabled {
   // a prior call to reserve. Note: we store reserved growth rather than
   // reservation size because calls to erase() decrease size_ but don't decrease
   // reserved growth.
-  // TODO(b/254649633): we can use reserved_growth_ to find more bugs by doing
-  // extra rehashes in sanitizer mode when reserved_growth_ is 0. We could
-  // potentially do a rehash with low probability whenever reserved_growth_ is
-  // zero, but also add a deterministic rehash the first insert after
-  // reserved_growth_ is zero after a call to reserve. This would detect cases
-  // of invalid references (as opposed to invalid iterators).
   size_t reserved_growth_ = 0;
   // Pointer to the generation counter, which is used to validate iterators and
   // is stored in the backing array between the control bytes and the slots.
@@ -809,6 +820,7 @@ class CommonFieldsGenerationInfoDisabled {
   CommonFieldsGenerationInfoDisabled& operator=(
       CommonFieldsGenerationInfoDisabled&&) = default;
 
+  bool should_rehash_for_bug_detection_on_insert() const { return false; }
   void maybe_increment_generation_on_insert() {}
   void reset_reserved_growth(size_t, size_t) {}
   size_t reserved_growth() const { return 0; }
@@ -937,6 +949,12 @@ class raw_hash_set;
 //
 // A valid capacity is a non-zero integer `2^m - 1`.
 inline bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
+
+// Returns the next valid capacity after `n`.
+inline size_t NextCapacity(size_t n) {
+  assert(IsValidCapacity(n) || n == 0);
+  return n * 2 + 1;
+}
 
 // Applies the following mapping to every byte in the control array:
 //   * kDeleted -> kEmpty
@@ -2385,7 +2403,7 @@ class raw_hash_set {
       drop_deletes_without_resize();
     } else {
       // Otherwise grow the container.
-      resize(cap * 2 + 1);
+      resize(NextCapacity(cap));
     }
   }
 
@@ -2449,8 +2467,16 @@ class raw_hash_set {
   //
   // REQUIRES: At least one non-full slot available.
   size_t prepare_insert(size_t hash) ABSL_ATTRIBUTE_NOINLINE {
+    const bool rehash_for_bug_detection =
+        common().should_rehash_for_bug_detection_on_insert();
+    if (rehash_for_bug_detection) {
+      // Move to a different heap allocation in order to detect bugs.
+      const size_t cap = capacity();
+      resize(growth_left() > 0 ? cap : NextCapacity(cap));
+    }
     auto target = find_first_non_full(common(), hash);
-    if (ABSL_PREDICT_FALSE(growth_left() == 0 &&
+    if (!rehash_for_bug_detection &&
+        ABSL_PREDICT_FALSE(growth_left() == 0 &&
                            !IsDeleted(control()[target.offset]))) {
       rehash_and_grow_if_necessary();
       target = find_first_non_full(common(), hash);
