@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -41,7 +42,7 @@ class BruschettaLauncherTest : public testing::Test,
 
     // We set up all our mocks to succeed, then failing tests explicitly break
     // the one thing they want to check the failure mode of.
-    ASSERT_TRUE(CreateTestBios());
+    ASSERT_TRUE(CreateTestFiles());
     vm_tools::concierge::StartVmResponse response;
     response.set_success(true);
     response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_RUNNING);
@@ -63,16 +64,17 @@ class BruschettaLauncherTest : public testing::Test,
         });
   }
 
-  bool CreateTestBios() {
-    auto downloads_folder = profile_.GetPath().Append("Downloads");
-    bios_path_ = downloads_folder.Append("bios");
+  bool CreateTestFiles() {
+    bios_path_ = profile_.GetPath().Append(kBiosPath);
+    pflash_path_ = profile_.GetPath().Append(kPflashPath);
     base::File::Error error;
-    bool result = base::CreateDirectoryAndGetError(downloads_folder, &error);
+    bool result =
+        base::CreateDirectoryAndGetError(bios_path_.DirName(), &error);
     if (!result) {
       LOG(ERROR) << "Error creating downloads folder: " << error;
       return false;
     }
-    return base::WriteFile(bios_path_, "");
+    return base::WriteFile(bios_path_, "") && base::WriteFile(pflash_path_, "");
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -80,6 +82,7 @@ class BruschettaLauncherTest : public testing::Test,
   base::RunLoop run_loop_;
   TestingProfile profile_;
   base::FilePath bios_path_;
+  base::FilePath pflash_path_;
   std::unique_ptr<BruschettaLauncher> launcher_;
 };
 
