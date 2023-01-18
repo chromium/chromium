@@ -423,6 +423,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       HandleAriaPropertiesChangedEvent(*wrapper);
       break;
     case ui::AXEventGenerator::Event::ROLE_CHANGED:
+      FireWinAccessibilityEvent(IA2_EVENT_ROLE_CHANGED, wrapper);
       FireUiaPropertyChangedEvent(UIA_AriaRolePropertyId, wrapper);
       break;
     case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:

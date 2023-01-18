@@ -72,15 +72,10 @@ class HTMLAreaElement;
 class LocalFrameView;
 class WebLocalFrameClient;
 
-// Describes a decicion on whether to create an AXNodeObject, an AXLayoutObject,
+// Describes a decision on whether to create an AXNodeObject, an AXLayoutObject,
 // or nothing (which will cause the AX subtree to be pruned at that point).
-// Currently this also mirrors the decision on whether to back the object by a
-// node or a layout object. When the AXObject is backed by a node, it's
-// AXID can be looked up in node_object_mapping_, and when the AXObject is
-// backed by layout, it's AXID can be looked up in layout_object_mapping_.
-// TODO(accessibility) Split the decision of what to use for backing from what
-// type of object to create, and use a node whenever possible, in order to
-// enable more stable IDs for most objects.
+// Not that AXLayoutObjects may be backed by a node, if it has one, and most do.
+// Only pseudo element descendants are missing DOM nodes.
 enum AXObjectType { kPruneSubtree = 0, kAXNodeObject, kAXLayoutObject };
 
 // This class should only be used from inside the accessibility directory.
@@ -247,7 +242,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* ObjectFromAXID(AXID id) const override;
   AXObject* Root();
 
-  // Used for objects without backing DOM nodes, layout objects, etc.
+  // Used for objects without a backing DOM nodes, layout or inline text box.
   AXObject* CreateAndInit(ax::mojom::blink::Role, AXObject* parent);
 
   AXObject* GetOrCreate(AccessibleNode*, AXObject* parent);
@@ -560,14 +555,10 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Create an AXObject, and do not check if a previous one exists.
   // Also, initialize the object and add it to maps for later retrieval.
-  AXObject* CreateAndInit(Node*,
-                          LayoutObject*,
-                          AXObject* parent_if_known,
-                          AXID use_axid = 0);
+  AXObject* CreateAndInit(Node*, LayoutObject*, AXObject* parent_if_known);
   // Helpers for CreateAndInitIfRelevant() methods..
   AXObject* CreateFromRenderer(LayoutObject*);
   AXObject* CreateFromNode(Node*);
-
   AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
 
   mojo::Remote<mojom::blink::RenderAccessibilityHost>&
@@ -578,6 +569,10 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   bool IsMainDocumentDirty() const;
   bool IsPopupDocumentDirty() const;
+
+  // Returns true if the AXID is for a DOM node.
+  // All other AXIDs are generated.
+  bool IsDOMNodeID(AXID axid) { return axid > 0; }
 
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
@@ -657,12 +652,16 @@ class MODULES_EXPORT AXObjectCacheImpl
   Member<Document> popup_document_;
 
   ui::AXMode ax_mode_;
+  // AXIDs for AXNodeObjects reuse the int ids in dom_node_id, all other AXIDs
+  // are negative in order to avoid a conflict.
   HeapHashMap<AXID, Member<AXObject>> objects_;
   // LayoutObject and AbstractInlineTextBox are not on the Oilpan heap so we
   // do not use HeapHashMap for those mappings.
   HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;
+  // When the AXObject is backed by layout, its AXID can be looked up in
+  // layout_object_mapping_. When the AXObject is backed by a node, its
+  // AXID can be looked up via DOMNodeIDs::ExistingIdForNode(node).
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
-  HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
   HashMap<AbstractInlineTextBox*, AXID> inline_text_box_object_mapping_;
   int modification_count_;
 
@@ -847,11 +846,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   TreeUpdateCallbackQueue tree_update_callback_queue_popup_;
 
   // Help de-dupe processing of repetitive events.
-  HeapHashSet<WeakMember<Node>> nodes_with_pending_children_changed_;
+  HashSet<AXID> nodes_with_pending_children_changed_;
   HashSet<AXID> nodes_with_pending_location_changed_;
 
   // Nodes with document markers that have received accessibility updates.
-  HeapHashSet<WeakMember<Node>> nodes_with_spelling_or_grammar_markers_;
+  HashSet<AXID> nodes_with_spelling_or_grammar_markers_;
 
   // True when layout has changed, and changed locations must be serialized.
   bool need_to_send_location_changes_ = false;
@@ -913,6 +912,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapDeque<Member<AXDirtyObject>> dirty_objects_;
 
   Deque<ui::AXEvent> pending_events_;
+
+  mutable bool has_axid_generator_looped_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveAXID);

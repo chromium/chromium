@@ -1,2 +1,3 @@
 AXFocusedUIElementChanged on AXStaticText AXValue='Apple'
 AXSelectedChildrenChanged on AXComboBox AXAutocompleteValue='list'
+AXSelectedChildrenChanged on AXList
