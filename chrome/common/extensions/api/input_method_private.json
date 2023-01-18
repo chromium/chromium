@@ -140,68 +140,62 @@
         "name": "getInputMethodConfig",
         "type": "function",
         "description": "Gets configurations for input methods.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback which is called with the config object.",
-            "parameters": [
-              {
-                "name": "config",
-                "type": "object",
-                "description": "The input method config object.",
-                "properties": {
-                  "isPhysicalKeyboardAutocorrectEnabled": {"type": "boolean"},
-                  "isImeMenuActivated": {"type": "boolean"}
-                }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback which is called with the config object.",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "object",
+              "description": "The input method config object.",
+              "properties": {
+                "isPhysicalKeyboardAutocorrectEnabled": {"type": "boolean"},
+                "isImeMenuActivated": {"type": "boolean"}
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }, {
         "name": "getInputMethods",
         "type": "function",
         "description": "Gets all enabled input methods, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback which is called with the input method objects.",
-            "parameters": [
-              {
-                "name": "inputMethods",
-                "type": "array",
-                "description": "Enabled input method objects, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id": {"type": "string"},
-                    "name": {"type": "string"},
-                    "indicator": {"type": "string"}
-                  }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback which is called with the input method objects.",
+          "parameters": [
+            {
+              "name": "inputMethods",
+              "type": "array",
+              "description": "Enabled input method objects, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {"type": "string"},
+                  "name": {"type": "string"},
+                  "indicator": {"type": "string"}
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }, {
         "name": "getCurrentInputMethod",
         "type": "function",
         "description": "Gets the current input method.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback which is called with the current input method.",
-            "parameters": [
-              {
-                "name": "inputMethodId",
-                "type": "string",
-                "description": "Current input method."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback which is called with the current input method.",
+          "parameters": [
+            {
+              "name": "inputMethodId",
+              "type": "string",
+              "description": "Current input method."
+            }
+          ]
+        }
       }, {
         "name": "setCurrentInputMethod",
         "type": "function",
@@ -211,49 +205,44 @@
             "name": "inputMethodId",
             "type": "string",
             "description": "The input method ID to be set as current input method."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Callback which is called once the current input method is set. If unsuccessful $(ref:runtime.lastError) is set.",
-            "parameters": []
           }
-        ]
-        }, {
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Callback which is called once the current input method is set. If unsuccessful $(ref:runtime.lastError) is set.",
+          "parameters": []
+        }
+      }, {
           "name": "switchToLastUsedInputMethod",
           "type": "function",
           "description": "Switches to the last used input method. If no last used input method, this is a no-op.",
-          "parameters": [
-            {
-              "name": "callback",
-              "type": "function",
-              "optional": true,
-              "description": "Callback which is called once the input method is swapped (if applicable). If unsuccessful $(ref:runtime.lastError) is set.",
-              "parameters": []
-            }
-          ]
+          "parameters": [],
+          "returns_async": {
+            "name": "callback",
+            "optional": true,
+            "description": "Callback which is called once the input method is swapped (if applicable). If unsuccessful $(ref:runtime.lastError) is set.",
+            "parameters": []
+          }
       }, {
         "name": "fetchAllDictionaryWords",
         "type": "function",
         "description": "Fetches a list of all the words currently in the dictionary.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback which is called once the list of dictionary words are ready.",
-            "parameters": [
-              {
-                "name": "words",
-                "type": "array",
-                "description": "List of dictionary words.",
-                "items": {
-                  "type": "string"
-                }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback which is called once the list of dictionary words are ready.",
+          "parameters": [
+            {
+              "name": "words",
+              "type": "array",
+              "description": "List of dictionary words.",
+              "items": {
+                "type": "string"
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }, {
         "name": "addWordToDictionary",
         "type": "function",
@@ -263,15 +252,14 @@
             "name": "word",
             "type": "string",
             "description": "A new word to add to the dictionary."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Callback which is called once the word is added. If unsuccessful $(ref:runtime.lastError) is set.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Callback which is called once the word is added. If unsuccessful $(ref:runtime.lastError) is set.",
+          "parameters": []
+        }
       }, {
         "name": "setXkbLayout",
         "type": "function",
@@ -281,15 +269,14 @@
             "name": "xkb_name",
             "type": "string",
             "description": "The XKB layout name."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Callback which is called when the layout is set.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Callback which is called when the layout is set.",
+          "parameters": []
+        }
       }, {
         "name": "finishComposingText",
         "type": "function",
@@ -304,41 +291,36 @@
                 "type": "integer"
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the operation completes.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the operation completes.",
+          "parameters": []
+        }
       }, {
         "name": "showInputView",
         "type": "function",
         "description": "Shows the input view window. If the input view window is already shown, this function will do nothing.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the operation completes.",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the operation completes.",
+          "parameters": []
+        }
       }, {
         "name": "hideInputView",
         "type": "function",
         "description": "Hides the input view window. If the input view window is already hidden, this function will do nothing.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the operation completes.",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the operation completes.",
+          "parameters": []
+        }
       }, {
         "name": "openOptionsPage",
         "type": "function",
@@ -364,25 +346,24 @@
             "name": "afterLength",
             "type": "integer",
             "description": "The number of characters after the current selection."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Callback which is called to provide the result",
-            "parameters": [
-              {
-                "name": "surroundingInfo",
-                "type": "object",
-                "description": "The surrouding text info.",
-                "properties": {
-                  "before": {"type": "string"},
-                  "selected": {"type": "string"},
-                  "after": {"type": "string"}
-                }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback which is called to provide the result",
+          "parameters": [
+            {
+              "name": "surroundingInfo",
+              "type": "object",
+              "description": "The surrouding text info.",
+              "properties": {
+                "before": {"type": "string"},
+                "selected": {"type": "string"},
+                "after": {"type": "string"}
+              }
+            }
+          ]
+        }
       }, {
         "name": "getSettings",
         "type": "function",
@@ -392,21 +373,20 @@
             "name": "engineID",
             "type": "string",
             "description": "The ID of the engine (e.g. 'zh-t-i0-pinyin', 'xkb:us::eng')"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Callback to receive the settings",
-            "parameters": [
-              {
-                "name": "settings",
-                "$ref": "InputMethodSettings",
-                "optional": true,
-                "description": "The requested setting, or null if there's no value"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback to receive the settings",
+          "parameters": [
+            {
+              "name": "settings",
+              "$ref": "InputMethodSettings",
+              "optional": true,
+              "description": "The requested setting, or null if there's no value"
+            }
+          ]
+        }
       }, {
         "name": "setSettings",
         "type": "function",
@@ -421,15 +401,14 @@
             "name": "settings",
             "$ref": "InputMethodSettings",
             "description": "The settings to set"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Callback to notify that the new value has been set",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Callback to notify that the new value has been set",
+          "parameters": []
+        }
       }, {
         "name": "setCompositionRange",
         "type": "function",
@@ -474,20 +453,19 @@
                 }
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the operation completes with a boolean indicating if the text was accepted or not. On failure, $(ref:runtime.lastError) is set.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the operation completes with a boolean indicating if the text was accepted or not. On failure, $(ref:runtime.lastError) is set.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean"
+            }
+          ]
+        }
       }, {
         "name": "reset",
         "type": "function",
@@ -536,37 +514,36 @@
                 "type": "integer"
               }
             }
-        },
-        {
-            "type": "function",
-            "name": "callback",
-            "description": "Called with screen coordinates of the text field when the operation completes. On failure, $(ref:runtime.lastError) is set.",
-            "parameters": [
-              {
-                "name": "textFieldBounds",
-                "type": "object",
-                "properties": {
-                  "x": {
-                    "description": "The x-coordinate of the text field's bounds.",
-                    "type": "integer"
-                  },
-                  "y": {
-                    "description": "The y-coordinate of the text field's bounds.",
-                    "type": "integer"
-                  },
-                  "width": {
-                    "description": "The width of the text field's bounds.",
-                    "type": "integer"
-                  },
-                  "height":{
-                    "description": "The height of the  bounds.",
-                    "type": "integer"
-                  }
-                }
+        }
+      ],
+      "returns_async": {
+        "name": "callback",
+        "description": "Called with screen coordinates of the text field when the operation completes. On failure, $(ref:runtime.lastError) is set.",
+        "parameters": [
+          {
+            "name": "textFieldBounds",
+            "type": "object",
+            "properties": {
+              "x": {
+                "description": "The x-coordinate of the text field's bounds.",
+                "type": "integer"
+              },
+              "y": {
+                "description": "The y-coordinate of the text field's bounds.",
+                "type": "integer"
+              },
+              "width": {
+                "description": "The width of the text field's bounds.",
+                "type": "integer"
+              },
+              "height":{
+                "description": "The height of the  bounds.",
+                "type": "integer"
               }
-            ]
+            }
           }
         ]
+      }
     },
     {
       "name" : "notifyInputMethodReadyForTesting",
