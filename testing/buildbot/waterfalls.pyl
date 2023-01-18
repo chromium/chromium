@@ -2980,7 +2980,7 @@
           'walleye',
         ],
         'test_suites': {
-          'gtest_tests': 'android_pie_coverage_gtests',
+          'gtest_tests': 'android_pie_coverage_instrumentation_tests',
           'junit_tests': 'chromium_junit_tests_no_swarming',
         },
         'os_type': 'android',

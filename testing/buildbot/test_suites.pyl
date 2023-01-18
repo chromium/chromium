@@ -25,6 +25,7 @@
       # Name is vr_*, but actually has AR tests.
       'vr_android_unittests': {},
     },
+
     'android_ddready_vr_gtests': {
       'chrome_public_test_vr_apk-ddready-cardboard': {
         'args': [
@@ -218,6 +219,20 @@
       },
       'mojo_test_apk': {},
       'ui_android_unittests': {},
+      'webview_instrumentation_test_apk': {
+        'swarming': {
+          'shards': 7,
+        },
+      },
+    },
+
+    'android_specific_coverage_java_tests': {
+      'content_shell_test_apk': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
+      'mojo_test_apk': {},
       'webview_instrumentation_test_apk': {
         'swarming': {
           'shards': 7,
@@ -5597,20 +5612,12 @@
       'android_smoke_tests',
     ],
 
-    # This is the same as 'chromium_android_gtests'
-    # with the addition of 'android_modern_smoke_tests',
-    # 'webview_cts_tests_gtest', and 'webview_ui_instrumentation_tests',
-    'android_pie_coverage_gtests': [
+    'android_pie_coverage_instrumentation_tests': [
       'android_modern_smoke_tests',
       'android_smoke_tests',
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
+      'android_specific_coverage_java_tests',
       'chrome_public_tests',
-      'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
-      'vr_platform_specific_chromium_gtests',
-      'webview_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
     ],
 
