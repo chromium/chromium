@@ -61,6 +61,7 @@
 
 using testing::_;
 using testing::AnyNumber;
+using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 using testing::Test;
@@ -1090,6 +1091,10 @@ class WebSocketQuicStreamAdapterTest
     : public TestWithTaskEnvironment,
       public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
  protected:
+  static spdy::Http2HeaderBlock RequestHeaders() {
+    return WebSocketHttp2Request("/", "www.example.org:443",
+                                 "http://www.example.org", {});
+  }
   WebSocketQuicStreamAdapterTest()
       : version_(GetParam()),
         mock_quic_data_(version_),
@@ -1111,6 +1116,12 @@ class WebSocketQuicStreamAdapterTest
                       &clock_,
                       "mail.example.org",
                       quic::Perspective::IS_CLIENT,
+                      /*client_headers_include_h2_stream_dependency_=*/false),
+        server_maker_(version_,
+                      connection_id_,
+                      &clock_,
+                      "mail.example.org",
+                      quic::Perspective::IS_SERVER,
                       /*client_headers_include_h2_stream_dependency_=*/false),
         peer_addr_(IPAddress(192, 0, 2, 23), 443),
         destination_endpoint_(url::kHttpsScheme, "mail.example.org", 80) {}
@@ -1145,6 +1156,17 @@ class WebSocketQuicStreamAdapterTest
     return client_maker_.MakeRstPacket(packet_number, /*include_version=*/true,
                                        client_data_stream_id1_, error_code,
                                        /*include_stop_sending_if_v99=*/true);
+  }
+
+  std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndRstPacket(
+      uint64_t packet_number,
+      quic::QuicRstStreamErrorCode error_code,
+      uint64_t largest_received,
+      uint64_t smallest_received) {
+    return client_maker_.MakeAckAndRstPacket(
+        packet_number, /*include_version=*/false, client_data_stream_id1_,
+        error_code, largest_received, smallest_received,
+        /*include_stop_sending_if_v99=*/true);
   }
 
   void Initialize() {
@@ -1228,16 +1250,21 @@ class WebSocketQuicStreamAdapterTest
   const quic::ParsedQuicVersion version_;
   MockQuicData mock_quic_data_;
   StrictMock<MockQuicDelegate> mock_delegate_;
+  const quic::QuicStreamId client_data_stream_id1_;
 
  private:
-  const quic::QuicStreamId client_data_stream_id1_;
-  quic::MockClock clock_;
-  std::unique_ptr<QuicChromiumClientSession> session_;
-  std::unique_ptr<QuicChromiumClientSession::Handle> session_handle_;
-  scoped_refptr<TestTaskRunner> runner_;
   quic::QuicCryptoClientConfig crypto_config_;
   const quic::QuicConnectionId connection_id_;
+
+ protected:
   QuicTestPacketMaker client_maker_;
+  QuicTestPacketMaker server_maker_;
+  std::unique_ptr<QuicChromiumClientSession> session_;
+
+ private:
+  quic::MockClock clock_;
+  std::unique_ptr<QuicChromiumClientSession::Handle> session_handle_;
+  scoped_refptr<TestTaskRunner> runner_;
   ProofVerifyDetailsChromium verify_details_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   quic::test::MockConnectionIdGenerator connection_id_generator_;
@@ -1280,6 +1307,97 @@ TEST_P(WebSocketQuicStreamAdapterTest, Disconnect) {
   EXPECT_TRUE(adapter->is_initialized());
   adapter->Disconnect();
   // TODO(momoka): Add tests to test both destruction orders.
+}
+
+TEST_P(WebSocketQuicStreamAdapterTest, SendRequestHeadersThenDisconnect) {
+  int packet_number = 1;
+  if (VersionUsesHttp3(version_.transport_version)) {
+    mock_quic_data_.AddWrite(SYNCHRONOUS,
+                             ConstructSettingsPacket(packet_number++));
+  }
+  SpdyTestUtil spdy_util;
+  spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+      "/", "www.example.org:443", "http://www.example.org", {});
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeRequestHeadersPacket(
+          packet_number++, client_data_stream_id1_,
+          /*should_include_version=*/true,
+          /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
+          std::move(request_header_block), 0, nullptr));
+
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(&mock_delegate_);
+  ASSERT_TRUE(adapter);
+  EXPECT_TRUE(adapter->is_initialized());
+
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  adapter->Disconnect();
+}
+
+TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
+  int packet_number = 1;
+  if (VersionUsesHttp3(version_.transport_version)) {
+    mock_quic_data_.AddWrite(SYNCHRONOUS,
+                             ConstructSettingsPacket(packet_number++));
+  }
+
+  SpdyTestUtil spdy_util;
+  spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+      "/", "www.example.org:443", "http://www.example.org", {});
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeRequestHeadersPacket(
+          packet_number++, client_data_stream_id1_,
+          /*should_include_version=*/true,
+          /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
+          std::move(request_header_block), 0, nullptr));
+
+  spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
+  mock_quic_data_.AddRead(ASYNC,
+                          server_maker_.MakeResponseHeadersPacket(
+                              /*packet_number=*/1, client_data_stream_id1_,
+                              /*should_include_version=*/false, /*fin=*/false,
+                              std::move(response_header_block),
+                              /*spdy_headers_frame_length=*/nullptr));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 1, 0));
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+    std::move(quit_closure).Run();
+  }));
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(&mock_delegate_);
+  ASSERT_TRUE(adapter);
+  EXPECT_TRUE(adapter->is_initialized());
+
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  session_->StartReading();
+  run_loop.Run();
+
+  adapter->Disconnect();
 }
 
 }  // namespace net::test

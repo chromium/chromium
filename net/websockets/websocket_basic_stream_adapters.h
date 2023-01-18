@@ -199,6 +199,10 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   bool is_initialized() const override;
 
   // WebSocketQuicSpdyStream::Delegate methods.
+  void OnInitialHeadersComplete(
+      bool fin,
+      size_t frame_len,
+      const quic::QuicHeaderList& header_list) override;
   void OnBodyAvailable() override;
   void ClearStream() override;
 

@@ -24,4 +24,14 @@ void WebSocketQuicSpdyStream::OnBodyAvailable() {
   }
 }
 
+void WebSocketQuicSpdyStream::OnInitialHeadersComplete(
+    bool fin,
+    size_t frame_len,
+    const quic::QuicHeaderList& header_list) {
+  QuicSpdyStream::OnInitialHeadersComplete(fin, frame_len, header_list);
+  if (delegate_) {
+    delegate_->OnInitialHeadersComplete(fin, frame_len, header_list);
+  }
+}
+
 }  // namespace net
