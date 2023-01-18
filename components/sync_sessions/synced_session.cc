@@ -258,6 +258,22 @@ const std::string& SyncedSession::GetSessionTag() const {
   return session_tag_;
 }
 
+void SyncedSession::SetSessionName(const std::string& session_name) {
+  session_name_ = session_name;
+}
+
+const std::string& SyncedSession::GetSessionName() const {
+  return session_name_;
+}
+
+void SyncedSession::SetModifiedTime(const base::Time& modified_time) {
+  modified_time_ = modified_time;
+}
+
+const base::Time& SyncedSession::GetModifiedTime() const {
+  return modified_time_;
+}
+
 void SyncedSession::SetDeviceTypeAndFormFactor(
     const sync_pb::SyncEnums::DeviceType& local_device_type,
     const syncer::DeviceInfo::FormFactor& local_device_form_factor) {
@@ -275,7 +291,7 @@ sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
     sync_pb::SessionWindow* w = header.add_window();
     w->CopyFrom(window->ToSessionWindowProto());
   }
-  header.set_client_name(session_name);
+  header.set_client_name(session_name_);
   header.set_device_type(device_type);
   header.set_device_form_factor(ToDeviceFormFactorProto(device_form_factor));
   return header;

@@ -79,8 +79,8 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
     const base::Time& session_time = base::Time::FromDoubleT(0)) {
   auto session = std::make_unique<sync_sessions::SyncedSession>();
-  session->session_name = session_name;
-  session->modified_time = session_time;
+  session->SetSessionName(session_name);
+  session->SetModifiedTime(session_time);
   return session;
 }
 

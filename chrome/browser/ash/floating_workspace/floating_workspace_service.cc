@@ -115,8 +115,9 @@ void FloatingWorkspaceService::
       GetMostRecentlyUsedRemoteSession();
   const sync_sessions::SyncedSession* local_session = GetLocalSession();
   if (!most_recently_used_remote_session ||
-      (local_session && local_session->modified_time >
-                            most_recently_used_remote_session->modified_time)) {
+      (local_session &&
+       local_session->GetModifiedTime() >
+           most_recently_used_remote_session->GetModifiedTime())) {
     // If local session is the most recently modified or no remote session,
     // dispatch a delayed task to check whether any foreign session got updated.
     // If remote session is not updated after the delay, launch local session.
@@ -144,8 +145,8 @@ void FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession() {
       GetMostRecentlyUsedRemoteSession();
   if (local_session) {
     if (!most_recently_used_remote_session ||
-        local_session->modified_time >
-            most_recently_used_remote_session->modified_time) {
+        local_session->GetModifiedTime() >
+            most_recently_used_remote_session->GetModifiedTime()) {
       // This is a delayed task, if at this time local session is still
       // most recent, restore local session.
       RestoreLocalSessionWindows();

@@ -66,7 +66,7 @@ const int kMaxLocalEntries = 8;
 // descending modified_time (i.e., most recent first).
 bool SortSessionsByRecency(const sync_sessions::SyncedSession* s1,
                            const sync_sessions::SyncedSession* s2) {
-  return s1->modified_time > s2->modified_time;
+  return s1->GetModifiedTime() > s2->GetModifiedTime();
 }
 
 ui::ImageModel CreateFavicon(const gfx::VectorIcon& icon) {
@@ -451,10 +451,10 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
       continue;
 
     // Add the header for the device session.
-    DCHECK(!session->session_name.empty());
+    DCHECK(!session->GetSessionName().empty());
     AddSeparator(ui::NORMAL_SEPARATOR);
     const int command_id = GetAndIncrementNextMenuID();
-    AddItem(command_id, base::UTF8ToUTF16(session->session_name));
+    AddItem(command_id, base::UTF8ToUTF16(session->GetSessionName()));
     device_name_items_.insert(command_id);
     AddDeviceFavicon(GetItemCount() - 1, session->GetDeviceFormFactor());
 

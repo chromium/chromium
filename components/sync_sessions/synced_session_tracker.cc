@@ -125,7 +125,7 @@ void PopulateSyncedSessionFromSpecifics(
     SyncedSession* synced_session,
     SyncedSessionTracker* tracker) {
   if (header_specifics.has_client_name()) {
-    synced_session->session_name = header_specifics.client_name();
+    synced_session->SetSessionName(header_specifics.client_name());
   }
   if (header_specifics.has_device_type()) {
     syncer::DeviceInfo::FormFactor device_form_factor;
@@ -139,8 +139,8 @@ void PopulateSyncedSessionFromSpecifics(
     synced_session->SetDeviceTypeAndFormFactor(header_specifics.device_type(),
                                                device_form_factor);
   }
-  synced_session->modified_time =
-      std::max(mtime, synced_session->modified_time);
+  synced_session->SetModifiedTime(
+      std::max(mtime, synced_session->GetModifiedTime()));
 
   // Process all the windows and their tab information.
   int num_windows = header_specifics.window_size();
@@ -154,7 +154,7 @@ void PopulateSyncedSessionFromSpecifics(
     // Window ID duplicates are filtered out in IsValidSessionHeader().
     DCHECK(success) << "Duplicate window ID in session";
     PopulateSyncedSessionWindowFromSpecifics(
-        session_tag, window_s, synced_session->modified_time,
+        session_tag, window_s, synced_session->GetModifiedTime(),
         synced_session->windows[window_id].get(), tracker);
   }
 }
@@ -180,7 +180,7 @@ void SyncedSessionTracker::InitLocalSession(
   local_session_tag_ = local_session_tag;
 
   SyncedSession* local_session = GetSession(local_session_tag);
-  local_session->session_name = local_session_name;
+  local_session->SetSessionName(local_session_name);
   local_session->SetDeviceTypeAndFormFactor(local_device_type,
                                             local_device_form_factor);
   local_session->SetSessionTag(local_session_tag);
@@ -788,8 +788,8 @@ void UpdateTrackerWithSpecifics(const sync_pb::SessionSpecifics& specifics,
     SetSessionTabFromSyncData(tab_s, modification_time, tab);
 
     // Update the last modified time.
-    if (session->modified_time < modification_time) {
-      session->modified_time = modification_time;
+    if (session->GetModifiedTime() < modification_time) {
+      session->SetModifiedTime(modification_time);
     }
   } else {
     LOG(WARNING) << "Ignoring session node with missing header/tab "
@@ -838,7 +838,7 @@ void SerializePartialTrackerToSpecifics(
         sync_pb::SessionSpecifics header_pb;
         header_pb.set_session_tag(session_tag);
         session->ToSessionHeaderProto().Swap(header_pb.mutable_header());
-        output_cb.Run(session->session_name, &header_pb);
+        output_cb.Run(session->GetSessionName(), &header_pb);
         continue;
       }
 
@@ -869,7 +869,7 @@ void SerializePartialTrackerToSpecifics(
         tab_pb.set_tab_node_id(tab_node_id);
         *tab_pb.mutable_tab() = SessionTabToSyncData(
             *tab, tracker.LookupWindowType(session_tag, tab->window_id));
-        output_cb.Run(session->session_name, &tab_pb);
+        output_cb.Run(session->GetSessionName(), &tab_pb);
         continue;
       }
 
@@ -878,7 +878,7 @@ void SerializePartialTrackerToSpecifics(
       tab_pb.set_tab_node_id(tab_node_id);
       tab_pb.set_session_tag(session_tag);
       tab_pb.mutable_tab()->set_tab_id(tab_id.id());
-      output_cb.Run(session->session_name, &tab_pb);
+      output_cb.Run(session->GetSessionName(), &tab_pb);
     }
   }
 }

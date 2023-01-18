@@ -27,8 +27,8 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
     const base::Time& session_time) {
   auto session = std::make_unique<sync_sessions::SyncedSession>();
-  session->session_name = session_name;
-  session->modified_time = session_time;
+  session->SetSessionName(session_name);
+  session->SetModifiedTime(session_time);
   return session;
 }
 
@@ -41,7 +41,7 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     *sessions = foreign_sessions_;
     base::ranges::sort(*sessions, std::greater(),
                        [](const sync_sessions::SyncedSession* session) {
-                         return session->modified_time;
+                         return session->GetModifiedTime();
                        });
 
     return !sessions->empty();
@@ -176,8 +176,9 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(remote_session_1_name,
-            test_floating_workspace_service.GetRestoredSession()->session_name);
+  EXPECT_EQ(
+      remote_session_1_name,
+      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
 }
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
@@ -207,8 +208,9 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(local_session_name,
-            test_floating_workspace_service.GetRestoredSession()->session_name);
+  EXPECT_EQ(
+      local_session_name,
+      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
 }
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
@@ -244,15 +246,16 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
   std::vector<const sync_sessions::SyncedSession*> updated_foreign_sessions;
   // Now previously less recent remote session becomes most recent
   // and should be restored.
-  less_recent_remote_session->modified_time = remote_session_updated_time;
+  less_recent_remote_session->SetModifiedTime(remote_session_updated_time);
   base::RunLoop second_run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, second_run_loop.QuitClosure(),
       GetMaxRestoreTime() - first_run_loop_delay_time);
   second_run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(less_recent_remote_session->session_name,
-            test_floating_workspace_service.GetRestoredSession()->session_name);
+  EXPECT_EQ(
+      less_recent_remote_session->GetSessionName(),
+      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
 }
 
 TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
@@ -277,8 +280,9 @@ TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(most_recent_remote_session->session_name,
-            test_floating_workspace_service.GetRestoredSession()->session_name);
+  EXPECT_EQ(
+      most_recent_remote_session->GetSessionName(),
+      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
 }
 
 TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
@@ -296,8 +300,9 @@ TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
       FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
   run_loop.Run();
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
-  EXPECT_EQ(local_session_name,
-            test_floating_workspace_service.GetRestoredSession()->session_name);
+  EXPECT_EQ(
+      local_session_name,
+      test_floating_workspace_service.GetRestoredSession()->GetSessionName());
 }
 
 TEST_F(FloatingWorkspaceServiceTest, NoSession) {

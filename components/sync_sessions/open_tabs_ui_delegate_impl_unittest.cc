@@ -60,8 +60,8 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   entry1.set_virtual_url(GURL("http://url1"));
   entry1.set_title(u"title1");
   session_tracker_.GetTab(kSessionTag1, kTabId1)->navigations.push_back(entry1);
-  session_tracker_.GetSession(kSessionTag1)->modified_time =
-      kTime0 + base::Seconds(3);
+  session_tracker_.GetSession(kSessionTag1)
+      ->SetModifiedTime(kTime0 + base::Seconds(3));
 
   session_tracker_.PutWindowInSession(kSessionTag2, kWindowId2);
   session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
@@ -70,8 +70,8 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   entry2.set_virtual_url(GURL("http://url2"));
   entry2.set_title(u"title2");
   session_tracker_.GetTab(kSessionTag2, kTabId2)->navigations.push_back(entry2);
-  session_tracker_.GetSession(kSessionTag2)->modified_time =
-      kTime0 + base::Seconds(1);
+  session_tracker_.GetSession(kSessionTag2)
+      ->SetModifiedTime(kTime0 + base::Seconds(1));
 
   session_tracker_.PutWindowInSession(kSessionTag3, kWindowId3);
   session_tracker_.PutTabInWindow(kSessionTag3, kWindowId3, kTabId3);
@@ -80,8 +80,8 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   entry3.set_virtual_url(GURL("http://url3"));
   entry3.set_title(u"title3");
   session_tracker_.GetTab(kSessionTag3, kTabId3)->navigations.push_back(entry3);
-  session_tracker_.GetSession(kSessionTag3)->modified_time =
-      kTime0 + base::Seconds(2);
+  session_tracker_.GetSession(kSessionTag3)
+      ->SetModifiedTime(kTime0 + base::Seconds(2));
 
   std::vector<const SyncedSession*> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));

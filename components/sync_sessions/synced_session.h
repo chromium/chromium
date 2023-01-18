@@ -89,12 +89,13 @@ struct SyncedSession {
 
   const std::string& GetSessionTag() const;
 
-  // User-visible name
-  std::string session_name;
+  void SetSessionName(const std::string& session_name);
 
-  // Last time this session was modified remotely. This is the max of the header
-  // and all children tab mtimes.
-  base::Time modified_time;
+  const std::string& GetSessionName() const;
+
+  void SetModifiedTime(const base::Time& modified_time);
+
+  const base::Time& GetModifiedTime() const;
 
   // Map of windows that make up this session.
   std::map<SessionID, std::unique_ptr<SyncedSessionWindow>> windows;
@@ -112,6 +113,13 @@ struct SyncedSession {
  private:
   // Unique tag for each session.
   std::string session_tag_;
+
+  // User-visible name
+  std::string session_name_;
+
+  // Last time this session was modified remotely. This is the max of the header
+  // and all children tab mtimes.
+  base::Time modified_time_;
 
   // Type of device this session is from.
   // It's used only to populate deprecated device_type by

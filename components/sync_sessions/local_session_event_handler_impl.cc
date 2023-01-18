@@ -154,7 +154,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
     // Just reset the session tracking. No need to worry about the previous
     // session; the current tabbed windows are now the source of truth.
     session_tracker_->ResetSessionTracking(current_session_tag_);
-    current_session->modified_time = base::Time::Now();
+    current_session->SetModifiedTime(base::Time::Now());
   } else {
     DVLOG(1) << "Found no tabbed windows. Reloading "
              << current_session->windows.size()

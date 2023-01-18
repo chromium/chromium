@@ -28,7 +28,7 @@ bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
       SyncedSessionTracker::PRESENTABLE);
   base::ranges::sort(
       *sessions, std::greater(),
-      [](const SyncedSession* session) { return session->modified_time; });
+      [](const SyncedSession* session) { return session->GetModifiedTime(); });
   return !sessions->empty();
 }
 

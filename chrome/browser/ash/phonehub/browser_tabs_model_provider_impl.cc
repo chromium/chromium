@@ -89,11 +89,12 @@ void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
   // |modified_time|.
   const sync_sessions::SyncedSession* phone_session = nullptr;
   for (const auto* session : sessions) {
-    if (session->session_name != *session_name)
+    if (session->GetSessionName() != *session_name) {
       continue;
+    }
 
     if (!phone_session ||
-        phone_session->modified_time < session->modified_time) {
+        phone_session->GetModifiedTime() < session->GetModifiedTime()) {
       phone_session = session;
     }
   }

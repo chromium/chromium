@@ -306,10 +306,10 @@ base::Value::List ForeignSessionHandler::GetForeignSessions() {
       // @typedef for ForeignSession. Please update it whenever you add or
       // remove any keys here.
       session_data.Set("tag", session_tag);
-      session_data.Set("name", session->session_name);
+      session_data.Set("name", session->GetSessionName());
       session_data.Set("modifiedTime",
-                       FormatSessionTime(session->modified_time));
-      session_data.Set("timestamp", session->modified_time.ToJsTime());
+                       FormatSessionTime(session->GetModifiedTime()));
+      session_data.Set("timestamp", session->GetModifiedTime().ToJsTime());
 
       bool is_collapsed = collapsed_sessions.Find(session_tag);
       session_data.Set("collapsed", is_collapsed);
