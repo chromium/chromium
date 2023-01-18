@@ -71,11 +71,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
       AttributionInputEvent input_event,
-      blink::mojom::AttributionNavigationType nav_type) override;
+      blink::mojom::AttributionNavigationType nav_type,
+      bool is_within_fenced_frame) override;
   void NotifyNavigationForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
       const attribution_reporting::SuitableOrigin& source_origin,
-      blink::mojom::AttributionNavigationType nav_type) override;
+      blink::mojom::AttributionNavigationType nav_type,
+      bool is_within_fenced_frame) override;
   void NotifyNavigationFailure(
       const blink::AttributionSrcToken& attribution_src_token) override;
 
@@ -105,6 +107,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const attribution_reporting::SuitableOrigin& reporting_origin,
       const std::string& header_value,
       blink::mojom::AttributionNavigationType nav_type,
+      bool is_within_fenced_frame,
       data_decoder::DataDecoder::ValueOrError result);
 
   void SetTriggerTimer(base::TimeDelta delay);

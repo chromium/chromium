@@ -76,6 +76,7 @@ class ScopedMapDeleter {
 struct AttributionHost::NavigationInfo {
   SuitableOrigin source_origin;
   AttributionInputEvent input_event;
+  bool is_within_fenced_frame;
 };
 
 AttributionHost::AttributionHost(WebContents* web_contents)
@@ -156,7 +157,10 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
                      .input_event = AttributionHost::FromWebContents(
                                         WebContents::FromRenderFrameHost(
                                             initiator_frame_host))
-                                        ->GetMostRecentNavigationInputEvent()});
+                                        ->GetMostRecentNavigationInputEvent(),
+
+                     .is_within_fenced_frame =
+                         initiator_frame_host->IsNestedWithinFencedFrame()});
 }
 
 void AttributionHost::DidRedirectNavigation(
@@ -207,7 +211,8 @@ void AttributionHost::DidRedirectNavigation(
   data_host_manager->NotifyNavigationRedirectRegistration(
       navigation_handle->GetImpression()->attribution_src_token,
       std::move(source_header), std::move(*reporting_origin),
-      it->second.source_origin, it->second.input_event, impression->nav_type);
+      it->second.source_origin, it->second.input_event, impression->nav_type,
+      it->second.is_within_fenced_frame);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -252,8 +257,10 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     MaybeNotifyFailedSourceNavigation(navigation_handle);
     return;
   }
-  const SuitableOrigin& source_origin =
-      (*navigation_source_origin_it.get())->second.source_origin;
+
+  const NavigationInfo& navigation_info =
+      (*navigation_source_origin_it.get())->second;
+  const SuitableOrigin& source_origin = navigation_info.source_origin;
 
   DCHECK(navigation_handle->GetImpression());
   const blink::Impression& impression = *(navigation_handle->GetImpression());
@@ -264,7 +271,8 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   }
 
   data_host_manager->NotifyNavigationForDataHost(
-      impression.attribution_src_token, source_origin, impression.nav_type);
+      impression.attribution_src_token, source_origin, impression.nav_type,
+      navigation_info.is_within_fenced_frame);
 }
 
 void AttributionHost::MaybeNotifyFailedSourceNavigation(

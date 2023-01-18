@@ -277,7 +277,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     SuitableOrigin reporting_origin,
     const SuitableOrigin& source_origin,
     AttributionInputEvent input_event,
-    AttributionNavigationType nav_type) {
+    AttributionNavigationType nav_type,
+    bool is_within_fenced_frame) {
   // Avoid costly isolated JSON parsing below if the header is obviously
   // invalid.
   if (header_value.empty()) {
@@ -309,22 +310,23 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
       header_value,
       base::BindOnce(&AttributionDataHostManagerImpl::OnRedirectSourceParsed,
                      weak_factory_.GetWeakPtr(), attribution_src_token,
-                     std::move(reporting_origin), header_value, nav_type));
+                     std::move(reporting_origin), header_value, nav_type,
+                     is_within_fenced_frame));
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
     const SuitableOrigin& source_origin,
-    AttributionNavigationType nav_type) {
+    AttributionNavigationType nav_type,
+    bool is_within_fenced_frame) {
   auto it = navigation_data_host_map_.find(attribution_src_token);
 
   if (it != navigation_data_host_map_.end()) {
-    // Source navigations need to navigate the primary main frame to be valid.
-    receivers_.Add(this, std::move(it->second.data_host),
-                   ReceiverContext(source_origin, RegistrationType::kSource,
-                                   it->second.register_time,
-                                   /*is_within_fenced_frame=*/false,
-                                   it->second.input_event, nav_type));
+    receivers_.Add(
+        this, std::move(it->second.data_host),
+        ReceiverContext(source_origin, RegistrationType::kSource,
+                        it->second.register_time, is_within_fenced_frame,
+                        it->second.input_event, nav_type));
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
@@ -568,6 +570,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     const SuitableOrigin& reporting_origin,
     const std::string& header_value,
     AttributionNavigationType nav_type,
+    bool is_within_fenced_frame,
     data_decoder::DataDecoder::ValueOrError result) {
   auto it = redirect_registrations_.find(attribution_src_token);
 
@@ -585,12 +588,10 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
       base::unexpected(SourceRegistrationError::kInvalidJson);
   if (result.has_value()) {
     if (result->is_dict()) {
-      // Source navigations need to navigate the primary main frame to be valid.
       source = ParseSourceRegistration(
           std::move(*result).TakeDict(), /*source_time=*/base::Time::Now(),
           reporting_origin, registrations.source_origin,
-          AttributionSourceType::kNavigation,
-          /*is_within_fenced_frame=*/false);
+          AttributionSourceType::kNavigation, is_within_fenced_frame);
     } else {
       source = base::unexpected(SourceRegistrationError::kRootWrongType);
     }

@@ -88,14 +88,16 @@ class MockDataHostManager : public AttributionDataHostManager {
                SuitableOrigin reporting_origin,
                const SuitableOrigin& source_origin,
                AttributionInputEvent input_event,
-               AttributionNavigationType),
+               AttributionNavigationType,
+               bool is_within_fenced_frame),
               (override));
 
   MOCK_METHOD(void,
               NotifyNavigationForDataHost,
               (const blink::AttributionSrcToken& attribution_src_token,
                const SuitableOrigin& source_origin,
-               AttributionNavigationType),
+               AttributionNavigationType,
+               bool is_within_fenced_frame),
               (override));
 
   MOCK_METHOD(void,
@@ -178,7 +180,8 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
               NotifyNavigationForDataHost(
                   impression.attribution_src_token,
                   *SuitableOrigin::Deserialize("https://secure_impression.com"),
-                  impression.nav_type));
+                  impression.nav_type,
+                  /*is_within_fenced_frame=*/false));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(

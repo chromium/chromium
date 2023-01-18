@@ -56,7 +56,8 @@ class AttributionDataHostManager {
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
       AttributionInputEvent input_event,
-      blink::mojom::AttributionNavigationType nav_type) = 0;
+      blink::mojom::AttributionNavigationType nav_type,
+      bool is_within_fenced_frame) = 0;
 
   // Notifies the manager that we have received a navigation for a given data
   // host. This may arrive before or after the attribution configuration is
@@ -64,7 +65,8 @@ class AttributionDataHostManager {
   virtual void NotifyNavigationForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
       const attribution_reporting::SuitableOrigin& source_origin,
-      blink::mojom::AttributionNavigationType nav_type) = 0;
+      blink::mojom::AttributionNavigationType nav_type,
+      bool is_within_fenced_frame) = 0;
 
   // Notifies the manager that a navigation associated with a data host failed
   // and should no longer be tracked.
