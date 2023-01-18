@@ -225,11 +225,6 @@ void TestWallpaperController::RemovePolicyWallpaper(
   NOTIMPLEMENTED();
 }
 
-void TestWallpaperController::GetOfflineWallpaperList(
-    GetOfflineWallpaperListCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void TestWallpaperController::SetAnimationDuration(
     base::TimeDelta animation_duration) {
   NOTIMPLEMENTED();
