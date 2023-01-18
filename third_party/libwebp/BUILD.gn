@@ -365,10 +365,16 @@ source_set("libwebp_sharpyuv_dsp_headers") {
   public = [ "src/sharpyuv/sharpyuv_dsp.h" ]
 }
 
+source_set("libwebp_dsp_cpu_c") {
+  public = [ "src/src/dsp/cpu.c" ]
+}
+
 static_library("libwebp_sharpyuv") {
   sources = [
     "src/sharpyuv/sharpyuv.c",
     "src/sharpyuv/sharpyuv.h",
+    "src/sharpyuv/sharpyuv_cpu.c",
+    "src/sharpyuv/sharpyuv_cpu.h",
     "src/sharpyuv/sharpyuv_csp.c",
     "src/sharpyuv/sharpyuv_csp.h",
     "src/sharpyuv/sharpyuv_gamma.c",
@@ -385,6 +391,7 @@ static_library("libwebp_sharpyuv") {
   all_dependent_configs = [ ":libwebp_config" ]
 
   deps = [
+    ":libwebp_dsp_cpu_c",
     ":libwebp_dsp_headers",
     ":libwebp_sharpyuv_dsp",
     ":libwebp_webp",
@@ -393,6 +400,8 @@ static_library("libwebp_sharpyuv") {
 
 static_library("libwebp_sharpyuv_dsp") {
   sources = [
+    "src/sharpyuv/sharpyuv.h",
+    "src/sharpyuv/sharpyuv_cpu.h",
     "src/sharpyuv/sharpyuv_dsp.c",
     "src/sharpyuv/sharpyuv_dsp.h",
   ]
@@ -644,6 +653,7 @@ if (current_toolchain == host_toolchain) {
       ":imagedec",
       ":imageio_util",
       ":libwebp",
+      ":libwebp_sharpyuv",
       ":libwebp_webp",
       "//base",
       "//build/win:default_exe_manifest",
