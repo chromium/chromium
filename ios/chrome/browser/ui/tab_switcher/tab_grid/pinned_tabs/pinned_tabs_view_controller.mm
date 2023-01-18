@@ -130,8 +130,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                    }
                    completion:nil];
 
-  self.collectionView.backgroundColor = _backgroundColor;
-  self.collectionView.backgroundView.hidden = NO;
+  [self resetCollectionViewBackground];
 }
 
 - (void)pinnedTabsAvailable:(BOOL)available {
@@ -399,15 +398,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidExit:(id<UIDropSession>)session {
-  self.collectionView.backgroundColor = _backgroundColor;
-  self.collectionView.backgroundView.hidden = NO;
+  [self resetCollectionViewBackground];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
      dropSessionDidEnd:(id<UIDropSession>)session {
   // Reset the background if the drop cames from another app.
-  self.collectionView.backgroundColor = _backgroundColor;
-  self.collectionView.backgroundView.hidden = NO;
+  [self resetCollectionViewBackground];
 }
 
 - (UICollectionViewDropProposal*)
@@ -707,6 +704,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   NSString* itemID = _items[index].identifier;
   [self.delegate pinnedTabsViewController:self didSelectItemWithID:itemID];
+}
+
+// Resets the `collectionView` background.
+- (void)resetCollectionViewBackground {
+  self.collectionView.backgroundColor = _backgroundColor;
+  self.collectionView.backgroundView.hidden = NO;
 }
 
 @end
