@@ -99,7 +99,6 @@ uint32_t TagnameHash(const String& s) {
   V(Div)                  \
   V(Footer)               \
   V(I)                    \
-  V(Img)                  \
   V(Input)                \
   V(Li)                   \
   V(Label)                \
@@ -147,6 +146,9 @@ uint32_t TagnameHash(const String& s) {
 // - Fails if a deep hierarchy is encountered. This is both to avoid a crash,
 //   but also at a certain depth elements get added as siblings vs children (see
 //   use of HTMLConstructionSite::kMaximumHTMLParserDOMTreeDepth).
+// - Fails if an <img> is encountered. Image elements request the image early
+//   on, resulting in network connections. Additionally, loading the image
+//   may consume preloaded resources.
 template <class Char>
 class HTMLFastPathParser {
   STACK_ALLOCATED();
@@ -347,11 +349,6 @@ class HTMLFastPathParser {
       static HTMLElement* Create(Document& document) {
         return MakeGarbageCollected<HTMLElement>(html_names::kITag, document);
       }
-    };
-
-    struct Img
-        : VoidTag<HTMLImageElement, PermittedParents::kPhrasingOrFlowContent> {
-      static constexpr const char tagname[] = "img";
     };
 
     struct Input
