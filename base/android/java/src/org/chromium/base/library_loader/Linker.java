@@ -18,7 +18,6 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.annotations.AccessedByNative;
-import org.chromium.base.annotations.JniIgnoreNatives;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.BufferedReader;
@@ -73,7 +72,6 @@ import javax.annotation.concurrent.GuardedBy;
  *   available to then send the Bundle to Linkers in other processes, consumed
  *   by takeSharedRelrosFromBundle().
  */
-@JniIgnoreNatives
 class Linker {
     private static final String TAG = "Linker";
 
@@ -769,7 +767,6 @@ class Linker {
      * well.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    @JniIgnoreNatives
     static class LibInfo implements Parcelable {
         private static final String EXTRA_LINKER_LIB_INFO = "libinfo";
 
@@ -870,8 +867,7 @@ class Linker {
         public int mRelroFd = -1; // shared RELRO file descriptor, or -1
     }
 
-    // Intentionally omitting @NativeMethods because generation of the stubs it requires (as
-    // GEN_JNI.java) is disabled by the @JniIgnoreNatives.
+    // Intentionally omitting @NativeMethods because this class does manual JNI.
     interface Natives {
         /**
          * Reserves a memory region (=mapping) of sufficient size to hold the loaded library before

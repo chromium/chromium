@@ -128,13 +128,6 @@ void JNI_MyClass_Bar(JNIEnv* env, jint a, jint b) { ... }
 void MyClass::NonStatic(JNIEnv* env) { ... }
 ```
 
-**Using the 'native' keyword**
-
-- The binding generator also looks for `native` JNI method declarations and
-  generates stubs for them. This used to be the norm, but is now obsolete.
-- If you have native methods that you don't want stubs generated for, you should
-  add @JniIgnoreNatives to the class.
-
 #### Testing Mockable Natives
 
 1. Add the `JniMocker` rule to your test.

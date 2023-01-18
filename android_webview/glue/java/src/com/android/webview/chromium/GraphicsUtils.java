@@ -4,9 +4,6 @@
 
 package com.android.webview.chromium;
 
-import org.chromium.base.annotations.JniIgnoreNatives;
-
-@JniIgnoreNatives
 abstract class GraphicsUtils {
     public static long getDrawSWFunctionTable() {
         return nativeGetDrawSWFunctionTable();

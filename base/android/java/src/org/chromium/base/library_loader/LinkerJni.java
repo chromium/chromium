@@ -7,7 +7,6 @@ package org.chromium.base.library_loader;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JniIgnoreNatives;
 
 /**
  * Mockable stub for all native methods in Linker.
@@ -15,11 +14,9 @@ import org.chromium.base.annotations.JniIgnoreNatives;
  * This functionality is usually generated from @NativeMethods, which cannot be used for the
  * auxiliary native library used by classes in Linker and other classes in this package.
  *
- * Generation of JNI stubs for classes in this package is omitted via @JniIgnoreNatives because
- * otherwise the generated native parts would have been linked into lib{,mono}chrome.so instead of
- * lib$LINKER_JNI_LIBRARY.so, where they are needed.
+ * Does not use jni_generator because otherwise the generated native parts would have been
+ * linked into libmonochrome.so instead of lib$LINKER_JNI_LIBRARY.so, where they are needed.
  */
-@JniIgnoreNatives
 class LinkerJni implements Linker.Natives {
     @Override
     public void findMemoryRegionAtRandomAddress(@NonNull Linker.LibInfo libInfo) {

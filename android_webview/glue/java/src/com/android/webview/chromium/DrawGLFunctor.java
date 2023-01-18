@@ -9,7 +9,6 @@ import android.view.View;
 import android.webkit.WebViewDelegate;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.base.annotations.JniIgnoreNatives;
 
 /**
  * Simple Java abstraction and wrapper for the native DrawGLFunctor flow.
@@ -17,7 +16,6 @@ import org.chromium.base.annotations.JniIgnoreNatives;
  * and then drawn and detached from the view tree any number of times (using requestDrawGL and
  * detach respectively).
  */
-@JniIgnoreNatives
 class DrawGLFunctor implements AwContents.NativeDrawGLFunctor {
     private static final String TAG = DrawGLFunctor.class.getSimpleName();
 
