@@ -3,9 +3,17 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_performer.h"
+
+#include <utility>
+
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.h"
@@ -164,7 +172,15 @@ void CryptohomeRecoveryPerformer::OnAuthenticateAuthFactor(
     return;
   }
   CHECK(reply.has_value());
-  DCHECK(reply->authenticated());
+  if (!base::Contains(reply->authorized_for(),
+                      user_data_auth::AUTH_INTENT_DECRYPT)) {
+    NOTREACHED() << "Authentication via recovery factor failed to authorize "
+                    "for decryption";
+    std::move(callback_).Run(
+        std::move(user_context_),
+        AuthenticationError(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
+    return;
+  }
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   std::move(callback_).Run(std::move(user_context_), absl::nullopt);
 }
