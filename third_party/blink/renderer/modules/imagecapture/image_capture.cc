@@ -279,67 +279,15 @@ void ImageCapture::ContextDestroyed() {
 }
 
 ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  if (TrackIsInactive(*stream_track_)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kInvalidStateTrackError));
-    return promise;
-  }
-
-  if (!service_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotFoundError, kNoServiceError));
-    return promise;
-  }
-  service_requests_.insert(resolver);
-
-  auto resolver_cb = WTF::BindOnce(&ImageCapture::ResolveWithPhotoCapabilities,
-                                   WrapPersistent(this));
-
-  // m_streamTrack->component()->source()->id() is the renderer "name" of the
-  // camera;
-  // TODO(mcasas) consider sending the security origin as well:
-  // scriptState->getExecutionContext()->getSecurityOrigin()->toString()
-  service_->GetPhotoState(
-      stream_track_->Component()->Source()->Id(),
-      WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(resolver_cb),
-                    false /* trigger_take_photo */));
-  return promise;
+  return GetMojoPhotoState(
+      script_state, WTF::BindOnce(&ImageCapture::ResolveWithPhotoCapabilities,
+                                  WrapPersistent(this)));
 }
 
 ScriptPromise ImageCapture::getPhotoSettings(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  if (TrackIsInactive(*stream_track_)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kInvalidStateTrackError));
-    return promise;
-  }
-
-  if (!service_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotFoundError, kNoServiceError));
-    return promise;
-  }
-  service_requests_.insert(resolver);
-
-  auto resolver_cb = WTF::BindOnce(&ImageCapture::ResolveWithPhotoSettings,
-                                   WrapPersistent(this));
-
-  // m_streamTrack->component()->source()->id() is the renderer "name" of the
-  // camera;
-  // TODO(mcasas) consider sending the security origin as well:
-  // scriptState->getExecutionContext()->getSecurityOrigin()->toString()
-  service_->GetPhotoState(
-      stream_track_->Component()->Source()->Id(),
-      WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(resolver_cb),
-                    false /* trigger_take_photo */));
-  return promise;
+  return GetMojoPhotoState(
+      script_state, WTF::BindOnce(&ImageCapture::ResolveWithPhotoSettings,
+                                  WrapPersistent(this)));
 }
 
 ScriptPromise ImageCapture::setOptions(ScriptState* script_state,
@@ -983,6 +931,37 @@ void ImageCapture::OnPermissionStatusChange(
 
 bool ImageCapture::HasPanTiltZoomPermissionGranted() const {
   return pan_tilt_zoom_permission_ == mojom::blink::PermissionStatus::GRANTED;
+}
+
+ScriptPromise ImageCapture::GetMojoPhotoState(
+    ScriptState* script_state,
+    PromiseResolverFunction resolver_cb) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  if (TrackIsInactive(*stream_track_)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kInvalidStateTrackError));
+    return promise;
+  }
+
+  if (!service_.is_bound()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotFoundError, kNoServiceError));
+    return promise;
+  }
+  service_requests_.insert(resolver);
+
+  // m_streamTrack->component()->source()->id() is the renderer "name" of the
+  // camera;
+  // TODO(mcasas) consider sending the security origin as well:
+  // scriptState->getExecutionContext()->getSecurityOrigin()->toString()
+  service_->GetPhotoState(
+      stream_track_->Component()->Source()->Id(),
+      WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
+                    WrapPersistent(resolver), std::move(resolver_cb),
+                    false /* trigger_take_photo */));
+  return promise;
 }
 
 void ImageCapture::OnMojoGetPhotoState(
