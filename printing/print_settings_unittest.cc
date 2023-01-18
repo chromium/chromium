@@ -15,7 +15,7 @@ namespace printing {
 
 TEST(PrintSettingsTest, ColorModeToColorModel) {
   for (int mode = static_cast<int>(mojom::ColorModel::kUnknownColorModel);
-       mode <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++mode) {
+       mode <= static_cast<int>(mojom::ColorModel::kMaxValue); ++mode) {
     EXPECT_EQ(ColorModeToColorModel(mode),
               static_cast<mojom::ColorModel>(mode));
   }
@@ -24,14 +24,14 @@ TEST(PrintSettingsTest, ColorModeToColorModel) {
   EXPECT_EQ(ColorModeToColorModel(
                 static_cast<int>(mojom::ColorModel::kUnknownColorModel) - 1),
             mojom::ColorModel::kUnknownColorModel);
-  EXPECT_EQ(ColorModeToColorModel(
-                static_cast<int>(mojom::ColorModel::kColorModelLast) + 1),
-            mojom::ColorModel::kUnknownColorModel);
+  EXPECT_EQ(
+      ColorModeToColorModel(static_cast<int>(mojom::ColorModel::kMaxValue) + 1),
+      mojom::ColorModel::kUnknownColorModel);
 }
 
 TEST(PrintSettingsTest, IsColorModelSelected) {
   for (int model = static_cast<int>(mojom::ColorModel::kUnknownColorModel) + 1;
-       model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model) {
+       model <= static_cast<int>(mojom::ColorModel::kMaxValue); ++model) {
     EXPECT_TRUE(IsColorModelSelected(static_cast<mojom::ColorModel>(model))
                     .has_value());
   }
@@ -47,7 +47,7 @@ TEST(PrintSettingsTest, GetColorModelForModel) {
   std::string color_setting_name;
   std::string color_value;
   for (int model = static_cast<int>(mojom::ColorModel::kUnknownColorModel);
-       model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model) {
+       model <= static_cast<int>(mojom::ColorModel::kMaxValue); ++model) {
     GetColorModelForModel(static_cast<mojom::ColorModel>(model),
                           &color_setting_name, &color_value);
     EXPECT_FALSE(color_setting_name.empty());
@@ -60,7 +60,7 @@ TEST(PrintSettingsTest, GetColorModelForModel) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(PrintSettingsTest, GetIppColorModelForModel) {
   for (int model = static_cast<int>(mojom::ColorModel::kUnknownColorModel);
-       model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model) {
+       model <= static_cast<int>(mojom::ColorModel::kMaxValue); ++model) {
     EXPECT_FALSE(GetIppColorModelForModel(static_cast<mojom::ColorModel>(model))
                      .empty());
   }

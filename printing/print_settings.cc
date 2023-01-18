@@ -26,8 +26,9 @@ namespace printing {
 
 mojom::ColorModel ColorModeToColorModel(int color_mode) {
   if (color_mode < static_cast<int>(mojom::ColorModel::kUnknownColorModel) ||
-      color_mode > static_cast<int>(mojom::ColorModel::kColorModelLast))
+      color_mode > static_cast<int>(mojom::ColorModel::kMaxValue)) {
     return mojom::ColorModel::kUnknownColorModel;
+  }
   return static_cast<mojom::ColorModel>(color_mode);
 }
 
