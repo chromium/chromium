@@ -1462,7 +1462,7 @@ void MaybeEmitDuplicateIdForInputIssue(
     if (IsAutofillableElement(element) &&
         id_count[element.GetIdAttribute()] > 1) {
       element.GetDocument().GetFrame()->AddGenericIssue(
-          blink::mojom::GenericIssueErrorType::kFormLabelForNameError,
+          blink::mojom::GenericIssueErrorType::kFormDuplicateIdForInputError,
           element.GetDevToolsNodeId());
     }
   }
