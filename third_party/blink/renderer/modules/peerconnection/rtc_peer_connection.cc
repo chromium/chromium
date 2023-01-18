@@ -643,10 +643,11 @@ RTCPeerConnection::~RTCPeerConnection() {
 }
 
 void RTCPeerConnection::Dispose() {
-  // Promptly clears the handler's pointer to |this|
+  // Promptly clears the handler
   // so that content/ doesn't access it in a lazy sweeping phase.
+  // Other references to the handler use a weak pointer, preventing access.
   if (peer_handler_) {
-    peer_handler_->CloseAndUnregister();
+    peer_handler_.reset();
   }
 }
 
