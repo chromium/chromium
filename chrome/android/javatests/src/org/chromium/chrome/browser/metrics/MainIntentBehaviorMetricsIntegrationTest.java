@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -146,7 +145,6 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     }
 
     @MediumTest
-    @DisabledTest(message = "crbug.com/879165")
     @Test
     public void testLaunch_From_InAppActivities() {
         try {
