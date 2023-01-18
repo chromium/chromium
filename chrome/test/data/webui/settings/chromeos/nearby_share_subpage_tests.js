@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 import {NearbyAccountManagerBrowserProxyImpl, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {RegisterReceiveSurfaceResult} from 'chrome://os-settings/mojo/nearby_share.mojom-webui.js';
+import {DeviceNameValidationResult, FastInitiationNotificationState} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
-
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeReceiveManager} from './fake_receive_manager.js';
 
@@ -262,7 +263,7 @@ suite('NearbyShare', function() {
     const doneButton = dialog.shadowRoot.querySelector('#doneButton');
 
     fakeSettings.setNextDeviceNameResult(
-        nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty);
+        DeviceNameValidationResult.kErrorEmpty);
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     // Allow the validation promise to resolve.
@@ -271,8 +272,7 @@ suite('NearbyShare', function() {
     assertTrue(input.invalid);
     assertTrue(doneButton.disabled);
 
-    fakeSettings.setNextDeviceNameResult(
-        nearbyShare.mojom.DeviceNameValidationResult.kValid);
+    fakeSettings.setNextDeviceNameResult(DeviceNameValidationResult.kValid);
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     await waitAfterNextRender();
@@ -373,7 +373,7 @@ suite('NearbyShare', function() {
         await waitAfterNextRender(dialog);
         assertTrue(isVisible(highVisibilityDialog));
         highVisibilityDialog.registerResult =
-            nearbyShare.mojom.RegisterReceiveSurfaceResult.kNoConnectionMedium;
+            RegisterReceiveSurfaceResult.kNoConnectionMedium;
         await waitAfterNextRender(highVisibilityDialog);
         highVisibilityDialog.shadowRoot.querySelector('nearby-page-template')
             .shadowRoot.querySelector('#closeButton')
@@ -620,14 +620,14 @@ suite('NearbyShare', function() {
     await flushAsync();
     assertTrue(fastInitToggle.checked);
     assertEquals(
-        nearbyShare.mojom.FastInitiationNotificationState.kEnabled,
+        FastInitiationNotificationState.kEnabled,
         subpage.settings.fastInitiationNotificationState);
 
     fastInitToggle.click();
     await flushAsync();
     assertFalse(fastInitToggle.checked);
     assertEquals(
-        nearbyShare.mojom.FastInitiationNotificationState.kDisabledByUser,
+        FastInitiationNotificationState.kDisabledByUser,
         subpage.settings.fastInitiationNotificationState);
   });
 

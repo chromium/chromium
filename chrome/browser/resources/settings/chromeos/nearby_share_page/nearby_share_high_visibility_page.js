@@ -14,6 +14,7 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../shared/nearby_page_template.js';
 import '../../shared/nearby_shared_icons.html.js';
 
+import {RegisterReceiveSurfaceResult} from '/mojo/nearby_share.mojom-webui.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -90,9 +91,9 @@ class NearbyShareHighVisibilityPageElement extends
         value: -1,
       },
 
-      /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
+      /** @private {?RegisterReceiveSurfaceResult} */
       registerResult: {
-        type: nearbyShare.mojom.RegisterReceiveSurfaceResult,
+        type: RegisterReceiveSurfaceResult,
         value: null,
       },
 
@@ -180,18 +181,17 @@ class NearbyShareHighVisibilityPageElement extends
    */
   computeErrorState_() {
     if (this.registerResult ===
-        nearbyShare.mojom.RegisterReceiveSurfaceResult.kNoConnectionMedium) {
+        RegisterReceiveSurfaceResult.kNoConnectionMedium) {
       return NearbyVisibilityErrorState.NO_CONNECTION_MEDIUM;
     }
     if (this.registerResult ===
-        nearbyShare.mojom.RegisterReceiveSurfaceResult.kTransferInProgress) {
+        RegisterReceiveSurfaceResult.kTransferInProgress) {
       return NearbyVisibilityErrorState.TRANSFER_IN_PROGRESS;
     }
     if (this.highVisibilityTimedOut_()) {
       return NearbyVisibilityErrorState.TIMED_OUT;
     }
-    if (this.registerResult ===
-            nearbyShare.mojom.RegisterReceiveSurfaceResult.kFailure ||
+    if (this.registerResult === RegisterReceiveSurfaceResult.kFailure ||
         this.nearbyProcessStopped || this.startAdvertisingFailed) {
       return NearbyVisibilityErrorState.SOMETHING_WRONG;
     }

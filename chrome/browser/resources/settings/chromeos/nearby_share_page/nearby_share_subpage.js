@@ -19,18 +19,20 @@ import './nearby_share_device_name_dialog.js';
 import './nearby_share_data_usage_dialog.js';
 import './nearby_share_receive_dialog.js';
 
+import {ReceiveObserverInterface, ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/mojo/nearby_share.mojom-webui.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../router.js';
 import {getContactManager} from '../../shared/nearby_contact_manager.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {Route, Router} from '../router.js';
 
 import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_browser_proxy.js';
 import {observeReceiveManager} from './nearby_share_receive_manager.js';
@@ -164,7 +166,7 @@ class SettingsNearbyShareSubpageElement extends
   constructor() {
     super();
 
-    /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
+    /** @private {?ReceiveObserverReceiver} */
     this.receiveObserver_ = null;
   }
 
@@ -192,7 +194,7 @@ class SettingsNearbyShareSubpageElement extends
           this.profileLabel_ = accounts[0].email;
         });
     this.receiveObserver_ = observeReceiveManager(
-        /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
+        /** @type {!ReceiveObserverInterface} */ (this));
   }
 
   /** @private */
@@ -284,8 +286,8 @@ class SettingsNearbyShareSubpageElement extends
 
   /**
    * Mojo callback when transfer status changes.
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
-   * @param {!nearbyShare.mojom.TransferMetadata} metadata
+   * @param {!ShareTarget} shareTarget
+   * @param {!TransferMetadata} metadata
    */
   onTransferUpdate(shareTarget, metadata) {
     // Note: Intentionally left empty.
@@ -333,19 +335,19 @@ class SettingsNearbyShareSubpageElement extends
   }
 
   /**
-   * @param {nearbyShare.mojom.Visibility} visibility
+   * @param {Visibility} visibility
    * @return {string} localized visibility string
    * @private
    */
   getVisibilityText_(visibility) {
     switch (visibility) {
-      case nearbyShare.mojom.Visibility.kAllContacts:
+      case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityAll');
-      case nearbyShare.mojom.Visibility.kSelectedContacts:
+      case Visibility.kSelectedContacts:
         return this.i18n('nearbyShareContactVisibilitySome');
-      case nearbyShare.mojom.Visibility.kNoOne:
+      case Visibility.kNoOne:
         return this.i18n('nearbyShareContactVisibilityNone');
-      case nearbyShare.mojom.Visibility.kUnknown:
+      case Visibility.kUnknown:
         return this.i18n('nearbyShareContactVisibilityUnknown');
       default:
         return '';  // Make closure happy.
@@ -353,19 +355,19 @@ class SettingsNearbyShareSubpageElement extends
   }
 
   /**
-   * @param {nearbyShare.mojom.Visibility} visibility
+   * @param {Visibility} visibility
    * @return {string} localized visibility description string
    * @private
    */
   getVisibilityDescription_(visibility) {
     switch (visibility) {
-      case nearbyShare.mojom.Visibility.kAllContacts:
+      case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityAllDescription');
-      case nearbyShare.mojom.Visibility.kSelectedContacts:
+      case Visibility.kSelectedContacts:
         return this.i18n('nearbyShareContactVisibilitySomeDescription');
-      case nearbyShare.mojom.Visibility.kNoOne:
+      case Visibility.kNoOne:
         return this.i18n('nearbyShareContactVisibilityNoneDescription');
-      case nearbyShare.mojom.Visibility.kUnknown:
+      case Visibility.kUnknown:
         return this.i18n('nearbyShareContactVisibilityUnknownDescription');
       default:
         return '';  // Make closure happy.
@@ -514,8 +516,8 @@ class SettingsNearbyShareSubpageElement extends
     this.set(
         'settings.fastInitiationNotificationState',
         this.isFastInitiationNotificationEnabled_() ?
-            nearbyShare.mojom.FastInitiationNotificationState.kDisabledByUser :
-            nearbyShare.mojom.FastInitiationNotificationState.kEnabled);
+            FastInitiationNotificationState.kDisabledByUser :
+            FastInitiationNotificationState.kEnabled);
   }
 
   /**
@@ -524,7 +526,7 @@ class SettingsNearbyShareSubpageElement extends
    */
   isFastInitiationNotificationEnabled_() {
     return this.get('settings.fastInitiationNotificationState') ===
-        nearbyShare.mojom.FastInitiationNotificationState.kEnabled;
+        FastInitiationNotificationState.kEnabled;
   }
 
   /**

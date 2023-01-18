@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
 /**
  * @fileoverview Fake implementation of ReceiveManagerInterface for testing.
  */
+
+import {ReceiveManagerInterface, ReceiveObserverInterface, ReceiveObserverRemote, RegisterReceiveSurfaceResult, TransferStatus} from 'chrome://os-settings/mojo/nearby_share.mojom-webui.js';
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 /**
- * Fake implementation of nearbyShare.mojom.ReceiveManagerInterface
+ * Fake implementation of ReceiveManagerInterface
  *
- * @implements {nearbyShare.mojom.ReceiveManagerInterface}
+ * @implements {ReceiveManagerInterface}
  */
 export class FakeReceiveManager extends TestBrowserProxy {
   constructor() {
@@ -22,11 +25,11 @@ export class FakeReceiveManager extends TestBrowserProxy {
       'accept',
       'reject',
     ]);
-    /** @private {!nearbyShare.mojom.ReceiveManagerObserverInterface} */
+    /** @private {!ReceiveObserverInterface} */
     this.observer_;
     /** @private {!boolean} */
     this.inHighVisibility_ = false;
-    /** @private {?mojoBase.mojom.UnguessableToken} */
+    /** @private {?UnguessableToken} */
     this.lastToken_ = null;
     /** @private {!boolean} */
     this.nextResult_ = true;
@@ -50,7 +53,7 @@ export class FakeReceiveManager extends TestBrowserProxy {
       },
     };
     const metadata = {
-      'status': nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation,
+      'status': TransferStatus.kAwaitingLocalConfirmation,
       progress: 0.0,
       token: connectionToken,
       is_original: true,
@@ -61,7 +64,7 @@ export class FakeReceiveManager extends TestBrowserProxy {
   }
 
   /**
-   * @param {!nearbyShare.mojom.ReceiveObserverRemote} observer
+   * @param {!ReceiveObserverRemote} observer
    */
   addReceiveObserver(observer) {
     this.methodCalled('addReceiveObserver');
@@ -77,8 +80,7 @@ export class FakeReceiveManager extends TestBrowserProxy {
   }
 
   /**
-   * @return {!Promise<{result:
-   *     !nearbyShare.mojom.RegisterReceiveSurfaceResult}>}
+   * @return {!Promise<{result: !RegisterReceiveSurfaceResult}>}
    */
   async registerForegroundReceiveSurface() {
     this.inHighVisibility_ = true;
@@ -86,9 +88,8 @@ export class FakeReceiveManager extends TestBrowserProxy {
       this.observer_.onHighVisibilityChanged(this.inHighVisibility_);
     }
     this.methodCalled('registerForegroundReceiveSurface');
-    const result = this.nextResult_ ?
-        nearbyShare.mojom.RegisterReceiveSurfaceResult.kSuccess :
-        nearbyShare.mojom.RegisterReceiveSurfaceResult.kFailure;
+    const result = this.nextResult_ ? RegisterReceiveSurfaceResult.kSuccess :
+                                      RegisterReceiveSurfaceResult.kFailure;
     return {result: result};
   }
 
@@ -105,7 +106,7 @@ export class FakeReceiveManager extends TestBrowserProxy {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} shareTargetId
+   * @param {!UnguessableToken} shareTargetId
    * @return {!Promise<{success: !boolean}>}
    */
   async accept(shareTargetId) {
@@ -115,7 +116,7 @@ export class FakeReceiveManager extends TestBrowserProxy {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} shareTargetId
+   * @param {!UnguessableToken} shareTargetId
    * @return {!Promise<{success: !boolean}>}
    */
   async reject(shareTargetId) {

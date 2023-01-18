@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeReceiveManager} from './fake_receive_manager.js';
@@ -47,7 +47,7 @@ suite('NearbyShare', function() {
     dialog.settings = {
       enabled: enabled,
       isOnboardingComplete: isOnboardingComplete,
-      visibility: nearbyShare.mojom.Visibility.kUnknown,
+      visibility: Visibility.kUnknown,
     };
     dialog.isSettingsRetreived = true;
     document.body.appendChild(dialog);
@@ -213,9 +213,7 @@ suite('NearbyShare', function() {
       await waitAfterNextRender(dialog);
 
       assertTrue(dialog.settings.enabled);
-      assertEquals(
-          nearbyShare.mojom.Visibility.kAllContacts,
-          dialog.settings.visibility);
+      assertEquals(Visibility.kAllContacts, dialog.settings.visibility);
       assertTrue(isVisible('nearby-share-high-visibility-page'));
     });
 

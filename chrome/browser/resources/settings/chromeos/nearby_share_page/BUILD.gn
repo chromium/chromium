@@ -115,7 +115,6 @@ js_library("nearby_share_receive_manager") {
     ":nearby_share_high_visibility_page",
     "//ash/webui/common/resources:i18n_behavior",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
-    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

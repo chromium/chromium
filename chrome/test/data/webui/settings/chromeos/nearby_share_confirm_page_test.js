@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/chromeos/os_settings.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
+import {TransferStatus} from 'chrome://os-settings/mojo/nearby_share.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NearbyShare', function() {
@@ -26,8 +27,7 @@ suite('NearbyShare', function() {
   }
 
   test('renders progress bar', async function() {
-    nearbyShareConfirmPage.set(
-        'transferStatus', nearbyShare.mojom.TransferStatus['kConnecting']);
+    nearbyShareConfirmPage.set('transferStatus', TransferStatus['kConnecting']);
     await flushAsync();
 
     const isAnimationHidden =
@@ -41,8 +41,7 @@ suite('NearbyShare', function() {
   });
 
   test('hide progress bar when error', async function() {
-    nearbyShareConfirmPage.set(
-        'transferStatus', nearbyShare.mojom.TransferStatus['kRejected']);
+    nearbyShareConfirmPage.set('transferStatus', TransferStatus['kRejected']);
     await flushAsync();
 
     const isAnimationHidden =
@@ -71,11 +70,10 @@ suite('NearbyShare', function() {
     };
 
     let key;
-    for (key of Object.keys(nearbyShare.mojom.TransferStatus)) {
+    for (key of Object.keys(TransferStatus)) {
       const isErrorState = !(key in nonErrorStates);
       if (isErrorState) {
-        nearbyShareConfirmPage.set(
-            'transferStatus', nearbyShare.mojom.TransferStatus[key]);
+        nearbyShareConfirmPage.set('transferStatus', TransferStatus[key]);
         await flushAsync();
         assertTrue(
             !!nearbyShareConfirmPage.shadowRoot.querySelector('#errorTitle')
@@ -83,7 +81,7 @@ suite('NearbyShare', function() {
 
         // Set back to a good state
         nearbyShareConfirmPage.set(
-            'transferStatus', nearbyShare.mojom.TransferStatus['kConnecting']);
+            'transferStatus', TransferStatus['kConnecting']);
         await flushAsync();
         assertFalse(
             !!nearbyShareConfirmPage.shadowRoot.querySelector('#errorTitle'));

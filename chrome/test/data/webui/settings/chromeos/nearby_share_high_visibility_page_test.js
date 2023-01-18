@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/chromeos/os_settings.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {RegisterReceiveSurfaceResult} from 'chrome://os-settings/mojo/nearby_share.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NearbyShare', function() {
@@ -58,8 +58,7 @@ suite('NearbyShare', function() {
 
   test('Handles No Connection Medium error', async function() {
     nearbyShareHighVisibilityPage.set(
-        'registerResult',
-        nearbyShare.mojom.RegisterReceiveSurfaceResult['kNoConnectionMedium']);
+        'registerResult', RegisterReceiveSurfaceResult['kNoConnectionMedium']);
     await flushAsync();
 
     assertEquals(
@@ -78,8 +77,7 @@ suite('NearbyShare', function() {
 
   test('Handles Transfer in Progress error', async function() {
     nearbyShareHighVisibilityPage.set(
-        'registerResult',
-        nearbyShare.mojom.RegisterReceiveSurfaceResult['kTransferInProgress']);
+        'registerResult', RegisterReceiveSurfaceResult['kTransferInProgress']);
     await flushAsync();
 
     assertEquals(
@@ -98,8 +96,7 @@ suite('NearbyShare', function() {
 
   test('Handles Failure error', async function() {
     nearbyShareHighVisibilityPage.set(
-        'registerResult',
-        nearbyShare.mojom.RegisterReceiveSurfaceResult['kFailure']);
+        'registerResult', RegisterReceiveSurfaceResult['kFailure']);
     await flushAsync();
 
     assertEquals(

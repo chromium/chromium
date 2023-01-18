@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DataUsage} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+
 /**
  * Enumeration of all possible data usage options for Nearby Share.
  * Note: This must be kept in sync with DataUsage in
@@ -18,21 +20,17 @@ export const NearbyShareDataUsage = {
 /**
  * Takes a string and returns a value of the NearbyShareDataUsage enum.
  * @param {string} s string representation of the data usage value
- * @return {!nearbyShare.mojom.DataUsage} enum value
+ * @return {!DataUsage} enum value
  */
 export function dataUsageStringToEnum(s) {
   switch ((parseInt(s, 10))) {
     case NearbyShareDataUsage.OFFLINE:
-      return /** @type {!nearbyShare.mojom.DataUsage} */ (
-          NearbyShareDataUsage.OFFLINE);
+      return /** @type {!DataUsage} */ (NearbyShareDataUsage.OFFLINE);
     case NearbyShareDataUsage.ONLINE:
-      return /** @type {!nearbyShare.mojom.DataUsage} */ (
-          NearbyShareDataUsage.ONLINE);
+      return /** @type {!DataUsage} */ (NearbyShareDataUsage.ONLINE);
     case NearbyShareDataUsage.WIFI_ONLY:
-      return /** @type {!nearbyShare.mojom.DataUsage} */ (
-          NearbyShareDataUsage.WIFI_ONLY);
+      return /** @type {!DataUsage} */ (NearbyShareDataUsage.WIFI_ONLY);
     default:
-      return /** @type {!nearbyShare.mojom.DataUsage} */ (
-          NearbyShareDataUsage.UNKNOWN);
+      return /** @type {!DataUsage} */ (NearbyShareDataUsage.UNKNOWN);
   }
 }

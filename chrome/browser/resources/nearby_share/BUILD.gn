@@ -106,21 +106,15 @@ generate_grd("build_mojo_grdp") {
   resource_path_rewrites = [
     "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js|mojo/nearby_share.mojom-webui.js",
     "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js|mojo/nearby_share_share_type.mojom-webui.js",
-
-    # TODO(b/263413628) Remove Mojo lite bindings once no longer used
-    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
-    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js|mojo/nearby_share_share_type.mojom-lite.js",
-    "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
-    "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_target_types.mojom-lite.js",
   ]
 }
 
 # Mojo files, for generating grdp
 preprocess_if_expr("preprocess_mojo") {
   deps = [
-    "//chrome/browser/ui/webui/nearby_share:mojom_js",
-    "//chrome/browser/ui/webui/nearby_share:share_type_js",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js",
+    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
+    "//chrome/browser/ui/webui/nearby_share:share_type_webui_js",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
   ]
   in_folder = root_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
@@ -128,12 +122,6 @@ preprocess_if_expr("preprocess_mojo") {
   in_files = [
     "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js",
     "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js",
-
-    # TODO(b/263413628) Remove Mojo lite bindings once no longer used
-    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js",
-    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js",
-    "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-lite.js",
-    "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js",
   ]
 }
 

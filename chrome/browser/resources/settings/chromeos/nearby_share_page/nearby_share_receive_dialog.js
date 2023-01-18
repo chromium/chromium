@@ -20,15 +20,16 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import '../../prefs/prefs.js';
 import '../../shared/nearby_onboarding_one_page.js';
 import '../../shared/nearby_onboarding_page.js';
 import '../../shared/nearby_visibility_page.js';
 import './nearby_share_confirm_page.js';
 import './nearby_share_high_visibility_page.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
+import {ReceiveManagerInterface, ReceiveObserverInterface, ReceiveObserverReceiver, RegisterReceiveSurfaceResult, ShareTarget, TransferMetadata, TransferStatus} from '/mojo/nearby_share.mojom-webui.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -64,7 +65,7 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
         value: Page,
       },
 
-      /** @type {?nearbyShare.mojom.ShareTarget} */
+      /** @type {?ShareTarget} */
       shareTarget: {
         type: Object,
         value: null,
@@ -91,10 +92,10 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
 
       /**
        * Status of the current transfer.
-       * @private {?nearbyShare.mojom.TransferStatus}
+       * @private {?TransferStatus}
        */
       transferStatus_: {
-        type: nearbyShare.mojom.TransferStatus,
+        type: TransferStatus,
         value: null,
       },
 
@@ -140,10 +141,10 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
      * */
     this.postOnboardingCallback = null;
 
-    /** @private {?nearbyShare.mojom.ReceiveManagerInterface} */
+    /** @private {?ReceiveManagerInterface} */
     this.receiveManager_ = null;
 
-    /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
+    /** @private {?ReceiveObserverReceiver} */
     this.observerReceiver_ = null;
 
     /**
@@ -153,7 +154,7 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
      */
     this.highVisibilityShutoffTimestamp_ = 0;
 
-    /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
+    /** @private {?RegisterReceiveSurfaceResult} */
     this.registerForegroundReceiveSurfaceResult_ = null;
   }
 
@@ -179,7 +180,7 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
     this.closing_ = false;
     this.receiveManager_ = getReceiveManager();
     this.observerReceiver_ = observeReceiveManager(
-        /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
+        /** @type {!ReceiveObserverInterface} */ (this));
   }
 
   /** @override */
@@ -225,8 +226,7 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
 
     if (inHighVisibility === false &&
         now < this.highVisibilityShutoffTimestamp_ &&
-        this.transferStatus_ !==
-            nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation) {
+        this.transferStatus_ !== TransferStatus.kAwaitingLocalConfirmation) {
       this.close_();
       return;
     }
@@ -242,14 +242,13 @@ class NearbyShareReceiveDialogElement extends PolymerElement {
 
   /**
    * Mojo callback when transfer status changes.
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
-   * @param {!nearbyShare.mojom.TransferMetadata} metadata
+   * @param {!ShareTarget} shareTarget
+   * @param {!TransferMetadata} metadata
    */
   onTransferUpdate(shareTarget, metadata) {
     this.transferStatus_ = metadata.status;
 
-    if (metadata.status ===
-        nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation) {
+    if (metadata.status === TransferStatus.kAwaitingLocalConfirmation) {
       this.shareTarget = shareTarget;
       this.connectionToken =
           (metadata && metadata.token) ? metadata.token : null;

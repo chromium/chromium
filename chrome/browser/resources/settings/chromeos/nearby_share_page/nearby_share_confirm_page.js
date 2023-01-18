@@ -8,23 +8,13 @@
  * reject the request
  */
 
-// clang-format off
-// TODO(b/263413628) Replace with Mojo WebUI bindings
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import '/mojo/nearby_share_target_types.mojom-lite.js';
-import '/mojo/nearby_share_share_type.mojom-lite.js';
-import '/mojo/nearby_share.mojom-lite.js';
-import '/mojo/nearby_share_settings.mojom-lite.js';
-// clang-format on
-
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import '../../shared/nearby_page_template.js';
 import '../../shared/nearby_device.js';
 import '../../shared/nearby_preview.js';
 import '../../shared/nearby_progress.js';
 
+import {ShareTarget, TransferStatus} from '/mojo/nearby_share.mojom-webui.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -60,7 +50,7 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
 
   static get properties() {
     return {
-      /** @type {?nearbyShare.mojom.ShareTarget} */
+      /** @type {?ShareTarget} */
       shareTarget: {
         type: Object,
         value: null,
@@ -73,10 +63,10 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
       },
 
       /**
-       * @type {?nearbyShare.mojom.TransferStatus}
+       * @type {?TransferStatus}
        */
       transferStatus: {
-        type: nearbyShare.mojom.TransferStatus,
+        type: TransferStatus,
         value: null,
         observer: 'onTransferStatusChanged_',
       },
@@ -115,43 +105,42 @@ class NearbyShareConfirmPageElement extends NearbyShareConfirmPageElementBase {
   /**
    * Update the |errorTitle_| and the |errorDescription_| when the transfer
    * status changes.
-   * @param {?nearbyShare.mojom.TransferStatus} newStatus
+   * @param {?TransferStatus} newStatus
    */
   onTransferStatusChanged_(newStatus) {
     switch (newStatus) {
-      case nearbyShare.mojom.TransferStatus.kTimedOut:
+      case TransferStatus.kTimedOut:
         this.errorTitle_ = this.i18n('nearbyShareErrorTimeOut');
         this.errorDescription_ = this.i18n('nearbyShareErrorTryAgain');
         break;
-      case nearbyShare.mojom.TransferStatus.kUnsupportedAttachmentType:
+      case TransferStatus.kUnsupportedAttachmentType:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantReceive');
         this.errorDescription_ =
             this.i18n('nearbyShareErrorUnsupportedFileType');
         break;
-      case nearbyShare.mojom.TransferStatus.kNotEnoughSpace:
+      case TransferStatus.kNotEnoughSpace:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantReceive');
         this.errorDescription_ = this.i18n('nearbyShareErrorNotEnoughSpace');
         break;
-      case nearbyShare.mojom.TransferStatus.kCancelled:
+      case TransferStatus.kCancelled:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantReceive');
         this.errorDescription_ = this.i18n('nearbyShareErrorCancelled');
         break;
-      case nearbyShare.mojom.TransferStatus.kFailed:
-      case nearbyShare.mojom.TransferStatus.kMediaUnavailable:
-      case nearbyShare.mojom.TransferStatus.kAwaitingRemoteAcceptanceFailed:
-      case nearbyShare.mojom.TransferStatus.kDecodeAdvertisementFailed:
-      case nearbyShare.mojom.TransferStatus.kMissingTransferUpdateCallback:
-      case nearbyShare.mojom.TransferStatus.kMissingShareTarget:
-      case nearbyShare.mojom.TransferStatus.kMissingEndpointId:
-      case nearbyShare.mojom.TransferStatus.kMissingPayloads:
-      case nearbyShare.mojom.TransferStatus.kPairedKeyVerificationFailed:
-      case nearbyShare.mojom.TransferStatus.kInvalidIntroductionFrame:
-      case nearbyShare.mojom.TransferStatus.kIncompletePayloads:
-      case nearbyShare.mojom.TransferStatus.kFailedToCreateShareTarget:
-      case nearbyShare.mojom.TransferStatus.kFailedToInitiateOutgoingConnection:
-      case nearbyShare.mojom.TransferStatus
-          .kFailedToReadOutgoingConnectionResponse:
-      case nearbyShare.mojom.TransferStatus.kUnexpectedDisconnection:
+      case TransferStatus.kFailed:
+      case TransferStatus.kMediaUnavailable:
+      case TransferStatus.kAwaitingRemoteAcceptanceFailed:
+      case TransferStatus.kDecodeAdvertisementFailed:
+      case TransferStatus.kMissingTransferUpdateCallback:
+      case TransferStatus.kMissingShareTarget:
+      case TransferStatus.kMissingEndpointId:
+      case TransferStatus.kMissingPayloads:
+      case TransferStatus.kPairedKeyVerificationFailed:
+      case TransferStatus.kInvalidIntroductionFrame:
+      case TransferStatus.kIncompletePayloads:
+      case TransferStatus.kFailedToCreateShareTarget:
+      case TransferStatus.kFailedToInitiateOutgoingConnection:
+      case TransferStatus.kFailedToReadOutgoingConnectionResponse:
+      case TransferStatus.kUnexpectedDisconnection:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantReceive');
         this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
         break;

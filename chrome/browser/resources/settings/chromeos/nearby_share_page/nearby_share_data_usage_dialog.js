@@ -75,11 +75,8 @@ class NearbyShareDataUsageDialogElement extends
 
   /** @private */
   onSaveClick_() {
-    getNearbyShareSettings().setDataUsage(
-        // TODO(b/263413628) Temporarily typecast until nearby share page
-        // uses Mojo WebUI bindings
-        /** @type {!DataUsage} */ (dataUsageStringToEnum(
-            this.shadowRoot.querySelector('cr-radio-group').selected)));
+    getNearbyShareSettings().setDataUsage(dataUsageStringToEnum(
+        this.shadowRoot.querySelector('cr-radio-group').selected));
     this.close();
   }
 

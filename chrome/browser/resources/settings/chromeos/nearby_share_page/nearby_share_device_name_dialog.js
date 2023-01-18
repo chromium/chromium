@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {DeviceNameValidationResult} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNearbyShareSettings} from '../../shared/nearby_share_settings.js';
@@ -77,11 +78,7 @@ class NearbyShareDeviceNameDialogElement extends
     getNearbyShareSettings()
         .validateDeviceName(this.getEditInputValue_())
         .then((result) => {
-          // TODO(b/263413628) Temporarily typecast until nearby share page
-          // uses Mojo WebUI bindings
-          this.updateErrorMessage_(
-              /** @type {nearbyShare.mojom.DeviceNameValidationResult} */ (
-                  result.result));
+          this.updateErrorMessage_(result.result);
         });
   }
 
@@ -95,13 +92,8 @@ class NearbyShareDeviceNameDialogElement extends
     getNearbyShareSettings()
         .setDeviceName(this.getEditInputValue_())
         .then((result) => {
-          // TODO(b/263413628) Temporarily typecast until nearby share page
-          // uses Mojo WebUI bindings
-          this.updateErrorMessage_(
-              /** @type {nearbyShare.mojom.DeviceNameValidationResult} */ (
-                  result.result));
-          if (result.result ===
-              nearbyShare.mojom.DeviceNameValidationResult.kValid) {
+          this.updateErrorMessage_(result.result);
+          if (result.result === DeviceNameValidationResult.kValid) {
             this.close();
           }
         });
@@ -110,18 +102,18 @@ class NearbyShareDeviceNameDialogElement extends
   /**
    * @private
    *
-   * @param {!nearbyShare.mojom.DeviceNameValidationResult} validationResult The
+   * @param {!DeviceNameValidationResult} validationResult The
    *     error status from validating the provided device name.
    */
   updateErrorMessage_(validationResult) {
     switch (validationResult) {
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty:
+      case DeviceNameValidationResult.kErrorEmpty:
         this.errorMessage = this.i18n('nearbyShareDeviceNameEmptyError');
         break;
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorTooLong:
+      case DeviceNameValidationResult.kErrorTooLong:
         this.errorMessage = this.i18n('nearbyShareDeviceNameTooLongError');
         break;
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorNotValidUtf8:
+      case DeviceNameValidationResult.kErrorNotValidUtf8:
         this.errorMessage =
             this.i18n('nearbyShareDeviceNameInvalidCharactersError');
         break;
