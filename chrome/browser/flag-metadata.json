@@ -3653,6 +3653,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "fedcm-auto-sign-in",
+    "owners": [ "tanzachary", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "fedcm-iframe-support",
     "owners": [ "npm", "web-identity-eng@google.com"],
     "expiry_milestone": 120

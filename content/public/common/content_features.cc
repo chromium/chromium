@@ -378,13 +378,14 @@ BASE_FEATURE(kExtraSafelistedRequestHeadersForOutOfBlinkCors,
 // We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Field trial boolean parameter which indicates whether FedCM auto
-// sign-in is enabled.
-const char kFedCmAutoSigninFieldTrialParamName[] = "AutoSignin";
-
 // Field trial boolean parameter which indicates whether FedCM IDP sign-out
 // is enabled.
 const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
+
+// Enables usage of the FedCM API with auto sign-in.
+BASE_FEATURE(kFedCmAutoSignin,
+             "FedCmAutoSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with iframe support.
 BASE_FEATURE(kFedCmIframeSupport,

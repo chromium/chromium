@@ -1232,6 +1232,11 @@
       status: "stable",
     },
     {
+      name: "FedCmAutoSignin",
+      depends_on: ["FedCm"],
+      public: true,
+    },
+    {
       // This only exists so we can use RuntimeEnabled in the IDL file
       // when either implied_by flag is enabled.
       name: "FedCmIdentityProviderInterface",

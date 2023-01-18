@@ -12,8 +12,7 @@
 namespace content {
 
 bool IsFedCmAutoSigninEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(
-      features::kFedCm, features::kFedCmAutoSigninFieldTrialParamName, false);
+  return base::FeatureList::IsEnabled(features::kFedCmAutoSignin);
 }
 
 bool IsFedCmIdpSignoutEnabled() {

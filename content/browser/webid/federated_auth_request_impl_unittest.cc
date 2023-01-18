@@ -1300,9 +1300,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
 TEST_F(FederatedAuthRequestImplTest, AutoSignInForReturningUser) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmAutoSigninFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmAutoSignin);
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
@@ -1325,9 +1323,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInForReturningUser) {
 
 TEST_F(FederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmAutoSigninFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmAutoSignin);
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.prefer_auto_sign_in = true;
@@ -1340,9 +1336,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
 
 TEST_F(FederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmAutoSigninFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmAutoSignin);
 
   content::BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
       ui::AXMode::kScreenReader);
