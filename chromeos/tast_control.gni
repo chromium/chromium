@@ -304,6 +304,11 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1236234
   "lacros.AudioPlay",
 
+  # b/265844024
+  "inputs.PhysicalKeyboardPinyinTyping.traditional",
+  "inputs.PhysicalKeyboardShapeBasedChineseTyping.array",
+  "inputs.PhysicalKeyboardShapeBasedChineseTyping.cangjie",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
