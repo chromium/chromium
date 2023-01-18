@@ -59,8 +59,6 @@ void ButtonExample::CreateExampleView(View* container) {
                   .SetInsideBorderInsets(gfx::Insets(10))
                   .SetBetweenChildSpacing(10)
                   .SetCrossAxisAlignment(BoxLayout::CrossAxisAlignment::kCenter)
-                  .SetBackground(CreateThemedSolidBackground(
-                      ExamplesColorIds::kColorButtonExampleBackground))
                   .AddChildren(Builder<LabelButton>()
                                    .CopyAddressTo(&label_button_)
                                    .SetText(kLabelButton)
@@ -85,6 +83,11 @@ void ButtonExample::CreateExampleView(View* container) {
                                    .SetIsDefault(true)
                                    .SetCallback(base::BindRepeating(
                                        start_throbber_cb, md_default_button_)),
+                               Builder<MdTextButton>()
+                                   .CopyAddressTo(&md_tonal_button_)
+                                   .SetText(u"Tonal")
+                                   .SetCallback(base::BindRepeating(
+                                       start_throbber_cb, md_tonal_button_)),
                                Builder<ImageButton>()
                                    .CopyAddressTo(&image_button_)
                                    .SetAccessibleName(l10n_util::GetStringUTF16(
@@ -101,6 +104,8 @@ void ButtonExample::CreateExampleView(View* container) {
                           rb.GetImageNamed(IDR_CLOSE_H).ToImageSkia());
   image_button_->SetImage(ImageButton::STATE_PRESSED,
                           rb.GetImageNamed(IDR_CLOSE_P).ToImageSkia());
+
+  md_tonal_button_->SetStyle(MdTextButton::Style::kTonal);
 
   container->AddChildView(std::move(view));
 }

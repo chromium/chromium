@@ -26,7 +26,6 @@ void AddExamplesColorMixers(ui::ColorProvider* color_provider,
   mixer[Ids::kColorBubbleExampleBackground3] = {SK_ColorCYAN};
   mixer[Ids::kColorBubbleExampleBackground4] = {
       SkColorSetRGB(0xC1, 0xB1, 0xE1)};
-  mixer[Ids::kColorButtonExampleBackground] = {SK_ColorWHITE};
   mixer[Ids::kColorDesignerGrabHandle] = {gfx::kGoogleGrey500};
   mixer[Ids::kColorDesignerGrid] = {SK_ColorBLACK};
   mixer[Ids::kColorFadeAnimationExampleBorder] = {gfx::kGoogleGrey900};
