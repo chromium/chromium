@@ -15,6 +15,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/dri3.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_image_egl_pixmap.h"
 
 namespace gl {
@@ -78,8 +79,9 @@ x11::Pixmap XPixmapFromNativePixmap(
 namespace ui {
 
 NativePixmapEGLX11Binding::NativePixmapEGLX11Binding(
-    scoped_refptr<gl::GLImageEGLPixmap> gl_image)
-    : gl_image_(std::move(gl_image)) {}
+    scoped_refptr<gl::GLImageEGLPixmap> gl_image,
+    gfx::BufferFormat format)
+    : gl_image_(std::move(gl_image)), format_(format) {}
 NativePixmapEGLX11Binding::~NativePixmapEGLX11Binding() = default;
 
 // static
@@ -101,8 +103,8 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     return nullptr;
   }
 
-  auto binding =
-      std::make_unique<NativePixmapEGLX11Binding>(std::move(gl_image));
+  auto binding = std::make_unique<NativePixmapEGLX11Binding>(
+      std::move(gl_image), plane_format);
   if (!binding->BindTexture(target, texture_id)) {
     return nullptr;
   }
@@ -116,7 +118,7 @@ bool NativePixmapEGLX11Binding::BindTexture(GLenum target, GLuint texture_id) {
 }
 
 GLuint NativePixmapEGLX11Binding::GetInternalFormat() {
-  return gl_image_->GetInternalFormat();
+  return gl::BufferFormatToGLInternalFormat(format_);
 }
 
 GLenum NativePixmapEGLX11Binding::GetDataFormat() {
