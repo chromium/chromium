@@ -934,12 +934,6 @@ void FakeUserDataAuthClient::StartAuthSession(
     for (const auto& [label, factor] : user_state.auth_factors) {
       absl::optional<cryptohome::KeyData> key_data =
           FakeAuthFactorToKeyData(label, factor);
-      if (key_data) {
-        reply.mutable_key_label_data()->insert({label, std::move(*key_data)});
-      } else {
-        LOG(WARNING) << "Ignoring auth factor incompatible with legacy API: "
-                     << label;
-      }
       absl::optional<user_data_auth::AuthFactor> auth_factor =
           FakeAuthFactorToAuthFactor(label, factor);
       if (key_data) {
@@ -949,31 +943,6 @@ void FakeUserDataAuthClient::StartAuthSession(
             << "Ignoring auth factor incompatible with AuthFactor API: "
             << label;
       }
-    }
-  }
-
-  // TODO(crbug.com/1334538): Some tests expect that kiosk or gaia keys exist
-  // for existing users, but don't set those keys up. Until those tests are
-  // fixed, we explicitly add keys here.
-  if (user_exists) {
-    if (is_kiosk) {
-      std::string kiosk_label = kCryptohomePublicMountLabel;
-      cryptohome::KeyData kiosk_key;
-      kiosk_key.set_label(kiosk_label);
-      kiosk_key.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-      const auto [_, was_inserted] = reply.mutable_key_label_data()->insert(
-          {std::move(kiosk_label), std::move(kiosk_key)});
-      LOG_IF(ERROR, was_inserted)
-          << "Listing kiosk key even though it was not set up";
-    } else {
-      std::string gaia_label = kCryptohomeGaiaKeyLabel;
-      cryptohome::KeyData gaia_key;
-      gaia_key.set_label(gaia_label);
-      gaia_key.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-      const auto [_, was_inserted] = reply.mutable_key_label_data()->insert(
-          {std::move(gaia_label), std::move(gaia_key)});
-      LOG_IF(ERROR, was_inserted)
-          << "Listing gaia key even though it was not set up";
     }
   }
 }

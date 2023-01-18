@@ -92,10 +92,12 @@ MATCHER_P2(WithAccountIdAndFlags, flags, intent, "") {
 
 // Matcher for `AuthenticateAuthFactorRequest` that verify the key properties.
 MATCHER_P(WithPasswordFactorAuth, expected_label, "") {
-  if (!arg.auth_input().has_password_input())
+  if (!arg.auth_input().has_password_input()) {
     return false;
-  if (arg.auth_factor_label() != expected_label)
+  }
+  if (arg.auth_factor_label() != expected_label) {
     return false;
+  }
 
   // Validate the password is already hashed here.
   EXPECT_NE(arg.auth_input().password_input().secret(), "");
@@ -105,12 +107,15 @@ MATCHER_P(WithPasswordFactorAuth, expected_label, "") {
 
 // Matcher `AddAuthFactorRequest` that verify the key properties.
 MATCHER_P(WithPasswordFactorAdd, expected_label, "") {
-  if (!arg.auth_input().has_password_input())
+  if (!arg.auth_input().has_password_input()) {
     return false;
-  if (arg.auth_factor().label() != expected_label)
+  }
+  if (arg.auth_factor().label() != expected_label) {
     return false;
-  if (arg.auth_factor().type() != user_data_auth::AUTH_FACTOR_TYPE_PASSWORD)
+  }
+  if (arg.auth_factor().type() != user_data_auth::AUTH_FACTOR_TYPE_PASSWORD) {
     return false;
+  }
 
   // Validate the password is already hashed here.
   EXPECT_NE(arg.auth_input().password_input().secret(), "");
@@ -125,20 +130,25 @@ MATCHER(WithKioskKey, "") {
 }
 
 MATCHER(WithKioskFactorAdd, "") {
-  if (!arg.auth_input().has_kiosk_input())
+  if (!arg.auth_input().has_kiosk_input()) {
     return false;
-  if (arg.auth_factor().label() != kCryptohomePublicMountLabel)
+  }
+  if (arg.auth_factor().label() != kCryptohomePublicMountLabel) {
     return false;
-  if (arg.auth_factor().type() != user_data_auth::AUTH_FACTOR_TYPE_KIOSK)
+  }
+  if (arg.auth_factor().type() != user_data_auth::AUTH_FACTOR_TYPE_KIOSK) {
     return false;
+  }
   return true;
 }
 
 MATCHER(WithKioskFactorAuth, "") {
-  if (!arg.auth_input().has_kiosk_input())
+  if (!arg.auth_input().has_kiosk_input()) {
     return false;
-  if (arg.auth_factor_label() != kCryptohomePublicMountLabel)
+  }
+  if (arg.auth_factor_label() != kCryptohomePublicMountLabel) {
     return false;
+  }
   return true;
 }
 
@@ -149,18 +159,15 @@ auto ReplyWith(const ReplyType& reply) {
   return base::test::RunOnceCallback<1>(reply);
 }
 
-StartAuthSessionReply BuildStartReply(
-    const std::string& auth_session_id,
-    bool user_exists,
-    const std::map<std::string, KeyData>& keys,
-    const std::vector<AuthFactor>& factors) {
+StartAuthSessionReply BuildStartReply(const std::string& auth_session_id,
+                                      bool user_exists,
+                                      const std::vector<AuthFactor>& factors) {
   StartAuthSessionReply reply;
   reply.set_auth_session_id(auth_session_id);
   reply.set_user_exists(user_exists);
-  for (const auto& [key, data] : keys)
-    (*reply.mutable_key_label_data())[key] = data;
-  for (const auto& factor : factors)
+  for (const auto& factor : factors) {
     (*reply.add_auth_factors()) = factor;
+  }
   return reply;
 }
 
@@ -300,7 +307,6 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
                                _))
       .WillOnce(ReplyWith(BuildStartReply(kFirstAuthSessionId,
                                           /*user_exists=*/false,
-                                          /*keys=*/{},
                                           /*factors=*/{})));
   EXPECT_CALL(userdataauth(), CreatePersistentUser(WithFirstAuthSessionId(), _))
       .WillOnce(ReplyWith(CreatePersistentUserReply()));
@@ -338,7 +344,6 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginRegularExisting) {
                                _))
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId, /*user_exists=*/true,
-          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
   EXPECT_CALL(userdataauth(),
               AuthenticateAuthFactor(
@@ -374,7 +379,6 @@ TEST_F(AuthSessionAuthenticatorTest,
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId,
           /*user_exists=*/true,
-          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
   // Set up the cryptohome authentication request to return a failure, since
   // we're simulating the case when it only knows about the old password.
@@ -408,7 +412,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
                                              AUTH_INTENT_DECRYPT),
                        _))
       .WillOnce(ReplyWith(BuildStartReply(kFirstAuthSessionId,
-                                          /*user_exists=*/false, /*keys=*/{},
+                                          /*user_exists=*/false,
                                           /*factors=*/{})));
   EXPECT_CALL(userdataauth(),
               PrepareEphemeralVault(WithFirstAuthSessionId(), _))
@@ -448,7 +452,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
                     _))
         .WillOnce(
             ReplyWith(BuildStartReply(kFirstAuthSessionId, /*user_exists=*/true,
-                                      /*keys=*/{}, /*factors=*/{})))
+                                      /*factors=*/{})))
         .RetiresOnSaturation();
     EXPECT_CALL(userdataauth(), Remove(WithFirstAuthSessionId(), _))
         .WillOnce(ReplyWith(RemoveReply()));
@@ -458,7 +462,7 @@ TEST_F(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
                                           AUTH_INTENT_DECRYPT),
                     _))
         .WillOnce(ReplyWith(BuildStartReply(kSecondAuthSessionId,
-                                            /*user_exists=*/false, /*keys=*/{},
+                                            /*user_exists=*/false,
                                             /*factors=*/{})));
     EXPECT_CALL(userdataauth(),
                 PrepareEphemeralVault(WithSecondAuthSessionId(), _))
@@ -496,7 +500,6 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLogin) {
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId,
           /*user_exists=*/true,
-          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
   EXPECT_CALL(userdataauth(),
               AuthenticateAuthFactor(
@@ -531,7 +534,6 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToLoginAuthFailure) {
                                _))
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId, /*user_exists=*/true,
-          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
   EXPECT_CALL(userdataauth(),
               AuthenticateAuthFactor(
@@ -571,7 +573,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsPublicSession) {
                                              AUTH_INTENT_DECRYPT),
                        _))
       .WillOnce(ReplyWith(BuildStartReply(kFirstAuthSessionId,
-                                          /*user_exists=*/false, /*keys=*/{},
+                                          /*user_exists=*/false,
                                           /*factors=*/{})));
   EXPECT_CALL(userdataauth(),
               PrepareEphemeralVault(WithFirstAuthSessionId(), _))
@@ -597,7 +599,6 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountNew) {
                                _))
       .WillOnce(
           ReplyWith(BuildStartReply(kFirstAuthSessionId, /*user_exists=*/false,
-                                    /*keys=*/{},
                                     /*factors=*/{})));
   EXPECT_CALL(userdataauth(), CreatePersistentUser(WithFirstAuthSessionId(), _))
       .WillOnce(ReplyWith(CreatePersistentUserReply()));
@@ -631,10 +632,9 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountExisting) {
               StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
                                                      AUTH_INTENT_DECRYPT),
                                _))
-      .WillOnce(ReplyWith(
-          BuildStartReply(kFirstAuthSessionId, /*user_exists=*/true,
-                          /*keys=*/{{kCryptohomePublicMountLabel, key_data}},
-                          /*factors=*/{KioskFactor()})));
+      .WillOnce(
+          ReplyWith(BuildStartReply(kFirstAuthSessionId, /*user_exists=*/true,
+                                    /*factors=*/{KioskFactor()})));
   EXPECT_CALL(userdataauth(),
               AuthenticateAuthFactor(
                   AllOf(WithFirstAuthSessionId(), WithKioskFactorAuth()), _))
@@ -662,7 +662,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeral) {
                                              AUTH_INTENT_DECRYPT),
                        _))
       .WillOnce(ReplyWith(BuildStartReply(kFirstAuthSessionId,
-                                          /*user_exists=*/false, /*keys=*/{},
+                                          /*user_exists=*/false,
                                           /*factors=*/{})));
   EXPECT_CALL(userdataauth(),
               PrepareEphemeralVault(WithFirstAuthSessionId(), _))
@@ -690,7 +690,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
                                           AUTH_INTENT_DECRYPT),
                     _))
         .WillOnce(ReplyWith(BuildStartReply(kFirstAuthSessionId,
-                                            /*user_exists=*/true, /*keys=*/{},
+                                            /*user_exists=*/true,
                                             /*factors=*/{})))
         .RetiresOnSaturation();
     EXPECT_CALL(userdataauth(), Remove(WithFirstAuthSessionId(), _))
@@ -701,7 +701,7 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
                                           AUTH_INTENT_DECRYPT),
                     _))
         .WillOnce(ReplyWith(BuildStartReply(kSecondAuthSessionId,
-                                            /*user_exists=*/false, /*keys=*/{},
+                                            /*user_exists=*/false,
                                             /*factors=*/{})));
     EXPECT_CALL(userdataauth(),
                 PrepareEphemeralVault(WithSecondAuthSessionId(), _))
@@ -731,7 +731,6 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId,
           /*user_exists=*/true,
-          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
   EXPECT_CALL(userdataauth(),
               AuthenticateAuthFactor(
@@ -765,7 +764,6 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId,
           /*user_exists=*/true,
-          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
   EXPECT_CALL(userdataauth(),
               AuthenticateAuthFactor(
@@ -798,7 +796,6 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId,
           /*user_exists=*/true,
-          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
   EXPECT_CALL(userdataauth(),
               AuthenticateAuthFactor(
@@ -830,7 +827,6 @@ TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
                                _))
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId, /*user_exists=*/true,
-          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
   EXPECT_CALL(userdataauth(),
               AuthenticateAuthFactor(
