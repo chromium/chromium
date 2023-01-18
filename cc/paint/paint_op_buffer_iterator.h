@@ -231,6 +231,8 @@ class CC_PAINT_EXPORT PaintOpBuffer::PlaybackFoldingIterator
     return static_cast<uint8_t>(current_alpha_ * 255.0f);
   }
 
+  float alphaf() const { return current_alpha_; }
+
  private:
   void FindNextOp();
   const PaintOp* NextUnfoldedOp();
