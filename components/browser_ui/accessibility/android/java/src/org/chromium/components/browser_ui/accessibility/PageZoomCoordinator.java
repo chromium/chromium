@@ -79,6 +79,9 @@ public class PageZoomCoordinator {
             mView.startAnimation(getInAnimation());
         }
 
+        // Consume hover events so screen readers do not select web contents behind slider.
+        mView.setOnHoverListener((v, event) -> true);
+
         // Adjust bottom margin for any bottom controls
         setBottomMargin(mBottomControlsOffset);
 
