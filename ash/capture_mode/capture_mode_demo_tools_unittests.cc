@@ -123,7 +123,7 @@ class CaptureModeDemoToolsTest : public AshTestBase {
   }
 
   // Fires the key combo viewer timer and verifies the existence of the widget
-  // after the timer expires if `should_hide_view` is true.
+  // after the timer expires.
   void FireTimerAndVerifyWidget(bool should_hide_view) {
     auto* demo_tools_controller = GetCaptureModeDemoToolsController();
     DCHECK(demo_tools_controller);

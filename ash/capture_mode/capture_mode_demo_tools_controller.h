@@ -29,9 +29,9 @@ using MouseHighlightLayers =
 using TouchHighlightLayersMap =
     base::flat_map<ui::PointerId, std::unique_ptr<PointerHighlightLayer>>;
 
-// Observes and decides whether to show a helper widget representing the
-// currently pressed key combination or not. The key combination will be used to
-// construct or modify the `KeyComboViewer`. The
+// Observes and decides whether to show clicks (or taps) highlights and a helper
+// widget that represents the currently pressed key combination or not. The key
+// combination will be used to construct or modify the `KeyComboViewer`. The
 // `CaptureModeDemoToolsController` will only be available during video
 // recording and has to be explicitly enabled by the user.
 class CaptureModeDemoToolsController : public ui::InputMethodObserver {
