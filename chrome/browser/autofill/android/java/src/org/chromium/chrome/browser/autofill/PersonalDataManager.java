@@ -152,6 +152,7 @@ public class PersonalDataManager {
         private String mGUID;
         private String mOrigin;
         private boolean mIsLocal;
+        private @Source int mSource;
         private ValueWithStatus mHonorificPrefix;
         private ValueWithStatus mFullName;
         private ValueWithStatus mCompanyName;
@@ -169,8 +170,9 @@ public class PersonalDataManager {
 
         @CalledByNative("AutofillProfile")
         private static AutofillProfile create(String guid, String origin, boolean isLocal,
-                String honorificPrefix, @VerificationStatus int honorificPrefixStatus,
-                String fullName, @VerificationStatus int fullNameStatus, String companyName,
+                @Source int source, String honorificPrefix,
+                @VerificationStatus int honorificPrefixStatus, String fullName,
+                @VerificationStatus int fullNameStatus, String companyName,
                 @VerificationStatus int companyNameStatus, String streetAddress,
                 @VerificationStatus int streetAddressStatus, String region,
                 @VerificationStatus int regionStatus, String locality,
@@ -181,7 +183,7 @@ public class PersonalDataManager {
                 @VerificationStatus int countryCodeStatus, String phoneNumber,
                 @VerificationStatus int phoneNumberStatus, String emailAddress,
                 @VerificationStatus int emailAddressStatus, String languageCode) {
-            return new AutofillProfile(guid, origin, isLocal,
+            return new AutofillProfile(guid, origin, isLocal, source,
                     new ValueWithStatus(honorificPrefix, honorificPrefixStatus),
                     new ValueWithStatus(fullName, fullNameStatus),
                     new ValueWithStatus(companyName, companyNameStatus),
@@ -196,8 +198,8 @@ public class PersonalDataManager {
                     new ValueWithStatus(emailAddress, emailAddressStatus), languageCode);
         }
 
-        @VisibleForTesting
-        AutofillProfile(String guid, String origin, boolean isLocal,
+        // TODO(crbug/1408117): remove duplicate constructors when the source is unnecessary.
+        private AutofillProfile(String guid, String origin, boolean isLocal, @Source int source,
                 ValueWithStatus honorificPrefix, ValueWithStatus fullName,
                 ValueWithStatus companyName, ValueWithStatus streetAddress, ValueWithStatus region,
                 ValueWithStatus locality, ValueWithStatus dependentLocality,
@@ -207,6 +209,7 @@ public class PersonalDataManager {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
+            mSource = source;
             mHonorificPrefix = honorificPrefix;
             mFullName = fullName;
             mCompanyName = companyName;
@@ -222,15 +225,28 @@ public class PersonalDataManager {
             mLanguageCode = languageCode;
         }
 
+        @VisibleForTesting
+        AutofillProfile(String guid, String origin, boolean isLocal,
+                ValueWithStatus honorificPrefix, ValueWithStatus fullName,
+                ValueWithStatus companyName, ValueWithStatus streetAddress, ValueWithStatus region,
+                ValueWithStatus locality, ValueWithStatus dependentLocality,
+                ValueWithStatus postalCode, ValueWithStatus sortingCode,
+                ValueWithStatus countryCode, ValueWithStatus phoneNumber,
+                ValueWithStatus emailAddress, String languageCode) {
+            this(guid, origin, isLocal, Source.LOCAL_OR_SYNCABLE, honorificPrefix, fullName,
+                    companyName, streetAddress, region, locality, dependentLocality, postalCode,
+                    sortingCode, countryCode, phoneNumber, emailAddress, languageCode);
+        }
         /**
          * Builds a profile with the given values, assuming those are reviewed by the user and thus
          * are marked {@link VerificationStatus.USER_VERIFIED}.
          */
-        public AutofillProfile(String guid, String origin, boolean isLocal, String honorificPrefix,
-                String fullName, String companyName, String streetAddress, String region,
-                String locality, String dependentLocality, String postalCode, String sortingCode,
-                String countryCode, String phoneNumber, String emailAddress, String languageCode) {
-            this(guid, origin, isLocal,
+        public AutofillProfile(String guid, String origin, boolean isLocal, @Source int source,
+                String honorificPrefix, String fullName, String companyName, String streetAddress,
+                String region, String locality, String dependentLocality, String postalCode,
+                String sortingCode, String countryCode, String phoneNumber, String emailAddress,
+                String languageCode) {
+            this(guid, origin, isLocal, source,
                     new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED),
                     new ValueWithStatus(fullName, VerificationStatus.USER_VERIFIED),
                     new ValueWithStatus(companyName, VerificationStatus.USER_VERIFIED),
@@ -247,13 +263,26 @@ public class PersonalDataManager {
         }
 
         /**
+         * Builds a profile with the {@link Source.LOCAL_OR_SYNCABLE} source and with given user
+         * verified values.
+         */
+        public AutofillProfile(String guid, String origin, boolean isLocal, String honorificPrefix,
+                String fullName, String companyName, String streetAddress, String region,
+                String locality, String dependentLocality, String postalCode, String sortingCode,
+                String countryCode, String phoneNumber, String emailAddress, String languageCode) {
+            this(guid, origin, isLocal, Source.LOCAL_OR_SYNCABLE, honorificPrefix, fullName,
+                    companyName, streetAddress, region, locality, dependentLocality, postalCode,
+                    sortingCode, countryCode, phoneNumber, emailAddress, languageCode);
+        }
+
+        /**
          * Builds an empty local profile with "settings" origin and country code from the default
          * locale. All other fields are empty strings with {@link VerificationStatus.NO_STATUS},
          * because JNI does not handle null strings.
          */
         public AutofillProfile() {
             this("" /* guid */, AutofillEditorBase.SETTINGS_ORIGIN /* origin */, true /* isLocal */,
-                    ValueWithStatus.EMPTY /* honorificPrefix */,
+                    Source.LOCAL_OR_SYNCABLE, ValueWithStatus.EMPTY /* honorificPrefix */,
                     ValueWithStatus.EMPTY /* fullName */, ValueWithStatus.EMPTY /* companyName */,
                     ValueWithStatus.EMPTY /* streetAddress */, ValueWithStatus.EMPTY /* region */,
                     ValueWithStatus.EMPTY /* locality */,
@@ -270,6 +299,7 @@ public class PersonalDataManager {
             mGUID = profile.getGUID();
             mOrigin = profile.getOrigin();
             mIsLocal = profile.getIsLocal();
+            mSource = profile.getSource();
             mHonorificPrefix = new ValueWithStatus(
                     profile.getHonorificPrefix(), profile.getHonorificPrefixStatus());
             mFullName = new ValueWithStatus(profile.getFullName(), profile.getFullNameStatus());
@@ -301,9 +331,9 @@ public class PersonalDataManager {
                 String companyName, String streetAddress, String region, String locality,
                 String dependentLocality, String postalCode, String sortingCode, String countryCode,
                 String phoneNumber, String emailAddress, String languageCode) {
-            this(guid, origin, true /* isLocal */, honorificPrefix, fullName, companyName,
-                    streetAddress, region, locality, dependentLocality, postalCode, sortingCode,
-                    countryCode, phoneNumber, emailAddress, languageCode);
+            this(guid, origin, true /* isLocal */, Source.LOCAL_OR_SYNCABLE, honorificPrefix,
+                    fullName, companyName, streetAddress, region, locality, dependentLocality,
+                    postalCode, sortingCode, countryCode, phoneNumber, emailAddress, languageCode);
         }
 
         @CalledByNative("AutofillProfile")
@@ -314,6 +344,10 @@ public class PersonalDataManager {
         @CalledByNative("AutofillProfile")
         public String getOrigin() {
             return mOrigin;
+        }
+
+        public @Source int getSource() {
+            return mSource;
         }
 
         @CalledByNative("AutofillProfile")

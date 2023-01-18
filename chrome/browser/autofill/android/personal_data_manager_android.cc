@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -326,6 +327,7 @@ PersonalDataManagerAndroid::CreateJavaProfileFromNative(
       env, ConvertUTF8ToJavaString(env, profile.guid()),
       ConvertUTF8ToJavaString(env, profile.origin()),
       profile.record_type() == AutofillProfile::LOCAL_PROFILE,
+      static_cast<jint>(profile.source()),
       ConvertUTF16ToJavaString(
           env, profile.GetInfo(AutofillType(NAME_HONORIFIC_PREFIX),
                                g_browser_process->GetApplicationLocale())),

@@ -4,8 +4,11 @@
 
 import("//build/config/android/rules.gni")
 
-java_cpp_enum("autofill_verification_status_generated_enum") {
-  sources = [ "//components/autofill/core/browser/data_model/autofill_structured_address_component.h" ]
+java_cpp_enum("autofill_generated_enums") {
+  sources = [
+    "//components/autofill/core/browser/data_model/autofill_profile.h",
+    "//components/autofill/core/browser/data_model/autofill_structured_address_component.h",
+  ]
 }
 
 android_library("java") {
@@ -46,7 +49,7 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":autofill_verification_status_generated_enum" ]
+  srcjar_deps = [ ":autofill_generated_enums" ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
