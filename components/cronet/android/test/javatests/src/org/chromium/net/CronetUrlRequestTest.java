@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
@@ -189,7 +190,8 @@ public class CronetUrlRequestTest {
 
     void runConnectionMigrationTest(boolean disableConnectionMigration) {
         // URLRequest load flags at net/base/load_flags_list.h.
-        int connectionMigrationLoadFlag = nativeGetConnectionMigrationDisableLoadFlag();
+        int connectionMigrationLoadFlag =
+                CronetUrlRequestTestJni.get().getConnectionMigrationDisableLoadFlag();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
         // Create builder, start a request, and check if default load_flags are set correctly.
@@ -2511,6 +2513,9 @@ public class CronetUrlRequestTest {
         assertEquals("POST", callback.mResponseAsString);
     }
 
-    // Return connection migration disable load flag value.
-    private static native int nativeGetConnectionMigrationDisableLoadFlag();
+    @NativeMethods
+    interface Natives {
+        // Return connection migration disable load flag value.
+        int getConnectionMigrationDisableLoadFlag();
+    }
 }

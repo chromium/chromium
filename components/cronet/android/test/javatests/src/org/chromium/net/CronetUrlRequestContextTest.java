@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -1530,15 +1531,11 @@ public class CronetUrlRequestContextTest {
         builder.setExperimentalOptions("");
         builder.setStoragePath(getTestStorage(getContext()));
         builder.enablePublicKeyPinningBypassForLocalTrustAnchors(false);
-        nativeVerifyUrlRequestContextConfig(
+        CronetUrlRequestContextTestJni.get().verifyUrlRequestContextConfig(
                 CronetUrlRequestContext.createNativeUrlRequestContextConfig(
                         (CronetEngineBuilderImpl) builder.mBuilderDelegate),
                 getTestStorage(getContext()));
     }
-
-    // Verifies that CronetEngine.Builder config from testCronetEngineBuilderConfig() is properly
-    // translated to a native UrlRequestContextConfig.
-    private static native void nativeVerifyUrlRequestContextConfig(long config, String storagePath);
 
     @Test
     @SmallTest
@@ -1558,16 +1555,11 @@ public class CronetUrlRequestContextTest {
         builder.setUserAgent("efgh");
         builder.setStoragePath(getTestStorage(getContext()));
         builder.enablePublicKeyPinningBypassForLocalTrustAnchors(false);
-        nativeVerifyUrlRequestContextQuicOffConfig(
+        CronetUrlRequestContextTestJni.get().verifyUrlRequestContextQuicOffConfig(
                 CronetUrlRequestContext.createNativeUrlRequestContextConfig(
                         (CronetEngineBuilderImpl) builder.mBuilderDelegate),
                 getTestStorage(getContext()));
     }
-
-    // Verifies that CronetEngine.Builder config from testCronetEngineQuicOffConfig() is properly
-    // translated to a native UrlRequestContextConfig and QUIC is turned off.
-    private static native void nativeVerifyUrlRequestContextQuicOffConfig(
-            long config, String storagePath);
 
     private static class TestBadLibraryLoader extends CronetEngine.Builder.LibraryLoader {
         private boolean mWasCalled;
@@ -1759,5 +1751,16 @@ public class CronetUrlRequestContextTest {
             assertEquals(threadPriority, getThreadPriority(engine));
             engine.shutdown();
         }
+    }
+
+    @NativeMethods
+    interface Natives {
+        // Verifies that CronetEngine.Builder config from testCronetEngineBuilderConfig() is
+        // properly translated to a native UrlRequestContextConfig.
+        void verifyUrlRequestContextConfig(long config, String storagePath);
+
+        // Verifies that CronetEngine.Builder config from testCronetEngineQuicOffConfig() is
+        // properly translated to a native UrlRequestContextConfig and QUIC is turned off.
+        void verifyUrlRequestContextQuicOffConfig(long config, String storagePath);
     }
 }

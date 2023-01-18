@@ -418,6 +418,7 @@ cronet_impl_native_java_deps_to_package = [
 
 # cronet_impl_native_base_java.jar - native implementation of the Cronet engine.
 android_library("cronet_impl_native_base_java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
@@ -443,7 +444,6 @@ android_library("cronet_impl_native_base_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   deps += cronet_impl_native_java_deps_to_package
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   srcjar_deps = cronet_impl_native_java_srcjar_deps
 }
@@ -566,10 +566,10 @@ java_prebuilt("package_impl_native_java") {
   jar_path = "$_package_dir/cronet_impl_native_java.jar"
   supports_android = true
   requires_android = true
-  
-  # To avoid dual definition of classes some dependencies are added 
+
+  # To avoid dual definition of classes some dependencies are added
   # downstream (Maven deps, BUILD dependencies), and the bytecode check
-  # doesn't like that. 
+  # doesn't like that.
   enable_bytecode_checks = false
 
   deps = [
@@ -742,7 +742,7 @@ template("repackage_jars") {
     _excludes += invoker.jar_excluded_patterns
   }
   if (!defined(invoker.remove_gen_jni) || invoker.remove_gen_jni) {
-    _excludes += ["*/GEN_JNI.class"]
+    _excludes += [ "*/GEN_JNI.class" ]
   }
   dist_jar(target_name) {
     requires_android = true
@@ -750,7 +750,7 @@ template("repackage_jars") {
     use_unprocessed_jars = true
     no_build_hooks = true
     jar_excluded_patterns = _excludes
-    forward_variables_from(invoker, "*", ["jar_excluded_patterns"])
+    forward_variables_from(invoker, "*", [ "jar_excluded_patterns" ])
   }
 }
 
@@ -930,6 +930,7 @@ if (!is_component_build) {
 
   android_library("cronet_test_apk_java") {
     testonly = true
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     sources = [
       "test/src/org/chromium/net/CronetTestApplication.java",
@@ -1039,6 +1040,7 @@ if (!is_component_build) {
 
   android_library("cronet_javatests") {
     testonly = true
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     sources = [
       "test/javatests/src/org/chromium/net/BidirectionalStreamQuicTest.java",
