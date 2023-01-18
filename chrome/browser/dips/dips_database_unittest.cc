@@ -408,11 +408,8 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedDuringGracePeriod) {
 
   base::Time event = Time::FromDoubleT(1);
   TimestampRange event_times = {event, event};
-  // Set up an interaction that will arrive too late to protect the event.
-  base::Time late_interaction = event + grace_period + base::Hours(1);
-  TimestampRange interaction_times = {late_interaction, late_interaction};
 
-  WriteForCurrentAction("site.test", event_times, interaction_times);
+  WriteForCurrentAction("site.test", event_times, /*interactions=*/{});
 
   // Time-travel to the start of the grace period of the triggering event.
   AdvanceTimeTo(event);
@@ -425,6 +422,10 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedDuringGracePeriod) {
   // Time-travel to the end of the grace period of the triggering event.
   AdvanceTimeTo(event + grace_period);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  // Site is no longer protected right after the grace period ends.
+  AdvanceTimeTo(event + grace_period + tiny_delta);
+  EXPECT_THAT(query.Run(), testing::ElementsAre("site.test"));
 }
 
 TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionBeforeGracePeriod) {
@@ -448,8 +449,21 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionBeforeGracePeriod) {
   // "site.test" should still be protected up until the interaction expires.
   AdvanceTimeTo(interaction + interaction_ttl - tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
-  // Once the interaction expires, "site.test" is no longer protected.
+
+  // Once `interaction` expires, "site.test" restarts the DIPS-procedure and
+  // `interaction` no longer protects it from DIPS clearing.
   AdvanceTimeTo(interaction + interaction_ttl + tiny_delta);
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  base::Time after_interaction_expiry = Now();
+  WriteForCurrentAction(
+      "site.test", {after_interaction_expiry, after_interaction_expiry}, {});
+
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  // "site.test" is no longer protected by `interaction` and is cleared right
+  // after its grace period ends.
+  AdvanceTimeTo(after_interaction_expiry + grace_period + tiny_delta);
   EXPECT_THAT(query.Run(), testing::ElementsAre("site.test"));
 }
 
@@ -475,8 +489,21 @@ TEST_P(DIPSDatabaseQueryTest, ProtectedByInteractionDuringGracePeriod) {
   // "site.test" should still be protected up until the interaction expires.
   AdvanceTimeTo(interaction + interaction_ttl - tiny_delta);
   EXPECT_THAT(query.Run(), testing::IsEmpty());
-  // Once the interaction expires, "site.test" is no longer protected.
+
+  // Once `interaction` expires, "site.test" restarts the DIPS-procedure and
+  // `interaction` no longer protects it from DIPS clearing.
   AdvanceTimeTo(interaction + interaction_ttl + tiny_delta);
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  base::Time after_interaction_expiry = Now();
+  WriteForCurrentAction(
+      "site.test", {after_interaction_expiry, after_interaction_expiry}, {});
+
+  EXPECT_THAT(query.Run(), testing::IsEmpty());
+
+  // "site.test" is no longer protected by `interaction` and is cleared right
+  // after its grace period ends.
+  AdvanceTimeTo(after_interaction_expiry + grace_period + tiny_delta);
   EXPECT_THAT(query.Run(), testing::ElementsAre("site.test"));
 }
 
