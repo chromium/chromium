@@ -16,9 +16,10 @@ import clobber
 
 class TestExtractBuildCommand(unittest.TestCase):
   def setUp(self):
-    _, self.build_ninja_path = tempfile.mkstemp(text=True)
+    self.build_ninja_file, self.build_ninja_path = tempfile.mkstemp(text=True)
 
   def tearDown(self):
+    os.close(self.build_ninja_file)
     os.remove(self.build_ninja_path)
 
   def test_normal_extraction(self):
