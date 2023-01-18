@@ -902,7 +902,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
     Isto non afecta ás aplicacións nin ao contido doutros dispositivos.</translation>
 <translation id="1809734401532861917">Engade os meus marcadores, o historial, os contrasinais e outras opcións de configuración a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810366086647840386">Servidor da imaxe</translation>
-<translation id="1811908311154949291">Marco con barreira do modo de incógnito: <ph name="FENCEDFRAME_SITE" /></translation>
+<translation id="1811908311154949291">Marco delimitado do modo de incógnito: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812284620455788548">Emitindo <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Servizos</translation>
 <translation id="18139523105317219">Nome da parte EDI</translation>
@@ -1760,7 +1760,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> non se puido conectar con <ph name="NETWORK_ID" />. Selecciona outra rede ou téntao de novo.</translation>
 <translation id="2553440850688409052">Ocultar este plugin</translation>
 <translation id="2554553592469060349">O ficheiro seleccionado é demasiado grande (tamaño máximo: 3 MB).</translation>
-<translation id="25568951186001797">Marco con barreira: <ph name="FENCEDFRAME_SITE" /></translation>
+<translation id="25568951186001797">Marco delimitado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">O teu historial de navegación aféctalles aos anuncios que se che mostran</translation>
 <translation id="2559889124253841528">Gardar no dispositivo</translation>
 <translation id="2564520396658920462">Está desactivada a execución de JavaScript a través de AppleScript. Para activala, na barra de menú, accede a Ver &gt; Programador &gt; Permitir JavaScript desde eventos de Apple. Podes obter máis información en: https://support.google.com/chrome/?p=applescript</translation>

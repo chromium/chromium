@@ -7964,7 +7964,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8338952601723052325">Website des Entwicklers</translation>
 <translation id="833986336429795709">App auswählen, um diesen Link zu öffnen</translation>
 <translation id="8340547030807793004">Weitere Aktionen für „<ph name="DEVICE" />“</translation>
-<translation id="8341557223534936723">{NUM_SITES,plural, =1{Hier kannst du dir <ph name="BEGIN_BOLD" />1 Website<ph name="END_BOLD" /> ansehen, die in letzter Zeit viele Benachrichtigungen gesendet hat}other{Hier kannst du dir <ph name="BEGIN_BOLD" />{NUM_SITES}<ph name="END_BOLD" /> Websites ansehen, die in letzter Zeit viele Benachrichtigungen gesendet haben}}</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 Website<ph name="END_BOLD" /> ansehen, die in letzter Zeit viele Benachrichtigungen gesendet hat}other{<ph name="BEGIN_BOLD" />{NUM_SITES} Websites<ph name="END_BOLD" /> ansehen, die in letzter Zeit viele Benachrichtigungen gesendet haben}}</translation>
 <translation id="8342221978608739536">Nicht ausprobiert</translation>
 <translation id="8342399870062010251">Weitere Informationen zum Arbeitsspeicher-Sparmodus</translation>
 <translation id="8342861492835240085">Sammlung auswählen</translation>

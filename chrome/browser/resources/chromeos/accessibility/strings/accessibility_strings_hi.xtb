@@ -190,7 +190,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2247700577781885251">सीखने वाला मोड बंद किया जा रहा है</translation>
 <translation id="2247870315273396641">चुनी गई आवाज़ की झलक</translation>
 <translation id="225732394367814946">बोली की दर बढ़ाएं</translation>
-<translation id="2267538686624070261">गलत वर्तनी छोड़ रहे हैं</translation>
+<translation id="2267538686624070261">गलत स्पेलिंग छोड़ रहे हैं</translation>
 <translation id="2267945578749931355">अगला वर्ण</translation>
 <translation id="2278490101488436824">तीन उंगलियों से बाईं ओर स्वाइप करें</translation>
 <translation id="2303873575703885770">कोई आइटम चालू करें</translation>
@@ -243,7 +243,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2637227747952042642">गणित</translation>
 <translation id="2638785836053527382">डाउनलोड फिर से शुरू हो गया <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox संशोधक</translation>
-<translation id="2644542693584024604">गलत वर्तनी</translation>
+<translation id="2644542693584024604">गलत स्पेलिंग</translation>
 <translation id="2651441758640020174">सूची में से अपना पसंदीदा मौसम चुनें.</translation>
 <translation id="2654172656519784359">एक शब्द आगे ले जाएं</translation>
 <translation id="2661530546602071611">सूचना</translation>
@@ -857,7 +857,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6837853484260746864">एक ध्वनि चुनें:</translation>
 <translation id="6858047746862060282">प्रस्तावना</translation>
 <translation id="6859876496651143278">एक उंगली से बाईं ओर स्वाइप करें</translation>
-<translation id="6865519907510167493">गलत वर्तनी</translation>
+<translation id="6865519907510167493">गलत स्पेलिंग</translation>
 <translation id="6873188295213080042">ध्यान दें: पेज पर एक से दूसरी जगह जाने के लिए, एक उंगली से खोज बटन दबाकर रखें और दूसरी उंगली से ऐरो बटन दबाएं.</translation>
 <translation id="6894148351896207544">मौजूदा तारीख और समय बोलें</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
@@ -937,7 +937,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="738899727977260036">स्लेटी नीला</translation>
 <translation id="7393979322571982935">आवाज़ और सेटिंग</translation>
 <translation id="739763518212184081">पिछली लाइन</translation>
-<translation id="7400575256015741911">वर्तनी की गलती का पता चला</translation>
+<translation id="7400575256015741911">स्पेलिंग की गलती का पता चला</translation>
 <translation id="7408482676469142474">tbl</translation>
 <translation id="7419264136822406994">पिछले इंटरैक्टिव आइटम पर जाने के लिए, आप Shift और Tab बटन इस्तेमाल कर सकते हैं. जारी रखने के लिए, Shift और Tab बटन दबाएं.</translation>
 <translation id="7425395583360211003">वापस लौटें</translation>

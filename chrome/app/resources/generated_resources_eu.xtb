@@ -903,7 +903,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
     Horrek ez die eragiten beste gailu batzuetako aplikazioei edo edukiei.</translation>
 <translation id="1809734401532861917">Gehitu laster-markak, historia, pasahitzak eta ezarpenak <ph name="USER_EMAIL_ADDRESS" /> profilean</translation>
 <translation id="1810366086647840386">Irudiaren zerbitzaria</translation>
-<translation id="1811908311154949291">Ezkutuko moduko marko hermetikoa (<ph name="FENCEDFRAME_SITE" />)</translation>
+<translation id="1811908311154949291">Ezkutuko moduko marko mugarritua (<ph name="FENCEDFRAME_SITE" />)</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> igortzen</translation>
 <translation id="1813278315230285598">Zerbitzuak</translation>
 <translation id="18139523105317219">EDI alderdiaren izena</translation>
@@ -1761,7 +1761,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> programak ezin izan da konektatu <ph name="NETWORK_ID" /> sarera. Hautatu beste sare bat edo saiatu berriro.</translation>
 <translation id="2553440850688409052">Ezkutatu plugina</translation>
 <translation id="2554553592469060349">Hautatutako fitxategia handiegia da (3 MB gehienez).</translation>
-<translation id="25568951186001797">Marko hermetikoa (<ph name="FENCEDFRAME_SITE" />)</translation>
+<translation id="25568951186001797">Marko mugarritua (<ph name="FENCEDFRAME_SITE" />)</translation>
 <translation id="2558569818338050235">Arakatze-historiak agertzen zaizkizun iragarkietan eragina du</translation>
 <translation id="2559889124253841528">Gorde gailuan</translation>
 <translation id="2564520396658920462">Desaktibatuta dago AppleScript bitartez JavaScript exekutatzeko aukera. Aktibatzeko, joan menu-barrara eta sakatu Ikusi &gt; Garatzailea &gt; Baimendu JavaScript Apple gertaeretan. Informazio gehiago lortzeko, joan https://support.google.com/chrome/?p=applescript helbidera.</translation>
