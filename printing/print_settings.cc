@@ -10,9 +10,13 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/units.h"
 
-#if BUILDFLAG(USE_CUPS) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS))
+#if BUILDFLAG(USE_CUPS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #include <cups/cups.h>
 #endif
+
+#include "printing/print_job_constants_cups.h"
+#endif  // BUILDFLAG(USE_CUPS)
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/mojom/print.mojom.h"
@@ -31,16 +35,6 @@ mojom::ColorModel ColorModeToColorModel(int color_mode) {
 void GetColorModelForModel(mojom::ColorModel color_model,
                            std::string* color_setting_name,
                            std::string* color_value) {
-  constexpr char kCUPSColorMode[] = "ColorMode";
-  constexpr char kCUPSColorModel[] = "ColorModel";
-  constexpr char kCUPSPrintoutMode[] = "PrintoutMode";
-  constexpr char kCUPSProcessColorModel[] = "ProcessColorModel";
-  constexpr char kCUPSBrotherMonoColor[] = "BRMonoColor";
-  constexpr char kCUPSBrotherPrintQuality[] = "BRPrintQuality";
-  constexpr char kCUPSEpsonInk[] = "Ink";
-  constexpr char kCUPSSharpARCMode[] = "ARCMode";
-  constexpr char kCUPSXeroxXRXColor[] = "XRXColor";
-
   *color_setting_name = kCUPSColorModel;
 
   switch (color_model) {

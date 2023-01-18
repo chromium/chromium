@@ -22,7 +22,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/print_job_constants.h"
+#include "printing/print_job_constants_cups.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
 #include "url/gurl.h"
@@ -51,12 +51,6 @@ constexpr int32_t kDefaultMaxCopies = 9999;
 constexpr char kCupsMaxCopies[] = "cupsMaxCopies";
 
 constexpr char kColorDevice[] = "ColorDevice";
-constexpr char kColorModel[] = "ColorModel";
-constexpr char kColorMode[] = "ColorMode";
-constexpr char kProcessColorModel[] = "ProcessColorModel";
-constexpr char kPrintoutMode[] = "PrintoutMode";
-constexpr char kDraftGray[] = "Draft.Gray";
-constexpr char kHighGray[] = "High.Gray";
 
 constexpr char kDuplex[] = "Duplex";
 constexpr char kDuplexNone[] = "None";
@@ -66,32 +60,6 @@ constexpr char kPageSize[] = "PageSize";
 
 // Brother printer specific options.
 constexpr char kBrotherDuplex[] = "BRDuplex";
-constexpr char kBrotherMonoColor[] = "BRMonoColor";
-constexpr char kBrotherPrintQuality[] = "BRPrintQuality";
-
-// Epson printer specific options.
-constexpr char kEpsonInk[] = "Ink";
-constexpr char kEpsonColor[] = "COLOR";
-constexpr char kEpsonMono[] = "MONO";
-
-// HP printer specific options.
-constexpr char kHpColorMode[] = "HPColorMode";
-constexpr char kHpColorPrint[] = "ColorPrint";
-constexpr char kHpGrayscalePrint[] = "GrayscalePrint";
-
-// Samsung printer specific options.
-constexpr char kSamsungColorTrue[] = "True";
-constexpr char kSamsungColorFalse[] = "False";
-
-// Sharp printer specific options.
-constexpr char kSharpARCMode[] = "ARCMode";
-constexpr char kSharpCMColor[] = "CMColor";
-constexpr char kSharpCMBW[] = "CMBW";
-
-// Xerox printer specific options.
-constexpr char kXeroxXRXColor[] = "XRXColor";
-constexpr char kXeroxAutomatic[] = "Automatic";
-constexpr char kXeroxBW[] = "BW";
 
 int32_t GetCopiesMax(ppd_file_t* ppd) {
   ppd_attr_t* attr = ppdFindAttr(ppd, kCupsMaxCopies, nullptr);
@@ -188,7 +156,7 @@ bool GetBasicColorModelSettings(ppd_file_t* ppd,
                                 mojom::ColorModel* color_model_for_black,
                                 mojom::ColorModel* color_model_for_color,
                                 bool* color_is_default) {
-  ppd_option_t* color_model = ppdFindOption(ppd, kColorModel);
+  ppd_option_t* color_model = ppdFindOption(ppd, kCUPSColorModel);
   if (!color_model)
     return false;
 
@@ -216,7 +184,7 @@ bool GetBasicColorModelSettings(ppd_file_t* ppd,
   else if (ppdFindChoice(color_model, kCMY_K))
     *color_model_for_color = mojom::ColorModel::kCMYPlusK;
 
-  ppd_choice_t* marked_choice = ppdFindMarkedChoice(ppd, kColorModel);
+  ppd_choice_t* marked_choice = ppdFindMarkedChoice(ppd, kCUPSColorModel);
   if (!marked_choice)
     marked_choice = ppdFindChoice(color_model, color_model->defchoice);
 
@@ -233,7 +201,7 @@ bool GetPrintOutModeColorSettings(ppd_file_t* ppd,
                                   mojom::ColorModel* color_model_for_black,
                                   mojom::ColorModel* color_model_for_color,
                                   bool* color_is_default) {
-  ppd_option_t* printout_mode = ppdFindOption(ppd, kPrintoutMode);
+  ppd_option_t* printout_mode = ppdFindOption(ppd, kCUPSPrintoutMode);
   if (!printout_mode)
     return false;
 
@@ -249,7 +217,8 @@ bool GetPrintOutModeColorSettings(ppd_file_t* ppd,
 
   // Get the default marked choice to identify the default color setting
   // value.
-  ppd_choice_t* printout_mode_choice = ppdFindMarkedChoice(ppd, kPrintoutMode);
+  ppd_choice_t* printout_mode_choice =
+      ppdFindMarkedChoice(ppd, kCUPSPrintoutMode);
   if (!printout_mode_choice) {
     printout_mode_choice =
         ppdFindChoice(printout_mode, printout_mode->defchoice);
@@ -270,7 +239,7 @@ bool GetColorModeSettings(ppd_file_t* ppd,
                           mojom::ColorModel* color_model_for_color,
                           bool* color_is_default) {
   // Samsung printers use "ColorMode" attribute in their PPDs.
-  ppd_option_t* color_mode_option = ppdFindOption(ppd, kColorMode);
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kCUPSColorMode);
   if (!color_mode_option)
     return false;
 
@@ -284,7 +253,7 @@ bool GetColorModeSettings(ppd_file_t* ppd,
     *color_model_for_black = mojom::ColorModel::kColorModeMonochrome;
   }
 
-  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kColorMode);
+  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kCUPSColorMode);
   if (!mode_choice) {
     mode_choice =
         ppdFindChoice(color_mode_option, color_mode_option->defchoice);
@@ -304,9 +273,9 @@ bool GetBrotherColorSettings(ppd_file_t* ppd,
                              bool* color_is_default) {
   // Some Brother printers use "BRMonoColor" attribute in their PPDs.
   // Some Brother printers use "BRPrintQuality" attribute in their PPDs.
-  ppd_option_t* color_mode_option = ppdFindOption(ppd, kBrotherMonoColor);
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kCUPSBrotherMonoColor);
   if (!color_mode_option)
-    color_mode_option = ppdFindOption(ppd, kBrotherPrintQuality);
+    color_mode_option = ppdFindOption(ppd, kCUPSBrotherPrintQuality);
   if (!color_mode_option)
     return false;
 
@@ -320,7 +289,7 @@ bool GetBrotherColorSettings(ppd_file_t* ppd,
   else if (ppdFindChoice(color_mode_option, kBlack))
     *color_model_for_black = mojom::ColorModel::kBrotherBRScript3Black;
 
-  ppd_choice_t* marked_choice = ppdFindMarkedChoice(ppd, kColorMode);
+  ppd_choice_t* marked_choice = ppdFindMarkedChoice(ppd, kCUPSColorMode);
   if (!marked_choice) {
     marked_choice =
         ppdFindChoice(color_mode_option, color_mode_option->defchoice);
@@ -347,7 +316,7 @@ bool GetHPColorSettings(ppd_file_t* ppd,
   if (ppdFindChoice(color_mode_option, kBlack))
     *color_model_for_black = mojom::ColorModel::kHPColorBlack;
 
-  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kColorMode);
+  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kCUPSColorMode);
   if (!mode_choice) {
     mode_choice =
         ppdFindChoice(color_mode_option, color_mode_option->defchoice);
@@ -363,7 +332,7 @@ bool GetHPColorModeSettings(ppd_file_t* ppd,
                             mojom::ColorModel* color_model_for_color,
                             bool* color_is_default) {
   // Some HP printers use "HPColorMode/Mode" attribute in their PPDs.
-  ppd_option_t* color_mode_option = ppdFindOption(ppd, kHpColorMode);
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kCUPSHpColorMode);
   if (!color_mode_option)
     return false;
 
@@ -372,7 +341,7 @@ bool GetHPColorModeSettings(ppd_file_t* ppd,
   if (ppdFindChoice(color_mode_option, kHpGrayscalePrint))
     *color_model_for_black = mojom::ColorModel::kHPColorBlack;
 
-  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kHpColorMode);
+  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kCUPSHpColorMode);
   if (!mode_choice) {
     mode_choice =
         ppdFindChoice(color_mode_option, color_mode_option->defchoice);
@@ -389,7 +358,7 @@ bool GetEpsonInkSettings(ppd_file_t* ppd,
                          mojom::ColorModel* color_model_for_color,
                          bool* color_is_default) {
   // Epson printers use "Ink" attribute in their PPDs.
-  ppd_option_t* color_mode_option = ppdFindOption(ppd, kEpsonInk);
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kCUPSEpsonInk);
   if (!color_mode_option)
     return false;
 
@@ -398,7 +367,7 @@ bool GetEpsonInkSettings(ppd_file_t* ppd,
   if (ppdFindChoice(color_mode_option, kEpsonMono))
     *color_model_for_black = mojom::ColorModel::kEpsonInkMono;
 
-  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kEpsonInk);
+  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kCUPSEpsonInk);
   if (!mode_choice) {
     mode_choice =
         ppdFindChoice(color_mode_option, color_mode_option->defchoice);
@@ -415,7 +384,7 @@ bool GetSharpARCModeSettings(ppd_file_t* ppd,
                              mojom::ColorModel* color_model_for_color,
                              bool* color_is_default) {
   // Sharp printers use "ARCMode" attribute in their PPDs.
-  ppd_option_t* color_mode_option = ppdFindOption(ppd, kSharpARCMode);
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kCUPSSharpARCMode);
   if (!color_mode_option)
     return false;
 
@@ -424,7 +393,7 @@ bool GetSharpARCModeSettings(ppd_file_t* ppd,
   if (ppdFindChoice(color_mode_option, kSharpCMBW))
     *color_model_for_black = mojom::ColorModel::kSharpARCModeCMBW;
 
-  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kSharpARCMode);
+  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kCUPSSharpARCMode);
   if (!mode_choice) {
     mode_choice =
         ppdFindChoice(color_mode_option, color_mode_option->defchoice);
@@ -443,7 +412,7 @@ bool GetXeroxColorSettings(ppd_file_t* ppd,
                            mojom::ColorModel* color_model_for_color,
                            bool* color_is_default) {
   // Some Xerox printers use "XRXColor" attribute in their PPDs.
-  ppd_option_t* color_mode_option = ppdFindOption(ppd, kXeroxXRXColor);
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kCUPSXeroxXRXColor);
   if (!color_mode_option)
     return false;
 
@@ -452,7 +421,7 @@ bool GetXeroxColorSettings(ppd_file_t* ppd,
   if (ppdFindChoice(color_mode_option, kXeroxBW))
     *color_model_for_black = mojom::ColorModel::kXeroxXRXColorBW;
 
-  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kXeroxXRXColor);
+  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kCUPSXeroxXRXColor);
   if (!mode_choice) {
     mode_choice =
         ppdFindChoice(color_mode_option, color_mode_option->defchoice);
@@ -471,7 +440,7 @@ bool GetProcessColorModelSettings(ppd_file_t* ppd,
                                   mojom::ColorModel* color_model_for_color,
                                   bool* color_is_default) {
   // Canon printers use "ProcessColorModel" attribute in their PPDs.
-  ppd_option_t* color_mode_option = ppdFindOption(ppd, kProcessColorModel);
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kCUPSProcessColorModel);
   if (!color_mode_option)
     return false;
 
@@ -483,7 +452,7 @@ bool GetProcessColorModelSettings(ppd_file_t* ppd,
   if (ppdFindChoice(color_mode_option, kGreyscale))
     *color_model_for_black = mojom::ColorModel::kProcessColorModelGreyscale;
 
-  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kProcessColorModel);
+  ppd_choice_t* mode_choice = ppdFindMarkedChoice(ppd, kCUPSProcessColorModel);
   if (!mode_choice) {
     mode_choice =
         ppdFindChoice(color_mode_option, color_mode_option->defchoice);

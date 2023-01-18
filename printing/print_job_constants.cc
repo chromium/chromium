@@ -246,30 +246,4 @@ const char kSettingIppClientType[] = "ipp-client-type";
 const char kSettingIppClientVersion[] = "ipp-client-version";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(USE_CUPS)
-const char kBlack[] = "Black";
-const char kCMYK[] = "CMYK";
-const char kKCMY[] = "KCMY";
-const char kCMY_K[] = "CMY+K";
-const char kCMY[] = "CMY";
-const char kColor[] = "Color";
-const char kEpsonColor[] = "COLOR";
-const char kEpsonMono[] = "MONO";
-const char kFullColor[] = "FullColor";
-const char kGray[] = "Gray";
-const char kGrayscale[] = "Grayscale";
-const char kGreyscale[] = "Greyscale";
-const char kMono[] = "Mono";
-const char kMonochrome[] = "Monochrome";
-const char kNormal[] = "Normal";
-const char kNormalGray[] = "Normal.Gray";
-const char kRGB[] = "RGB";
-const char kRGBA[] = "RGBA";
-const char kRGB16[] = "RGB16";
-const char kSharpCMColor[] = "CMColor";
-const char kSharpCMBW[] = "CMBW";
-const char kXeroxAutomatic[] = "Automatic";
-const char kXeroxBW[] = "BW";
-#endif
-
 }  // namespace printing

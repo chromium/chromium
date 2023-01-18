@@ -153,33 +153,6 @@ COMPONENT_EXPORT(PRINTING_BASE)
 extern const uint32_t kInvalidPageIndex;
 COMPONENT_EXPORT(PRINTING_BASE) extern const uint32_t kMaxPageCount;
 
-#if BUILDFLAG(USE_CUPS)
-// Printer color models
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kBlack[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kCMYK[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kKCMY[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kCMY_K[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kCMY[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kColor[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kEpsonColor[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kEpsonMono[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kFullColor[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kGray[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kGrayscale[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kGreyscale[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kMono[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kMonochrome[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kNormal[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kNormalGray[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kRGB[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kRGBA[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kRGB16[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kSharpCMColor[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kSharpCMBW[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kXeroxAutomatic[];
-COMPONENT_EXPORT(PRINTING_BASE) extern const char kXeroxBW[];
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingChromeOSAccessOAuthToken[];

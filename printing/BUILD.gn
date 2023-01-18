@@ -50,6 +50,10 @@ component("printing_base") {
 
   if (use_cups) {
     public_configs = [ ":cups" ]
+    sources += [
+      "print_job_constants_cups.cc",
+      "print_job_constants_cups.h",
+    ]
   }
 
   cflags = []
