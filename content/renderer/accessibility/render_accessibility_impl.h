@@ -84,8 +84,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // start accessibility.
   RenderAccessibilityImpl(
       RenderAccessibilityManager* const render_accessibility_manager,
-      RenderFrameImpl* const render_frame,
-      bool serialize_post_lifecycle);
+      RenderFrameImpl* const render_frame);
 
   RenderAccessibilityImpl(const RenderAccessibilityImpl&) = delete;
   RenderAccessibilityImpl& operator=(const RenderAccessibilityImpl&) = delete;
@@ -116,7 +115,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // Called when an accessibility notification occurs in Blink.
   void HandleAXEvent(const ui::AXEvent& event);
-  // An AXObject should be serialized at the next available opportunity.
   void MarkWebAXObjectDirty(
       const blink::WebAXObject& obj,
       bool subtree,
@@ -165,12 +163,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   int GetDeferredEventsDelay();
 
  private:
-  enum class LegacyEventScheduleMode {
-    kDeferEvents,
-    kProcessEventsImmediately
-  };
+  enum class EventScheduleMode { kDeferEvents, kProcessEventsImmediately };
 
-  enum class LegacyEventScheduleStatus {
+  enum class EventScheduleStatus {
     // Events have been scheduled with a delay, but have not been sent.
     kScheduledDeferred,
     // Events have been scheduled without a delay, but have not been sent.
@@ -183,19 +178,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // Callback that will be called from the browser upon handling the message
   // previously sent to it via SendPendingAccessibilityEvents().
-  void LegacyOnAccessibilityEventsHandled();
-
-  // If we are calling this from a task, scheduling is allowed even if there is
-  // a running task
-  void LegacyScheduleSendPendingAccessibilityEvents(
-      bool scheduling_from_task = false);
-
-  // Cancels scheduled events that are not yet in flight
-  void LegacyCancelScheduledEvents();
-
-  // Called whenever the "ack" message is received for a serialization message
-  // sent to the browser process, indicating it was received.
-  void OnSerializationReceived();
+  void OnAccessibilityEventsHandled();
 
   // RenderFrameObserver implementation.
   void OnDestruct() override;
@@ -227,6 +210,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // opportunity, so that any dirty objects will be serialized soon.
   void ScheduleImmediateAXUpdate();
 
+  // If we are calling this from a task, scheduling is allowed even if there is
+  // a running task
+  void ScheduleSendPendingAccessibilityEvents(
+      bool scheduling_from_task = false);
   void AddImageAnnotationDebuggingAttributes(
       const std::vector<ui::AXTreeUpdate>& updates);
 
@@ -242,6 +229,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   blink::WebAXObject GetPluginRoot();
 
   blink::WebAXObject ComputeRoot();
+
+  // Cancels scheduled events that are not yet in flight
+  void CancelScheduledEvents();
 
   // Sends the URL-keyed metrics for the maximum amount of time spent in
   // SendPendingAccessibilityEvents if they meet the minimum criteria for
@@ -265,11 +255,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   static void IgnoreProtocolChecksForTesting();
 
-  // After a serialization is sent to the browser process, this function will
-  // return true until the "ack" message is received, indicating the browser got
-  // the serialization message.
-  // No new serializations are sent until this message is received.
-  bool IsWaitingForAck() const;
+  // The initial accessibility tree root still needs to be created. Like other
+  // accessible objects, it must be created when layout is clean.
+  bool needs_initial_ax_tree_root_ = true;
 
   // The RenderAccessibilityManager that owns us.
   RenderAccessibilityManager* render_accessibility_manager_;
@@ -288,6 +276,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   PluginAXTreeSource* plugin_tree_source_;
   blink::WebAXObject plugin_host_node_;
 
+  // Current event scheduling status
+  EventScheduleStatus event_schedule_status_;
+
   // Nonzero if the browser requested we reset the accessibility state.
   // We need to return this token in the next IPC.
   int reset_token_;
@@ -295,6 +286,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Whether or not we've injected a stylesheet in this document
   // (only when debugging flags are enabled, never under normal circumstances).
   bool has_injected_stylesheet_ = false;
+
+  // We defer events to improve performance during the initial page load.
+  EventScheduleMode event_schedule_mode_;
 
   // Whether we should highlight annotation results visually on the page
   // for debugging.
@@ -310,18 +304,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // in SendPendingAccessibilityEvents. This is periodically uploaded as
   // a UKM and then reset.
   base::TimeDelta slowest_serialization_time_;
-
-  // This stores the last time during that a serialization was done, so that
-  // serializations can be skipped if the time since the last serialization is
-  // less than GetDeferredEventsDelay(). Setting to "beginning of time" causes
-  // the upcoming serialization to occur at the next available opportunity.
-  // Batching is used to reduce the number of serializations, in order to
-  // provide overall faster content updates while using less CPU, because nodes
-  // that change multiple times in a short time period only need to be
-  // serialized once, e.g. during page loads or animations.
-  static constexpr base::Time kSerializeAtNextOpportunity =
-      base::Time::UnixEpoch();
-  base::Time last_serialization_timestamp_ = kSerializeAtNextOpportunity;
 
   // The amount of time since the last UKM upload.
   std::unique_ptr<base::ElapsedTimer> ukm_timer_;
@@ -344,27 +326,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // A set of IDs for which we should always load inline text boxes.
   std::set<int32_t> load_inline_text_boxes_ids_;
-
-  // Controls whether serialization should be run synchronously at the end of a
-  // main frame update, or scheduled as an asynchronous task.
-  bool serialize_post_lifecycle_;
-
-  // The initial accessibility tree root still needs to be created. Like other
-  // accessible objects, it must be created when layout is clean.
-  bool legacy_needs_initial_ax_tree_root_ = true;
-
-  // Current event scheduling status
-  LegacyEventScheduleStatus legacy_event_schedule_status_ =
-      LegacyEventScheduleStatus::kNotWaiting;
-
-  // We defer events to improve performance during the initial page load.
-  LegacyEventScheduleMode legacy_event_schedule_mode_ =
-      LegacyEventScheduleMode::kDeferEvents;
-
-  // So we can ensure the serialization pipeline never stalls with dirty objects
-  // remaining to be serialized.
-  base::WeakPtrFactory<RenderAccessibilityImpl>
-      weak_factory_for_serialization_pipeline_{this};
 
   // So we can queue up tasks to be executed later.
   base::WeakPtrFactory<RenderAccessibilityImpl>
