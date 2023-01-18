@@ -13,7 +13,7 @@ import {routes} from '../os_route.js';
 import {Route} from '../router.js';
 
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
-import {JAPANESE_INPUT_MODE, JAPANESE_KEYMAP_STYLE, JAPANESE_PUNCTUATION_STYLE, JAPANESE_SECTION_SHORTCUT, JAPANESE_SHIFT_KEY_MODE_STYLE, JAPANESE_SPACE_INPUT_STYLE, JAPANESE_SYMBOL_STYLE} from './input_method_types.js';
+import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle} from './input_method_types.js';
 
 /**
  * The prefix string shared by all first party input method ID.
@@ -138,7 +138,7 @@ export const OPTION_DEFAULT = {
   [OptionType.ENABLE_SOUND_ON_KEYPRESS]: false,
   [OptionType.JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH]: true,
   [OptionType.JAPANESE_SHIFT_KEY_MODE_STYLE]:
-      JAPANESE_SHIFT_KEY_MODE_STYLE.ALPHANUMERIC,
+      JapaneseShiftKeyModeStyle.ALPHANUMERIC,
   [OptionType.JAPANESE_USE_INPUT_HISTORY]: true,
   [OptionType.JAPANESE_USE_SYSTEM_DICTIONARY]: true,
   [OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS]: 3,
@@ -150,16 +150,15 @@ export const OPTION_DEFAULT = {
   [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.XKB_LAYOUT]: 'US',
   // Options for Japanese input methods.
-  [OptionType.JAPANESE_INPUT_MODE]: JAPANESE_INPUT_MODE.ROMAJI,
+  [OptionType.JAPANESE_INPUT_MODE]: JapaneseInputMode.ROMAJI,
   [OptionType.JAPANESE_PUNCTUATION_STYLE]:
-      JAPANESE_PUNCTUATION_STYLE.KUTEN_TOUTEN,
+      JapanesePunctuationStyle.KUTEN_TOUTEN,
   [OptionType.JAPANESE_SYMBOL_STYLE]:
-      JAPANESE_SYMBOL_STYLE.CORNER_BRACKET_MIDDLE_DOT,
-  [OptionType.JAPANESE_SPACE_INPUT_STYLE]:
-      JAPANESE_SPACE_INPUT_STYLE.INPUT_MODE,
+      JapaneseSymbolStyle.CORNER_BRACKET_MIDDLE_DOT,
+  [OptionType.JAPANESE_SPACE_INPUT_STYLE]: JapaneseSpaceInputStyle.INPUT_MODE,
   [OptionType.JAPANESE_SECTION_SHORTCUT]:
-      JAPANESE_SECTION_SHORTCUT.DIGITS_123456789,
-  [OptionType.JAPANESE_KEYMAP_STYLE]: JAPANESE_KEYMAP_STYLE.CUSTOM,
+      JapaneseSectionShortcut.DIGITS_123456789,
+  [OptionType.JAPANESE_KEYMAP_STYLE]: JapaneseKeymapStyle.CUSTOM,
   [OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS]: true,
   [OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE]: true,
 
@@ -420,7 +419,7 @@ const Settings = {
  * @return {string} The corresponding engind ID of the input method.
  */
 export function getFirstPartyInputMethodEngineId(id) {
-  assert(isFirstPartyInputMethodId_(id));
+  assert(isFirstPartyInputMethodId(id));
   return id.substring(FIRST_PARTY_INPUT_METHOD_ID_PREFIX.length);
 }
 
@@ -433,7 +432,7 @@ export function getFirstPartyInputMethodEngineId(id) {
 export function hasOptionsPageInSettings(
     id, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
     isJapaneseSettingsEnabled) {
-  if (!isFirstPartyInputMethodId_(id)) {
+  if (!isFirstPartyInputMethodId(id)) {
     return false;
   }
   const engineId = getFirstPartyInputMethodEngineId(id);
@@ -760,121 +759,121 @@ export function getOptionMenuItems(option) {
     case OptionType.JAPANESE_INPUT_MODE:
       return [
         {
-          value: JAPANESE_INPUT_MODE.KANA,
+          value: JapaneseInputMode.KANA,
           name: 'inputMethodOptionsJapaneseInputModeKana',
         },
         {
-          value: JAPANESE_INPUT_MODE.ROMAJI,
+          value: JapaneseInputMode.ROMAJI,
           name: 'inputMethodOptionsJapaneseInputModeRomaji',
         },
       ];
     case OptionType.JAPANESE_PUNCTUATION_STYLE:
       return [
         {
-          value: JAPANESE_PUNCTUATION_STYLE.KUTEN_TOUTEN,
+          value: JapanesePunctuationStyle.KUTEN_TOUTEN,
           name: 'inputMethodOptionsJapanesePunctuationStyleKutenTouten',
         },
         {
-          value: JAPANESE_PUNCTUATION_STYLE.COMMA_PERIOD,
+          value: JapanesePunctuationStyle.COMMA_PERIOD,
           name: 'inputMethodOptionsJapanesePunctuationStyleCommaPeriod',
         },
         {
-          value: JAPANESE_PUNCTUATION_STYLE.KUTEN_PERIOD,
+          value: JapanesePunctuationStyle.KUTEN_PERIOD,
           name: 'inputMethodOptionsJapanesePunctuationStyleKutenPeriod',
         },
         {
-          value: JAPANESE_PUNCTUATION_STYLE.COMMA_TOUTEN,
+          value: JapanesePunctuationStyle.COMMA_TOUTEN,
           name: 'inputMethodOptionsJapanesePunctuationStyleCommaTouten',
         },
       ];
     case OptionType.JAPANESE_SYMBOL_STYLE:
       return [
         {
-          value: JAPANESE_SYMBOL_STYLE.CORNER_BRACKET_MIDDLE_DOT,
+          value: JapaneseSymbolStyle.CORNER_BRACKET_MIDDLE_DOT,
           name: 'inputMethodOptionsJapaneseSymbolStyleCornerBracketMiddleDot',
         },
         {
-          value: JAPANESE_SYMBOL_STYLE.SQUARE_BRACKET_SLASH,
+          value: JapaneseSymbolStyle.SQUARE_BRACKET_SLASH,
           name: 'inputMethodOptionsJapaneseSymbolStyleSquareBracketSlash',
         },
         {
-          value: JAPANESE_SYMBOL_STYLE.CORNER_BRACKET_SLASH,
+          value: JapaneseSymbolStyle.CORNER_BRACKET_SLASH,
           name: 'inputMethodOptionsJapaneseSymbolStyleCornerBracketSlash',
         },
         {
-          value: JAPANESE_SYMBOL_STYLE.SQUARE_BRACKET_MIDDLE_DOT,
+          value: JapaneseSymbolStyle.SQUARE_BRACKET_MIDDLE_DOT,
           name: 'inputMethodOptionsJapaneseSymbolStyleSquareBracketMiddleDot',
         },
       ];
     case OptionType.JAPANESE_SPACE_INPUT_STYLE:
       return [
         {
-          value: JAPANESE_SPACE_INPUT_STYLE.INPUT_MODE,
+          value: JapaneseSpaceInputStyle.INPUT_MODE,
           name: 'inputMethodOptionsJapaneseSpaceInputStyleInputMode',
         },
         {
-          value: JAPANESE_SPACE_INPUT_STYLE.FULLWIDTH,
+          value: JapaneseSpaceInputStyle.FULLWIDTH,
           name: 'inputMethodOptionsJapaneseSpaceInputStyleFullwidth',
         },
         {
-          value: JAPANESE_SPACE_INPUT_STYLE.HALFWIDTH,
+          value: JapaneseSpaceInputStyle.HALFWIDTH,
           name: 'inputMethodOptionsJapaneseSpaceInputStyleHalfwidth',
         },
       ];
     case OptionType.JAPANESE_SECTION_SHORTCUT:
       return [
         {
-          value: JAPANESE_SECTION_SHORTCUT.NO_SHORTCUT,
+          value: JapaneseSectionShortcut.NO_SHORTCUT,
           name: 'inputMethodOptionsJapaneseSectionShortcutNoShortcut',
         },
         {
-          value: JAPANESE_SECTION_SHORTCUT.DIGITS_123456789,
+          value: JapaneseSectionShortcut.DIGITS_123456789,
           name: 'inputMethodOptionsJapaneseSectionShortcut123456789',
         },
         {
-          value: JAPANESE_SECTION_SHORTCUT.ASDFGHJKL,
+          value: JapaneseSectionShortcut.ASDFGHJKL,
           name: 'inputMethodOptionsJapaneseSectionShortcutAsdfghjkl',
         },
       ];
     case OptionType.JAPANESE_KEYMAP_STYLE:
       return [
         {
-          value: JAPANESE_KEYMAP_STYLE.CUSTOM,
+          value: JapaneseKeymapStyle.CUSTOM,
           name: 'inputMethodOptionsJapaneseKeymapStyleCustom',
         },
         {
-          value: JAPANESE_KEYMAP_STYLE.ATOK,
+          value: JapaneseKeymapStyle.ATOK,
           name: 'inputMethodOptionsJapaneseKeymapStyleAtok',
         },
         {
-          value: JAPANESE_KEYMAP_STYLE.MS_IME,
+          value: JapaneseKeymapStyle.MS_IME,
           name: 'inputMethodOptionsJapaneseKeymapStyleMsIme',
         },
         {
-          value: JAPANESE_KEYMAP_STYLE.KOTOERI,
+          value: JapaneseKeymapStyle.KOTOERI,
           name: 'inputMethodOptionsJapaneseKeymapStyleKotoeri',
         },
         {
-          value: JAPANESE_KEYMAP_STYLE.MOBILE,
+          value: JapaneseKeymapStyle.MOBILE,
           name: 'inputMethodOptionsJapaneseKeymapStyleMobile',
         },
         {
-          value: JAPANESE_KEYMAP_STYLE.CHROME_OS,
+          value: JapaneseKeymapStyle.CHROME_OS,
           name: 'inputMethodOptionsJapaneseKeymapStyleChromeOs',
         },
       ];
     case OptionType.JAPANESE_SHIFT_KEY_MODE_STYLE:
       return [
         {
-          value: JAPANESE_SHIFT_KEY_MODE_STYLE.OFF,
+          value: JapaneseShiftKeyModeStyle.OFF,
           name: 'inputMethodOptionsJapaneseShiftKeyModeStyleOff',
         },
         {
-          value: JAPANESE_SHIFT_KEY_MODE_STYLE.ALPHANUMERIC,
+          value: JapaneseShiftKeyModeStyle.ALPHANUMERIC,
           name: 'inputMethodOptionsJapaneseShiftKeyModeStyleAlphanumeric',
         },
         {
-          value: JAPANESE_SHIFT_KEY_MODE_STYLE.KATAKANA,
+          value: JapaneseShiftKeyModeStyle.KATAKANA,
           name: 'inputMethodOptionsJapaneseShiftKeyModeStyleKatakana',
         },
       ];
@@ -967,6 +966,6 @@ export function getSubmenuButtonType(option) {
  * @return {boolean} true if |id| is a first party input method ID.
  * @private
  */
-function isFirstPartyInputMethodId_(id) {
+function isFirstPartyInputMethodId(id) {
   return id.startsWith(FIRST_PARTY_INPUT_METHOD_ID_PREFIX);
 }

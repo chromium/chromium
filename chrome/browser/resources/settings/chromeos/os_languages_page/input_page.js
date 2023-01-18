@@ -150,9 +150,9 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
        * showing.
        * @private
        */
-      showLastUsedIMEShortcutReminder_: {
+      showLastUsedImeShortcutReminder_: {
         type: Boolean,
-        computed: `shouldShowLastUsedIMEShortcutReminder_(
+        computed: `shouldShowLastUsedImeShortcutReminder_(
             languages.inputMethods.enabled.length,
             prefs.ash.shortcut_reminders.last_used_ime_dismissed.value)`,
       },
@@ -161,9 +161,9 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
        * Whether the shortcut reminder for the next IME is currently showing.
        * @private
        */
-      showNextIMEShortcutReminder_: {
+      showNextImeShortcutReminder_: {
         type: Boolean,
-        computed: `shouldShowNextIMEShortcutReminder_(
+        computed: `shouldShowNextImeShortcutReminder_(
             languages.inputMethods.enabled.length,
             prefs.ash.shortcut_reminders.next_ime_dismissed.value)`,
       },
@@ -174,8 +174,8 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
        */
       shortcutReminderBody_: {
         type: Array,
-        computed: `getShortcutReminderBody_(showLastUsedIMEShortcutReminder_,
-            showNextIMEShortcutReminder_)`,
+        computed: `getShortcutReminderBody_(showLastUsedImeShortcutReminder_,
+            showNextImeShortcutReminder_)`,
       },
 
       /** @private */
@@ -649,7 +649,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
    * @return {boolean}
    * @private
    */
-  shouldShowLastUsedIMEShortcutReminder_() {
+  shouldShowLastUsedImeShortcutReminder_() {
     // User has already dismissed the shortcut reminder.
     if (this.getPref('ash.shortcut_reminders.last_used_ime_dismissed').value) {
       return false;
@@ -662,7 +662,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
    * @return {boolean}
    * @private
    */
-  shouldShowNextIMEShortcutReminder_() {
+  shouldShowNextImeShortcutReminder_() {
     // User has already dismissed the shortcut reminder.
     if (this.getPref('ash.shortcut_reminders.next_ime_dismissed').value) {
       return false;
@@ -677,10 +677,10 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
    */
   getShortcutReminderBody_() {
     const /** !Array<string> */ reminderBody = [];
-    if (this.showLastUsedIMEShortcutReminder_) {
+    if (this.showLastUsedImeShortcutReminder_) {
       reminderBody.push(this.i18nAdvanced('imeShortcutReminderLastUsed'));
     }
-    if (this.showNextIMEShortcutReminder_) {
+    if (this.showNextImeShortcutReminder_) {
       reminderBody.push(this.i18nAdvanced('imeShortcutReminderNext'));
     }
     return reminderBody;
@@ -700,20 +700,20 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     // Record the metric - assume that both reminders were dismissed unless one
     // of them wasn't shown.
     assert(
-        this.showLastUsedIMEShortcutReminder_ ||
-        this.showNextIMEShortcutReminder_);
+        this.showLastUsedImeShortcutReminder_ ||
+        this.showNextImeShortcutReminder_);
     let dismissedState = InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME;
-    if (!this.showLastUsedIMEShortcutReminder_) {
+    if (!this.showLastUsedImeShortcutReminder_) {
       dismissedState = InputsShortcutReminderState.NEXT_IME;
-    } else if (!this.showNextIMEShortcutReminder_) {
+    } else if (!this.showNextImeShortcutReminder_) {
       dismissedState = InputsShortcutReminderState.LAST_USED_IME;
     }
     this.languagesMetricsProxy_.recordShortcutReminderDismissed(dismissedState);
 
-    if (this.showLastUsedIMEShortcutReminder_) {
+    if (this.showLastUsedImeShortcutReminder_) {
       this.setPrefValue('ash.shortcut_reminders.last_used_ime_dismissed', true);
     }
-    if (this.showNextIMEShortcutReminder_) {
+    if (this.showNextImeShortcutReminder_) {
       this.setPrefValue('ash.shortcut_reminders.next_ime_dismissed', true);
     }
   }

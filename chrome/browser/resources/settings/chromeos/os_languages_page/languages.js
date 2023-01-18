@@ -905,7 +905,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
     // For CrOS language settings V2 update 2, languages and spell check are
     // decoupled so there's no need to remove the language from spell check.
-    if (!this.isChromeOSLanguageSettingsV2Update2_()) {
+    if (!this.isChromeOsLanguageSettingsV2Update2_()) {
       this.deletePrefListItem('spellcheck.dictionaries', languageCode);
     }
 
@@ -917,7 +917,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
    * @return {boolean}
    * @private
    */
-  isChromeOSLanguageSettingsV2Update2_() {
+  isChromeOsLanguageSettingsV2Update2_() {
     return loadTimeData.valueExists('enableLanguageSettingsV2Update2') &&
         loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
   }

@@ -44,7 +44,7 @@ import {getTemplate} from './os_languages_page_v2.html.js';
  * @type {number} Millisecond delay that can be used when closing an action
  * menu to keep it briefly on-screen so users can see the changes.
  */
-const kMenuCloseDelay = 100;
+const MENU_CLOSE_DELAY = 100;
 
 /**
  * @constructor
@@ -292,7 +292,7 @@ class OsSettingsLanguagesPageV2Element extends
       if (menu.open) {
         menu.close();
       }
-    }, kMenuCloseDelay);
+    }, MENU_CLOSE_DELAY);
   }
 
   /**

@@ -5,27 +5,25 @@
 /**
  * @enum {string}
  */
-export const JAPANESE_INPUT_MODE = {
+export const JapaneseInputMode = {
   KANA: 'Kana',
   ROMAJI: 'Romaji',
 };
 
-
 /**
  * @enum {string}
  */
-export const JAPANESE_PUNCTUATION_STYLE = {
+export const JapanesePunctuationStyle = {
   KUTEN_TOUTEN: 'KutenTouten',
   COMMA_PERIOD: 'CommaPeriod',
   KUTEN_PERIOD: 'KutenPeriod',
   COMMA_TOUTEN: 'CommaTouten',
 };
 
-
 /**
  * @enum {string}
  */
-export const JAPANESE_SYMBOL_STYLE = {
+export const JapaneseSymbolStyle = {
   CORNER_BRACKET_MIDDLE_DOT: 'CornerBracketMiddleDot',
   SQUARE_BRACKET_SLASH: 'SquareBracketSlash',
   CORNER_BRACKET_SLASH: 'CornerBracketSlash',
@@ -35,27 +33,25 @@ export const JAPANESE_SYMBOL_STYLE = {
 /**
  * @enum {string}
  */
-export const JAPANESE_SPACE_INPUT_STYLE = {
+export const JapaneseSpaceInputStyle = {
   INPUT_MODE: 'InputMode',
   FULLWIDTH: 'Fullwidth',
   HALFWIDTH: 'Halfwidth',
 };
 
-
 /**
  * @enum {string}
  */
-export const JAPANESE_SECTION_SHORTCUT = {
+export const JapaneseSectionShortcut = {
   NO_SHORTCUT: 'NoShortcut',
   DIGITS_123456789: 'Digits123456789',
   ASDFGHJKL: 'ASDFGHJKL',
 };
 
-
 /**
  * @enum {string}
  */
-export const JAPANESE_KEYMAP_STYLE = {
+export const JapaneseKeymapStyle = {
   CUSTOM: 'Custom',
   ATOK: 'Atok',
   MS_IME: 'MsIme',
@@ -64,7 +60,7 @@ export const JAPANESE_KEYMAP_STYLE = {
   CHROME_OS: 'ChromeOs',
 };
 
-export const JAPANESE_SHIFT_KEY_MODE_STYLE = {
+export const JapaneseShiftKeyModeStyle = {
   OFF: 'Off',
   ALPHANUMERIC: 'Alphanumeric',
   KATAKANA: 'Katakana',
