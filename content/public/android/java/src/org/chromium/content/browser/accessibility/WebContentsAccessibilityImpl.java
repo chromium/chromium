@@ -612,6 +612,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
     }
 
+    private void unInitialize() {
+        if (mNativeObj != 0) {
+            WebContentsAccessibilityImplJni.get().unInitialize(mNativeObj);
+        }
+    }
+
     /**
      * Refresh a11y state with that of {@link AccessibilityManager}.
      */
@@ -2330,5 +2336,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 long nativeWebContentsAccessibilityAndroid, float x, float y);
         boolean getImageData(long nativeWebContentsAccessibilityAndroid,
                 AccessibilityNodeInfoCompat info, int id, boolean hasSentPreviousRequest);
+        void unInitialize(long nativeWebContentsAccessibilityAndroid);
     }
 }

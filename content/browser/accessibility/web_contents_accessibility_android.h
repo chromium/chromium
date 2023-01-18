@@ -79,6 +79,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // --------------------------------------------------------------------------
 
   void DeleteEarly(JNIEnv* env);
+  void UnInitialize(JNIEnv* env);
 
   // Global methods.
   jboolean IsEnabled(JNIEnv* env);

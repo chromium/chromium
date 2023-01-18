@@ -251,6 +251,10 @@ void WebContentsAccessibilityAndroid::DeleteEarly(JNIEnv* env) {
   }
 }
 
+void WebContentsAccessibilityAndroid::UnInitialize(JNIEnv* env) {
+  // TODO(jacklynch): Implement teardown of native accessibility
+}
+
 jboolean WebContentsAccessibilityAndroid::IsEnabled(JNIEnv* env) {
   return !!GetRootBrowserAccessibilityManager();
 }
