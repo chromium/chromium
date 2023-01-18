@@ -1432,6 +1432,11 @@ BASE_FEATURE(kEcheLauncherListView,
              "EcheLauncherListView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Switch the "More Apps" button in eche launcher to show small app icons
+BASE_FEATURE(kEcheLauncherIconsInMoreAppsButton,
+             "EcheLauncherIconsInMoreAppsButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables support for multilingual assistive typing on ChromeOS.
 BASE_FEATURE(kMultilingualTyping,
              "MultilingualTyping",

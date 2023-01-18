@@ -1610,6 +1610,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "eche-launcher-app-icon-in-more-apps-button",
+    "owners": ["joeantonetti@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "eche-launcher-list-view",
     "owners": ["pushi"],
     "expiry_milestone": 115

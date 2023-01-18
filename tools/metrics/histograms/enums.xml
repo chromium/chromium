@@ -62057,6 +62057,7 @@ from previous Chrome versions.
   <int value="598926697" label="VrLaunchIntent:disabled"/>
   <int value="600037637" label="AndroidSigninPromos:enabled"/>
   <int value="600643275" label="OobeRecommendAppsScreen:enabled"/>
+  <int value="601510870" label="EcheLauncherIconsInMoreAppsButton:disabled"/>
   <int value="601875786" label="PageVisibilityPageContentAnnotations:enabled"/>
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
   <int value="602452004" label="WebBluetoothBondOnDemand:disabled"/>
@@ -63721,6 +63722,7 @@ from previous Chrome versions.
       label="OmniboxOnDeviceHeadProviderNonIncognito:disabled"/>
   <int value="1569982806" label="BentoBar:enabled"/>
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
+  <int value="1571640975" label="EcheLauncherIconsInMoreAppsButton:enabled"/>
   <int value="1571998166" label="DetectingHeavyPages:disabled"/>
   <int value="1572464760" label="pwa-update-dialog-for-name-and-icon:disabled"/>
   <int value="1573323485" label="ViewportHeightClientHintHeader:enabled"/>
