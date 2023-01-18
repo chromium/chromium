@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/test/feature_parameter_interface.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -32,21 +33,12 @@ const test::UIPath kTurnOnButton = {kSmartPrivacyProtection, "turnOnButton"};
 
 // Class to test SmartPrivacyProtection screen in OOBE. Screen promotes the
 // "lock on leave" feature that users can either turn and proceed with a
-// kTurnOnButton or reject and proceed with a kNoThanksButton. TestMode
-// represents if the feature is enabled.
-class SmartPrivacyProtectionScreenTest
-    : public OobeBaseTest,
-      public ::testing::WithParamInterface<bool> {
+// kTurnOnButton or reject and proceed with a kNoThanksButton. The feature
+// parameter determines whether kQuickDim is enabled or not for the test.
+class SmartPrivacyProtectionScreenTest : public OobeBaseTest,
+                                         public FeatureAsParameterInterface<1> {
  public:
   SmartPrivacyProtectionScreenTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
-      enabled_features.push_back(features::kQuickDim);
-    } else {
-      disabled_features.push_back(features::kQuickDim);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kHasHps);
   }
 
@@ -91,15 +83,13 @@ class SmartPrivacyProtectionScreenTest
   }
 
   base::OnceClosure quit_closure_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOnFeature) {
   ShowSmartPrivacyProtectionScreen();
-  if (!GetParam()) {
-    // Feature not enabled.
+  if (!IsFeatureEnabledInThisTestCase(features::kQuickDim)) {
     ExitScreenAndExpectResult(
         SmartPrivacyProtectionScreen::Result::NOT_APPLICABLE);
     return;
@@ -115,8 +105,7 @@ IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOnFeature) {
 
 IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOffFeature) {
   ShowSmartPrivacyProtectionScreen();
-  if (!GetParam()) {
-    // Feature not enabled.
+  if (!IsFeatureEnabledInThisTestCase(features::kQuickDim)) {
     ExitScreenAndExpectResult(
         SmartPrivacyProtectionScreen::Result::NOT_APPLICABLE);
     return;
@@ -132,8 +121,12 @@ IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOffFeature) {
 // Note that both tests have essentially the same logic when the feature is
 // disabled. We leave in the redundant logic since it will become needed once we
 // add the UI for snooping protection.
+const auto kAllFeatureVariations =
+    FeatureAsParameterInterface<1>::Generator({&features::kQuickDim});
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SmartPrivacyProtectionScreenTest,
-                         ::testing::Bool());
+                         testing::ValuesIn(kAllFeatureVariations),
+                         FeatureAsParameterInterface<1>::ParamInfoToString);
 
 }  // namespace ash

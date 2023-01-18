@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,10 +28,10 @@ struct FeatureState {
 template <size_t N>
 using FeatureStateArray = std::array<FeatureState, N>;
 
-// Alias for an element that holds all permutations of FeatureStateArray
-// For any N, the amount of permutations is N^2
+// Alias for an element that holds all configurations of FeatureStateArray
+// For any N, the amount of configurations is 2^N
 template <size_t N>
-using FeatureStateArrayPermutations =
+using FeatureStateArrayConfigurations =
     std::array<FeatureStateArray<N>, 1 << N /* = 2^N */>;
 
 template <size_t N>
@@ -41,14 +42,24 @@ using BaseFeatureArray = std::array<const base::Feature*, N>;
 //
 // Use this interface in tests when you want to provide features as parameters.
 // Tests will run with the features enabled and disabled, in all possible
-// permutations. Note that for N features, there are 2^N permutations.
+// configurations. Note that for N features, there are 2^N configurations.
+//
+// The main benefit in contrast to using ::testing::WithParamInterface<bool> is
+// that this interface will provide appropriate naming for the tests. Instead of
+// having something like `MySuite.MyTest/0` & `MySuite.MyTest/1`, it provides:
+//
+//       - TestSuite.TestName/_With_FEATURENAME_Enabled
+//       - TestSuite.TestName/_With_FEATURENAME_Disabled
+//
+// There is also an utility method `IsFeatureEnabledInThisTestCase(features::A)`
+// that should replace the usages of GetParam() or std::get<N>(GetParam()).
 //
 // QUICK REFERENCE:
 //
 // Features: A and B ( N = 2 )
 //
-// --- 1. Create all possible permutations of the state of the features.
-// const auto kAllFeaturePermutations =
+// --- 1. Create all possible configurations of the state of the features.
+// const auto kAllFeatureStates =
 //       FeatureAsParameterInterface<2>::Generator({&features::A,
 //                                                  &features::B});
 //
@@ -75,10 +86,10 @@ using BaseFeatureArray = std::array<const base::Feature*, N>;
 //
 // }
 //
-// --- 4. Instantiate the tests with all possible permutations.
+// --- 4. Instantiate the tests with all possible configurations.
 // INSTANTIATE_TEST_SUITE_P(MyTestSuiteName,
 //                          MyTestClass,
-//                          testing::ValuesIn(kAllFeaturePermutations),
+//                          testing::ValuesIn(kAllFeatureStates),
 //                          FeatureAsParameterInterface<2>::ParamInfoToString);
 //
 template <size_t N>
@@ -99,7 +110,7 @@ class FeatureAsParameterInterface
 
   // Generates all possible test cases from an array of features. Similar to
   // other GTest Generators. Only used during compile time.
-  static constexpr FeatureStateArrayPermutations<N> Generator(
+  static constexpr FeatureStateArrayConfigurations<N> Generator(
       BaseFeatureArray<N> all_features);
 
   // Whether the given feature is enabled for the current test case.
@@ -171,22 +182,23 @@ bool FeatureAsParameterInterface<N>::IsFeatureEnabledInThisTestCase(
 }
 
 template <size_t N>
-constexpr FeatureStateArrayPermutations<N>
+constexpr FeatureStateArrayConfigurations<N>
 FeatureAsParameterInterface<N>::Generator(BaseFeatureArray<N> all_features) {
   // The result is an array of N^2 FeatureStateArrays
-  FeatureStateArrayPermutations<N> result{};
+  FeatureStateArrayConfigurations<N> result{};
 
-  for (size_t permutation = 0; permutation < result.size(); ++permutation) {
+  for (size_t configuration = 0; configuration < result.size();
+       ++configuration) {
     FeatureStateArray<N> current_test_case{};
 
-    // Populate the current test case using the bits of the current permutation
-    // to enable/disable features.
+    // Populate the current test case using the bits of the current
+    // configuration to enable/disable features.
     for (size_t feature_index = 0; feature_index < N; ++feature_index) {
-      const bool is_enabled = (permutation & (1 << feature_index));
+      const bool is_enabled = (configuration & (1 << feature_index));
       current_test_case[feature_index] = {
           FeatureState{all_features[feature_index], is_enabled}};
     }
-    result[permutation] = current_test_case;
+    result[configuration] = current_test_case;
   }
   return result;
 }
