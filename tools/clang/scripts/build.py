@@ -233,6 +233,31 @@ def AddGnuWinToPath():
     f.write('group: files\n')
 
 
+def AddOpenSSLToEnv(build_mac_arm):
+  """Download and build OpenSSL, and add to OPENSSL_DIR."""
+  ssl_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'openssl-openssl-3.0.7')
+  ssl_install_dir = f'{ssl_dir}/install'
+  if os.path.exists(ssl_dir):
+    RmTree(ssl_dir)
+  zip_name = 'openssl-3.0.7.tar.gz'
+  DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, LLVM_BUILD_TOOLS_DIR)
+  os.chdir(ssl_dir)
+  args = [f'--prefix={ssl_install_dir}', f'--openssldir={ssl_install_dir}']
+  if sys.platform == 'darwin':
+    if build_mac_arm:
+      RunCommand(['./Configure', 'darwin64-arm64-cc'] + args)
+    else:
+      RunCommand(['./Configure', 'darwin64-x86_64-cc'] + args)
+  else:
+    print("Building OpenSSL is only supported on Mac as it's "
+          "already present elsewhere.")
+    sys.exit(1)
+  RunCommand(['make'])
+  RunCommand(['make', 'install'])
+  os.environ['OPENSSL_DIR'] = ssl_install_dir
+  return ssl_install_dir
+
+
 def AddZlibToPath():
   """Download and build zlib, and add to PATH."""
   zlib_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'zlib-1.2.11')

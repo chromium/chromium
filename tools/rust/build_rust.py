@@ -50,7 +50,8 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-from build import (AddCMakeToPath, AddZlibToPath, GetLibXml2Dirs, RunCommand)
+from build import (AddCMakeToPath, AddOpenSSLToEnv, AddZlibToPath,
+                   GetLibXml2Dirs, RunCommand)
 from update import (CLANG_REVISION, CLANG_SUB_REVISION, LLVM_BUILD_DIR,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 import build
@@ -356,6 +357,11 @@ def main():
         libxml2_dirs = GetLibXml2Dirs()
     else:
         libxml2_dirs = None
+
+    # Cargo requires OpenSSL to build, and it's not already present on Mac
+    # builders.
+    if sys.platform == 'darwin':
+        AddOpenSSLToEnv(args.build_mac_arm)
 
     if args.run_xpy:
         if rest[0] == '--':
