@@ -3253,7 +3253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Notification.SwipeControl.FadeIn.AnimationSmoothness"
-    units="%" expires_after="2023-02-07">
+    units="%" expires_after="2024-01-28">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -3294,7 +3294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness"
-    units="%" expires_after="2023-02-09">
+    units="%" expires_after="2024-01-28">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -3334,7 +3334,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NotificationView.ImageContainerView.ScaleDown.AnimationSmoothness"
-    units="%" expires_after="2023-02-17">
+    units="%" expires_after="2024-01-28">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -3355,7 +3355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotificationView.{ChildView}.FadeIn.AnimationSmoothness"
-    units="%" expires_after="2023-01-28">
+    units="%" expires_after="2024-01-28">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -3380,7 +3380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotificationView.{ChildView}.FadeOut.AnimationSmoothness"
-    units="%" expires_after="2023-02-17">
+    units="%" expires_after="2024-01-28">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -3404,7 +3404,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.NotificationView.{ChildView}.ScaleAndTranslate.AnimationSmoothness"
-    units="%" expires_after="2023-02-09">
+    units="%" expires_after="2024-01-28">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
