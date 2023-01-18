@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
 #import "ui/base/window_open_disposition.h"
 
+@protocol ApplicationCommands;
 @protocol BrowserCommands;
 @class BrowserActionFactory;
 @class CarouselItem;
@@ -88,6 +89,7 @@ class OmniboxPopupMediatorDelegate {
 @property(nonatomic, weak) id<AutocompleteResultConsumer> consumer;
 /// Consumer for debug info.
 @property(nonatomic, weak) id<PopupDebugInfoConsumer> debugInfoConsumer;
+@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 /// Scheduler to notify about events happening in this popup.
 @property(nonatomic, weak) DefaultBrowserPromoNonModalScheduler* promoScheduler;
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;

@@ -15,6 +15,10 @@
     contextMenuConfigurationForCarouselItem:(CarouselItem*)carouselItem
                                    fromView:(UIView*)view;
 
+- (NSArray<UIAccessibilityCustomAction*>*)
+    accessibilityActionsForCarouselItem:(CarouselItem*)carouselItem
+                               fromView:(UIView*)view;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_CAROUSEL_ITEM_MENU_PROVIDER_H_

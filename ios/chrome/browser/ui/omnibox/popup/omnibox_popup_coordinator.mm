@@ -144,7 +144,7 @@
   self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
   self.mediator.carouselItemConsumer = self.popupViewController;
   self.mediator.allowIncognitoActions =
-      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
+      !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
   annotator.pedalsEndpoint = HandlerForProtocol(
@@ -153,6 +153,8 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   self.mediator.pedalAnnotator = annotator;
 
+  self.mediator.applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   self.mediator.incognito = isIncognito;
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();

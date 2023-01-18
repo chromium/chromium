@@ -255,4 +255,11 @@ const CGFloat kOmniboxPopupCarouselControlWidth =
   return UIAccessibilityTraitButton | [super accessibilityTraits];
 }
 
+/// Custom actions for a cell configured with this item.
+- (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
+  return
+      [self.menuProvider accessibilityActionsForCarouselItem:self.carouselItem
+                                                    fromView:self];
+}
+
 @end

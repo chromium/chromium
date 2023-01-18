@@ -238,6 +238,13 @@ CAGradientLayer* CarouselGradientLayer() {
     return;
   }
   [control removeFromSuperview];
+  // Remove voice over focus to avoid focusing an invisible tile. Focus instead
+  // on the first tile.
+  if (self.suggestionsStackView.arrangedSubviews.firstObject) {
+    UIAccessibilityPostNotification(
+        UIAccessibilityScreenChangedNotification,
+        self.suggestionsStackView.arrangedSubviews.firstObject);
+  }
   [self.delegate carouselCellDidChangeItemCount:self];
 }
 
