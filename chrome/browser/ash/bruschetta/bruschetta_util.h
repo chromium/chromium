@@ -12,6 +12,8 @@
 
 namespace bruschetta {
 
+extern const char kToolsDlc[];
+
 extern const char kBruschettaVmName[];
 extern const char kBruschettaDisplayName[];
 

@@ -64,7 +64,7 @@ void BruschettaLauncher::EnsureRunning(
 
 void BruschettaLauncher::EnsureDlcInstalled() {
   dlcservice::InstallRequest request;
-  request.set_id(crostini::kCrostiniDlcName);
+  request.set_id(kToolsDlc);
   ash::DlcserviceClient::Get()->Install(
       request,
       base::BindOnce(&BruschettaLauncher::OnMountDlc,
@@ -109,7 +109,7 @@ void BruschettaLauncher::StartVm(base::File bios) {
   vm_tools::concierge::StartVmRequest request;
   request.set_start_termina(false);
   request.set_name(vm_name_);
-  *request.mutable_vm()->mutable_tools_dlc_id() = "termina-dlc";
+  *request.mutable_vm()->mutable_tools_dlc_id() = kToolsDlc;
   *request.mutable_owner_id() = user_hash;
   request.set_start_termina(false);
   request.set_timeout(240);

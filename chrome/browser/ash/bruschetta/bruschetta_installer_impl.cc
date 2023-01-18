@@ -143,7 +143,7 @@ void BruschettaInstallerImpl::InstallToolsDlc() {
   NotifyObserver(State::kDlcInstall);
 
   dlcservice::InstallRequest request;
-  request.set_id(crostini::kCrostiniDlcName);
+  request.set_id(kToolsDlc);
   ash::DlcserviceClient::Get()->Install(
       request,
       base::BindOnce(&BruschettaInstallerImpl::OnToolsDlcInstalled,
@@ -482,7 +482,7 @@ void BruschettaInstallerImpl::StartVm() {
 
   request.set_name(kBruschettaVmName);
   request.set_owner_id(std::move(user_hash));
-  request.mutable_vm()->set_tools_dlc_id("termina-dlc");
+  request.mutable_vm()->set_tools_dlc_id(kToolsDlc);
   request.set_start_termina(false);
 
   auto* disk = request.add_disks();
