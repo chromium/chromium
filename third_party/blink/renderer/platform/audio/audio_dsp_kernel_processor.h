@@ -79,7 +79,7 @@ class PLATFORM_EXPORT AudioDSPKernelProcessor : public AudioProcessor {
   bool RequiresTailProcessing() const override;
 
  protected:
-  Vector<std::unique_ptr<AudioDSPKernel>> kernels_;
+  Vector<std::unique_ptr<AudioDSPKernel>> kernels_ GUARDED_BY(process_lock_);
   mutable base::Lock process_lock_;
 };
 

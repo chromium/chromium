@@ -28,10 +28,6 @@ class IIRProcessor final : public AudioDSPKernelProcessor {
 
   std::unique_ptr<AudioDSPKernel> CreateKernel() override;
 
-  void Process(const AudioBus* source,
-               AudioBus* destination,
-               uint32_t frames_to_process) override;
-
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.
   void GetFrequencyResponse(int n_frequencies,
