@@ -2497,7 +2497,6 @@ if (current_toolchain == default_toolchain) {
       forward_variables_from(invoker,
                              [
                                "add_view_trace_events",
-                               "assert_no_deps",
                                "apk_name",
                                "bundle_target",
                                "is_base_module",
@@ -2530,7 +2529,6 @@ if (current_toolchain == default_toolchain) {
     target_type = "android_apk"
     apk_name = "ChromePublic"
     enable_multidex = is_java_debug
-    assert_no_deps = [ "//android_webview:v8_snapshot_secondary_abi_assets" ]
   }
 
   chrome_public_apk_or_module_tmpl("chrome_modern_public_base_bundle_module") {
