@@ -8569,6 +8569,8 @@ domain Page
       ActivationNavigationDestroyedBeforeSuccess
       TabClosedByUserGesture
       TabClosedWithoutUserGesture
+      PrimaryMainFrameRendererProcessCrashed
+      PrimaryMainFrameRendererProcessKilled
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

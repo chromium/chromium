@@ -6394,6 +6394,32 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessIsKilled) {
       PrerenderFinalStatus::kRendererProcessKilled);
 }
 
+// Test if the host is abandoned when the primary main page that triggers a
+// prerendering is killed.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       AbandonIfPrimaryMainFrameRendererProcessIsKilled) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  int host_id = AddPrerender(kPrerenderingUrl);
+
+  // Shut down the current renderer.
+  {
+    test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+    RenderProcessHost* process = current_frame_host()->GetProcess();
+    ScopedAllowRendererCrashes allow_renderer_crashes(process);
+    EXPECT_TRUE(process->Shutdown(0));
+    host_observer.WaitForDestroyed();
+  }
+
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled);
+}
+
 class PrerenderBackForwardCacheBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderBackForwardCacheBrowserTest() {

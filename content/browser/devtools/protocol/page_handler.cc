@@ -1587,6 +1587,12 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Page::PrerenderFinalStatusEnum::TabClosedByUserGesture;
     case PrerenderFinalStatus::kTabClosedWithoutUserGesture:
       return Page::PrerenderFinalStatusEnum::TabClosedWithoutUserGesture;
+    case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessCrashed:
+      return Page::PrerenderFinalStatusEnum::
+          PrimaryMainFrameRendererProcessCrashed;
+    case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled:
+      return Page::PrerenderFinalStatusEnum::
+          PrimaryMainFrameRendererProcessKilled;
   }
 }
 
