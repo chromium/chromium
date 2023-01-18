@@ -1,7 +1,7 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
 
 #import <memory>
 #import <set>
@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface BookmarkFolderEditorViewController () <
+@interface BookmarksFolderEditorViewController () <
     BookmarkFolderViewControllerDelegate,
     BookmarkModelBridgeObserver,
     BookmarkTextFieldItemDelegate> {
@@ -93,7 +93,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @end
 
-@implementation BookmarkFolderEditorViewController
+@implementation BookmarksFolderEditorViewController
 
 @synthesize bookmarkModel = _bookmarkModel;
 @synthesize delegate = _delegate;
@@ -114,7 +114,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                   parentFolder:(const BookmarkNode*)parentFolder
                                        browser:(Browser*)browser {
   DCHECK(browser);
-  BookmarkFolderEditorViewController* folderCreator =
+  BookmarksFolderEditorViewController* folderCreator =
       [[self alloc] initWithBookmarkModel:bookmarkModel];
   folderCreator.parentFolder = parentFolder;
   folderCreator.folder = NULL;
@@ -130,7 +130,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(folder);
   DCHECK(!bookmarkModel->is_permanent_node(folder));
   DCHECK(browser);
-  BookmarkFolderEditorViewController* folderEditor =
+  BookmarksFolderEditorViewController* folderEditor =
       [[self alloc] initWithBookmarkModel:bookmarkModel];
   folderEditor.parentFolder = folder->parent();
   folderEditor.folder = folder;

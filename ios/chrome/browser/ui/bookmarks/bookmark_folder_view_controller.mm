@@ -12,10 +12,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 using bookmarks::BookmarkNode;
 
 @interface BookmarkFolderViewController () <
-    BookmarkFolderEditorViewControllerDelegate,
+    BookmarksFolderEditorViewControllerDelegate,
     BookmarkModelBridgeObserver,
     UITableViewDataSource,
     UITableViewDelegate> {
@@ -74,7 +74,7 @@ using bookmarks::BookmarkNode;
 
 // The view controller to present when creating a new folder.
 @property(nonatomic, strong)
-    BookmarkFolderEditorViewController* folderAddController;
+    BookmarksFolderEditorViewController* folderAddController;
 
 // A linear list of folders.
 @property(nonatomic, assign, readonly)
@@ -268,9 +268,9 @@ using bookmarks::BookmarkNode;
   }
 }
 
-#pragma mark - BookmarkFolderEditorViewControllerDelegate
+#pragma mark - BookmarksFolderEditorViewControllerDelegate
 
-- (void)bookmarkFolderEditor:(BookmarkFolderEditorViewController*)folderEditor
+- (void)bookmarkFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
       didFinishEditingFolder:(const BookmarkNode*)folder {
   DCHECK(folder);
   [self reloadModel];
@@ -279,19 +279,19 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)bookmarkFolderEditorDidDeleteEditedFolder:
-    (BookmarkFolderEditorViewController*)folderEditor {
+    (BookmarksFolderEditorViewController*)folderEditor {
   NOTREACHED();
 }
 
 - (void)bookmarkFolderEditorDidCancel:
-    (BookmarkFolderEditorViewController*)folderEditor {
+    (BookmarksFolderEditorViewController*)folderEditor {
   [self.navigationController popViewControllerAnimated:YES];
   self.folderAddController.delegate = nil;
   self.folderAddController = nil;
 }
 
 - (void)bookmarkFolderEditorWillCommitTitleChange:
-    (BookmarkFolderEditorViewController*)controller {
+    (BookmarksFolderEditorViewController*)controller {
   // Do nothing.
 }
 
@@ -435,8 +435,8 @@ using bookmarks::BookmarkNode;
 
 - (void)pushFolderAddViewController {
   DCHECK(self.allowsNewFolders);
-  BookmarkFolderEditorViewController* folderCreator =
-      [BookmarkFolderEditorViewController
+  BookmarksFolderEditorViewController* folderCreator =
+      [BookmarksFolderEditorViewController
           folderCreatorWithBookmarkModel:self.bookmarkModel
                             parentFolder:self.selectedFolder
                                  browser:self.browser];

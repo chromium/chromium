@@ -1,14 +1,14 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_FOLDER_EDITOR_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_FOLDER_EDITOR_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_EDITOR_BOOKMARKS_FOLDER_EDITOR_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_EDITOR_BOOKMARKS_FOLDER_EDITOR_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@class BookmarkFolderEditorViewController;
+@class BookmarksFolderEditorViewController;
 class Browser;
 @protocol SnackbarCommands;
 
@@ -17,31 +17,31 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-@protocol BookmarkFolderEditorViewControllerDelegate
+@protocol BookmarksFolderEditorViewControllerDelegate
 // Called when the controller successfully created or edited `folder`.
-- (void)bookmarkFolderEditor:(BookmarkFolderEditorViewController*)folderEditor
+- (void)bookmarkFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
       didFinishEditingFolder:(const bookmarks::BookmarkNode*)folder;
 // Called when the user deletes the edited folder.
 // This is never called if the editor is created with
 // `folderCreatorWithBookmarkModel:parentFolder:`.
 - (void)bookmarkFolderEditorDidDeleteEditedFolder:
-    (BookmarkFolderEditorViewController*)folderEditor;
+    (BookmarksFolderEditorViewController*)folderEditor;
 // Called when the user cancels the folder creation.
 - (void)bookmarkFolderEditorDidCancel:
-    (BookmarkFolderEditorViewController*)folderEditor;
+    (BookmarksFolderEditorViewController*)folderEditor;
 // Called when the controller is going to commit the title change.
 - (void)bookmarkFolderEditorWillCommitTitleChange:
-    (BookmarkFolderEditorViewController*)folderEditor;
+    (BookmarksFolderEditorViewController*)folderEditor;
 @end
 
 // View controller for creating or editing a bookmark folder. Allows editing of
 // the title and selecting the parent folder of the bookmark.
 // This controller monitors the state of the bookmark model, so changes to the
 // bookmark model can affect this controller's state.
-@interface BookmarkFolderEditorViewController
+@interface BookmarksFolderEditorViewController
     : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 
-@property(nonatomic, weak) id<BookmarkFolderEditorViewControllerDelegate>
+@property(nonatomic, weak) id<BookmarksFolderEditorViewControllerDelegate>
     delegate;
 
 // Snackbar commands handler for this ViewController.
@@ -69,4 +69,4 @@ class BookmarkNode;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_FOLDER_EDITOR_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_EDITOR_BOOKMARKS_FOLDER_EDITOR_VIEW_CONTROLLER_H_

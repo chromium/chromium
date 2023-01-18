@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller_delegate.h"
@@ -33,6 +32,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
@@ -73,7 +73,7 @@ enum class PresentedState {
 
 @interface BookmarkInteractionController () <
     BookmarksEditorViewControllerDelegate,
-    BookmarkFolderEditorViewControllerDelegate,
+    BookmarksFolderEditorViewControllerDelegate,
     BookmarkFolderViewControllerDelegate,
     BookmarkHomeViewControllerDelegate,
     TableViewPresentationControllerDelegate> {
@@ -117,7 +117,7 @@ enum class PresentedState {
 
 // A reference to the potentially presented folder editor. This will be non-nil
 // when `currentPresentedState` is FOLDER_EDITOR.
-@property(nonatomic, strong) BookmarkFolderEditorViewController* folderEditor;
+@property(nonatomic, strong) BookmarksFolderEditorViewController* folderEditor;
 
 // A reference to the potentially presented folder selector. This will be
 // non-nil when `currentPresentedState` is FOLDER_SELECTION.
@@ -336,8 +336,8 @@ enum class PresentedState {
     editorController = bookmarkEditor;
   } else if (node->type() == BookmarkNode::FOLDER) {
     self.currentPresentedState = PresentedState::FOLDER_EDITOR;
-    BookmarkFolderEditorViewController* folderEditor =
-        [BookmarkFolderEditorViewController
+    BookmarksFolderEditorViewController* folderEditor =
+        [BookmarksFolderEditorViewController
             folderEditorWithBookmarkModel:self.bookmarkModel
                                    folder:node
                                   browser:_browser];
@@ -497,26 +497,26 @@ enum class PresentedState {
   [self.delegate bookmarkInteractionControllerWillCommitTitleOrUrlChange:self];
 }
 
-#pragma mark - BookmarkFolderEditorViewControllerDelegate
+#pragma mark - BookmarksFolderEditorViewControllerDelegate
 
-- (void)bookmarkFolderEditor:(BookmarkFolderEditorViewController*)folderEditor
+- (void)bookmarkFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
       didFinishEditingFolder:(const BookmarkNode*)folder {
   DCHECK(folder);
   [self dismissFolderEditorAnimated:YES];
 }
 
 - (void)bookmarkFolderEditorDidDeleteEditedFolder:
-    (BookmarkFolderEditorViewController*)folderEditor {
+    (BookmarksFolderEditorViewController*)folderEditor {
   [self dismissFolderEditorAnimated:YES];
 }
 
 - (void)bookmarkFolderEditorDidCancel:
-    (BookmarkFolderEditorViewController*)folderEditor {
+    (BookmarksFolderEditorViewController*)folderEditor {
   [self dismissFolderEditorAnimated:YES];
 }
 
 - (void)bookmarkFolderEditorWillCommitTitleChange:
-    (BookmarkFolderEditorViewController*)controller {
+    (BookmarksFolderEditorViewController*)controller {
   [self.delegate bookmarkInteractionControllerWillCommitTitleOrUrlChange:self];
 }
 

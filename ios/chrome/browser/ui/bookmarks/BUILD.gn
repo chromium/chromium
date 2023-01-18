@@ -65,6 +65,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/bookmarks/cells",
     "//ios/chrome/browser/ui/bookmarks/editor",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/elements",
@@ -135,8 +136,6 @@ source_set("core") {
 source_set("bookmarks_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "bookmark_folder_editor_view_controller.h",
-    "bookmark_folder_editor_view_controller.mm",
     "bookmark_folder_view_controller.h",
     "bookmark_folder_view_controller.mm",
   ]
@@ -155,6 +154,7 @@ source_set("bookmarks_ui") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/image_util",
@@ -167,7 +167,10 @@ source_set("bookmarks_ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
-  allow_circular_includes_from = [ "//ios/chrome/browser/ui/bookmarks/cells" ]
+  allow_circular_includes_from = [
+    "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
