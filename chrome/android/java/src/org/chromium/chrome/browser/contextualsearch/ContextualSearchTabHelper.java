@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -17,7 +18,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -36,6 +36,9 @@ import org.chromium.url.GURL;
 public class ContextualSearchTabHelper
         extends EmptyTabObserver implements NetworkChangeNotifier.ConnectionTypeObserver {
     private static final String TAG = "ContextualSearch";
+
+    private static ContextualSearchTabHelper sContextualSearchTabHelperForTest;
+    private static boolean sIsOnlineDetectionOverridden;
 
     /** The Tab that this helper tracks. */
     private final Tab mTab;
@@ -78,7 +81,7 @@ public class ContextualSearchTabHelper
      * @param tab The tab whose contextual search actions will be handled by this helper.
      */
     public static void createForTab(Tab tab) {
-        new ContextualSearchTabHelper(tab);
+        sContextualSearchTabHelperForTest = new ContextualSearchTabHelper(tab);
     }
 
     /**
@@ -204,7 +207,8 @@ public class ContextualSearchTabHelper
      */
     private void updateHooksForTab(Tab tab) {
         WebContents currentWebContents = tab.getWebContents();
-        boolean webContentsChanged = currentWebContents != mWebContents;
+        boolean webContentsChanged =
+                currentWebContents != mWebContents || sIsOnlineDetectionOverridden;
         if (webContentsChanged || mContextualSearchManager != getContextualSearchManager(tab)) {
             mContextualSearchManager = getContextualSearchManager(tab);
             if (webContentsChanged) {
@@ -242,7 +246,8 @@ public class ContextualSearchTabHelper
     private void addContextualSearchHooks(WebContents webContents) {
         assert mTab.getWebContents() == null || mTab.getWebContents() == webContents;
         ContextualSearchManager contextualSearchManager = getContextualSearchManager(mTab);
-        if (mGestureStateListener == null && contextualSearchManager != null) {
+        if (mGestureStateListener == null && contextualSearchManager != null
+                && mSelectionClientManager != null) {
             mGestureStateListener = contextualSearchManager.getGestureStateListener();
             GestureListenerManager.fromWebContents(webContents).addListener(mGestureStateListener);
 
@@ -330,10 +335,7 @@ public class ContextualSearchTabHelper
 
     /** @return Whether the device is online, or we have disabled online-detection. */
     private boolean isDeviceOnline(ContextualSearchManager manager) {
-        return ChromeFeatureList.isEnabled(
-                       ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
-                ? true
-                : manager.isDeviceOnline();
+        return sIsOnlineDetectionOverridden || manager.isDeviceOnline();
     }
 
     /**
@@ -359,6 +361,12 @@ public class ContextualSearchTabHelper
             return ((ChromeActivity) activity).getContextualSearchManagerSupplier();
         }
         return null;
+    }
+
+    @VisibleForTesting
+    static void overrideOnlineDetectionForTesting(Tab tab) {
+        sIsOnlineDetectionOverridden = true;
+        sContextualSearchTabHelperForTest.updateContextualSearchHooks(tab.getWebContents());
     }
 
     // ============================================================================================

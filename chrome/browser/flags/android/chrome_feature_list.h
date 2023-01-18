@@ -76,7 +76,6 @@ BASE_DECLARE_FEATURE(kContextMenuShopWithGoogleLens);
 BASE_DECLARE_FEATURE(kContextMenuSearchAndShopWithGoogleLens);
 BASE_DECLARE_FEATURE(kContextMenuTranslateWithGoogleLens);
 BASE_DECLARE_FEATURE(kContextualSearchDelayedIntelligence);
-BASE_DECLARE_FEATURE(kContextualSearchDisableOnlineDetection);
 BASE_DECLARE_FEATURE(kContextualSearchForceCaption);
 BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);
 BASE_DECLARE_FEATURE(kContextualSearchThinWebViewImplementation);
