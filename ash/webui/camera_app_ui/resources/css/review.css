@@ -24,11 +24,6 @@
   max-width: 100%;
 }
 
-#view-crop-document .review-image {
-  max-height: unset;
-  max-width: unset;
-}
-
 .review-views .button-group {
   align-items: center;
   bottom: 0;

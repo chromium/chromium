@@ -695,7 +695,6 @@ body.doc-mode-reviewing #open-settings {
 }
 
 #view-camera,
-#view-crop-document,
 #view-document-mode-dialog,
 #view-document-review,
 #view-option-panel,
@@ -725,7 +724,6 @@ body.doc-mode-reviewing #open-settings {
 }
 
 body.view-camera #view-camera,
-body.view-crop-document #view-crop-document,
 body.view-document-mode-dialog #view-document-mode-dialog,
 body.view-document-review #view-document-review,
 body.view-option-panel #view-option-panel,
