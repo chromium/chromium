@@ -32,7 +32,7 @@ export function search(state: State, action: SearchAction): State {
     search.status = payload.status;
   }
   if (payload.options !== undefined) {
-    search.options = payload.options;
+    search.options = {...payload.options};
   }
   return {...state, search};
 }

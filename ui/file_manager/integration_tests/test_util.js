@@ -443,6 +443,17 @@ export class TestEntryInfo {
   }
 
   /**
+   * Returns a new entry with modified attributes specified in the
+   * `newOptions` object.
+   * @param {!Object} newOptions  The options to be modified.
+   * @returns {!TestEntryInfo}
+   */
+  cloneWith(newOptions) {
+    return new TestEntryInfo(/** @type {TestEntryInfoOptions} */ (
+        Object.assign({}, this, newOptions)));
+  }
+
+  /**
    * Clone the existing TestEntryInfo object to a new TestEntryInfo object but
    * with modified lastModifiedTime field. This is especially useful for
    * constructing TestEntryInfo for Recents view.
@@ -451,11 +462,7 @@ export class TestEntryInfo {
    * @return {!TestEntryInfo}
    */
   cloneWithModifiedDate(newDate) {
-    const updatedOptions =
-        /** @type {TestEntryInfoOptions} */ (Object.assign({}, this, {
-          lastModifiedTime: newDate,
-        }));
-    return new TestEntryInfo(updatedOptions);
+    return this.cloneWith({lastModifiedTime: newDate});
   }
 
   /**
@@ -467,12 +474,10 @@ export class TestEntryInfo {
    * @return {!TestEntryInfo}
    */
   cloneWithNewName(newName) {
-    const updatedOptions =
-        /** @type {TestEntryInfoOptions} */ (Object.assign({}, this, {
-          targetPath: newName,
-          nameText: newName,
-        }));
-    return new TestEntryInfo(updatedOptions);
+    return this.cloneWith({
+      targetPath: newName,
+      nameText: newName,
+    });
   }
 }
 

@@ -1802,7 +1802,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchHidingTextEntryField").EnableSearchV2(),
         TestCase("searchButtonToggles"),
         TestCase("searchButtonToggles").EnableSearchV2(),
-        TestCase("searchOptions").EnableSearchV2()
+        TestCase("searchWithLocationOptions").EnableSearchV2(),
+        TestCase("searchWithTypeOptions").EnableSearchV2(),
+        TestCase("searchWithRecencyOptions").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));

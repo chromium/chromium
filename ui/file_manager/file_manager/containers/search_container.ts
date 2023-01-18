@@ -10,8 +10,8 @@ import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchOptions, S
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
-import {updateSearch} from '../state/actions.js';
-import {getStore, Store} from '../state/store.js';
+import {clearSearch, updateSearch} from '../state/actions.js';
+import {getDefaultSearchOptions, getStore, Store} from '../state/store.js';
 import {XfPathDisplayElement} from '../widgets/xf_path_display.js';
 import {OptionKind, SEARCH_OPTIONS_CHANGED, SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
 
@@ -57,11 +57,7 @@ export class SearchContainer extends EventTarget {
   // far.
   private autocompleteList_: SearchAutocompleteList;
   // The current value of search options, initialized to some sensible default.
-  private currentOptions_: SearchOptions = {
-    location: SearchLocation.THIS_FOLDER,
-    recency: SearchRecency.ANYTIME,
-    type: SearchFileType.ALL_TYPES,
-  };
+  private currentOptions_: SearchOptions = getDefaultSearchOptions();
   // The store which updates us about state changes.
   private store_: Store;
   // The cached state of the store; store may post events if other parts of the
@@ -152,7 +148,15 @@ export class SearchContainer extends EventTarget {
     const value = this.inputElement_.value;
     if (value !== '') {
       this.inputElement_.value = '';
-      this.onQueryChanged_();
+      if (!util.isSearchV2Enabled()) {
+        // Force query change flow only if V2 search is not enabled. This
+        // is due to the fact that in the legacy search we listen to input
+        // events from the text field, which are not posted when the value
+        // is directly assigned a value. In the V2 search we listen to store
+        // change events that cause the code path that handles clearing of
+        // search to be executed.
+        this.onQueryChanged_();
+      }
       requestAnimationFrame(() => {
         this.closeSearch();
       });
@@ -433,7 +437,7 @@ export class SearchContainer extends EventTarget {
         const location = value as unknown as SearchLocation;
         if (location !== this.currentOptions_.location) {
           this.currentOptions_.location = location;
-          this.updateState_();
+          this.updateSearchOptions_();
         }
         break;
       }
@@ -441,7 +445,7 @@ export class SearchContainer extends EventTarget {
         const recency = value as unknown as SearchRecency;
         if (recency !== this.currentOptions_.recency) {
           this.currentOptions_.recency = recency;
-          this.updateState_();
+          this.updateSearchOptions_();
         }
         break;
       }
@@ -449,7 +453,7 @@ export class SearchContainer extends EventTarget {
         const type = value as unknown as SearchFileType;
         if (type !== this.currentOptions_.type) {
           this.currentOptions_.type = type;
-          this.updateState_();
+          this.updateSearchOptions_();
         }
         break;
       }
@@ -460,9 +464,9 @@ export class SearchContainer extends EventTarget {
   }
 
   /**
-   * Updates the store state.
+   * Updates search options in the store.
    */
-  private updateState_() {
+  private updateSearchOptions_() {
     if (util.isSearchV2Enabled()) {
       this.store_.dispatch(updateSearch({
         query: undefined,   // do not change
@@ -564,6 +568,7 @@ export class SearchContainer extends EventTarget {
     if (this.inputState_ === SearchInputState.OPEN) {
       this.hideOptions_();
       this.hidePathDisplay_();
+      this.store_.dispatch(clearSearch());
       this.inputState_ = SearchInputState.CLOSING;
       this.inputElement_.tabIndex = -1;
       this.inputElement_.disabled = true;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileData, FileKey, State} from '../externs/ts/state.js';
+import {FileData, FileKey, SearchFileType, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {BaseStore} from '../lib/base_store.js';
 
 import {Action} from './actions.js';
@@ -47,6 +47,17 @@ export function getEmptyState(): State {
       options: undefined,
     },
   };
+}
+
+/**
+ * Search options to be used if the user did not specify their own.
+ */
+export function getDefaultSearchOptions(): SearchOptions {
+  return {
+    location: SearchLocation.THIS_FOLDER,
+    recency: SearchRecency.ANYTIME,
+    type: SearchFileType.ALL_TYPES,
+  } as SearchOptions;
 }
 
 /**

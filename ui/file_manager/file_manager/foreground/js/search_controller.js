@@ -6,7 +6,10 @@ import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {SEARCH_ITEM_CHANGED, SEARCH_QUERY_CHANGED, SearchContainer} from '../../containers/search_container.js';
 import {EntryLocation} from '../../externs/entry_location.js';
+import {SearchOptions, State} from '../../externs/ts/state.js';
+import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {TaskController} from './task_controller.js';
@@ -50,12 +53,37 @@ export class SearchController {
     /** @const @private {!FileManagerUI} */
     this.a11y_ = a11y;
 
-    searchContainer.addEventListener(SEARCH_QUERY_CHANGED, (event) => {
-      this.onTextChange_(event.detail.query);
-    });
-    searchContainer.addEventListener(
-        SEARCH_ITEM_CHANGED, this.onItemSelect_.bind(this));
     directoryModel.addEventListener('directory-changed', this.clear.bind(this));
+
+    if (util.isSearchV2Enabled()) {
+      this.cachedSearchState_ = {};
+      this.store_ = getStore();
+      this.store_.subscribe(this);
+    } else {
+      searchContainer.addEventListener(SEARCH_QUERY_CHANGED, (event) => {
+        this.onSearchChange_(event.detail.query, event.detail.options);
+      });
+      searchContainer.addEventListener(
+          SEARCH_ITEM_CHANGED, this.onItemSelect_.bind(this));
+    }
+  }
+
+  /**
+   * Reacts to state change in the store. This method checks if the search
+   * component of the search state changed. If so, it triggers a new search.
+   * @param {State} state
+   */
+  onStateChanged(state) {
+    const searchState = state.search;
+    if (!searchState) {
+      return;
+    }
+    if (searchState.query === this.cachedSearchState_.query &&
+        searchState.options === this.cachedSearchState_.options) {
+      return;
+    }
+    this.cachedSearchState_ = searchState;
+    this.onSearchChange_(searchState.query || '', searchState.options);
   }
 
   /**
@@ -108,7 +136,7 @@ export class SearchController {
    */
   setSearchQuery(searchQuery) {
     this.searchContainer_.setQuery(searchQuery);
-    this.onTextChange_(searchQuery);
+    this.onSearchChange_(searchQuery, undefined);
     if (this.isOnDrive_) {
       this.onItemSelect_();
     }
@@ -117,15 +145,17 @@ export class SearchController {
   /**
    * Handles text change event.
    * @param {string} query
+   * @param {SearchOptions|undefined} options Search options, such as type,
+   *    location, etc.
    * @private
    */
-  onTextChange_(query) {
+  onSearchChange_(query, options) {
     const searchString = query;
 
     // On drive, incremental search is not invoked since we have an auto-
     // complete suggestion instead.
-    if (!this.isOnDrive_) {
-      this.search_(searchString);
+    if (!this.isOnDrive_ || util.isSearchV2Enabled()) {
+      this.search_(searchString, options);
       return;
     }
 
@@ -134,7 +164,7 @@ export class SearchController {
     // {@code DirectoryModel.search()}.
     if (this.directoryModel_.isSearching() &&
         this.directoryModel_.getLastSearchQuery() != searchString) {
-      this.directoryModel_.search('', () => {});
+      this.directoryModel_.search('', undefined, () => {});
     }
 
     this.requestAutocompleteSuggestions_();
@@ -207,7 +237,7 @@ export class SearchController {
     if (!selectedItem || selectedItem.isHeaderItem) {
       const query = selectedItem ? selectedItem.searchQuery :
                                    this.searchContainer_.getQuery();
-      this.search_(query);
+      this.search_(query, undefined);
       return;
     }
 
@@ -252,11 +282,13 @@ export class SearchController {
 
   /**
    * Search files and update the list with the search result.
-   * @param {string} searchString String to be searched with.
+   * @param {string} query String to be searched with.
+   * @param {SearchOptions|undefined} options Search options, such as file
+   *     type, etc.
    * @private
    */
-  search_(searchString) {
-    if (!searchString) {
+  search_(query, options) {
+    if (!query) {
       const msg = str('SEARCH_A11Y_CLEAR_SEARCH');
       this.a11y_.speakA11yMessage(msg);
     }
@@ -265,10 +297,10 @@ export class SearchController {
       const count = fileList.getFileCount() + fileList.getFolderCount();
       const msgId =
           count === 0 ? 'SEARCH_A11Y_NO_RESULT' : 'SEARCH_A11Y_RESULT';
-      const msg = strf(msgId, searchString);
+      const msg = strf(msgId, query);
       this.a11y_.speakA11yMessage(msg);
     };
 
-    this.directoryModel_.search(searchString, onSearchRescan.bind(this));
+    this.directoryModel_.search(query, options, onSearchRescan.bind(this));
   }
 }

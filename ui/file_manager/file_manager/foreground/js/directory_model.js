@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
@@ -14,16 +14,16 @@ import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_type
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {PropStatus, State} from '../../externs/ts/state.js';
+import {PropStatus, SearchOptions, State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {clearSearch, updateSearch} from '../../state/actions.js';
+import {updateSearch} from '../../state/actions.js';
 import {changeDirectory} from '../../state/actions/current_directory.js';
 import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
-import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner, TrashContentScanner} from './directory_contents.js';
+import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher} from './file_watcher.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -1445,11 +1445,12 @@ export class DirectoryModel extends EventTarget {
    *
    * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
    * @param {string=} opt_query Search query string.
+   * @param {SearchOptions=} opt_options search options.
    * @return {function():ContentScanner} The factory to create ContentScanner
    *     instance.
    */
-  createScannerFactory(entry, opt_query) {
-    const query = (opt_query || '').trimLeft();
+  createScannerFactory(entry, opt_query, opt_options) {
+    const query = (opt_query || '').trimStart();
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const canUseDriveSearch =
         this.volumeManager_.getDriveConnectionState().type !==
@@ -1494,6 +1495,15 @@ export class DirectoryModel extends EventTarget {
       return () => {
         return new TrashContentScanner(this.volumeManager_);
       };
+    }
+    if (util.isSearchV2Enabled()) {
+      if (query) {
+        return () => {
+          return new SearchV2ContentScanner(
+              locationInfo ? locationInfo.rootType : null,
+              /** @type {!DirectoryEntry} */ (entry), query, opt_options);
+        };
+      }
     }
     if (query && canUseDriveSearch) {
       // Drive search.
@@ -1550,12 +1560,14 @@ export class DirectoryModel extends EventTarget {
    * @param {FileListContext} context File list context.
    * @param {!DirectoryEntry|!FilesAppDirEntry} entry Current directory.
    * @param {string=} opt_query Search query string.
+   * @param {SearchOptions=} opt_options Search options.
    * @return {DirectoryContents} Directory contents.
    * @private
    */
-  createDirectoryContents_(context, entry, opt_query) {
+  createDirectoryContents_(context, entry, opt_query, opt_options) {
     const isSearch = this.isSearchDirectory(entry, opt_query);
-    const scannerFactory = this.createScannerFactory(entry, opt_query);
+    const scannerFactory =
+        this.createScannerFactory(entry, opt_query, opt_options);
     return new DirectoryContents(context, isSearch, entry, scannerFactory);
   }
 
@@ -1581,10 +1593,12 @@ export class DirectoryModel extends EventTarget {
    * name search over current directory will be performed.
    *
    * @param {string} query Query that will be searched for.
+   * @param {SearchOptions|undefined} options Search options, such as file
+   *     type, etc.
    * @param {function(Event)} onSearchRescan Function that will be called when
    *     the search directory is rescanned (i.e. search results are displayed).
    */
-  search(query, onSearchRescan) {
+  search(query, options, onSearchRescan) {
     this.lastSearchQuery_ = query;
     this.stopActiveSearch_();
     const currentDirEntry = this.getCurrentDirEntry();
@@ -1600,7 +1614,7 @@ export class DirectoryModel extends EventTarget {
         return;
       }
 
-      if (!(query || '').trimLeft()) {
+      if (!(query || '').trimStart()) {
         if (this.isSearching()) {
           const newDirContents = this.createDirectoryContents_(
               this.currentFileListContext_, assert(currentDirEntry));
@@ -1612,7 +1626,8 @@ export class DirectoryModel extends EventTarget {
       }
 
       const newDirContents = this.createDirectoryContents_(
-          this.currentFileListContext_, assert(currentDirEntry), query);
+          this.currentFileListContext_, assert(currentDirEntry), query,
+          options);
       if (!newDirContents) {
         callback();
         return;
@@ -1646,10 +1661,6 @@ export class DirectoryModel extends EventTarget {
     if (this.onSearchCompleted_) {
       this.removeEventListener('scan-completed', this.onSearchCompleted_);
       this.onSearchCompleted_ = null;
-    }
-
-    if (this.store_.getState()?.search?.query) {
-      this.store_.dispatch(clearSearch());
     }
   }
 
