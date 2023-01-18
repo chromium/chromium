@@ -223,7 +223,6 @@
         "UserCallback",
         "V8Compile",
         "DocumentWriteFetchScript",
-        "WillReactToScriptPromise",
       ]
     },
     InspectorPerformanceAgent: {
