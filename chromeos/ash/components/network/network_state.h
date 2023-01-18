@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "components/onc/onc_constants.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -322,7 +323,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::string device_path_;
   std::string guid_;
   std::string tether_guid_;  // Used to double link a Tether and Wi-Fi network.
-  std::string connection_state_;
+  std::string connection_state_ = shill::kStateIdle;
   std::string profile_path_;
   GURL probe_url_;
   std::vector<uint8_t> raw_ssid_;  // Unknown encoding. Not necessarily UTF-8.

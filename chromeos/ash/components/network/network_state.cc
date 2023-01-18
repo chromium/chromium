@@ -51,10 +51,7 @@ bool IsValidConnectionState(const std::string& connection_state) {
          connection_state == shill::kStatePortalSuspected ||
          connection_state == shill::kStateOnline ||
          connection_state == shill::kStateFailure ||
-         connection_state == shill::kStateDisconnect ||
-         // TODO(b/260792466): Empty should not be a valid state,
-         // but e.g. new tether NetworkStates and unit tests use it currently.
-         connection_state.empty();
+         connection_state == shill::kStateDisconnect;
 }
 
 }  // namespace
