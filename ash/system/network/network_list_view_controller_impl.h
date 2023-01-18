@@ -72,7 +72,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
     kWifiSeparator = 16,
     kWifiSectionHeader = 17,
     kWifiStatusMessage = 18,
-    kConnectionWarningIcon = 19
+    kConnectionWarningSystemIcon = 19,
+    kConnectionWarningManagedIcon = 20
   };
 
   // Map of network guids and their corresponding list item views.

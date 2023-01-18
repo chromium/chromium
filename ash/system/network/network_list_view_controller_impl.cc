@@ -499,6 +499,16 @@ void NetworkListViewControllerImpl::SetConnectionWarningIcon(
     TriView* parent,
     bool use_managed_icon) {
   DCHECK(parent) << "The connection warning parent view should not be null";
+  int newIconId = static_cast<int>(
+      use_managed_icon
+          ? NetworkListViewControllerViewChildId::kConnectionWarningManagedIcon
+          : NetworkListViewControllerViewChildId::kConnectionWarningSystemIcon);
+
+  if (connection_warning_icon_ &&
+      connection_warning_icon_->GetID() == newIconId) {
+    // The view is already showing the correct icon.
+    return;
+  }
 
   // Remove the previous icon if set.
   RemoveAndResetViewIfExists(&connection_warning_icon_);
@@ -511,8 +521,7 @@ void NetworkListViewControllerImpl::SetConnectionWarningIcon(
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
   image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  image_view->SetID(static_cast<int>(
-      NetworkListViewControllerViewChildId::kConnectionWarningIcon));
+  image_view->SetID(newIconId);
   connection_warning_icon_ = image_view.get();
   parent->AddView(TriView::Container::START, image_view.release());
 }

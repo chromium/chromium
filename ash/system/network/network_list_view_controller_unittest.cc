@@ -100,24 +100,6 @@ constexpr char kNetworkListNetworkItemView[] = "NetworkListNetworkItemView";
 // Delay used to simulate running process when setting device technology state.
 constexpr base::TimeDelta kInteractiveDelay = base::Milliseconds(3000);
 
-bool IsManagedIcon(views::ImageView* icon) {
-  const gfx::ImageSkia managed_icon = gfx::CreateVectorIcon(
-      kSystemTrayManagedIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
-  return gfx::BitmapsAreEqual(*icon->GetImage().bitmap(),
-                              *managed_icon.bitmap());
-}
-
-bool IsSystemIcon(views::ImageView* icon) {
-  const gfx::ImageSkia system_icon = gfx::CreateVectorIcon(
-      kSystemMenuInfoIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
-  return gfx::BitmapsAreEqual(*icon->GetImage().bitmap(),
-                              *system_icon.bitmap());
-}
-
 std::vector<ash::SIMInfoPtr> CellularSIMInfos(const std::string& iccid,
                                               const std::string& eid) {
   auto sim_info_mojo = chromeos::network_config::mojom::SIMInfo::New();
@@ -471,6 +453,36 @@ class NetworkListViewControllerTest : public AshTestBase,
     return static_cast<NetworkDetailedNetworkView*>(
                network_detailed_network_view_)
         ->GetNetworkList(type);
+  }
+
+  bool IsManagedIcon(views::ImageView* icon) {
+    if (icon->GetID() !=
+        static_cast<int>(NetworkListViewControllerImpl::
+                             NetworkListViewControllerViewChildId::
+                                 kConnectionWarningManagedIcon)) {
+      return false;
+    }
+    const gfx::ImageSkia managed_icon = gfx::CreateVectorIcon(
+        kSystemTrayManagedIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary));
+    return gfx::BitmapsAreEqual(*icon->GetImage().bitmap(),
+                                *managed_icon.bitmap());
+  }
+
+  bool IsSystemIcon(views::ImageView* icon) {
+    if (icon->GetID() !=
+        static_cast<int>(NetworkListViewControllerImpl::
+                             NetworkListViewControllerViewChildId::
+                                 kConnectionWarningSystemIcon)) {
+      return false;
+    }
+    const gfx::ImageSkia system_icon = gfx::CreateVectorIcon(
+        kSystemMenuInfoIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary));
+    return gfx::BitmapsAreEqual(*icon->GetImage().bitmap(),
+                                *system_icon.bitmap());
   }
 
   FakeCrosNetworkConfig* cros_network() { return cros_network_.get(); }
