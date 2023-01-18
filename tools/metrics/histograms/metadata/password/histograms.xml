@@ -1747,6 +1747,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ImportResultsStatus"
     enum="PasswordManagerImportResultsStatus" expires_after="2023-06-11">
+  <obsolete>
+    Obsolete in M111, the enum contained a duplicate - values 7 and 8. Also,
+    those values were never emmited.
+  </obsolete>
+  <owner>eliaskh@chromium.org</owner>
+  <owner>natiahlyi@google.com</owner>
+  <summary>
+    Tracks the final outcome status of importing a CSV File to Chrome Password
+    Manager in settings UI. Recorded when the import flow finishes within
+    password settings. This can be either successfuly or due to an error. Before
+    M111, values 7 and 8 were not emmited.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ImportResultsStatus2"
+    enum="PasswordManagerImportResultsStatus" expires_after="2023-06-11">
   <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
   <summary>

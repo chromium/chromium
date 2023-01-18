@@ -178,6 +178,8 @@ extensions::api::passwords_private::ImportEntry ConvertImportEntry(
 // extensions::api::passwords_private::ImportResults.
 extensions::api::passwords_private::ImportResults ConvertImportResults(
     const password_manager::ImportResults& results) {
+  base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus2",
+                                results.status);
   extensions::api::passwords_private::ImportResults private_results;
   private_results.status =
       static_cast<extensions::api::passwords_private::ImportResultsStatus>(

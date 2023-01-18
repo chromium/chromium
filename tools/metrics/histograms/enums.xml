@@ -78683,8 +78683,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Dismissed"/>
   <int value="6" label="Chosen file exceeds max file size"/>
   <int value="7" label="Import already active"/>
-  <int value="8" label="Import already active"/>
-  <int value="9" label="Number of allowed passwords exceeded"/>
+  <int value="8" label="Number of allowed passwords exceeded"/>
 </enum>
 
 <enum name="PasswordManagerMatchedFormType">

@@ -167,8 +167,6 @@ void AddCredentialsCallback(
                               base::Time::Now() - start_time);
 
   import_results.status = password_manager::ImportResults::Status::SUCCESS;
-  base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus",
-                                import_results.status);
 
   std::move(import_results_callback).Run(std::move(import_results));
 }
@@ -194,8 +192,6 @@ void PasswordImporter::ParseCSVPasswordsInSandbox(
   // Currently, CSV is the only supported format.
   if (!result.has_value()) {
     this->status_ = result.error();
-    base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus",
-                                  this->status_);
     std::move(completion).Run(nullptr);
   } else {
     GetParser()->ParseCSV(std::move(result.value()), std::move(completion));
@@ -231,8 +227,6 @@ void PasswordImporter::ConsumePasswords(
     // A nullptr returned by the parser means a bad format.
     if (results.status == ImportResults::Status::NONE) {
       results.status = password_manager::ImportResults::Status::BAD_FORMAT;
-      base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus",
-                                    results.status);
     }
 
     std::move(results_callback_).Run(std::move(results));
@@ -241,8 +235,6 @@ void PasswordImporter::ConsumePasswords(
   if (seq->csv_passwords.size() > MAX_PASSWORDS_PER_IMPORT) {
     results.status =
         password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED;
-    base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus",
-                                  results.status);
     std::move(results_callback_).Run(results);
     return;
   }

@@ -49,6 +49,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/test/test_sync_service.h"
@@ -104,6 +105,36 @@ class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
                password_manager::PasswordForm::Store to_store,
                ImportResultsCallback results_callback),
               (override));
+};
+
+class FakePasswordManagerPorter : public PasswordManagerPorterInterface {
+ public:
+  bool Export(content::WebContents* web_contents) override { return true; }
+
+  void CancelExport() override {}
+
+  password_manager::ExportProgressStatus GetExportProgressStatus() override {
+    return password_manager::ExportProgressStatus::SUCCEEDED;
+  }
+
+  void Import(content::WebContents* web_contents,
+              password_manager::PasswordForm::Store to_store,
+              ImportResultsCallback results_callback) override {
+    password_manager::ImportResults results;
+    results.status = import_results_status_;
+    // For consistency |results_callback| is always run asynchronously.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(results_callback), results));
+  }
+
+  void set_import_result_status(
+      password_manager::ImportResults::Status status) {
+    import_results_status_ = status;
+  }
+
+ private:
+  password_manager::ImportResults::Status import_results_status_ =
+      password_manager::ImportResults::Status::SUCCESS;
 };
 
 class MockPasswordManagerClient : public ChromePasswordManagerClient {
@@ -533,6 +564,36 @@ TEST_F(PasswordsPrivateDelegateImplTest, ImportPasswordsUpdatesDefaultStore) {
   delegate.ImportPasswords(
       api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT,
       base::DoNothing(), web_contents.get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ImportPasswordsLogsImportResultsStatus) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(),
+                                                        /*instance=*/nullptr);
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+
+  PasswordsPrivateDelegateImpl delegate(profile());
+
+  auto fake_porter = std::make_unique<FakePasswordManagerPorter>();
+  auto* fake_porter_ptr = fake_porter.get();
+  delegate.SetPorterForTesting(std::move(fake_porter));
+
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(false));
+
+  const auto kExpectedStatus =
+      password_manager::ImportResults::Status::BAD_FORMAT;
+  fake_porter_ptr->set_import_result_status(kExpectedStatus);
+
+  delegate.ImportPasswords(
+      api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT,
+      base::DoNothing(), web_contents.get());
+  task_environment()->RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",
+                                        kExpectedStatus, 1);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
