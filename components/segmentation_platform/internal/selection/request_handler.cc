@@ -115,11 +115,10 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   PostProcessor post_processor;
   PredictionStatus status = PredictionStatus::kFailed;
-  std::vector<std::string> ordered_labels;
+  proto::PredictionResult pred_result;
   if (result) {
-    ordered_labels = post_processor.GetClassifierResults(result->result);
     status = ResultStateToPredictionStatus(result->state);
-
+    pred_result = result->result;
     // Collect training data. The execution service and training data collector
     // might be null in testing.
     if (execution_service_ && execution_service_->training_data_collector()) {
@@ -128,8 +127,8 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
           proto::TrainingOutputs::TriggerConfig::ONDEMAND);
     }
   }
-  ClassificationResult classification_result(status);
-  classification_result.ordered_labels = ordered_labels;
+  ClassificationResult classification_result =
+      post_processor.GetPostProcessedClassificationResult(pred_result, status);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(classification_callback),
                                 classification_result));

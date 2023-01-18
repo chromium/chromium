@@ -19,6 +19,7 @@
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
+#include "components/segmentation_platform/internal/selection/cached_result_provider.h"
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/internal/sync_device_info_observer.h"
@@ -168,6 +169,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   // For routing requests to the right handler.
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
+
+  // Result cache.
+  std::unique_ptr<CachedResultProvider> cached_result_provider_;
 
   // Segment results.
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;

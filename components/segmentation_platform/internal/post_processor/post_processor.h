@@ -10,6 +10,7 @@
 
 #include "components/segmentation_platform/public/proto/output_config.pb.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
+#include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
 
@@ -30,6 +31,12 @@ class PostProcessor {
   // OutputConfig.
   std::vector<std::string> GetClassifierResults(
       const proto::PredictionResult& prediction_result);
+
+  // Calls GetClassifieResults toget post processed result from model execution
+  // and wrap them as ClassificationResult.
+  ClassificationResult GetPostProcessedClassificationResult(
+      const proto::PredictionResult& prediction_result,
+      PredictionStatus status);
 
  private:
   std::vector<std::string> GetBinaryClassifierResults(

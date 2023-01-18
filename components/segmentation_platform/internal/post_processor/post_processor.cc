@@ -90,4 +90,16 @@ std::vector<std::string> PostProcessor::GetBinnedClassifierResults(
   return std::vector<std::string>(1, winning_bin_label);
 }
 
+ClassificationResult PostProcessor::GetPostProcessedClassificationResult(
+    const proto::PredictionResult& prediction_result,
+    PredictionStatus status) {
+  std::vector<std::string> ordered_labels;
+  if (prediction_result.result_size() > 0) {
+    ordered_labels = GetClassifierResults(prediction_result);
+  }
+  ClassificationResult classification_result = ClassificationResult(status);
+  classification_result.ordered_labels = ordered_labels;
+  return classification_result;
+}
+
 }  // namespace segmentation_platform

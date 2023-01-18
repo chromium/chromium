@@ -95,8 +95,13 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           &SegmentationPlatformServiceImpl::OnModelRefreshNeeded,
           weak_ptr_factory_.GetWeakPtr()));
 
-  // Central class to delegate the client requests.
-  request_dispatcher_ = std::make_unique<RequestDispatcher>(configs_);
+  // TODO(ritikagup@): Move code for recording FieldTrialRegister into separate
+  // class when adding support for recording multi class output fields.
+  cached_result_provider_ = std::make_unique<CachedResultProvider>(
+      init_params->profile_prefs, configs_);
+
+  request_dispatcher_ = std::make_unique<RequestDispatcher>(
+      configs_, cached_result_provider_.get());
 
   for (const auto& config : configs_) {
     segment_selectors_[config->segmentation_key] =
@@ -312,6 +317,7 @@ void SegmentationPlatformServiceImpl::RunDailyTasks(bool is_startup) {
 void SegmentationPlatformService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSegmentationResultPref);
+  registry->RegisterStringPref(kSegmentationClientResultPrefs, std::string());
   registry->RegisterTimePref(kSegmentationLastDBCompactionTimePref,
                              base::Time());
 }

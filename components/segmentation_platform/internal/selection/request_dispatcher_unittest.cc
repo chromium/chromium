@@ -57,7 +57,8 @@ class RequestDispatcherTest : public testing::Test {
     configs_.emplace_back(CreateTestConfig(kTestClient1));
     configs_.emplace_back(CreateTestConfig(kTestClient2));
 
-    request_dispatcher_ = std::make_unique<RequestDispatcher>(configs_);
+    request_dispatcher_ =
+        std::make_unique<RequestDispatcher>(configs_, nullptr);
 
     auto handler1 = std::make_unique<MockRequestHandler>();
     request_handler1_ = handler1.get();

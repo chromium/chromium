@@ -10,6 +10,7 @@
 
 #include "base/test/simple_test_clock.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
