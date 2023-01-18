@@ -2584,6 +2584,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.TimeToFirstPolicyLoad.Profile{ProfileType}"
+    units="ms" expires_after="2023-07-01">
+  <owner>emaxx@chromium.org</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    Duration of the initial policy load operation (including reading from cache
+    or fetching over network, parsing and validating) during {ProfileType}
+    session startup.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Child" summary="Child account (ChromeOS Ash only)"/>
+    <variant name="Kiosk" summary="Kiosk (ChromeOS Ash only)"/>
+    <variant name="Managed" summary="Managed user (non ChromeOS Ash only)"/>
+    <variant name="Managed.Ephemeral"
+        summary="Ephemeral managed user (ChromeOS Ash only)"/>
+    <variant name="Managed.Existing"
+        summary="Existing regular managed user (ChromeOS Ash only)"/>
+    <variant name="Managed.NewPersistent"
+        summary="Newly created regular managed user (ChromeOS Ash only)"/>
+    <variant name="ManagedGuestSession"
+        summary="Managed Guest Session (ChromeOS Ash only)"/>
+    <variant name="Unmanaged" summary="Unmanaged user"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.TimeToUnthrottlePolicyInit" units="ms"
     expires_after="2023-07-01">
   <owner>emaxx@chromium.org</owner>

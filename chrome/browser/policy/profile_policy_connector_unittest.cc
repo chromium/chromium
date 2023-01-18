@@ -4,10 +4,15 @@
 
 #include "chrome/browser/policy/profile_policy_connector.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -24,6 +29,7 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/proxy_policy_provider.h"
@@ -44,6 +50,7 @@
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
+using testing::SizeIs;
 
 namespace policy {
 namespace {
@@ -118,7 +125,6 @@ class ProfilePolicyConnectorTest : public testing::Test {
   ~ProfilePolicyConnectorTest() override {}
 
   void SetUp() override {
-    cloud_policy_store_.NotifyStoreLoaded();
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();
     cloud_policy_manager_ = std::make_unique<CloudPolicyManager>(
         std::string(), std::string(), &cloud_policy_store_, task_runner,
@@ -145,7 +151,8 @@ class ProfilePolicyConnectorTest : public testing::Test {
   }
 
   // Needs to be the first member.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   SchemaRegistry schema_registry_;
   MockCloudPolicyStore cloud_policy_store_;
   std::unique_ptr<CloudPolicyManager> cloud_policy_manager_;
@@ -330,5 +337,57 @@ TEST_F(ProfilePolicyConnectorTest, MachineLevelUserCloudPolicyForProfile) {
   proxy_policy_provider.Shutdown();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Basic test for the Enterprise.TimeToFirstPolicyLoad.*" metrics.
+TEST_F(ProfilePolicyConnectorTest, InitializationDurationUma) {
+  constexpr base::TimeDelta kDelay = base::Seconds(1);
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("foo@bar.com", "fake-gaia-id");
+
+  // Arrange.
+  base::HistogramTester histogram_tester;
+  user_manager::User* user = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash, simulate user login as metric isn't reported otherwise.
+  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+  user = user_manager->AddUser(account_id);
+  user_manager->LoginUser(account_id);
+  user_manager::ScopedUserManager scoped_user_manager_enabler(
+      std::move(user_manager));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ProfilePolicyConnector connector;
+  connector.Init(user, &schema_registry_, cloud_policy_manager_.get(),
+                 &cloud_policy_store_,
+                 g_browser_process->browser_policy_connector(),
+                 /*force_immediate_load=*/false);
+
+  // Act. Simulate installation of policy after some delay.
+  task_environment_.FastForwardBy(kDelay);
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_state(enterprise_management::PolicyData::ACTIVE);
+  cloud_policy_store_.set_policy_data_for_testing(std::move(policy));
+  cloud_policy_store_.NotifyStoreLoaded();
+  // Wait until the store status gets propagated to trigger the initialization.
+  PolicyServiceInitializedWaiter(connector.policy_service(),
+                                 POLICY_DOMAIN_CHROME)
+      .Wait();
+
+  // Assert. Note the recorded delay is exactly `kDelay`, since we're using
+  // `MOCK_TIME` and we don't expect delayed tasks here.
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Enterprise.TimeToFirstPolicyLoad.Profile."),
+              SizeIs(1));
+  histogram_tester.ExpectUniqueTimeSample(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      "Enterprise.TimeToFirstPolicyLoad.Profile.Managed.Existing"
+#else
+      "Enterprise.TimeToFirstPolicyLoad.Profile.Managed"
+#endif
+      ,
+      kDelay, 1);
+
+  // Cleanup.
+  connector.Shutdown();
+}
 
 }  // namespace policy
