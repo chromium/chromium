@@ -11,18 +11,18 @@
     try {
       stored_media_streams =
         await navigator.mediaDevices.getDisplayMediaSet(constraints);
-      returnToTest(
-        stored_media_streams.map(
+      const stream_ids = stored_media_streams.map(
+        stream => stream.id
+      ).toString();
+      const track_ids = stored_media_streams.map(
           stream => stream.getTracks()[0].id
-        ).toString()
+      ).toString();
+      returnToTest(
+        stream_ids + ":" + track_ids
       );
     } catch(error) {
       returnToTest("capture-failure," + error.name);
     }
-  }
-
-  function getStreamCount() {
-    returnToTest(stored_media_streams.length.toString());
   }
 
   function videoTrackContainsScreenDetailed(track_id) {

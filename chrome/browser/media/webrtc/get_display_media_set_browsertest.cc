@@ -31,24 +31,48 @@
 
 namespace {
 
+std::string ExtractError(const std::string& message) {
+  const std::vector<std::string> split_components = base::SplitString(
+      message, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  return (split_components.size() == 2 &&
+          split_components[0] == "capture-failure")
+             ? split_components[1]
+             : "";
+}
+
 bool RunGetDisplayMediaSet(content::WebContents* tab,
                            const std::string& constraints,
-                           std::vector<std::string>& track_ids,
+                           std::set<std::string>& stream_ids,
+                           std::set<std::string>& track_ids,
                            std::string* error_name_out = nullptr) {
+  EXPECT_TRUE(stream_ids.empty());
+  EXPECT_TRUE(track_ids.empty());
+
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       tab->GetPrimaryMainFrame(),
       base::StringPrintf("runGetDisplayMediaSet(%s);", constraints.c_str()),
       &result));
-  std::vector<std::string> split_result = base::SplitString(
-      result, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (split_result.empty() || split_result[0] == "capture-failure") {
-    if (error_name_out && split_result.size() == 2) {
-      *error_name_out = split_result[1];
+
+  const std::vector<std::string> split_id_components = base::SplitString(
+      result, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (split_id_components.size() != 2) {
+    if (error_name_out) {
+      *error_name_out = ExtractError(result);
     }
     return false;
   }
-  track_ids = split_result;
+
+  std::vector<std::string> stream_ids_vector = base::SplitString(
+      split_id_components[0], ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  stream_ids =
+      std::set<std::string>(stream_ids_vector.begin(), stream_ids_vector.end());
+
+  std::vector<std::string> track_ids_vector = base::SplitString(
+      split_id_components[1], ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  track_ids =
+      std::set<std::string>(track_ids_vector.begin(), track_ids_vector.end());
+
   return true;
 }
 
@@ -137,24 +161,26 @@ class GetDisplayMediaSetBrowserTest : public WebRtcTestBase {
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        GetDisplayMediaSetSingleScreenSuccess) {
   SetScreens(/*screen_count=*/1u);
-  std::vector<std::string> track_ids;
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
   EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
-                                    track_ids));
+                                    stream_ids, track_ids));
   EXPECT_EQ(1u, track_ids.size());
 }
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        GetDisplayMediaSetNoScreenSuccess) {
   SetScreens(/*screen_count=*/0u);
-  std::vector<std::string> track_ids;
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
   EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
-                                    track_ids));
+                                    stream_ids, track_ids));
   // If no screen is attached to a device, the |DisplayManager| will add a
   // default device. This same behavior is used in other places in Chrome that
   // handle multiple screens (e.g. in JS window.getScreenDetails() API) and
   // getDisplayMediaSet will follow the same convention.
+  EXPECT_EQ(1u, stream_ids.size());
   EXPECT_EQ(1u, track_ids.size());
-  EXPECT_EQ(track_ids.size(), base::flat_set<std::string>(track_ids).size());
 }
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
@@ -162,31 +188,38 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
   base::AddTagToTestResult("feature_id",
                            "screenplay-f3601ae4-bff7-495a-a51f-3c0997a46445");
   SetScreens(/*screen_count=*/5u);
-  std::vector<std::string> track_ids;
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
   EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
-                                    track_ids));
+                                    stream_ids, track_ids));
+  // TODO(crbug.com/1404274): Adapt this test if a decision is made on whether
+  // stream ids shall be shared or unique.
+  EXPECT_EQ(1u, stream_ids.size());
   EXPECT_EQ(5u, track_ids.size());
 }
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        TrackContainsScreenDetailed) {
   SetScreens(/*screen_count=*/1u);
-  std::vector<std::string> track_ids;
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
   EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
-                                    track_ids));
+                                    stream_ids, track_ids));
+  ASSERT_EQ(1u, stream_ids.size());
   ASSERT_EQ(1u, track_ids.size());
 
-  EXPECT_TRUE(CheckScreenDetailedExists(contents_, track_ids[0]));
+  EXPECT_TRUE(CheckScreenDetailedExists(contents_, *track_ids.begin()));
 }
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        MultipleTracksContainScreenDetailed) {
   SetScreens(/*screen_count=*/5u);
-  std::vector<std::string> track_ids;
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
   EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
-                                    track_ids));
+                                    stream_ids, track_ids));
+  EXPECT_EQ(1u, stream_ids.size());
   EXPECT_EQ(5u, track_ids.size());
-  EXPECT_EQ(track_ids.size(), base::flat_set<std::string>(track_ids).size());
 
   for (const std::string& track_id : track_ids) {
     std::string screen_detailed_attributes;
@@ -199,10 +232,11 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
   SetScreens(/*screen_count=*/1u);
   browser_client_->SetIsGetDisplayMediaSetSelectAllScreensAllowed(
       /*is_allowed=*/false);
-  std::vector<std::string> track_ids;
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
   std::string error_name;
   EXPECT_FALSE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
-                                     track_ids, &error_name));
+                                     stream_ids, track_ids, &error_name));
   EXPECT_EQ("NotAllowedError", error_name);
 }
 
