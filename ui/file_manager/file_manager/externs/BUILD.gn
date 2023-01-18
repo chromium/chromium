@@ -79,6 +79,11 @@ js_library("files_app_entry_interfaces") {
   deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
 }
 
+js_library("metadata_model") {
+  deps =
+      [ "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item" ]
+}
+
 js_library("metadata_worker_window") {
 }
 
