@@ -1552,6 +1552,8 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
       policy::policy_prefs::kUseMojoVideoDecoderForPepperAllowed, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed, true);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI, false);
 }
 
 // static
@@ -2963,6 +2965,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed)) {
       command_line->AppendSwitch(
           ::switches::kDisablePPAPISharedImagesSwapChain);
+    }
+    if (local_state->GetBoolean(
+            policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI)) {
+      command_line->AppendSwitch(
+          ::switches::kForceEnablePepperVideoDecoderDevAPI);
     }
   }
 }

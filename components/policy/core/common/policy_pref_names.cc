@@ -5,6 +5,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 
 #include "build/build_config.h"
+#include "policy_pref_names.h"
 
 namespace policy {
 namespace policy_prefs {
@@ -135,6 +136,11 @@ const char kUseMojoVideoDecoderForPepperAllowed[] =
 // feature will be forced off.
 const char kPPAPISharedImagesSwapChainAllowed[] =
     "policy.ppapi_shared_images_swap_chain_allowed";
+
+// If true then support for the PPB_VideoDecoder(Dev) API will be enabled;
+// otherwise the browser will decide whether the API is supported.
+const char kForceEnablePepperVideoDecoderDevAPI[] =
+    "policy.force_enable_pepper_video_decoder_dev_api";
 
 }  // namespace policy_prefs
 }  // namespace policy

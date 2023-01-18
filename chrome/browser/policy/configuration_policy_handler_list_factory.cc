@@ -1829,6 +1829,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPPAPISharedImagesSwapChainAllowed,
     policy::policy_prefs::kPPAPISharedImagesSwapChainAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kForceEnablePepperVideoDecoderDevAPI,
+    policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(ENABLE_PPAPI)
 };
 // clang-format on

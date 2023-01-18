@@ -32411,6 +32411,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1054" label="DeviceHindiInscriptLayoutEnabled"/>
   <int value="1055" label="DeviceLoginScreenExtensionManifestV2Availability"/>
   <int value="1056" label="KioskTroubleshootingToolsEnabled"/>
+  <int value="1057" label="ForceEnablePepperVideoDecoderDevAPI"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

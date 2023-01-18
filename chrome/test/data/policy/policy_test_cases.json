@@ -21516,6 +21516,44 @@
       }
     ]
   },
+  "ForceEnablePepperVideoDecoderDevAPI": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.force_enable_pepper_video_decoder_dev_api": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "ForceEnablePepperVideoDecoderDevAPI": true },
+        "prefs": {
+          "policy.force_enable_pepper_video_decoder_dev_api": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": { "ForceEnablePepperVideoDecoderDevAPI": false },
+        "prefs": {
+          "policy.force_enable_pepper_video_decoder_dev_api": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  },
   "PrivacySandboxPromptEnabled": {
     "os": [
       "win",

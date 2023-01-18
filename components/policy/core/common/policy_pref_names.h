@@ -49,6 +49,7 @@ POLICY_EXPORT extern const char kOffsetParentNewSpecBehaviorEnabled[];
 POLICY_EXPORT extern const char kSendMouseEventsDisabledFormControlsEnabled[];
 POLICY_EXPORT extern const char kUseMojoVideoDecoderForPepperAllowed[];
 POLICY_EXPORT extern const char kPPAPISharedImagesSwapChainAllowed[];
+POLICY_EXPORT extern const char kForceEnablePepperVideoDecoderDevAPI[];
 
 }  // namespace policy_prefs
 }  // namespace policy

@@ -1,0 +1,45 @@
+owners:
+- blundell@chromium.org
+- vasilyt@chromium.org
+caption: Enable support for the PPB_VideoDecoder(Dev) API.
+desc: |-
+  This policy can be temporarily used to force-enable support for the
+  PPB_VideoDecoder(Dev) API.
+
+  When the policy is left unset or set to Disabled, the browser will decide whether
+  the API is supported.
+  When the policy is set to Enabled, the API will be supported.
+
+  This policy can be used in case our ongoing elimination of support for this API
+  exposes problems. If you must use the policy, please file a bug on crbug.com
+  explaining your use case and CC {blundell, vasilyt}@chromium.org. The policy is
+  scheduled to live through <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+  version 114, after which support for this API is planned to be eliminated
+  unconditionally.
+
+  NOTE: When the value of the policy is changed, new tabs will pick up the new
+  value. Existing tabs will need to be closed and reopened to pick up the new
+  value.
+
+supported_on:
+# TODO(crbug.com/1408421): Remove this policy on ~May 6 after 114 has branched.
+- chrome.*:111-
+- chrome_os:111-
+device_only: false
+supported_chrome_os_management:
+- google_cloud
+- active_directory
+features:
+  dynamic_refresh: true
+  per_profile: false
+type: main
+schema:
+  type: boolean
+items:
+- caption: Enable support
+  value: true
+- caption: Let browser decide support
+  value: false
+default: true
+example_value: false
+tags: []
