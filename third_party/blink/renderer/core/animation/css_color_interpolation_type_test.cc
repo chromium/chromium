@@ -59,7 +59,8 @@ TEST(CSSColorInterpolationTypeTest, RGBBounds) {
 
 TEST(CSSColorInterpolationTypeTest, RGBToOklab) {
   Color from_color = Color::FromRGBAFloat(1, 1, 1, 1);
-  Color to_color = Color::FromOklab(0, 0, 0, 0.5);
+  Color to_color =
+      Color::FromColorSpace(Color::ColorSpace::kOklab, 0, 0, 0, 0.5);
   std::unique_ptr<InterpolableColor> from =
       CSSColorInterpolationType::CreateInterpolableColor(from_color);
   std::unique_ptr<InterpolableColor> to =
@@ -84,8 +85,10 @@ TEST(CSSColorInterpolationTypeTest, RGBToOklab) {
 }
 
 TEST(CSSColorInterpolationTypeTest, Oklab) {
-  Color from_color = Color::FromOklab(100, 1, 1, 1);
-  Color to_color = Color::FromOklab(0, 0, 0, 0.5);
+  Color from_color =
+      Color::FromColorSpace(Color::ColorSpace::kOklab, 100, 1, 1, 1);
+  Color to_color =
+      Color::FromColorSpace(Color::ColorSpace::kOklab, 0, 0, 0, 0.5);
   std::unique_ptr<InterpolableValue> from =
       CSSColorInterpolationType::CreateInterpolableColor(from_color);
   std::unique_ptr<InterpolableValue> to =

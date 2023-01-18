@@ -37,7 +37,7 @@ namespace blink {
 namespace {
 
 Color CreateSRGBColor(float r, float g, float b, float a) {
-  return Color::FromColorFunction(Color::ColorSpace::kSRGB, r, g, b, a);
+  return Color::FromColorSpace(Color::ColorSpace::kSRGB, r, g, b, a);
 }
 
 // Helper struct for testing purposes.
@@ -66,11 +66,11 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
        /*percentage =*/0.5f, /*alpha_multiplier=*/1.0f,
        CreateSRGBColor(0.5f, 0.5f, 0.0f, 1.0f)},
       {Color::ColorInterpolationSpace::kSRGB, absl::nullopt,
-       Color::FromColorFunction(Color::ColorSpace::kRec2020,
+       Color::FromColorSpace(Color::ColorSpace::kRec2020,
                                 0.7919771358198009f, 0.23097568481079767f,
                                 0.07376147493817597f, 1.0f),
-       Color::FromLab(87.81853633115202f, -79.27108223854806f,
-                      80.99459785152247f, 1.0f),
+       Color::FromColorSpace(Color::ColorSpace::kLab, 87.81853633115202f,
+                             -79.27108223854806f, 80.99459785152247f, 1.0f),
        /*percentage =*/0.5f, /*alpha_multiplier=*/1.0f,
        CreateSRGBColor(0.5f, 0.5f, 0.0f, 1.0f)},
       {Color::ColorInterpolationSpace::kSRGB, absl::nullopt,
@@ -154,9 +154,9 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
 }
 
 TEST(BlinkColor, ColorMixNone) {
-  Color color1 = Color::FromColorFunction(
+  Color color1 = Color::FromColorSpace(
       Color::ColorSpace::kXYZD50, absl::nullopt, 0.5f, absl::nullopt, 1.0f);
-  Color color2 = Color::FromColorFunction(
+  Color color2 = Color::FromColorSpace(
       Color::ColorSpace::kXYZD50, absl::nullopt, absl::nullopt, 0.7f, 1.0f);
 
   Color result = Color::FromColorMix(
@@ -183,28 +183,30 @@ TEST(BlinkColor, ColorInterpolation) {
   // Tests extracted from the CSS Color 4 spec.
   // https://csswg.sesse.net/css-color-4/#interpolation-alpha
   ColorsTest colors_test[] = {
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
                                 0.4f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.62f, 0.26f, 0.64f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.62f, 0.26f, 0.64f,
                                 0.6f),
        Color::ColorInterpolationSpace::kSRGB, absl::nullopt, 0.5f,
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.468f, 0.204f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.468f, 0.204f,
                                 0.776f, 0.5f)},
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.76f, 0.62f, 0.03f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.76f, 0.62f, 0.03f,
                                 0.4f),
-       Color::FromColorFunction(Color::ColorSpace::kDisplayP3, 0.84f, 0.19f,
+       Color::FromColorSpace(Color::ColorSpace::kDisplayP3, 0.84f, 0.19f,
                                 0.72f, 0.6f),
        Color::ColorInterpolationSpace::kLab, absl::nullopt, 0.5f,
-       Color::FromLab(58.873f, 51.552f, 7.108f, 0.5f)},
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.76f, 0.62f, 0.03f,
+       Color::FromColorSpace(Color::ColorSpace::kLab, 58.873f, 51.552f, 7.108f,
+                             0.5f)},
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.76f, 0.62f, 0.03f,
                                 0.4f),
-       Color::FromColorFunction(Color::ColorSpace::kDisplayP3, 0.84f, 0.19f,
+       Color::FromColorSpace(Color::ColorSpace::kDisplayP3, 0.84f, 0.19f,
                                 0.72f, 0.6f),
        Color::ColorInterpolationSpace::kLch,
        Color::HueInterpolationMethod::kShorter, 0.5f,
        // There is an issue with the spec where the hue is un-premultiplied even
        // though it shouldn't be.
-       Color::FromLch(58.873f, 81.126f, 31.82f, 0.5f)}};
+       Color::FromColorSpace(Color::ColorSpace::kLch, 58.873f, 81.126f, 31.82f,
+                             0.5f)}};
 
   for (auto& color_test : colors_test) {
     Color result = Color::InterpolateColors(
@@ -323,42 +325,9 @@ TEST(BlinkColor, toSkColor4fValidation) {
       // values should be the same, if the transformations are correct.
       // ToSkColor4f is validate in color_conversions_test.cc.
       Color input;
-      if (Color::IsColorFunction(color_function_value.color_space)) {
-        input = Color::FromColorFunction(
-            color_function_value.color_space, color_function_value.param0,
-            color_function_value.param1, color_function_value.param2, 1.0f);
-      } else if (color_function_value.color_space == Color::ColorSpace::kLab) {
-        input = Color::FromLab(color_function_value.param0,
-                               color_function_value.param1,
-                               color_function_value.param2, 1.0f);
-      } else if (color_function_value.color_space ==
-                 Color::ColorSpace::kOklab) {
-        input = Color::FromOklab(color_function_value.param0,
-                                 color_function_value.param1,
-                                 color_function_value.param2, 1.0f);
-      } else if (color_function_value.color_space == Color::ColorSpace::kLch) {
-        input = Color::FromLch(color_function_value.param0,
-                               color_function_value.param1,
-                               color_function_value.param2, 1.0f);
-      } else if (color_function_value.color_space ==
-                 Color::ColorSpace::kOklch) {
-        input = Color::FromOklch(color_function_value.param0,
-                                 color_function_value.param1,
-                                 color_function_value.param2, 1.0f);
-      } else if (color_function_value.color_space ==
-                 Color::ColorSpace::kRGBLegacy) {
-        input = Color::FromRGBAFloat(color_function_value.param0,
-                                     color_function_value.param1,
-                                     color_function_value.param2, 1.0f);
-      } else if (color_function_value.color_space == Color::ColorSpace::kHSL) {
-        input = Color::FromHSLA(color_function_value.param0,
-                                color_function_value.param1,
-                                color_function_value.param2, 1.0f);
-      } else if (color_function_value.color_space == Color::ColorSpace::kHWB) {
-        input = Color::FromHWBA(color_function_value.param0,
-                                color_function_value.param1,
-                                color_function_value.param2, 1.0f);
-      }
+      input = Color::FromColorSpace(
+          color_function_value.color_space, color_function_value.param0,
+          color_function_value.param1, color_function_value.param2, 1.0f);
 
       SkColor4f expected_output = input.toSkColor4f();
       input.ConvertToColorInterpolationSpace(space);
@@ -407,10 +376,10 @@ TEST(BlinkColor, ExportAsXYZD50Floats) {
 
   for (auto& input_parameter : input_parameters) {
     Color expected =
-        Color::FromColorFunction(Color::ColorSpace::kXYZD50, input_parameter.x,
+        Color::FromColorSpace(Color::ColorSpace::kXYZD50, input_parameter.x,
                                  input_parameter.y, input_parameter.z, 1.0f);
     for (auto& space : color_spaces) {
-      Color input = Color::FromColorFunction(
+      Color input = Color::FromColorSpace(
           Color::ColorSpace::kXYZD50, input_parameter.x, input_parameter.y,
           input_parameter.z, 1.0f);
       input.ConvertToColorInterpolationSpace(space);
@@ -432,33 +401,37 @@ TEST(BlinkColor, ExportAsXYZD50Floats) {
 TEST(BlinkColor, Premultiply) {
   ColorTest color_tests[] = {
       // Testing rectangular-color-space premultiplication.
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
                                 0.4f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.24f * 0.4f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.24f * 0.4f,
                                 0.12f * 0.4f, 0.98f * 0.4f, 1.0f)},
       // Testing none value in each component premultiplication.
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, absl::nullopt, 0.26f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt, 0.26f,
                                 0.64f, 0.6f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, absl::nullopt,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, absl::nullopt,
                                 0.26f * 0.6f, 0.64f * 0.6f, 1.0f)},
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.26f, absl::nullopt,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f, absl::nullopt,
                                 0.64f, 0.6f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.26f * 0.6f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f * 0.6f,
                                 absl::nullopt, 0.64f * 0.6f, 1.0f)},
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.26f, 0.64f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f, 0.64f,
                                 absl::nullopt, 0.6f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.26f * 0.6f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.26f * 0.6f,
                                 0.64f * 0.6f, absl::nullopt, 1.0f)},
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
                                 absl::nullopt),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
                                 absl::nullopt)},
       // Testing polar-color-space premultiplication. Hue component should not
       // be premultiplied.
-      {Color::FromLch(0.24f, 0.12f, 0.98f, 0.4f),
-       Color::FromLch(0.24f * 0.4f, 0.12f * 0.4f, 0.98f, 1.0f)},
-      {Color::FromOklch(0.24f, 0.12f, 0.98f, 0.4f),
-       Color::FromOklch(0.24f * 0.4f, 0.12f * 0.4f, 0.98f, 1.0f)}};
+      {Color::FromColorSpace(Color::ColorSpace::kLch, 0.24f, 0.12f, 0.98f,
+                             0.4f),
+       Color::FromColorSpace(Color::ColorSpace::kLch, 0.24f * 0.4f,
+                             0.12f * 0.4f, 0.98f, 1.0f)},
+      {Color::FromColorSpace(Color::ColorSpace::kOklch, 0.24f, 0.12f, 0.98f,
+                             0.4f),
+       Color::FromColorSpace(Color::ColorSpace::kOklch, 0.24f * 0.4f,
+                             0.12f * 0.4f, 0.98f, 1.0f)}};
 
   for (auto& color_test : color_tests) {
     color_test.color.PremultiplyColor();
@@ -524,17 +497,17 @@ TEST(BlinkColor, Premultiply) {
 
 TEST(BlinkColor, Unpremultiply) {
   ColorTest color_tests[] = {
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.096f, 0.048f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.096f, 0.048f,
                                 0.392f, 1.0f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
                                 0.4f)},
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.372f, 0.156f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.372f, 0.156f,
                                 0.384f, 1.0f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.62f, 0.26f, 0.64f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.62f, 0.26f, 0.64f,
                                 0.6f)},
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.5f, 0.4f, 0.0f,
+      {Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.5f, 0.4f, 0.0f,
                                 1.0f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
+       Color::FromColorSpace(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
                                 0.5f)}};
 
   for (auto& color_test : color_tests) {

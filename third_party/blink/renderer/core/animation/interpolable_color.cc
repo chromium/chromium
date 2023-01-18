@@ -122,7 +122,8 @@ Color InterpolableColor::GetColor() const {
     case Color::ColorInterpolationSpace::kSRGB:
       return Color::FromRGBAFloat(param0, param1, param2, alpha);
     case Color::ColorInterpolationSpace::kOklab:
-      return Color::FromOklab(param0, param1, param2, alpha);
+      return Color::FromColorSpace(Color::ColorSpace::kOklab, param0, param1,
+                                   param2, alpha);
     default:
       // There is no way for the user to specify which color spaces should be
       // used for interpolation, so sRGB (for legacy colors) and Oklab are the

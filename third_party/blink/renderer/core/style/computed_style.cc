@@ -2178,8 +2178,10 @@ Color ComputedStyle::VisitedDependentColor(const Longhand& color_property,
   // the flag when the unvisited color is ‘currentColor’ would break tests like
   // css/css-pseudo/selection-link-001 and css/css-pseudo/target-text-008.
   // TODO(dazabani@igalia.com) improve behaviour where unvisited is currentColor
-  return blink::Color(visited_color.Red(), visited_color.Green(),
-                      visited_color.Blue(), unvisited_color.Alpha());
+  return Color::FromColorSpace(visited_color.GetColorSpace(),
+                               visited_color.Param0(), visited_color.Param1(),
+                               visited_color.Param2(),
+                               unvisited_color.FloatAlpha());
 }
 
 blink::Color ComputedStyle::ResolvedColor(const StyleColor& color,
