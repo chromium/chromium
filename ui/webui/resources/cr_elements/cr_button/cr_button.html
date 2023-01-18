@@ -73,6 +73,29 @@
       }
 
       :host-context([chrome-refresh-2023]):host {
+        /* Default button colors. */
+        --border-color: var(--color-button-border,
+            var(--cr-color-token-primary-container));
+        --text-color: var(--color-button-foreground,
+            var(--cr-color-token-primary));
+
+        /* Disabled default button colors. */
+        --disabled-border-color: var(--color-button-border-disabled,
+            rgba(var(--cr-color-token-on-surface-rgb), .12));
+        --disabled-text-color: var(--color-button-foreground-disabled,
+            rgba(var(--cr-color-token-on-surface-rgb),
+                 var(--cr-disabled-opacity)));
+
+        /* Action button colors. */
+        --bg-action: var(--color-button-background-prominent,
+            var(--cr-color-token-primary));
+        --text-color-action: var(--color-button-foreground-prominent,
+            var(--cr-color-token-on-primary));
+
+        /* Disabled action button colors. */
+        --disabled-bg-action: var(--color-button-background-prominent-disabled,
+            rgba(var(--cr-color-token-on-surface-rgb), .12));
+
         border-radius: 100px;
         line-height: 20px;
       }

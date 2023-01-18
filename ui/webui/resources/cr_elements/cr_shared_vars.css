@@ -233,5 +233,25 @@ html {
 }
 
 html[chrome-refresh-2023] {
+  /* Colors */
+  --cr-color-token-primary: rgb(11, 87, 208);
+  --cr-color-token-on-primary: rgb(255, 255, 255);
+  --cr-color-token-primary-container: rgb(211, 227, 253);
+  --cr-color-token-on-primary-container: rgb(4, 30, 73);
+  --cr-color-token-on-surface-rgb: 31, 31, 31;
+  --cr-color-token-on-surface: rgb(var(--cr-color-token-on-surface-rgb));
+
+  /* Layout */
   --cr-button-height: 36px;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[chrome-refresh-2023] {
+    /* Colors */
+    --cr-color-token-primary: rgb(168, 199, 250);
+    --cr-color-token-on-primary: rgb(6, 46, 111);
+    --cr-color-token-primary-container: rgb(8, 66, 160);
+    --cr-color-token-on-primary-container: rgb(211, 227, 253);
+    --cr-color-token-on-surface-rgb: 227, 227, 227;
+  }
 }
