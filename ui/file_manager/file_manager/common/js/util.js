@@ -1434,11 +1434,6 @@ util.getFilesAppModalDialogInstance = () => {
   return /** @type {!HTMLDialogElement} */ (dialogElement);
 };
 
-util.isDriveDssPinEnabled = () => {
-  return loadTimeData.valueExists('DRIVE_DSS_PIN_ENABLED') &&
-      loadTimeData.getBoolean('DRIVE_DSS_PIN_ENABLED');
-};
-
 /**
  *
  * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} left

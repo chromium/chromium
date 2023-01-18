@@ -141,11 +141,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableDriveDssPin() {
-    options.drive_dss_pin = true;
-    return *this;
-  }
-
   TestCase& EnableTrash() {
     options.enable_trash = true;
     return *this;
@@ -223,9 +218,6 @@ struct TestCase {
 
     if (options.photos_documents_provider)
       full_name += "_PhotosDocumentsProvider";
-
-    if (options.drive_dss_pin)
-      full_name += "_DriveDssPin";
 
     if (options.single_partition_format)
       full_name += "_SinglePartitionFormat";
@@ -1325,8 +1317,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkOpenFileThroughLinkedDirectory"),
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
-        TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
-        TestCase("driveOfflineInfoBannerWithoutFlag"),
+        TestCase("driveOfflineInfoBanner"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
         TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
         TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync()

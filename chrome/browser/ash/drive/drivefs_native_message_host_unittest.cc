@@ -48,10 +48,7 @@ class DriveFsNativeMessageHostTest
       public drivefs::mojom::DriveFsInterceptorForTesting,
       public drivefs::mojom::NativeMessagingHost {
  public:
-  DriveFsNativeMessageHostTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kDriveFsBidirectionalNativeMessaging);
-  }
+  DriveFsNativeMessageHostTest() = default;
 
   DriveFsNativeMessageHostTest(const DriveFsNativeMessageHostTest&) = delete;
   DriveFsNativeMessageHostTest& operator=(const DriveFsNativeMessageHostTest&) =
@@ -164,30 +161,6 @@ TEST_F(DriveFsNativeMessageHostTest, Error) {
 
   host->OnMessage("bar");
   base::RunLoop().RunUntilIdle();
-}
-
-class DriveFsNativeMessageHostTestWithoutFlag
-    : public DriveFsNativeMessageHostTest {
- public:
-  DriveFsNativeMessageHostTestWithoutFlag() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kDriveFsBidirectionalNativeMessaging);
-  }
-
-  DriveFsNativeMessageHostTestWithoutFlag(
-      const DriveFsNativeMessageHostTestWithoutFlag&) = delete;
-  DriveFsNativeMessageHostTestWithoutFlag& operator=(
-      const DriveFsNativeMessageHostTestWithoutFlag&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(DriveFsNativeMessageHostTestWithoutFlag,
-       DriveFsCannotInitiateMessaging) {
-  ASSERT_FALSE(CreateDriveFsInitiatedNativeMessageHost(
-      extension_port_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote()));
 }
 
 }  // namespace

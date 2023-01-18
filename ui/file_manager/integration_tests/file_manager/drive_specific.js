@@ -873,23 +873,6 @@ testcase.driveOfflineInfoBanner = async () => {
 };
 
 /**
- * Tests that the Drive offline info banner does not show when the
- * DriveFsBidirectionalNativeMessaging flag is disabled.
- */
-testcase.driveOfflineInfoBannerWithoutFlag = async () => {
-  // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
-
-  await remoteCall.isolateBannerForTesting(
-      appId, 'drive-offline-pinning-banner');
-  const driveOfflineInfoBannerHiddenQuery =
-      '#banners > drive-offline-pinning-banner';
-
-  // Check: the Drive Offline info banner should not appear.
-  await remoteCall.waitForElementLost(appId, driveOfflineInfoBannerHiddenQuery);
-};
-
-/**
  * Tests that the inline file sync "in progress" icon is displayed in Drive as
  * the file starts syncing then disappears as it finishes syncing.
  */

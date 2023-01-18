@@ -49,13 +49,10 @@ export class DriveOfflinePinningBanner extends EducationalBanner {
    * @returns {!Array<!Banner.AllowedVolume>}
    */
   allowedVolumes() {
-    if (util.isDriveDssPinEnabled()) {
-      return [{
-        type: VolumeManagerCommon.VolumeType.DRIVE,
-        root: VolumeManagerCommon.RootType.DRIVE,
-      }];
-    }
-    return [];
+    return [{
+      type: VolumeManagerCommon.VolumeType.DRIVE,
+      root: VolumeManagerCommon.RootType.DRIVE,
+    }];
   }
 }
 

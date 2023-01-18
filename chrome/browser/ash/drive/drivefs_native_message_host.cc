@@ -50,9 +50,7 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
           extension_receiver,
       mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote)
       : pending_receiver_(std::move(extension_receiver)),
-        drivefs_remote_(std::move(drivefs_remote)) {
-    DCHECK(UseBidirectionalNativeMessaging());
-  }
+        drivefs_remote_(std::move(drivefs_remote)) {}
 
   explicit DriveFsNativeMessageHost(
       drivefs::mojom::DriveFs* drivefs_for_testing)
@@ -66,28 +64,13 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
   void OnMessage(const std::string& message) override {
     DCHECK(client_);
 
-    if (UseBidirectionalNativeMessaging()) {
-      if (drivefs_remote_) {
-        drivefs_remote_->HandleMessageFromExtension(message);
-      }
-    } else {
-      if (!drive_service_ || !drive_service_->GetDriveFsInterface()) {
-        OnDriveFsResponse(FILE_ERROR_SERVICE_UNAVAILABLE, "");
-        return;
-      }
-
-      drive_service_->GetDriveFsInterface()->SendNativeMessageRequest(
-          message, base::BindOnce(&DriveFsNativeMessageHost::OnDriveFsResponse,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    if (drivefs_remote_) {
+      drivefs_remote_->HandleMessageFromExtension(message);
     }
   }
 
   void Start(Client* client) override {
     client_ = client;
-
-    if (!UseBidirectionalNativeMessaging()) {
-      return;
-    }
 
     if (!pending_receiver_) {
       // The session was initiated by the extension.
@@ -98,7 +81,8 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
       if (drivefs_for_testing_) {
         drivefs = drivefs_for_testing_;
       } else if (!drive_service_ || !drive_service_->GetDriveFsInterface()) {
-        OnDriveFsResponse(FILE_ERROR_SERVICE_UNAVAILABLE, "");
+        client_->CloseChannel(
+            FileErrorToString(FILE_ERROR_SERVICE_UNAVAILABLE));
         return;
       } else {
         drivefs = drive_service_->GetDriveFsInterface();
@@ -120,15 +104,6 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
   }
 
  private:
-  void OnDriveFsResponse(FileError error, const std::string& response) {
-    if (error == FILE_ERROR_OK) {
-      client_->PostMessageFromNativeHost(response);
-    } else {
-      LOG(WARNING) << "DriveFS returned error " << FileErrorToString(error);
-      client_->CloseChannel(FileErrorToString(error));
-    }
-  }
-
   void PostMessageToExtension(const std::string& message) override {
     client_->PostMessageFromNativeHost(message);
   }
@@ -138,11 +113,6 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
                               -static_cast<int32_t>(error))) +
                           ": " + reason);
     drivefs_remote_.reset();
-  }
-
-  bool UseBidirectionalNativeMessaging() {
-    return base::FeatureList::IsEnabled(
-        ash::features::kDriveFsBidirectionalNativeMessaging);
   }
 
   DriveIntegrationService* drive_service_ = nullptr;
@@ -157,8 +127,6 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
       base::SingleThreadTaskRunner::GetCurrentDefault();
-
-  base::WeakPtrFactory<DriveFsNativeMessageHost> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<extensions::NativeMessageHost> CreateDriveFsNativeMessageHost(
@@ -172,10 +140,6 @@ CreateDriveFsInitiatedNativeMessageHost(
     mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort>
         extension_receiver,
     mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote) {
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kDriveFsBidirectionalNativeMessaging)) {
-    return nullptr;
-  }
   return std::make_unique<DriveFsNativeMessageHost>(
       std::move(extension_receiver), std::move(drivefs_remote));
 }

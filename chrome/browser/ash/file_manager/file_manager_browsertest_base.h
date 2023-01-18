@@ -78,9 +78,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test requires a browser to be started.
     bool browser = false;
 
-    // Whether test should enable drive dss pinning.
-    bool drive_dss_pin = false;
-
     // Whether Drive should act as if offline.
     bool offline = false;
 

@@ -637,11 +637,6 @@ BASE_FEATURE(kDragWindowToNewDesk,
 // If enabled, DriveFS will be used for Drive sync.
 BASE_FEATURE(kDriveFs, "DriveFS", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables duplex native messaging between DriveFS and extensions.
-BASE_FEATURE(kDriveFsBidirectionalNativeMessaging,
-             "DriveFsBidirectionalNativeMessaging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables DriveFS' experimental local files mirroring functionality.
 BASE_FEATURE(kDriveFsMirroring,
              "DriveFsMirroring",
