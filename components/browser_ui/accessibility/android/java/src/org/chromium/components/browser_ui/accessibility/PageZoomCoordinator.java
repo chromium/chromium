@@ -12,8 +12,6 @@ import android.view.animation.AnimationUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -31,9 +29,8 @@ public class PageZoomCoordinator {
     private final PageZoomMediator mMediator;
 
     private WebContentsObserver mWebContentsObserver;
-    private GestureListenerManager mGestureListenerManager;
-    private GestureStateListener mGestureListener;
     private int mBottomControlsOffset;
+    private Runnable mDismissalCallback;
 
     private View mView;
 
@@ -49,7 +46,9 @@ public class PageZoomCoordinator {
     public PageZoomCoordinator(Delegate delegate) {
         mDelegate = delegate;
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
+        mModel.set(PageZoomProperties.USER_INTERACTION_CALLBACK, this::onViewInteraction);
         mMediator = new PageZoomMediator(mModel);
+        mDismissalCallback = () -> hide();
     }
 
     /**
@@ -109,16 +108,7 @@ public class PageZoomCoordinator {
             }
         };
 
-        mGestureListenerManager = GestureListenerManager.fromWebContents(webContents);
-        mGestureListener = new GestureStateListener() {
-            @Override
-            public void onScrollStarted(
-                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
-                // On scroll, hide the dialog
-                hide();
-            }
-        };
-        mGestureListenerManager.addListener(mGestureListener);
+        onViewInteraction(null);
     }
 
     /**
@@ -162,8 +152,8 @@ public class PageZoomCoordinator {
             mWebContentsObserver.destroy();
         }
 
-        if (mGestureListenerManager != null && mGestureListener != null) {
-            mGestureListenerManager.removeListener(mGestureListener);
+        if (mView != null) {
+            mView.removeCallbacks(mDismissalCallback);
         }
     }
 
@@ -174,6 +164,14 @@ public class PageZoomCoordinator {
     @VisibleForTesting
     public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
         sShouldShowMenuItemForTesting = isEnabled;
+    }
+
+    /**
+     * Handle when the user interacts with the view
+     */
+    private void onViewInteraction(Void unused) {
+        mView.removeCallbacks(mDismissalCallback);
+        mView.postDelayed(mDismissalCallback, PageZoomUtils.LAST_INTERACTION_DISMISSAL);
     }
 
     private Animation getInAnimation() {

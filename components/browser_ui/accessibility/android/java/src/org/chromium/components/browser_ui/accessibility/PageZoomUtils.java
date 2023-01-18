@@ -51,6 +51,9 @@ public class PageZoomUtils {
     protected static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.50f;
     protected static final float PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL = 3.00f;
 
+    // The timeout for when to dismiss the slider from the last user interaction
+    protected static final long LAST_INTERACTION_DISMISSAL = 5000; // 5 seconds = 5 * 1000
+
     /**
      * Returns whether the Accessibility Settings page should include the 'Zoom' UI. The page
      * should always display the UI if the feature is enabled.

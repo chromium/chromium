@@ -33,13 +33,15 @@ class PageZoomViewBinder {
             ((SeekBar) view.findViewById(R.id.page_zoom_slider))
                     .setMax(model.get(PageZoomProperties.MAXIMUM_SEEK_VALUE));
         } else if (PageZoomProperties.DECREASE_ZOOM_CALLBACK == propertyKey) {
-            view.findViewById(R.id.page_zoom_decrease_zoom_button)
-                    .setOnClickListener(v
-                            -> model.get(PageZoomProperties.DECREASE_ZOOM_CALLBACK).onResult(null));
+            view.findViewById(R.id.page_zoom_decrease_zoom_button).setOnClickListener(v -> {
+                model.get(PageZoomProperties.DECREASE_ZOOM_CALLBACK).onResult(null);
+                model.get(PageZoomProperties.USER_INTERACTION_CALLBACK).onResult(null);
+            });
         } else if (PageZoomProperties.INCREASE_ZOOM_CALLBACK == propertyKey) {
-            view.findViewById(R.id.page_zoom_increase_zoom_button)
-                    .setOnClickListener(v
-                            -> model.get(PageZoomProperties.INCREASE_ZOOM_CALLBACK).onResult(null));
+            view.findViewById(R.id.page_zoom_increase_zoom_button).setOnClickListener(v -> {
+                model.get(PageZoomProperties.INCREASE_ZOOM_CALLBACK).onResult(null);
+                model.get(PageZoomProperties.USER_INTERACTION_CALLBACK).onResult(null);
+            });
         } else if (PageZoomProperties.DECREASE_ZOOM_ENABLED == propertyKey) {
             view.findViewById(R.id.page_zoom_decrease_zoom_button)
                     .setEnabled(model.get(PageZoomProperties.DECREASE_ZOOM_ENABLED));
@@ -55,6 +57,8 @@ class PageZoomViewBinder {
                             if (fromUser) {
                                 model.get(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK)
                                         .onResult(progress);
+                                model.get(PageZoomProperties.USER_INTERACTION_CALLBACK)
+                                        .onResult(null);
                             }
                         }
 
