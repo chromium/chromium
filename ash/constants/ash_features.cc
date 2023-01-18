@@ -1021,6 +1021,11 @@ BASE_FEATURE(kGaiaReauthEndpoint,
              "GaiaReauthEndpoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the Game Dashboard.
+BASE_FEATURE(kGameDashboard,
+             "GameDashboard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls gamepad vibration in Exo.
 BASE_FEATURE(kGamepadVibration,
              "ExoGamepadVibration",
@@ -2779,6 +2784,10 @@ bool IsLogControllerForDiagnosticsAppEnabled() {
 
 bool IsEducationEnrollmentOobeFlowEnabled() {
   return base::FeatureList::IsEnabled(kEducationEnrollmentOobeFlow);
+}
+
+bool IsGameDashboardEnabled() {
+  return base::FeatureList::IsEnabled(kGameDashboard);
 }
 
 bool IsLockScreenInlineReplyEnabled() {
