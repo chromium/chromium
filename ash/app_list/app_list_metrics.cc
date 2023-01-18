@@ -369,9 +369,7 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::UNINSTALL:
     case CommandId::REMOVE_FROM_FOLDER:
     case CommandId::INSTALL:
-    case CommandId::USE_LAUNCH_TYPE_PINNED:
     case CommandId::USE_LAUNCH_TYPE_REGULAR:
-    case CommandId::USE_LAUNCH_TYPE_FULLSCREEN:
     case CommandId::USE_LAUNCH_TYPE_WINDOW:
     case CommandId::USE_LAUNCH_TYPE_TABBED_WINDOW:
     case CommandId::USE_LAUNCH_TYPE_COMMAND_END:
@@ -396,6 +394,8 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::DEPRECATED_LAUNCH_TYPE_WINDOW:
     case CommandId::DEPRECATED_LAUNCH_TYPE_TABBED_WINDOW:
     case CommandId::DEPRECATED_LAUNCH_TYPE_FULLSCREEN:
+    case CommandId::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
+    case CommandId::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       NOTREACHED();
       return false;
   }

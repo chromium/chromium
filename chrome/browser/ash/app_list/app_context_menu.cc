@@ -111,11 +111,14 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
       return gfx::kNoneIcon;
     case ash::SETTINGS:
       return vector_icons::kSettingsIcon;
-    case ash::USE_LAUNCH_TYPE_PINNED:
     case ash::USE_LAUNCH_TYPE_REGULAR:
-    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
     case ash::USE_LAUNCH_TYPE_WINDOW:
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       // Check items use the default icon.
+      return gfx::kNoneIcon;
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
+      NOTREACHED();
       return gfx::kNoneIcon;
     case ash::REORDER_SUBMENU:
       return ash::kReorderIcon;
@@ -172,10 +175,8 @@ void AppContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
     return;
   }
   // Check items use default icons.
-  if (command_id == ash::USE_LAUNCH_TYPE_PINNED ||
-      command_id == ash::USE_LAUNCH_TYPE_REGULAR ||
-      command_id == ash::USE_LAUNCH_TYPE_FULLSCREEN ||
-      command_id == ash::USE_LAUNCH_TYPE_WINDOW) {
+  if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
+      command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
     menu_model->AddCheckItemWithStringId(command_id, string_id);
     return;
   }

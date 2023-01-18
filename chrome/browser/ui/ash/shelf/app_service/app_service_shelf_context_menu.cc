@@ -68,15 +68,18 @@ apps::WindowMode ConvertLaunchTypeCommandToWindowMode(int command_id) {
 extensions::LaunchType ConvertLaunchTypeCommandToExtensionLaunchType(
     int command_id) {
   switch (command_id) {
-    case ash::USE_LAUNCH_TYPE_PINNED:
-      return extensions::LAUNCH_TYPE_PINNED;
     case ash::USE_LAUNCH_TYPE_REGULAR:
       return extensions::LAUNCH_TYPE_REGULAR;
     case ash::USE_LAUNCH_TYPE_WINDOW:
       return extensions::LAUNCH_TYPE_WINDOW;
-    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
-      return extensions::LAUNCH_TYPE_FULLSCREEN;
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
+      // Not supported for extensions.
+      [[fallthrough]];
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
+      [[fallthrough]];
     default:
+      NOTREACHED();
       return extensions::LAUNCH_TYPE_INVALID;
   }
 }
@@ -203,15 +206,16 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       [[fallthrough]];
-    case ash::USE_LAUNCH_TYPE_PINNED:
-      [[fallthrough]];
     case ash::USE_LAUNCH_TYPE_REGULAR:
       [[fallthrough]];
     case ash::USE_LAUNCH_TYPE_WINDOW:
-      [[fallthrough]];
-    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
       launch_new_string_id_ = apps::StringIdForUseLaunchTypeCommand(command_id);
       SetLaunchType(command_id);
+      break;
+
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
+      NOTREACHED();
       break;
 
     case ash::CROSTINI_USE_LOW_DENSITY:
@@ -547,10 +551,6 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
 
 void AppServiceShelfContextMenu::SetExtensionLaunchType(int command_id) {
   switch (static_cast<ash::CommandId>(command_id)) {
-    case ash::USE_LAUNCH_TYPE_PINNED:
-      extensions::SetLaunchType(controller()->profile(), item().id.app_id,
-                                extensions::LAUNCH_TYPE_PINNED);
-      break;
     case ash::USE_LAUNCH_TYPE_REGULAR:
       extensions::SetLaunchType(controller()->profile(), item().id.app_id,
                                 extensions::LAUNCH_TYPE_REGULAR);
@@ -566,9 +566,10 @@ void AppServiceShelfContextMenu::SetExtensionLaunchType(int command_id) {
                                 launch_type);
       break;
     }
-    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
-      extensions::SetLaunchType(controller()->profile(), item().id.app_id,
-                                extensions::LAUNCH_TYPE_FULLSCREEN);
+    case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
+      NOTREACHED();
       break;
     default:
       return;

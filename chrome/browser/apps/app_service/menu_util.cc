@@ -64,13 +64,6 @@ void AddCommandItem(uint32_t command_id,
   menu_items.items.push_back(std::move(menu_item));
 }
 
-void AddRadioItem(uint32_t command_id,
-                  uint32_t string_id,
-                  int group_id,
-                  MenuItems& menu_items) {
-  menu_items.items.push_back(CreateRadioItem(command_id, string_id, group_id));
-}
-
 void AddSeparator(ui::MenuSeparatorType separator_type, MenuItems& menu_items) {
   MenuItemPtr menu_item =
       std::make_unique<MenuItem>(MenuItemType::kSeparator, separator_type);
@@ -250,6 +243,9 @@ uint32_t StringIdForUseLaunchTypeCommand(uint32_t command_id) {
       return IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW;
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       return IDS_APP_LIST_CONTEXT_MENU_NEW_TABBED_WINDOW;
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
+      [[fallthrough]];
     default:
       NOTREACHED();
       return 0;

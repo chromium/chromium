@@ -33,12 +33,6 @@ void AddCommandItem(uint32_t command_id,
                     uint32_t string_id,
                     MenuItems& menu_items);
 
-// Adds a radio menu item to |menu_items|.
-void AddRadioItem(uint32_t command_id,
-                  uint32_t string_id,
-                  int group_id,
-                  MenuItems& menu_items);
-
 // Adds a separator of the specified type to |menu_items|.
 void AddSeparator(ui::MenuSeparatorType separator_type, MenuItems& menu_items);
 

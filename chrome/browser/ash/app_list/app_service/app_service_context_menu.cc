@@ -69,9 +69,11 @@ apps::WindowMode ConvertUseLaunchTypeCommandToWindowMode(int command_id) {
       return apps::WindowMode::kWindow;
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       return apps::WindowMode::kTabbedWindow;
-    case ash::USE_LAUNCH_TYPE_PINNED:
-    case ash::USE_LAUNCH_TYPE_FULLSCREEN:
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
+    case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
+      [[fallthrough]];
     default:
+      NOTREACHED();
       return apps::WindowMode::kUnknown;
   }
 }
