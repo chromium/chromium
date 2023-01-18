@@ -221,23 +221,6 @@ void OpenGoogleServicesSettings() {
                                    kGoogleServicesSettingsViewIdentifier)]
       assertWithMatcher:grey_notNil()];
 }
-
-void AppendEnableMiceFre(AppLaunchConfiguration* config) {
-  // Enable Mice FRE with Tangible Sync A.
-  config->additional_args.push_back(
-      "--enable-features=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) + "<" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name));
-  config->additional_args.push_back(
-      "--force-fieldtrials=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) + "/Test");
-  config->additional_args.push_back(
-      "--force-fieldtrial-params=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) +
-      ".Test:" + std::string(kNewMobileIdentityConsistencyFREParam) + "/" +
-      kNewMobileIdentityConsistencyFREParamTangibleSyncA);
-}
-
 }  // namespace
 
 // Test the forced sign-in screens.
@@ -249,8 +232,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
-
   // Configure the policy to force sign-in.
   config.additional_args.push_back(
       "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
@@ -621,7 +602,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 - (void)testSignInScreenOnModal {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -649,7 +629,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 - (void)testSignInScreenOnTabSwitcher {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -676,7 +655,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 - (void)testSignInScreenOnIncognito {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -703,7 +681,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 - (void)testSignInScreenDuringRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -740,7 +717,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 - (void)testNoSignInScreenWhenSigninFromRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -819,7 +795,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -876,7 +851,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -934,7 +908,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1074,7 +1047,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1119,7 +1091,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1171,7 +1142,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1225,7 +1195,6 @@ void AppendEnableMiceFre(AppLaunchConfiguration* config) {
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
-  AppendEnableMiceFre(&config);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

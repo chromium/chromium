@@ -20,6 +20,6 @@ const char kWaitThresholdMillisecondsForCapabilitiesApi[] =
 
 BASE_FEATURE(kNewMobileIdentityConsistencyFRE,
              "NewMobileIdentityConsistencyFRE",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace signin

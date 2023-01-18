@@ -101,6 +101,10 @@ void DismissDefaultBrowserPromo() {
 }  // namespace
 
 // Test first run stages
+//
+// Note: Contrary to the naming, this file tests MiceFRE with
+// TangibleSyncA (which is the default configuration of the
+// `kNewMobileIdentityConsistencyFRE` feature flag).
 @interface FirstRunTwoStepsTestCase : ChromeTestCase
 
 @end
@@ -135,20 +139,6 @@ void DismissDefaultBrowserPromo() {
   AppLaunchConfiguration config;
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSignInAtStartup);
-  // Enable 2 steps MICe FRe.
-  config.additional_args.push_back(
-      "--enable-features=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) + "<" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) + "/Test");
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) +
-      ".Test:" + std::string(kNewMobileIdentityConsistencyFREParam) + "/" +
-      kNewMobileIdentityConsistencyFREParamTangibleSyncA);
-  // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
   // Relaunch app at each test to rewind the startup state.
