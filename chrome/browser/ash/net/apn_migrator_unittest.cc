@@ -171,8 +171,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
       AddTestCellularDeviceAndService(kCellularName2, kTestCellularPath2,
                                       kTestCellularIccid2, kTestCellularGuid2);
 
-  // Every network should be evaluated, the first one will be set to be
-  // migrated, the second one will not.
+  // Every network should be evaluated, simulate the first one as migrated, and
+  // the second one as not.
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(1)
@@ -184,8 +184,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
 
   // For the migrated network, the routine should not check for the current
   // custom APN list, but rather just resets the UserApnList.
-  EXPECT_CALL(*network_metadata_store(),
-              GetPreRevampCustomApnList(kTestCellularGuid1))
+  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
       .Times(0);
   base::Value::Dict expected_onc1 = chromeos::network_config::UserApnListToOnc(
       kTestCellularGuid1, /*user_apn_list=*/nullptr);
@@ -198,8 +197,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
       .Times(1);
 
   // Ensure that the function does not modify the non-migrated network.
-  EXPECT_CALL(*network_metadata_store(),
-              GetPreRevampCustomApnList(kTestCellularGuid2))
+  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
       .Times(0);
   EXPECT_CALL(*managed_network_configuration_handler(),
               SetProperties(cellular_service_path_2, _, _, _))
@@ -209,7 +207,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
   TriggerNetworkListChanged();
 }
 
-TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigratedNetworks) {
+TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_AlreadyMigratedNetworks) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
 
@@ -246,13 +244,11 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigratedNetworks) {
       .Times(0);
 
   // Return nullptr and empty list for the first two networks.
-  EXPECT_CALL(*network_metadata_store(),
-              GetPreRevampCustomApnList(kTestCellularGuid1))
+  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
       .Times(1)
       .WillOnce(Return(nullptr));
   base::Value::List empty_apn_list;
-  EXPECT_CALL(*network_metadata_store(),
-              GetPreRevampCustomApnList(kTestCellularGuid2))
+  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
       .Times(1)
       .WillOnce(Return(&empty_apn_list));
 
@@ -264,8 +260,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigratedNetworks) {
   base::Value::List populated_apn_list;
   populated_apn_list.Append(std::move(custom_apn_1));
   populated_apn_list.Append(std::move(custom_apn_2));
-  EXPECT_CALL(*network_metadata_store(),
-              GetPreRevampCustomApnList(kTestCellularGuid3))
+  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid3))
       .Times(1)
       .WillOnce(Return(&populated_apn_list));
 
@@ -319,12 +314,12 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworksWithoutCustomApns) {
   // migrated.
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-      .Times(1)
-      .WillOnce(Return(false));
+      .Times(2)
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
-      .Times(1)
-      .WillOnce(Return(false));
+      .Times(2)
+      .WillRepeatedly(Return(false));
 
   // Simulate that all networks do not have custom APNs
   EXPECT_CALL(*network_metadata_store(),
@@ -369,7 +364,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworksWithoutCustomApns) {
   TriggerNetworkListChanged();
 }
 
-TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworks) {
+TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetwork) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
 
@@ -385,8 +380,8 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworks) {
   {
     EXPECT_CALL(*managed_cellular_pref_handler(),
                 ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-        .Times(1)
-        .WillOnce(Return(false));
+        .Times(2)
+        .WillRepeatedly(Return(false));
 
     base::Value::Dict custom_apn_1;
     custom_apn_1.Set(::onc::cellular_apn::kAccessPointName, "apn_1");

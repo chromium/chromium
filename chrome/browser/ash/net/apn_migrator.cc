@@ -55,29 +55,32 @@ void ApnMigrator::NetworkListChanged() {
   network_state_handler_->GetVisibleNetworkListByType(
       NetworkTypePattern::Cellular(), &network_list);
   for (const NetworkState* network : network_list) {
+    // Only attempt to migrate networks known by Shill.
     if (network->IsNonShillCellularNetwork()) {
       continue;
     }
 
-    if (!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
-            network->iccid())) {
-      if (!ash::features::IsApnRevampEnabled()) {
-        continue;
+    bool has_network_been_migrated =
+        managed_cellular_pref_handler_->ContainsApnMigratedIccid(
+            network->iccid());
+    if (!ash::features::IsApnRevampEnabled()) {
+      // If the network has been marked as migrated, but the ApnRevamp flag is
+      // disabled, the flag was disabled after being enabled. Clear UserApnList
+      // so that Shill knows to use legacy APN selection logic.
+      if (has_network_been_migrated) {
+        SetShillUserApnListForNetwork(*network, /*apn_list=*/nullptr);
       }
-      // Network needs to be migrated to the APN revamp
+      continue;
+    }
+
+    if (!has_network_been_migrated) {
       MigrateNetwork(*network);
       continue;
     }
 
-    if (!ash::features::IsApnRevampEnabled()) {
-      // Clear UserApnList so that Shill knows to use legacy APN selection
-      // logic.
-      SetShillUserApnListForNetwork(*network, /*apn_list=*/nullptr);
-      continue;
-    }
+    // The network has already been migrated. Send Shill the revamp APN list.
     if (const base::Value::List* custom_apn_list =
-            network_metadata_store_->GetPreRevampCustomApnList(
-                network->guid())) {
+            network_metadata_store_->GetCustomApnList(network->guid())) {
       SetShillUserApnListForNetwork(*network, custom_apn_list);
       continue;
     }
@@ -99,13 +102,22 @@ void ApnMigrator::SetShillUserApnListForNetwork(
 }
 
 void ApnMigrator::MigrateNetwork(const NetworkState& network) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+
+  // Return early if the network is already in the process of being migrated.
   if (iccids_in_migration_.find(network.iccid()) !=
       iccids_in_migration_.end()) {
     return;
   }
+  DCHECK(!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
+      network.iccid()));
 
+  // Get the pre-revamp APN list.
   const base::Value::List* custom_apn_list =
       network_metadata_store_->GetPreRevampCustomApnList(network.guid());
+
+  // If the pre-revamp APN list is empty, set the revamp list as empty and
+  // finish the migration.
   if (!custom_apn_list || custom_apn_list->empty()) {
     base::Value::List empty_apn_list;
     SetShillUserApnListForNetwork(network, &empty_apn_list);
@@ -113,11 +125,16 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
     return;
   }
 
+  // If the pre-revamp APN list is non-empty, get the network's managed
+  // properties, to be used for the migration heuristic. This call is
+  // asynchronous; mark the ICCID as migrating so that the network won't
+  // be attempted to be migrated again while these properties are being fetched.
+  iccids_in_migration_.emplace(network.iccid());
+
   network_configuration_handler_->GetManagedProperties(
       LoginState::Get()->primary_user_hash(), network.path(),
       base::BindOnce(&ApnMigrator::OnGetManagedProperties,
                      weak_factory_.GetWeakPtr(), network.iccid()));
-  iccids_in_migration_.emplace(network.iccid());
 }
 
 void ApnMigrator::OnGetManagedProperties(std::string iccid,
