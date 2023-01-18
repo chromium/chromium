@@ -2309,6 +2309,9 @@ class DeleteAllDataForStorageKeyTest {
       blink::mojom::AncestorChainBit registered_key_ancestor_chain_bit,
       std::string deleted_origin,
       bool expect_key_deleted);
+
+  // Test that DeleteAllDataForStorageKeys works when passed multiple keys.
+  void TestDeleteAllDataForStorageKeyWithMultipleKeys();
 };
 
 void DeleteAllDataForStorageKeyTest::TestDeleteAllDataForStorageKey(
@@ -2515,6 +2518,133 @@ void DeleteAllDataForStorageKeyTest::TestDeleteAllDataForStorageKey(
   ASSERT_EQ("value4", user_data_out[0]);
 }
 
+void DeleteAllDataForStorageKeyTest::
+    TestDeleteAllDataForStorageKeyWithMultipleKeys() {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (WithThirdPartyStoragePartitioningEnabled()) {
+    scoped_feature_list.InitAndEnableFeature(
+        net::features::kThirdPartyStoragePartitioning);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        net::features::kThirdPartyStoragePartitioning);
+  }
+
+  // Register with a third-party key for example.com -- multiple keys to
+  // delete will reference this registration.
+  blink::StorageKey registered_key = blink::StorageKey::CreateWithOptionalNonce(
+      url::Origin::Create(GURL("https://example.com")),
+      net::SchemefulSite(GURL("https://example.com")), nullptr,
+      blink::mojom::AncestorChainBit::kCrossSite);
+
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+  ServiceWorkerDatabase::DeletedVersion deleted_version;
+  GURL reg_url = registered_key.origin().GetURL();
+
+  // `registered_key` has two registrations (data1 and data2).
+  RegistrationData data1;
+  data1.registration_id = 10;
+  data1.scope = URL(reg_url, "/foo");
+  data1.key = registered_key;
+  data1.script = URL(reg_url, "/resource1");
+  data1.version_id = 100;
+  data1.resources_total_size_bytes = 2013 + 512;
+
+  std::vector<ResourceRecordPtr> resources1;
+  resources1.push_back(CreateResource(1, URL(reg_url, "/resource1"), 2013));
+  resources1.push_back(CreateResource(2, URL(reg_url, "/resource2"), 512));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data1, resources1, &deleted_version));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteUserData(
+                data1.registration_id, registered_key,
+                CreateUserData(data1.registration_id, {{"key1", "value1"}})));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteUserData(
+                data1.registration_id, registered_key,
+                CreateUserData(data1.registration_id, {{"key2", "value2"}})));
+
+  RegistrationData data2;
+  data2.registration_id = 11;
+  data2.scope = URL(reg_url, "/bar");
+  data2.key = registered_key;
+  data2.script = URL(reg_url, "/resource3");
+  data2.version_id = 101;
+  data2.resources_total_size_bytes = 4 + 5;
+
+  std::vector<ResourceRecordPtr> resources2;
+  resources2.push_back(CreateResource(3, URL(reg_url, "/resource3"), 4));
+  resources2.push_back(CreateResource(4, URL(reg_url, "/resource4"), 5));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data2, resources2, &deleted_version));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteUserData(
+                data2.registration_id, registered_key,
+                CreateUserData(data2.registration_id, {{"key3", "value3"}})));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteUserData(
+                data2.registration_id, registered_key,
+                CreateUserData(data2.registration_id, {{"key4", "value4"}})));
+
+  // invoke DeleteAllDataForStorageKeys
+  std::vector<int64_t> newly_purgeable_resources;
+  auto make_key = [](std::string origin) {
+    return blink::StorageKey(url::Origin::Create(GURL(origin)));
+  };
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->DeleteAllDataForStorageKeys(
+                {
+                    // This key does not correspond to the registered data.
+                    make_key("https://other.com"),
+                    // Delete the registered data precisely.
+                    make_key("https://example.com"),
+                    // With 3PSP enabled, this will delete the same data.
+                    make_key("https://sub2.example.com"),
+                },
+                &newly_purgeable_resources));
+
+  // `registered_key` should be removed from the unique origin list.
+  std::set<blink::StorageKey> unique_keys;
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetStorageKeysWithRegistrations(&unique_keys));
+  ASSERT_EQ(0u, unique_keys.size());
+
+  // The registrations for `registered_key` should be removed.
+  std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetRegistrationsForStorageKey(registered_key,
+                                                    &registrations, nullptr));
+  ASSERT_TRUE(registrations.empty());
+  blink::StorageKey key_out;
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kErrorNotFound,
+      database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
+
+  // The resources associated with `registered_key` should be purgeable.
+  std::vector<int64_t> purgeable_ids_out;
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetPurgeableResourceIds(&purgeable_ids_out));
+  ASSERT_EQ(4u, purgeable_ids_out.size());
+  ASSERT_TRUE(base::Contains(purgeable_ids_out, 1));
+  ASSERT_TRUE(base::Contains(purgeable_ids_out, 2));
+  ASSERT_TRUE(base::Contains(purgeable_ids_out, 3));
+  ASSERT_TRUE(base::Contains(purgeable_ids_out, 4));
+
+  // The user data associated with `registered_key` should be removed.
+  std::vector<std::string> user_data_out;
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kErrorNotFound,
+      database->ReadUserData(data1.registration_id, {"key1"}, &user_data_out));
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kErrorNotFound,
+      database->ReadUserData(data1.registration_id, {"key2"}, &user_data_out));
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kErrorNotFound,
+      database->ReadUserData(data2.registration_id, {"key3"}, &user_data_out));
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kErrorNotFound,
+      database->ReadUserData(data2.registration_id, {"key4"}, &user_data_out));
+}
+
 }  // namespace
 
 // Tests for first-party keys, which are parameterized on whether
@@ -2577,26 +2707,28 @@ TEST_P(DeleteAllDataForStorageKeyFirstPartyP,
                                  "https://subsite.example.com", true);
 }
 
+TEST_P(DeleteAllDataForStorageKeyFirstPartyP, CallWithMultipleKeys) {
+  TestDeleteAllDataForStorageKeyWithMultipleKeys();
+}
+
 // A third-party key with a subsite origin not matching the top-level site,
-// where the deleted origin matches the key origin, should not be deleted.
+// where the deleted origin matches the key origin, should be deleted.
 TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
        WithSubsiteMatchingDeletedOrigin) {
-  TestDeleteAllDataForStorageKey(
-      "https://subsite.example.com", "https://other.com",
-      blink::mojom::AncestorChainBit::kCrossSite, "https://subsite.example.com",
-      // TODO(crbug.com/1376065): should be deleted (origin match)
-      false);
+  TestDeleteAllDataForStorageKey("https://subsite.example.com",
+                                 "https://other.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://subsite.example.com", true);
 }
 
 // A third-party key with a subsite origin matching the top-level site,
-// where the deleted origin matches the key origin, should not be deleted.
+// where the deleted origin matches the key origin, should be deleted.
 TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
        WithSubsiteMatchingDeletedOriginMatchingTopLevelSite) {
-  TestDeleteAllDataForStorageKey(
-      "https://subsite.example.com", "https://example.com",
-      blink::mojom::AncestorChainBit::kCrossSite, "https://subsite.example.com",
-      // TODO(crbug.com/1376065): should be deleted (origin match)
-      false);
+  TestDeleteAllDataForStorageKey("https://subsite.example.com",
+                                 "https://example.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://subsite.example.com", true);
 }
 
 // A third-party key with an origin equal to the top-level site,
@@ -2609,14 +2741,12 @@ TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
 }
 
 // A third-party key with an origin equal to the top-level site,
-// where the deleted origin is a subsite, should not be deleted.
+// where the deleted origin is a subsite, should be deleted.
 TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
        SupersiteOfDeletedOriginMatchingTopLevelSite) {
   TestDeleteAllDataForStorageKey("https://example.com", "https://example.com",
                                  blink::mojom::AncestorChainBit::kCrossSite,
-                                 "https://subsite.example.com",
-                                 // TODO(crbug.com/1376065): maybe? (site match)
-                                 false);
+                                 "https://subsite.example.com", true);
 }
 
 // A third-party key for a subsite of the deleted key should not be
@@ -2629,14 +2759,12 @@ TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
 }
 
 // A third-party key (per ancestor chain bit) for a subsite of the deleted
-// key should not be deleted.
+// key should be deleted.
 TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
        PerAncestorChainBitSubsiteOfDeletedOrigin) {
   TestDeleteAllDataForStorageKey(
       "https://sub.example.com", "https://example.com",
-      blink::mojom::AncestorChainBit::kCrossSite, "https://example.com",
-      // TODO(crbug.com/1376065): maybe? (site match)
-      false);
+      blink::mojom::AncestorChainBit::kCrossSite, "https://example.com", true);
 }
 
 // A third-party key where the origin (but not the top-level site) matches
@@ -2645,18 +2773,16 @@ TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
        WithMatchingOrigin) {
   TestDeleteAllDataForStorageKey("https://example.com", "https://other.com",
                                  blink::mojom::AncestorChainBit::kCrossSite,
-                                 "https://example.com", false);
+                                 "https://example.com", true);
 }
 
-// A third-party key (per ancestor chain bit) for a the deleted origin
-// should not be deleted.
+// A third-party key (per ancestor chain bit) for the deleted origin should
+// be deleted.
 TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
        PerAncestorChainBitWithMatchingOrigin) {
-  TestDeleteAllDataForStorageKey(
-      "https://example.com", "https://example.com",
-      blink::mojom::AncestorChainBit::kCrossSite, "https://example.com",
-      // TODO(crbug.com/1376065): should be deleted (origin match)
-      false);
+  TestDeleteAllDataForStorageKey("https://example.com", "https://example.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://example.com", true);
 }
 
 // A third-party key for an unrelated origin should not be deleted..
@@ -2668,14 +2794,12 @@ TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
 }
 
 // A third-party key where the top-level-site (but not the origin) matches
-// the deleted origin should not be deleted.
+// the deleted origin should be deleted.
 TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
        WithMatchingTopLevelSite) {
   TestDeleteAllDataForStorageKey("https://other.com", "https://example.com",
                                  blink::mojom::AncestorChainBit::kCrossSite,
-                                 "https://example.com",
-                                 // TODO(crbug.com/1376065): maybe? (site match)
-                                 false);
+                                 "https://example.com", true);
 }
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorkerDatabaseTest,

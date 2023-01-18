@@ -273,7 +273,13 @@ class ServiceWorkerDatabase {
   Status PurgeUncommittedResourceIds(const std::vector<int64_t>& ids);
 
   // Deletes all data for |keys|, namely, unique origin, registrations and
-  // resource records. Resources are moved to the purgeable list. Returns OK if
+  // resource records.
+  //
+  // Specifically, this will delete data from any context where the origin
+  // matches or where the context is cross-site and the origin is same-site with
+  // the top-level-site.
+  //
+  // Resources are moved to the purgeable list. Returns OK if
   // they are successfully deleted or not found in the database. Otherwise,
   // returns an error.
   Status DeleteAllDataForStorageKeys(
