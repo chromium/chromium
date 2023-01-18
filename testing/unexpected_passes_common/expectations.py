@@ -710,7 +710,7 @@ class Expectations(object):
       # fail tag sets is still a valid fail tag set. If so, the original sets
       # are replaced by the intersection.
       new_tag_sets = set()
-      used_fail_tag_sets = set()
+      covered_fail_tag_sets = set()
       for fail_tags in fail_tag_sets:
         if any(fail_tags <= pt for pt in pass_tag_sets):
           logging.warning(
@@ -718,20 +718,28 @@ class Expectations(object):
               'not narrowing expectation scope.', e.AsExpectationFileString())
           skip_to_next_expectation = True
           break
-        if fail_tags in used_fail_tag_sets:
+        if fail_tags in covered_fail_tag_sets:
           continue
-        used_fail_tag_sets.add(fail_tags)
         tag_set_to_add = fail_tags
         for ft in fail_tag_sets:
-          if ft in used_fail_tag_sets:
+          if ft in covered_fail_tag_sets:
             continue
           intersection = tag_set_to_add & ft
-          if not any(intersection <= pt for pt in pass_tag_sets):
-            # Intersection would still only cover known failure cases, so use
-            # it instead of the tag sets that the intersection came from.
-            tag_set_to_add = intersection
-            used_fail_tag_sets.add(ft)
+          if any(intersection <= pt for pt in pass_tag_sets):
+            # Intersection is too small, as it also covers a passing tag set.
+            continue
+          if any(intersection <= cft for cft in covered_fail_tag_sets):
+            # Both the intersection and some tag set from new_tag_sets
+            # apply to the same original failing tag set,
+            # which means if we add the intersection to new_tag_sets,
+            # they will conflict on the bot from the original failing tag set.
+            # The above check works because new_tag_sets and
+            # covered_fail_tag_sets are updated together below.
+            continue
+          tag_set_to_add = intersection
         new_tag_sets.add(tag_set_to_add)
+        covered_fail_tag_sets.update(cft for cft in fail_tag_sets
+                                     if tag_set_to_add <= cft)
       if skip_to_next_expectation:
         continue
 

@@ -2029,6 +2029,136 @@ crbug.com/2345 [ mac ] bar/test [ Failure ]
       self.assertEqual(infile.read(), expected_contents)
     self.assertEqual(urls, set(['crbug.com/1234']))
 
+  def testNoOverlapsInNarrowedExpectations(self):
+    """Tests that scope narrowing does not produce overlapping tag sets."""
+    original_contents = """\
+# tags: [ Linux
+#         Mac Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64
+#         Win Win10.20h2 Win11 ]
+# tags: [ Release Debug ]
+# results: [ Failure ]
+
+crbug.com/874695 foo/test [ Failure ]
+"""
+    with open(self.filename, 'w') as outfile:
+      outfile.write(original_contents)
+
+    linux_debug_stats = data_types.BuildStats()
+    linux_debug_stats.AddPassedBuild(frozenset(['debug', 'linux']))
+    linux_release_stats = data_types.BuildStats()
+    linux_release_stats.AddFailedBuild('1', frozenset(['linux', 'release']))
+    mac10_release_stats = data_types.BuildStats()
+    mac10_release_stats.AddFailedBuild(
+        '1', frozenset(['mac', 'mac10.15', 'release']))
+    mac11_arm_release_stats = data_types.BuildStats()
+    mac11_arm_release_stats.AddFailedBuild(
+        '1', frozenset(['mac', 'mac11-arm64', 'release']))
+    mac11_release_stats = data_types.BuildStats()
+    mac11_release_stats.AddFailedBuild('1',
+                                       frozenset(['mac', 'mac11', 'release']))
+    mac12_arm_release_stats = data_types.BuildStats()
+    mac12_arm_release_stats.AddFailedBuild(
+        '1', frozenset(['mac', 'mac12-arm64', 'release']))
+    mac12_debug_stats = data_types.BuildStats()
+    mac12_debug_stats.AddFailedBuild('1', frozenset(['debug', 'mac', 'mac12']))
+    mac12_release_stats = data_types.BuildStats()
+    mac12_release_stats.AddFailedBuild('1',
+                                       frozenset(['mac', 'mac12', 'release']))
+    win10_release_stats = data_types.BuildStats()
+    win10_release_stats.AddFailedBuild(
+        '1', frozenset(['release', 'win', 'win10.20h2']))
+    win11_release_stats = data_types.BuildStats()
+    win11_release_stats.AddFailedBuild('1',
+                                       frozenset(['release', 'win', 'win11']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/test',
+                [], 'Failure', 'crbug.com/874695'):
+            data_types.BuilderStepMap({
+                'Linux Tests (dbg)(1)':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': linux_debug_stats,
+                }),
+                'Mac10.15 Tests':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': mac10_release_stats,
+                }),
+                'mac11-arm64-rel-tests':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': mac11_arm_release_stats,
+                }),
+                'Mac11 Tests':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': mac11_release_stats,
+                }),
+                'mac12-arm64-rel-tests':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': mac12_arm_release_stats,
+                }),
+                'Mac12 Tests (dbg)':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': mac12_debug_stats,
+                }),
+                'Mac12 Tests':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': mac12_release_stats,
+                }),
+                'Linux Tests':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': linux_release_stats,
+                }),
+                'WebKit Win10':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': win10_release_stats,
+                }),
+                'Win11 Tests x64':
+                data_types.StepBuildStatsMap({
+                    'blink_web_tests': win11_release_stats,
+                }),
+            }),
+        }),
+    })
+    # yapf: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    # Python sets are not stable between different processes due to random hash
+    # seeds that are on by default. Since there are two valid ways to simplify
+    # the tags we provided, this means that the test is flaky if we only check
+    # for one due to the non-deterministic order the tags are processed, so
+    # instead, accept either valid output.
+    #
+    # Random hash seeds can be disabled by setting PYTHONHASHSEED, but that
+    # requires that we either ensure that this test is always run with that set
+    # (difficult/error-prone), or we manually set the seed and recreate the
+    # process (hacky). Simply accepting either valid value instead of trying to
+    # force a certain order seems like the better approach.
+    expected_contents1 = """\
+# tags: [ Linux
+#         Mac Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64
+#         Win Win10.20h2 Win11 ]
+# tags: [ Release Debug ]
+# results: [ Failure ]
+
+crbug.com/874695 [ debug mac12 ] foo/test [ Failure ]
+crbug.com/874695 [ release ] foo/test [ Failure ]
+"""
+    expected_contents2 = """\
+# tags: [ Linux
+#         Mac Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64
+#         Win Win10.20h2 Win11 ]
+# tags: [ Release Debug ]
+# results: [ Failure ]
+
+crbug.com/874695 [ linux release ] foo/test [ Failure ]
+crbug.com/874695 [ mac ] foo/test [ Failure ]
+crbug.com/874695 [ release win ] foo/test [ Failure ]
+"""
+    with open(self.filename) as infile:
+      self.assertIn(infile.read(), (expected_contents1, expected_contents2))
+    self.assertEqual(urls, set(['crbug.com/874695']))
+
   def testInlineDisableAnnotation(self) -> None:
     """Tests that narrowing is skipped if inline annotations are present."""
     original_contents = """\
