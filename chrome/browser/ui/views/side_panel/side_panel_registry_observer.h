@@ -13,7 +13,8 @@ class SidePanelRegistry;
 class SidePanelRegistryObserver : public base::CheckedObserver {
  public:
   // Called when a SidePanelEntry is added to the registry.
-  virtual void OnEntryRegistered(SidePanelEntry* entry) {}
+  virtual void OnEntryRegistered(SidePanelRegistry* registry,
+                                 SidePanelEntry* entry) {}
 
   // Called immediately before a SidePanelEntry is being removed from the given
   // registry.

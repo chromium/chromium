@@ -99,12 +99,26 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
                            PopulateUserNoteSidePanel);
 
+  // Unlike Show() which takes in a SidePanelEntry's id or key, this version
+  // should only be used for the rare case when we need to show a particular
+  // entry instead of letting GetEntryForKey() decide for us.
+  void Show(SidePanelEntry* entry,
+            absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
+                absl::nullopt);
+
   views::View* GetContentView() const;
 
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
   // not registered in the currently observed registries. This looks through the
   // active contextual registry first, then the global registry.
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
+
+  SidePanelEntry* GetActiveContextualEntryForKey(
+      const SidePanelEntry::Key& entry_key);
+
+  // Returns whether the global entry with the same key as `entry_key` is
+  // showing.
+  bool IsGlobalEntryShowing(const SidePanelEntry::Key& entry_key) const;
 
   void SetSidePanelButtonTooltipText(std::u16string tooltip_text);
 
@@ -141,8 +155,30 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // delays as the side panel content when there are delays for loading content.
   bool OnComboboxChangeTriggered(size_t index);
 
+  // Sets the entry corresponding to `entry_key` as selected in the combobox.
+  void SetSelectedEntryInCombobox(const SidePanelEntry::Key& entry_key);
+
+  // Determines if the extension's entry in the combobox should be removed when
+  // one of its entries is deregistered. Called from OnEntryWillDeregister().
+  bool ShouldRemoveExtensionFromComboboxOnDeregister(
+      SidePanelRegistry* registry,
+      const SidePanelEntry::Key& entry_key);
+
+  // Finds and shows an appropriate fallback entry or closes the side panel.
+  // Called if the entry being deregistered is an active extension entry in
+  // OnEntryWillDeregister().
+  void OnActiveExtensionEntryWillDeregister(
+      SidePanelRegistry* registry,
+      const SidePanelEntry::Key& entry_key);
+
+  // Returns the new entry to be shown after the active tab has changed, or
+  // nullptr if no suitable entry is found. Called from OnTabStripModelChanged()
+  // when there's an active entry being shown in the side panel.
+  SidePanelEntry* GetNewActiveEntryOnTabChanged();
+
   // SidePanelRegistryObserver:
-  void OnEntryRegistered(SidePanelEntry* entry) override;
+  void OnEntryRegistered(SidePanelRegistry* registry,
+                         SidePanelEntry* entry) override;
   void OnEntryWillDeregister(SidePanelRegistry* registry,
                              SidePanelEntry* entry) override;
   void OnEntryIconUpdated(SidePanelEntry* entry) override;

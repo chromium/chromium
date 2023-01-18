@@ -1020,37 +1020,25 @@ TEST_F(SidePanelCoordinatorTest, ShowGlobalAndContextualExtensionEntries) {
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                     "extension_id");
-  int global_count = 0;
-  int contextual_count = 0;
-  auto increment_count = [](int* count) {
-    (*count)++;
-    return std::make_unique<views::View>();
-  };
-
-  global_registry_->Register(std::make_unique<SidePanelEntry>(
-      extension_key, u"extension",
-      ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
-      base::BindRepeating(increment_count, &global_count)));
-
-  contextual_registries_[0]->Register(std::make_unique<SidePanelEntry>(
-      extension_key, u"extension",
-      ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
-      base::BindRepeating(increment_count, &contextual_count)));
+  global_registry_->Register(CreateEntry(extension_key));
+  contextual_registries_[0]->Register(CreateEntry(extension_key));
 
   coordinator_->Show(extension_key);
-  ASSERT_EQ(1, contextual_count);
-  ASSERT_EQ(0, global_count);
+  EXPECT_EQ(contextual_registries_[0]->GetEntryForKey(extension_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
 
   // Switch to a tab that does not have an extension entry registered for its
   // contextual registry.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
   coordinator_->Show(extension_key);
-  ASSERT_EQ(1, contextual_count);
-  ASSERT_EQ(1, global_count);
+  EXPECT_EQ(global_registry_->GetEntryForKey(extension_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
 }
 
 // Test that the combobox shows the correct number of extension entries when
-// global or contextual entries are registered.
+// global or contextual entries are registered, and that a new contextual
+// extension entry gets shown if it's registered for the active tab and the
+// global extension entry is showing.
 TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   // Make sure the second tab is active.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
@@ -1078,77 +1066,134 @@ TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   global_registry_->Register(CreateEntry(extension_2_key));
   EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_2_key));
 
+  // Show the global entry for `extension_2`.
+  coordinator_->Show(extension_2_key);
+  EXPECT_EQ(global_registry_->GetEntryForKey(extension_2_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+
   // Check that registering an entry on the active tab while the combobox
   // contains an item for the global entry still results in one item for an
   // extension.
   contextual_registries_[1]->Register(CreateEntry(extension_2_key));
   EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_2_key));
+
+  // Since `extension_2`'s global entry was showing when the contextual entry
+  // was registered for the active tab, the contextual entry should be shown
+  // right after registration.
+  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_2_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
 }
 
 // Test that the combobox shows the correct number of extension entries when
-// global or contextual entries are deregistered.
+// global or contextual entries are deregistered, and if it exists, the global
+// extension entry is shown if the active tab's extension entry is deregistered.
 TEST_F(SidePanelCoordinatorTest, DeregisterExtensionEntries) {
   // Make sure the second tab is active.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
-  SidePanelEntry::Key extension_1_key(SidePanelEntry::Id::kExtension,
-                                      "extension_1");
+  SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
+                                    "extension");
   auto* combobox_model = coordinator_->GetComboboxModelForTesting();
 
   // Registers an entry in the global and active contextual registry.
-  auto register_entries = [this, &combobox_model, &extension_1_key]() {
-    contextual_registries_[1]->Register(CreateEntry(extension_1_key));
-    global_registry_->Register(CreateEntry(extension_1_key));
-    EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_1_key));
+  auto register_entries = [this, &combobox_model, &extension_key]() {
+    contextual_registries_[1]->Register(CreateEntry(extension_key));
+    global_registry_->Register(CreateEntry(extension_key));
+    EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_key));
   };
 
   register_entries();
+
+  // The contextual entry should be shown.
+  coordinator_->Show(extension_key);
+  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+
   // If the contextual entry is deregistered while there exists a global entry,
   // an entry should still be shown in the combobox.
-  contextual_registries_[1]->Deregister(extension_1_key);
-  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_1_key));
-  global_registry_->Deregister(extension_1_key);
-  EXPECT_FALSE(combobox_model->HasKey(extension_1_key));
+  contextual_registries_[1]->Deregister(extension_key);
+  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_key));
+  // Since there exists a global entry for the extension, it should be shown
+  // after the contextual entry (that was shown) is deregistered.
+  EXPECT_EQ(global_registry_->GetEntryForKey(extension_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+
+  // The side panel should be closed after the global entry is deregistered.
+  global_registry_->Deregister(extension_key);
+  EXPECT_FALSE(combobox_model->HasKey(extension_key));
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
 
   register_entries();
+  coordinator_->Show(extension_key);
+
   // If the global entry is deregistered while there exists an active contextual
   // entry, an entry should still be shown in the combobox.
-  global_registry_->Deregister(extension_1_key);
-  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_1_key));
-  contextual_registries_[1]->Deregister(extension_1_key);
-  EXPECT_FALSE(combobox_model->HasKey(extension_1_key));
+  global_registry_->Deregister(extension_key);
+  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_key));
+
+  // The contextual entry should still be shown after the global entry is
+  // deregistered.
+  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+
+  contextual_registries_[1]->Deregister(extension_key);
+  EXPECT_FALSE(combobox_model->HasKey(extension_key));
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
 }
 
 // Test that the combobox shows the correct number of extension entries in
-// between tab switches.
+// between tab switches, and that the correct extension entry is shown after
+// each switch.
 TEST_F(SidePanelCoordinatorTest, ExtensionEntriesTabSwitching) {
-  // Make sure the second tab is active.
+  // Show the side search entry on the first tab so the contextual registry for
+  // that tab has an active entry.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator_->Show(SidePanelEntry::Id::kSideSearch);
+
+  // Switch to the second tab.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
-  SidePanelEntry::Key extension_1_key(SidePanelEntry::Id::kExtension,
-                                      "extension_1");
+  SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
+                                    "extension");
   auto* combobox_model = coordinator_->GetComboboxModelForTesting();
 
-  contextual_registries_[1]->Register(CreateEntry(extension_1_key));
-  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_1_key));
+  // Register a contextual extension entry for the second tab and show it.
+  contextual_registries_[1]->Register(CreateEntry(extension_key));
+  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_key));
+  coordinator_->Show(extension_key);
 
   // Switch to the first tab, which does not have an extension entry for its
   // registry.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_FALSE(combobox_model->HasKey(extension_1_key));
+  EXPECT_FALSE(combobox_model->HasKey(extension_key));
 
-  // Register an extension entry to the global registry.
-  global_registry_->Register(CreateEntry(extension_1_key));
-  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_1_key));
+  // Since there's no extension entry in the global registry nor the registry
+  // for the first tab, fall back to showing the last active entry, which is the
+  // side search entry for the first tab.
+  EXPECT_EQ(contextual_registries_[0]->GetEntryForKey(
+                SidePanelEntry::Key(SidePanelEntry::Id::kSideSearch)),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+
+  // Register an extension entry to the global registry and show it.
+  global_registry_->Register(CreateEntry(extension_key));
+  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_key));
+  coordinator_->Show(extension_key);
 
   // Switch back to the second tab. There should be only one extension entry in
   // the combobox, corresponding to the contextual registry's extension entry.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_1_key));
+  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_key));
 
-  // Finally, switch back to the first tab. There should be only one extension
-  // entry in the combobox, corresponding to the global registry's extension
-  // entry.
+  // The extension entry for the second tab should be showing.
+  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
+
+  // Switch back to the first tab. There should be only one extension entry in
+  // the combobox, corresponding to the global registry's extension entry.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_1_key));
+  EXPECT_EQ(1, combobox_model->GetKeyCountForTesting(extension_key));
+
+  // The global extension entry should be showing.
+  EXPECT_EQ(global_registry_->GetEntryForKey(extension_key),
+            coordinator_->GetCurrentSidePanelEntryForTesting());
 }
 
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing

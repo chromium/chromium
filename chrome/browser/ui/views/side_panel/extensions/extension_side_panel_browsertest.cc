@@ -87,7 +87,8 @@ class ExtensionSidePanelRegistryWaiter : public SidePanelRegistryObserver {
 
  private:
   // SidePanelRegistryObserver implementation.
-  void OnEntryRegistered(SidePanelEntry* entry) override {
+  void OnEntryRegistered(SidePanelRegistry* registry,
+                         SidePanelEntry* entry) override {
     if (entry->key() == GetKey(extension_id_)) {
       registration_run_loop_.QuitWhenIdle();
     }

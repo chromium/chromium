@@ -61,7 +61,7 @@ bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
   if (GetEntryForKey(entry->key()))
     return false;
   for (SidePanelRegistryObserver& observer : observers_)
-    observer.OnEntryRegistered(entry.get());
+    observer.OnEntryRegistered(this, entry.get());
   entry->AddObserver(this);
   entries_.push_back(std::move(entry));
   return true;
