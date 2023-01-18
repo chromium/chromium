@@ -126,11 +126,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                    animations:^{
                      self->_dragEnabledConstraint.active = enabled;
                      self->_defaultConstraint.active = !enabled;
+
+                     [self resetCollectionViewBackground];
                      [self.view.superview layoutIfNeeded];
                    }
                    completion:nil];
-
-  [self resetCollectionViewBackground];
 }
 
 - (void)pinnedTabsAvailable:(BOOL)available {
