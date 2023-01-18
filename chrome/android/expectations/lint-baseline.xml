@@ -3990,7 +3990,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: PasswordCheckUserAction.START_CHECK_AUTOMATICALLY, PasswordCheckUserAction.START_CHECK_MANUALLY, PasswordCheckUserAction.CANCEL_CHECK, PasswordCheckUserAction.CHANGE_PASSWORD, PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY, PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY, PasswordCheckUserAction.VIEW_PASSWORD_CLICK, PasswordCheckUserAction.VIEWED_PASSWORD, PasswordCheckUserAction.COPIED_PASSWORD, PasswordCheckUserAction.EDIT_PASSWORD_CLICK, PasswordCheckUserAction.EDITED_PASSWORD, PasswordCheckUserAction.DELETE_PASSWORD_CLICK, PasswordCheckUserAction.DELETED_PASSWORD"
+        message="Must be one of: PasswordCheckUserAction.START_CHECK_AUTOMATICALLY, PasswordCheckUserAction.START_CHECK_MANUALLY, PasswordCheckUserAction.CANCEL_CHECK, PasswordCheckUserAction.CHANGE_PASSWORD, PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY, PasswordCheckUserAction.VIEW_PASSWORD_CLICK, PasswordCheckUserAction.VIEWED_PASSWORD, PasswordCheckUserAction.COPIED_PASSWORD, PasswordCheckUserAction.EDIT_PASSWORD_CLICK, PasswordCheckUserAction.EDITED_PASSWORD, PasswordCheckUserAction.DELETE_PASSWORD_CLICK, PasswordCheckUserAction.DELETED_PASSWORD"
         errorLine1="                userAction, PasswordCheckUserAction.COUNT);"
         errorLine2="                                                    ~~~~~">
         <location
@@ -4001,7 +4001,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: PasswordCheckResolutionAction.OPENED_SITE, PasswordCheckResolutionAction.STARTED_SCRIPT, PasswordCheckResolutionAction.DELETED_PASSWORD, PasswordCheckResolutionAction.EDITED_PASSWORD, PasswordCheckResolutionAction.DID_NOTHING"
+        message="Must be one of: PasswordCheckResolutionAction.OPENED_SITE, PasswordCheckResolutionAction.DELETED_PASSWORD, PasswordCheckResolutionAction.EDITED_PASSWORD, PasswordCheckResolutionAction.DID_NOTHING"
         errorLine1="                PasswordCheckResolutionAction.COUNT);"
         errorLine2="                                              ~~~~~">
         <location

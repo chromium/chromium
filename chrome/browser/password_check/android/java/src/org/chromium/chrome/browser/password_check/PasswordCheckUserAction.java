@@ -15,9 +15,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @IntDef({PasswordCheckUserAction.START_CHECK_AUTOMATICALLY,
         PasswordCheckUserAction.START_CHECK_MANUALLY, PasswordCheckUserAction.CANCEL_CHECK,
-        PasswordCheckUserAction.CHANGE_PASSWORD,
-        PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY,
-        PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY,
+        PasswordCheckUserAction.CHANGE_PASSWORD, PasswordCheckUserAction.CHANGE_PASSWORD_MANUALLY,
         PasswordCheckUserAction.VIEW_PASSWORD_CLICK, PasswordCheckUserAction.VIEWED_PASSWORD,
         PasswordCheckUserAction.COPIED_PASSWORD, PasswordCheckUserAction.EDIT_PASSWORD_CLICK,
         PasswordCheckUserAction.EDITED_PASSWORD, PasswordCheckUserAction.DELETE_PASSWORD_CLICK,
@@ -25,7 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 public @interface PasswordCheckUserAction {
     /**
-     * A check was automatically started when the user entered the password check view.
+     * A check was automatically started when the user entered the password check
+     * view.
      */
     int START_CHECK_AUTOMATICALLY = 0;
     /**
@@ -40,10 +39,12 @@ public @interface PasswordCheckUserAction {
      * The change password button was pressed.
      */
     int CHANGE_PASSWORD = 3;
+
     /**
-     * The automatic change password button was pressed.
+     * Deprecated as a part of APC removal (crbug.com/1386065).
+     * int CHANGE_PASSWORD_AUTOMATICALLY = 4;
      */
-    int CHANGE_PASSWORD_AUTOMATICALLY = 4;
+
     /**
      * The manual change password button was pressed. This is displayed together with the
      * automatic password change button.

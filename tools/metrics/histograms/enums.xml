@@ -77784,7 +77784,8 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PasswordChangeType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Opened a site to change password manually"/>
-  <int value="2" label="Started an automated password change flow"/>
+  <int value="2"
+      label="(DEPRECATED IN M111) Started an automated password change flow"/>
 </enum>
 
 <enum name="PasswordCheckInteraction">
@@ -77818,7 +77819,8 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="PasswordCheckResolutionAction">
   <int value="0" label="Opened a site to change password manually"/>
-  <int value="1" label="Started an automated password change flow"/>
+  <int value="1"
+      label="(DEPRECATED IN M111) Started an automated password change flow"/>
   <int value="2" label="Removed a password"/>
   <int value="3" label="Edited a password"/>
   <int value="4" label="Did nothing"/>
@@ -77829,7 +77831,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Start check manually"/>
   <int value="2" label="Cancel check"/>
   <int value="3" label="Change password"/>
-  <int value="4" label="Change password automatically"/>
+  <int value="4" label="(DEPRECATED IN M111) Change password automatically"/>
   <int value="5" label="Change password manually"/>
   <int value="6" label="View password click"/>
   <int value="7" label="Viewed password"/>
