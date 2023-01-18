@@ -14,7 +14,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
@@ -63,10 +62,14 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.BooleanSupplier;
 
 /**
  * CustomTabHeightStrategy for Partial Custom Tab. An instance of this class should be
- * owned by the CustomTabActivity.
+ * owned by the CustomTabActivity. Refer to
+ * {@link
+ * https://docs.google.com/document/d/1YuFXHai2JECqAPE_HgamcKid3VTR05GAvJcyb4jaL6o/edit?usp=sharing}
+ * for detailed inner workings and issues addressed along the way.
  */
 public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         implements ConfigurationChangedObserver, ValueAnimator.AnimatorUpdateListener,
@@ -121,7 +124,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final @Px int mUnclampedInitialHeight;
     private final FullscreenManager mFullscreenManager;
     private final boolean mAlwaysShowNavbarButtons;
-    private final Rect mFullscreenRestoreRect = new Rect();
 
     private static boolean sHasLoggedImmersiveModeConfirmationSetting;
 
@@ -131,6 +133,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private TabAnimator mTabAnimator;
     private int mShadowOffset;
     private boolean mDrawOutlineShadow;
+    private BooleanSupplier mIsFullscreen;
 
     // ContentFrame + CoordinatorLayout - CompositorViewHolder
     //              + NavigationBar
@@ -248,6 +251,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mPositionUpdater = mVersionCompat::updatePosition;
 
         fullscreenManager.addObserver(this);
+        mIsFullscreen = fullscreenManager::getPersistentFullscreenMode;
         mIsTablet = isTablet;
         mHeight = MATCH_PARENT;
         mWidth = MATCH_PARENT;
@@ -536,7 +540,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private void positionAtHeight(int height) {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        if (isFullHeight()) {
+        if (isFullHeight() || isFullscreen()) {
             attrs.height = MATCH_PARENT;
             attrs.y = 0;
         } else {
@@ -604,9 +608,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private boolean isFullscreen() {
-        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        return attrs.x == 0 && attrs.y == 0 && attrs.width == MATCH_PARENT
-                && attrs.height == MATCH_PARENT;
+        return mIsFullscreen.getAsBoolean();
     }
 
     private boolean canInteractWithBackground() {
@@ -923,40 +925,35 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-        if (isFullscreen()) return;
-        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        mFullscreenRestoreRect.set(attrs.x, attrs.y, attrs.width, attrs.height);
-        attrs.x = 0;
-        attrs.y = 0;
-        attrs.width = MATCH_PARENT;
-        attrs.height = MATCH_PARENT;
-        mActivity.getWindow().setAttributes(attrs);
+        // Enter fullscreen i.e. (x, y, height, width) = (0, 0, MATCH_PARENT, MATCH_PARENT)
+        assert isFullscreen() : "Fullscreen mode should be on";
+        positionAtHeight(/*height=*/0); // |height| is not used
         setTopMargins(0, 0);
         maybeInvokeResizeCallback();
     }
 
     @Override
     public void onExitFullscreen(Tab tab) {
-        if (!isFullscreen()) return;
-        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        attrs.x = mFullscreenRestoreRect.left;
-        attrs.y = mFullscreenRestoreRect.top;
-        attrs.width = mFullscreenRestoreRect.right;
-        attrs.height = mFullscreenRestoreRect.bottom;
-        mActivity.getWindow().setAttributes(attrs);
+        // System UI (navigation/status bar) dimensions still remain zero at this point.
+        // For the restoring job that needs these values, we wait till they get reported
+        // correctly by posting the task instead of executing them right away.
+        new Handler().post(this::restoreWindow);
+    }
+
+    // Restore the window upon exiting fullscreen.
+    private void restoreWindow() {
+        initializeHeight();
         updateShadowOffset();
         maybeInvokeResizeCallback();
 
         // Status/navigation bar are not restored on T+. This makes host app visible
         // at the area. To work around this, simulate user dragging the tab by 1 pixel
         // upon exiting fullscreen.
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
-            int startY = attrs.y;
-            new Handler().post(() -> {
-                onDragStart(startY);
-                onDragMove(startY + 1);
-                onDragEnd(0);
-            });
+        if (!isFullHeight() && Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
+            int startY = mActivity.getWindow().getAttributes().y;
+            onDragStart(startY);
+            onDragMove(startY + 1);
+            onDragEnd(0);
         }
     }
 
@@ -1014,6 +1011,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         @Override
         public void onCancelled(WindowInsetsAnimationControllerCompat controller) {}
+    }
+
+    @VisibleForTesting
+    void setFullscreenSupplierForTesting(BooleanSupplier fullscreen) {
+        mIsFullscreen = fullscreen;
     }
 
     // Wrapper around Animator class, also holding the information to use after the animation ends.
