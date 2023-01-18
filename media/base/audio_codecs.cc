@@ -88,10 +88,6 @@ AudioCodec StringToAudioCodec(const std::string& codec_id) {
     return AudioCodec::kOpus;
   if (codec_id == "vorbis")
     return AudioCodec::kVorbis;
-  if (codec_id == "dtsc")
-    return AudioCodec::kDTS;
-  if (codec_id == "dtsx")
-    return AudioCodec::kDTSXP2;
   if (base::StartsWith(codec_id, "mp4a.40.", base::CompareCase::SENSITIVE))
     return AudioCodec::kAAC;
   return AudioCodec::kUnknown;
