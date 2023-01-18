@@ -77,7 +77,11 @@ class NearbyShareDeviceNameDialogElement extends
     getNearbyShareSettings()
         .validateDeviceName(this.getEditInputValue_())
         .then((result) => {
-          this.updateErrorMessage_(result.result);
+          // TODO(b/263413628) Temporarily typecast until nearby share page
+          // uses Mojo WebUI bindings
+          this.updateErrorMessage_(
+              /** @type {nearbyShare.mojom.DeviceNameValidationResult} */ (
+                  result.result));
         });
   }
 
@@ -91,7 +95,11 @@ class NearbyShareDeviceNameDialogElement extends
     getNearbyShareSettings()
         .setDeviceName(this.getEditInputValue_())
         .then((result) => {
-          this.updateErrorMessage_(result.result);
+          // TODO(b/263413628) Temporarily typecast until nearby share page
+          // uses Mojo WebUI bindings
+          this.updateErrorMessage_(
+              /** @type {nearbyShare.mojom.DeviceNameValidationResult} */ (
+                  result.result));
           if (result.result ===
               nearbyShare.mojom.DeviceNameValidationResult.kValid) {
             this.close();

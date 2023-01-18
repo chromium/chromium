@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './nearby_shared_icons.html.js';
 import './nearby_device_icon.js';
 
+import {ShareTarget} from '/mojo/nearby_share.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_device.html.js';
@@ -32,7 +33,7 @@ export class NearbyDeviceElement extends PolymerElement {
       /**
        * Expected to start as null, then change to a valid object before this
        * component is shown.
-       * @type {?nearbyShare.mojom.ShareTarget}
+       * @type {?ShareTarget}
        */
       shareTarget: {
         type: Object,

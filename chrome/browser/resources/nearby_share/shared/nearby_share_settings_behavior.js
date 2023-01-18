@@ -7,17 +7,18 @@
  * mojo to get values and keeps them in sync by observing for changes
  */
 
+import {DataUsage, FastInitiationNotificationState, NearbyShareSettingsInterface, NearbyShareSettingsObserverInterface, NearbyShareSettingsObserverReceiver, NearbyShareSettingsRemote, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+
 import {getNearbyShareSettings, observeNearbyShareSettings} from './nearby_share_settings.js';
 
 /**
  * @typedef {{
  *            enabled:boolean,
- *            fastInitiationNotificationState:
- *                nearbyShare.mojom.FastInitiationNotificationState,
+ *            fastInitiationNotificationState: FastInitiationNotificationState,
  *            isFastInitiationHardwareSupported:boolean,
  *            deviceName:string,
- *            dataUsage:nearbyShare.mojom.DataUsage,
- *            visibility:nearbyShare.mojom.Visibility,
+ *            dataUsage:DataUsage,
+ *            visibility:Visibility,
  *            allowedContacts:Array<string>,
  *            isOnboardingComplete:boolean,
  *          }}
@@ -37,16 +38,16 @@ export const NearbyShareSettingsBehavior = {
 
   observers: ['settingsChanged_(settings.*)'],
 
-  /** @private {?nearbyShare.mojom.NearbyShareSettingsInterface} */
+  /** @private {?NearbyShareSettingsInterface} */
   nearbyShareSettings_: null,
 
-  /** @private {?nearbyShare.mojom.NearbyShareSettingsObserverReceiver} */
+  /** @private {?NearbyShareSettingsObserverReceiver} */
   observerReceiver_: null,
 
   attached() {
     this.nearbyShareSettings_ = getNearbyShareSettings();
     this.observerReceiver_ = observeNearbyShareSettings(
-        /** @type {!nearbyShare.mojom.NearbyShareSettingsObserverInterface} */
+        /** @type {!NearbyShareSettingsObserverInterface} */
         (this));
     // Request the initial values and trigger onSettingsRetrieved when they
     // are all retrieved.
@@ -82,7 +83,7 @@ export const NearbyShareSettingsBehavior = {
       this.observerReceiver_.$.close();
     }
     if (this.nearbyShareSettings_) {
-      /** @type {nearbyShare.mojom.NearbyShareSettingsRemote} */
+      /** @type {NearbyShareSettingsRemote} */
       (this.nearbyShareSettings_).$.close();
     }
   },
@@ -102,7 +103,7 @@ export const NearbyShareSettingsBehavior = {
   },
 
   /**
-   * @param {!nearbyShare.mojom.FastInitiationNotificationState} state
+   * @param {!FastInitiationNotificationState} state
    */
   onFastInitiationNotificationStateChanged(state) {
     this.set('settings.fastInitiationNotificationState', state);
@@ -116,14 +117,14 @@ export const NearbyShareSettingsBehavior = {
   },
 
   /**
-   * @param {!nearbyShare.mojom.DataUsage} dataUsage
+   * @param {!DataUsage} dataUsage
    */
   onDataUsageChanged(dataUsage) {
     this.set('settings.dataUsage', dataUsage);
   },
 
   /**
-   * @param {!nearbyShare.mojom.Visibility} visibility
+   * @param {!Visibility} visibility
    */
   onVisibilityChanged(visibility) {
     this.set('settings.visibility', visibility);

@@ -9,8 +9,9 @@ import './nearby_confirmation_page.js';
 import './nearby_discovery_page.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
+import {ConfirmationManagerInterface, PayloadPreview, ShareTarget, TransferUpdateListenerPendingReceiver} from '/mojo/nearby_share.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {NearbyShareSettingsBehavior, NearbyShareSettingsBehaviorInterface} from './shared/nearby_share_settings_behavior.js';
@@ -60,7 +61,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
       /**
        * Set by the nearby-discovery-page component when switching to the
        * nearby-confirmation-page.
-       * @private {?nearbyShare.mojom.ConfirmationManagerInterface}
+       * @private {?ConfirmationManagerInterface}
        */
       confirmationManager_: {
         type: Object,
@@ -70,7 +71,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
       /**
        * Set by the nearby-discovery-page component when switching to the
        * nearby-confirmation-page.
-       * @private {?nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
+       * @private {?TransferUpdateListenerPendingReceiver}
        */
       transferUpdateListener_: {
         type: Object,
@@ -80,7 +81,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
       /**
        * The currently selected share target set by the nearby-discovery-page
        * component when the user selects a device.
-       * @private {?nearbyShare.mojom.ShareTarget}
+       * @private {?ShareTarget}
        */
       selectedShareTarget_: {
         type: Object,
@@ -90,7 +91,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
       /**
        * Preview info of attachment to be sent, set by the
        * nearby-discovery-page.
-       * @private {?nearbyShare.mojom.PayloadPreview}
+       * @private {?PayloadPreview}
        */
       payloadPreview_: {
         type: Object,

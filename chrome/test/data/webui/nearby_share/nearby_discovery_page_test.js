@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// So that mojo is defined.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://nearby/nearby_discovery_page.js';
 
 import {setDiscoveryManagerForTesting} from 'chrome://nearby/discovery_manager.js';
+import {SelectShareTargetResult, ShareTarget, ShareTargetListenerRemote, StartDiscoveryResult} from 'chrome://nearby/mojo/nearby_share.mojom-webui.js';
+import {ShareType} from 'chrome://nearby/mojo/nearby_share_share_type.mojom-webui.js';
 import {NearbyDiscoveryPageElement} from 'chrome://nearby/nearby_discovery_page.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,8 +32,8 @@ suite('DiscoveryPageTest', function() {
 
   /**
    * Compares two unguessable tokens.
-   * @param {!mojoBase.mojom.UnguessableToken} a
-   * @param {!mojoBase.mojom.UnguessableToken} b
+   * @param {!UnguessableToken} a
+   * @param {!UnguessableToken} b
    */
   function assertTokensEqual(a, b) {
     assertEquals(a.high, b.high);
@@ -39,8 +42,8 @@ suite('DiscoveryPageTest', function() {
 
   /**
    * Compares two share targets.
-   * @param {?nearbyShare.mojom.ShareTarget} a
-   * @param {?nearbyShare.mojom.ShareTarget} b
+   * @param {?ShareTarget} a
+   * @param {?ShareTarget} b
    */
   function assertShareTargetsEqual(a, b) {
     assertTrue(!!a);
@@ -193,20 +196,20 @@ suite('DiscoveryPageTest', function() {
 
   /**
    * @param {!string} name Device name
-   * @return {!nearbyShare.mojom.ShareTarget}
+   * @return {!ShareTarget}
    */
   function createShareTarget(name) {
     return {
       id: {high: BigInt(0), low: BigInt(nextId++)},
       name,
-      type: nearbyShare.mojom.ShareTargetType.kPhone,
+      type: ShareTargetType.kPhone,
       imageUrl: {
         url: 'testImageURL',
       },
       payloadPreview: {
         description: '',
         fileCount: 0,
-        shareType: /** @type {!nearbyShare.mojom.ShareType} */ (0),
+        shareType: /** @type {!ShareType} */ (0),
       },
     };
   }
@@ -221,7 +224,7 @@ suite('DiscoveryPageTest', function() {
 
   /**
    * Starts discovery and returns the ShareTargetListenerRemote.
-   * @return {!Promise<nearbyShare.mojom.ShareTargetListenerRemote>}
+   * @return {!Promise<ShareTargetListenerRemote>}
    */
   async function startDiscovery() {
     fireViewEnterStart();
@@ -230,7 +233,7 @@ suite('DiscoveryPageTest', function() {
 
   /**
    * Creates a share target and sends it to the WebUI.
-   * @return {!Promise<nearbyShare.mojom.ShareTarget>}
+   * @return {!Promise<ShareTarget>}
    */
   async function setupShareTarget() {
     const listener = await startDiscovery();
@@ -268,8 +271,7 @@ suite('DiscoveryPageTest', function() {
   });
 
   test('error state with generic error', async function() {
-    discoveryManager.startDiscoveryResult =
-        nearbyShare.mojom.StartDiscoveryResult.kErrorGeneric;
+    discoveryManager.startDiscoveryResult = StartDiscoveryResult.kErrorGeneric;
     await startDiscovery();
     flush();
 
@@ -282,7 +284,7 @@ suite('DiscoveryPageTest', function() {
 
   test('error state with in progress transfer', async function() {
     discoveryManager.startDiscoveryResult =
-        nearbyShare.mojom.StartDiscoveryResult.kErrorInProgressTransferring;
+        StartDiscoveryResult.kErrorInProgressTransferring;
     await startDiscovery();
     flush();
 
@@ -296,7 +298,7 @@ suite('DiscoveryPageTest', function() {
 
   test('error state with unavailable connections error', async function() {
     discoveryManager.startDiscoveryResult =
-        nearbyShare.mojom.StartDiscoveryResult.kNoConnectionMedium;
+        StartDiscoveryResult.kNoConnectionMedium;
     await startDiscovery();
     flush();
 
@@ -319,7 +321,7 @@ suite('DiscoveryPageTest', function() {
   test('selects share target with error', async function() {
     discoveryPageElement.selectedShareTarget = await setupShareTarget();
     discoveryManager.selectShareTargetResult.result =
-        nearbyShare.mojom.SelectShareTargetResult.kError;
+        SelectShareTargetResult.kError;
 
     getButton('#actionButton').click();
     await discoveryManager.whenCalled('selectShareTarget');

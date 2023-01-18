@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import '/mojo/nearby_share_settings.mojom-lite.js';
+import {NearbyShareSettings, NearbyShareSettingsInterface, NearbyShareSettingsObserverInterface, NearbyShareSettingsObserverReceiver, NearbyShareSettingsObserverRemote} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
-/** @type {?nearbyShare.mojom.NearbyShareSettingsInterface} */
+/** @type {?NearbyShareSettingsInterface} */
 let nearbyShareSettings = null;
 
 /** @type {boolean} */
 let isTesting = false;
 
 /**
- * @param {!nearbyShare.mojom.NearbyShareSettingsInterface}
- *     testNearbyShareSettings A test nearby share settings impl.
+ * @param {!NearbyShareSettingsInterface} testNearbyShareSettings
  */
 export function setNearbyShareSettingsForTesting(testNearbyShareSettings) {
   nearbyShareSettings = testNearbyShareSettings;
@@ -22,31 +19,27 @@ export function setNearbyShareSettingsForTesting(testNearbyShareSettings) {
 }
 
 /**
- * @return {!nearbyShare.mojom.NearbyShareSettingsInterface}
- *     the Nearby Share settings interface
+ * @return {!NearbyShareSettingsInterface} the Nearby Share settings interface
  */
 export function getNearbyShareSettings() {
   if (!nearbyShareSettings) {
-    nearbyShareSettings = nearbyShare.mojom.NearbyShareSettings.getRemote();
+    nearbyShareSettings = NearbyShareSettings.getRemote();
   }
   return nearbyShareSettings;
 }
 
 /**
- * @param {!nearbyShare.mojom.NearbyShareSettingsObserverInterface} observer
- * @return {?nearbyShare.mojom.NearbyShareSettingsObserverReceiver} the mojo
- *     receiver.
+ * @param {!NearbyShareSettingsObserverInterface} observer
+ * @return {?NearbyShareSettingsObserverReceiver} the mojo receiver.
  */
 export function observeNearbyShareSettings(observer) {
   if (isTesting) {
     getNearbyShareSettings().addSettingsObserver(
-        /** @type {!nearbyShare.mojom.NearbyShareSettingsObserverRemote} */ (
-            observer));
+        /** @type {!NearbyShareSettingsObserverRemote} */ (observer));
     return null;
   }
 
-  const receiver =
-      new nearbyShare.mojom.NearbyShareSettingsObserverReceiver(observer);
+  const receiver = new NearbyShareSettingsObserverReceiver(observer);
   getNearbyShareSettings().addSettingsObserver(
       receiver.$.bindNewPipeAndPassRemote());
   return receiver;

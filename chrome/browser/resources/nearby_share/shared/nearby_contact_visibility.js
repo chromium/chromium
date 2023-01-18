@@ -22,7 +22,8 @@ import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js'
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ContactManagerInterface, ContactRecord, DownloadContactsObserverInterface, DownloadContactsObserverReceiver, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getContactManager, observeContactManager} from './nearby_contact_manager.js';
 import {getTemplate} from './nearby_contact_visibility.html.js';
@@ -39,16 +40,16 @@ const ContactsState = {
 /**
  * Maps visibility string to the mojo enum
  * @param {?string} visibilityString
- * @return {?nearbyShare.mojom.Visibility}
+ * @return {?Visibility}
  */
 const visibilityStringToValue = function(visibilityString) {
   switch (visibilityString) {
     case 'all':
-      return nearbyShare.mojom.Visibility.kAllContacts;
+      return Visibility.kAllContacts;
     case 'some':
-      return nearbyShare.mojom.Visibility.kSelectedContacts;
+      return Visibility.kSelectedContacts;
     case 'none':
-      return nearbyShare.mojom.Visibility.kNoOne;
+      return Visibility.kNoOne;
     default:
       return null;
   }
@@ -56,16 +57,16 @@ const visibilityStringToValue = function(visibilityString) {
 
 /**
  * Maps visibility mojo enum to a string for the radio button selection
- * @param {?nearbyShare.mojom.Visibility} visibility
+ * @param {?Visibility} visibility
  * @return {?string}
  */
 const visibilityValueToString = function(visibility) {
   switch (visibility) {
-    case nearbyShare.mojom.Visibility.kAllContacts:
+    case Visibility.kAllContacts:
       return 'all';
-    case nearbyShare.mojom.Visibility.kSelectedContacts:
+    case Visibility.kSelectedContacts:
       return 'some';
-    case nearbyShare.mojom.Visibility.kNoOne:
+    case Visibility.kNoOne:
       return 'none';
     default:
       return null;
@@ -191,10 +192,10 @@ export class NearbyContactVisibilityElement extends
 
   constructor() {
     super();
-    /** @private {?nearbyShare.mojom.ContactManagerInterface} */
+    /** @private {?ContactManagerInterface} */
     this.contactManager_ = null;
 
-    /** @private {?nearbyShare.mojom.DownloadContactsObserverReceiver} */
+    /** @private {?DownloadContactsObserverReceiver} */
     this.downloadContactsObserverReceiver_ = null;
 
     /** @private {?number} */
@@ -207,8 +208,7 @@ export class NearbyContactVisibilityElement extends
 
     this.contactManager_ = getContactManager();
     this.downloadContactsObserverReceiver_ = observeContactManager(
-        /** @type {!nearbyShare.mojom.DownloadContactsObserverInterface} */ (
-            this));
+        /** @type {!DownloadContactsObserverInterface} */ (this));
     // Start a contacts download now so we have it by the time the component is
     // shown.
     this.downloadContacts_();
@@ -264,7 +264,7 @@ export class NearbyContactVisibilityElement extends
 
   /**
    * @param {boolean} allowed
-   * @param {!nearbyShare.mojom.ContactRecord} contactRecord
+   * @param {!ContactRecord} contactRecord
    * @return {!NearbyVisibilityContact}
    * @private
    */
@@ -286,13 +286,13 @@ export class NearbyContactVisibilityElement extends
   }
 
   /**
-   * From nearbyShare.mojom.DownloadContactsObserver, called when contacts have
+   * From DownloadContactsObserver, called when contacts have
    * been successfully downloaded.
    * @param {!Array<!string>} allowedContacts the server ids of the contacts
    *     that are allowed to see this device when visibility is
    *     kSelectedContacts. This corresponds to the checkbox shown next to the
    *     contact for kSelectedContacts visibility.
-   * @param {!Array<!nearbyShare.mojom.ContactRecord>} contactRecords the full
+   * @param {!Array<!ContactRecord>} contactRecords the full
    *     set of contacts returned from the people api. All contacts are shown to
    *     the user so they can see who can see their device for visibility
    *     kAllContacts and so they can choose which contacts are
@@ -321,7 +321,7 @@ export class NearbyContactVisibilityElement extends
   }
 
   /**
-   * From nearbyShare.mojom.DownloadContactsObserver, called when contacts have
+   * From DownloadContactsObserver, called when contacts have
    * failed to download or the local timeout has triggered.
    */
   onContactsDownloadFailed() {
@@ -611,11 +611,11 @@ export class NearbyContactVisibilityElement extends
    */
   getVisibilityDescription_(selectedVisibility) {
     switch (visibilityStringToValue(selectedVisibility)) {
-      case nearbyShare.mojom.Visibility.kAllContacts:
+      case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityOwnAll');
-      case nearbyShare.mojom.Visibility.kSelectedContacts:
+      case Visibility.kSelectedContacts:
         return this.i18n('nearbyShareContactVisibilityOwnSome');
-      case nearbyShare.mojom.Visibility.kNoOne:
+      case Visibility.kNoOne:
         return this.i18nAdvanced('nearbyShareContactVisibilityOwnNone');
       default:
         return '';
@@ -646,9 +646,7 @@ export class NearbyContactVisibilityElement extends
   /**
    * Return the selected visibility as a enum to nearby_visibiity_page when
    * logging metric to avoid potential race condition
-   *
-   * @return {?nearbyShare.mojom.Visibility}
-   *
+   * @return {?Visibility}
    * @public
    */
   getSelectedVisibility() {

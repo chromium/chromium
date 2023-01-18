@@ -5,33 +5,35 @@
 /**
  * @fileoverview Fake implementation of NearbyShareSettings for testing.
  */
+
+import {DataUsage, DeviceNameValidationResult, FastInitiationNotificationState, NearbyShareSettingsInterface, NearbyShareSettingsObserverInterface, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+
 /**
- * Fake implementation of nearbyShare.mojom.NearbyShareSettingsInterface
+ * Fake implementation of NearbyShareSettingsInterface
  *
- * @implements {nearbyShare.mojom.NearbyShareSettingsInterface}
+ * @implements {NearbyShareSettingsInterface}
  */
 export class FakeNearbyShareSettings {
   constructor() {
     /** @private {!boolean} */
     this.enabled_ = true;
-    /** @private {!nearbyShare.mojom.FastInitiationNotificationState} */
+    /** @private {!FastInitiationNotificationState} */
     this.fastInitiationNotificationState_ =
-        nearbyShare.mojom.FastInitiationNotificationState.kEnabled;
+        FastInitiationNotificationState.kEnabled;
     /** @private {!boolean} */
     this.isFastInitiationHardwareSupported_ = true;
     /** @private {!string} */
     this.deviceName_ = 'testDevice';
-    /** @private {!nearbyShare.mojom.DataUsage} */
-    this.dataUsage_ = nearbyShare.mojom.DataUsage.kOnline;
-    /** @private {!nearbyShare.mojom.Visibility} */
-    this.visibility_ = nearbyShare.mojom.Visibility.kAllContacts;
+    /** @private {!DataUsage} */
+    this.dataUsage_ = DataUsage.kOnline;
+    /** @private {!Visibility} */
+    this.visibility_ = Visibility.kAllContacts;
     /** @private {!Array<!string>} */
     this.allowedContacts_ = [];
-    /** @private {!nearbyShare.mojom.NearbyShareSettingsObserverInterface} */
+    /** @private {!NearbyShareSettingsObserverInterface} */
     this.observer_;
-    /** @private {!nearbyShare.mojom.DeviceNameValidationResult} */
-    this.nextDeviceNameResult_ =
-        nearbyShare.mojom.DeviceNameValidationResult.kValid;
+    /** @private {!DeviceNameValidationResult} */
+    this.nextDeviceNameResult_ = DeviceNameValidationResult.kValid;
     /** @private {!boolean} */
     this.isOnboardingComplete_ = false;
     /** @private {Object} */
@@ -41,7 +43,7 @@ export class FakeNearbyShareSettings {
   }
 
   /**
-   * @param { !nearbyShare.mojom.NearbyShareSettingsObserverInterface }
+   * @param { !NearbyShareSettingsObserverInterface }
    *     observer
    */
   addSettingsObserver(observer) {
@@ -50,7 +52,7 @@ export class FakeNearbyShareSettings {
   }
 
   /**
-   * @param { !nearbyShare.mojom.DeviceNameValidationResult } result
+   * @param { !DeviceNameValidationResult } result
    */
   setNextDeviceNameResult(result) {
     // Set the next result to be used when calling ValidateDeviceName() or
@@ -74,7 +76,7 @@ export class FakeNearbyShareSettings {
 
   /**
    * @return {!Promise<{state:
-   *     !nearbyShare.mojom.FastInitiationNotificationState}>}
+   *     !FastInitiationNotificationState}>}
    */
   async getFastInitiationNotificationState() {
     return {state: this.fastInitiationNotificationState_};
@@ -91,7 +93,7 @@ export class FakeNearbyShareSettings {
   }
 
   /**
-   * @param { !nearbyShare.mojom.FastInitiationNotificationState } state
+   * @param { !FastInitiationNotificationState } state
    */
   setFastInitiationNotificationState(state) {
     this.fastInitiationNotificationState_ = state;
@@ -117,7 +119,7 @@ export class FakeNearbyShareSettings {
   /**
    * @param { !string } deviceName
    * @return {!Promise<{
-        result: !nearbyShare.mojom.DeviceNameValidationResult,
+        result: !DeviceNameValidationResult,
    *  }>}
    */
   async validateDeviceName(deviceName) {
@@ -127,12 +129,11 @@ export class FakeNearbyShareSettings {
   /**
    * @param { !string } deviceName
    * @return {!Promise<{
-        result: !nearbyShare.mojom.DeviceNameValidationResult,
+        result: !DeviceNameValidationResult,
    *  }>}
    */
   async setDeviceName(deviceName) {
-    if (this.nextDeviceNameResult_ !==
-        nearbyShare.mojom.DeviceNameValidationResult.kValid) {
+    if (this.nextDeviceNameResult_ !== DeviceNameValidationResult.kValid) {
       return {result: this.nextDeviceNameResult_};
     }
 
@@ -145,14 +146,14 @@ export class FakeNearbyShareSettings {
   }
 
   /**
-   * @return {!Promise<{dataUsage: !nearbyShare.mojom.DataUsage}>}
+   * @return {!Promise<{dataUsage: !DataUsage}>}
    */
   async getDataUsage() {
     return {dataUsage: this.dataUsage_};
   }
 
   /**
-   * @param { !nearbyShare.mojom.DataUsage } dataUsage
+   * @param { !DataUsage } dataUsage
    */
   setDataUsage(dataUsage) {
     this.dataUsage_ = dataUsage;
@@ -162,14 +163,14 @@ export class FakeNearbyShareSettings {
   }
 
   /**
-   * @return {!Promise<{visibility: !nearbyShare.mojom.Visibility}>}
+   * @return {!Promise<{visibility: !Visibility}>}
    */
   async getVisibility() {
     return {visibility: this.visibility_};
   }
 
   /**
-   * @param { !nearbyShare.mojom.Visibility } visibility
+   * @param { !Visibility } visibility
    */
   setVisibility(visibility) {
     this.visibility_ = visibility;

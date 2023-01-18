@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // So that mojo is defined.
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://nearby/nearby_confirmation_page.js';
 
+import {ShareTarget, TransferStatus} from 'chrome://nearby/mojo/nearby_share.mojom-webui.js';
+import {ShareType} from 'chrome://nearby/mojo/nearby_share_share_type.mojom-webui.js';
 import {NearbyConfirmationPageElement} from 'chrome://nearby/nearby_confirmation_page.js';
+import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chromeos/chai_assert.js';
 
@@ -51,7 +53,7 @@ suite('ConfirmatonPageTest', function() {
 
   test('calls accept on click', async function() {
     transferUpdateListener.remote_.onTransferUpdate(
-        nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation,
+        TransferStatus.kAwaitingLocalConfirmation,
         /*token=*/ null);
     await transferUpdateListener.remote_.$.flushForTesting();
 
@@ -61,7 +63,7 @@ suite('ConfirmatonPageTest', function() {
 
   test('calls reject on click', async function() {
     transferUpdateListener.remote_.onTransferUpdate(
-        nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation,
+        TransferStatus.kAwaitingLocalConfirmation,
         /*token=*/ null);
     await transferUpdateListener.remote_.$.flushForTesting();
 
@@ -71,7 +73,7 @@ suite('ConfirmatonPageTest', function() {
 
   test('calls cancel on click', async function() {
     transferUpdateListener.remote_.onTransferUpdate(
-        nearbyShare.mojom.TransferStatus.kAwaitingRemoteAcceptance,
+        TransferStatus.kAwaitingRemoteAcceptance,
         /*token=*/ null);
     await transferUpdateListener.remote_.$.flushForTesting();
 
@@ -82,7 +84,7 @@ suite('ConfirmatonPageTest', function() {
   test('renders confirmation token', async function() {
     const token = 'TestToken1234';
     transferUpdateListener.remote_.onTransferUpdate(
-        nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation, token);
+        TransferStatus.kAwaitingLocalConfirmation, token);
     await transferUpdateListener.remote_.$.flushForTesting();
 
     const renderedToken =
@@ -94,10 +96,10 @@ suite('ConfirmatonPageTest', function() {
   test('renders share target name', function() {
     const name = 'Device Name';
     confirmationPageElement.shareTarget =
-        /** @type {!nearbyShare.mojom.ShareTarget} */ ({
+        /** @type {!ShareTarget} */ ({
           id: {high: BigInt(0), low: BigInt(0)},
           name,
-          type: nearbyShare.mojom.ShareTargetType.kPhone,
+          type: ShareTargetType.kPhone,
           imageUrl: {
             url: 'testImageURL',
           },
@@ -115,7 +117,7 @@ suite('ConfirmatonPageTest', function() {
     confirmationPageElement.payloadPreview = {
       description: title,
       fileCount: 1,
-      shareType: nearbyShare.mojom.ShareType.kUnknownFile,
+      shareType: ShareType.kUnknownFile,
     };
     const renderedTitle =
         confirmationPageElement.shadowRoot.querySelector('nearby-preview')
@@ -127,7 +129,7 @@ suite('ConfirmatonPageTest', function() {
   test('renders progress bar', async function() {
     const token = 'TestToken1234';
     transferUpdateListener.remote_.onTransferUpdate(
-        nearbyShare.mojom.TransferStatus.kInProgress, token);
+        TransferStatus.kInProgress, token);
     await transferUpdateListener.remote_.$.flushForTesting();
 
     const isAnimationHidden =
@@ -143,7 +145,7 @@ suite('ConfirmatonPageTest', function() {
   test('renders error', async function() {
     const token = 'TestToken1234';
     transferUpdateListener.remote_.onTransferUpdate(
-        nearbyShare.mojom.TransferStatus.kRejected, token);
+        TransferStatus.kRejected, token);
     await transferUpdateListener.remote_.$.flushForTesting();
 
     const errorTitle =
@@ -155,7 +157,7 @@ suite('ConfirmatonPageTest', function() {
   test('hide progress bar when error', async function() {
     const token = 'TestToken1234';
     transferUpdateListener.remote_.onTransferUpdate(
-        nearbyShare.mojom.TransferStatus.kRejected, token);
+        TransferStatus.kRejected, token);
     await transferUpdateListener.remote_.$.flushForTesting();
 
     const isAnimationHidden =
@@ -186,12 +188,12 @@ suite('ConfirmatonPageTest', function() {
     };
 
     let key;
-    for (key of Object.keys(nearbyShare.mojom.TransferStatus)) {
+    for (key of Object.keys(TransferStatus)) {
       const isErrorState = !(key in nonErrorStates);
       const token = 'TestToken1234';
       if (isErrorState) {
         transferUpdateListener.remote_.onTransferUpdate(
-            nearbyShare.mojom.TransferStatus[key], token);
+            TransferStatus[key], token);
         await transferUpdateListener.remote_.$.flushForTesting();
 
         assertTrue(
@@ -202,7 +204,7 @@ suite('ConfirmatonPageTest', function() {
         confirmationPageElement.set('errorTitle_', null);
         confirmationPageElement.set('errorDescription_', null);
         transferUpdateListener.remote_.onTransferUpdate(
-            nearbyShare.mojom.TransferStatus.kConnecting, token);
+            TransferStatus.kConnecting, token);
         await transferUpdateListener.remote_.$.flushForTesting();
         assertFalse(
             !!confirmationPageElement.shadowRoot.querySelector('#errorTitle'));
@@ -213,12 +215,11 @@ suite('ConfirmatonPageTest', function() {
   test('gets transfer info for testing', async function() {
     const token = 'TestToken1234';
     transferUpdateListener.remote_.onTransferUpdate(
-        nearbyShare.mojom.TransferStatus.kRejected, token);
+        TransferStatus.kRejected, token);
     await transferUpdateListener.remote_.$.flushForTesting();
 
     const info = confirmationPageElement.getTransferInfoForTesting();
-    assertEquals(
-        info.transferStatus, nearbyShare.mojom.TransferStatus.kRejected);
+    assertEquals(info.transferStatus, TransferStatus.kRejected);
     assertEquals(info.confirmationToken, token);
     assertTrue(!!info.errorTitle);
     assertTrue(!!info.errorDescription);

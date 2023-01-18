@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {DataUsage} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNearbyShareSettings} from '../../shared/nearby_share_settings.js';
@@ -74,8 +75,11 @@ class NearbyShareDataUsageDialogElement extends
 
   /** @private */
   onSaveClick_() {
-    getNearbyShareSettings().setDataUsage((dataUsageStringToEnum(
-        this.shadowRoot.querySelector('cr-radio-group').selected)));
+    getNearbyShareSettings().setDataUsage(
+        // TODO(b/263413628) Temporarily typecast until nearby share page
+        // uses Mojo WebUI bindings
+        /** @type {!DataUsage} */ (dataUsageStringToEnum(
+            this.shadowRoot.querySelector('cr-radio-group').selected)));
     this.close();
   }
 

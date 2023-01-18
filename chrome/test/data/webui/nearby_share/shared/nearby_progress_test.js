@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// So that mojo is defined.
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
-import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
-import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
-
+import {ShareTarget} from 'chrome://nearby/mojo/nearby_share.mojom-webui.js';
 import {NearbyProgressElement} from 'chrome://nearby/shared/nearby_progress.js';
+import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 
 import {assertEquals} from '../../chromeos/chai_assert.js';
 
@@ -28,12 +22,12 @@ suite('ProgressTest', function() {
     progressElement.remove();
   });
 
-  /** @return {!nearbyShare.mojom.ShareTarget} */
+  /** @return {!ShareTarget} */
   function getDefaultShareTarget() {
-    return /** @type {!nearbyShare.mojom.ShareTarget} */ ({
+    return /** @type {!ShareTarget} */ ({
       id: {high: 0, low: 0},
       name: 'Default Device Name',
-      type: nearbyShare.mojom.ShareTargetType.kPhone,
+      type: ShareTargetType.kPhone,
       imageUrl: {
         url: 'http://google.com/image',
       },

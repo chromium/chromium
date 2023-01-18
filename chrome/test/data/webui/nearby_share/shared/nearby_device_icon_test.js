@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// So that mojo is defined.
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
-import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
-import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
-
+import {ShareTarget} from 'chrome://nearby/mojo/nearby_share.mojom-webui.js';
 import {NearbyDeviceIconElement} from 'chrome://nearby/shared/nearby_device_icon.js';
+import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 
 import {assertEquals} from '../../chromeos/chai_assert.js';
 
@@ -39,7 +33,7 @@ suite('DeviceIconTest', function() {
   });
 
   function testIcon(type, expected) {
-    const shareTarget = /** @type {!nearbyShare.mojom.ShareTarget} */ ({
+    const shareTarget = /** @type {!ShareTarget} */ ({
       id: {high: 0, low: 0},
       name: 'Device Name',
       type,
@@ -52,19 +46,18 @@ suite('DeviceIconTest', function() {
   }
 
   test('renders phone', function() {
-    testIcon(nearbyShare.mojom.ShareTargetType.kPhone,
-      'nearby-share:smartphone');
+    testIcon(ShareTargetType.kPhone, 'nearby-share:smartphone');
   });
 
   test('renders tablet', function() {
-    testIcon(nearbyShare.mojom.ShareTargetType.kTablet, 'nearby-share:tablet');
+    testIcon(ShareTargetType.kTablet, 'nearby-share:tablet');
   });
 
   test('renders laptop', function() {
-    testIcon(nearbyShare.mojom.ShareTargetType.kLaptop, 'nearby-share:laptop');
+    testIcon(ShareTargetType.kLaptop, 'nearby-share:laptop');
   });
 
   test('renders unknown as laptop', function() {
-    testIcon(nearbyShare.mojom.ShareTargetType.kUnknown, 'nearby-share:laptop');
+    testIcon(ShareTargetType.kUnknown, 'nearby-share:laptop');
   });
 });

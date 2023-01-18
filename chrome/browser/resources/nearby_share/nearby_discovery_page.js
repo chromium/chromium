@@ -9,29 +9,25 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './shared/nearby_device.js';
-import './mojo/nearby_share_target_types.mojom-lite.js';
-import './mojo/nearby_share_share_type.mojom-lite.js';
-import './mojo/nearby_share.mojom-lite.js';
 import './shared/nearby_page_template.js';
 import './shared/nearby_preview.js';
 import './strings.m.js';
 
+import {ConfirmationManagerInterface, DiscoveryObserverInterface, DiscoveryObserverReceiver, PayloadPreview, SelectShareTargetResult, ShareTarget, ShareTargetListenerCallbackRouter, StartDiscoveryResult, TransferUpdateListenerPendingReceiver} from '/mojo/nearby_share.mojom-webui.js';
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager, observeDiscoveryManager} from './discovery_manager.js';
 import {getTemplate} from './nearby_discovery_page.html.js';
 
 /**
  * Converts an unguessable token to a string.
- * @param {!mojoBase.mojom.UnguessableToken} token
+ * @param {!UnguessableToken} token
  * @return {!string}
  */
 function tokenToString(token) {
@@ -40,8 +36,8 @@ function tokenToString(token) {
 
 /**
  * Compares two unguessable tokens.
- * @param {!mojoBase.mojom.UnguessableToken} a
- * @param {!mojoBase.mojom.UnguessableToken} b
+ * @param {!UnguessableToken} a
+ * @param {!UnguessableToken} b
  */
 function tokensEqual(a, b) {
   return a.high === b.high && a.low === b.low;
@@ -81,7 +77,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     return {
       /**
        * Preview info for the file(s) to be shared.
-       * @type {?nearbyShare.mojom.PayloadPreview}
+       * @type {?PayloadPreview}
        */
       payloadPreview: {
         notify: true,
@@ -91,7 +87,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
       /**
        * ConfirmationManager interface for the currently selected share target.
-       * @type {?nearbyShare.mojom.ConfirmationManagerInterface}
+       * @type {?ConfirmationManagerInterface}
        */
       confirmationManager: {
         notify: true,
@@ -102,7 +98,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
       /**
        * TransferUpdateListener interface for the currently selected share
        * target.
-       * @type {?nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
+       * @type {?TransferUpdateListenerPendingReceiver}
        */
       transferUpdateListener: {
         notify: true,
@@ -112,7 +108,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
       /**
        * The currently selected share target.
-       * @type {?nearbyShare.mojom.ShareTarget}
+       * @type {?ShareTarget}
        */
       selectedShareTarget: {
         notify: true,
@@ -122,7 +118,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
       /**
        * A list of all discovered nearby share targets.
-       * @private {!Array<!nearbyShare.mojom.ShareTarget>}
+       * @private {!Array<!ShareTarget>}
        */
       shareTargets_: {
         type: Array,
@@ -162,16 +158,16 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   constructor() {
     super();
 
-    /** @private {?nearbyShare.mojom.ShareTargetListenerCallbackRouter} */
+    /** @private {?ShareTargetListenerCallbackRouter} */
     this.mojoEventTarget_ = null;
 
     /** @private {Array<number>} */
     this.listenerIds_ = null;
 
-    /** @private {Map<!string,!nearbyShare.mojom.ShareTarget>} */
+    /** @private {Map<!string,!ShareTarget>} */
     this.shareTargetMap_ = null;
 
-    /** @private {?nearbyShare.mojom.DiscoveryObserverReceiver} */
+    /** @private {?DiscoveryObserverReceiver} */
     this.discoveryObserver_ = null;
   }
 
@@ -182,7 +178,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     this.shareTargetMap_ = new Map();
     this.clearShareTargets_();
     this.discoveryObserver_ = observeDiscoveryManager(
-        /** @type {!nearbyShare.mojom.DiscoveryObserverInterface} */ (this));
+        /** @type {!DiscoveryObserverInterface} */ (this));
   }
 
 
@@ -206,7 +202,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   }
 
   /**
-   * @return {!Array<!nearbyShare.mojom.ShareTarget>}
+   * @return {!Array<!ShareTarget>}
    * @public
    */
   getShareTargetsForTesting() {
@@ -214,7 +210,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   }
 
   /**
-   * @param {nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {ShareTarget} shareTarget
    * @return {boolean} True if share target found
    * @public
    */
@@ -245,8 +241,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
     this.clearShareTargets_();
 
-    this.mojoEventTarget_ =
-        new nearbyShare.mojom.ShareTargetListenerCallbackRouter();
+    this.mojoEventTarget_ = new ShareTargetListenerCallbackRouter();
 
     this.listenerIds_ = [
       this.mojoEventTarget_.onShareTargetDiscovered.addListener(
@@ -263,19 +258,17 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
         .startDiscovery(this.mojoEventTarget_.$.bindNewPipeAndPassRemote())
         .then(response => {
           switch (response.result) {
-            case nearbyShare.mojom.StartDiscoveryResult.kErrorGeneric:
+            case StartDiscoveryResult.kErrorGeneric:
               this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
               this.errorDescription_ =
                   this.i18n('nearbyShareErrorSomethingWrong');
               return;
-            case nearbyShare.mojom.StartDiscoveryResult
-                .kErrorInProgressTransferring:
+            case StartDiscoveryResult.kErrorInProgressTransferring:
               this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
               this.errorDescription_ =
                   this.i18n('nearbyShareErrorTransferInProgress');
               return;
-            case nearbyShare.mojom.StartDiscoveryResult
-                .kNoConnectionMedium:
+            case StartDiscoveryResult.kNoConnectionMedium:
               this.errorTitle_ =
                   this.i18n('nearbyShareErrorNoConnectionMedium');
               this.errorDescription_ =
@@ -388,7 +381,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * Selects the shareTarget when selected by the user, either through click
    * or key press.
    * @private
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {!ShareTarget} shareTarget
    */
   selectShareTargetOnUserInput_(shareTarget) {
     if (this.isShareTargetSelected_(shareTarget)) {
@@ -402,7 +395,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
   /**
    * @private
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {!ShareTarget} shareTarget
    * @return {boolean} True if shareTarget is currently selected
    */
   isShareTargetSelected_(shareTarget) {
@@ -412,7 +405,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
   /**
    * @private
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget The discovered device.
+   * @param {!ShareTarget} shareTarget The discovered device.
    */
   onShareTargetDiscovered_(shareTarget) {
     const shareTargetId = tokenToString(shareTarget.id);
@@ -430,7 +423,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
   /**
    * @private
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget The lost device.
+   * @param {!ShareTarget} shareTarget The lost device.
    */
   onShareTargetLost_(shareTarget) {
     const index = this.shareTargets_.findIndex(
@@ -450,13 +443,13 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
   /**
    * Select the given share target and proceed to the confirmation page.
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {!ShareTarget} shareTarget
    * @private
    */
   selectShareTarget_(shareTarget) {
     getDiscoveryManager().selectShareTarget(shareTarget.id).then(response => {
       const {result, transferUpdateListener, confirmationManager} = response;
-      if (result !== nearbyShare.mojom.SelectShareTargetResult.kOk) {
+      if (result !== SelectShareTargetResult.kOk) {
         this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
         this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
         return;
@@ -483,7 +476,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
   }
 
   /**
-   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {!ShareTarget} shareTarget
    * @return {string}
    * @private
    */
@@ -501,8 +494,8 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
 
   /**
    * Updates the selected share target to |shareTarget| if its id matches |id|.
-   * @param {!mojoBase.mojom.UnguessableToken} id
-   * @param {?nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {!UnguessableToken} id
+   * @param {?ShareTarget} shareTarget
    * @private
    */
   updateSelectedShareTarget_(id, shareTarget) {
@@ -514,13 +507,13 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     }
   }
 
-  /*
+  /**
    * If the shareTarget is the first in the list, it's tab index should be 0
    * if there is no current selected share target. Otherwise, the tab index
    * should be 0 if it is the current selected share target. Tab index of 0
    *  allows users to navigate to it with tabs, and others should be -1
    * so users will not navigate to by tab.
-   * @param {?nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {?ShareTarget} shareTarget
    * @return {string}
    * @private
    */

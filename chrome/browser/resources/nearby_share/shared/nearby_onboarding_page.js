@@ -16,7 +16,8 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DeviceNameValidationResult} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingInitiatedMetrics} from './nearby_metrics_logger.js';
 import {getTemplate} from './nearby_onboarding_page.html.js';
@@ -140,8 +141,7 @@ export class NearbyOnboardingPageElement extends
         .setDeviceName(this.$.deviceName.value)
         .then((result) => {
           this.updateErrorMessage_(result.result);
-          if (result.result ===
-              nearbyShare.mojom.DeviceNameValidationResult.kValid) {
+          if (result.result === DeviceNameValidationResult.kValid) {
             const changePageEvent = new CustomEvent(
                 'change-page',
                 {bubbles: true, composed: true, detail: {page: 'visibility'}});
@@ -152,19 +152,18 @@ export class NearbyOnboardingPageElement extends
 
   /**
    * @private
-   *
-   * @param {!nearbyShare.mojom.DeviceNameValidationResult} validationResult The
+   * @param {!DeviceNameValidationResult} validationResult The
    *     error status from validating the provided device name.
    */
   updateErrorMessage_(validationResult) {
     switch (validationResult) {
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty:
+      case DeviceNameValidationResult.kErrorEmpty:
         this.errorMessage = this.i18n('nearbyShareDeviceNameEmptyError');
         break;
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorTooLong:
+      case DeviceNameValidationResult.kErrorTooLong:
         this.errorMessage = this.i18n('nearbyShareDeviceNameTooLongError');
         break;
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorNotValidUtf8:
+      case DeviceNameValidationResult.kErrorNotValidUtf8:
         this.errorMessage =
             this.i18n('nearbyShareDeviceNameInvalidCharactersError');
         break;

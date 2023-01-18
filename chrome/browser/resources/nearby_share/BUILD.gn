@@ -56,12 +56,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/$preprocess_src_manifest",
     "$target_gen_dir/$preprocess_gen_manifest",
   ]
-  resource_path_rewrites = [
-    "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
-    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js|mojo/nearby_share_share_type.mojom-lite.js",
-    "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
-    "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_target_types.mojom-lite.js",
-  ]
 }
 
 web_component_files = [
@@ -110,6 +104,10 @@ generate_grd("build_mojo_grdp") {
   deps = [ ":preprocess_mojo" ]
   manifest_files = [ "$target_gen_dir/$preprocess_mojo_manifest" ]
   resource_path_rewrites = [
+    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js|mojo/nearby_share.mojom-webui.js",
+    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js|mojo/nearby_share_share_type.mojom-webui.js",
+
+    # TODO(b/263413628) Remove Mojo lite bindings once no longer used
     "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
     "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js|mojo/nearby_share_share_type.mojom-lite.js",
     "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
@@ -121,12 +119,17 @@ generate_grd("build_mojo_grdp") {
 preprocess_if_expr("preprocess_mojo") {
   deps = [
     "//chrome/browser/ui/webui/nearby_share:mojom_js",
-    "//chromeos/ash/services/nearby/public/mojom:mojom_js",
+    "//chrome/browser/ui/webui/nearby_share:share_type_js",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js",
   ]
   in_folder = root_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
   in_files = [
+    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js",
+    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js",
+
+    # TODO(b/263413628) Remove Mojo lite bindings once no longer used
     "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js",
     "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js",
     "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-lite.js",
@@ -136,13 +139,20 @@ preprocess_if_expr("preprocess_mojo") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags =
-      default_closure_args + [
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/nearby_share/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/nearby_share/",
-      ]
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/nearby_share/",
+                                    root_build_dir),
+                    "js_module_root=./gen/chrome/browser/resources/nearby_share/",
+
+                    # For typechecking nearby share Mojo WebUI bindings:
+                    # - Add the Mojo WebUI binding gen directory to the module root
+                    # - Replace import path prefix so the bindings can be resolved
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/",
+                            root_build_dir),
+                    "browser_resolver_prefix_replacements=\"/mojo/=./\"",
+                  ]
   deps = [
     ":app",
     ":discovery_manager",
@@ -161,16 +171,14 @@ js_library("app") {
     "./shared:nearby_visibility_page",
     "./shared:types",
     "//ash/webui/common/resources:load_time_data.m",
+    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
 }
 
 js_library("discovery_manager") {
-  deps = [
-    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
-    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
-  ]
+  deps = [ "//chrome/browser/ui/webui/nearby_share:mojom_webui_js" ]
 }
 
 js_library("nearby_confirmation_page") {
@@ -179,8 +187,7 @@ js_library("nearby_confirmation_page") {
     "./shared:nearby_progress",
     "./shared:types",
     "//ash/webui/common/resources:i18n_behavior",
-    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
-    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
+    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list =
@@ -193,8 +200,7 @@ js_library("nearby_discovery_page") {
     "./shared:nearby_device",
     "./shared:nearby_preview",
     "//ash/webui/common/resources:assert",
-    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
-    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
+    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

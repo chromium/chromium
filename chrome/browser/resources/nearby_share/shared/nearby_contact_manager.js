@@ -2,46 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import '/mojo/nearby_share_settings.mojom-lite.js';
+import {ContactManager, ContactManagerInterface, DownloadContactsObserverInterface, DownloadContactsObserverReceiver, DownloadContactsObserverRemote} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
-/** @type {?nearbyShare.mojom.ContactManagerInterface} */
+/** @type {?ContactManagerInterface} */
 let contactManager = null;
 /** @type {boolean} */
 let isTesting = false;
 /**
- * @param {!nearbyShare.mojom.ContactManagerInterface}
- *     testContactManager A test contactManager impl.
+ * @param {!ContactManagerInterface} testContactManager A test impl.
  */
 export function setContactManagerForTesting(testContactManager) {
   contactManager = testContactManager;
   isTesting = true;
 }
 /**
- * @return {!nearbyShare.mojom.ContactManagerInterface}
- *     the contactManager interface
+ * @return {!ContactManagerInterface} the contactManager interface
  */
 export function getContactManager() {
   if (!contactManager) {
-    contactManager = nearbyShare.mojom.ContactManager.getRemote();
+    contactManager = ContactManager.getRemote();
   }
   return contactManager;
 }
 /**
- * @param {!nearbyShare.mojom.DownloadContactsObserverInterface} observer
- * @return {?nearbyShare.mojom.DownloadContactsObserverReceiver} The mojo
- *     receiver or null when testing.
+ * @param {!DownloadContactsObserverInterface} observer
+ * @return {?DownloadContactsObserverReceiver} The mojo receiver or null
+ *   when testing.
  */
 export function observeContactManager(observer) {
   if (isTesting) {
     getContactManager().addDownloadContactsObserver(
-        /** @type {!nearbyShare.mojom.DownloadContactsObserverRemote} */ (
-            observer));
+        /** @type {!DownloadContactsObserverRemote} */ (observer));
     return null;
   }
-  const receiver =
-      new nearbyShare.mojom.DownloadContactsObserverReceiver(observer);
+  const receiver = new DownloadContactsObserverReceiver(observer);
   getContactManager().addDownloadContactsObserver(
       receiver.$.bindNewPipeAndPassRemote());
   return receiver;

@@ -4,10 +4,13 @@
 
 /** @fileoverview Contains fake implementations of mojo interfaces. */
 
+import {ConfirmationManagerInterface, DiscoveryManagerInterface, DiscoveryObserverInterface, DiscoveryObserverRemote, PayloadPreview, SelectShareTargetResult, ShareTargetListenerRemote, StartDiscoveryResult, TransferUpdateListenerPendingReceiver, TransferUpdateListenerRemote} from 'chrome://nearby/mojo/nearby_share.mojom-webui.js';
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+
 import {TestBrowserProxy} from '../chromeos/test_browser_proxy.js';
 
 /**
- * @implements {nearbyShare.mojom.ConfirmationManagerInterface}
+ * @implements {ConfirmationManagerInterface}
  * @extends {TestBrowserProxy}
  */
 export class FakeConfirmationManagerRemote extends TestBrowserProxy {
@@ -36,7 +39,7 @@ export class FakeConfirmationManagerRemote extends TestBrowserProxy {
 }
 
 /**
- * @implements {nearbyShare.mojom.DiscoveryManagerInterface}
+ * @implements {DiscoveryManagerInterface}
  * @extends {TestBrowserProxy}
  */
 export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
@@ -50,23 +53,23 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
     ]);
 
     this.selectShareTargetResult = {
-      result: nearbyShare.mojom.SelectShareTargetResult.kOk,
+      result: SelectShareTargetResult.kOk,
       transferUpdateListener: null,
       confirmationManager: null,
     };
     this.shareDescription = 'Test is a test share';
-    this.startDiscoveryResult = nearbyShare.mojom.StartDiscoveryResult.kSuccess;
-    /** @private {!nearbyShare.mojom.DiscoveryObserverInterface} */
+    this.startDiscoveryResult = StartDiscoveryResult.kSuccess;
+    /** @private {!DiscoveryObserverInterface} */
     this.observer_;
   }
 
   /**
-   * @return {!Promise<{payloadPreview: !nearbyShare.mojom.PayloadPreview}>}
+   * @return {!Promise<{payloadPreview: !PayloadPreview}>}
    */
   async getPayloadPreview() {
     this.methodCalled('getPayloadPreview');
     return {
-      payloadPreview: /** @type {!nearbyShare.mojom.PayloadPreview} */ ({
+      payloadPreview: /** @type {!PayloadPreview} */ ({
         description: this.shareDescription,
         fileCount: 0,
         shareType: 0,
@@ -75,7 +78,7 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} shareTargetId
+   * @param {!UnguessableToken} shareTargetId
    * @suppress {checkTypes} FakeConfirmationManagerRemote does not extend
    * ConfirmationManagerRemote but implements ConfirmationManagerInterface.
    */
@@ -85,7 +88,7 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
   }
 
   /**
-   * @param {nearbyShare.mojom.ShareTargetListenerRemote} listener
+   * @param {ShareTargetListenerRemote} listener
    */
   async startDiscovery(listener) {
     this.methodCalled('startDiscovery', listener);
@@ -97,7 +100,7 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
   }
 
   /**
-   * @param {!nearbyShare.mojom.DiscoveryObserverRemote} observer
+   * @param {!DiscoveryObserverRemote} observer
    */
   addDiscoveryObserver(observer) {
     this.methodCalled('addDiscoveryObserver');
@@ -106,13 +109,13 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
 }
 
 /**
- * @extends {nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
+ * @extends {TransferUpdateListenerPendingReceiver}
  */
 export class FakeTransferUpdateListenerPendingReceiver extends
-    nearbyShare.mojom.TransferUpdateListenerPendingReceiver {
+    TransferUpdateListenerPendingReceiver {
   constructor() {
     const {handle0, handle1} = Mojo.createMessagePipe();
     super(handle0);
-    this.remote_ = new nearbyShare.mojom.TransferUpdateListenerRemote(handle1);
+    this.remote_ = new TransferUpdateListenerRemote(handle1);
   }
 }

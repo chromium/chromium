@@ -6,14 +6,13 @@ import 'chrome://nearby/strings.m.js';
 
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
 import {NearbyContactVisibilityElement} from 'chrome://nearby/shared/nearby_contact_visibility.js';
-import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
+import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chromeos/chai_assert.js';
 import {isChildVisible} from '../../chromeos/test_util.js';
 
 import {FakeContactManager} from './fake_nearby_contact_manager.js';
-import {FakeNearbyShareSettings} from './fake_nearby_share_settings.js';
 
 suite('nearby-contact-visibility', () => {
   /** @type {!NearbyContactVisibilityElement} */
@@ -31,12 +30,11 @@ suite('nearby-contact-visibility', () => {
 
     visibilityElement.settings = {
       enabled: false,
-      fastInitiationNotificationState:
-          nearbyShare.mojom.FastInitiationNotificationState.kEnabled,
+      fastInitiationNotificationState: FastInitiationNotificationState.kEnabled,
       isFastInitiationHardwareSupported: true,
       deviceName: 'deviceName',
-      dataUsage: nearbyShare.mojom.DataUsage.kOnline,
-      visibility: nearbyShare.mojom.Visibility.kUnknown,
+      dataUsage: DataUsage.kOnline,
+      visibility: Visibility.kUnknown,
       isOnboardingComplete: false,
       allowedContacts: [],
     };
@@ -124,8 +122,7 @@ suite('nearby-contact-visibility', () => {
   test('Downloads failed show failure ui', async function() {
     // Failed the download right away so we see the failure screen.
     fakeContactManager.failDownload();
-    visibilityElement.set(
-        'settings.visibility', nearbyShare.mojom.Visibility.kSelectedContacts);
+    visibilityElement.set('settings.visibility', Visibility.kSelectedContacts);
     await waitAfterNextRender(visibilityElement);
 
     assertToggleState(/*all=*/ false, /*some=*/ true, /*no=*/ false);
@@ -186,8 +183,7 @@ suite('nearby-contact-visibility', () => {
       'Visibility component shows allContacts for kAllContacts',
       async function() {
         succeedContactDownload();
-        visibilityElement.set(
-            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
 
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
@@ -203,8 +199,7 @@ suite('nearby-contact-visibility', () => {
       async function() {
         succeedContactDownload();
         visibilityElement.set(
-            'settings.visibility',
-            nearbyShare.mojom.Visibility.kSelectedContacts);
+            'settings.visibility', Visibility.kSelectedContacts);
 
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
@@ -216,8 +211,7 @@ suite('nearby-contact-visibility', () => {
       });
 
   test('Visibility component shows no contacts for kNoOne', async function() {
-    visibilityElement.set(
-        'settings.visibility', nearbyShare.mojom.Visibility.kNoOne);
+    visibilityElement.set('settings.visibility', Visibility.kNoOne);
     succeedContactDownload();
     // need to wait for the next render to see results
     await waitAfterNextRender(visibilityElement);
@@ -233,8 +227,7 @@ suite('nearby-contact-visibility', () => {
       async function() {
         fakeContactManager.contactRecords = [];
         fakeContactManager.completeDownload();
-        visibilityElement.set(
-            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
         visibilityElement.set('contacts', []);
 
         // need to wait for the next render to see results
@@ -252,8 +245,7 @@ suite('nearby-contact-visibility', () => {
         fakeContactManager.setupContactRecords();
         fakeContactManager.setNumUnreachable(1);
         fakeContactManager.completeDownload();
-        visibilityElement.set(
-            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
 
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
@@ -267,8 +259,7 @@ suite('nearby-contact-visibility', () => {
         fakeContactManager.setupContactRecords();
         fakeContactManager.setNumUnreachable(3);
         fakeContactManager.completeDownload();
-        visibilityElement.set(
-            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
 
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
@@ -282,8 +273,7 @@ suite('nearby-contact-visibility', () => {
         fakeContactManager.setupContactRecords();
         fakeContactManager.setNumUnreachable(0);
         fakeContactManager.completeDownload();
-        visibilityElement.set(
-            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
 
         // need to wait for the next render to see results
         await waitAfterNextRender(visibilityElement);
@@ -297,8 +287,7 @@ suite('nearby-contact-visibility', () => {
         fakeContactManager.setupContactRecords();
         fakeContactManager.setNumUnreachable(0);
         fakeContactManager.completeDownload();
-        visibilityElement.set(
-            'settings.visibility', nearbyShare.mojom.Visibility.kAllContacts);
+        visibilityElement.set('settings.visibility', Visibility.kAllContacts);
         await waitAfterNextRender(visibilityElement);
 
         // visibility setting is not immediately updated
@@ -307,7 +296,7 @@ suite('nearby-contact-visibility', () => {
         assertTrue(areContactCheckBoxesVisible());
         assertEquals(
             visibilityElement.get('settings.visibility'),
-            nearbyShare.mojom.Visibility.kAllContacts);
+            Visibility.kAllContacts);
 
         // allow only contact 2, check that allowed contacts are not yet pushed
         // to the contact manager
@@ -325,7 +314,7 @@ suite('nearby-contact-visibility', () => {
         visibilityElement.saveVisibilityAndAllowedContacts();
         assertEquals(
             visibilityElement.get('settings.visibility'),
-            nearbyShare.mojom.Visibility.kSelectedContacts);
+            Visibility.kSelectedContacts);
         assertEquals(fakeContactManager.allowedContacts.length, 1);
         assertEquals(fakeContactManager.allowedContacts[0], '2');
       });

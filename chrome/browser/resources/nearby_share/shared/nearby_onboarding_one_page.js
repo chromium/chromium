@@ -17,7 +17,8 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DeviceNameValidationResult, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
 import {getTemplate} from './nearby_onboarding_one_page.html.js';
@@ -140,8 +141,7 @@ export class NearbyOnboardingOnePageElement extends
         .setDeviceName(this.$.deviceName.value)
         .then((result) => {
           this.updateErrorMessage_(result.result);
-          if (result.result ===
-              nearbyShare.mojom.DeviceNameValidationResult.kValid) {
+          if (result.result === DeviceNameValidationResult.kValid) {
             /**
              * TODO(crbug.com/1265562): remove this line once the old onboarding
              * is deprecated and default visibility is changed in
@@ -186,18 +186,18 @@ export class NearbyOnboardingOnePageElement extends
   /**
    * @private
    *
-   * @param {!nearbyShare.mojom.DeviceNameValidationResult} validationResult
+   * @param {!DeviceNameValidationResult} validationResult
    * The error status from validating the provided device name.
    */
   updateErrorMessage_(validationResult) {
     switch (validationResult) {
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty:
+      case DeviceNameValidationResult.kErrorEmpty:
         this.errorMessage = this.i18n('nearbyShareDeviceNameEmptyError');
         break;
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorTooLong:
+      case DeviceNameValidationResult.kErrorTooLong:
         this.errorMessage = this.i18n('nearbyShareDeviceNameTooLongError');
         break;
-      case nearbyShare.mojom.DeviceNameValidationResult.kErrorNotValidUtf8:
+      case DeviceNameValidationResult.kErrorNotValidUtf8:
         this.errorMessage =
             this.i18n('nearbyShareDeviceNameInvalidCharactersError');
         break;
@@ -236,15 +236,15 @@ export class NearbyOnboardingOnePageElement extends
    * setting visibility selection to 'all contacts' in nearby_visibility_page in
    * existing onboarding workflow.
    *
-   * @return {?nearbyShare.mojom.Visibility} default visibility
+   * @return {?Visibility} default visibility
    *
    * TODO(crbug.com/1265562): remove this function once the old onboarding is
    * deprecated and default visibility is changed in
    * nearby_share_prefs.cc:kNearbySharingBackgroundVisibilityName
    */
   getDefaultVisibility_() {
-    if (this.settings.visibility === nearbyShare.mojom.Visibility.kUnknown) {
-      return nearbyShare.mojom.Visibility.kAllContacts;
+    if (this.settings.visibility === Visibility.kUnknown) {
+      return Visibility.kAllContacts;
     }
     return this.settings.visibility;
   }
@@ -257,11 +257,11 @@ export class NearbyOnboardingOnePageElement extends
   getVisibilitySelectionButtonText_() {
     const visibility = this.getDefaultVisibility_();
     switch (visibility) {
-      case nearbyShare.mojom.Visibility.kAllContacts:
+      case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityAll');
-      case nearbyShare.mojom.Visibility.kSelectedContacts:
+      case Visibility.kSelectedContacts:
         return this.i18n('nearbyShareContactVisibilitySome');
-      case nearbyShare.mojom.Visibility.kNoOne:
+      case Visibility.kNoOne:
         return this.i18n('nearbyShareContactVisibilityNone');
       default:
         return this.i18n('nearbyShareContactVisibilityAll');
@@ -276,11 +276,11 @@ export class NearbyOnboardingOnePageElement extends
   getVisibilitySelectionButtonIcon_() {
     const visibility = this.getDefaultVisibility_();
     switch (visibility) {
-      case nearbyShare.mojom.Visibility.kAllContacts:
+      case Visibility.kAllContacts:
         return 'contact-all';
-      case nearbyShare.mojom.Visibility.kSelectedContacts:
+      case Visibility.kSelectedContacts:
         return 'contact-group';
-      case nearbyShare.mojom.Visibility.kNoOne:
+      case Visibility.kNoOne:
         return 'visibility-off';
       default:
         return 'contact-all';

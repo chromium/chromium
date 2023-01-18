@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// So that mojo is defined.
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://nearby/app.js';
 
 import {NearbyShareAppElement} from 'chrome://nearby/app.js';
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {NearbyShareSettingsInterface} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chromeos/chai_assert.js';
@@ -20,7 +19,7 @@ import {FakeNearbyShareSettings} from './shared/fake_nearby_share_settings.js';
 suite('ShareAppTest', function() {
   /** @type {!NearbyShareAppElement} */
   let shareAppElement;
-  /** @type {!nearbyShare.mojom.NearbyShareSettingsInterface} */
+  /** @type {!NearbyShareSettingsInterface} */
   let fakeSettings;
 
   /** @param {!string} page Page to check if it is active. */

@@ -12,7 +12,15 @@ js_type_check("closure_compile") {
   # TODO(crbug.com/1121865): browser_resolver_prefix_replacements allows path
   # from ../../shared/* to resolve to ../../../nearby_share/shared/* for closure
   # purposes.
-  closure_flags = os_settings_closure_flags
+  closure_flags = os_settings_closure_flags + mojom_js_args + [
+                    # For typechecking nearby share Mojo WebUI bindings:
+                    # - Add the Mojo WebUI binding gen directory to the module root
+                    # - Replace import path prefix so the bindings can be resolved
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/",
+                            root_build_dir),
+                    "browser_resolver_prefix_replacements=\"/mojo/=./\"",
+                  ]
   deps = [
     ":nearby_share_confirm_page",
     ":nearby_share_contact_visibility_dialog",

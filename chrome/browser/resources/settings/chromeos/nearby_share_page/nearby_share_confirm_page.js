@@ -8,6 +8,17 @@
  * reject the request
  */
 
+// clang-format off
+// TODO(b/263413628) Replace with Mojo WebUI bindings
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import '/mojo/nearby_share_target_types.mojom-lite.js';
+import '/mojo/nearby_share_share_type.mojom-lite.js';
+import '/mojo/nearby_share.mojom-lite.js';
+import '/mojo/nearby_share_settings.mojom-lite.js';
+// clang-format on
+
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import '../../shared/nearby_page_template.js';
 import '../../shared/nearby_device.js';

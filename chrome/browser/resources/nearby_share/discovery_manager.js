@@ -7,20 +7,15 @@
  * DiscoveryManager which allows interaction with native code.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import './mojo/nearby_share_target_types.mojom-lite.js';
-import './mojo/nearby_share_share_type.mojom-lite.js';
-import './mojo/nearby_share.mojom-lite.js';
+import {DiscoveryManager, DiscoveryManagerInterface, DiscoveryObserverInterface, DiscoveryObserverReceiver, DiscoveryObserverRemote} from '/mojo/nearby_share.mojom-webui.js';
 
-/** @type {?nearbyShare.mojom.DiscoveryManagerInterface} */
+/** @type {?DiscoveryManagerInterface} */
 let discoveryManager = null;
 /** @type {boolean} */
 let isTesting = false;
 
 /**
- * @param {!nearbyShare.mojom.DiscoveryManagerInterface}
- *     testDiscoveryManager A test discovery manager.
+ * @param {!DiscoveryManagerInterface} testDiscoveryManager
  */
 export function setDiscoveryManagerForTesting(testDiscoveryManager) {
   discoveryManager = testDiscoveryManager;
@@ -28,31 +23,30 @@ export function setDiscoveryManagerForTesting(testDiscoveryManager) {
 }
 
 /**
- * @return {!nearbyShare.mojom.DiscoveryManagerInterface} Discovery manager.
+ * @return {!DiscoveryManagerInterface} Discovery manager.
  */
 export function getDiscoveryManager() {
   if (discoveryManager) {
     return discoveryManager;
   }
 
-  discoveryManager = nearbyShare.mojom.DiscoveryManager.getRemote();
+  discoveryManager = DiscoveryManager.getRemote();
   discoveryManager.onConnectionError.addListener(() => discoveryManager = null);
   return discoveryManager;
 }
 
 /**
- * @param {!nearbyShare.mojom.DiscoveryObserverInterface} observer
- * @return {?nearbyShare.mojom.DiscoveryObserverReceiver} The mojo
- *     receiver or null when testing.
+ * @param {!DiscoveryObserverInterface} observer
+ * @return {?DiscoveryObserverReceiver} The mojo receiver or null when testing.
  */
 export function observeDiscoveryManager(observer) {
   if (isTesting) {
     getDiscoveryManager().addDiscoveryObserver(
-        /** @type {!nearbyShare.mojom.DiscoveryObserverRemote} */ (observer));
+        /** @type {!DiscoveryObserverRemote} */ (observer));
     return null;
   }
 
-  const receiver = new nearbyShare.mojom.DiscoveryObserverReceiver(observer);
+  const receiver = new DiscoveryObserverReceiver(observer);
   getDiscoveryManager().addDiscoveryObserver(
       receiver.$.bindNewPipeAndPassRemote());
   return receiver;

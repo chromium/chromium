@@ -8,18 +8,25 @@ assert(is_chromeos, "Nearby Share is CrOS only")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags =
-      default_closure_args + [
-        "browser_resolver_prefix_replacements=\"chrome://nearby/=" +
-            rebase_path("//chrome/browser/resources/nearby_share/",
-                        root_build_dir) + "\"",
-        "browser_resolver_prefix_replacements=\"chrome://webui-test/=" +
-            "./gen/chrome/test/data/webui/tsc\"",
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/nearby_share/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/nearby_share/",
-      ]
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://nearby/=" +
+                        rebase_path("//chrome/browser/resources/nearby_share/",
+                                    root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=" + "./gen/chrome/test/data/webui/tsc\"",
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/nearby_share/",
+                                    root_build_dir),
+                    "js_module_root=./gen/chrome/browser/resources/nearby_share/",
+
+                    # For typechecking nearby share Mojo WebUI bindings:
+                    # - Add the Mojo WebUI binding gen directory to the module root
+                    # - Replace import path prefix so the bindings can be resolved
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/",
+                            root_build_dir),
+                    "browser_resolver_prefix_replacements=\"chrome://nearby/mojo/=./\"",
+                    "browser_resolver_prefix_replacements=\"/mojo/=./\"",
+                  ]
   deps = [
     ":fake_nearby_contact_manager",
     ":fake_nearby_share_settings",

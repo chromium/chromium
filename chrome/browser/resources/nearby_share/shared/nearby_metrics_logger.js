@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
 /**
  * This enum is tied directly to a UMA enum defined in
@@ -245,7 +246,7 @@ export function processOnboardingCompleteMetrics() {
  * time it took to complete.
  *
  * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
- * @param {?nearbyShare.mojom.Visibility} visibility
+ * @param {?Visibility} visibility
  */
 export function processOnePageOnboardingCompleteMetrics(
     nearbyShareOnboardingFinalState, visibility) {
@@ -278,7 +279,7 @@ export function processOnePageOnboardingCompleteMetrics(
  * and visibility selected.
  *
  * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
- * @param {?nearbyShare.mojom.Visibility} visibility
+ * @param {?Visibility} visibility
  * @returns {NearbyShareOnboardingFlowEvent}
  *
  * @private
@@ -299,19 +300,19 @@ function getOnboardingCompleteFlowEvent_(
  * Gets the corresponding onboarding complete flow event on visibility
  * selection page based on final visibility selected.
  *
- * @param {?nearbyShare.mojom.Visibility} visibility
+ * @param {?Visibility} visibility
  * @returns {NearbyShareOnboardingFlowEvent}
  *
  * @private
  */
 function getOnboardingCompleteFlowEventOnVisibilityPage_(visibility) {
   switch (visibility) {
-    case nearbyShare.mojom.Visibility.kAllContacts:
+    case Visibility.kAllContacts:
       return NearbyShareOnboardingFlowEvent.ALL_CONTACTS_SELECTED_AND_CONFIRMED;
-    case nearbyShare.mojom.Visibility.kSelectedContacts:
+    case Visibility.kSelectedContacts:
       return NearbyShareOnboardingFlowEvent
           .SOME_CONTACTS_SELECTED_AND_CONFIRMED;
-    case nearbyShare.mojom.Visibility.kNoOne:
+    case Visibility.kNoOne:
       return NearbyShareOnboardingFlowEvent.HIDDEN_SELECTED_AND_CONFIRMED;
     default:
       assertNotReached('Invalid visibility');

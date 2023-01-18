@@ -5,20 +5,23 @@
 /**
  * @fileoverview Fake implementation of ContactManagerInterface for testing.
  */
+
+import {ContactManagerInterface, ContactRecord, DownloadContactsObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+
 /**
- * Fake implementation of nearbyShare.mojom.ContactManagerInterface
+ * Fake implementation of ContactManagerInterface
  *
- * @implements {nearbyShare.mojom.ContactManagerInterface}
+ * @implements {ContactManagerInterface}
  */
 export class FakeContactManager {
   constructor() {
-    /** @type {?Array<!nearbyShare.mojom.ContactRecord>} */
+    /** @type {?Array<!ContactRecord>} */
     this.contactRecords = null;
     /** @type {!Array<!string>} */
     this.allowedContacts = [];
     /** @private {number} */
     this.numUnreachable_ = 3;
-    /** @private {?nearbyShare.mojom.DownloadContactsObserverInterface} */
+    /** @private {?DownloadContactsObserverInterface} */
     this.observer_;
     /** @private {Object} */
     this.$ = {
@@ -29,7 +32,7 @@ export class FakeContactManager {
   }
 
   /**
-   * @param {!nearbyShare.mojom.DownloadContactsObserverInterface} observer
+   * @param {!DownloadContactsObserverInterface} observer
    */
   addDownloadContactsObserver(observer) {
     // Just support a single observer for testing.

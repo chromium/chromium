@@ -13,6 +13,8 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './nearby_shared_icons.html.js';
 
+import {ShareTarget} from '/mojo/nearby_share.mojom-webui.js';
+import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_device_icon.html.js';
@@ -32,7 +34,7 @@ export class NearbyDeviceIconElement extends PolymerElement {
       /**
        * The share target to show the icon for. Expected to start as null, then
        * change to a valid object before this component is shown.
-       * @type {?nearbyShare.mojom.ShareTarget}
+       * @type {?ShareTarget}
        */
       shareTarget: {
         type: Object,
@@ -50,11 +52,11 @@ export class NearbyDeviceIconElement extends PolymerElement {
       return 'nearby-share:laptop';
     }
     switch (this.shareTarget.type) {
-      case nearbyShare.mojom.ShareTargetType.kPhone:
+      case ShareTargetType.kPhone:
         return 'nearby-share:smartphone';
-      case nearbyShare.mojom.ShareTargetType.kTablet:
+      case ShareTargetType.kTablet:
         return 'nearby-share:tablet';
-      case nearbyShare.mojom.ShareTargetType.kLaptop:
+      case ShareTargetType.kLaptop:
         return 'nearby-share:laptop';
       default:
         return 'nearby-share:laptop';
