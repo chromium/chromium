@@ -222,9 +222,9 @@ void AccountChecker::OnFetchPriceEmailPrefJsonParsed(
   // the fetched result should be discarded.
   if (pref_service_ && is_waiting_for_pref_fetch_completion_ &&
       result.has_value() && result->is_dict()) {
-    if (auto* preferences_map = result->FindKey(kPreferencesKey)) {
+    if (auto* preferences_map = result->GetDict().FindDict(kPreferencesKey)) {
       if (absl::optional<bool> price_email_pref =
-              preferences_map->FindBoolKey(kPriceTrackEmailPref)) {
+              preferences_map->FindBool(kPriceTrackEmailPref)) {
         // Only set the pref value when necessary since it could affect
         // PrefService::Preference::IsDefaultValue().
         if (pref_service_->GetBoolean(kPriceEmailNotificationsEnabled) !=
@@ -306,9 +306,9 @@ void AccountChecker::HandleSendPriceEmailPrefResponse(
 void AccountChecker::OnSendPriceEmailPrefJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (pref_service_ && result.has_value() && result->is_dict()) {
-    if (auto* preferences_map = result->FindKey(kPreferencesKey)) {
+    if (auto* preferences_map = result->GetDict().FindDict(kPreferencesKey)) {
       if (auto price_email_pref =
-              preferences_map->FindBoolKey(kPriceTrackEmailPref)) {
+              preferences_map->FindBool(kPriceTrackEmailPref)) {
         if (pref_service_->GetBoolean(kPriceEmailNotificationsEnabled) !=
             *price_email_pref) {
           VLOG(1) << "Fail to update the price email pref";
