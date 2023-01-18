@@ -305,6 +305,11 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
 }
 
 bool PageImpl::IsSelectURLAllowed(const url::Origin& origin) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSharedStorageSelectURLLimit)) {
+    return true;
+  }
+
   int& count = select_url_count_[origin];
   if (count >=
       blink::features::

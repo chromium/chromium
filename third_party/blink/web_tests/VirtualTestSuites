@@ -1344,6 +1344,18 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "shared-storage-fenced-frame-mparch-selecturl-limit",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "wpt_internal/shared_storage_selecturl_limit/"
+    ],
+    "exclusive_tests": [
+      "wpt_internal/shared_storage_selecturl_limit/"
+    ],
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit"],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "task-tracking",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/task-tracking"],

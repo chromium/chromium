@@ -589,11 +589,7 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
                                                kBudgetAllowed)},
                                           {"SharedStorageStalenessThreshold",
                                            TimeDeltaToString(base::Days(
-                                               kStalenessThresholdDays))},
-                                          {"SharedStorageMaxAllowedSelectURLCal"
-                                           "lsPerOriginPerPageLoad",
-                                           base::NumberToString(
-                                               kMaxSelectURLCalls)}}},
+                                               kStalenessThresholdDays))}}},
                                         {features::
                                              kPrivacySandboxAdsAPIsOverride,
                                          {}}},
@@ -1960,294 +1956,6 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                   {{"", https_server()
                             ->GetURL("a.test", "/fenced_frames/report1.html")
                             .spec()}}}}))}});
-}
-
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
-                       SelectURL_Simple_LimitReached) {
-  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )"));
-
-  // There is 1 "worklet operation": `addModule()`.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHost()
-      ->WaitForWorkletResponsesCount(1);
-
-  for (int i = 0; i < kMaxSelectURLCalls; i++) {
-    std::string urn_uuid = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
-    )")
-                               .ExtractString();
-
-    EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
-
-    // There is 1 "worklet operation": `selectURL()`.
-    test_worklet_host_manager()
-        .GetAttachedWorkletHost()
-        ->WaitForWorkletResponsesCount(1);
-
-    SharedStorageBudgetMetadata* metadata =
-        GetSharedStorageBudgetMetadata(GURL(urn_uuid));
-    EXPECT_TRUE(metadata);
-    EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
-    EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
-
-    EXPECT_EQ("Finish executing 'test-url-selection-operation'",
-              base::UTF16ToUTF8(console_observer.messages().back().message));
-  }
-
-  // The limit for `selectURL()` has now been reached for "a.test". Make one
-  // more call, which will be blocked.
-  EvalJsResult result = EvalJs(shell(), R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
-    )");
-
-  EXPECT_EQ(result.error,
-            base::StrCat({"a JavaScript error: \"Error: ",
-                          kSharedStorageSelectURLLimitReachedMessage, "\"\n"}));
-
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
-  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
-                                     kMaxSelectURLCalls);
-
-  std::string origin_str = url::Origin::Create(main_url).Serialize();
-  std::vector<TestSharedStorageObserver::Access> expected_accesses(
-      {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-            "a.test", "/shared_storage/simple_module.js"))}});
-  for (int i = 0; i < kMaxSelectURLCalls; i++) {
-    expected_accesses.emplace_back(
-        AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
-            std::vector<SharedStorageUrlSpecWithMetadata>(
-                {{https_server()->GetURL("a.test",
-                                         "/fenced_frames/title0.html"),
-                  {}}})));
-  }
-  ExpectAccessObserved(expected_accesses);
-}
-
-IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
-                       SelectURL_IframesSharingCommonOrigin_LimitReached) {
-  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  GURL iframe_url = https_server()->GetURL("b.test", kSimplePagePath);
-
-  for (int i = 0; i < kMaxSelectURLCalls; i++) {
-    // Create a new iframe.
-    FrameTreeNode* iframe_node =
-        CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
-
-    EXPECT_TRUE(ExecJs(iframe_node, R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )"));
-
-    std::string urn_uuid = EvalJs(iframe_node, R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
-    )")
-                               .ExtractString();
-
-    EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
-
-    // There are 2 "worklet operations": `addModule()` and  `selectURL()`.
-    test_worklet_host_manager()
-        .GetAttachedWorkletHostForFrame(iframe_node->current_frame_host())
-        ->WaitForWorkletResponsesCount(2);
-
-    SharedStorageBudgetMetadata* metadata =
-        GetSharedStorageBudgetMetadata(GURL(urn_uuid));
-    EXPECT_TRUE(metadata);
-    EXPECT_EQ(metadata->origin, https_server()->GetOrigin("b.test"));
-    EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
-
-    EXPECT_EQ("Finish executing 'test-url-selection-operation'",
-              base::UTF16ToUTF8(console_observer.messages().back().message));
-  }
-
-  // Create a new iframe.
-  FrameTreeNode* iframe_node =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
-
-  EXPECT_TRUE(ExecJs(iframe_node, R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )"));
-
-  // There is 1 "worklet operation": `addModule()`.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHostForFrame(iframe_node->current_frame_host())
-      ->WaitForWorkletResponsesCount(1);
-
-  // The limit for `selectURL()` has now been reached for "b.test". Make one
-  // more call, which will be blocked.
-  EvalJsResult result = EvalJs(iframe_node, R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
-    )");
-
-  EXPECT_EQ(result.error,
-            base::StrCat({"a JavaScript error: \"Error: ",
-                          kSharedStorageSelectURLLimitReachedMessage, "\"\n"}));
-
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
-  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
-                                     kMaxSelectURLCalls);
-
-  std::string origin_str = url::Origin::Create(iframe_url).Serialize();
-  std::vector<TestSharedStorageObserver::Access> expected_accesses;
-  for (int i = 0; i <= kMaxSelectURLCalls; i++) {
-    expected_accesses.emplace_back(
-        AccessType::kDocumentAddModule, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-            "b.test", "/shared_storage/simple_module.js")));
-    if (i == kMaxSelectURLCalls) {
-      break;
-    }
-    expected_accesses.emplace_back(
-        AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
-            std::vector<SharedStorageUrlSpecWithMetadata>(
-                {{https_server()->GetURL("b.test",
-                                         "/fenced_frames/title0.html"),
-                  {}}})));
-  }
-
-  ExpectAccessObserved(expected_accesses);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SharedStorageBrowserTest,
-    SelectURL_IframesDifferentOrigin_LimitNotReachedForLast) {
-  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  GURL iframe_url1 = https_server()->GetURL("b.test", kSimplePagePath);
-
-  for (int i = 0; i < kMaxSelectURLCalls; i++) {
-    // Create a new iframe.
-    FrameTreeNode* iframe_node =
-        CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url1);
-
-    EXPECT_TRUE(ExecJs(iframe_node, R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )"));
-
-    std::string urn_uuid = EvalJs(iframe_node, R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
-    )")
-                               .ExtractString();
-
-    EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
-
-    // There are 2 "worklet operations": `addModule()` and  `selectURL()`.
-    test_worklet_host_manager()
-        .GetAttachedWorkletHostForFrame(iframe_node->current_frame_host())
-        ->WaitForWorkletResponsesCount(2);
-
-    SharedStorageBudgetMetadata* metadata =
-        GetSharedStorageBudgetMetadata(GURL(urn_uuid));
-    EXPECT_TRUE(metadata);
-    EXPECT_EQ(metadata->origin, https_server()->GetOrigin("b.test"));
-    EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
-
-    EXPECT_EQ("Finish executing 'test-url-selection-operation'",
-              base::UTF16ToUTF8(console_observer.messages().back().message));
-  }
-
-  // Create a new iframe with a different origin.
-  GURL iframe_url2 = https_server()->GetURL("c.test", kSimplePagePath);
-  FrameTreeNode* iframe_node =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url2);
-
-  EXPECT_TRUE(ExecJs(iframe_node, R"(
-      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
-    )"));
-
-  // The limit for `selectURL()` has now been reached for "b.test", but not for
-  // "c.test". Make one more call, which will not be blocked.
-  std::string urn_uuid = EvalJs(iframe_node, R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}],
-          {data: {'mockResult':0}});
-    )")
-                             .ExtractString();
-
-  EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
-
-  // There are 2 "worklet operations": `addModule()` and  `selectURL()`.
-  test_worklet_host_manager()
-      .GetAttachedWorkletHostForFrame(iframe_node->current_frame_host())
-      ->WaitForWorkletResponsesCount(2);
-
-  SharedStorageBudgetMetadata* metadata =
-      GetSharedStorageBudgetMetadata(GURL(urn_uuid));
-  EXPECT_TRUE(metadata);
-  EXPECT_EQ(metadata->origin, https_server()->GetOrigin("c.test"));
-  EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
-
-  EXPECT_EQ("Finish executing 'test-url-selection-operation'",
-            base::UTF16ToUTF8(console_observer.messages().back().message));
-
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
-  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
-                                     kMaxSelectURLCalls + 1);
-
-  std::string origin1_str = url::Origin::Create(iframe_url1).Serialize();
-  std::string origin2_str = url::Origin::Create(iframe_url2).Serialize();
-  std::vector<TestSharedStorageObserver::Access> expected_accesses;
-  for (int i = 0; i < kMaxSelectURLCalls; i++) {
-    expected_accesses.emplace_back(
-        AccessType::kDocumentAddModule, MainFrameId(), origin1_str,
-        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-            "b.test", "/shared_storage/simple_module.js")));
-    expected_accesses.emplace_back(
-        AccessType::kDocumentSelectURL, MainFrameId(), origin1_str,
-        SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
-            std::vector<SharedStorageUrlSpecWithMetadata>(
-                {{https_server()->GetURL("b.test",
-                                         "/fenced_frames/title0.html"),
-                  {}}})));
-  }
-  expected_accesses.emplace_back(
-      AccessType::kDocumentAddModule, MainFrameId(), origin2_str,
-      SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
-          "c.test", "/shared_storage/simple_module.js")));
-  expected_accesses.emplace_back(
-      AccessType::kDocumentSelectURL, MainFrameId(), origin2_str,
-      SharedStorageEventParams::CreateForSelectURL(
-          "test-url-selection-operation", std::vector<uint8_t>(),
-          std::vector<SharedStorageUrlSpecWithMetadata>(
-              {{https_server()->GetURL("c.test", "/fenced_frames/title0.html"),
-                {}}})));
-
-  ExpectAccessObserved(expected_accesses);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, SetAppendOperationInDocument) {
@@ -4481,6 +4189,314 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
       "TypeError: The \"private-aggregation\" Permissions Policy denied the "
       "method on privateAggregation",
       base::UTF16ToUTF8(console_observer.messages()[0].message));
+}
+
+class SharedStorageSelectURLLimitBrowserTest
+    : public SharedStorageBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SharedStorageSelectURLLimitBrowserTest() {
+    if (GetParam()) {
+      feature_list_
+          .InitWithFeaturesAndParameters(/*enabled_features=*/
+                                         {{blink::features::
+                                               kSharedStorageSelectURLLimit,
+                                           {{"SharedStorageMaxAllowedSelectURLC"
+                                             "al"
+                                             "lsPerOriginPerPageLoad",
+                                             base::NumberToString(
+                                                 kMaxSelectURLCalls)}}}},
+                                         /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/{},
+          /*disabled_features=*/
+          {blink::features::kSharedStorageSelectURLLimit});
+    }
+  }
+
+  // Precondition: `addModule('shared_storage/simple_module.js')` has been
+  // called in the main frame.
+  void RunSuccessfulSelectURLInMainFrame(
+      std::string host_str,
+      WebContentsConsoleObserver* console_observer) {
+    std::string urn_uuid = EvalJs(shell(), R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}],
+          {data: {'mockResult':0}});
+    )")
+                               .ExtractString();
+
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+
+    // There is 1 "worklet operation": `selectURL()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->WaitForWorkletResponsesCount(1);
+
+    SharedStorageBudgetMetadata* metadata =
+        GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+    EXPECT_TRUE(metadata);
+    EXPECT_EQ(metadata->origin, https_server()->GetOrigin(host_str));
+    EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
+
+    EXPECT_EQ("Finish executing 'test-url-selection-operation'",
+              base::UTF16ToUTF8(console_observer->messages().back().message));
+  }
+
+  void RunSuccessfulSelectURLInIframe(
+      std::string host_str,
+      FrameTreeNode* iframe_node,
+      WebContentsConsoleObserver* console_observer) {
+    EXPECT_TRUE(ExecJs(iframe_node, R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+    std::string urn_uuid = EvalJs(iframe_node, R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}],
+          {data: {'mockResult':0}});
+    )")
+                               .ExtractString();
+
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(GURL(urn_uuid)));
+
+    // There are 2 "worklet operations": `addModule()` and  `selectURL()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHostForFrame(iframe_node->current_frame_host())
+        ->WaitForWorkletResponsesCount(2);
+
+    SharedStorageBudgetMetadata* metadata =
+        GetSharedStorageBudgetMetadata(GURL(urn_uuid));
+    EXPECT_TRUE(metadata);
+    EXPECT_EQ(metadata->origin, https_server()->GetOrigin(host_str));
+    EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 0.0);
+
+    EXPECT_EQ("Finish executing 'test-url-selection-operation'",
+              base::UTF16ToUTF8(console_observer->messages().back().message));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageSelectURLLimitBrowserTest,
+                         testing::Bool(),
+                         [](const auto& info) {
+                           if (info.param) {
+                             return "SelectURLLimit";
+                           } else {
+                             return "NoSelectURLLimit";
+                           }
+                         });
+
+IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
+                       SelectURL_Simple_LimitReached) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+  // There is 1 "worklet operation": `addModule()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponsesCount(1);
+
+  for (int i = 0; i < kMaxSelectURLCalls; i++) {
+    RunSuccessfulSelectURLInMainFrame("a.test", &console_observer);
+  }
+
+  if (GetParam()) {
+    // The limit for `selectURL()` has now been reached for "a.test". Make one
+    // more call, which will be blocked.
+    EvalJsResult result = EvalJs(shell(), R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}],
+          {data: {'mockResult':0}});
+    )");
+
+    EXPECT_EQ(
+        result.error,
+        base::StrCat({"a JavaScript error: \"Error: ",
+                      kSharedStorageSelectURLLimitReachedMessage, "\"\n"}));
+  } else {
+    // The `selectURL()` limit is disabled. The call will run successfully.
+    RunSuccessfulSelectURLInMainFrame("a.test", &console_observer);
+  }
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+
+  int expected_success_count =
+      GetParam() ? kMaxSelectURLCalls : kMaxSelectURLCalls + 1;
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     expected_success_count);
+
+  std::string origin_str = url::Origin::Create(main_url).Serialize();
+  std::vector<TestSharedStorageObserver::Access> expected_accesses(
+      {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
+            "a.test", "/shared_storage/simple_module.js"))}});
+  for (int i = 0; i < expected_success_count; i++) {
+    expected_accesses.emplace_back(
+        AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSelectURL(
+            "test-url-selection-operation", std::vector<uint8_t>(),
+            std::vector<SharedStorageUrlSpecWithMetadata>(
+                {{https_server()->GetURL("a.test",
+                                         "/fenced_frames/title0.html"),
+                  {}}})));
+  }
+  ExpectAccessObserved(expected_accesses);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
+                       SelectURL_IframesSharingCommonOrigin_LimitReached) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL iframe_url = https_server()->GetURL("b.test", kSimplePagePath);
+
+  for (int i = 0; i < kMaxSelectURLCalls; i++) {
+    // Create a new iframe.
+    FrameTreeNode* iframe_node =
+        CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
+
+    RunSuccessfulSelectURLInIframe("b.test", iframe_node, &console_observer);
+  }
+
+  // Create a new iframe.
+  FrameTreeNode* iframe_node =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
+
+  if (GetParam()) {
+    EXPECT_TRUE(ExecJs(iframe_node, R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+    // There is 1 "worklet operation": `addModule()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHostForFrame(iframe_node->current_frame_host())
+        ->WaitForWorkletResponsesCount(1);
+
+    // The limit for `selectURL()` has now been reached for "b.test". Make one
+    // more call, which will be blocked.
+    EvalJsResult result = EvalJs(iframe_node, R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}],
+          {data: {'mockResult':0}});
+    )");
+
+    EXPECT_EQ(
+        result.error,
+        base::StrCat({"a JavaScript error: \"Error: ",
+                      kSharedStorageSelectURLLimitReachedMessage, "\"\n"}));
+  } else {
+    // The `selectURL()` limit is disabled. The call will run successfully.
+    RunSuccessfulSelectURLInIframe("b.test", iframe_node, &console_observer);
+  }
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+
+  int expected_success_count =
+      GetParam() ? kMaxSelectURLCalls : kMaxSelectURLCalls + 1;
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     expected_success_count);
+
+  std::string origin_str = url::Origin::Create(iframe_url).Serialize();
+  std::vector<TestSharedStorageObserver::Access> expected_accesses;
+  for (int i = 0; i <= kMaxSelectURLCalls; i++) {
+    expected_accesses.emplace_back(
+        AccessType::kDocumentAddModule, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
+            "b.test", "/shared_storage/simple_module.js")));
+    if (GetParam() && i == kMaxSelectURLCalls) {
+      break;
+    }
+    expected_accesses.emplace_back(
+        AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSelectURL(
+            "test-url-selection-operation", std::vector<uint8_t>(),
+            std::vector<SharedStorageUrlSpecWithMetadata>(
+                {{https_server()->GetURL("b.test",
+                                         "/fenced_frames/title0.html"),
+                  {}}})));
+  }
+
+  ExpectAccessObserved(expected_accesses);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageSelectURLLimitBrowserTest,
+    SelectURL_IframesDifferentOrigin_LimitNotReachedForLast) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL iframe_url1 = https_server()->GetURL("b.test", kSimplePagePath);
+
+  for (int i = 0; i < kMaxSelectURLCalls; i++) {
+    // Create a new iframe.
+    FrameTreeNode* iframe_node =
+        CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url1);
+
+    RunSuccessfulSelectURLInIframe("b.test", iframe_node, &console_observer);
+  }
+
+  // Create a new iframe with a different origin.
+  GURL iframe_url2 = https_server()->GetURL("c.test", kSimplePagePath);
+  FrameTreeNode* iframe_node =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url2);
+
+  // If enabled, the limit for `selectURL()` has now been reached for "b.test",
+  // but not for "c.test". Make one more call, which will not be blocked.
+  RunSuccessfulSelectURLInIframe("c.test", iframe_node, &console_observer);
+
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
+                                     kMaxSelectURLCalls + 1);
+
+  std::string origin1_str = url::Origin::Create(iframe_url1).Serialize();
+  std::string origin2_str = url::Origin::Create(iframe_url2).Serialize();
+  std::vector<TestSharedStorageObserver::Access> expected_accesses;
+  for (int i = 0; i < kMaxSelectURLCalls; i++) {
+    expected_accesses.emplace_back(
+        AccessType::kDocumentAddModule, MainFrameId(), origin1_str,
+        SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
+            "b.test", "/shared_storage/simple_module.js")));
+    expected_accesses.emplace_back(
+        AccessType::kDocumentSelectURL, MainFrameId(), origin1_str,
+        SharedStorageEventParams::CreateForSelectURL(
+            "test-url-selection-operation", std::vector<uint8_t>(),
+            std::vector<SharedStorageUrlSpecWithMetadata>(
+                {{https_server()->GetURL("b.test",
+                                         "/fenced_frames/title0.html"),
+                  {}}})));
+  }
+  expected_accesses.emplace_back(
+      AccessType::kDocumentAddModule, MainFrameId(), origin2_str,
+      SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
+          "c.test", "/shared_storage/simple_module.js")));
+  expected_accesses.emplace_back(
+      AccessType::kDocumentSelectURL, MainFrameId(), origin2_str,
+      SharedStorageEventParams::CreateForSelectURL(
+          "test-url-selection-operation", std::vector<uint8_t>(),
+          std::vector<SharedStorageUrlSpecWithMetadata>(
+              {{https_server()->GetURL("c.test", "/fenced_frames/title0.html"),
+                {}}})));
+
+  ExpectAccessObserved(expected_accesses);
 }
 
 }  // namespace content

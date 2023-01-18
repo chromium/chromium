@@ -1,7 +1,7 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="../shared_storage/resources/utils.js"></script>
 <script src="/common/utils.js"></script>
 <script src="../fenced_frame/resources/utils.js"></script>
 
@@ -11,10 +11,10 @@
 
 promise_test(async () => {
   const ancestor_key = token();
-  let url0 = generateURL("resources/frame0.html", [ancestor_key]);
-  let url1 = generateURL("resources/frame1.html", [ancestor_key]);
+  let url0 = generateURL("../shared_storage/resources/frame0.html", [ancestor_key]);
+  let url1 = generateURL("../shared_storage/resources/frame1.html", [ancestor_key]);
 
-  await sharedStorage.worklet.addModule("resources/simple-module.js");
+  await sharedStorage.worklet.addModule("../shared_storage/resources/simple-module.js");
 
   let uuid0 = await sharedStorage.selectURL(
       "test-url-selection-operation", [{url: url0}, {url: url1}],
@@ -39,7 +39,20 @@ promise_test(async () => {
   attachFencedFrame(uuid2, 'opaque-ads');
   const result2 = await nextValueFromServer(ancestor_key);
   assert_equals(result2, "frame0_loaded");
-}, 'selectURL()');
+
+  // The per-origin per-pageload call limit for `selectURL()` has been
+  // reached. The next call should be blocked.
+  try {
+    await sharedStorage.selectURL(
+      "test-url-selection-operation", [{url: url0}, {url: url1}],
+	{data: {'mockResult': 0}});
+  } catch (e) {
+      assert_equals(e.name, 'OperationError');
+      assert_equals(e.message, 'sharedStorage.selectURL limit has been reached');
+      return;
+  }
+  assert_unreached("did not reject final call");
+}, 'selectURL() with limit');
 
 </script>
 </body>

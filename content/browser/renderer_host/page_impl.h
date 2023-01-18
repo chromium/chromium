@@ -178,7 +178,10 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // Returns whether a pending call to `sharedStorage.selectURL()` should be
   // allowed for `origin`, incrementing the corresponding count in
-  // `select_url_count_` if so.
+  // `select_url_count_` if so and if
+  // `blink::features::kSharedStorageSelectURLLimit` is enabled. If
+  // `blink::features::kSharedStorageSelectURLLimit` is disabled, always returns
+  // true.
   bool IsSelectURLAllowed(const url::Origin& origin);
 
  private:
@@ -248,7 +251,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   // `sharedStorage.selectURL()` from the given origin during this page load.
   // `select_url_count_` is not cleared until `this` is destroyed, and it does
   // not rely on any assumptions about when specifically `this` is destroyed
-  // (e.g. during navigation or not).
+  // (e.g. during navigation or not). Used only if
+  // `blink::features::kSharedStorageSelectURLLimit` is enabled.
   base::flat_map<url::Origin, int> select_url_count_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
