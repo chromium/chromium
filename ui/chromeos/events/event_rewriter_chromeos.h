@@ -69,12 +69,7 @@ class EventRewriterChromeOS : public EventRewriter {
 
   class Delegate {
    public:
-    Delegate() {}
-
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns true only if the the key event was rewritten to ALTGR. For most
     // cases, it is expected that this function returns false as most key events

@@ -746,7 +746,7 @@ EventRewriterChromeOS::EventRewriterChromeOS(
       used_modifier_latches_(EF_NONE),
       ime_keyboard_(ime_keyboard) {}
 
-EventRewriterChromeOS::~EventRewriterChromeOS() {}
+EventRewriterChromeOS::~EventRewriterChromeOS() = default;
 
 void EventRewriterChromeOS::KeyboardDeviceAddedForTesting(int device_id) {
   KeyboardDeviceAdded(device_id);
