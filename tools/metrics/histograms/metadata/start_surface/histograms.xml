@@ -22,6 +22,31 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="StartSurface.ColdStartup.IsLastActiveTabNtp" enum="Boolean"
+    expires_after="2023-07-12">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records whether the last active tab is a NewTabPage during tab restore in
+    cold startup when Start surface is showing. The histogram is logged in
+    deferred startup tasks.
+  </summary>
+</histogram>
+
+<histogram name="StartSurface.Show.State" enum="StartSurfaceState"
+    expires_after="2023-07-12">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the StartSurfaceState when Start surface or Grid tab switcher is
+    showing due to ChromeTabbedActivity#showOverview() is called. It includes
+    showing at cold or warm startup, or when users bringing Chrome from
+    background to foreground, or via back operations from a Tab etc. The
+    histogram doesn't include the cases of showing overview page due to the
+    transition between Start surface and Tab switcher.
+  </summary>
+</histogram>
+
 <histogram name="StartSurface.TimeSpent" units="ms" expires_after="2023-07-09">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>

@@ -44,9 +44,11 @@ import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformSer
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -76,13 +78,15 @@ public final class ReturnToChromeUtil {
     @VisibleForTesting
     public static final String LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA =
             "Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch";
+    public static final String LAST_ACTIVE_TAB_IS_NTP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA =
+            "StartSurface.ColdStartup.IsLastActiveTabNtp";
     public static final String SHOWN_FROM_BACK_NAVIGATION_UMA =
             "StartSurface.ShownFromBackNavigation.";
+    public static final String START_SHOW_STATE_UMA = "StartSurface.Show.State";
 
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
     private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
 
-    private static boolean sGTSFirstMeaningfulPaintRecorded;
     private static boolean sIsHomepagePolicyManagerInitializedRecorded;
     // Whether to skip the check of the initialization of HomepagePolicyManager.
     private static boolean sSkipInitializationCheckForTesting;
@@ -847,14 +851,22 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * Record whether the last visited tab shown in the single tab switcher or carousel tab switcher
-     * is a search result page or not. This should be called when Start surface is shown at startup.
+     * Called when Start surface is shown at startup.
      */
-    public static void recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch() {
+    public static void recordHistogramsWhenOverviewIsShownAtLaunch() {
+        // Records whether the last visited tab shown in the single tab switcher or carousel tab
+        // switcher is a search result page or not.
         RecordHistogram.recordBooleanHistogram(
                 LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA,
                 SharedPreferencesManager.getInstance().readBoolean(
                         ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
+
+        // Records whether the last active tab from tab restore is a NTP.
+        RecordHistogram.recordBooleanHistogram(
+                LAST_ACTIVE_TAB_IS_NTP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE)
+                        == ActiveTabState.NTP);
     }
 
     /**
@@ -911,6 +923,15 @@ public final class ReturnToChromeUtil {
      */
     public static void recordBackNavigationToStart(String from) {
         RecordUserAction.record(SHOWN_FROM_BACK_NAVIGATION_UMA + from);
+    }
+
+    /**
+     * Records the StartSurfaceState when overview page is shown.
+     * @param state: the current StartSurfaceState.
+     */
+    public static void recordStartSurfaceState(@StartSurfaceState int state) {
+        RecordHistogram.recordEnumeratedHistogram(
+                START_SHOW_STATE_UMA, state, StartSurfaceState.NUM_ENTRIES);
     }
 
     public static void setSkipInitializationCheckForTesting(boolean skipInitializationCheck) {

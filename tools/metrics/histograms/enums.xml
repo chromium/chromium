@@ -96757,6 +96757,36 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Completed">The user selected the sign-in button.</int>
 </enum>
 
+<enum name="StartSurfaceState">
+  <int value="0" label="NOT_SHOWN">The Start surface isn't shown.</int>
+  <int value="1" label="SHOWN_HOMEPAGE">
+    The Start surface homepage is visible.
+  </int>
+  <int value="2" label="SHOWN_TABSWITCHER">
+    The grid Tab switcher is visible.
+  </int>
+  <int value="3" label="DISABLED">The Start surface is disabled.</int>
+  <int value="4" label="SHOWING_TABSWITCHER">
+    The Tab switcher is shown when the Tab switcher button on the toolbar is
+    clicked.
+  </int>
+  <int value="5" label="SHOWING_START">
+    The Start surface is shown when users are back to Chrome. It includes cold
+    or warm startup, or users bringing Chrome from background to foreground.
+  </int>
+  <int value="6" label="SHOWING_HOMEPAGE">
+    The Start surface is shown via back operations from a restored Tab, or a
+    background Tab created from Start surface, or tapping the home button on the
+    toolbar (deprecated).
+  </int>
+  <int value="7" label="SHOWING_PREVIOUS">
+    The Start surface is shown via back operations from a foreground Tab created
+    from the Start surface, with tab launch type &quot;FROM_START_SURFACE&quot;.
+    However, when &quot;Previous&quot; is used, either Grid tab switcher or
+    Start surface can be shown, i.e., the Tab returns to the last overview page.
+  </int>
+</enum>
+
 <enum name="StartupProfilingFinishReason">
   <int value="0" label="Done (all metrics gathered)"/>
   <int value="1"

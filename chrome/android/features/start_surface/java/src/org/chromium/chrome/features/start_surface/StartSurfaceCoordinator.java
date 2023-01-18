@@ -593,6 +593,9 @@ public class StartSurfaceCoordinator implements StartSurface {
             mStartSurfaceMediator.onOverviewShownAtLaunch(activityCreationTimeMs);
         }
         if (ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
+            if (isOverviewShownOnStartup) {
+                ReturnToChromeUtil.recordHistogramsWhenOverviewIsShownAtLaunch();
+            }
             Log.i(TAG, "Recorded %s = %b", START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
             RecordHistogram.recordBooleanHistogram(
                     START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
