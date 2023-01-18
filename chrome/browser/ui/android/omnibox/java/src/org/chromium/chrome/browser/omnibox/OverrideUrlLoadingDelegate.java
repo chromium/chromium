@@ -15,5 +15,5 @@ public interface OverrideUrlLoadingDelegate {
      * Returns true if the delegate will handle loading for the given parameters.
      */
     boolean willHandleLoadUrlWithPostData(String url, @PageTransition int transition,
-            String postDataType, byte[] postData, boolean incognito);
+            long inputStart, String postDataType, byte[] postData, boolean incognito);
 }

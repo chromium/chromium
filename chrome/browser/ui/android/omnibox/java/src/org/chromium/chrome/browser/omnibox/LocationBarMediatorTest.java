@@ -412,11 +412,13 @@ public class LocationBarMediatorTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(true)
                 .when(mOverrideUrlLoadingDelegate)
-                .willHandleLoadUrlWithPostData(TEST_URL, PageTransition.TYPED, null, null, false);
+                .willHandleLoadUrlWithPostData(
+                        TEST_URL, PageTransition.TYPED, 0, null, null, false);
         mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0);
 
         verify(mOverrideUrlLoadingDelegate)
-                .willHandleLoadUrlWithPostData(TEST_URL, PageTransition.TYPED, null, null, false);
+                .willHandleLoadUrlWithPostData(
+                        TEST_URL, PageTransition.TYPED, 0, null, null, false);
         verify(mTab, times(0)).loadUrl(any());
     }
 

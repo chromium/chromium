@@ -486,8 +486,8 @@ class LocationBarMediator
         assert mNativeInitialized : "Loading URL before native side initialized";
 
         // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
-        if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(url, transition, postDataType,
-                    postData, mLocationBarDataProvider.isIncognito())) {
+        if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(url, transition, inputStart,
+                    postDataType, postData, mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
