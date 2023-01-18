@@ -804,39 +804,22 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     """Install finch seed for testing
 
     Returns:
-      None
+      The path to the new finch seed under the application data folder.
     """
     app_data_dir = posixpath.join(
         self._device.GetApplicationDataDirectory(self.browser_package_name),
         self.app_user_sub_dir())
-    device_local_state_file = posixpath.join(app_data_dir, 'Local State')
 
+    device_local_state_file = posixpath.join(app_data_dir, 'Local State')
     self._wait_for_local_state_file(device_local_state_file)
 
-    with NamedTemporaryDirectory() as tmp_dir:
-      tmp_ls_path = os.path.join(tmp_dir, 'local_state.json')
-      self._device.adb.Pull(device_local_state_file, tmp_ls_path)
+    seed_path = posixpath.join(app_data_dir, 'local_variations_seed')
+    self._device.adb.Push(self.options.finch_seed_path, seed_path)
 
-      with open(tmp_ls_path, 'r') as local_state_content, \
-          open(self.options.finch_seed_path, 'r') as test_seed_content:
-        local_state_json = json.loads(local_state_content.read())
-        test_seed_json = json.loads(test_seed_content.read())
+    user_id = self._device.GetUidForPackage(self.browser_package_name)
+    self._device.RunShellCommand(['chown', user_id, seed_path], as_root=True)
 
-        # Copy over the seed data and signature
-        local_state_json['variations_compressed_seed'] = (
-            test_seed_json['variations_compressed_seed'])
-        local_state_json['variations_seed_signature'] = (
-            test_seed_json['variations_seed_signature'])
-
-        with open(os.path.join(tmp_dir, 'new_local_state.json'),
-                  'w') as new_local_state:
-          new_local_state.write(json.dumps(local_state_json))
-
-        self._device.adb.Push(new_local_state.name, device_local_state_file)
-        user_id = self._device.GetUidForPackage(self.browser_package_name)
-        logger.info('Setting owner of Local State file to %r', user_id)
-        self._device.RunShellCommand(
-            ['chown', user_id, device_local_state_file], as_root=True)
+    return seed_path
 
 
 class ChromeFinchTestCase(FinchTestCase):
@@ -1245,8 +1228,16 @@ def main(args):
       # timeouts in the adb commands run below.
       test_case.disable_wifi()
     else:
-      test_case.install_seed()
-      ret = test_case.run_tests('with_finch_seed', test_results_dict)
+      installed_seed = test_case.install_seed()
+      # If the seed is placed in a local path, we can pass it from the command
+      # line, e.g. for Android.
+      if installed_seed:
+        extra_args = [f'--variations-test-seed-path={installed_seed}']
+        extra_args += ['--disable-field-trial-config']
+        ret = test_case.run_tests('with_finch_seed', test_results_dict,
+            extra_browser_args=extra_args)
+      else:
+        ret = test_case.run_tests('with_finch_seed', test_results_dict)
       # Clears out the finch seed. Need to run finch_seed tests first.
       # See crbug/1305430
       device.ClearApplicationState(test_case.browser_package_name)
