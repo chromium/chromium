@@ -186,8 +186,9 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
 
     StateForURL(url,
                 base::BindLambdaForTesting([&](const DIPSState& loaded_state) {
-                  if (loaded_state.was_loaded())
+                  if (loaded_state.was_loaded()) {
                     state = loaded_state.ToStateValue();
+                  }
                 }));
     BlockUntilHelperProcessesPendingRequests();
 
@@ -632,16 +633,27 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, PrepopulateTest) {
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       PRE_ChromeBrowsingDataRemover_Basic) {
-  // Simulate the user typing the URL to visit the page, which will record site
-  // engagement.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
-}
-
-IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        ChromeBrowsingDataRemover_Basic) {
-  base::Time time = base::Time::Now();
+  content::WebContents* web_contents = GetActiveWebContents();
+  base::Time interaction_time = base::Time::Now() - base::Seconds(10);
+  SetDIPSTime(interaction_time);
+
+  // Perform a click to get a.test added to the DIPS DB.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+  UserActivationObserver observer(web_contents,
+                                  web_contents->GetPrimaryMainFrame());
+  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
+  observer.Wait();
+
+  // Verify it was added.
+  absl::optional<StateValue> state_initial =
+      GetDIPSState(GURL("http://a.test"));
+  ASSERT_TRUE(state_initial.has_value());
+  ASSERT_TRUE(state_initial->user_interaction_times.has_value());
+  EXPECT_EQ(state_initial->user_interaction_times->first, interaction_time);
+
+  // Remove browsing data for the past day.
   uint64_t remove_mask = chrome_browsing_data_remover::DATA_TYPE_HISTORY |
                          chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder(
@@ -650,22 +662,11 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   content::BrowsingDataRemover* remover =
       GetActiveWebContents()->GetBrowserContext()->GetBrowsingDataRemover();
 
-  // Since there was previous site engagement, the DIPS DB should be
-  // prepopulated with a user interaction timestamp.
-  absl::optional<StateValue> state_initial =
-      GetDIPSState(GURL("http://a.test"));
-  ASSERT_TRUE(state_initial.has_value());
-  ASSERT_TRUE(state_initial->user_interaction_times.has_value());
-  EXPECT_LE(state_initial->user_interaction_times->first, time);
-  EXPECT_GT(state_initial->user_interaction_times->first, time - base::Days(1));
-
   base::RunLoop run_loop;
-  base::OnceCallback<void(uint64_t)> callback =
-      (base::BindLambdaForTesting([&](uint64_t) { run_loop.Quit(); }));
   browsing_data_important_sites_util::Remove(
       remove_mask, content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
       browsing_data::TimePeriod::LAST_DAY, std::move(filter_builder), remover,
-      std::move(callback));
+      base::IgnoreArgs<uint64_t>(run_loop.QuitClosure()));
   run_loop.Run();
 
   // Verify that the user interaction has been cleared from the DIPS DB.
