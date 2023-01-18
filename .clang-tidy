@@ -13,6 +13,8 @@
                     bugprone-use-after-move,
                     google-build-explicit-make-pair,
                     google-explicit-constructor,
+                    misc-misleading-identifier,
+                    misc-homoglyph,
                     modernize-avoid-bind,
                     modernize-concat-nested-namespaces,
                     modernize-loop-convert,
