@@ -4,6 +4,8 @@
 
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 
+#include <string>
+
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/base64.h"
@@ -103,14 +105,15 @@ absl::optional<const std::vector<uint8_t>> SavedDeviceRegistry::GetAccountKey(
     return absl::nullopt;
   }
 
-  const base::Value* result =
-      pref_service->GetValue(kFastPairSavedDevicesPref).FindKey(mac_address);
-  if (!result || !result->is_string()) {
+  const std::string* result = pref_service->GetValue(kFastPairSavedDevicesPref)
+                                  .GetDict()
+                                  .FindString(mac_address);
+  if (!result) {
     return absl::nullopt;
   }
 
   std::string decoded;
-  if (!base::Base64Decode(result->GetString(), &decoded)) {
+  if (!base::Base64Decode(*result, &decoded)) {
     QP_LOG(WARNING) << __func__
                     << ": Failed to decode the account key from Base64.";
     return absl::nullopt;
