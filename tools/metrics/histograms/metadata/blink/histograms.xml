@@ -1112,6 +1112,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Timing.WindowOnloadDelayDuration" units="ms"
+    expires_after="M120">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the duration from when RequestToken is called directly in
+    navigator.credentials.get to when RequestToken would be called if invoked
+    through a window onload event listener. Records at most once per API call
+    when the FedCmMultipleIdentityProviders flag is disabled and RequestToken is
+    called prior to the window onload event.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.WebContentsVisible" enum="Boolean"
     expires_after="2023-07-16">
   <owner>yigu@chromium.org</owner>

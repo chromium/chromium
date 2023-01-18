@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -118,11 +120,7 @@ void WebIdentityRequester::AppendGetCall(
     // All get calls up until the window onload event is fired are collated into
     // a single token request. Once the window onload event is fired, we post a
     // task with all collated IDPs to RequestToken.
-    window_onload_event_listener_ =
-        MakeGarbageCollected<WebIdentityWindowOnloadEventListener>(
-            document, WrapPersistent(this));
-    resolver->DomWindow()->addEventListener(event_type_names::kLoad,
-                                            window_onload_event_listener_);
+    InitWindowOnloadEventListener(resolver);
     return;
   }
 
@@ -138,6 +136,45 @@ void WebIdentityRequester::AppendGetCall(
 void WebIdentityRequester::InsertScopedAbortState(
     std::unique_ptr<ScopedAbortState> scoped_abort_state) {
   scoped_abort_states_.insert(std::move(scoped_abort_state));
+}
+
+void WebIdentityRequester::InitWindowOnloadEventListener(
+    ScriptPromiseResolver* resolver) {
+  window_onload_event_listener_ =
+      MakeGarbageCollected<WebIdentityWindowOnloadEventListener>(
+          resolver->DomWindow()->document(), WrapPersistent(this));
+  resolver->DomWindow()->addEventListener(event_type_names::kLoad,
+                                          window_onload_event_listener_);
+}
+
+void WebIdentityRequester::StartWindowOnloadDelayTimer(
+    ScriptPromiseResolver* resolver) {
+  DCHECK(!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+      execution_context_));
+
+  // Checking if document load is completed is equivalent to checking if
+  // this method was called during or after the window.onload event. If document
+  // load is completed, there is no delay caused by window onload and hence, the
+  // early return.
+  if (resolver->DomWindow()->document()->IsLoadCompleted()) {
+    return;
+  }
+
+  // Before window.onload event, we add a listener to the window onload event.
+  // Once the window onload event is fired, we post a task to
+  // StopWindowOnloadDelayTimer.
+  InitWindowOnloadEventListener(resolver);
+  window_onload_delay_start_time_ = base::TimeTicks::Now();
+}
+
+void WebIdentityRequester::StopWindowOnloadDelayTimer() {
+  DCHECK(!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+      execution_context_));
+
+  base::TimeDelta onload_delay_duration =
+      base::TimeTicks::Now() - window_onload_delay_start_time_;
+  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.WindowOnloadDelayDuration",
+                             onload_delay_duration);
 }
 
 void WebIdentityRequester::Trace(Visitor* visitor) const {

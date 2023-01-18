@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/before_unload_event.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -28,6 +29,20 @@ void WebIdentityWindowOnloadEventListener::Invoke(
   // valid and requester_ becomes null when CredentialsContainer is destroyed.
   if (!document_ || !requester_)
     return;
+
+  // If the FedCmMultipleIdentityProviders flag is disabled, we use the
+  // WebIdentityWindowOnloadEventListener purely for metrics purposes.
+  // Specifically, we want to gather metrics on how much of a delay the window
+  // onload event introduces.
+  if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+          execution_context)) {
+    document_->GetTaskRunner(TaskType::kInternalDefault)
+        ->PostTask(
+            FROM_HERE,
+            WTF::BindOnce(&WebIdentityRequester::StopWindowOnloadDelayTimer,
+                          WrapPersistent(requester_.Get())));
+    return;
+  }
 
   // Post a task to WebIdentityRequester::RequestToken() to guarantee that
   // WebIdentityRequester::RequestToken() is called after all the Javascript

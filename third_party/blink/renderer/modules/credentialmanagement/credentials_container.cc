@@ -1411,6 +1411,11 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           options->identity()->context());
     }
 
+    if (!web_identity_requester_) {
+      web_identity_requester_ =
+          MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
+    }
+
     if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
             context)) {
       Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
@@ -1427,12 +1432,14 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
                         std::move(scoped_abort_state),
                         WrapPersistent(options)));
-      return promise;
-    }
 
-    if (!web_identity_requester_) {
-      web_identity_requester_ =
-          MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
+      // Start recording the duration from when RequestToken is called directly
+      // to when RequestToken would be called if invoked through a window onload
+      // event listener.
+      web_identity_requester_->StartWindowOnloadDelayTimer(
+          WrapPersistent(resolver));
+
+      return promise;
     }
 
     if (scoped_abort_state) {

@@ -443,6 +443,7 @@ source_set("unit_tests") {
     "credentialmanagement/credential_manager_type_converters_unittest.cc",
     "credentialmanagement/credentials_container_test.cc",
     "credentialmanagement/password_credential_test.cc",
+    "credentialmanagement/web_identity_requester_test.cc",
     "csspaint/document_paint_definition_test.cc",
     "csspaint/nativepaint/background_color_paint_definition_test.cc",
     "csspaint/nativepaint/clip_path_paint_definition_test.cc",

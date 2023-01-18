@@ -19,7 +19,7 @@ class IdentityProviderConfig;
 class WebIdentityWindowOnloadEventListener;
 
 // Helper class to handle FedCM token requests.
-class WebIdentityRequester final
+class MODULES_EXPORT WebIdentityRequester final
     : public GarbageCollected<WebIdentityRequester> {
  public:
   explicit WebIdentityRequester(ExecutionContext* context);
@@ -27,6 +27,7 @@ class WebIdentityRequester final
   void OnRequestToken(mojom::blink::RequestTokenStatus status,
                       const absl::optional<KURL>& selected_idp_config_url,
                       const WTF::String& token);
+
   // Invoked at most once per token request.
   void RequestToken();
   // Invoked at least once per token request, can be multiple times.
@@ -37,9 +38,21 @@ class WebIdentityRequester final
       mojom::blink::RpContext rp_context);
   void InsertScopedAbortState(
       std::unique_ptr<ScopedAbortState> scoped_abort_state);
+
+  // Starts the timer for recording the duration from when RequestToken is
+  // called directly to when RequestToken would be called if invoked through a
+  // window onload event listener.
+  void StartWindowOnloadDelayTimer(ScriptPromiseResolver* resolver);
+  // Stops the timer for recording the duration from when RequestToken is
+  // called directly to when RequestToken would be called if invoked through a
+  // window onload event listener.
+  void StopWindowOnloadDelayTimer();
+
   void Trace(Visitor* visitor) const;
 
  private:
+  void InitWindowOnloadEventListener(ScriptPromiseResolver* resolver);
+
   // A vector of pointers to mojom class objects. Each mojom class object
   // corresponds to parameters of a navigator.credentials.get call and contains
   // a vector of IDPs. This is to reduce storage of duplicate data such as
@@ -52,6 +65,7 @@ class WebIdentityRequester final
   HeapHashMap<KURL, Member<ScriptPromiseResolver>> provider_to_resolver_;
   bool is_requesting_token_{false};
   bool has_posted_task_{false};
+  base::TimeTicks window_onload_delay_start_time_;
 };
 
 }  // namespace blink
