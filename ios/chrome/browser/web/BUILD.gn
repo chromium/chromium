@@ -307,6 +307,7 @@ source_set("web_internal") {
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/components/webui:url_constants",
     "//ios/net",
+    "//ios/public/provider/chrome/browser/find_in_page:find_in_page_api",
     "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api",
     "//ios/web",
     "//ios/web/common",

@@ -72,6 +72,7 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/public/provider/chrome/browser/url_rewriters/url_rewriters_api.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
@@ -453,4 +454,17 @@ bool ChromeWebClient::IsPointingToSameDocument(const GURL& url1,
   GURL url_to_compare1 = GetOnlineUrl(url1);
   GURL url_to_compare2 = GetOnlineUrl(url2);
   return url_to_compare1 == url_to_compare2;
+}
+
+id<UITextSearching> ChromeWebClient::GetSearchableObjectForWebState(
+    web::WebState* web_state) const API_AVAILABLE(ios(16)) {
+  return ios::provider::GetSearchableObjectForWebState(web_state);
+}
+
+void ChromeWebClient::StartTextSearchInWebState(web::WebState* web_state) {
+  ios::provider::StartTextSearchInWebState(web_state);
+}
+
+void ChromeWebClient::StopTextSearchInWebState(web::WebState* web_state) {
+  ios::provider::StopTextSearchInWebState(web_state);
 }

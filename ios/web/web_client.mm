@@ -124,4 +124,21 @@ bool WebClient::IsPointingToSameDocument(const GURL& url1,
   return url1 == url2;
 }
 
+id<UITextSearching> WebClient::GetSearchableObjectForWebState(
+    web::WebState* web_state) const API_AVAILABLE(ios(16)) {
+  // Subclasses need to provide their own implementation to use this method.
+  NOTREACHED();
+  return nil;
+}
+
+void WebClient::StartTextSearchInWebState(web::WebState* web_state) {
+  // Subclasses need to provide their own implementation to use this method.
+  NOTREACHED();
+}
+
+void WebClient::StopTextSearchInWebState(web::WebState* web_state) {
+  // Subclasses need to provide their own implementation to use this method.
+  NOTREACHED();
+}
+
 }  // namespace web

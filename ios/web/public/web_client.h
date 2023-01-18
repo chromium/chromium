@@ -24,8 +24,8 @@ class RefCountedMemory;
 
 class GURL;
 
+@protocol UITextSearching;
 @protocol UITraitEnvironment;
-@class UIWebView;
 @class NSString;
 
 namespace net {
@@ -190,6 +190,16 @@ class WebClient {
   // Returns whether `url1` and `url2` are actually pointing to the same page.
   virtual bool IsPointingToSameDocument(const GURL& url1,
                                         const GURL& url2) const;
+
+  // Provides a searchable object for the given `web_state` instance.
+  virtual id<UITextSearching> GetSearchableObjectForWebState(
+      web::WebState* web_state) const API_AVAILABLE(ios(16));
+
+  // Starts a text search in `web_state`.
+  virtual void StartTextSearchInWebState(web::WebState* web_state);
+
+  // Stops the ongoing text search in `web_state`.
+  virtual void StopTextSearchInWebState(web::WebState* web_state);
 };
 
 }  // namespace web
