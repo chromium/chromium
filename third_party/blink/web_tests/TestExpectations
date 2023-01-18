@@ -2328,8 +2328,6 @@ crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-skip-unsu
 
 # CSS Color 4 interpolations
 crbug.com/1362022 external/wpt/css/css-images/gradient/gradient-eval-004.html [ Failure ]
-crbug.com/1362022 [ Mac11-arm64 Release ] external/wpt/css/css-images/gradient/gradient-eval-006.html [ Failure ]
-crbug.com/1362022 [ Mac12-arm64 Release ] external/wpt/css/css-images/gradient/gradient-eval-006.html [ Failure ]
 
 crbug.com/808834 [ Linux ] external/wpt/css/css-pseudo/first-letter-001.html [ Failure ]
 crbug.com/808834 [ Win ] external/wpt/css/css-pseudo/first-letter-001.html [ Failure ]
