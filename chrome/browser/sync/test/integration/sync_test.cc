@@ -257,6 +257,7 @@ SyncTest::SyncTest(TestType test_type)
       break;
     }
   }
+
 #if !BUILDFLAG(IS_ANDROID)
   browser_list_observer_ = std::make_unique<ClosedBrowserObserver>(
       base::BindRepeating(&SyncTest::OnBrowserRemoved, base::Unretained(this)));
@@ -485,22 +486,8 @@ void SyncTest::OnBrowserRemoved(Browser* browser) {
   for (size_t i = 0; i < browsers_.size(); ++i) {
     if (browsers_[i] == browser) {
       browsers_[i] = nullptr;
-      // Remove a corresponding SyncServiceHarness if exists since SyncService
-      // may be destroyed soon. It may not exist for browsers added during
-      // tests using AddBrowser().
-      if (i < clients_.size()) {
-        CheckForDataTypeFailures(/*client_index=*/i);
-        clients_[i].reset();
-      }
       break;
     }
-  }
-
-  if (fake_server_sync_invalidation_sender_ &&
-      base::Contains(profile_to_fcm_handler_map_, browser->profile())) {
-    fake_server_sync_invalidation_sender_->RemoveFCMHandler(
-        profile_to_fcm_handler_map_[browser->profile()]);
-    profile_to_fcm_handler_map_.erase(browser->profile());
   }
 }
 #endif
@@ -659,6 +646,7 @@ bool SyncTest::SetupClients() {
 void SyncTest::InitializeProfile(int index, Profile* profile) {
   DCHECK(profile);
   profiles_[index] = profile;
+  profile->AddObserver(this);
 
   SetUpInvalidations(index);
 #if !BUILDFLAG(IS_ANDROID)
@@ -927,6 +915,13 @@ void SyncTest::TearDownOnMainThread() {
   // Delete things that unsubscribe in destructor before their targets are gone.
   configuration_refresher_.reset();
 
+  for (Profile* profile : profiles_) {
+    // Profile could be removed earlier.
+    if (profile) {
+      profile->RemoveObserver(this);
+    }
+  }
+
   // Note: Closing all the browsers (see above) may destroy the Profiles, if
   // kDestroyProfileOnBrowserClose is enabled. So clear them out here, to make
   // sure they're not used anymore.
@@ -956,6 +951,30 @@ void SyncTest::SetUpInProcessBrowserTestFixture() {
           ->RegisterCreateServicesCallbackForTesting(
               base::BindRepeating(&SyncTest::OnWillCreateBrowserContextServices,
                                   base::Unretained(this)));
+}
+
+void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
+  profile->RemoveObserver(this);
+
+  for (size_t index = 0; index < profiles_.size(); ++index) {
+    if (profiles_[index] != profile) {
+      continue;
+    }
+
+    CheckForDataTypeFailures(/*client_index=*/index);
+    profiles_[index] = nullptr;
+    clients_[index].reset();
+#if !BUILDFLAG(IS_ANDROID)
+    DCHECK(!browsers_[index]);
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  if (fake_server_sync_invalidation_sender_) {
+    DCHECK(base::Contains(profile_to_fcm_handler_map_, profile));
+    fake_server_sync_invalidation_sender_->RemoveFCMHandler(
+        profile_to_fcm_handler_map_[profile]);
+    profile_to_fcm_handler_map_.erase(profile);
+  }
 }
 
 void SyncTest::OnWillCreateBrowserContextServices(

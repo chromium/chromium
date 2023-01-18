@@ -18,6 +18,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/sync/test/integration/configuration_refresher.h"
 #include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
@@ -105,7 +106,7 @@ inline constexpr char kSyncPasswordForTest[] = "sync-password-for-test";
 //    username and password are ignored if this is set.
 // Other switches may modify the behavior of helper classes frequently used in
 // sync integration tests, see StatusChangeChecker for example.
-class SyncTest : public PlatformBrowserTest {
+class SyncTest : public PlatformBrowserTest, public ProfileObserver {
  public:
   // The different types of live sync tests that can be implemented.
   enum TestType {
@@ -278,6 +279,9 @@ class SyncTest : public PlatformBrowserTest {
   void TearDownOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
 
+  // ProfileObserver implementation.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   void OnWillCreateBrowserContextServices(content::BrowserContext* context);
 
   // Invoked immediately before creating profile |index| under |profile_path|.
@@ -410,7 +414,7 @@ class SyncTest : public PlatformBrowserTest {
   // directory. Profiles are owned by the ProfileManager.
   // TODO(crbug.com/1349349): store |profiles_|, |browsers_| and |clients_| in
   // one structure.
-  std::vector<Profile*> profiles_;
+  std::vector<raw_ptr<Profile>> profiles_;
 
   // List of temporary directories that need to be deleted when the test is
   // completed, used for two-client tests with external server.
@@ -421,7 +425,7 @@ class SyncTest : public PlatformBrowserTest {
   // instance is created for each sync profile. Browser object lifetime is
   // managed by BrowserList, so we don't use a std::vector<std::unique_ptr<>>
   // here.
-  std::vector<Browser*> browsers_;
+  std::vector<raw_ptr<Browser>> browsers_;
 
   class ClosedBrowserObserver;
   std::unique_ptr<ClosedBrowserObserver> browser_list_observer_;
