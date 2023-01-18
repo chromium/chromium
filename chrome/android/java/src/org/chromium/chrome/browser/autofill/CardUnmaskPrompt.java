@@ -36,6 +36,7 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -154,6 +155,12 @@ public class CardUnmaskPrompt
         mIsVirtualCard = isVirtualCard;
 
         LayoutInflater inflater = LayoutInflater.from(context);
+
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)) {
+            View unused = inflater.inflate(R.layout.autofill_card_unmask_prompt_new, null);
+        }
+
         View v = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
         mInstructions = (TextView) v.findViewById(R.id.instructions);
         mInstructions.setText(instructions);
