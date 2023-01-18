@@ -117,8 +117,14 @@
 <!--            android:layout_gravity="bottom"-->
 <!--            />-->
 
-        <include layout="@layout/layout_controller"
-            android:id="@+id/bottom_controller"
+<!--        <include layout="@layout/layout_controller"-->
+<!--            android:id="@+id/bottom_controller"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="bottom"/>-->
+
+        <com.ark.browser.ui.widget.BottomControlBar
+            android:id="@+id/bottom_control_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"/>
@@ -198,6 +204,11 @@
     <include layout="@layout/layout_smart_search"
         android:visibility="invisible"
         />
+
+    <com.ark.browser.ui.widget.homepage.SwitcherRecyclerLayout
+        android:id="@+id/tab_switcher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

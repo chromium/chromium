@@ -6643,6 +6643,7 @@ RenderFrameHostImpl* NavigationRequest::GetRenderFrameHost() const {
   // documentation for |is_synchronous_renderer_commit_|) have a
   // RenderFrameHost available from the start.
   if (!is_synchronous_renderer_commit()) {
+    LOG(ERROR) << "NavigationRequest::GetRenderFrameHost state=" << state_;
     CHECK_GE(state_, WILL_PROCESS_RESPONSE)
         << "This accessor should only be called after a RenderFrameHost has "
            "been picked for this navigation.";

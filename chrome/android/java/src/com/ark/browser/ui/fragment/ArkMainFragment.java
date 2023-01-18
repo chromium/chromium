@@ -30,7 +30,11 @@ import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
+import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
+import com.ark.browser.ui.widget.homepage.ArkTabAdapter;
+import com.ark.browser.ui.widget.homepage.SwitcherRecyclerLayout;
+import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 import com.zpj.bus.ZBus;
@@ -78,8 +82,10 @@ public class ArkMainFragment extends BaseFragment implements
     private ArkCompositorViewHolder mViewHolder;
 //    private ProgressBar mProgressBar;
 //    private EditText mUrlBar;
+    private SwitcherRecyclerLayout mSwitcher;
 
     private BottomController mBottomController;
+    private TabSwitcherManager mSwitcherManager;
 
     private boolean isViewCreated = false;
     private Runnable mOpenPage;
@@ -221,6 +227,10 @@ public class ArkMainFragment extends BaseFragment implements
                     } else {
                         mOpenPage = runnable;
                     }
+
+                    if (mSwitcher != null) {
+                        mSwitcher.notifyDataSetChanged();
+                    }
                 });
             }
         });
@@ -239,6 +249,11 @@ public class ArkMainFragment extends BaseFragment implements
 
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
 
+        mSwitcher = findViewById(R.id.tab_switcher);
+        mSwitcherManager = new TabSwitcherManager(mSwitcher);
+
+        BottomControlBar bottomControlBar = findViewById(R.id.bottom_control_bar);
+        bottomControlBar.setSwitcher(mSwitcher);
         mBottomController = new BottomController(view);
 
 //        ImageView btnBack = findViewById(R.id.btn_back);
@@ -313,6 +328,14 @@ public class ArkMainFragment extends BaseFragment implements
             mOpenPage.run();
             mOpenPage = null;
         }
+    }
+
+    @Override
+    public boolean onBackPressedSupport() {
+        if (mSwitcherManager != null && mSwitcherManager.onBackPressed()) {
+            return true;
+        }
+        return super.onBackPressedSupport();
     }
 
     @Override

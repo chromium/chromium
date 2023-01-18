@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:background="@color/colorPrimary"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        >
+
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/default_favicon"
+            android:layout_marginHorizontal="6dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_lock"
+            android:layout_width="36dp"
+            android:layout_height="48dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_lock_24dp"
+            android:background="?android:attr/actionBarItemBackground"
+            android:layout_gravity="center_vertical"
+            android:tint="@color/white"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_more"
+            android:layout_width="36dp"
+            android:layout_height="48dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:background="?android:attr/actionBarItemBackground"
+            android:layout_gravity="center_vertical"
+            android:tint="@color/white"
+            />
+
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="16dp"
+        app:cardUseCompatPadding="false"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="?attr/backgroundColor"
+        >
+
+        <!--        <ImageView-->
+        <!--            android:id="@+id/iv_thumbnail"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            />-->
+
+        <com.ark.browser.ui.widget.FitWidthImageView
+            android:id="@+id/iv_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
