@@ -388,7 +388,7 @@ void SessionSyncBridge::DoGarbageCollection(SessionStore::WriteBatch* batch) {
     const base::TimeDelta session_age =
         base::Time::Now() - session->modified_time;
     if (session_age > kStaleSessionThreshold) {
-      const std::string session_tag = session->session_tag;
+      const std::string session_tag = session->GetSessionTag();
       DVLOG(1) << "Found stale session " << session_tag << " with age "
                << session_age.InDays() << " days, deleting.";
       DeleteForeignSessionWithBatch(session_tag, batch);

@@ -157,9 +157,9 @@ class MatchesSyncedSessionMatcher
       *listener << " which is null";
       return false;
     }
-    if (!session_tag_.MatchAndExplain(actual->session_tag, listener)) {
+    if (!session_tag_.MatchAndExplain(actual->GetSessionTag(), listener)) {
       *listener << " which contains an unexpected session tag: "
-                << actual->session_tag;
+                << actual->GetSessionTag();
       return false;
     }
 

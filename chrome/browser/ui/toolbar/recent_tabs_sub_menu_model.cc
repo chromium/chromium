@@ -442,7 +442,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   for (size_t i = 0;
        i < sessions.size() && num_sessions_added < kMaxSessionsToShow; ++i) {
     const sync_sessions::SyncedSession* session = sessions[i];
-    const std::string& session_tag = session->session_tag;
+    const std::string& session_tag = session->GetSessionTag();
 
     // Collect tabs from all windows of the session, ordered by recency.
     std::vector<const sessions::SessionTab*> tabs_in_session;

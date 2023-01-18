@@ -55,7 +55,7 @@ const SessionID kTab6 = SessionID::FromSerializedValue(65);
 const SessionID kTab7 = SessionID::FromSerializedValue(75);
 
 MATCHER_P(HasSessionTag, expected_tag, "") {
-  return arg->session_tag == expected_tag;
+  return arg->GetSessionTag() == expected_tag;
 }
 
 }  // namespace

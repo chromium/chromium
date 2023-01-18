@@ -227,13 +227,13 @@ jboolean ForeignSessionHelper::GetForeignSessions(
       continue;
 
     const bool is_collapsed =
-        (collapsed_sessions.Find(session.session_tag) != nullptr);
+        (collapsed_sessions.Find(session.GetSessionTag()) != nullptr);
 
     if (is_collapsed)
-      pref_collapsed_sessions.Set(session.session_tag, true);
+      pref_collapsed_sessions.Set(session.GetSessionTag(), true);
 
     last_pushed_session.Reset(Java_ForeignSessionHelper_pushSession(
-        env, result, ConvertUTF8ToJavaString(env, session.session_tag),
+        env, result, ConvertUTF8ToJavaString(env, session.GetSessionTag()),
         ConvertUTF8ToJavaString(env, session.session_name),
         session.modified_time.ToJavaTime()));
 

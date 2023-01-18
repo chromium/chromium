@@ -389,8 +389,8 @@ api::sessions::Device SessionsGetDevicesFunction::CreateDeviceModel(
        it != session->windows.end() &&
        static_cast<int>(device_struct.sessions.size()) < max_results;
        ++it) {
-    absl::optional<api::sessions::Session> session_model =
-        CreateSessionModel(it->second->wrapped_window, session->session_tag);
+    absl::optional<api::sessions::Session> session_model = CreateSessionModel(
+        it->second->wrapped_window, session->GetSessionTag());
     if (session_model)
       device_struct.sessions.push_back(std::move(*session_model));
   }

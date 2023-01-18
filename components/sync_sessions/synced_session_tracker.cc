@@ -183,7 +183,7 @@ void SyncedSessionTracker::InitLocalSession(
   local_session->session_name = local_session_name;
   local_session->SetDeviceTypeAndFormFactor(local_device_type,
                                             local_device_form_factor);
-  local_session->session_tag = local_session_tag;
+  local_session->SetSessionTag(local_session_tag);
 }
 
 const std::string& SyncedSessionTracker::GetLocalSessionTag() const {
@@ -340,7 +340,7 @@ SyncedSessionTracker::TrackedSession* SyncedSessionTracker::GetTrackedSession(
   session = &session_map_[session_tag];
   DVLOG(1) << "Creating new session with tag " << session_tag << " at "
            << session;
-  session->synced_session.session_tag = session_tag;
+  session->synced_session.SetSessionTag(session_tag);
   return session;
 }
 
@@ -806,10 +806,10 @@ void SerializeTrackerToSpecifics(
   for (const SyncedSession* session :
        tracker.LookupAllSessions(SyncedSessionTracker::RAW)) {
     // Request all tabs.
-    session_tag_to_node_ids[session->session_tag] =
-        tracker.LookupTabNodeIds(session->session_tag);
+    session_tag_to_node_ids[session->GetSessionTag()] =
+        tracker.LookupTabNodeIds(session->GetSessionTag());
     // Request the header too.
-    session_tag_to_node_ids[session->session_tag].insert(
+    session_tag_to_node_ids[session->GetSessionTag()].insert(
         TabNodePool::kInvalidTabNodeID);
   }
   SerializePartialTrackerToSpecifics(tracker, session_tag_to_node_ids,

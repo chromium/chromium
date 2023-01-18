@@ -85,8 +85,10 @@ struct SyncedSession {
 
   ~SyncedSession();
 
-  // Unique tag for each session.
-  std::string session_tag;
+  void SetSessionTag(const std::string& session_tag);
+
+  const std::string& GetSessionTag() const;
+
   // User-visible name
   std::string session_name;
 
@@ -108,6 +110,9 @@ struct SyncedSession {
   syncer::DeviceInfo::FormFactor GetDeviceFormFactor() const;
 
  private:
+  // Unique tag for each session.
+  std::string session_tag_;
+
   // Type of device this session is from.
   // It's used only to populate deprecated device_type by
   // ToSessionHeaderProto().

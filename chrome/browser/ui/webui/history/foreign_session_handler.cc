@@ -299,7 +299,7 @@ base::Value::List ForeignSessionHandler::GetForeignSessions() {
     // Note: we don't own the SyncedSessions themselves.
     for (size_t i = 0; i < sessions.size() && i < kMaxSessionsToShow; ++i) {
       const sync_sessions::SyncedSession* session = sessions[i];
-      const std::string& session_tag = session->session_tag;
+      const std::string& session_tag = session->GetSessionTag();
       base::Value::Dict session_data;
       // The items which are to be written into |session_data| are also
       // described in chrome/browser/resources/history/externs.js

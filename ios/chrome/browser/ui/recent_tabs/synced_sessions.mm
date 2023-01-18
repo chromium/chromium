@@ -83,7 +83,7 @@ DistantSession::DistantSession(sync_sessions::SessionSyncService* sync_service,
     std::vector<const sync_sessions::SyncedSession*> sessions;
     open_tabs->GetAllForeignSessions(&sessions);
     for (const auto* session : sessions) {
-      if (tag == session->session_tag) {
+      if (tag == session->GetSessionTag()) {
         this->InitWithSyncedSession(session, open_tabs);
       }
     }
@@ -95,7 +95,7 @@ DistantSession::~DistantSession() = default;
 void DistantSession::InitWithSyncedSession(
     const sync_sessions::SyncedSession* synced_session,
     sync_sessions::OpenTabsUIDelegate* open_tabs_delegate) {
-  tag = synced_session->session_tag;
+  tag = synced_session->GetSessionTag();
   name = synced_session->session_name;
   modified_time = synced_session->modified_time;
 

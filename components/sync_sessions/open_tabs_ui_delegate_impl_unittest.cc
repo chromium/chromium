@@ -85,10 +85,9 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
 
   std::vector<const SyncedSession*> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
-  EXPECT_THAT(sessions,
-              ElementsAre(Field(&SyncedSession::session_tag, kSessionTag1),
-                          Field(&SyncedSession::session_tag, kSessionTag3),
-                          Field(&SyncedSession::session_tag, kSessionTag2)));
+  EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag1);
+  EXPECT_EQ(sessions[1]->GetSessionTag(), kSessionTag3);
+  EXPECT_EQ(sessions[2]->GetSessionTag(), kSessionTag2);
 }
 
 TEST_F(OpenTabsUIDelegateImplTest, ShouldSortTabs) {
@@ -141,8 +140,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonPresentable) {
 
   std::vector<const SyncedSession*> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
-  EXPECT_THAT(sessions,
-              ElementsAre(Field(&SyncedSession::session_tag, kSessionTag2)));
+  EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
 }
 
 TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
@@ -171,8 +169,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
 
   std::vector<const SyncedSession*> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
-  EXPECT_THAT(sessions,
-              ElementsAre(Field(&SyncedSession::session_tag, kSessionTag2)));
+  EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
 }
 
 }  // namespace

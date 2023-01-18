@@ -478,7 +478,7 @@ SessionStore::SessionStore(
   // the header.
   for (const SyncedSession* session :
        session_tracker_.LookupAllForeignSessions(SyncedSessionTracker::RAW)) {
-    session_tracker_.CleanupSession(session->session_tag);
+    session_tracker_.CleanupSession(session->GetSessionTag());
   }
 }
 

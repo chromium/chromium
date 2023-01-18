@@ -201,8 +201,8 @@ void FloatingWorkspaceService::RestoreForeignSessionWindows(
     const sync_sessions::SyncedSession* session) {
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
   std::vector<const sessions::SessionWindow*> session_windows;
-  if (open_tabs &&
-      open_tabs->GetForeignSession(session->session_tag, &session_windows)) {
+  if (open_tabs && open_tabs->GetForeignSession(session->GetSessionTag(),
+                                                &session_windows)) {
     SessionRestore::RestoreForeignSessionWindows(
         profile_, session_windows.begin(), session_windows.end());
   }

@@ -246,9 +246,17 @@ sync_pb::SessionWindow SyncedSessionWindow::ToSessionWindowProto() const {
 }
 
 SyncedSession::SyncedSession()
-    : session_tag("invalid"), device_type(sync_pb::SyncEnums::TYPE_UNSET) {}
+    : session_tag_("invalid"), device_type(sync_pb::SyncEnums::TYPE_UNSET) {}
 
 SyncedSession::~SyncedSession() = default;
+
+void SyncedSession::SetSessionTag(const std::string& session_tag) {
+  session_tag_ = session_tag;
+}
+
+const std::string& SyncedSession::GetSessionTag() const {
+  return session_tag_;
+}
 
 void SyncedSession::SetDeviceTypeAndFormFactor(
     const sync_pb::SyncEnums::DeviceType& local_device_type,
