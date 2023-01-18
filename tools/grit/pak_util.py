@@ -19,12 +19,6 @@ import subprocess
 import sys
 import tempfile
 
-_HERE_PATH = os.path.dirname(__file__)
-_SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..'))
-sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'six', 'src'))
-
-import six
-
 from grit import constants
 from grit.format import data_pack
 

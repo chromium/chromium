@@ -16,9 +16,6 @@ setuptools.setup(
         'console_scripts': ['grit = grit.grit_runner:Main'],
     },
     packages=setuptools.find_packages(),
-    install_requires=[
-        'six >= 1.10',
-    ],
     author='The Chromium Authors',
     author_email='chromium-dev@chromium.org',
     description=('Google Resource and Internationalization Tool for managing '
@@ -34,7 +31,6 @@ setuptools.setup(
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

@@ -12,8 +12,6 @@ import sys
 
 from xml.sax import saxutils
 
-import six
-
 from grit import grd_reader
 from grit import lazy_re
 from grit import tclib

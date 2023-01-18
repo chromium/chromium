@@ -11,7 +11,6 @@ import sys
 from xml.dom import Node
 import xml.dom.minidom
 
-import six
 from io import StringIO
 
 import grit.node.empty

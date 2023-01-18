@@ -10,7 +10,6 @@ import getopt
 import re
 import sys
 
-import six
 from io import StringIO
 
 import grit.node.empty

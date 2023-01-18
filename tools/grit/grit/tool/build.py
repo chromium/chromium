@@ -15,8 +15,6 @@ import os
 import shutil
 import sys
 
-import six
-
 from grit import grd_reader
 from grit import shortcuts
 from grit import util

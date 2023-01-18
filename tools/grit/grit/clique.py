@@ -9,8 +9,6 @@ collections of cliques (uber-cliques).
 
 import re
 
-import six
-
 from grit import constants
 from grit import exception
 from grit import lazy_re

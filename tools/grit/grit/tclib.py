@@ -9,8 +9,6 @@
 import functools
 import re
 
-import six
-
 from grit import exception
 from grit import lazy_re
 import grit.extern.tclib

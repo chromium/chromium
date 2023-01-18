@@ -14,8 +14,6 @@ if __name__ == '__main__':
 
 import unittest
 
-import six
-
 from grit import util
 
 

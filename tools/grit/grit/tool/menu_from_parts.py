@@ -5,8 +5,6 @@
 '''The 'grit menufromparts' tool.'''
 
 
-import six
-
 from grit import grd_reader
 from grit import util
 from grit import xtb_reader
