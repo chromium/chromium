@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
@@ -271,6 +272,14 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // next time |ShowUserWallpaper| is called.
   // |account_id|: The user's account id.
   virtual void RemovePolicyWallpaper(const AccountId& account_id) = 0;
+
+  // Returns the urls of the wallpapers that exist in local file system (i.e.
+  // |SetOnlineWallpaper| was called earlier). The url is used as id
+  // to identify which wallpapers are available to be set offline.
+  using GetOfflineWallpaperListCallback =
+      base::OnceCallback<void(const std::vector<std::string>&)>;
+  virtual void GetOfflineWallpaperList(
+      GetOfflineWallpaperListCallback callback) = 0;
 
   // Sets wallpaper animation duration. Passing an empty value disables the
   // animation.

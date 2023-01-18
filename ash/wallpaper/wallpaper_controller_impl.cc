@@ -44,6 +44,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -533,6 +534,27 @@ void EnsureGooglePhotosDirectoryExists(const AccountId& account_id) {
   auto user_directory = GetUserGooglePhotosWallpaperDir(account_id);
   if (!base::DirectoryExists(user_directory))
     base::CreateDirectory(user_directory);
+}
+
+// Implementation of |WallpaperControllerImpl::GetOfflineWallpaper|.
+std::vector<std::string> GetOfflineWallpaperListImpl() {
+  DCHECK(!GlobalChromeOSWallpapersDir().empty());
+  std::vector<std::string> url_list;
+  if (base::DirectoryExists(GlobalChromeOSWallpapersDir())) {
+    base::FileEnumerator files(GlobalChromeOSWallpapersDir(),
+                               /*recursive=*/false,
+                               base::FileEnumerator::FILES);
+    for (base::FilePath current = files.Next(); !current.empty();
+         current = files.Next()) {
+      // Do not add file name of small resolution wallpaper to the list.
+      if (!base::EndsWith(current.BaseName().RemoveExtension().value(),
+                          kSmallWallpaperSuffix,
+                          base::CompareCase::SENSITIVE)) {
+        url_list.push_back(current.BaseName().value());
+      }
+    }
+  }
+  return url_list;
 }
 
 // Returns the type of the user with the specified |id| or USER_TYPE_REGULAR.
@@ -1597,6 +1619,13 @@ void WallpaperControllerImpl::RemovePolicyWallpaper(
   // otherwise setting default wallpaper is not allowed.
   pref_manager_->RemoveUserWallpaperInfo(account_id);
   SetDefaultWallpaper(account_id, show_wallpaper, base::DoNothing());
+}
+
+void WallpaperControllerImpl::GetOfflineWallpaperList(
+    GetOfflineWallpaperListCallback callback) {
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&GetOfflineWallpaperListImpl),
+      std::move(callback));
 }
 
 void WallpaperControllerImpl::SetAnimationDuration(

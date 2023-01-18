@@ -1214,8 +1214,14 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
 
   // Verify that the wallpaper with |url| is available offline, and the returned
   // file name should not contain the small wallpaper suffix.
-  EXPECT_TRUE(base::PathExists(online_wallpaper_dir_.GetPath().Append(
-      GURL(kDummyUrl).ExtractFileName())));
+  run_loop = std::make_unique<base::RunLoop>();
+  controller_->GetOfflineWallpaperList(base::BindLambdaForTesting(
+      [&run_loop](const std::vector<std::string>& url_list) {
+        EXPECT_EQ(1U, url_list.size());
+        EXPECT_EQ(GURL(kDummyUrl).ExtractFileName(), url_list[0]);
+        run_loop->Quit();
+      }));
+  run_loop->Run();
 }
 
 TEST_F(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {

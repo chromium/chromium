@@ -378,6 +378,11 @@ void WallpaperControllerClientImpl::RemovePolicyWallpaper(
   wallpaper_controller_->RemovePolicyWallpaper(account_id);
 }
 
+void WallpaperControllerClientImpl::GetOfflineWallpaperList(
+    ash::WallpaperController::GetOfflineWallpaperListCallback callback) {
+  wallpaper_controller_->GetOfflineWallpaperList(std::move(callback));
+}
+
 void WallpaperControllerClientImpl::SetAnimationDuration(
     const base::TimeDelta& animation_duration) {
   wallpaper_controller_->SetAnimationDuration(animation_duration);
