@@ -91,6 +91,18 @@ std::unique_ptr<views::View> CreateOriginView(const SharingDialogData& data) {
   return label;
 }
 
+const gfx::VectorIcon& GetIconType(
+    const syncer::DeviceInfo::FormFactor& device_form_factor) {
+  switch (device_form_factor) {
+    case syncer::DeviceInfo::FormFactor::kPhone:
+      return kHardwareSmartphoneIcon;
+    case syncer::DeviceInfo::FormFactor::kTablet:
+      return kTabletIcon;
+    default:
+      return kHardwareComputerIcon;
+  }
+}
+
 }  // namespace
 
 SharingDialogView::SharingDialogView(views::View* anchor_view,
@@ -246,14 +258,9 @@ void SharingDialogView::InitListView() {
   LogSharingDevicesToShow(data_.prefix, kSharingUiDialog, data_.devices.size());
   size_t index = 0;
   for (const auto& device : data_.devices) {
-    // TODO(crbug.com/1368080): Investigate the need to add a desktop device
-    // icon.
-    auto icon =
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            device->form_factor() == syncer::DeviceInfo::FormFactor::kTablet
-                ? kTabletIcon
-                : kHardwareSmartphoneIcon,
-            ui::kColorIcon, kPrimaryIconSize));
+    auto icon = std::make_unique<views::ImageView>(
+        ui::ImageModel::FromVectorIcon(GetIconType(device->form_factor()),
+                                       ui::kColorIcon, kPrimaryIconSize));
 
     auto* dialog_button =
         button_list->AddChildView(std::make_unique<HoverButton>(
