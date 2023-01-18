@@ -86,6 +86,12 @@ constexpr int kMaxNumPrunableMonths = 20;
 // Between child spacing for `CalendarUpNextView`.
 constexpr int kUpNextBetweenChildSpacing = 8;
 
+// The `CalendarUpNextView` UI has a rounded 'nub' that sticks up in the middle
+// of the view. To ensure that the scroll view animates nicely behind the up
+// next view, we need to forcibly overlap the views slightly for the distance
+// between the bottom and top of the 'nub'.
+constexpr int kUpNextOverlapInPx = 12;
+
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time selected_date);
 

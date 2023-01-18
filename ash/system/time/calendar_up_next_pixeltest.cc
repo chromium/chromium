@@ -66,8 +66,9 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
         google_apis::ApiErrorCode::HTTP_SUCCESS,
         calendar_test_utils::CreateMockEventList(std::move(events)).get());
 
-    up_next_view_ = widget_->SetContentsView(
-        std::make_unique<CalendarUpNextView>(controller_.get()));
+    up_next_view_ =
+        widget_->SetContentsView(std::make_unique<CalendarUpNextView>(
+            controller_.get(), views::Button::PressedCallback()));
     widget_->SetSize(
         gfx::Size(kTrayMenuWidth, up_next_view_->GetPreferredSize().height()));
   }

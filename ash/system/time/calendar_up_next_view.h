@@ -24,19 +24,23 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
  public:
   METADATA_HEADER(CalendarUpNextView);
 
-  explicit CalendarUpNextView(CalendarViewController* calendar_view_controller);
+  CalendarUpNextView(CalendarViewController* calendar_view_controller,
+                     views::Button::PressedCallback callback);
   CalendarUpNextView(const CalendarUpNextView& other) = delete;
   CalendarUpNextView& operator=(const CalendarUpNextView& other) = delete;
   ~CalendarUpNextView() override;
 
+  // Returns the `SkPath` for the background of the `CalendarUpNextView`.
+  SkPath GetClipPath() const;
+
   // views::View
   void Layout() override;
-  void OnThemeChanged() override;
 
  private:
-  friend class CalendarUpNextViewTest;
   friend class CalendarUpNextViewAnimationTest;
   friend class CalendarUpNextViewPixelTest;
+  friend class CalendarUpNextViewTest;
+  friend class CalendarViewTest;
 
   // Populates the scroll view with events.
   void UpdateEvents(
@@ -63,6 +67,7 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
   CalendarViewController* calendar_view_controller_;
 
   // Owned by `CalendarUpNextView`.
+  views::View* const todays_events_button_container_;
   views::View* const header_view_;
   views::Button* left_scroll_button_;
   views::Button* right_scroll_button_;

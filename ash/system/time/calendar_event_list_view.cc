@@ -128,6 +128,7 @@ CalendarEventListView::CalendarEventListView(
       views::BoxLayout::Orientation::kVertical));
 
   SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
   // Set the bottom corners to be rounded so that `CalendarEventListView` is
   // contained in `CalendarView`.
   layer()->SetRoundedCornerRadius(features::IsCalendarJellyEnabled()

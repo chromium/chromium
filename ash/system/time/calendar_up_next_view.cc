@@ -12,11 +12,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/time/calendar_event_list_item_view_jelly.h"
+#include "ash/system/time/calendar_up_next_view_background_painter.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -27,10 +28,10 @@
 namespace ash {
 namespace {
 
-constexpr int kContainerInsets = 12;
-constexpr int kBackgroundRadius = 12;
+constexpr gfx::Insets kContainerInsets = gfx::Insets::TLBR(4, 14, 12, 14);
 constexpr int kFullWidth = 0;
 constexpr int kMaxItemWidth = 160;
+constexpr gfx::Insets kHeaderInsets = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr int kHeaderBetweenChildSpacing = 14;
 constexpr int kHeaderButtonsBetweenChildSpacing = 28;
 
@@ -81,12 +82,23 @@ class ScrollingAnimation : public gfx::LinearAnimation,
   const gfx::Rect end_visible_rect_;
 };
 
-views::Builder<views::Label> CreateHeaderLabel() {
+std::unique_ptr<views::Button> CreateTodaysEventsButton(
+    views::Button::PressedCallback callback) {
+  return views::Builder<views::Button>(
+             std::make_unique<ash::IconButton>(
+                 std::move(callback), IconButton::Type::kXSmall,
+                 &kCalendarUpNextTodaysEventsButtonIcon,
+                 IDS_ASH_CALENDAR_UP_NEXT_TODAYS_EVENTS_BUTTON))
+      .Build();
+}
+
+std::unique_ptr<views::Label> CreateHeaderLabel() {
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(
                  bubble_utils::TypographyStyle::kButton2,
                  l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_UP_NEXT)))
-      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .Build();
 }
 
 bool IsRightScrollButtonEnabled(views::ScrollView* scroll_view) {
@@ -115,16 +127,20 @@ int GetFirstVisibleChildIndex(std::vector<views::View*> event_views,
 }  // namespace
 
 CalendarUpNextView::CalendarUpNextView(
-    CalendarViewController* calendar_view_controller)
+    CalendarViewController* calendar_view_controller,
+    views::Button::PressedCallback callback)
     : calendar_view_controller_(calendar_view_controller),
+      todays_events_button_container_(
+          AddChildView(std::make_unique<views::View>())),
       header_view_(AddChildView(std::make_unique<views::View>())),
       scroll_view_(AddChildView(std::make_unique<views::ScrollView>(
           views::ScrollView::ScrollWithLayers::kEnabled))),
       content_view_(scroll_view_->SetContents(std::make_unique<views::View>())),
       bounds_animator_(this) {
+  SetBackground(std::make_unique<CalendarUpNextViewBackground>(
+      cros_tokens::kCrosSysSystemOnBase));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(kContainerInsets),
-      calendar_utils::kUpNextBetweenChildSpacing));
+      views::BoxLayout::Orientation::kVertical, kContainerInsets, 0));
 
   if (!gfx::Animation::ShouldRenderRichAnimation())
     bounds_animator_.SetAnimationDuration(base::TimeDelta());
@@ -134,15 +150,22 @@ CalendarUpNextView::CalendarUpNextView(
           base::BindRepeating(&CalendarUpNextView::ToggleScrollButtonState,
                               base::Unretained(this)));
 
+  // Todays events button
+  todays_events_button_container_
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>())
+      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  todays_events_button_container_->AddChildView(
+      CreateTodaysEventsButton(callback));
+
   // Header.
   auto* header_layout_manager =
       header_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          views::BoxLayout::Orientation::kHorizontal, kHeaderInsets,
           kHeaderBetweenChildSpacing));
   // Header label.
-  auto* header_label = header_view_->AddChildView(CreateHeaderLabel().Build());
+  auto* header_label = header_view_->AddChildView(CreateHeaderLabel());
   header_layout_manager->SetFlexForView(header_label, 1);
-  // Header buttons.
+  // Header scroll buttons.
   auto button_container =
       views::Builder<views::View>()
           .SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -184,6 +207,10 @@ CalendarUpNextView::CalendarUpNextView(
 
 CalendarUpNextView::~CalendarUpNextView() = default;
 
+SkPath CalendarUpNextView::GetClipPath() const {
+  return CalendarUpNextViewBackground::GetPath(size());
+}
+
 void CalendarUpNextView::Layout() {
   // For some reason the `content_view_` is constrained to the
   // `scroll_view_` width and so it isn't scrollable. This seems to be a
@@ -202,13 +229,6 @@ void CalendarUpNextView::Layout() {
   // After laying out the `content_view_`, we need to set the initial scroll
   // button state.
   ToggleScrollButtonState();
-}
-
-void CalendarUpNextView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  SetBackground(views::CreateRoundedRectBackground(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase),
-      kBackgroundRadius));
 }
 
 void CalendarUpNextView::UpdateEvents(

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/time/calendar_view.h"
+#include <climits>
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
@@ -192,6 +193,11 @@ class CalendarViewTest : public AshTestBase {
   views::View* event_list_view() { return calendar_view_->event_list_view_; }
 
   views::View* up_next_view() { return calendar_view_->up_next_view_; }
+
+  views::View* up_next_todays_events_button() {
+    return calendar_view_->up_next_view_->todays_events_button_container_
+        ->children()[0];
+  }
 
   void ScrollUpOneMonth() {
     calendar_view_->ScrollOneMonthAndAutoScroll(/*scroll_up=*/true);
@@ -2277,6 +2283,89 @@ TEST_F(
   EXPECT_TRUE(is_showing_up_next_view);
 }
 
+TEST_F(CalendarViewWithJellyEnabledTest,
+       ShouldNotShowUpNextView_WhenEventListViewIsOpen) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  // Open the event list view for any day.
+  GestureTapOn(
+      static_cast<views::LabelButton*>(current_month()->children()[2]));
+  ASSERT_TRUE(event_list_view());
+  // Mock events that start in ten mins coming in.
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateMockEventListWithEventStartTimeTenMinsAway());
+
+  // When the event list view is open, then the up next view should not have
+  // been created.
+  bool is_showing_up_next_view = up_next_view();
+  EXPECT_FALSE(is_showing_up_next_view);
+}
+
+// If there are upcoming events and the up next view should have been shown but
+// the event list was open, then when it closes we should show the up next view.
+TEST_F(CalendarViewWithJellyEnabledTest,
+       ShouldShowUpNextView_WhenEventListViewHasFinishedClosing) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  // Open the event list view for any day.
+  GestureTapOn(
+      static_cast<views::LabelButton*>(current_month()->children()[2]));
+  ASSERT_TRUE(event_list_view());
+  // Mock events that start in ten mins coming in.
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateMockEventListWithEventStartTimeTenMinsAway());
+  // Event list view is showing, so up next should not be shown.
+  bool is_showing_up_next_view = up_next_view();
+  ASSERT_FALSE(is_showing_up_next_view);
+  CloseEventList();
+
+  // After closing the event list view, we expect the up next view to now be
+  // shown.
+  is_showing_up_next_view = up_next_view();
+  EXPECT_TRUE(is_showing_up_next_view);
+}
+
+TEST_F(CalendarViewWithJellyEnabledTest,
+       ShouldOpenEventListView_WhenUpNextShowTodaysEventsButtonPressed) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateMockEventListWithEventStartTimeTenMinsAway());
+
+  // When fetched events are in the next 10 mins, then up next should have been
+  // created.
+  bool is_showing_up_next_view = up_next_view();
+  EXPECT_TRUE(is_showing_up_next_view);
+  bool is_showing_event_list_view = event_list_view();
+  EXPECT_FALSE(is_showing_event_list_view);
+
+  LeftClickOn(up_next_todays_events_button());
+
+  is_showing_event_list_view = event_list_view();
+  EXPECT_TRUE(is_showing_event_list_view);
+}
+
 TEST_F(
     CalendarViewWithJellyEnabledTest,
     GivenUpNextIsShown_WhenNewEventsMoreThanTwoHoursAwayAreFetched_ThenUpNextViewShouldNotBeShown) {
@@ -2303,6 +2392,75 @@ TEST_F(
   // When fetched events are now more than two hours away, then up next
   // should have been destroyed.
   EXPECT_FALSE(up_next_view());
+}
+
+TEST_F(CalendarViewWithJellyEnabledTest,
+       ShouldClipHeightOfScrollView_WhenUpNextIsShown) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+
+  // Expect the scrollview to have max int height when neither up next nor the
+  // event list view are showing.
+  EXPECT_EQ(INT_MAX, scroll_view()->GetMaxHeight());
+
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateMockEventListWithEventStartTimeTenMinsAway());
+
+  // When fetched events are in the next 10 mins, then up next should have been
+  // created.
+  EXPECT_TRUE(up_next_view());
+  // When up next is showing, the scrollview should be clipped to sit above but
+  // slightly overlapping the up next view bounds.
+  const int expected_max_height = scroll_view()->height() -
+                                  up_next_view()->height() +
+                                  calendar_utils::kUpNextOverlapInPx;
+  EXPECT_EQ(expected_max_height, scroll_view()->GetMaxHeight());
+}
+
+TEST_F(
+    CalendarViewWithJellyEnabledTest,
+    ShouldClipHeightOfScrollView_WhenEventListHasClosed_AndUpNextIsStillShown) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateMockEventListWithEventStartTimeTenMinsAway());
+
+  // When fetched events are in the next 10 mins, then up next should have been
+  // created.
+  EXPECT_TRUE(up_next_view());
+
+  // Open the event list view.
+  ASSERT_EQ(u"2",
+            static_cast<views::LabelButton*>(current_month()->children()[2])
+                ->GetText());
+  GestureTapOn(
+      static_cast<views::LabelButton*>(current_month()->children()[2]));
+  ASSERT_TRUE(event_list_view());
+
+  // Close the event list view.
+  GestureTapOn(close_button());
+  ASSERT_FALSE(event_list_view());
+
+  // When the event list view closes, the scrollview max height should have been
+  // clipped back to the right height for the up next view.
+  const int expected_max_height = scroll_view()->height() -
+                                  up_next_view()->height() +
+                                  calendar_utils::kUpNextOverlapInPx;
+  EXPECT_EQ(expected_max_height, scroll_view()->GetMaxHeight());
 }
 
 }  // namespace ash

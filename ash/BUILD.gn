@@ -1797,6 +1797,8 @@ component("ash") {
     "system/time/calendar_month_view.h",
     "system/time/calendar_up_next_view.cc",
     "system/time/calendar_up_next_view.h",
+    "system/time/calendar_up_next_view_background_painter.cc",
+    "system/time/calendar_up_next_view_background_painter.h",
     "system/time/calendar_utils.cc",
     "system/time/calendar_utils.h",
     "system/time/calendar_view.cc",

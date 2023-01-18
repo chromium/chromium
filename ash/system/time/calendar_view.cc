@@ -31,6 +31,7 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/paint_recorder.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
@@ -185,6 +186,84 @@ void ResetLayer(views::View* view) {
   view->layer()->SetOpacity(1.0f);
   view->layer()->SetTransform(gfx::Transform());
 }
+
+// Provides a layer mask over the `scroll_view_` that stops the calendar from
+// showing underneath the `up_next_view_`, if a transparent color is used as
+// the background color.
+// TODO: b/265057469 Remove layer mask if the cros.sys.system-on-base dark
+// theme colour is updated to be opaque.
+class UpNextViewMask : public ui::LayerOwner,
+                       public ui::LayerDelegate,
+                       public views::ViewObserver {
+ public:
+  UpNextViewMask(views::ScrollView* scroll_view,
+                 CalendarUpNextView* up_next_view)
+      : scroll_view_(scroll_view), up_next_view_(up_next_view) {
+    SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->set_delegate(this);
+
+    if (!scroll_view_->layer()) {
+      scroll_view_->SetPaintToLayer();
+      scroll_view_->layer()->SetFillsBoundsOpaquely(false);
+    }
+
+    scroll_view_->layer()->SetMaskLayer(layer());
+
+    scroll_view_->AddObserver(this);
+    up_next_view_->AddObserver(this);
+
+    // Up next view is added after the `scroll_view_` already exists so we need
+    // to manually set the layer's bounds initially.
+    if (!scroll_view_->bounds().IsEmpty()) {
+      OnViewBoundsChanged(scroll_view_);
+    }
+  }
+
+  ~UpNextViewMask() override {
+    scroll_view_->RemoveObserver(this);
+    up_next_view_->RemoveObserver(this);
+  }
+
+  // ui::LayerDelegate:
+  // We handle the views size dynamically when painting the layer so we don't
+  // need to do anything here.
+  void OnDeviceScaleFactorChanged(float, float) override {}
+
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    ui::PaintRecorder recorder(context, layer()->size());
+    recorder.canvas()->DrawColor(SK_ColorBLACK);
+
+    gfx::Rect up_next_view_bounds(up_next_view_->GetVisibleBounds());
+    views::View::ConvertRectToScreen(up_next_view_, &up_next_view_bounds);
+
+    recorder.canvas()->Translate(gfx::Vector2d(
+        up_next_view_bounds.x() - scroll_view_->GetBoundsInScreen().x(),
+        up_next_view_bounds.y() - scroll_view_->GetBoundsInScreen().y()));
+
+    cc::PaintFlags flags;
+    flags.setBlendMode(SkBlendMode::kClear);
+    flags.setAntiAlias(true);
+    recorder.canvas()->DrawPath(up_next_view_->GetClipPath(), flags);
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* view) override {
+    if (view == scroll_view_) {
+      layer()->SetBounds(scroll_view_->layer()->bounds());
+      return;
+    }
+
+    if (view == up_next_view_) {
+      scroll_view_->layer()->SchedulePaint(
+          gfx::Rect(scroll_view_->layer()->size()));
+    }
+  }
+
+  // Owned by `CalendarView`.
+  views::ScrollView* const scroll_view_;
+  CalendarUpNextView* const up_next_view_;
+};
 
 }  // namespace
 
@@ -378,7 +457,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                 calendar_view->set_should_months_animate(true);
               },
               base::Unretained(this))) {
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
@@ -453,11 +532,9 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   // Add scroll view.
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
-  // Flex the scrollview around any sibling views that are added or removed.
-  layout->SetFlexForView(scroll_view_, 1);
   scroll_view_->SetAllowKeyboardScrolling(false);
   scroll_view_->SetBackgroundColor(absl::nullopt);
-  scroll_view_->ClipHeightTo(0, INT_MAX);
+  ClipScrollViewHeight(ScrollViewState::FULL_HEIGHT);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
@@ -878,6 +955,14 @@ void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
     return;
   }
 
+  // For screen density or orientation changes, we need to redraw the up next
+  // views position and adjust the scroll view height accordingly.
+  if (observed_view == this && up_next_view_) {
+    SetUpNextViewBounds();
+    ClipScrollViewHeight(ScrollViewState::UP_NEXT_SHOWING);
+    return;
+  }
+
   if (observed_view != scroll_view_)
     return;
 
@@ -1085,6 +1170,8 @@ void CalendarView::OpenEventList() {
   auto event_list_reporter = calendar_metrics::CreateAnimationReporter(
       event_list_view_, kEventListViewOpenEventListAnimationHistogram);
 
+  // TODO: b/265057469 Fix issue with transparent event list view when animating
+  // in dark mode.
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -1119,7 +1206,9 @@ void CalendarView::CloseEventList() {
           calendar_view_controller_->currently_shown_date())));
   scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                          /*send_native_event=*/true);
-  scroll_view_->ClipHeightTo(0, INT_MAX);
+  // Increase the scroll height before the animation starts, so that it's
+  // already full height when animating the event list view sliding down.
+  ClipScrollViewHeight(ScrollViewState::FULL_HEIGHT);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
@@ -1618,6 +1707,10 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   if (is_destroying_)
     return;
 
+  // Once the event list is open, remove the up next view as it's hidden and can
+  // cause UI issues if it remains there.
+  RemoveUpNextView();
+
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   // Scrolls to the next month if the selected date is in the `next_month_`, so
@@ -1635,7 +1728,7 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  PositionOfSelectedDate());
   // Clip the height to a bit more than the height of a row.
-  scroll_view_->ClipHeightTo(0, calendar_view_controller_->row_height());
+  ClipScrollViewHeight(ScrollViewState::EVENT_LIST_SHOWING);
 
   if (!should_months_animate_)
     months_animation_restart_timer_.Reset();
@@ -1679,6 +1772,10 @@ void CalendarView::OnCloseEventListAnimationComplete() {
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
   down_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
+
+  // Once the event list view is closed, we might need to show the up next view
+  // if we have upcoming events.
+  MaybeShowUpNextView();
 }
 
 void CalendarView::RequestFocusForEventListCloseButton() {
@@ -1804,24 +1901,76 @@ void CalendarView::MaybeShowUpNextView() {
     return;
   }
 
-  if (up_next_view_)
+  if (event_list_view_ || up_next_view_) {
     return;
+  }
 
-  up_next_view_ = AddChildView(
-      std::make_unique<CalendarUpNextView>(calendar_view_controller_.get()));
+  up_next_view_ = AddChildView(std::make_unique<CalendarUpNextView>(
+      calendar_view_controller_.get(),
+      base::BindRepeating(&CalendarView::OpenEventListForTodaysDate,
+                          base::Unretained(this))));
+  up_next_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  SetUpNextViewBounds();
+  ClipScrollViewHeight(ScrollViewState::UP_NEXT_SHOWING);
+
   InvalidateLayout();
+
+  // TODO: b/265057469 Remove layer mask if the cros.sys.system-on-base dark
+  // theme colour is updated to be opaque.
+  up_next_view_mask_ =
+      std::make_unique<UpNextViewMask>(scroll_view_, up_next_view_);
 }
 
 void CalendarView::RemoveUpNextView() {
   if (!up_next_view_)
     return;
 
+  up_next_view_mask_.reset();
+
   RemoveChildViewT(up_next_view_);
   up_next_view_ = nullptr;
+
+  ClipScrollViewHeight(ScrollViewState::FULL_HEIGHT);
   // If the up next view is deleted whilst the calendar is still open, e.g.
   // time has passed and an event no longer meets 'upcoming' criteria, then
   // the calendar view needs to relayout after removing the upnext view.
   InvalidateLayout();
+}
+
+void CalendarView::SetUpNextViewBounds() {
+  const int up_next_view_preferred_height =
+      up_next_view_->GetPreferredSize().height();
+  up_next_view_->SetBounds(
+      scroll_view_->x(),
+      GetVisibleBounds().bottom() - up_next_view_preferred_height,
+      GetVisibleBounds().width(), up_next_view_preferred_height);
+}
+
+// TODO: b/258648728 Handle animating the up next view into the event list view
+// and use the upcoming event date start time instead of `base::Time::Now()`.
+void CalendarView::OpenEventListForTodaysDate() {
+  calendar_view_controller_->ShowEventListView(
+      /*selected_calendar_date_cell_view=*/calendar_view_controller_
+          ->todays_date_cell_view(),
+      /*selected_date=*/base::Time::Now(),
+      /*row_index=*/calendar_view_controller_->today_row() - 1);
+}
+
+void CalendarView::ClipScrollViewHeight(ScrollViewState state_to_change_to) {
+  switch (state_to_change_to) {
+    case ScrollViewState::FULL_HEIGHT:
+      scroll_view_->ClipHeightTo(0, INT_MAX);
+      break;
+    case ScrollViewState::UP_NEXT_SHOWING:
+      scroll_view_->ClipHeightTo(0, GetBoundsInScreen().bottom() -
+                                        scroll_view_->GetBoundsInScreen().y() -
+                                        up_next_view_->height() +
+                                        calendar_utils::kUpNextOverlapInPx);
+      break;
+    case ScrollViewState::EVENT_LIST_SHOWING:
+      scroll_view_->ClipHeightTo(0, calendar_view_controller_->row_height());
+      break;
+  }
 }
 
 BEGIN_METADATA(CalendarView, views::View)

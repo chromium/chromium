@@ -163,6 +163,7 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
   const gfx::RoundedCornersF item_corner_radius = gfx::RoundedCornersF(
       top_radius, top_radius, bottom_radius, bottom_radius);
   SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(item_corner_radius);
 
   auto horizontal_layout_manager = std::make_unique<views::BoxLayout>(

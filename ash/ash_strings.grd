@@ -4557,6 +4557,10 @@ Connect your device to power.
         Scroll right
       </message>
 
+      <message name="IDS_ASH_CALENDAR_UP_NEXT_TODAYS_EVENTS_BUTTON" desc="The accessible/tooltip description of the calendar up next today's events button.">
+        See all events for today
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME" desc="The accessible name for the progress bar shown in the status tray.">
         Loading
       </message>
