@@ -16,12 +16,15 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
+import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 
 /**
  * Container holding messages.
  */
 public class MessageContainer extends FrameLayout {
+    private static final String TAG = "MessageContainer";
+
     interface MessageContainerA11yDelegate {
         void onA11yFocused();
         void onA11yFocusCleared();
@@ -99,6 +102,10 @@ public class MessageContainer extends FrameLayout {
 
     public int getMessageBannerHeight() {
         assert getChildCount() > 0;
+        // TODO(https://crbug.com/1382275): remove this log after fix.
+        if (getChildAt(0) == null) {
+            Log.w(TAG, "Null child in message container; child count %s", getChildCount());
+        }
         return getChildAt(0).getHeight();
     }
 
