@@ -815,20 +815,24 @@ void DriveFsPinManager::OnFilesChanged(
   }
 
   for (const mojom::FileChange& change : changes) {
-    VLOG(1) << "Got FileChange " << Quote(change);
-
     const StableId id = StableId(change.stable_id);
-    const Files::const_iterator it = files_to_track_.find(id);
+    const Files::iterator it = files_to_track_.find(id);
     if (it == files_to_track_.end()) {
+      VLOG(1) << "Ignored FileChange " << Quote(change);
       continue;
     }
 
-    const Progress& progress = it->second;
-    if (progress.in_progress) {
-      continue;
+    VLOG(1) << "Got FileChange " << Quote(change);
+    DCHECK_EQ(it->first, id);
+    Progress& progress = it->second;
+
+    const std::string& path = change.path.value();
+    if (progress.path != path) {
+      LOG(ERROR) << "Changed path of " << id << " " << Quote(progress.path)
+                 << " to " << Quote(path);
+      progress.path = path;
     }
 
-    const std::string& path = progress.path;
     VLOG(2) << "Checking changed " << id << " " << Quote(path);
     drivefs_interface_->GetMetadataByStableId(
         static_cast<int64_t>(id),
