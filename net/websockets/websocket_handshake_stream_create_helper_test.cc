@@ -472,10 +472,11 @@ class TemporaryHttp3WebSocketHandshakeStreamCreateHelperTest
     mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
 
     mock_quic_data.AddWrite(
-        SYNCHRONOUS, client_maker.MakeRstPacket(
-                         packet_number++, /*include_version=*/false,
-                         client_data_stream_id1, quic::QUIC_STREAM_CANCELLED,
-                         /*include_stop_sending_if_v99=*/true));
+        SYNCHRONOUS,
+        client_maker.MakeAckAndRstPacket(
+            packet_number++, /*include_version=*/false, client_data_stream_id1,
+            quic::QUIC_STREAM_CANCELLED, 1, 0,
+            /*include_stop_sending_if_v99=*/true));
     auto socket = std::make_unique<MockUDPClientSocket>(
         mock_quic_data.InitializeAndGetSequencedSocketData(), NetLog::Get());
     socket->Connect(peer_addr);
@@ -567,10 +568,17 @@ class TemporaryHttp3WebSocketHandshakeStreamCreateHelperTest
         handshake->SendRequest(headers, &response, request_callback.callback());
     EXPECT_THAT(rv, IsOk());
 
-    // TODO(momoka): Add functions handshake->ReadResponseHeaders(),
-    // handshake->Upgrade() after implementing them in
-    // WebSocketHttp3HandshakeStream.
-    handshake->Close(true);
+    session->StartReading();
+
+    TestCompletionCallback response_callback;
+    rv = handshake->ReadResponseHeaders(response_callback.callback());
+    EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+    rv = response_callback.WaitForResult();
+    EXPECT_THAT(rv, IsOk());
+
+    EXPECT_EQ(200, response.headers->response_code());
+
+    handshake->Upgrade();
   }
 
  private:

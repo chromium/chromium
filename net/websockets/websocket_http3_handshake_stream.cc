@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_deflate_predictor_impl.h"
@@ -21,6 +23,14 @@
 #include "net/websockets/websocket_handshake_constants.h"
 
 namespace net {
+
+namespace {
+
+bool ValidateStatus(const HttpResponseHeaders* headers) {
+  return headers->GetStatusLine() == "HTTP/1.1 200";
+}
+
+}  // namespace
 
 WebSocketHttp3HandshakeStream::WebSocketHttp3HandshakeStream(
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
@@ -120,7 +130,6 @@ int WebSocketHttp3HandshakeStream::SendRequest(
   return OK;
 }
 
-// TODO(momoka): Implement this.
 int WebSocketHttp3HandshakeStream::ReadResponseHeaders(
     CompletionOnceCallback callback) {
   if (stream_closed_) {
@@ -316,15 +325,53 @@ void WebSocketHttp3HandshakeStream::StartRequestCallback() {
   stream_adapter_->WriteHeaders(std::move(http3_request_headers_), false);
 }
 
-// TODO(momoka): Implement this.
 int WebSocketHttp3HandshakeStream::ValidateResponse() {
-  return OK;
+  DCHECK(http_response_info_);
+  const HttpResponseHeaders* headers = http_response_info_->headers.get();
+  const int response_code = headers->response_code();
+  switch (response_code) {
+    case HTTP_OK:
+      return ValidateUpgradeResponse(headers);
+
+    // We need to pass these through for authentication to work.
+    case HTTP_UNAUTHORIZED:
+    case HTTP_PROXY_AUTHENTICATION_REQUIRED:
+      return OK;
+
+    // Other status codes are potentially risky (see the warnings in the
+    // WHATWG WebSocket API spec) and so are dropped by default.
+    default:
+      OnFailure(
+          base::StringPrintf(
+              "Error during WebSocket handshake: Unexpected response code: %d",
+              headers->response_code()),
+          ERR_FAILED, headers->response_code());
+      result_ = HandshakeResult::HTTP2_INVALID_STATUS;
+      return ERR_INVALID_RESPONSE;
+  }
 }
 
-// TODO(momoka): Implement this.
 int WebSocketHttp3HandshakeStream::ValidateUpgradeResponse(
     const HttpResponseHeaders* headers) {
-  return OK;
+  extension_params_ = std::make_unique<WebSocketExtensionParams>();
+  std::string failure_message;
+  if (!ValidateStatus(headers)) {
+    result_ = HandshakeResult::HTTP2_INVALID_STATUS;
+  } else if (!ValidateSubProtocol(headers, requested_sub_protocols_,
+                                  &sub_protocol_, &failure_message)) {
+    result_ = HandshakeResult::HTTP2_FAILED_SUBPROTO;
+  } else if (!ValidateExtensions(headers, &extensions_, &failure_message,
+                                 extension_params_.get())) {
+    result_ = HandshakeResult::HTTP2_FAILED_EXTENSIONS;
+  } else {
+    result_ = HandshakeResult::HTTP2_CONNECTED;
+    return OK;
+  }
+
+  const int rv = ERR_INVALID_RESPONSE;
+  OnFailure("Error during WebSocket handshake: " + failure_message, rv,
+            absl::nullopt);
+  return rv;
 }
 
 // TODO(momoka): Implement this.
