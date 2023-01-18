@@ -50,6 +50,11 @@ void UpdateBookmarksForSubscriptionsResult(
         continue;
 
       specifics->set_is_price_tracked(enabled);
+      // Always use the Windows epoch to keep consistency. This also align with
+      // how we set the time fields in the bookmark_specifics.proto and in the
+      // subscriptions_manager.cc.
+      specifics->set_last_subscription_change_time(
+          base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
       power_bookmarks::SetNodePowerBookmarkMeta(model.get(), node,
                                                 std::move(meta));
@@ -75,6 +80,20 @@ bool IsProductBookmark(bookmarks::BookmarkModel* model,
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(model, node);
   return meta && meta->has_shopping_specifics();
+}
+
+absl::optional<int64_t> GetBookmarkLastSubscriptionChangeTime(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node) {
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+
+  if (!meta || !meta->has_shopping_specifics() ||
+      !meta->shopping_specifics().has_last_subscription_change_time()) {
+    return absl::nullopt;
+  }
+  return absl::make_optional<int64_t>(
+      meta->shopping_specifics().last_subscription_change_time());
 }
 
 void SetPriceTrackingStateForClusterId(

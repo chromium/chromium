@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/mock_shopping_service.h"
@@ -18,6 +19,7 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -44,12 +46,19 @@ class PriceTrackingUtilsTest : public testing::Test {
 TEST_F(PriceTrackingUtilsTest,
        SetPriceTrackingStateUpdatesAll_UnsubscribeSuccess) {
   const uint64_t cluster_id = 12345L;
+  const int64_t last_change_time = 100L;
   const bookmarks::BookmarkNode* product1 =
       AddProductBookmark(bookmark_model_.get(), u"product 1",
                          GURL("http://example.com/1"), cluster_id, true);
   const bookmarks::BookmarkNode* product2 =
       AddProductBookmark(bookmark_model_.get(), u"product 2",
-                         GURL("http://example.com/2"), cluster_id, true);
+                         GURL("http://example.com/2"), cluster_id, true, 0L,
+                         "usd", absl::make_optional<int64_t>(last_change_time));
+  ASSERT_EQ(absl::nullopt, GetBookmarkLastSubscriptionChangeTime(
+                               bookmark_model_.get(), product1));
+  ASSERT_EQ(last_change_time, GetBookmarkLastSubscriptionChangeTime(
+                                  bookmark_model_.get(), product2)
+                                  .value());
 
   // Simulate successful calls in the subscriptions manager.
   shopping_service_->SetSubscribeCallbackValue(true);
@@ -68,6 +77,14 @@ TEST_F(PriceTrackingUtilsTest,
 
   EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product1));
   EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product2));
+
+  ASSERT_GT(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds(),
+      GetBookmarkLastSubscriptionChangeTime(bookmark_model_.get(), product1)
+          .value());
+  ASSERT_NE(last_change_time, GetBookmarkLastSubscriptionChangeTime(
+                                  bookmark_model_.get(), product2)
+                                  .value());
 }
 
 // Test that a bookmark is updated in-place if revisiting the page and it is
@@ -112,12 +129,19 @@ TEST_F(PriceTrackingUtilsTest,
 TEST_F(PriceTrackingUtilsTest,
        SetPriceTrackingStateUpdatesAll_UnsubscribeFailed) {
   const uint64_t cluster_id = 12345L;
+  const int64_t last_change_time = 100L;
   const bookmarks::BookmarkNode* product1 =
       AddProductBookmark(bookmark_model_.get(), u"product 1",
                          GURL("http://example.com/1"), cluster_id, true);
   const bookmarks::BookmarkNode* product2 =
       AddProductBookmark(bookmark_model_.get(), u"product 2",
-                         GURL("http://example.com/2"), cluster_id, true);
+                         GURL("http://example.com/2"), cluster_id, true, 0L,
+                         "usd", absl::make_optional<int64_t>(last_change_time));
+  ASSERT_EQ(absl::nullopt, GetBookmarkLastSubscriptionChangeTime(
+                               bookmark_model_.get(), product1));
+  ASSERT_EQ(last_change_time, GetBookmarkLastSubscriptionChangeTime(
+                                  bookmark_model_.get(), product2)
+                                  .value());
 
   // Simulate failed calls in the subscriptions manager.
   shopping_service_->SetSubscribeCallbackValue(false);
@@ -136,6 +160,12 @@ TEST_F(PriceTrackingUtilsTest,
 
   EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product1));
   EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product2));
+
+  ASSERT_EQ(absl::nullopt, GetBookmarkLastSubscriptionChangeTime(
+                               bookmark_model_.get(), product1));
+  ASSERT_EQ(last_change_time, GetBookmarkLastSubscriptionChangeTime(
+                                  bookmark_model_.get(), product2)
+                                  .value());
 }
 
 TEST_F(PriceTrackingUtilsTest, SetPriceTrackingForClusterId) {

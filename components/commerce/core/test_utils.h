@@ -6,6 +6,7 @@
 #define COMPONENTS_COMMERCE_CORE_TEST_UTILS_H_
 
 #include <string>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -26,7 +27,9 @@ const bookmarks::BookmarkNode* AddProductBookmark(
     uint64_t cluster_id,
     bool is_price_tracked = false,
     const int64_t price_micros = 0L,
-    const std::string& currency_code = "usd");
+    const std::string& currency_code = "usd",
+    const absl::optional<int64_t>& last_subscription_change_time =
+        absl::nullopt);
 
 // Sets the state of the enterprise policy for the shopping list feature for
 // testing.

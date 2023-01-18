@@ -13,6 +13,7 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -34,6 +35,12 @@ bool IsBookmarkPriceTracked(bookmarks::BookmarkModel* model,
 // Return whether the |node| is a product bookmark.
 bool IsProductBookmark(bookmarks::BookmarkModel* model,
                        const bookmarks::BookmarkNode* node);
+
+// Return the last timestamp when the product is successfully tracked or
+// untracked by the user.
+absl::optional<int64_t> GetBookmarkLastSubscriptionChangeTime(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node);
 
 // Set the price tracking state for a particular cluster ID. This function
 // assumes that a bookmark with the specified cluster ID already exists and

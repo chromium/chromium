@@ -24,7 +24,8 @@ const bookmarks::BookmarkNode* AddProductBookmark(
     uint64_t cluster_id,
     bool is_price_tracked,
     const int64_t price_micros,
-    const std::string& currency_code) {
+    const std::string& currency_code,
+    const absl::optional<int64_t>& last_subscription_change_time) {
   const bookmarks::BookmarkNode* node =
       bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url);
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
@@ -37,6 +38,11 @@ const bookmarks::BookmarkNode* AddProductBookmark(
 
   specifics->mutable_current_price()->set_currency_code(currency_code);
   specifics->mutable_current_price()->set_amount_micros(price_micros);
+
+  if (last_subscription_change_time.has_value()) {
+    specifics->set_last_subscription_change_time(
+        last_subscription_change_time.value());
+  }
 
   power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model, node,
                                             std::move(meta));

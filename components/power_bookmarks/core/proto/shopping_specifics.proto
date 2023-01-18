@@ -38,6 +38,10 @@ message ShoppingSpecifics {
   // The previous price of the product if available. This value can be used
   // for price change events when compared to |current_price|.
   optional ProductPrice previous_price = 8;
+
+  // Last time the product is successfully tracked or untracked by the user,
+  // represented as microseconds since the Windows epoch.
+  optional int64 last_subscription_change_time = 9;
 }
 
 message ProductPrice {
