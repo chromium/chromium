@@ -458,5 +458,4 @@ crbug.com/1318592 external/wpt/resource-timing/object-not-found-after-TAO-cross-
 crbug.com/1324618 external/wpt/css/css-images/object-view-box-fit-fill* [ Pass ]
 
 # crbug.com/1339051: some ref tests generate output with minor differences.
-crbug.com/1339051 compositing/text-on-scaled-layer.html [ Failure ]
 crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Failure ]
