@@ -327,6 +327,12 @@ class CONTENT_EXPORT InterestGroupAuction
     // The Auction with the interest group that made this bid. Important in the
     // case of component auctions.
     const raw_ptr<InterestGroupAuction> auction;
+
+    // Time where tracing for wait_seller_deps began; if it ever did.
+    base::TimeTicks trace_wait_seller_deps_start;
+    // How long various inputs were waited for.
+    base::TimeDelta wait_worklet;
+    base::TimeDelta wait_promises;
   };
 
   // Combines a Bid with seller score and seller state needed to invoke its
@@ -755,11 +761,13 @@ class CONTENT_EXPORT InterestGroupAuction
   bool NonKAnonWinnerIsKAnon() const;
 
   // Tracing ID associated with the Auction. A nestable
-  // async "Auction" trace
-  // event lasts for the lifetime of `this`. Sequential events that apply to
-  // the entire auction are logged using this ID, including potentially
+  // async "Auction" trace event lasts for the combined lifetime of `this` and a
+  // possible InterestGroupAuctionReporter. Sequential events that apply to the
+  // entire auction are logged using this ID, including potentially
   // out-of-process events by bidder and seller worklet reporting methods.
-  const uint64_t trace_id_;
+  //
+  // Cleared if the ID got transferred to InterestGroupAuctionReporter.
+  absl::optional<uint64_t> trace_id_;
 
   // Whether k-anonymity enforcement or simulation (or none) are performed.
   const auction_worklet::mojom::KAnonymityBidMode kanon_mode_;

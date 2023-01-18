@@ -422,11 +422,12 @@ void SellerWorklet::ScoreAd(
         DirectFromSellerSignalsRequester::Result();
   }
 
+  score_ad_task->trace_wait_deps_start = base::TimeTicks::Now();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_score_ad_deps", trace_id);
+
   // If `trusted_signals_request_manager_` exists, there's a trusted scoring
   // signals URL which needs to be fetched before the auction can be run.
   if (trusted_signals_request_manager_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_scoring_signals",
-                                      trace_id);
     score_ad_task->trusted_scoring_signals_request =
         trusted_signals_request_manager_->RequestScoringSignals(
             browser_signal_render_url,
@@ -436,8 +437,6 @@ void SellerWorklet::ScoreAd(
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_seller_script",
-                                    trace_id);
   ScoreAdIfReady(score_ad_task);
 }
 
@@ -529,7 +528,8 @@ void SellerWorklet::ReportResult(
         DirectFromSellerSignalsRequester::Result();
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_seller_script",
+  report_result_task->trace_wait_deps_start = base::TimeTicks::Now();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_report_result_deps",
                                     trace_id);
   RunReportResultIfReady(report_result_task);
 }
@@ -1175,6 +1175,7 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
                        base::BindOnce(&SellerWorklet::V8State::SetWorkletScript,
                                       base::Unretained(v8_state_.get()),
                                       std::move(worklet_script)));
+  MaybeRecordCodeWait();
 
   for (auto score_ad_task = score_ad_tasks_.begin();
        score_ad_task != score_ad_tasks_.end(); ++score_ad_task) {
@@ -1187,22 +1188,34 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
   }
 }
 
+void SellerWorklet::MaybeRecordCodeWait() {
+  if (!IsCodeReady()) {
+    return;
+  }
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  for (auto& task : score_ad_tasks_) {
+    task.wait_code = now - task.trace_wait_deps_start;
+  }
+
+  for (auto& task : report_result_tasks_) {
+    task.wait_code = now - task.trace_wait_deps_start;
+  }
+}
+
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     ScoreAdTaskList::iterator task,
     scoped_refptr<TrustedSignals::Result> result,
     absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "request_scoring_signals",
-                                  task->trace_id);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_seller_script",
-                                    task->trace_id);
-
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
   task->trusted_scoring_signals_result = std::move(result);
   // Clean up single-use object, now that it has done its job.
   task->trusted_scoring_signals_request.reset();
 
+  task->wait_trusted_signals =
+      base::TimeTicks::Now() - task->trace_wait_deps_start;
   ScoreAdIfReady(task);
 }
 
@@ -1228,6 +1241,11 @@ void SellerWorklet::OnDirectFromSellerSellerSignalsDownloadedScoreAd(
 
   task->direct_from_seller_result_seller_signals = std::move(result);
   task->direct_from_seller_request_seller_signals.reset();
+  // The two direct from seller signals metrics for tracing are combined since
+  // they should be roughly the same.
+  task->wait_direct_from_seller_signals =
+      std::max(task->wait_direct_from_seller_signals,
+               base::TimeTicks::Now() - task->trace_wait_deps_start);
 
   ScoreAdIfReady(task);
 }
@@ -1239,6 +1257,11 @@ void SellerWorklet::OnDirectFromSellerAuctionSignalsDownloadedScoreAd(
 
   task->direct_from_seller_result_auction_signals = std::move(result);
   task->direct_from_seller_request_auction_signals.reset();
+  // The two direct from seller signals metrics for tracing are combined since
+  // they should be roughly the same.
+  task->wait_direct_from_seller_signals =
+      std::max(task->wait_direct_from_seller_signals,
+               base::TimeTicks::Now() - task->trace_wait_deps_start);
 
   ScoreAdIfReady(task);
 }
@@ -1255,8 +1278,22 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   if (!IsReadyToScoreAd(*task))
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_seller_script",
-                                  task->trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "fledge", "wait_score_ad_deps", task->trace_id, "data",
+      [&](perfetto::TracedValue trace_context) {
+        auto dict = std::move(trace_context).WriteDictionary();
+        if (!task->wait_code.is_zero()) {
+          dict.Add("wait_code_ms", task->wait_code.InMillisecondsF());
+        }
+        if (!task->wait_trusted_signals.is_zero()) {
+          dict.Add("wait_trusted_signals_ms",
+                   task->wait_trusted_signals.InMillisecondsF());
+        }
+        if (!task->wait_direct_from_seller_signals.is_zero()) {
+          dict.Add("wait_direct_from_seller_signals_ms",
+                   task->wait_direct_from_seller_signals.InMillisecondsF());
+        }
+      });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
   // Normally the PostTask below will eventually get `task` cleaned up once it
@@ -1333,6 +1370,11 @@ void SellerWorklet::OnDirectFromSellerSellerSignalsDownloadedReportResult(
 
   task->direct_from_seller_result_seller_signals = std::move(result);
   task->direct_from_seller_request_seller_signals.reset();
+  // The two direct from seller signals metrics for tracing are combined since
+  // they should be roughly the same.
+  task->wait_direct_from_seller_signals =
+      std::max(task->wait_direct_from_seller_signals,
+               base::TimeTicks::Now() - task->trace_wait_deps_start);
 
   RunReportResultIfReady(task);
 }
@@ -1344,6 +1386,11 @@ void SellerWorklet::OnDirectFromSellerAuctionSignalsDownloadedReportResult(
 
   task->direct_from_seller_result_auction_signals = std::move(result);
   task->direct_from_seller_request_auction_signals.reset();
+  // The two direct from seller signals metrics for tracing are combined since
+  // they should be roughly the same.
+  task->wait_direct_from_seller_signals =
+      std::max(task->wait_direct_from_seller_signals,
+               base::TimeTicks::Now() - task->trace_wait_deps_start);
 
   RunReportResultIfReady(task);
 }
@@ -1358,8 +1405,18 @@ void SellerWorklet::RunReportResultIfReady(
   if (!IsReadyToReportResult(*task))
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_seller_script",
-                                  task->trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "fledge", "wait_report_result_deps", task->trace_id, "data",
+      [&](perfetto::TracedValue trace_context) {
+        auto dict = std::move(trace_context).WriteDictionary();
+        if (!task->wait_code.is_zero()) {
+          dict.Add("wait_code_ms", task->wait_code.InMillisecondsF());
+        }
+        if (!task->wait_direct_from_seller_signals.is_zero()) {
+          dict.Add("wait_direct_from_seller_signals_ms",
+                   task->wait_direct_from_seller_signals.InMillisecondsF());
+        }
+      });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
   cancelable_task_tracker_.PostTask(

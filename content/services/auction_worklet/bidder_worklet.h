@@ -183,6 +183,14 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     base::Time auction_start_time;
     uint64_t trace_id;
 
+    // Time where tracing for wait_generate_bid_deps began.
+    base::TimeTicks trace_wait_deps_start;
+    // How long various inputs were waited for.
+    base::TimeDelta wait_code;
+    base::TimeDelta wait_trusted_signals;
+    base::TimeDelta wait_direct_from_seller_signals;
+    base::TimeDelta wait_promises;
+
     // Set while loading is in progress.
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_bidding_signals_request;
@@ -239,6 +247,12 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     absl::optional<uint32_t> bidding_signals_data_version;
     uint64_t trace_id;
+
+    // Time where tracing for wait_report_win_deps began.
+    base::TimeTicks trace_wait_deps_start;
+    // How long various inputs were waited for.
+    base::TimeDelta wait_code;
+    base::TimeDelta wait_direct_from_seller_signals;
 
     // Set while loading is in progress.
     std::unique_ptr<DirectFromSellerSignalsRequester::Request>
@@ -447,6 +461,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
                           absl::optional<std::string> error_msg);
   void OnWasmDownloaded(WorkletWasmLoader::Result worklet_script,
                         absl::optional<std::string> error_msg);
+  void MaybeRecordCodeWait();
   void RunReadyTasks();
 
   void OnTrustedBiddingSignalsDownloaded(

@@ -155,6 +155,13 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     absl::optional<base::TimeDelta> seller_timeout;
     uint64_t trace_id;
 
+    // Time where tracing for wait_score_ad_deps began.
+    base::TimeTicks trace_wait_deps_start;
+    // How long various inputs were waited for.
+    base::TimeDelta wait_code;
+    base::TimeDelta wait_trusted_signals;
+    base::TimeDelta wait_direct_from_seller_signals;
+
     mojo::Remote<auction_worklet::mojom::ScoreAdClient> score_ad_client;
 
     std::unique_ptr<TrustedSignalsRequestManager::Request>
@@ -201,6 +208,12 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         browser_signals_component_auction_report_result_params;
     absl::optional<uint32_t> scoring_signals_data_version;
     uint64_t trace_id;
+
+    // Time where tracing for wait_report_result_deps began.
+    base::TimeTicks trace_wait_deps_start;
+    // How long various inputs were waited for.
+    base::TimeDelta wait_code;
+    base::TimeDelta wait_direct_from_seller_signals;
 
     // Set while loading is in progress.
     std::unique_ptr<DirectFromSellerSignalsRequester::Request>
@@ -360,6 +373,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   void OnDownloadComplete(WorkletLoader::Result worklet_script,
                           absl::optional<std::string> error_msg);
+  void MaybeRecordCodeWait();
 
   // Called when trusted scoring signals have finished downloading, or when
   // there are no scoring signals to download. Starts running scoreAd() on the

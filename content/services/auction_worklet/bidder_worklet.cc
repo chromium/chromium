@@ -267,9 +267,10 @@ void BidderWorklet::BeginGenerateBid(
   const auto& trusted_bidding_signals_keys =
       generate_bid_task->bidder_worklet_non_shared_params
           ->trusted_bidding_signals_keys;
+  generate_bid_task->trace_wait_deps_start = base::TimeTicks::Now();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_generate_bid_deps",
+                                    trace_id);
   if (trusted_signals_request_manager_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_bidding_signals",
-                                      trace_id);
     generate_bid_task->trusted_bidding_signals_request =
         trusted_signals_request_manager_->RequestBiddingSignals(
             generate_bid_task->bidder_worklet_non_shared_params->name,
@@ -279,11 +280,6 @@ void BidderWorklet::BeginGenerateBid(
     return;
   }
 
-  // TODO(morlovich): This is inaccurate if we're waiting for
-  // FinalizeGenerateBid, or for direct-from-seller signals. A different
-  // approach is probably needed for how many things we have to wait for now.
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_bidder_script",
-                                    trace_id);
   // Deleting `generate_bid_task` will destroy `generate_bid_client` and thus
   // abort this callback, so it's safe to use Unretained(this) and
   // `generate_bid_task` here.
@@ -371,9 +367,9 @@ void BidderWorklet::ReportWin(
     report_win_task->direct_from_seller_result_auction_signals =
         DirectFromSellerSignalsRequester::Result();
   }
+  report_win_task->trace_wait_deps_start = base::TimeTicks::Now();
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_bidder_script",
-                                    trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_report_win_deps", trace_id);
   RunReportWinIfReady(report_win_task);
 }
 
@@ -397,6 +393,7 @@ void BidderWorklet::FinishGenerateBid(
   task->finalize_generate_bid_called = true;
   finalize_receiver_set_.Remove(*task->finalize_generate_bid_receiver_id);
   task->finalize_generate_bid_receiver_id = absl::nullopt;
+  task->wait_promises = base::TimeTicks::Now() - task->trace_wait_deps_start;
   GenerateBidIfReady(task);
 }
 
@@ -1094,6 +1091,7 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
                        base::BindOnce(&BidderWorklet::V8State::SetWorkletScript,
                                       base::Unretained(v8_state_.get()),
                                       std::move(worklet_script)));
+  MaybeRecordCodeWait();
   RunReadyTasks();
 }
 
@@ -1125,7 +1123,23 @@ void BidderWorklet::OnWasmDownloaded(WorkletWasmLoader::Result wasm_helper,
                        base::BindOnce(&BidderWorklet::V8State::SetWasmHelper,
                                       base::Unretained(v8_state_.get()),
                                       std::move(wasm_helper)));
+  MaybeRecordCodeWait();
   RunReadyTasks();
+}
+
+void BidderWorklet::MaybeRecordCodeWait() {
+  if (!IsCodeReady()) {
+    return;
+  }
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  for (auto& task : generate_bid_tasks_) {
+    task.wait_code = now - task.trace_wait_deps_start;
+  }
+
+  for (auto& task : report_win_tasks_) {
+    task.wait_code = now - task.trace_wait_deps_start;
+  }
 }
 
 void BidderWorklet::RunReadyTasks() {
@@ -1154,11 +1168,6 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
     scoped_refptr<TrustedSignals::Result> result,
     absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "request_bidding_signals",
-                                  task->trace_id);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "waiting_for_bidder_script",
-                                    task->trace_id);
 
   const TrustedSignals::Result::PriorityVector* priority_vector = nullptr;
   if (result) {
@@ -1208,6 +1217,8 @@ void BidderWorklet::SignalsReceivedCallback(
     GenerateBidTaskList::iterator task) {
   DCHECK(!task->signals_received_callback_invoked);
   task->signals_received_callback_invoked = true;
+  task->wait_trusted_signals =
+      base::TimeTicks::Now() - task->trace_wait_deps_start;
   GenerateBidIfReady(task);
 }
 
@@ -1219,6 +1230,12 @@ void BidderWorklet::OnDirectFromSellerPerBuyerSignalsDownloadedGenerateBid(
   task->direct_from_seller_result_per_buyer_signals = std::move(result);
   task->direct_from_seller_request_per_buyer_signals.reset();
 
+  // The two direct from seller signals metrics for tracing are combined since
+  // they should be roughly the same.
+  task->wait_direct_from_seller_signals =
+      std::max(task->wait_direct_from_seller_signals,
+               base::TimeTicks::Now() - task->trace_wait_deps_start);
+
   GenerateBidIfReady(task);
 }
 
@@ -1229,6 +1246,12 @@ void BidderWorklet::OnDirectFromSellerAuctionSignalsDownloadedGenerateBid(
 
   task->direct_from_seller_result_auction_signals = std::move(result);
   task->direct_from_seller_request_auction_signals.reset();
+
+  // The two direct from seller signals metrics for tracing are combined since
+  // they should be roughly the same.
+  task->wait_direct_from_seller_signals =
+      std::max(task->wait_direct_from_seller_signals,
+               base::TimeTicks::Now() - task->trace_wait_deps_start);
 
   GenerateBidIfReady(task);
 }
@@ -1250,8 +1273,25 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   // true.
   DCHECK(!task->trusted_bidding_signals_request);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_bidder_script",
-                                  task->trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "fledge", "wait_generate_bid_deps", task->trace_id, "data",
+      [&](perfetto::TracedValue trace_context) {
+        auto dict = std::move(trace_context).WriteDictionary();
+        if (!task->wait_code.is_zero()) {
+          dict.Add("wait_code_ms", task->wait_code.InMillisecondsF());
+        }
+        if (!task->wait_trusted_signals.is_zero()) {
+          dict.Add("wait_trusted_signals_ms",
+                   task->wait_trusted_signals.InMillisecondsF());
+        }
+        if (!task->wait_direct_from_seller_signals.is_zero()) {
+          dict.Add("wait_direct_from_seller_signals_ms",
+                   task->wait_direct_from_seller_signals.InMillisecondsF());
+        }
+        if (!task->wait_promises.is_zero()) {
+          dict.Add("wait_promises_ms", task->wait_promises.InMillisecondsF());
+        }
+      });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
   // Normally the PostTask below will eventually get `task` cleaned up once it
@@ -1302,6 +1342,12 @@ void BidderWorklet::OnDirectFromSellerPerBuyerSignalsDownloadedReportWin(
   task->direct_from_seller_result_per_buyer_signals = std::move(result);
   task->direct_from_seller_request_per_buyer_signals.reset();
 
+  // The two direct from seller signals metrics for tracing are combined since
+  // they should be roughly the same.
+  task->wait_direct_from_seller_signals =
+      std::max(task->wait_direct_from_seller_signals,
+               base::TimeTicks::Now() - task->trace_wait_deps_start);
+
   RunReportWinIfReady(task);
 }
 
@@ -1312,6 +1358,12 @@ void BidderWorklet::OnDirectFromSellerAuctionSignalsDownloadedReportWin(
 
   task->direct_from_seller_result_auction_signals = std::move(result);
   task->direct_from_seller_request_auction_signals.reset();
+
+  // The two direct from seller signals metrics for tracing are combined since
+  // they should be roughly the same.
+  task->wait_direct_from_seller_signals =
+      std::max(task->wait_direct_from_seller_signals,
+               base::TimeTicks::Now() - task->trace_wait_deps_start);
 
   RunReportWinIfReady(task);
 }
@@ -1326,8 +1378,18 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
   if (!IsReadyToReportWin(*task))
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "waiting_for_bidder_script",
-                                  task->trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "fledge", "wait_report_win_deps", task->trace_id, "data",
+      [&](perfetto::TracedValue trace_context) {
+        auto dict = std::move(trace_context).WriteDictionary();
+        if (!task->wait_code.is_zero()) {
+          dict.Add("wait_code_ms", task->wait_code.InMillisecondsF());
+        }
+        if (!task->wait_direct_from_seller_signals.is_zero()) {
+          dict.Add("wait_direct_from_seller_signals_ms",
+                   task->wait_direct_from_seller_signals.InMillisecondsF());
+        }
+      });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
   // Other than the callback field, no fields of `task` are needed after this

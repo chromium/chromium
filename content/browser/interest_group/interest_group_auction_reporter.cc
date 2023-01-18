@@ -437,6 +437,8 @@ void InterestGroupAuctionReporter::OnReportingComplete(
     const std::vector<std::string>& errors) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase",
                                   top_level_seller_winning_bid_info_.trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "auction",
+                                  top_level_seller_winning_bid_info_.trace_id);
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   std::move(callback_).Run();
 }
