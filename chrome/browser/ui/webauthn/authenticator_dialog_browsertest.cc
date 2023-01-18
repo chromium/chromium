@@ -297,8 +297,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       model_->set_cable_transport_info(
           /*extension_is_v2=*/true, /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      model_->experiment_server_link_title_ = AuthenticatorRequestDialogModel::
-          ExperimentServerLinkTitle::UNLOCK_YOUR_PHONE;
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "create_passkey") {
@@ -311,25 +309,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           AuthenticatorRequestDialogModel::Step::kBlePermissionMac);
     }
 #endif
-
-#define EXP_SHEET(x)                                                    \
-  else if (name == "server_link_sheet_" #x) { /* NOLINT */              \
-    model_->set_cable_transport_info(                                   \
-        /*extension_is_v2=*/true, /*paired_phones=*/{},                 \
-        /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode"); \
-    model_->experiment_server_link_sheet_ =                             \
-        AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::x;  \
-    model_->SetCurrentStepForTesting(                                   \
-        AuthenticatorRequestDialogModel::Step::kCableActivate);         \
-  }
-
-    EXP_SHEET(CONTROL)
-    EXP_SHEET(ARM_2)
-    EXP_SHEET(ARM_3)
-    EXP_SHEET(ARM_4)
-    EXP_SHEET(ARM_5)
-    EXP_SHEET(ARM_6)
-#undef EXP_SHEET
 
     model_->StartFlow(std::move(transport_availability),
                       /*use_location_bar_bubble=*/false,
@@ -515,20 +494,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
                        InvokeUi_server_link_title_UNLOCK_YOUR_PHONE) {
   ShowAndVerifyUi();
 }
-
-#define EXP_SHEET(x)                                       \
-  IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,          \
-                         InvokeUi_server_link_sheet_##x) { \
-    ShowAndVerifyUi();                                     \
-  }
-
-EXP_SHEET(CONTROL)
-EXP_SHEET(ARM_2)
-EXP_SHEET(ARM_3)
-EXP_SHEET(ARM_4)
-EXP_SHEET(ARM_5)
-EXP_SHEET(ARM_6)
-#undef EXP_SHEET
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_permission_mac) {

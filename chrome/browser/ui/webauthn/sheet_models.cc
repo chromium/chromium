@@ -664,38 +664,6 @@ AuthenticatorPaaskSheetModel::AuthenticatorPaaskSheetModel(
 
 AuthenticatorPaaskSheetModel::~AuthenticatorPaaskSheetModel() = default;
 
-bool AuthenticatorPaaskSheetModel::IsBackButtonVisible() const {
-  switch (dialog_model()->experiment_server_link_sheet_) {
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_5:
-      return true;
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_2:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_3:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_4:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_6:
-      return false;
-  }
-}
-
-bool AuthenticatorPaaskSheetModel::IsCloseButtonVisible() const {
-  switch (dialog_model()->experiment_server_link_sheet_) {
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_2:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_3:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_4:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_5:
-      return false;
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_6:
-      return true;
-  }
-}
-
-bool AuthenticatorPaaskSheetModel::IsCancelButtonVisible() const {
-  // Don't hide the Cancel button in the new UI. Back and close do not exist
-  // there.
-  return true;
-}
-
 bool AuthenticatorPaaskSheetModel::IsActivityIndicatorVisible() const {
   return true;
 }
@@ -731,21 +699,6 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
           base::UTF8ToUTF16(
               dialog_model()->selected_phone_name().value_or("")));
     }
-  }
-}
-
-void AuthenticatorPaaskSheetModel::OnBack() {
-  switch (dialog_model()->experiment_server_link_sheet_) {
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_2:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_3:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_4:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_6:
-      dialog_model()->StartOver();
-      break;
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_5:
-      dialog_model()->Cancel();
-      break;
   }
 }
 

@@ -426,19 +426,7 @@ void AuthenticatorRequestDialogModel::OnOffTheRecordInterstitialAccepted() {
 
 void AuthenticatorRequestDialogModel::ShowCableUsbFallback() {
   DCHECK_EQ(current_step(), Step::kCableActivate);
-
-  switch (experiment_server_link_sheet_) {
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_2:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_5:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_6:
-      SetCurrentStep(Step::kAndroidAccessory);
-      break;
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_3:
-    case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_4:
-      Cancel();
-      break;
-  }
+  SetCurrentStep(Step::kAndroidAccessory);
 }
 
 void AuthenticatorRequestDialogModel::ShowCable() {

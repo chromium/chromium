@@ -121,10 +121,7 @@ class ChromeAuthenticatorRequestDelegate
     virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) = 0;
 
     virtual void CableV2ExtensionSeen(
-        base::span<const uint8_t> server_link_data,
-        base::span<const uint8_t> experiments,
-        AuthenticatorRequestDialogModel::ExperimentServerLinkSheet,
-        AuthenticatorRequestDialogModel::ExperimentServerLinkTitle) = 0;
+        base::span<const uint8_t> server_link_data) = 0;
 
     virtual void ConfiguringCable(device::CableRequestType request_type) {}
 

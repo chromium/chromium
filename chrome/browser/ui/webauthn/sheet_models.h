@@ -299,15 +299,11 @@ class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
 
  private:
   // AuthenticatorSheetModelBase:
-  bool IsBackButtonVisible() const override;
-  bool IsCloseButtonVisible() const override;
-  bool IsCancelButtonVisible() const override;
   bool IsActivityIndicatorVisible() const override;
   const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  void OnBack() override;
 };
 
 class AuthenticatorAndroidAccessorySheetModel
