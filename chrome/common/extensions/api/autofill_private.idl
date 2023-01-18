@@ -19,6 +19,16 @@ namespace autofillPrivate {
     COUNTRY_CODE
   };
 
+  // The address source origin. Describes where the address is stored.
+  enum AddressSource {
+    // The address is stored in the Chrome infrastructure (locally and
+    // possibly synced between devices).
+    LOCAL_OR_SYNCABLE,
+    // The address is stored in a third party service that is tied
+    // to user's account.
+    ACCOUNT
+  };
+
   // Metadata about an autofill entry (address or credit card) which is used to
   // render a summary list of all entries.
   dictionary AutofillMetadata {
@@ -31,6 +41,9 @@ namespace autofillPrivate {
     // in the UI; an undefined value means that this entry has just been created
     // on the client and has not yet been given a summary.
     DOMString? summarySublabel;
+
+    // For addresses. Describes where the address is stored.
+    AddressSource? source;
 
     // For credit cards, whether the entry is locally owned by Chrome (as opposed to
     // being synced down from the server). Non-local entries may not be editable.

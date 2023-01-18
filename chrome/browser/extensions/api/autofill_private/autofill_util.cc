@@ -69,6 +69,20 @@ std::string GetStringFromProfile(const autofill::AutofillProfile& profile,
   return base::UTF16ToUTF8(profile.GetRawInfo(type));
 }
 
+// Converts AutofillProfile::Source enum to the WebUI idl one.
+autofill_private::AddressSource ConvertProfileSource(
+    autofill::AutofillProfile::Source source) {
+  switch (source) {
+    case autofill::AutofillProfile::Source::kLocalOrSyncable:
+      return autofill_private::AddressSource::ADDRESS_SOURCE_LOCAL_OR_SYNCABLE;
+    case autofill::AutofillProfile::Source::kAccount:
+      return autofill_private::AddressSource::ADDRESS_SOURCE_ACCOUNT;
+    default:
+      NOTREACHED();
+      return autofill_private::AddressSource::ADDRESS_SOURCE_NONE;
+  }
+}
+
 autofill_private::AddressEntry ProfileToAddressEntry(
     const autofill::AutofillProfile& profile,
     const std::u16string& label) {
@@ -109,6 +123,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.metadata->summary_label = base::UTF16ToUTF8(label_pieces[0]);
   address.metadata->summary_sublabel =
       base::UTF16ToUTF8(label.substr(label_pieces[0].size()));
+  address.metadata->source = ConvertProfileSource(profile.source());
 
   return address;
 }

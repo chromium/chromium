@@ -24,9 +24,15 @@ declare global {
         COUNTRY_CODE = 'COUNTRY_CODE',
       }
 
+      export enum AddressSource {
+        LOCAL_OR_SYNCABLE = 'LOCAL_OR_SYNCABLE',
+        ACCOUNT = 'ACCOUNT',
+      }
+
       export interface AutofillMetadata {
         summaryLabel: string;
         summarySublabel?: string;
+        source?: AddressSource;
         isLocal?: boolean;
         isCached?: boolean;
         isMigratable?: boolean;

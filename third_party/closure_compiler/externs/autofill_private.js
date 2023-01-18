@@ -34,9 +34,18 @@ chrome.autofillPrivate.AddressField = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.autofillPrivate.AddressSource = {
+  LOCAL_OR_SYNCABLE: 'LOCAL_OR_SYNCABLE',
+  ACCOUNT: 'ACCOUNT',
+};
+
+/**
  * @typedef {{
  *   summaryLabel: string,
  *   summarySublabel: (string|undefined),
+ *   source: (!chrome.autofillPrivate.AddressSource|undefined),
  *   isLocal: (boolean|undefined),
  *   isCached: (boolean|undefined),
  *   isMigratable: (boolean|undefined),
