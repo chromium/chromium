@@ -211,7 +211,11 @@ class Rankings {
   Addr heads_[LAST_ELEMENT];
   Addr tails_[LAST_ELEMENT];
   raw_ptr<BackendImpl> backend_;
-  raw_ptr<LruData> control_data_;  // Data related to the LRU lists.
+
+  // Data related to the LRU lists.
+  // May point to a mapped file's unmapped memory at destruction time.
+  raw_ptr<LruData, DisableDanglingPtrDetection> control_data_;
+
   IteratorList iterators_;
 };
 

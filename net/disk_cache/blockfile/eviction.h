@@ -75,7 +75,10 @@ class Eviction {
 
   raw_ptr<BackendImpl> backend_ = nullptr;
   raw_ptr<Rankings> rankings_;
-  raw_ptr<IndexHeader> header_;
+
+  // May point to a mapped file's unmapped memory at destruction time.
+  raw_ptr<IndexHeader, DisableDanglingPtrDetection> header_;
+
   int max_size_;
   int trim_delays_;
   int index_size_;

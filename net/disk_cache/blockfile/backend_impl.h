@@ -400,7 +400,11 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   InFlightBackendIO background_queue_;  // The controller of pending operations.
   scoped_refptr<MappedFile> index_;  // The main cache index.
   base::FilePath path_;  // Path to the folder used as backing storage.
-  raw_ptr<Index> data_;  // Pointer to the index data.
+
+  // Pointer to the index data.
+  // May point to a mapped file's unmapped memory at destruction time.
+  raw_ptr<Index, DisableDanglingPtrDetection> data_;
+
   BlockFiles block_files_;  // Set of files used to store all data.
   Rankings rankings_;  // Rankings to be able to trim the cache.
   uint32_t mask_ = 0;  // Binary mask to map a hash to the hash table.
