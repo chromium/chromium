@@ -942,9 +942,6 @@
           'cronet_test_instrumentation_apk',
           'chrome_nocompile_tests',
         ],
-        'args': [
-          '--use-persistent-shell',
-        ],
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_nougat_emulator_gtests',
