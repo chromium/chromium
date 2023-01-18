@@ -80,6 +80,15 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
     kInitialized = 3,
   };
 
+  // Should only be used for tests.
+  //
+  // TODO(crbug/1350322): Use this ctor to replace existing ctor.
+  StructuredMetricsProvider(
+      const base::FilePath& device_key_path,
+      base::TimeDelta write_delay,
+      base::TimeDelta min_independent_metrics_interval,
+      base::raw_ptr<metrics::MetricsProvider> system_profile_provider);
+
   void OnKeyDataInitialized();
   void OnRead(ReadStatus status);
   void OnWrite(WriteStatus status);
@@ -105,7 +114,6 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
 
   void WriteNowForTest();
   void SetExternalMetricsDirForTest(const base::FilePath& dir);
-  void SetDeviceKeyDataPathForTest(const base::FilePath& path);
 
   // Records events before |init_state_| is kInitialized.
   void RecordEventBeforeInitialization(const Event& event);
@@ -191,14 +199,26 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   std::unique_ptr<KeyData> profile_key_data_;
   std::unique_ptr<KeyData> device_key_data_;
 
-  // Used to override the otherwise hardcoded path for device keys in unit tests
-  // only.
-  absl::optional<base::FilePath> device_key_data_path_for_test_;
-
   // todo(andrewbreggr): investigate removing this field, it is used
   //                     when feature kDelayUploadUntilHwid is enabled
   // SystemProfile is loaded to populate independent metric uploads.
   bool system_profile_initialized_ = false;
+
+  // File path where device keys will be persisted.
+  const base::FilePath device_key_path_;
+
+  // Delay period for PersistentProto writes. Default value of 1000 ms used if
+  // not specified in ctor.
+  base::TimeDelta write_delay_;
+
+  // The minimum waiting time between successive deliveries of independent
+  // metrics to the metrics service via ProvideIndependentMetrics. This is set
+  // carefully: metrics logs are stored in a queue of limited size, and are
+  // uploaded roughly every 30 minutes.
+  //
+  // If this value is 0, then there will be no waiting time and events will be
+  // available on every ProvideIndependentMetrics.
+  base::TimeDelta min_independent_metrics_interval_;
 
   // Interface for providing the SystemProfile to metrics.
   // See chrome/browser/metrics/chrome_metrics_service_client.h

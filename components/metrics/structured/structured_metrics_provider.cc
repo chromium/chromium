@@ -33,10 +33,8 @@ constexpr int kSaveDelayMs = 1000;
 // The interval between chrome's collection of metrics logged from cros.
 constexpr int kExternalMetricsIntervalMins = 10;
 
-// The minimum waiting time between successive deliveries of independent metrics
-// to the metrics service via ProvideIndependentMetrics. This is set carefully:
-// metrics logs are stored in a queue of limited size, and are uploaded roughly
-// every 30 minutes.
+// This is set carefully: metrics logs are stored in a queue of limited size,
+// and are uploaded roughly every 30 minutes.
 constexpr base::TimeDelta kMinIndependentMetricsInterval = base::Minutes(45);
 
 // Directory containing serialized event protos to read.
@@ -55,8 +53,21 @@ char StructuredMetricsProvider::kDeviceKeyDataPath[] =
 char StructuredMetricsProvider::kUnsentLogsPath[] = "structured_metrics/events";
 
 StructuredMetricsProvider::StructuredMetricsProvider(
+    base::raw_ptr<metrics::MetricsProvider> system_profile_provider) {
+  StructuredMetricsProvider(
+      base::FilePath(kDeviceKeyDataPath), base::Milliseconds(kSaveDelayMs),
+      kMinIndependentMetricsInterval, system_profile_provider);
+}
+
+StructuredMetricsProvider::StructuredMetricsProvider(
+    const base::FilePath& device_key_path,
+    base::TimeDelta min_independent_metrics_interval,
+    base::TimeDelta write_delay,
     base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
-    : system_profile_provider_(system_profile_provider) {
+    : device_key_path_(device_key_path),
+      write_delay_(write_delay),
+      min_independent_metrics_interval_(min_independent_metrics_interval),
+      system_profile_provider_(system_profile_provider) {
   DCHECK(system_profile_provider_);
   Recorder::GetInstance()->AddObserver(this);
 }
@@ -143,25 +154,18 @@ void StructuredMetricsProvider::OnProfileAdded(
   }
   init_state_ = InitState::kProfileAdded;
 
-  const auto save_delay = base::Milliseconds(kSaveDelayMs);
-
   profile_key_data_ = std::make_unique<KeyData>(
-      profile_path.Append(kProfileKeyDataPath), save_delay,
+      profile_path.Append(kProfileKeyDataPath), write_delay_,
       base::BindOnce(&StructuredMetricsProvider::OnKeyDataInitialized,
                      weak_factory_.GetWeakPtr()));
 
-  // TODO(crbug.com/1148168): Change this to receive the key data path in the
-  // constructor and avoid the test-specific logic.
-  const auto device_key_data_path = device_key_data_path_for_test_.has_value()
-                                        ? device_key_data_path_for_test_.value()
-                                        : base::FilePath(kDeviceKeyDataPath);
   device_key_data_ = std::make_unique<KeyData>(
-      base::FilePath(device_key_data_path), save_delay,
+      base::FilePath(device_key_path_), write_delay_,
       base::BindOnce(&StructuredMetricsProvider::OnKeyDataInitialized,
                      weak_factory_.GetWeakPtr()));
 
   events_ = std::make_unique<PersistentProto<EventsProto>>(
-      profile_path.Append(kUnsentLogsPath), save_delay,
+      profile_path.Append(kUnsentLogsPath), write_delay_,
       base::BindOnce(&StructuredMetricsProvider::OnRead,
                      weak_factory_.GetWeakPtr()),
       base::BindRepeating(&StructuredMetricsProvider::OnWrite,
@@ -305,7 +309,7 @@ bool StructuredMetricsProvider::HasIndependentMetrics() {
   }
 
   if (base::Time::Now() - last_provided_independent_metrics_ <
-      kMinIndependentMetricsInterval) {
+      min_independent_metrics_interval_) {
     return false;
   }
 
@@ -381,14 +385,6 @@ void StructuredMetricsProvider::SetExternalMetricsDirForTest(
       base::BindRepeating(
           &StructuredMetricsProvider::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));
-}
-
-void StructuredMetricsProvider::SetDeviceKeyDataPathForTest(
-    const base::FilePath& path) {
-  // Updating the path after a profile has been added will have no effect, so
-  // make it an error.
-  DCHECK_EQ(init_state_, InitState::kUninitialized);
-  device_key_data_path_for_test_ = path;
 }
 
 void StructuredMetricsProvider::RecordEventBeforeInitialization(
