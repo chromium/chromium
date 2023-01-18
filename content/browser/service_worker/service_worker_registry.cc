@@ -255,6 +255,10 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   // trace event id.
   int64_t trace_event_id =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+  TRACE_EVENT_WITH_FLOW1(
+      "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
+      TRACE_EVENT_FLAG_FLOW_OUT, "URL", client_url.spec());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
       TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry::FindRegistrationForClientUrl",
@@ -977,6 +981,10 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     int64_t trace_event_id,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     storage::mojom::ServiceWorkerFindRegistrationResultPtr result) {
+  TRACE_EVENT_WITH_FLOW0(
+      "ServiceWorker", "ServiceWorkerRegistry::DidFindRegistrationForClientUrl",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
+      TRACE_EVENT_FLAG_FLOW_IN);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (database_status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       database_status !=
