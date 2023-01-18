@@ -31,6 +31,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
     kSuccess,
     // User exited the login screen without successfully logging in.
     kFailure,
+    // User opened the account recovery flow from the login screen.
+    kRecovery
   };
 
   AuthMetricsRecorder(const AuthMetricsRecorder&) = delete;

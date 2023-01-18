@@ -87,6 +87,8 @@ std::string GetAuthenticationOutcomeSuffix(AuthenticationOutcome exit_type) {
       return "UntilSuccess";
     case AuthenticationOutcome::kFailure:
       return "UntilFailure";
+    case AuthenticationOutcome::kRecovery:
+      return "UntilRecovery";
   }
   NOTREACHED();
   return "";

@@ -3560,9 +3560,9 @@ chromium-metrics-reviews@google.com.
   <owner>cros-lurs@google.com</owner>
   <summary>
     The number of incorrect passwords entered in Chrome OS
-    {AuthenticationSurface} screen until a successful/failed attempt. For
-    previous data (grouped for login and lock screen together) see
-    &quot;Ash.Login.Lock.NbPasswordAttempts.{AuthenticationOutcome}&quot;.
+    {AuthenticationSurface} screen until the &quot;{AuthenticationOutcome}&quot;
+    outcome. For previous data (grouped for login and lock screen together) see
+    &quot;Ash.Login.Lock.NbPasswordAttempts.*&quot;.
   </summary>
   <token key="AuthenticationSurface">
     <variant name="Lock"/>
@@ -3570,6 +3570,7 @@ chromium-metrics-reviews@google.com.
   </token>
   <token key="AuthenticationOutcome">
     <variant name="UntilFailure"/>
+    <variant name="UntilRecovery"/>
     <variant name="UntilSuccess"/>
   </token>
 </histogram>

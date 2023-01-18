@@ -744,7 +744,9 @@ LockContentsView::~LockContentsView() {
     // was reset to 0. Therefore, we will not record it the second time
     // here.
     if (unlock_attempt.second > 0) {
-      RecordAndResetPasswordAttempts(/*success=*/false, unlock_attempt.first);
+      RecordAndResetPasswordAttempts(
+          AuthMetricsRecorder::AuthenticationOutcome::kFailure,
+          unlock_attempt.first);
     }
   }
 
@@ -2149,7 +2151,8 @@ void LockContentsView::OnAuthenticate(bool auth_success,
     }
 
     // Times a password was incorrectly entered until user succeeds.
-    RecordAndResetPasswordAttempts(/*success=*/true, account_id);
+    RecordAndResetPasswordAttempts(
+        AuthMetricsRecorder::AuthenticationOutcome::kSuccess, account_id);
   } else {
     ++unlock_attempt_by_user_[account_id];
     if (authenticated_by_pin) {
@@ -2585,6 +2588,8 @@ void LockContentsView::ForgotPasswordButtonPressed() {
         .UpdateReauthReason(account_id,
                             static_cast<int>(ReauthReason::kForgotPassword));
   }
+  RecordAndResetPasswordAttempts(
+      AuthMetricsRecorder::AuthenticationOutcome::kRecovery, account_id);
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(account_id);
   HideAuthErrorMessage();
 }
@@ -2823,13 +2828,11 @@ void LockContentsView::SetKioskLicenseModeForTesting(
   UpdateKioskDefaultMessageVisibility();
 }
 
-void LockContentsView::RecordAndResetPasswordAttempts(bool success,
-                                                      AccountId account_id) {
-  AuthMetricsRecorder::AuthenticationOutcome exit_type =
-      success ? AuthMetricsRecorder::AuthenticationOutcome::kSuccess
-              : AuthMetricsRecorder::AuthenticationOutcome::kFailure;
+void LockContentsView::RecordAndResetPasswordAttempts(
+    AuthMetricsRecorder::AuthenticationOutcome outcome,
+    AccountId account_id) {
   AuthMetricsRecorder::Get()->OnExistingUserLoginExit(
-      exit_type, unlock_attempt_by_user_[account_id]);
+      outcome, unlock_attempt_by_user_[account_id]);
   unlock_attempt_by_user_[account_id] = 0;
 }
 

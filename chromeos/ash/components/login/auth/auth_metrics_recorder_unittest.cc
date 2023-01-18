@@ -136,6 +136,14 @@ TEST_F(AuthMetricsRecorderTest, OnExistingUserLoginExit) {
   histogram_tester.ExpectBucketCount(
       "Ash.OSAuth.Login.NbPasswordAttempts.UntilFailure", three_attempts, 1);
 
+  int eleven_attempts = 11;
+  recorder_->OnExistingUserLoginExit(
+      AuthMetricsRecorder::AuthenticationOutcome::kRecovery, eleven_attempts);
+  histogram_tester.ExpectTotalCount(
+      "Ash.OSAuth.Login.NbPasswordAttempts.UntilRecovery", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.NbPasswordAttempts.UntilRecovery", eleven_attempts, 1);
+
   int five_attempts = 5;
   recorder_->OnAuthenticationSurfaceChange(
       AuthMetricsRecorder::AuthenticationSurface::kLock);
