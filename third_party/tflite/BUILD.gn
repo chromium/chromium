@@ -477,6 +477,8 @@ static_library("tflite") {
     "src/tensorflow/lite/profiling/root_profiler.h",
     "src/tensorflow/lite/profiling/telemetry/profiler.cc",
     "src/tensorflow/lite/profiling/telemetry/profiler.h",
+    "src/tensorflow/lite/profiling/telemetry/telemetry.cc",
+    "src/tensorflow/lite/profiling/telemetry/telemetry.h",
     "src/tensorflow/lite/profiling/time.cc",
     "src/tensorflow/lite/profiling/time.h",
     "src/tensorflow/lite/schema/schema_utils.cc",
