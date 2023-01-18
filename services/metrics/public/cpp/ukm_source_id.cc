@@ -109,6 +109,8 @@ std::string GetSourceIdTypeDebugString(SourceId source_id) {
       return "REDIRECT_ID";
     case SourceIdObj::Type::WEB_IDENTITY_ID:
       return "WEB_IDENTITY_ID";
+    case SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
+      return "CHROMEOS_WEBSITE_ID";
   }
 }
 

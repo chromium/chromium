@@ -98,14 +98,14 @@ class METRICS_EXPORT UkmRecorder {
   // Gets new SourceId for a website Url. This method should only be called by
   // WebsiteMetrics.
   static SourceId GetSourceIdForWebsiteUrl(base::PassKey<apps::WebsiteMetrics>,
-                                           const GURL& start_url);
+                                           const GURL& website_url);
 
   // Gets new source Id for PAYMENT_APP_ID type and updates the source url to
   // the scope of the app. This method should only be called by
   // PaymentAppProviderUtil class when the payment app window is opened.
   static SourceId GetSourceIdForPaymentAppFromScope(
       base::PassKey<content::PaymentAppProviderUtil>,
-      const GURL& service_worker_scope);
+      const GURL& payment_app_from_scope_url);
 
   // Gets a new SourceId for WEB_IDENTITY_ID type and updates the source url
   // from the identity provider. This method should only be called in the
@@ -119,6 +119,12 @@ class METRICS_EXPORT UkmRecorder {
   // DIPSNavigationHandle class.
   static SourceId GetSourceIdForRedirectUrl(base::PassKey<DIPSNavigationHandle>,
                                             const GURL& redirect_url);
+
+  // Gets a new SourceId of CHROMEOS_WEBSITE_ID type. This should be only
+  // used for recording ChromeOS website stats.
+  static SourceId GetSourceIdForChromeOSWebsiteURL(
+      base::PassKey<DIPSNavigationHandle>,
+      const GURL& chromeos_website_url);
 
   // Add an entry to the UkmEntry list.
   virtual void AddEntry(mojom::UkmEntryPtr entry) = 0;
