@@ -67,6 +67,8 @@ All changes to this list should go through Blink's feature review process: http:
     animation-iteration-count
     animation-name
     animation-play-state
+    animation-range-end
+    animation-range-start
     animation-timeline
     animation-timing-function
     app-region
@@ -459,6 +461,9 @@ All changes to this list should go through Blink's feature review process: http:
     animation-delay
         animation-delay-end
         animation-delay-start
+    animation-range
+        animation-range-end
+        animation-range-start
     background
         background-attachment
         background-clip

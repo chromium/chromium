@@ -20,6 +20,9 @@ animationFillMode
 animationIterationCount
 animationName
 animationPlayState
+animationRange
+animationRangeEnd
+animationRangeStart
 animationTimeline
 animationTimingFunction
 appRegion

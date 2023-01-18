@@ -97,6 +97,8 @@ struct CORE_EXPORT Timing {
     TimelineOffset() = default;
     explicit TimelineOffset(double relative_offset)
         : relative_offset(relative_offset) {}
+    TimelineOffset(TimelineNamedRange name, double relative_offset)
+        : name(name), relative_offset(relative_offset) {}
 
     V8TimelineRangeOffset* ToV8TimelineRangeOffset() const;
 

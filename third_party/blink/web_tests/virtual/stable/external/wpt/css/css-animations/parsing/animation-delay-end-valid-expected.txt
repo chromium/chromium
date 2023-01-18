@@ -1,16 +1,7 @@
 This is a testharness.js-based test.
-FAIL e.style['animation-delay-start'] = "-5ms" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "0s" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "10s" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "20s, 10s" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "cover 0%" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "cover 100%" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "cover 120%" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "cover 42%" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "cover -42%" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "contain 42%" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "exit 42%" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "exit 1%, cover 2%, contain 100%" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['animation-delay-start'] = "enter 42%" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['animation-delay-end'] = "-5ms" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['animation-delay-end'] = "0s" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['animation-delay-end'] = "10s" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['animation-delay-end'] = "20s, 10s" should set the property value assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

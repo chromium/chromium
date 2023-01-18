@@ -66386,6 +66386,9 @@ Called by update_use_counter_css.py.-->
   <int value="737" label="font-variant-position"/>
   <int value="738" label="font-variant-alternates"/>
   <int value="739" label="baseline-source"/>
+  <int value="740" label="animation-range"/>
+  <int value="741" label="animation-range-start"/>
+  <int value="742" label="animation-range-end"/>
 </enum>
 
 <enum name="MappedEditingCommands">

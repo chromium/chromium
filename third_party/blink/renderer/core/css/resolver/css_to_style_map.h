@@ -85,6 +85,12 @@ class CSSToStyleMap {
                                             const ScopedCSSValue&);
   static EAnimPlayState MapAnimationPlayState(StyleResolverState&,
                                               const CSSValue&);
+  static absl::optional<Timing::TimelineOffset> MapAnimationRangeStart(
+      StyleResolverState&,
+      const CSSValue&);
+  static absl::optional<Timing::TimelineOffset> MapAnimationRangeEnd(
+      StyleResolverState&,
+      const CSSValue&);
   static CSSTransitionData::TransitionProperty MapAnimationProperty(
       StyleResolverState&,
       const CSSValue&);

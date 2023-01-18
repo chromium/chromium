@@ -2051,6 +2051,45 @@ CSSValue* ComputedStyleUtils::ValueForAnimationPlayStateList(
       &ValueForAnimationPlayState);
 }
 
+CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
+    const absl::optional<Timing::TimelineOffset>& offset) {
+  if (!offset.has_value()) {
+    return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kAuto);
+  }
+  // TODO(crbug.com/1407923): Support <length-percentage>.
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*MakeGarbageCollected<CSSIdentifierValue>(offset->name));
+  list->Append(*CSSNumericLiteralValue::Create(
+      offset->relative_offset * 100.0,
+      CSSPrimitiveValue::UnitType::kPercentage));
+  return list;
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationRangeStartList(
+    const CSSTimingData* timing_data) {
+  return CreateAnimationValueList(
+      timing_data
+          ? timing_data->RangeStartList()
+          : Vector<absl::optional<
+                Timing::TimelineOffset>>{CSSTimingData::InitialRangeStart()},
+      &ValueForAnimationRangeStart);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationRangeEnd(
+    const absl::optional<Timing::TimelineOffset>& offset) {
+  return ValueForAnimationRangeStart(offset);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationRangeEndList(
+    const CSSTimingData* timing_data) {
+  return CreateAnimationValueList(
+      timing_data
+          ? timing_data->RangeEndList()
+          : Vector<absl::optional<
+                Timing::TimelineOffset>>{CSSTimingData::InitialRangeEnd()},
+      &ValueForAnimationRangeEnd);
+}
+
 CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
     const scoped_refptr<TimingFunction>& timing_function) {
   switch (timing_function->GetType()) {

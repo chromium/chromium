@@ -476,6 +476,38 @@ EAnimPlayState CSSToStyleMap::MapAnimationPlayState(StyleResolverState& state,
   return EAnimPlayState::kPlaying;
 }
 
+namespace {
+
+absl::optional<Timing::TimelineOffset> MapAnimationRange(
+    const CSSValue& value) {
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
+      ident && ident->GetValueID() == CSSValueID::kAuto) {
+    return absl::nullopt;
+  }
+  const auto& list = To<CSSValueList>(value);
+  DCHECK_EQ(list.length(), 2u);
+  const auto& range_name = To<CSSIdentifierValue>(list.Item(0));
+  const auto& percentage = To<CSSPrimitiveValue>(list.Item(1));
+  DCHECK(percentage.IsPercentage());
+  return Timing::TimelineOffset(
+      range_name.ConvertTo<Timing::TimelineNamedRange>(),
+      percentage.GetValue<double>() / 100.0);
+}
+
+}  // namespace
+
+absl::optional<Timing::TimelineOffset> CSSToStyleMap::MapAnimationRangeStart(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationRange(value);
+}
+
+absl::optional<Timing::TimelineOffset> CSSToStyleMap::MapAnimationRangeEnd(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return MapAnimationRange(value);
+}
+
 CSSTransitionData::TransitionProperty CSSToStyleMap::MapAnimationProperty(
     StyleResolverState& state,
     const CSSValue& value) {

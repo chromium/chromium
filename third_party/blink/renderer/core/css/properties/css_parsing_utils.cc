@@ -4071,6 +4071,7 @@ CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange& range) {
                       CSSValueID::kEnter, CSSValueID::kExit>(range);
 }
 
+// TODO(crbug.com/1407923): Support <length-percentage>.
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange& range,
                                              const CSSParserContext& context) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
@@ -4091,9 +4092,14 @@ CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange& range,
 CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
                                 const CSSParserContext& context) {
   DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
-  if (CSSPrimitiveValue* time =
-          ConsumeTime(range, context, CSSPrimitiveValue::ValueRange::kAll)) {
-    return time;
+  return ConsumeTime(range, context, CSSPrimitiveValue::ValueRange::kAll);
+}
+
+CSSValue* ConsumeAnimationRange(CSSParserTokenRange& range,
+                                const CSSParserContext& context) {
+  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(range)) {
+    return ident;
   }
   return ConsumeTimelineRangeNameAndPercent(range, context);
 }

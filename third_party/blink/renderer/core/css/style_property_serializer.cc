@@ -472,6 +472,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(alternativeAnimationShorthand());
     case CSSPropertyID::kAlternativeAnimationDelay:
       return AnimationDelayShorthandValue();
+    case CSSPropertyID::kAnimationRange:
+      return AnimationRangeShorthandValue();
     case CSSPropertyID::kBorderSpacing:
       return Get2Values(borderSpacingShorthand());
     case CSSPropertyID::kBackgroundPosition:
@@ -885,6 +887,27 @@ String StylePropertySerializer::ViewTimelineValue() const {
 
 namespace {
 
+CSSValue* AnimationDelayShorthandValueItem(wtf_size_t index,
+                                           const CSSValueList& start_list,
+                                           const CSSValueList& end_list) {
+  DCHECK_LT(index, start_list.length());
+  DCHECK_LT(index, end_list.length());
+
+  const CSSValue& start = start_list.Item(index);
+  const CSSValue& end = end_list.Item(index);
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+  list->Append(start);
+
+  if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(end);
+      !primitive || !primitive->IsZero()) {
+    list->Append(end);
+  }
+
+  return list;
+}
+
 std::pair<CSSValueID, double> GetTimelineRange(const CSSValue& value) {
   const auto* list = DynamicTo<CSSValueList>(value);
   if (!list) {
@@ -896,7 +919,7 @@ std::pair<CSSValueID, double> GetTimelineRange(const CSSValue& value) {
   return {name.GetValueID(), offset.GetValue<double>()};
 }
 
-CSSValue* AnimationDelayShorthandValueItem(wtf_size_t index,
+CSSValue* AnimationRangeShorthandValueItem(wtf_size_t index,
                                            const CSSValueList& start_list,
                                            const CSSValueList& end_list) {
   DCHECK_LT(index, start_list.length());
@@ -918,8 +941,8 @@ CSSValue* AnimationDelayShorthandValueItem(wtf_size_t index,
 
   list->Append(start);
 
-  if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(end);
-      !primitive || !primitive->IsZero()) {
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(end);
+      !ident || (ident->GetValueID() != CSSValueID::kAuto)) {
     list->Append(end);
   }
 
@@ -948,6 +971,31 @@ String StylePropertySerializer::AnimationDelayShorthandValue() const {
 
   for (wtf_size_t i = 0; i < start_list.length(); ++i) {
     list->Append(*AnimationDelayShorthandValueItem(i, start_list, end_list));
+  }
+
+  return list->CssText();
+}
+
+String StylePropertySerializer::AnimationRangeShorthandValue() const {
+  CHECK_EQ(animationRangeShorthand().length(), 2u);
+  CHECK_EQ(animationRangeShorthand().properties()[0],
+           &GetCSSPropertyAnimationRangeStart());
+  CHECK_EQ(animationRangeShorthand().properties()[1],
+           &GetCSSPropertyAnimationRangeEnd());
+
+  const CSSValueList& start_list = To<CSSValueList>(
+      *property_set_.GetPropertyCSSValue(GetCSSPropertyAnimationRangeStart()));
+  const CSSValueList& end_list = To<CSSValueList>(
+      *property_set_.GetPropertyCSSValue(GetCSSPropertyAnimationRangeEnd()));
+
+  if (start_list.length() != end_list.length()) {
+    return "";
+  }
+
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+
+  for (wtf_size_t i = 0; i < start_list.length(); ++i) {
+    list->Append(*AnimationRangeShorthandValueItem(i, start_list, end_list));
   }
 
   return list->CssText();
