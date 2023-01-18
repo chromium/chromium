@@ -15,13 +15,16 @@ promise_test(t => {
   return scheduler.postTask(async _ => {
     // We should be in a new task.
     const postTaskId = scheduler.taskId;
-    assert_not_equals(scriptId, postTaskId);
+    assert_not_equals(scriptId, postTaskId,
+      "postTaskId should not be equal to the script task ID.");
 
     let eventFired = false;
     // Set things up so the abort event listener is an ancestor of this task.
     const controller = new AbortController();
     controller.signal.onabort = t.step_func(() => {
-      assert_not_equals(scheduler.taskId, postTaskId);
+      assert_equals(scheduler.taskId, postTaskId,
+        "aborted task ID is the same as the postTask ID, as it is fired" +
+        " synchronously.");
       assert_equals(scheduler.isAncestor(postTaskId), "ancestor");
       eventFired = true;
     });
