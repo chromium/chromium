@@ -4,6 +4,8 @@
 #ifndef MEDIA_GPU_V4L2_TEST_H264_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_H264_DECODER_H_
 
+#include <linux/media/h264-ctrls-upstream.h>
+
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
@@ -26,7 +28,7 @@ struct PreviousRefPicOrder {
 // H264DPB is a class representing a Decoded Picture Buffer (DPB).
 // The DPB is a vector of H264 picture slice metadata objects that
 // describe the pictures used in the H.264 decoding process.
-class H264DPB : std::vector<std::unique_ptr<H264SliceMetadata>> {
+class H264DPB : public std::vector<std::unique_ptr<H264SliceMetadata>> {
  public:
   H264DPB() = default;
   ~H264DPB() = default;
@@ -57,6 +59,9 @@ class H264DPB : std::vector<std::unique_ptr<H264SliceMetadata>> {
   // not reference elements.
   void MarkAllUnusedRef();
   void StorePic(H264SliceMetadata* pic);
+  // Updates each H264SliceMetadata object in DPB's frame num wrap
+  // based on the max frame num.
+  void UpdateFrameNumWrap(const int curr_frame_num, const int max_frame_num);
 
  private:
   // A vector of H264SliceMetadata objects which will be created by the H264
@@ -101,7 +106,8 @@ class H264Decoder : public VideoDecoder {
       int sps_id,
       int pps_id,
       H264SliceHeader* slice_hdr,
-      std::unique_ptr<H264SliceMetadata>& slice_metadata);
+      std::unique_ptr<H264SliceMetadata>& slice_metadata,
+      v4l2_ctrl_h264_decode_params* v4l2_decode_param);
 
   // Transmits each H264 Slice associated with the current frame to the
   // device.  Additionally sends Decode Parameters and Decode Mode
@@ -127,6 +133,8 @@ class H264Decoder : public VideoDecoder {
   PreviousRefPicOrder prev_pic_order_;
 
   int global_pic_count_ = 0;
+
+  H264DPB dpb_;
 
   std::unique_ptr<H264NALU> pending_nalu_;
   std::unique_ptr<H264SliceHeader> pending_slice_header_;

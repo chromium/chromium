@@ -323,6 +323,21 @@ void H264DPB::StorePic(H264SliceMetadata* pic) {
   dpb_.push_back(std::make_unique<H264SliceMetadata>(*pic));
 }
 
+void H264DPB::UpdateFrameNumWrap(const int curr_frame_num,
+                                 const int max_frame_num) {
+  for (auto& pic : dpb_) {
+    if (pic->ref) {
+      continue;
+    }
+
+    if (pic->frame_num > curr_frame_num) {
+      pic->frame_num_wrap = pic->frame_num - max_frame_num;
+    } else {
+      pic->frame_num_wrap = pic->frame_num;
+    }
+  }
+}
+
 // Initializes H264 Slice Metadata based on slice header and
 // based on H264 specifications which it calculates its pic order count.
 VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
@@ -402,7 +417,8 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
     const int sps_id,
     const int pps_id,
     H264SliceHeader* slice_hdr,
-    std::unique_ptr<H264SliceMetadata>& slice_metadata) {
+    std::unique_ptr<H264SliceMetadata>& slice_metadata,
+    v4l2_ctrl_h264_decode_params* v4l2_decode_param) {
   const H264SPS* sps = parser_->GetSPS(sps_id);
   const H264PPS* pps = parser_->GetPPS(pps_id);
 
@@ -411,6 +427,13 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
     return VideoDecoder::kError;
   }
   global_pic_count_++;
+
+  if (slice_hdr->idr_pic_flag) {
+    dpb_.ClearDPB();
+  }
+
+  const int max_frame_num = 1 << (sps->log2_max_frame_num_minus4 + 4);
+  dpb_.UpdateFrameNumWrap(slice_hdr->frame_num, max_frame_num);
 
   struct v4l2_ctrl_h264_sps v4l2_sps = SetupSPSCtrl(sps);
   struct v4l2_ctrl_h264_pps v4l2_pps = SetupPPSCtrl(pps);
@@ -435,6 +458,22 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
     return VideoDecoder::kError;
   }
 
+  memset(v4l2_decode_param->dpb, 0, sizeof(v4l2_decode_param->dpb));
+  size_t i = 0;
+  constexpr size_t kTimestampToNanoSecs = 1000;
+  for (const auto& element : dpb_) {
+    struct v4l2_h264_dpb_entry& entry = v4l2_decode_param->dpb[i++];
+    entry = {
+      .reference_ts = element->ref_ts_nsec * kTimestampToNanoSecs,
+      .frame_num = static_cast<unsigned short>(element->frame_num),
+      .fields = V4L2_H264_FRAME_REF,
+      .top_field_order_cnt = element->top_field_order_cnt,
+      .bottom_field_order_cnt = element->bottom_field_order_cnt,
+      .flags = static_cast<uint32_t>(V4L2_H264_DPB_ENTRY_FLAG_VALID |
+               (element->ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0))
+    };
+  }
+
   return VideoDecoder::kOk;
 }
 
@@ -452,6 +491,10 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
   // TODO(bchoobineh): Incorporate slice_metadata with Frame Finish
   // logic in this function.
   std::unique_ptr<H264SliceMetadata> slice_metadata;
+
+  // TODO(bchoobineh): Incorporate v4l2_decode_params with Frame Finish
+  // logic in this function.
+  v4l2_ctrl_h264_decode_params v4l2_decode_param = {};
 
   std::unique_ptr<H264SliceHeader> curr_slice_header =
       std::move(pending_slice_header_);
@@ -480,7 +523,8 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
 
         if (!pending_slice_header_) {
           if (StartNewFrame(sps_id, pps_id, curr_slice_header.get(),
-                            slice_metadata) != VideoDecoder::kOk) {
+                            slice_metadata,
+                            &v4l2_decode_param) != VideoDecoder::kOk) {
             return H264Parser::kInvalidStream;
           }
 
