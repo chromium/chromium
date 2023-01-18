@@ -73,7 +73,7 @@ int GetGroupWeight() {
     case Channel::BETA:
       return 50;
     case Channel::STABLE:
-      return 0;
+      return 5;
   }
 }
 
