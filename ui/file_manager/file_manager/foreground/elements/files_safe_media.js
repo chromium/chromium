@@ -65,23 +65,39 @@ export const FilesSafeMedia = Polymer({
 
   onSrcChange_: function() {
     const hasContent = this.src.dataType !== '';
-    if (!hasContent && this.contentsNode_) {
-      // Remove webview or iframe to clean up unnecessary processes.
+
+    if (!hasContent) {
+      // Remove untrusted iframe to clean up unnecessary processes.
+      if (this.contentsNode_) {
+        this.$.content.removeChild(this.contentsNode_);
+        this.contentsNode_ = null;
+      }
+      return;
+    }
+
+    if (this.contentsNode_ && this.contentsNode_.isVideoMedia_) {
+      // Remove old video item first to stop UI flicker when drawing the new
+      // video content: bug b/260619403
       this.$.content.removeChild(this.contentsNode_);
       this.contentsNode_ = null;
-    } else if (hasContent && !this.contentsNode_) {
-      // Create node only if src exists to save resources.
+    }
+
+    if (!this.contentsNode_) {
+      // Create the node, which will callback here (onSrcChange_) when done.
       this.createUntrustedContents_();
-    } else if (hasContent && this.contentsNode_.contentWindow) {
-      /** @type {!UntrustedPreviewData} */
-      const data = {
-        type: this.type,
-        sourceContent: /** @type {!FilePreviewContent} */ (this.src),
-      };
-      window.setTimeout(() => {
-        this.contentsNode_.contentWindow.postMessage(
-            data, toSandboxedURL().origin);
-      });
+      return;
+    }
+
+    const data = /** @type {!UntrustedPreviewData} */ ({
+      type: this.type,
+      sourceContent: /** @type {!FilePreviewContent} */ (this.src),
+    });
+
+    if (this.contentsNode_.contentWindow) {
+      this.contentsNode_.isVideoMedia_ = (this.type === 'video');
+      // Send the data to preview to the untrusted <iframe>.
+      this.contentsNode_.contentWindow.postMessage(
+          data, toSandboxedURL().origin);
     }
   },
 
