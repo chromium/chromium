@@ -91,6 +91,7 @@ class TransparentButton : public views::Button {
                              DownloadBubbleRowView* row_view)
       : Button(callback), row_view_(row_view) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+    SetInstallFocusRingOnFocus(false);
   }
   ~TransparentButton() override = default;
 
@@ -575,6 +576,7 @@ void DownloadBubbleRowView::UpdateRowForFocus(
     bool visible,
     bool request_focus_on_last_quick_action) {
   quick_action_holder_->SetVisible(visible);
+  views::InkDrop::Get(this)->GetInkDrop()->SetFocused(visible);
   // Update focus only if focus received from a different row.
   bool should_set_focus = request_focus_on_last_quick_action &&
                           GetFocusManager() &&
