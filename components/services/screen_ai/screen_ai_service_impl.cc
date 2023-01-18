@@ -371,9 +371,9 @@ void ScreenAIService::VisualAnnotationInternal(
     result = CallLibraryLayoutExtractionFunction(image, annotation_proto,
                                                  annotation_proto_length);
   }
-  if (!result) {
+  if (!result || !annotation_proto_length) {
     DCHECK_EQ(annotation->tree_data.tree_id, ui::AXTreeIDUnknown());
-    VLOG(1) << "Screen AI library could not process snapshot.";
+    VLOG(1) << "Screen AI library could not process snapshot or no OCR data.";
     return;
   }
 

@@ -1778,7 +1778,13 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   // more convenient and less complex if an `ui::AXTree` was never constructed
   // and if the `ui::AXTreeSource` was able to use the collection of `nodes_`
   // directly.
+  if (child_tree_id == ui::AXTreeIDUnknown()) {
+    VLOG(1) << "Empty OCR data received.";
+    return;
+  }
+
   VLOG(1) << "OCR data received: " << child_tree_id.ToString();
+
   DCHECK_NE(image_node_id, ui::kInvalidAXNodeID);
   DCHECK_NE(parent_node_id, ui::kInvalidAXNodeID);
   DCHECK(!image_bounds.IsEmpty());
