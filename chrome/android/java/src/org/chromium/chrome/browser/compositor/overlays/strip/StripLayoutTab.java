@@ -182,6 +182,10 @@ public class StripLayoutTab implements VirtualView {
     private static final int CLOSE_BUTTON_WIDTH_DP = 36;
     private static final int CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP = 48;
 
+    // Tab strip content y offset
+    private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
+    private static final float DETACHED_CONTENT_OFFSET_Y = 10.f;
+
     // Divider Constants
     // TODO(crbug.com/1373632): Temp value until the 9-patches are updated.
     private static final int DIVIDER_OFFSET_X = 9;
@@ -583,6 +587,20 @@ public class StripLayoutTab implements VirtualView {
             }
         }
         return 1.0f;
+    }
+
+    /**
+     * @return How far to vertically offset the tab content.
+     */
+    public float getContentOffsetY() {
+        if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+            return DETACHED_CONTENT_OFFSET_Y;
+        } else if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+            return FOLIO_CONTENT_OFFSET_Y;
+        } else {
+            // If TSR is disabled, contentOffsetY will not be used. Default to 0.
+            return 0.f;
+        }
     }
 
     /**

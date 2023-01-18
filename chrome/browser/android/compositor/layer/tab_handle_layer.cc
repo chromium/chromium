@@ -39,6 +39,7 @@ void TabHandleLayer::SetProperties(
     float width,
     float height,
     float content_offset_x,
+    float content_offset_y,
     float divider_offset_x,
     float bottom_offset_y,
     float close_button_alpha,
@@ -177,8 +178,15 @@ void TabHandleLayer::SetProperties(
   }
 
   if (title_layer) {
-    int title_y = tab_handle_resource->padding().y() / 2 + height / 2 -
-                  title_layer->size().height() / 2;
+    int title_y;
+    if (is_tab_strip_redesign_enabled) {
+      // 8dp top padding for folio and 10 dp for detached.
+      title_y = content_offset_y;
+    } else {
+      title_y = tab_handle_resource->padding().y() / 2 + height / 2 -
+                title_layer->size().height() / 2;
+    }
+
     int title_x = is_rtl ? padding_left + close_width : padding_left;
     title_x += is_rtl ? 0 : content_offset_x;
     title_layer->setBounds(gfx::Size(
@@ -202,8 +210,15 @@ void TabHandleLayer::SetProperties(
   } else {
     close_button_->SetIsDrawable(true);
     const float close_max_width = close_button_->bounds().width();
-    int close_y = (tab_handle_resource->padding().y() + height) / 2 -
-                  close_button_->bounds().height() / 2;
+
+    int close_y;
+    if (is_tab_strip_redesign_enabled) {
+      close_y = content_offset_y;
+    } else {
+      close_y = (tab_handle_resource->padding().y() + height) / 2 -
+                close_button_->bounds().height() / 2;
+    }
+
     int close_x = is_rtl ? padding_left - close_max_width + close_width
                          : width - padding_right - close_width;
     if (foreground_) {

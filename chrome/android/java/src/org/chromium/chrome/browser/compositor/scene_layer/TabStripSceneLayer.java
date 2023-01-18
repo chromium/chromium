@@ -207,10 +207,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     isSelected, st.getClosePressed(), layoutHelper.getWidth() * mDpToPx,
                     st.getDrawX() * mDpToPx, st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx,
                     st.getHeight() * mDpToPx, st.getContentOffsetX() * mDpToPx,
-                    st.getDividerOffsetX() * mDpToPx, st.getBottomMargin() * mDpToPx,
-                    st.getCloseButton().getOpacity(), st.getDividerOpacity(), st.isLoading(),
-                    st.getLoadingSpinnerRotation(), st.getBrightness(), st.getOpacity(isSelected),
-                    layerTitleCache, resourceManager);
+                    st.getContentOffsetY() * mDpToPx, st.getDividerOffsetX() * mDpToPx,
+                    st.getBottomMargin() * mDpToPx, st.getCloseButton().getOpacity(),
+                    st.getDividerOpacity(), st.isLoading(), st.getLoadingSpinnerRotation(),
+                    st.getBrightness(), st.getOpacity(isSelected), layerTitleCache,
+                    resourceManager);
         }
     }
 
@@ -253,9 +254,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int handleOutlineResourceId, int closeTint, int dividerTint, int handleTint,
                 int handleOutlineTint, boolean foreground, boolean closePressed, float toolbarWidth,
                 float x, float y, float width, float height, float contentOffsetX,
-                float dividerOffsetX, float bottomOffsetY, float closeButtonAlpha,
-                float dividerAlpha, boolean isLoading, float spinnerRotation, float brightness,
-                float opacity, LayerTitleCache layerTitleCache, ResourceManager resourceManager);
+                float contentOffsetY, float dividerOffsetX, float bottomOffsetY,
+                float closeButtonAlpha, float dividerAlpha, boolean isLoading,
+                float spinnerRotation, float brightness, float opacity,
+                LayerTitleCache layerTitleCache, ResourceManager resourceManager);
         void setContentTree(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);
     }
