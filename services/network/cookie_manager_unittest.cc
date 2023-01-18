@@ -2777,6 +2777,7 @@ TEST_F(FlushableCookieManagerTest, DeletionFilterToInfo) {
   EXPECT_TRUE(delete_info.domains_and_ips_to_delete.empty());
   EXPECT_TRUE(delete_info.domains_and_ips_to_ignore.empty());
   EXPECT_FALSE(delete_info.value_for_testing.has_value());
+  EXPECT_TRUE(delete_info.cookie_partition_key_collection.ContainsAllKeys());
 
   // Then test all with non-default values.
   const double kTestStartEpoch = 1000;

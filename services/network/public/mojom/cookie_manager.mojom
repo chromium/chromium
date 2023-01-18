@@ -325,7 +325,10 @@ struct CookieDeletionFilter {
   // Only delete partitioned cookies contained in this
   // CookiePartitionKeyCollection.
   // See net/cookies/cookie_partition_key_collection.h for documentation.
-  CookiePartitionKeyCollection cookie_partition_key_collection;
+  // If the field is not set, then we delete cookies from all partitions. This
+  // is equivalent to setting the field to
+  // CookiePartitionKeyCollection::ContainsAll.
+  CookiePartitionKeyCollection? cookie_partition_key_collection;
 };
 
 interface CookieChangeListener {

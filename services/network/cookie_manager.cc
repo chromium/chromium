@@ -376,7 +376,9 @@ CookieDeletionInfo DeletionFilterToInfo(mojom::CookieDeletionFilterPtr filter) {
   }
 
   delete_info.cookie_partition_key_collection =
-      filter->cookie_partition_key_collection;
+      filter->cookie_partition_key_collection
+          ? *filter->cookie_partition_key_collection
+          : net::CookiePartitionKeyCollection::ContainsAll();
 
   return delete_info;
 }
