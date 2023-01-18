@@ -647,10 +647,10 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
   // of the flag. That class will own both the loaders and the
   // AccessibilityServiceClient.
   if (enabled) {
-    chromevox_loader_->SetProfile(
+    chromevox_loader_->SetBrowserContext(
         profile_,
-        base::BindRepeating(&AccessibilityManager::PostSwitchChromeVoxProfile,
-                            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&AccessibilityManager::PostSwitchChromeVoxProfile,
+                       weak_ptr_factory_.GetWeakPtr()));
     if (accessibility_service_client_)
       accessibility_service_client_->SetProfile(profile_);
   }
@@ -829,7 +829,7 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
 
   const bool enabled = profile_->GetPrefs()->GetBoolean(pref_name);
   if (enabled) {
-    accessibility_common_extension_loader_->SetProfile(
+    accessibility_common_extension_loader_->SetBrowserContext(
         profile_, base::OnceClosure() /* done_callback */);
     if (accessibility_service_client_)
       accessibility_service_client_->SetProfile(profile_);
@@ -1225,7 +1225,7 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       prefs::kAccessibilitySelectToSpeakEnabled);
   if (enabled) {
-    select_to_speak_loader_->SetProfile(profile_, base::OnceClosure());
+    select_to_speak_loader_->SetBrowserContext(profile_, base::OnceClosure());
     if (accessibility_service_client_)
       accessibility_service_client_->SetProfile(profile_);
   }
@@ -1280,13 +1280,13 @@ void AccessibilityManager::OnSwitchAccessChanged() {
   if (enabled) {
     // Only update |was_vk_enabled_before_switch_access_| if the profile
     // changed.
-    if (profile_ != switch_access_loader_->profile()) {
+    if (profile_ != switch_access_loader_->browser_context()) {
       was_vk_enabled_before_switch_access_ =
           ChromeKeyboardControllerClient::Get()->IsEnableFlagSet(
               keyboard::KeyboardEnableFlag::kExtensionEnabled);
     }
 
-    switch_access_loader_->SetProfile(profile_, base::OnceClosure());
+    switch_access_loader_->SetBrowserContext(profile_, base::OnceClosure());
 
     if (accessibility_service_client_)
       accessibility_service_client_->SetProfile(profile_);
