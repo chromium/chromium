@@ -619,6 +619,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
         ->current_replication_state();
   }
 
+  base::WeakPtr<RenderFrameHostManager> GetWeakPtr();
+
  private:
   friend class NavigatorTest;
   friend class RenderFrameHostManagerTest;

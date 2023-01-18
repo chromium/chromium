@@ -8642,12 +8642,11 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
          type == BeforeUnloadType::INNER_DELEGATE_ATTACH ||
          IsOutermostMainFrame());
 
+  CHECK(owner_);  // Only active documents are subject to BeforeUnload.
+
   if (!for_navigation) {
     // Cancel any pending navigations, to avoid their navigation commit/fail
     // event from wiping out the is_waiting_for_beforeunload_completion_ state.
-    // TODO(https://crbug.com/1405759) Explain why `owner_` is non-null here. It
-    // isn't clear why.
-    CHECK(owner_);
     owner_->CancelNavigation();
   }
 
@@ -8663,16 +8662,11 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
     DCHECK(!for_navigation);
 
     // Dispatch the ACK to prevent re-entrancy.
-    base::OnceClosure task = base::BindOnce(
-        [](base::WeakPtr<RenderFrameHostImpl> self) {
-          if (!self)
-            return;
-          self->frame_tree_node_->render_manager()->BeforeUnloadCompleted(
-              true, base::TimeTicks::Now());
-        },
-        weak_ptr_factory_.GetWeakPtr());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(task));
+        FROM_HERE,
+        base::BindOnce(&RenderFrameHostManager::BeforeUnloadCompleted,
+                       owner_->GetRenderFrameHostManager().GetWeakPtr(),
+                       /*proceed=*/true, base::TimeTicks::Now()));
     return;
   }
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(

@@ -4401,4 +4401,8 @@ NavigationControllerImpl& RenderFrameHostManager::GetNavigationController() {
   return frame_tree_node_->frame_tree().controller();
 }
 
+base::WeakPtr<RenderFrameHostManager> RenderFrameHostManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace content
