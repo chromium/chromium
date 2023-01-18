@@ -14,18 +14,18 @@ using ZygoteLaunchCallback =
     base::OnceCallback<pid_t(base::CommandLine*, base::ScopedFD*)>;
 
 // Allocates and initializes the global generic zygote process, and returns the
-// ZygoteHandle used to communicate with it. |launch_cb| is a callback that
-// should actually launch the process, after adding additional command line
+// ZygoteCommunication* used to communicate with it. |launch_cb| is a callback
+// that should actually launch the process, after adding additional command line
 // switches to the ones composed by this function. It returns the pid created,
 // and provides a control fd for it.
 CONTENT_EXPORT
-ZygoteHandle CreateGenericZygote(ZygoteLaunchCallback launch_cb);
+ZygoteCommunication* CreateGenericZygote(ZygoteLaunchCallback launch_cb);
 
 // Similar to the above but for creating an unsandboxed zygote from which
 // processes which need non-generic sandboxes can be derived.
 CONTENT_EXPORT
-ZygoteHandle CreateUnsandboxedZygote(ZygoteLaunchCallback launch_cb);
-CONTENT_EXPORT ZygoteHandle GetUnsandboxedZygote();
+ZygoteCommunication* CreateUnsandboxedZygote(ZygoteLaunchCallback launch_cb);
+CONTENT_EXPORT ZygoteCommunication* GetUnsandboxedZygote();
 
 }  // namespace content
 

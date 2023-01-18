@@ -98,7 +98,7 @@ class ChildProcessLauncherHelper
     base::Process process;
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-    ZygoteHandle zygote = nullptr;
+    ZygoteCommunication* zygote = nullptr;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -234,7 +234,7 @@ class ChildProcessLauncherHelper
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // Returns the zygote handle for this particular launch, if any.
-  ZygoteHandle GetZygoteHandle();
+  ZygoteCommunication* GetZygoteForLaunch();
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
   base::CommandLine* command_line() { return command_line_.get(); }

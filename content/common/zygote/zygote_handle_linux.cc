@@ -13,12 +13,12 @@ namespace content {
 namespace {
 
 // Intentionally leaked.
-ZygoteHandle g_generic_zygote = nullptr;
-ZygoteHandle g_unsandboxed_zygote = nullptr;
+ZygoteCommunication* g_generic_zygote = nullptr;
+ZygoteCommunication* g_unsandboxed_zygote = nullptr;
 
 }  // namespace
 
-ZygoteHandle CreateGenericZygote(ZygoteLaunchCallback launch_cb) {
+ZygoteCommunication* CreateGenericZygote(ZygoteLaunchCallback launch_cb) {
   CHECK(!g_generic_zygote);
   g_generic_zygote =
       new ZygoteCommunication(ZygoteCommunication::ZygoteType::kSandboxed);
@@ -26,12 +26,12 @@ ZygoteHandle CreateGenericZygote(ZygoteLaunchCallback launch_cb) {
   return g_generic_zygote;
 }
 
-ZygoteHandle GetGenericZygote() {
+ZygoteCommunication* GetGenericZygote() {
   CHECK(g_generic_zygote);
   return g_generic_zygote;
 }
 
-ZygoteHandle CreateUnsandboxedZygote(ZygoteLaunchCallback launch_cb) {
+ZygoteCommunication* CreateUnsandboxedZygote(ZygoteLaunchCallback launch_cb) {
   CHECK(!g_unsandboxed_zygote);
   g_unsandboxed_zygote =
       new ZygoteCommunication(ZygoteCommunication::ZygoteType::kUnsandboxed);
@@ -39,7 +39,7 @@ ZygoteHandle CreateUnsandboxedZygote(ZygoteLaunchCallback launch_cb) {
   return g_unsandboxed_zygote;
 }
 
-ZygoteHandle GetUnsandboxedZygote() {
+ZygoteCommunication* GetUnsandboxedZygote() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNoUnsandboxedZygote)) {
     CHECK(!g_unsandboxed_zygote);

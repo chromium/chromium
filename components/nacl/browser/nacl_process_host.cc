@@ -195,7 +195,7 @@ class NaClSandboxedProcessLauncherDelegate
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-  content::ZygoteHandle GetZygote() override {
+  content::ZygoteCommunication* GetZygote() override {
     return content::GetGenericZygote();
   }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)

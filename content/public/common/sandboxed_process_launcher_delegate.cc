@@ -46,7 +46,7 @@ bool SandboxedProcessLauncherDelegate::CetCompatible() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-ZygoteHandle SandboxedProcessLauncherDelegate::GetZygote() {
+ZygoteCommunication* SandboxedProcessLauncherDelegate::GetZygote() {
   // Default to the sandboxed zygote. If a more lax sandbox is needed, then the
   // child class should override this method and use the unsandboxed zygote.
   return GetGenericZygote();

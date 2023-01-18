@@ -32,7 +32,7 @@
 namespace content {
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-ZygoteHandle RendererSandboxedProcessLauncherDelegate::GetZygote() {
+ZygoteCommunication* RendererSandboxedProcessLauncherDelegate::GetZygote() {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
   base::CommandLine::StringType renderer_prefix =

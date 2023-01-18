@@ -297,8 +297,9 @@ void ZygoteHostImpl::AdjustRendererOOMScore(base::ProcessHandle pid,
 #if BUILDFLAG(IS_CHROMEOS)
 void ZygoteHostImpl::ReinitializeLogging(uint32_t logging_dest,
                                          base::PlatformFile log_file_fd) {
-  content::ZygoteHandle generic_zygote = content::GetGenericZygote();
-  content::ZygoteHandle unsandboxed_zygote = content::GetUnsandboxedZygote();
+  content::ZygoteCommunication* generic_zygote = content::GetGenericZygote();
+  content::ZygoteCommunication* unsandboxed_zygote =
+      content::GetUnsandboxedZygote();
   if (generic_zygote)
     generic_zygote->ReinitializeLogging(logging_dest, log_file_fd);
   if (unsandboxed_zygote)

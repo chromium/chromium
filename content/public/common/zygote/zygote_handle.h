@@ -20,14 +20,13 @@ namespace content {
 
 #if BUILDFLAG(IS_POSIX)
 class ZygoteCommunication;
-using ZygoteHandle = ZygoteCommunication*;
 #else
 // Perhaps other ports may USE_ZYGOTE_HANDLE here somdeday.
 #error "Can not use zygote handles on this platform"
 #endif  // BUILDFLAG(IS_POSIX)
 
 // Gets the generic global zygote used to launch sandboxed children.
-CONTENT_EXPORT ZygoteHandle GetGenericZygote();
+CONTENT_EXPORT ZygoteCommunication* GetGenericZygote();
 
 }  // namespace content
 

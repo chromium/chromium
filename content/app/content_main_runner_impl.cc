@@ -360,7 +360,7 @@ void InitializeZygoteSandboxForBrowserProcess(
   if (!parsed_command_line.HasSwitch(switches::kNoUnsandboxedZygote)) {
     CreateUnsandboxedZygote(base::BindOnce(LaunchZygoteHelper));
   }
-  ZygoteHandle generic_zygote =
+  ZygoteCommunication* generic_zygote =
       CreateGenericZygote(base::BindOnce(LaunchZygoteHelper));
 
   // This operation is done through the ZygoteHostImpl as a proxy because of

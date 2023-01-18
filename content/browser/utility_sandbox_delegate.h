@@ -42,7 +42,7 @@ class UtilitySandboxedProcessLauncherDelegate
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-  ZygoteHandle GetZygote() override;
+  ZygoteCommunication* GetZygote() override;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
 #if BUILDFLAG(IS_POSIX)

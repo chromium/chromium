@@ -45,14 +45,14 @@ ChildProcessLauncherHelper::GetFilesToMap() {
 }
 
 bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
-  return !GetZygoteHandle();
+  return !GetZygoteForLaunch();
 }
 
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
   if (options) {
-    DCHECK(!GetZygoteHandle());
+    DCHECK(!GetZygoteForLaunch());
     // Convert FD mapping to FileHandleMappingVector
     options->fds_to_remap = files_to_register.GetMappingWithIDAdjustment(
         base::GlobalDescriptors::kBaseDescriptor);
@@ -64,7 +64,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
 
     options->environment = delegate_->GetEnvironment();
   } else {
-    DCHECK(GetZygoteHandle());
+    DCHECK(GetZygoteForLaunch());
     // Environment variables could be supported in the future, but are not
     // currently supported when launching with the zygote.
     DCHECK(delegate_->GetEnvironment().empty());
@@ -81,7 +81,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     int* launch_result) {
   *is_synchronous_launch = true;
   Process process;
-  ZygoteHandle zygote_handle = GetZygoteHandle();
+  ZygoteCommunication* zygote_handle = GetZygoteForLaunch();
   if (zygote_handle) {
     // TODO(crbug.com/569191): If chrome supported multiple zygotes they could
     // be created lazily here, or in the delegate GetZygote() implementations.
@@ -174,7 +174,7 @@ void ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread(
     process.SetProcessBackgrounded(is_background);
 }
 
-ZygoteHandle ChildProcessLauncherHelper::GetZygoteHandle() {
+ZygoteCommunication* ChildProcessLauncherHelper::GetZygoteForLaunch() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoZygote)
              ? nullptr
              : delegate_->GetZygote();

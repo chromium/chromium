@@ -103,7 +103,7 @@ base::EnvironmentMap UtilitySandboxedProcessLauncherDelegate::GetEnvironment() {
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
+ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
   // If the sandbox has been disabled for a given type, don't use a zygote.
   if (sandbox::policy::IsUnsandboxedSandboxType(sandbox_type_))
     return nullptr;

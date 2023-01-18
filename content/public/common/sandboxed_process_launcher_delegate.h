@@ -45,7 +45,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // Returns the zygote used to launch the process.
-  virtual ZygoteHandle GetZygote();
+  virtual ZygoteCommunication* GetZygote();
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
 #if BUILDFLAG(IS_POSIX)

@@ -65,7 +65,7 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-ZygoteHandle PpapiPluginSandboxedProcessLauncherDelegate::GetZygote() {
+ZygoteCommunication* PpapiPluginSandboxedProcessLauncherDelegate::GetZygote() {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
   base::CommandLine::StringType plugin_launcher =

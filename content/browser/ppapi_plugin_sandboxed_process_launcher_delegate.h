@@ -34,7 +34,7 @@ class CONTENT_EXPORT PpapiPluginSandboxedProcessLauncherDelegate
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-  ZygoteHandle GetZygote() override;
+  ZygoteCommunication* GetZygote() override;
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
   sandbox::mojom::Sandbox GetSandboxType() override;

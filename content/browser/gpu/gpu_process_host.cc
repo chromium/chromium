@@ -465,7 +465,7 @@ class GpuSandboxedProcessLauncherDelegate
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-  ZygoteHandle GetZygote() override {
+  ZygoteCommunication* GetZygote() override {
     if (sandbox::policy::IsUnsandboxedSandboxType(GetSandboxType()))
       return nullptr;
 
