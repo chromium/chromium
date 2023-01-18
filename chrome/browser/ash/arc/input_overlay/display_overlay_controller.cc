@@ -205,8 +205,6 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   menu_entry->SetSize(gfx::Size(kMenuEntrySize, kMenuEntrySize));
   menu_entry->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   menu_entry->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  // TODO(djacobo): Set proper positioning based on specs and responding to
-  // resize.
   menu_entry->SetPosition(CalculateMenuEntryPosition());
   menu_entry->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
