@@ -73,6 +73,7 @@ class AnchorElementPreloaderBrowserTest
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             ToPreloadingPredictor(
                 ChromePreloadingPredictor::kPointerDownOnAnchor));
+    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     ASSERT_TRUE(loading_predictor);
     loading_predictor->preconnect_manager()->SetObserverForTesting(this);
   }
@@ -152,6 +153,7 @@ class AnchorElementPreloaderBrowserTest
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       ukm_entry_builder_;
+  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 };
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {

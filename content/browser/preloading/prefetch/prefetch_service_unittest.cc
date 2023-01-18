@@ -7,13 +7,14 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
-#include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -245,6 +246,9 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
             ToPreloadingPredictor(
                 ContentPreloadingPredictor::kSpeculationRules));
+
+    scoped_test_timer_ =
+        std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void TearDown() override {
@@ -553,8 +557,14 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     mock_handle.set_is_in_primary_main_frame(true);
     mock_handle.set_is_same_document(false);
     mock_handle.set_has_committed(true);
+    // Makes sure the accurate bit is always false.
+    mock_handle.set_url(GURL("http://Not.Accurate.Trigger.Url/"));
     auto* preloading_data =
         PreloadingData::GetOrCreateForWebContents(web_contents());
+    // Sets the accurate bit, and records `TimeToNextNavigation`.
+    static_cast<PreloadingDataImpl*>(preloading_data)
+        ->DidStartNavigation(&mock_handle);
+    // Records the UKMs.
     static_cast<PreloadingDataImpl*>(preloading_data)
         ->DidFinishNavigation(&mock_handle);
     return mock_handle.GetNextPageUkmSourceId();
@@ -570,10 +580,17 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         test::kPreloadingAttemptUkmMetrics);
     EXPECT_EQ(actual_attempts.size(), 1u);
 
-    auto expected_attempts = {attempt_entry_builder()->BuildEntry(
+    absl::optional<base::TimeDelta> ready_time = absl::nullopt;
+    if (outcome == PreloadingTriggeringOutcome::kReady ||
+        outcome == PreloadingTriggeringOutcome::kSuccess) {
+      ready_time = base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
+    }
+
+    const auto expected_attempts = {attempt_entry_builder()->BuildEntry(
         source_id, PreloadingType::kPrefetch, eligibility, holdback, outcome,
         failure,
-        /*accurate=*/false)};
+        /*accurate=*/false, ready_time)};
+
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))
         << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
@@ -603,6 +620,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
+
+  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
 TEST_F(PrefetchServiceTest, CreateServiceWhenFeatureEnabled) {
@@ -2485,14 +2504,18 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kReady,
              PreloadingFailureReason::kUnspecified,
-             /*accurate=*/false),
+             /*accurate=*/false,
+             /*ready_time=*/
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kReady,
              PreloadingFailureReason::kUnspecified,
-             /*accurate=*/false),
+             /*accurate=*/false,
+             /*ready_time=*/
+             base::ScopedMockElapsedTimersForTest::kMockElapsedTime),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,

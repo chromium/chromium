@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content::test {
@@ -22,12 +23,15 @@ const std::vector<std::string> kPreloadingAttemptUkmMetrics{
     Preloading_Attempt::kTriggeringOutcomeName,
     Preloading_Attempt::kFailureReasonName,
     Preloading_Attempt::kAccurateTriggeringName,
+    Preloading_Attempt::kReadyTimeName,
+    Preloading_Attempt::kTimeToNextNavigationName,
 };
 
 const std::vector<std::string> kPreloadingPredictionUkmMetrics{
     Preloading_Prediction::kPreloadingPredictorName,
     Preloading_Prediction::kConfidenceName,
     Preloading_Prediction::kAccuratePredictionName,
+    Preloading_Prediction::kTimeToNextNavigationName,
 };
 
 PreloadingAttemptUkmEntryBuilder::PreloadingAttemptUkmEntryBuilder(
@@ -41,24 +45,31 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
     PreloadingHoldbackStatus holdback_status,
     PreloadingTriggeringOutcome triggering_outcome,
     PreloadingFailureReason failure_reason,
-    bool accurate) const {
-  return UkmEntry{
-      source_id,
-      {
-          {Preloading_Attempt::kPreloadingTypeName,
-           static_cast<int64_t>(preloading_type)},
-          {Preloading_Attempt::kPreloadingPredictorName,
-           static_cast<int64_t>(predictor_)},
-          {Preloading_Attempt::kEligibilityName,
-           static_cast<int64_t>(eligibility)},
-          {Preloading_Attempt::kHoldbackStatusName,
-           static_cast<int64_t>(holdback_status)},
-          {Preloading_Attempt::kTriggeringOutcomeName,
-           static_cast<int64_t>(triggering_outcome)},
-          {Preloading_Attempt::kFailureReasonName,
-           static_cast<int64_t>(failure_reason)},
-          {Preloading_Attempt::kAccurateTriggeringName, accurate ? 1 : 0},
-      }};
+    bool accurate,
+    absl::optional<base::TimeDelta> ready_time) const {
+  std::map<std::string, int64_t> metrics = {
+      {Preloading_Attempt::kPreloadingTypeName,
+       static_cast<int64_t>(preloading_type)},
+      {Preloading_Attempt::kPreloadingPredictorName,
+       static_cast<int64_t>(predictor_)},
+      {Preloading_Attempt::kEligibilityName, static_cast<int64_t>(eligibility)},
+      {Preloading_Attempt::kHoldbackStatusName,
+       static_cast<int64_t>(holdback_status)},
+      {Preloading_Attempt::kTriggeringOutcomeName,
+       static_cast<int64_t>(triggering_outcome)},
+      {Preloading_Attempt::kFailureReasonName,
+       static_cast<int64_t>(failure_reason)},
+      {Preloading_Attempt::kAccurateTriggeringName, accurate ? 1 : 0},
+      {Preloading_Attempt::kTimeToNextNavigationName,
+       ukm::GetExponentialBucketMinForCounts1000(
+           base::ScopedMockElapsedTimersForTest::kMockElapsedTime
+               .InMilliseconds())}};
+  if (ready_time) {
+    metrics.insert({Preloading_Attempt::kReadyTimeName,
+                    ukm::GetExponentialBucketMinForCounts1000(
+                        ready_time->InMilliseconds())});
+  }
+  return UkmEntry{source_id, std::move(metrics)};
 }
 
 PreloadingPredictionUkmEntryBuilder::PreloadingPredictionUkmEntryBuilder(
@@ -70,13 +81,15 @@ UkmEntry PreloadingPredictionUkmEntryBuilder::BuildEntry(
     int64_t confidence,
     bool accurate_prediction) const {
   return UkmEntry{source_id,
-                  {
-                      {Preloading_Prediction::kPreloadingPredictorName,
-                       static_cast<int64_t>(predictor_)},
-                      {Preloading_Prediction::kConfidenceName, confidence},
-                      {Preloading_Prediction::kAccuratePredictionName,
-                       accurate_prediction ? 1 : 0},
-                  }};
+                  {{Preloading_Prediction::kPreloadingPredictorName,
+                    static_cast<int64_t>(predictor_)},
+                   {Preloading_Prediction::kConfidenceName, confidence},
+                   {Preloading_Prediction::kAccuratePredictionName,
+                    accurate_prediction ? 1 : 0},
+                   {Preloading_Prediction::kTimeToNextNavigationName,
+                    ukm::GetExponentialBucketMinForCounts1000(
+                        base::ScopedMockElapsedTimersForTest::kMockElapsedTime
+                            .InMilliseconds())}}};
 }
 
 std::string UkmEntryToString(const UkmEntry& entry) {

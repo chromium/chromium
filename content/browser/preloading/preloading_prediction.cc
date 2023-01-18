@@ -5,6 +5,7 @@
 #include "content/browser/preloading/preloading_prediction.h"
 
 #include "content/public/browser/page.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -28,25 +29,39 @@ void PreloadingPrediction::RecordPreloadingPredictionUKMs(
 
   // Don't log when the source id is invalid.
   if (navigated_page_source_id != ukm::kInvalidSourceId) {
-    ukm::builders::Preloading_Prediction(navigated_page_source_id)
-        .SetPreloadingPredictor(static_cast<int64_t>(predictor_type_))
+    ukm::builders::Preloading_Prediction builder(navigated_page_source_id);
+    builder.SetPreloadingPredictor(static_cast<int64_t>(predictor_type_))
         .SetConfidence(confidence_)
-        .SetAccuratePrediction(is_accurate_prediction_)
-        .Record(ukm_recorder);
+        .SetAccuratePrediction(is_accurate_prediction_);
+    if (time_to_next_navigation_) {
+      builder.SetTimeToNextNavigation(ukm::GetExponentialBucketMinForCounts1000(
+          time_to_next_navigation_->InMilliseconds()));
+    }
+    builder.Record(ukm_recorder);
   }
 
   if (triggered_primary_page_source_id_ != ukm::kInvalidSourceId) {
-    ukm::builders::Preloading_Prediction_PreviousPrimaryPage(
-        triggered_primary_page_source_id_)
-        .SetPreloadingPredictor(static_cast<int64_t>(predictor_type_))
+    ukm::builders::Preloading_Prediction_PreviousPrimaryPage builder(
+        triggered_primary_page_source_id_);
+    builder.SetPreloadingPredictor(static_cast<int64_t>(predictor_type_))
         .SetConfidence(confidence_)
-        .SetAccuratePrediction(is_accurate_prediction_)
-        .Record(ukm_recorder);
+        .SetAccuratePrediction(is_accurate_prediction_);
+    if (time_to_next_navigation_) {
+      builder.SetTimeToNextNavigation(ukm::GetExponentialBucketMinForCounts1000(
+          time_to_next_navigation_->InMilliseconds()));
+    }
+    builder.Record(ukm_recorder);
   }
 }
 
 void PreloadingPrediction::SetIsAccuratePrediction(const GURL& navigated_url) {
   DCHECK(url_match_predicate_);
+
+  // `PreloadingAttemptImpl::SetIsAccurateTriggering` is called during
+  // `WCO::DidStartNavigation`.
+  if (!time_to_next_navigation_) {
+    time_to_next_navigation_ = elapsed_timer_.Elapsed();
+  }
 
   // Use the predicate to match the URLs as the matching logic varies for each
   // predictor.

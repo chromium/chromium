@@ -5,10 +5,11 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRELOADING_ATTEMPT_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_ATTEMPT_IMPL_H_
 
+#include "base/timer/elapsed_timer.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
-
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -40,7 +41,7 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   void RecordPreloadingAttemptUKMs(ukm::SourceId navigated_page);
 
   // Sets `is_accurate_triggering_` to true if `navigated_url` matches the
-  // predicate URL logic.
+  // predicate URL logic. It also records `time_to_next_navigation_`.
   void SetIsAccurateTriggering(const GURL& navigated_url);
 
   explicit PreloadingAttemptImpl(
@@ -85,6 +86,19 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
 
   // Set to true if this PreloadingAttempt was used for the next navigation.
   bool is_accurate_triggering_ = false;
+
+  // Records when the preloading attempt began, for computing times.
+  const base::ElapsedTimer elapsed_timer_;
+
+  // The time between the creation of the attempt and the start of the next
+  // navigation, whether accurate or not. The latency is reported as standard
+  // buckets, of 1.15 spacing.
+  absl::optional<base::TimeDelta> time_to_next_navigation_;
+
+  // Represents the duration between the attempt creation and its
+  // `triggering_outcome_` becoming `kReady`. The latency is reported as
+  // standard buckets, of 1.15 spacing.
+  absl::optional<base::TimeDelta> ready_time_;
 
   base::WeakPtrFactory<PreloadingAttemptImpl> weak_factory_{this};
 };

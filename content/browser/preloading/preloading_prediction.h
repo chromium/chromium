@@ -7,7 +7,7 @@
 
 #include "content/public/browser/preloading_data.h"
 
-#include "base/functional/callback.h"
+#include "base/timer/elapsed_timer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -35,7 +35,7 @@ class PreloadingPrediction {
   void RecordPreloadingPredictionUKMs(ukm::SourceId navigated_page_source_id);
 
   // Sets `is_accurate_prediction_` to true if `navigated_url` matches the URL
-  // predicate.
+  // predicate. It also records `time_to_next_navigation_`.
   void SetIsAccuratePrediction(const GURL& navigated_url);
 
   explicit PreloadingPrediction(
@@ -63,6 +63,14 @@ class PreloadingPrediction {
   // Set to true when preloading prediction was correct i.e., when the
   // navigation happens to the same predicted URL.
   bool is_accurate_prediction_ = false;
+
+  // Records when the preloading prediction was first recorded.
+  const base::ElapsedTimer elapsed_timer_;
+
+  // The time between the creation of the prediction and the start of the next
+  // navigation, whether accurate or not. The latency is reported as standard
+  // buckets, of 1.15 spacing.
+  absl::optional<base::TimeDelta> time_to_next_navigation_;
 };
 
 }  // namespace content

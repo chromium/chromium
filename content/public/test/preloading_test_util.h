@@ -26,6 +26,13 @@ class PreloadingAttemptUkmEntryBuilder {
  public:
   explicit PreloadingAttemptUkmEntryBuilder(PreloadingPredictor predictor);
 
+  // This method assumes a navigation has occurred thus `TimeToNextNavigation`
+  // is set. Install `base::ScopedMockElapsedTimersForTest` into the test
+  // fixture to assert the entry's latency values' correctness.
+  //
+  // Optional `ready_time` should be set by the caller, if this attempt ever
+  // reaches `PreloadingTriggeringOutcome::kReady` state, at the time of
+  // reporting.
   ukm::TestUkmRecorder::HumanReadableUkmEntry BuildEntry(
       ukm::SourceId source_id,
       PreloadingType preloading_type,
@@ -33,7 +40,8 @@ class PreloadingAttemptUkmEntryBuilder {
       PreloadingHoldbackStatus holdback_status,
       PreloadingTriggeringOutcome triggering_outcome,
       PreloadingFailureReason failure_reason,
-      bool accurate) const;
+      bool accurate,
+      absl::optional<base::TimeDelta> ready_time = absl::nullopt) const;
 
  private:
   PreloadingPredictor predictor_;
@@ -46,6 +54,9 @@ class PreloadingPredictionUkmEntryBuilder {
  public:
   explicit PreloadingPredictionUkmEntryBuilder(PreloadingPredictor predictor);
 
+  // This method assumes a navigation has occurred thus `TimeToNextNavigation`
+  // is set. Install `base::ScopedMockElapsedTimersForTest` into the test
+  // fixture to assert the entry's latency values' correctness.
   ukm::TestUkmRecorder::HumanReadableUkmEntry BuildEntry(
       ukm::SourceId source_id,
       int64_t confidence,

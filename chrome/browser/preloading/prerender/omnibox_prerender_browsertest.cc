@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
@@ -75,6 +76,7 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             ToPreloadingPredictor(
                 ChromePreloadingPredictor::kOmniboxDirectURLInput));
+    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -117,6 +119,7 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       ukm_entry_builder_;
+  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 };
 
 // Tests that Prerender2 cannot be triggered when preload setting is disabled.
@@ -206,7 +209,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
         content::PreloadingHoldbackStatus::kAllowed,
         content::PreloadingTriggeringOutcome::kSuccess,
         content::PreloadingFailureReason::kUnspecified,
-        /*accurate=*/true);
+        /*accurate=*/true,
+        /*ready_time=*/base::ScopedMockElapsedTimersForTest::kMockElapsedTime);
     EXPECT_EQ(ukm_entries[1], expected_entry)
         << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[1],
                                                            expected_entry);
