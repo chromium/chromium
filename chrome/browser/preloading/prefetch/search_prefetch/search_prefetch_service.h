@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -161,7 +160,7 @@ class SearchPrefetchService : public KeyedService,
                                  const GURL& prerendering_url);
 
   // Called by `SearchPrerenderTask` upon prerender activation.
-  void OnPrerenderedRequestUsed(const std::u16string& search_terms,
+  void OnPrerenderedRequestUsed(const GURL& canonical_search_url,
                                 const GURL& navigation_url);
 
   // A prefetch hint can be upgraded to prerender hint. Once the upgrade
@@ -173,9 +172,9 @@ class SearchPrefetchService : public KeyedService,
   std::unique_ptr<SearchPrefetchURLLoader> TakePrerenderFromMemoryCache(
       const network::ResourceRequest& tentative_resource_request);
 
-  // Reports the status of a prefetch for a given search term.
+  // Reports the status of a prefetch for a given search suggestion URL.
   absl::optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
-      std::u16string search_terms);
+      const GURL& canonical_search_url);
 
   // Calls |LoadFromPrefs()|.
   bool LoadFromPrefsForTesting();
@@ -223,7 +222,7 @@ class SearchPrefetchService : public KeyedService,
   // Removes the prefetch and prefetch timers associated with |search_terms|.
   // Note: Always call this method to remove prefetch requests from memory
   // cache; Do not delete it from `prefetches_` directly.
-  void DeletePrefetch(std::u16string search_terms);
+  void DeletePrefetch(GURL canonical_search_url);
 
   // Records metrics around the error rate of prefetches. When |error| is true,
   // records the current time to prevent prefetches for a set duration.
@@ -238,7 +237,7 @@ class SearchPrefetchService : public KeyedService,
   void SaveToPrefs() const;
 
   // Retrieved the started prefetches by search_terms.
-  std::map<std::u16string, std::unique_ptr<SearchPrefetchRequest>>::iterator
+  std::map<GURL, std::unique_ptr<SearchPrefetchRequest>>::iterator
   RetrieveSearchTermsInMemoryCache(
       const network::ResourceRequest& tentative_resource_request,
       SearchPrefetchServingReasonRecorder& recorder);
@@ -252,16 +251,15 @@ class SearchPrefetchService : public KeyedService,
   void CoordinatePrefetchWithPrerender(const AutocompleteMatch& match,
                                        content::WebContents* web_contents,
                                        TemplateURLService* template_url_service,
-                                       std::u16string search_terms);
+                                       const GURL& canonical_search_url);
 
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
-  std::map<std::u16string, std::unique_ptr<SearchPrefetchRequest>> prefetches_;
+  std::map<GURL, std::unique_ptr<SearchPrefetchRequest>> prefetches_;
 
   // A group of timers to expire |prefetches_| based on the same key.
-  std::map<std::u16string, std::unique_ptr<base::OneShotTimer>>
-      prefetch_expiry_timers_;
+  std::map<GURL, std::unique_ptr<base::OneShotTimer>> prefetch_expiry_timers_;
 
   // The time of the last prefetch network/server error.
   base::TimeTicks last_error_time_ticks_;

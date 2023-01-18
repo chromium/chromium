@@ -69,7 +69,7 @@ enum class SearchPrefetchStatus {
 
 // A class representing a prefetch used by the Search Prefetch Service.
 // It plays the following roles to support search preloading.
-// - Preparing a resource request to prefetch a search terms.
+// - Preparing a resource request to prefetch a search page.
 // - Starting prerendering upon the request succeeding to upgrade prefetch to
 //   prerender after the Search Prefetch Service tells it that the prefetched
 //   term is prerenderable.
@@ -78,7 +78,7 @@ enum class SearchPrefetchStatus {
 //   more easily.
 class SearchPrefetchRequest {
  public:
-  SearchPrefetchRequest(const std::u16string& prefetch_search_terms,
+  SearchPrefetchRequest(const GURL& canonical_search_url,
                         const GURL& prefetch_url,
                         bool navigation_prefetch,
                         content::PreloadingAttempt* prefetch_preloading_attempt,
@@ -191,8 +191,9 @@ class SearchPrefetchRequest {
 
   SearchPrefetchStatus current_status_ = SearchPrefetchStatus::kNotStarted;
 
-  // The search terms that this request is prefetching.
-  const std::u16string prefetch_search_terms_;
+  // The canonical representation of the search suggestion including query,
+  // intent, and extra parameters that can alter the Search page.
+  const GURL canonical_search_url_;
 
   // The URL to prefetch the search terms from.
   GURL prefetch_url_;

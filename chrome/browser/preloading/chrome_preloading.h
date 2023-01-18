@@ -137,9 +137,17 @@ std::u16string ExtractSearchTermsFromURL(
     content::BrowserContext* browser_context,
     const GURL& url);
 
-// Returns true when the two given URLs are considered as navigating to the same
-// search term.
-bool IsSearchDestinationMatch(const std::u16string& preloading_search_terms,
+// Returns true if a canonical URL representation of a |preloading_url| can be
+// generated. |canonical_url| is set to the canonical URL representation when
+// this method returns |true|.
+bool HasCanoncialPreloadingOmniboxSearchURL(
+    const GURL& preloading_url,
+    content::BrowserContext* browser_context,
+    GURL* canonical_url);
+
+// Returns true when |navigation_url| is considered as navigating to the same
+// omnibox search results page as |canonical_preloading_search_url|.
+bool IsSearchDestinationMatch(const GURL& canonical_preloading_search_url,
                               content::BrowserContext* browser_context,
                               const GURL& navigation_url);
 

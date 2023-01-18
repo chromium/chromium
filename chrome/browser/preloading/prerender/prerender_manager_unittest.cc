@@ -111,7 +111,7 @@ TEST_F(PrerenderManagerTest, StartCleanSearchSuggestionPrerender) {
       *GetActiveWebContents());
   AutocompleteMatch match =
       CreateSearchSuggestionMatch("/title1.html", "pre", "prerender");
-  prerender_manager()->StartPrerenderSearchSuggestion(match);
+  prerender_manager()->StartPrerenderSearchSuggestion(match, prerendering_url);
   registry_observer.WaitForTrigger(prerendering_url);
   int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
@@ -126,7 +126,7 @@ TEST_F(PrerenderManagerTest, StartNewSuggestionPrerender) {
       *GetActiveWebContents());
   AutocompleteMatch match =
       CreateSearchSuggestionMatch("/title1.html", "pre", "prefetch");
-  prerender_manager()->StartPrerenderSearchSuggestion(match);
+  prerender_manager()->StartPrerenderSearchSuggestion(match, prerendering_url);
 
   registry_observer.WaitForTrigger(prerendering_url);
   int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
@@ -136,12 +136,12 @@ TEST_F(PrerenderManagerTest, StartNewSuggestionPrerender) {
   GURL prerendering_url2 =
       GetSearchSuggestionUrl("/title1.html", "prer", "prerender");
   match = CreateSearchSuggestionMatch("/title1.html", "prer", "prerender");
-  prerender_manager()->StartPrerenderSearchSuggestion(match);
+  prerender_manager()->StartPrerenderSearchSuggestion(match, prerendering_url2);
   host_observer.WaitForDestroyed();
   registry_observer.WaitForTrigger(prerendering_url2);
   EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
-  EXPECT_EQ(std::u16string(u"prerender"),
-            prerender_manager()->GetPrerenderSearchTermForTesting());
+  EXPECT_EQ(prerendering_url2,
+            prerender_manager()->GetPrerenderCanonicalSearchURLForTesting());
 }
 
 // Tests that the old prerender is not destroyed when starting prerendering the
@@ -153,12 +153,12 @@ TEST_F(PrerenderManagerTest, StartSameSuggestionPrerender) {
       *GetActiveWebContents());
   AutocompleteMatch match =
       CreateSearchSuggestionMatch("/title1.html", "pre", "prerender");
-  prerender_manager()->StartPrerenderSearchSuggestion(match);
+  prerender_manager()->StartPrerenderSearchSuggestion(match, prerendering_url);
   registry_observer.WaitForTrigger(prerendering_url);
   int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_NE(prerender_host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
   match = CreateSearchSuggestionMatch("/title1.html", "prer", "prerender");
-  prerender_manager()->StartPrerenderSearchSuggestion(match);
+  prerender_manager()->StartPrerenderSearchSuggestion(match, prerendering_url);
   EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
 
   // The created prerender for `prerendering_url` still exists, so the
@@ -175,7 +175,7 @@ TEST_F(PrerenderManagerTest, DestroyedOnNavigateAway) {
       *GetActiveWebContents());
   AutocompleteMatch match =
       CreateSearchSuggestionMatch("/title1.html", "pre", "prerende");
-  prerender_manager()->StartPrerenderSearchSuggestion(match);
+  prerender_manager()->StartPrerenderSearchSuggestion(match, prerendering_url);
 
   registry_observer.WaitForTrigger(prerendering_url);
   int prerender_host_id = prerender_helper().GetHostForUrl(prerendering_url);

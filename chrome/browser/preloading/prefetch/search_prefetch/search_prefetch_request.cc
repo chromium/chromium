@@ -11,7 +11,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
@@ -141,12 +143,12 @@ const char* SearchPrefetchStatusToString(SearchPrefetchStatus status) {
 }  // namespace
 
 SearchPrefetchRequest::SearchPrefetchRequest(
-    const std::u16string& prefetch_search_terms,
+    const GURL& canonical_search_url,
     const GURL& prefetch_url,
     bool navigation_prefetch,
     content::PreloadingAttempt* prefetch_preloading_attempt,
     base::OnceCallback<void(bool)> report_error_callback)
-    : prefetch_search_terms_(prefetch_search_terms),
+    : canonical_search_url_(canonical_search_url),
       prefetch_url_(prefetch_url),
       navigation_prefetch_(navigation_prefetch),
       prefetch_preloading_attempt_(
@@ -272,12 +274,6 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
           /*navigation_ui_data=*/nullptr,
           content::RenderFrameHost::kNoFrameTreeNodeId);
 
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-  DCHECK(template_url_service);
-  auto* default_search = template_url_service->GetDefaultSearchProvider();
-  DCHECK(default_search);
-
   bool should_defer = false;
   {
     TRACE_EVENT0(
@@ -298,16 +294,14 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       // case they call into the delegate in the destructor.
       throttle.reset();
 
-      std::u16string new_url_search_terms;
+      GURL new_canonical_search_url;
 
-      // Check that search terms still match. Google URLs can be changed by
-      // by safe search (and other features as well) Make sure the URL still has
-      // the same search terms for the DSE.
-      default_search->ExtractSearchTermsFromURL(
-          resource_request->url, template_url_service->search_terms_data(),
-          &new_url_search_terms);
+      // Check that the search preloading URL has not been altered by a
+      // navigation throttle such that its canonical representation has changed.
+      HasCanoncialPreloadingOmniboxSearchURL(resource_request->url, profile,
+                                             &new_canonical_search_url);
 
-      if (should_defer || new_url_search_terms != prefetch_search_terms_ ||
+      if (should_defer || new_canonical_search_url != canonical_search_url_ ||
           cancel_or_pause_delegate.cancelled_or_paused()) {
         return false;
       }
@@ -399,7 +393,7 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
     // TODO(https://crbug.com/1295170): Do not start prerendering if this
     // request is about to expire.
     prerender_manager_->StartPrerenderSearchResult(
-        prefetch_search_terms_, prerender_url, prerender_preloading_attempt_);
+        canonical_search_url_, prerender_url, prerender_preloading_attempt_);
   }
 }
 
@@ -421,8 +415,9 @@ void SearchPrefetchRequest::OnServableResponseCodeReceived() {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
-                       prerender_manager_, prefetch_search_terms_,
-                       prerender_url_, prerender_preloading_attempt_));
+                       prerender_manager_,
+                       base::OwnedRef(canonical_search_url_), prerender_url_,
+                       prerender_preloading_attempt_));
   }
 }
 
@@ -497,7 +492,7 @@ void SearchPrefetchRequest::StopPrefetch() {
 
 void SearchPrefetchRequest::StopPrerender() {
   if (prerender_manager_) {
-    prerender_manager_->StopPrerenderSearchResult(prefetch_search_terms_);
+    prerender_manager_->StopPrerenderSearchResult(canonical_search_url_);
     prerender_manager_ = nullptr;
     prerender_preloading_attempt_ = nullptr;
     prerender_url_ = GURL();

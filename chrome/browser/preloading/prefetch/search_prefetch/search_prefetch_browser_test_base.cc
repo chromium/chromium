@@ -103,6 +103,14 @@ GURL SearchPrefetchBaseBrowserTest::GetSearchServerQueryURLWithNoQuery(
   return search_server_->GetURL(kSearchDomain, path);
 }
 
+GURL SearchPrefetchBaseBrowserTest::GetCanonicalSearchURL(
+    const GURL& prefetch_url) {
+  GURL canonical_search_url;
+  EXPECT_TRUE(HasCanoncialPreloadingOmniboxSearchURL(
+      prefetch_url, browser()->profile(), &canonical_search_url));
+  return canonical_search_url;
+}
+
 GURL SearchPrefetchBaseBrowserTest::GetSearchServerQueryURLWithSubframeLoad(
     const std::string& path) const {
   return search_server_->GetURL(
@@ -145,12 +153,12 @@ SearchPrefetchBaseBrowserTest::GetSearchPrefetchAndNonPrefetch(
 }
 
 void SearchPrefetchBaseBrowserTest::WaitUntilStatusChangesTo(
-    std::u16string search_terms,
+    const GURL& canonical_search_url,
     absl::optional<SearchPrefetchStatus> status) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   while (search_prefetch_service->GetSearchPrefetchStatusForTesting(
-             search_terms) != status) {
+             canonical_search_url) != status) {
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
   }

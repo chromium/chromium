@@ -930,6 +930,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   std::string search_query = "prerender2";
   GURL expected_prerender_url =
       GetSearchUrl(search_query, "prerender222", /*is_prerender=*/true);
+
+  GURL canonical_search_url;
+  HasCanoncialPreloadingOmniboxSearchURL(
+      expected_prerender_url, GetActiveWebContents()->GetBrowserContext(),
+      &canonical_search_url);
   int host_id =
       InputSearchQueryAndWaitForTrigger(search_query, expected_prerender_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
@@ -944,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_NE(search_prefetch_service, nullptr);
   absl::optional<SearchPrefetchStatus> prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
-          u"prerender222");
+          canonical_search_url);
   EXPECT_FALSE(prefetch_status.has_value());
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",

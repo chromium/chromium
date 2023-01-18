@@ -37,6 +37,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
   GURL GetSearchServerQueryURL(const std::string& path) const;
   GURL GetSearchServerQueryURLWithNoQuery(const std::string& path) const;
+  GURL GetCanonicalSearchURL(const GURL& prefetch_url);
 
   std::tuple<GURL, GURL> GetSearchPrefetchAndNonPrefetch(
       const std::string& search_terms);
@@ -46,7 +47,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
   GURL GetSuggestServerURL(const std::string& path) const;
 
-  void WaitUntilStatusChangesTo(std::u16string search_terms,
+  void WaitUntilStatusChangesTo(const GURL& canonical_search_url,
                                 absl::optional<SearchPrefetchStatus> status);
 
   content::WebContents* GetWebContents() const;

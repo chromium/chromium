@@ -248,10 +248,19 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
   }
 
  protected:
+  GURL GetCanonicalSearchURL(const GURL& prefetch_url) {
+    GURL canonical_search_url;
+    HasCanoncialPreloadingOmniboxSearchURL(prefetch_url,
+                                           chrome_test_utils::GetProfile(this),
+                                           &canonical_search_url);
+    return canonical_search_url;
+  }
+
   int PrerenderQuery(const std::string& search_terms,
                      const GURL& expected_prerender_url) {
     AutocompleteMatch match = CreateSearchSuggestionMatch(search_terms);
-    prerender_manager_->StartPrerenderSearchSuggestion(match);
+    prerender_manager_->StartPrerenderSearchSuggestion(
+        match, GetCanonicalSearchURL(match.destination_url));
     int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
     EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
     return host_id;

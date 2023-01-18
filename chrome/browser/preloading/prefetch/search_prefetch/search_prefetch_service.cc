@@ -211,7 +211,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
   SearchPrefetchEligibilityReasonRecorder recorder(navigation_prefetch);
 
   // Check for search terms before checking for any other eligibility reasons
-  // for Prefetch to exit early.
+  // for Prefetch to exit early. And extract the canonical search URL.
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_url_service ||
@@ -223,19 +223,16 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // Lazily observe Template URL Service.
   ObserveTemplateURLService(template_url_service);
 
-  std::u16string search_terms;
-
-  // Extract the terms directly to make sure this string will match the URL
-  // interception string logic.
-  template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
-      url, template_url_service->search_terms_data(), &search_terms);
+  GURL canonical_search_url;
+  bool search_with_terms = HasCanoncialPreloadingOmniboxSearchURL(
+      url, profile_, &canonical_search_url);
 
   // It is possible that the current page doesn't exist. Don't create
   // PreloadingAttempt in that case.
   content::PreloadingAttempt* attempt = nullptr;
   DCHECK(web_contents);
   content::PreloadingURLMatchCallback same_url_matcher =
-      base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+      base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
                           web_contents->GetBrowserContext());
 
   auto* preloading_data =
@@ -248,7 +245,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
       ToPreloadingPredictor(predictor), content::PreloadingType::kPrefetch,
       same_url_matcher);
 
-  if (search_terms.size() == 0) {
+  if (!search_with_terms) {
     recorder.reason_ =
         SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms;
     SetEligibility(attempt, ToPreloadingEligibility(
@@ -305,7 +302,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
   }
 
   // Don't prefetch the same search terms twice within the expiry duration.
-  if (prefetches_.find(search_terms) != prefetches_.end()) {
+  if (prefetches_.find(canonical_search_url) != prefetches_.end()) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kAttemptedQueryRecently;
     // Prefetch was eligible as it was attempted recently but mark it as a
     // duplicate attempt.
@@ -328,7 +325,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
 
   std::unique_ptr<SearchPrefetchRequest> prefetch_request =
       std::make_unique<SearchPrefetchRequest>(
-          search_terms, url, navigation_prefetch, attempt,
+          canonical_search_url, url, navigation_prefetch, attempt,
           base::BindOnce(&SearchPrefetchService::ReportFetchResult,
                          base::Unretained(this)));
 
@@ -344,13 +341,13 @@ bool SearchPrefetchService::MaybePrefetchURL(
     return false;
   }
 
-  prefetches_.emplace(search_terms, std::move(prefetch_request));
-  prefetch_expiry_timers_.emplace(search_terms,
+  prefetches_.emplace(canonical_search_url, std::move(prefetch_request));
+  prefetch_expiry_timers_.emplace(canonical_search_url,
                                   std::make_unique<base::OneShotTimer>());
-  prefetch_expiry_timers_[search_terms]->Start(
+  prefetch_expiry_timers_[canonical_search_url]->Start(
       FROM_HERE, SearchPrefetchCachingLimit(),
       base::BindOnce(&SearchPrefetchService::DeletePrefetch,
-                     base::Unretained(this), search_terms));
+                     base::Unretained(this), canonical_search_url));
   return true;
 }
 
@@ -395,19 +392,15 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(
   if (!default_search)
     return;
 
-  std::u16string match_search_terms;
+  GURL canonical_search_url;
 
-  default_search->ExtractSearchTermsFromURL(
-      opened_url, template_url_service->search_terms_data(),
-      &match_search_terms);
+  HasCanoncialPreloadingOmniboxSearchURL(opened_url, profile_,
+                                         &canonical_search_url);
 
-  if (match_search_terms.size() == 0)
-    return;
-
-  if (prefetches_.find(match_search_terms) == prefetches_.end()) {
+  if (prefetches_.find(canonical_search_url) == prefetches_.end()) {
     return;
   }
-  SearchPrefetchRequest& prefetch = *prefetches_[match_search_terms];
+  SearchPrefetchRequest& prefetch = *prefetches_[canonical_search_url];
   prefetch.RecordClickTime();
 
   if (prefetch.current_status() != SearchPrefetchStatus::kCanBeServed &&
@@ -435,11 +428,11 @@ void SearchPrefetchService::AddCacheEntryForPrerender(
 }
 
 void SearchPrefetchService::OnPrerenderedRequestUsed(
-    const std::u16string& search_terms,
+    const GURL& canonical_search_url,
     const GURL& navigation_url) {
   DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
 
-  auto request_it = prefetches_.find(search_terms);
+  auto request_it = prefetches_.find(canonical_search_url);
   DCHECK(request_it != prefetches_.end());
   if (request_it == prefetches_.end()) {
     // TODO(https://crbug.com/1295170): It should be rare but the request can be
@@ -449,7 +442,7 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
   }
   AddCacheEntry(navigation_url, request_it->second->prefetch_url());
   request_it->second->MarkPrefetchAsPrerenderActivated();
-  DeletePrefetch(search_terms);
+  DeletePrefetch(canonical_search_url);
 }
 
 std::unique_ptr<SearchPrefetchURLLoader>
@@ -479,10 +472,11 @@ SearchPrefetchService::TakePrerenderFromMemoryCache(
 
 absl::optional<SearchPrefetchStatus>
 SearchPrefetchService::GetSearchPrefetchStatusForTesting(
-    std::u16string search_terms) {
-  if (prefetches_.find(search_terms) == prefetches_.end())
+    const GURL& canonical_search_url) {
+  if (prefetches_.find(canonical_search_url) == prefetches_.end()) {
     return absl::nullopt;
-  return prefetches_[search_terms]->current_status();
+  }
+  return prefetches_[canonical_search_url]->current_status();
 }
 
 std::unique_ptr<SearchPrefetchURLLoader>
@@ -556,16 +550,15 @@ void SearchPrefetchService::ClearPrefetches() {
   SaveToPrefs();
 }
 
-void SearchPrefetchService::DeletePrefetch(std::u16string search_terms) {
-  DCHECK(prefetches_.find(search_terms) != prefetches_.end());
-  DCHECK(prefetch_expiry_timers_.find(search_terms) !=
+void SearchPrefetchService::DeletePrefetch(GURL canonical_search_url) {
+  DCHECK(prefetches_.find(canonical_search_url) != prefetches_.end());
+  DCHECK(prefetch_expiry_timers_.find(canonical_search_url) !=
          prefetch_expiry_timers_.end());
+  RecordFinalStatus(prefetches_[canonical_search_url]->current_status(),
+                    prefetches_[canonical_search_url]->navigation_prefetch());
 
-  RecordFinalStatus(prefetches_[search_terms]->current_status(),
-                    prefetches_[search_terms]->navigation_prefetch());
-
-  prefetches_.erase(search_terms);
-  prefetch_expiry_timers_.erase(search_terms);
+  prefetches_.erase(canonical_search_url);
+  prefetch_expiry_timers_.erase(canonical_search_url);
 }
 
 void SearchPrefetchService::ReportFetchResult(bool error) {
@@ -591,7 +584,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   // Cancel Unneeded prefetch requests. Since we limit the number of prefetches
   // in the map, this should be fast despite the two loops.
   for (const auto& kv_pair : prefetches_) {
-    const auto& search_terms = kv_pair.first;
+    const auto& canonical_search_url = kv_pair.first;
     auto& prefetch_request = kv_pair.second;
 
     if (!prefetch_request->ShouldBeCancelledOnResultChanges()) {
@@ -607,12 +600,12 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     }
     bool should_cancel_request = true;
     for (const auto& match : result) {
-      std::u16string match_search_terms;
-      default_search->ExtractSearchTermsFromURL(
+      GURL match_canonical_search_url;
+      default_search->KeepSearchTermsInURL(
           match.destination_url, template_url_service->search_terms_data(),
-          &match_search_terms);
+          true, true, &match_canonical_search_url);
 
-      if (search_terms == match_search_terms) {
+      if (canonical_search_url == match_canonical_search_url) {
         should_cancel_request = false;
         break;
       }
@@ -645,13 +638,12 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     int64_t confidence = BaseSearchProvider::ShouldPrerender(match) ? 80 : 60;
     auto* preloading_data =
         content::PreloadingData::GetOrCreateForWebContents(web_contents);
-    std::u16string search_terms;
-    default_search->ExtractSearchTermsFromURL(
-        match.destination_url, template_url_service->search_terms_data(),
-        &search_terms);
+    GURL canonical_search_url;
+    HasCanoncialPreloadingOmniboxSearchURL(match.destination_url, profile_,
+                                           &canonical_search_url);
 
     content::PreloadingURLMatchCallback same_url_matcher =
-        base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+        base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
                             web_contents->GetBrowserContext());
 
     // Create PreloadingPrediction for this match.
@@ -665,7 +657,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
           content::PreloadingData::GetOrCreateForWebContents(web_contents);
 
       same_url_matcher =
-          base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+          base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
                               web_contents->GetBrowserContext());
 
       // Create PreloadingPrediction for this match.
@@ -681,7 +673,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
         prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
       CoordinatePrefetchWithPrerender(match, web_contents, template_url_service,
-                                      search_terms);
+                                      canonical_search_url);
       continue;
     }
 
@@ -696,7 +688,8 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
       PrerenderManager::CreateForWebContents(web_contents);
       auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
       DCHECK(prerender_manager);
-      prerender_manager->StartPrerenderSearchSuggestion(match);
+      prerender_manager->StartPrerenderSearchSuggestion(match,
+                                                        canonical_search_url);
     }
   }
 }
@@ -743,6 +736,12 @@ void SearchPrefetchService::OnNavigationLikely(
     return;
   }
 
+  GURL canonical_search_url;
+  if (!HasCanoncialPreloadingOmniboxSearchURL(match.destination_url, profile_,
+                                              &canonical_search_url)) {
+    return;
+  }
+
   // Parse the search terms from the match URL to verify this is a valid search
   // query.
   std::u16string search_terms;
@@ -773,7 +772,7 @@ void SearchPrefetchService::OnNavigationLikely(
       /*attach_prefetch_information=*/true);
 
   content::PreloadingURLMatchCallback same_url_matcher =
-      base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+      base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
                           web_contents->GetBrowserContext());
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
@@ -980,7 +979,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
     const AutocompleteMatch& match,
     content::WebContents* web_contents,
     TemplateURLService* template_url_service,
-    std::u16string search_terms) {
+    const GURL& canonical_search_url) {
   DCHECK(web_contents);
   GURL prefetch_url =
       GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
@@ -990,7 +989,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
     return;
 
   content::PreloadingURLMatchCallback same_url_matcher =
-      base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+      base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
                           web_contents->GetBrowserContext());
 
   // Create new PreloadingAttempt and pass all the values corresponding to
@@ -1003,8 +1002,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
               ChromePreloadingPredictor::kDefaultSearchEngine),
           content::PreloadingType::kPrerender, same_url_matcher);
 
-  auto prefetch_request_iter =
-      prefetches_.find(match.search_terms_args->search_terms);
+  auto prefetch_request_iter = prefetches_.find(canonical_search_url);
   if (prefetch_request_iter == prefetches_.end()) {
     preloading_attempt->SetEligibility(ToPreloadingEligibility(
         ChromePreloadingEligibility::kPrefetchNotStarted));
@@ -1024,7 +1022,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
       *prerender_manager, prerender_url, *preloading_attempt);
 }
 
-std::map<std::u16string, std::unique_ptr<SearchPrefetchRequest>>::iterator
+std::map<GURL, std::unique_ptr<SearchPrefetchRequest>>::iterator
 SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     const network::ResourceRequest& tentative_resource_request,
     SearchPrefetchServingReasonRecorder& recorder) {
@@ -1038,17 +1036,16 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     return prefetches_.end();
   }
 
-  std::u16string search_terms;
-  template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
-      navigation_url, template_url_service->search_terms_data(), &search_terms);
-
-  if (search_terms.length() == 0 ||
-      !IsSearchDestinationMatch(search_terms, profile_, navigation_url)) {
+  GURL canonical_search_url;
+  if (!HasCanoncialPreloadingOmniboxSearchURL(navigation_url, profile_,
+                                              &canonical_search_url) ||
+      !IsSearchDestinationMatch(canonical_search_url, profile_,
+                                navigation_url)) {
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
     return prefetches_.end();
   }
 
-  const auto& iter = prefetches_.find(search_terms);
+  const auto& iter = prefetches_.find(canonical_search_url);
 
   // Return early if there is no prefetch found before checking for other
   // reasons.

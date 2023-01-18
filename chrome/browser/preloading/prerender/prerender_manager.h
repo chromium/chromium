@@ -56,22 +56,24 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // The entry of Default Search Engine prerender. Calling this method will lead
   // to the cancellation of the previous prerender if the given `match`'s search
-  // terms differs from the ongoing one's.
+  // suggestion canonical URL differs from the ongoing one's.
   // TODO(https://crbug.com/1295170): Remove this method after Search prerender
   // work properly with Search prefetch.
-  void StartPrerenderSearchSuggestion(const AutocompleteMatch& match);
+  void StartPrerenderSearchSuggestion(const AutocompleteMatch& match,
+                                      const GURL& canonical_search_url);
 
   // Calling this method will lead to the cancellation of the previous prerender
-  // if the given `search_terms` differs from the ongoing one's.
+  // if the given `canonical_search_url` differs from the ongoing one's.
   void StartPrerenderSearchResult(
-      const std::u16string& search_terms,
+      const GURL& canonical_search_url,
       const GURL& prerendering_url,
       base::WeakPtr<content::PreloadingAttempt> attempt);
 
-  // Cancels the prerender that is prerendering the given `search_terms`.
+  // Cancels the prerender that is prerendering the given
+  // `canonical_search_url`.
   // TODO(https://crbug.com/1295170): Use the creator's address to identify the
   // owner that can cancels the corresponding prerendering?
-  void StopPrerenderSearchResult(const std::u16string& search_terms);
+  void StopPrerenderSearchResult(const GURL& canonical_search_url);
 
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead
@@ -94,7 +96,7 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // Returns the prerendered search terms if search_prerender_task_ exists.
   // Returns empty string otherwise.
-  const std::u16string GetPrerenderSearchTermForTesting() const;
+  const GURL GetPrerenderCanonicalSearchURLForTesting() const;
 
   void set_skip_template_url_service_for_testing() {
     skip_template_url_service_for_testing_ = true;
@@ -116,11 +118,11 @@ class PrerenderManager : public content::WebContentsObserver,
   // prerender another search result. Here `attempt` represents the
   // PreloadingAttempt corresponding to this prerender attempt to log metrics.
   bool ResetSearchPrerenderTaskIfNecessary(
-      const std::u16string& search_terms,
+      const GURL& canonical_search_url,
       base::WeakPtr<content::PreloadingAttempt> attempt);
 
   void StartPrerenderSearchResultInternal(
-      const std::u16string& search_terms,
+      const GURL& canonical_search_url,
       const GURL& prerendering_url,
       base::WeakPtr<content::PreloadingAttempt> attempt);
 

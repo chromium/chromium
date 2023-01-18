@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
   remote_page_handler.FlushForTesting();
 
   // Prerender and Prefetch should be triggered.
-  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(prerender_url),
                            SearchPrefetchStatus::kComplete);
   registry_observer.WaitForTrigger(prerender_url);
 }
