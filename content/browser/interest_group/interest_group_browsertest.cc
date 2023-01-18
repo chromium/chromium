@@ -4479,15 +4479,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancelBefore) {
             EvalJs(shell(), auction_script));
 }
 
-// TODO(crbug.com/1408219) Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_RunAdAuctionWithBidderWasm DISABLED_RunAdAuctionWithBidderWasm
-#else
-#define MAYBE_RunAdAuctionWithBidderWasm RunAdAuctionWithBidderWasm
-#endif  // BUILDFLAG(IS_LINUX)
 // Runs an auction where the bidding function uses a WASM helper.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       MAYBE_RunAdAuctionWithBidderWasm) {
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithBidderWasm) {
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
