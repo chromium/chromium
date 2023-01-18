@@ -54,10 +54,9 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
   };
   Vector<OwnedReceiver> owned_receivers;
 
-  std::unique_ptr<mojo::DataPipeDrainer> drainer_;
-
   class DataPipeDrainerClient;
   std::unique_ptr<DataPipeDrainerClient> drainer_client_;
+  std::unique_ptr<mojo::DataPipeDrainer> drainer_;
 };
 
 }  // namespace blink
