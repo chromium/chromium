@@ -14,6 +14,7 @@ import {PasswordManagerImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 
 import {createPasswordEntry, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -186,8 +187,8 @@ async function changeSavedPasswordTestHelper(
  */
 async function addPasswordTestHelper(
     addDialog: PasswordEditDialogElement,
-    passwordManager: TestPasswordManagerProxy,
-    expectedUseAccountStore: boolean) {
+    passwordManager: TestPasswordManagerProxy, expectedUseAccountStore: boolean,
+    note?: string) {
   const WEBSITE = 'example.com';
   const USERNAME = 'username';
   const PASSWORD = 'password';
@@ -195,6 +196,10 @@ async function addPasswordTestHelper(
   await updateWebsiteInput(addDialog, passwordManager, WEBSITE);
   addDialog.$.usernameInput.value = USERNAME;
   addDialog.$.passwordInput.value = PASSWORD;
+  if (note) {
+    addDialog.shadowRoot!.querySelector<CrTextareaElement>('#note')!.value =
+        note;
+  }
 
   addDialog.$.actionButton.click();
 
@@ -211,10 +216,12 @@ async function addPasswordTestHelper(
 suite('PasswordEditDialog', function() {
   let passwordManager: TestPasswordManagerProxy;
   let elementFactory: PasswordSectionElementFactory;
+  let metricsTracker: MetricsTracker;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Override the PasswordManagerImpl for testing.
+    metricsTracker = fakeMetricsPrivate();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     elementFactory = new PasswordSectionElementFactory(document);
@@ -533,6 +540,17 @@ suite('PasswordEditDialog', function() {
         addDialog, passwordManager, /*expectedUseAccountStore=*/ false);
   });
 
+  test('addPasswordWithNoteEmitsCorrectMetric', async function() {
+    const addDialog = elementFactory.createPasswordEditDialog();
+    await addPasswordTestHelper(
+        addDialog, passwordManager, /*expectedUseAccountStore=*/ false, 'note');
+    assertEquals(
+        1,
+        metricsTracker.count(
+            'PasswordManager.PasswordNoteActionInSettings2',
+            /*NOTE_ADDED_IN_ADD_DIALOG*/ 0));
+  });
+
   test('validatesUsernameWhenWebsiteOriginChanges', async function() {
     const passwords = [createPasswordEntry(
         {url: 'website.com', username: 'username', id: 0})];
@@ -744,6 +762,56 @@ suite('PasswordEditDialog', function() {
                   assertEquals(expectedParams.password, event.detail.password);
                   assertEquals(testCase.expectedNote, event.detail.note);
                 });
+              }));
+
+  [{oldNote: '', newNote: '', expectedMetricBucket: 4},
+   {oldNote: '', newNote: 'new note', expectedMetricBucket: 1},
+   {oldNote: undefined, newNote: '', expectedMetricBucket: 4},
+   {oldNote: 'some note', newNote: 'different note', expectedMetricBucket: 2},
+   {oldNote: 'some note', newNote: '', expectedMetricBucket: 3},
+   {oldNote: 'same note', newNote: 'same note', expectedMetricBucket: 4}]
+      .forEach(
+          testCase =>
+              test(`changePasswordWithNotesForMetrics`, async function() {
+                loadTimeData.overrideValues({enablePasswordNotes: true});
+                loadTimeData.overrideValues({enablePasswordViewPage: true});
+                const entry = createPasswordEntry({
+                  url: 'goo.gl',
+                  username: 'bart',
+                  id: 42,
+                  note: testCase.oldNote,
+                });
+                const editDialog =
+                    elementFactory.createPasswordEditDialog(entry);
+                const noteElement =
+                    editDialog.shadowRoot!.querySelector<CrTextareaElement>(
+                        '#note')!;
+
+                const expectedParams:
+                    chrome.passwordsPrivate.ChangeSavedPasswordParams = {
+                  username: 'bart',
+                  password: 'password',
+                  note: testCase.newNote,
+                };
+
+                editDialog.$.usernameInput.value = expectedParams.username;
+                editDialog.$.passwordInput.value = expectedParams.password;
+                noteElement.value = expectedParams.note!;
+
+                passwordManager.setChangeSavedPasswordResponse(43);
+                editDialog.$.actionButton.click();
+
+                // Check that the correct metrics have been emitted.
+                const dispatchedEvent =
+                    eventToPromise('saved-password-edited', editDialog);
+                await passwordManager.whenCalled('changeSavedPassword');
+                assertEquals(
+                    1,
+                    metricsTracker.count(
+                        'PasswordManager.PasswordNoteActionInSettings2',
+                        testCase.expectedMetricBucket));
+
+                await dispatchedEvent;
               }));
 
   test('noChangesWhenNotesIsNotEnabled', async function() {

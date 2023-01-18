@@ -815,10 +815,6 @@ void LogUserInteractionsWhenAddingCredentialFromSettings(
     AddCredentialFromSettingsUserInteractions
         add_credential_from_settings_user_interaction);
 
-// Log how the user interaction with the note field in password add / edit
-// dialogs.
-void LogPasswordNoteActionInSettings(PasswordNoteAction action);
-
 // Wraps |callback| into another callback that measures the elapsed time between
 // construction and actual execution of the callback. Records the result to
 // |histogram|, which is expected to be a char literal.

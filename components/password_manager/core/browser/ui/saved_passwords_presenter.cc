@@ -89,22 +89,6 @@ IsPasswordNoteChanged IsNoteChanged(const password_manager::PasswordForm& form,
       new_note);
 }
 
-PasswordNoteAction NoteChangeResultToPasswordNoteEditDialogAction(
-    password_manager::PasswordNoteChangeResult result) {
-  switch (result) {
-    case password_manager::PasswordNoteChangeResult::kNoteAdded:
-      return PasswordNoteAction::kNoteAddedInEditDialog;
-    case password_manager::PasswordNoteChangeResult::kNoteEdited:
-      return PasswordNoteAction::kNoteEditedInEditDialog;
-    case password_manager::PasswordNoteChangeResult::kNoteRemoved:
-      return PasswordNoteAction::kNoteRemovedInEditDialog;
-    case password_manager::PasswordNoteChangeResult::kNoteNotChanged:
-      return PasswordNoteAction::kNoteNotChanged;
-  }
-  NOTREACHED();
-  return PasswordNoteAction::kNoteNotChanged;
-}
-
 }  // namespace
 
 namespace password_manager {
@@ -252,14 +236,6 @@ bool SavedPasswordsPresenter::AddCredential(
   PasswordForm form = GenerateFormFromCredential(credential, type);
 
   GetStoreFor(form).AddLogin(form);
-
-  if (form.type == password_manager::PasswordForm::Type::kManuallyAdded) {
-    if (!form.notes.empty() && form.notes[0].value.length() > 0) {
-      password_manager::metrics_util::LogPasswordNoteActionInSettings(
-          PasswordNoteAction::kNoteAddedInAddDialog);
-    }
-  }
-
   return true;
 }
 
@@ -375,16 +351,9 @@ SavedPasswordsPresenter::EditSavedCredentials(
       new_form.password_issues.clear();
     }
 
-    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-      if (note_changed) {
-        password_manager::PasswordNoteChangeResult note_change_result =
-            new_form.SetNoteWithEmptyUniqueDisplayName(updated_credential.note);
-        metrics_util::LogPasswordNoteActionInSettings(
-            NoteChangeResultToPasswordNoteEditDialogAction(note_change_result));
-      } else {
-        metrics_util::LogPasswordNoteActionInSettings(
-            PasswordNoteAction::kNoteNotChanged);
-      }
+    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup) &&
+        note_changed) {
+      new_form.SetNoteWithEmptyUniqueDisplayName(updated_credential.note);
     }
 
     // An updated username implies a change in the primary key, thus we need

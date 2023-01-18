@@ -318,24 +318,22 @@ absl::optional<std::u16string> PasswordForm::GetNoteWithEmptyUniqueDisplayName()
                                  : absl::nullopt;
 }
 
-PasswordNoteChangeResult PasswordForm::SetNoteWithEmptyUniqueDisplayName(
+void PasswordForm::SetNoteWithEmptyUniqueDisplayName(
     const std::u16string& new_note_value) {
   const auto& note_itr = base::ranges::find_if(
       notes, &std::u16string::empty, &PasswordNote::unique_display_name);
   // if the old note doesn't exist, the note is just created.
   if (note_itr == notes.end()) {
     notes.emplace_back(new_note_value, base::Time::Now());
-    return PasswordNoteChangeResult::kNoteAdded;
+    return;
   }
   // Note existed, but it was empty.
   if (note_itr->value.empty()) {
     note_itr->value = new_note_value;
     note_itr->date_created = base::Time::Now();
-    return PasswordNoteChangeResult::kNoteAdded;
+    return;
   }
   note_itr->value = new_note_value;
-  return new_note_value.empty() ? PasswordNoteChangeResult::kNoteRemoved
-                                : PasswordNoteChangeResult::kNoteEdited;
 }
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,

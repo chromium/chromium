@@ -61,6 +61,28 @@ export interface PasswordEditDialogElement {
   };
 }
 
+/**
+ * Should be kept in sync with
+ * |password_manager::metrics_util::PasswordNoteAction|.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+enum PasswordNoteAction {
+  NOTE_ADDED_IN_ADD_DIALOG = 0,
+  NOTE_ADDED_IN_EDIT_DIALOG = 1,
+  NOTE_EDITED_IN_EDIT_DIALOG = 2,
+  NOTE_REMOVED_IN_EDIT_DIALOG = 3,
+  NOTE_NOT_CHANGED = 4,
+  // Must be last.
+  COUNT = 5,
+}
+
+function recordPasswordNoteAction(action: PasswordNoteAction) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.PasswordNoteActionInSettings2', action,
+      PasswordNoteAction.COUNT);
+}
+
 const PasswordEditDialogElementBase =
     PasswordRequestorMixin(I18nMixin(PolymerElement));
 
@@ -513,6 +535,12 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
           note: this.note_.trim(),
           useAccountStore: useAccountStore,
         })
+        .then(() => {
+          if (this.isPasswordNotesEnabled_ && !!this.note_.trim()) {
+            recordPasswordNoteAction(
+                PasswordNoteAction.NOTE_ADDED_IN_ADD_DIALOG);
+          }
+        })
         .finally(() => {
           this.close();
         });
@@ -530,6 +558,24 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     PasswordManagerImpl.getInstance()
         .changeSavedPassword(this.existingEntry!.id, params)
         .then(newId => {
+          if (this.isPasswordNotesEnabled_) {
+            const newNote = this.note_.trim();
+            const oldNote = this.existingEntry!.note === undefined ?
+                '' :
+                this.existingEntry!.note;
+            if (oldNote === newNote) {
+              recordPasswordNoteAction(PasswordNoteAction.NOTE_NOT_CHANGED);
+            } else if (oldNote !== '' && newNote !== '') {
+              recordPasswordNoteAction(
+                  PasswordNoteAction.NOTE_EDITED_IN_EDIT_DIALOG);
+            } else if (oldNote !== '') {
+              recordPasswordNoteAction(
+                  PasswordNoteAction.NOTE_REMOVED_IN_EDIT_DIALOG);
+            } else {
+              recordPasswordNoteAction(
+                  PasswordNoteAction.NOTE_ADDED_IN_EDIT_DIALOG);
+            }
+          }
           if (this.isPasswordViewPageEnabled_) {
             const newEntry = {
               ...this.existingEntry!,

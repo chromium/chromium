@@ -2275,6 +2275,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordNoteActionInSettings"
+    enum="PasswordNoteAction" expires_after="M111">
+  <obsolete>
+    Obsolete in M111 as the logic is moved to settings.
+  </obsolete>
+  <owner>derinel@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    This metric shows how user created / edited / cleared the note field in the
+    passwords settings page. Recorded after closing the add/edit password dialog
+    in settings.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordNoteActionInSettings2"
     enum="PasswordNoteAction" expires_after="2023-06-01">
   <owner>derinel@google.com</owner>
   <owner>mamir@chromium.org</owner>
