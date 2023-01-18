@@ -146,6 +146,8 @@ const EXPAND_FOLDER_DELAY: number = 400;
 class AutoExpander {
   private lastElement_: BookmarkElement|null = null;
   private debouncer_: Debouncer;
+  private lastX_: number|null = null;
+  private lastY_: number|null = null;
 
   constructor() {
     this.debouncer_ = new Debouncer(() => {
@@ -155,7 +157,11 @@ class AutoExpander {
     });
   }
 
-  update(_e: Event, overElement: BookmarkElement|null) {
+  update(
+      e: Event, overElement: BookmarkElement|null,
+      dropPosition?: DropPosition) {
+    const x = (e as DragEvent).clientX;
+    const y = (e as DragEvent).clientY;
     const itemId = overElement ? overElement.itemId : null;
     const store = Store.getInstance();
 
@@ -169,13 +175,17 @@ class AutoExpander {
     }
 
     // If dragging over the same node, reset the expander delay.
-    if (overElement && overElement === this.lastElement_) {
-      this.debouncer_.restartTimeout(EXPAND_FOLDER_DELAY);
-      return;
+    if (overElement && overElement === this.lastElement_ &&
+        dropPosition === DropPosition.ON) {
+      if (x !== this.lastX_ || y !== this.lastY_) {
+        this.debouncer_.restartTimeout(EXPAND_FOLDER_DELAY);
+      }
+    } else {
+      // Otherwise, cancel the expander.
+      this.reset();
     }
-
-    // Otherwise, cancel the expander.
-    this.reset();
+    this.lastX_ = x;
+    this.lastY_ = y;
   }
 
   reset() {
@@ -405,8 +415,8 @@ export class DndManager {
     }
 
     const overElement = getBookmarkElement(e.composedPath());
-    this.autoExpander_!.update(e, overElement);
     if (!overElement) {
+      this.autoExpander_!.update(e, overElement);
       this.dropIndicator_!.finish();
       return;
     }
@@ -416,10 +426,12 @@ export class DndManager {
     this.dropDestination_ =
         this.calculateDropDestination_((e as DragEvent).clientY, overElement);
     if (!this.dropDestination_) {
+      this.autoExpander_!.update(e, overElement);
       this.dropIndicator_!.finish();
       return;
     }
 
+    this.autoExpander_!.update(e, overElement, this.dropDestination_.position);
     this.dropIndicator_!.update(this.dropDestination_);
   }
 
