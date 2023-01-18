@@ -9,8 +9,11 @@
 #include <tuple>
 #include <vector>
 
+#include <ocidl.h>
+#include <olectl.h>
 #include <shldisp.h>
 #include <shlobj.h>
+#include <windows.h>
 #include <wrl/client.h>
 
 #include "base/check.h"
@@ -53,6 +56,7 @@
 #include "chrome/updater/win/install_progress_observer.h"
 #include "chrome/updater/win/manifest_util.h"
 #include "chrome/updater/win/scoped_impersonation.h"
+#include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
 
@@ -385,6 +389,9 @@ class AppInstallControllerImpl : public AppInstallController,
 
   // Overrides for WTL::CMessageFilter.
   BOOL PreTranslateMessage(MSG* msg) override;
+
+  // This function is called on a dedicated COM STA thread.
+  void LoadLogo(std::wstring url, HWND progress_hwnd);
 
   // These functions are called on the UI thread.
   void InitializeUI();
@@ -793,6 +800,42 @@ ObserverCompletionInfo AppInstallControllerImpl::HandleInstallResult(
   return observer_info;
 }
 
+// Loads the logo in BMP format if it exists at the provided `url`, and sets the
+// resultant image onto the app bitmap for the progress window.
+void AppInstallControllerImpl::LoadLogo(std::wstring url, HWND progress_hwnd) {
+  if (url.empty()) {
+    VLOG(1) << __func__ << "No url specified";
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<IPicture> picture;
+  HRESULT hr =
+      ::OleLoadPicturePath(&url[0], nullptr, 0, 0, IID_PPV_ARGS(&picture));
+  if (FAILED(hr)) {
+    VLOG(1) << __func__ << "::OleLoadPicturePath failed: " << std::hex << hr
+            << ": " << logging::SystemErrorCodeToString(hr);
+    return;
+  }
+
+  HBITMAP bitmap = nullptr;
+  hr = picture->get_Handle(reinterpret_cast<UINT*>(&bitmap));
+  if (FAILED(hr)) {
+    VLOG(1) << __func__ << "picture->get_Handle failed: " << std::hex << hr
+            << ": " << logging::SystemErrorCodeToString(hr);
+    return;
+  }
+
+  if (!::IsWindow(progress_hwnd)) {
+    VLOG(1) << __func__ << "progress_hwnd not valid anymore";
+    return;
+  }
+
+  ::SendDlgItemMessage(progress_hwnd, IDC_APP_BITMAP, STM_SETIMAGE,
+                       IMAGE_BITMAP,
+                       reinterpret_cast<LPARAM>(::CopyImage(
+                           bitmap, IMAGE_BITMAP, 0, 0, LR_COPYRETURNORG)));
+}
+
 // Creates the install progress observer. The observer has thread affinity. It
 // must be created, process its messages, and be destroyed on the same thread.
 void AppInstallControllerImpl::InitializeUI() {
@@ -812,6 +855,14 @@ void AppInstallControllerImpl::InitializeUI() {
     progress_wnd->SetEventSink(this);
     progress_wnd->Initialize();
     progress_wnd->Show();
+
+    // TODO(crbug/1406963): Provide the url for the logo here based on the
+    // `app_id_`.
+    base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&AppInstallControllerImpl::LoadLogo, this,
+                                  L"", progress_wnd->m_hWnd));
+
     observer_.reset(progress_wnd.release());
   }
 }
