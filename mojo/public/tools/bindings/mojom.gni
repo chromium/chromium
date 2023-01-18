@@ -106,6 +106,7 @@ mojom_generator_sources =
       "$mojom_generator_root/generators/mojom_cpp_generator.py",
       "$mojom_generator_root/generators/mojom_java_generator.py",
       "$mojom_generator_root/generators/mojom_js_generator.py",
+      "$mojom_generator_root/generators/mojom_js_interface_binder_generator.py",
       "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
       "$mojom_generator_root/generators/mojom_ts_generator.py",
       "$mojom_generator_script",
@@ -318,6 +319,11 @@ if (enable_scrambled_message_ids) {
 #
 #   use_typescript_sources (optional)
 #       Uses the Typescript generator to generate JavaScript bindings.
+#
+#   js_interface_binder (optional)
+#       A JsInterfaceBinder is a Mojo interface that contains binders for all
+#       interfaces that can be bound from WebUI's JavaScript. Setting this flag
+#       to true will generate a C++ implementationa of the JSInterfaceBinder(s).
 #
 #   js_generate_struct_deserializers (optional)
 #       Generates JS deerialize methods for structs.
@@ -1744,6 +1750,51 @@ template("mojom") {
         }
 
         srcjar_deps = [ ":$java_srcjar_target_name" ]
+      }
+    }
+  }
+
+  if (defined(invoker.js_interface_binder) && invoker.js_interface_binder) {
+    if (sources_list != []) {
+      generator_js_interface_binder_impl_target_name =
+          "${target_name}_js_interface_binder_impl__generator"
+      action(generator_js_interface_binder_impl_target_name) {
+        visibility = [ ":*" ]
+        script = mojom_generator_script
+        inputs = mojom_generator_sources + jinja2_sources
+        sources = sources_list
+
+        deps = [
+          ":$parser_target_name",
+          "//mojo/public/tools/bindings:precompile_templates",
+        ]
+
+        filelist = []
+        foreach(source, sources_list) {
+          filelist += [ rebase_path(source, root_build_dir) ]
+        }
+
+        outputs = []
+        foreach(base_path, output_file_base_paths) {
+          outputs += [ "$root_gen_dir/${base_path}-js-interface-binder-impl.h" ]
+        }
+
+        response_file_contents = filelist
+
+        args = common_generator_args + export_args
+        args += [
+          "--filelist={{response_file_name}}",
+          "-g",
+          "js_interface_binder",
+        ]
+      }
+
+      source_set("${target_name}_js_interface_binder_impl") {
+        sources = []
+        foreach(base_path, output_file_base_paths) {
+          sources = [ "$root_gen_dir/${base_path}-js-interface-binder-impl.h" ]
+        }
+        deps = [ ":$generator_js_interface_binder_impl_target_name" ]
       }
     }
   }

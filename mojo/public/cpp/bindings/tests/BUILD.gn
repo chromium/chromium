@@ -30,6 +30,7 @@ source_set("tests") {
     "hash_unittest.cc",
     "idle_tracking_unittest.cc",
     "interface_unittest.cc",
+    "js_interface_binder_unittest.cc",
     "lazy_serialization_unittest.cc",
     "map_unittest.cc",
     "message_queue.cc",
@@ -66,6 +67,7 @@ source_set("tests") {
     ":test_extra_cpp_template_mojom",
     ":test_mojom",
     ":test_mojom__generate_message_ids",
+    ":test_mojom_js_interface_binder_js_interface_binder_impl",
     "//base/test:test_support",
     "//mojo/core/test:test_support",
     "//mojo/public/cpp/bindings",
@@ -185,6 +187,15 @@ mojom("test_mojom") {
       traits_headers = [ "default_construct_unittest_mojom_traits.h" ]
     },
   ]
+}
+
+mojom("test_mojom_js_interface_binder") {
+  testonly = true
+  sources = [ "js_interface_binder_unittest.test-mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  js_interface_binder = true
 }
 
 source_set("perftests") {

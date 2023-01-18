@@ -61,6 +61,7 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/java_templates/interface_internal.java.tmpl",
     "$mojom_generator_root/generators/java_templates/struct.java.tmpl",
     "$mojom_generator_root/generators/java_templates/union.java.tmpl",
+    "$mojom_generator_root/generators/js_interface_binder_templates/js_interface_binder_impl.h.tmpl",
     "$mojom_generator_root/generators/js_templates/enum_definition.tmpl",
     "$mojom_generator_root/generators/js_templates/fuzzing.tmpl",
     "$mojom_generator_root/generators/js_templates/interface_definition.tmpl",

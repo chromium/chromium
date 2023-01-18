@@ -34,6 +34,7 @@ _ENUMVAL_ATTRIBUTES = _COMMON_ATTRIBUTES | {
 }
 
 _INTERFACE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
+    'JsInterfaceBinder',
     'RenamedFrom',
     'RequireContext',
     'ServiceSandbox',
