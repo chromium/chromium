@@ -64,6 +64,7 @@ source_set("unit_tests") {
   sources = [
     "canonical_topic_unittest.cc",
     "privacy_sandbox_settings_impl_unittest.cc",
+    "privacy_sandbox_test_util_unittest.cc",
   ]
 
   deps = [

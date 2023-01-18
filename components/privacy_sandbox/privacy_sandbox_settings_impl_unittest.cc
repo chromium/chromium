@@ -1141,8 +1141,46 @@ TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
            static_cast<int>(Status::kAllowed)}});
 }
 
-TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockApplies) {
-  // Confirm that blocking site data disabled M1 kAPIs.
+TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
+  // Confirm that blocking site data for a site disables M1 kAPIs, with the
+  // exception of the generic IsTopicsAllowed(). Topics should still be able
+  // to calculate, as sites with ALLOW exceptions may still access site data.
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue},
+                 true},
+                {kSiteDataUserDefault, CONTENT_SETTING_BLOCK}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin, kAccessingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
+      TestOutput{
+          {kIsTopicsAllowed, true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContext, kIsFledgeAllowed,
+               kIsAttributionReportingAllowed, kMaySendAttributionReport,
+               kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
+               kIsPrivateAggregationAllowed},
+           false},
+          {kIsTopicsAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric, kIsFledgeAllowedMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kSiteDataAccessBlocked)}});
+}
+
+TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockExceptionApplies) {
+  // Confirm that blocking site data for a site disabled M1 kAPIs.
   RunTestCase(
       TestState{
           {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,

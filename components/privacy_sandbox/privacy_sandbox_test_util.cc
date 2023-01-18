@@ -65,8 +65,8 @@ V GetItemValueForKey(K key, std::map<K, TestCaseItemValue> test_components) {
   return GetItemValue<V>(test_components.at(key));
 }
 
-// Applies the state defined by `key`, `value` to the provided profile
-// components.
+}  // namespace
+
 void ApplyTestState(
     StateKey key,
     const TestCaseItemValue& value,
@@ -110,6 +110,7 @@ void ApplyTestState(
     case (StateKey::kSiteDataUserDefault): {
       SCOPED_TRACE("State Setup: User site data default");
       auto content_setting = GetItemValue<ContentSetting>(value);
+
       user_content_setting_provider->SetWebsiteSetting(
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
@@ -240,9 +241,6 @@ void ApplyTestState(
   }
 }
 
-// Some input is not directly passed to the function under test, and so must
-// be run in advance of checking output. When input is provided directly to
-// and output function, it is handled in `CheckOutput()`
 void ProvideInput(const std::pair<InputKey, TestCaseItemValue>& input,
                   PrivacySandboxServiceTestInterface* privacy_sandbox_service) {
   auto [input_key, input_value] = input;
@@ -563,7 +561,6 @@ void CheckOutput(
   }
 }
 
-}  // namespace
 MockPrivacySandboxObserver::MockPrivacySandboxObserver() = default;
 MockPrivacySandboxObserver::~MockPrivacySandboxObserver() = default;
 MockPrivacySandboxSettingsDelegate::MockPrivacySandboxSettingsDelegate() =
