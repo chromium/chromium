@@ -3005,6 +3005,7 @@ void CrostiniManager::OnCreateLxdContainer(
       // UI. But for any created manually also register now (crbug.com/1330168).
       AddNewLxdContainerToPrefs(profile_, container_id);
       RegisterContainer(container_id);
+      SetCreateOptionsUsed(container_id);
       std::move(callback).Run(CrostiniResult::SUCCESS);
       break;
     default:
