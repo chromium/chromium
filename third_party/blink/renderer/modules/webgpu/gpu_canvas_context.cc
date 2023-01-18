@@ -167,6 +167,10 @@ bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(
     SourceDrawingBuffer src_buffer,
     const gfx::ColorSpace& dst_color_space,
     VideoFrameCopyCompletedCallback callback) {
+  if (!swap_buffers_) {
+    return false;
+  }
+
   return swap_buffers_->CopyToVideoFrame(frame_pool, src_buffer,
                                          dst_color_space, std::move(callback));
 }
@@ -221,6 +225,35 @@ bool GPUCanvasContext::PushFrame() {
 
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     ScriptState* script_state) {
+  auto MakeFallbackImageBitmap =
+      [this](V8GPUCanvasAlphaMode::Enum alpha_mode) -> ImageBitmap* {
+    // It is not possible to create an empty image bitmap, return null in that
+    // case which will fail ImageBitmap creation with an exception instead.
+    gfx::Size size = Host()->Size();
+    if (size.IsEmpty()) {
+      return nullptr;
+    }
+
+    // We intentionally leave the image in legacy color space.
+    SkBitmap black_bitmap;
+    black_bitmap.allocN32Pixels(size.width(), size.height());
+    if (alpha_mode == V8GPUCanvasAlphaMode::Enum::kOpaque) {
+      black_bitmap.eraseARGB(255, 0, 0, 0);
+    } else {
+      black_bitmap.eraseARGB(0, 0, 0, 0);
+    }
+
+    return MakeGarbageCollected<ImageBitmap>(
+        UnacceleratedStaticBitmapImage::Create(
+            SkImage::MakeFromBitmap(black_bitmap)));
+  };
+
+  // If the canvas configuration is invalid, WebGPU requires that we give a
+  // fallback black ImageBitmap if possible.
+  if (!swap_buffers_) {
+    return MakeFallbackImageBitmap(V8GPUCanvasAlphaMode::Enum::kOpaque);
+  }
+
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
   if (!swap_buffers_->PrepareTransferableResource(
@@ -228,15 +261,8 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
-    // lost. We intentionally leave the transparent black image in legacy color
-    // space.
-    SkBitmap black_bitmap;
-    black_bitmap.allocN32Pixels(transferable_resource.size.width(),
-                                transferable_resource.size.height());
-    black_bitmap.eraseARGB(0, 0, 0, 0);
-    return MakeGarbageCollected<ImageBitmap>(
-        UnacceleratedStaticBitmapImage::Create(
-            SkImage::MakeFromBitmap(black_bitmap)));
+    // lost.
+    return MakeFallbackImageBitmap(alpha_mode_);
   }
   DCHECK(release_callback);
 
