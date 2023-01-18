@@ -24,7 +24,6 @@
 #include "ash/shell_observer.h"
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
-#include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -79,7 +78,6 @@ class ASH_EXPORT WallpaperControllerImpl
       public WindowTreeHostManager::Observer,
       public ShellObserver,
       public WallpaperResizerObserver,
-      public WallpaperColorCalculatorObserver,
       public SessionObserver,
       public TabletModeObserver,
       public OverviewObserver,
@@ -330,9 +328,6 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // WallpaperResizerObserver:
   void OnWallpaperResized() override;
-
-  // WallpaperColorCalculatorObserver:
-  void OnColorCalculationComplete() override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
@@ -639,6 +634,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // logged in, feature isn't enabled).
   // If an existing calculation is in progress it is destroyed.
   void CalculateWallpaperColors();
+
+  // Callback to handle the completed color computation.
+  void OnColorCalculationComplete(const WallpaperCalculatedColors& colors);
 
   // Returns false when the color extraction algorithm shouldn't be run based on
   // system state (e.g. wallpaper image, SessionState, etc.).
