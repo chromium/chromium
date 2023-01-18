@@ -168,8 +168,8 @@ void OfflineInternalsUIMessageHandler::HandleStoredPagesCallback(
   }
   // Sort by creation order.
   std::sort(results.begin(), results.end(), [](const auto& a, const auto& b) {
-    return a.FindKey({"creationTime"})->GetDouble() <
-           b.FindKey({"creationTime"})->GetDouble();
+    return a.GetDict().FindDouble("creationTime").value() <
+           b.GetDict().FindDouble("creationTime").value();
   });
 
   ResolveJavascriptCallback(base::Value(callback_id), results);
