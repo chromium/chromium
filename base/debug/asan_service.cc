@@ -7,6 +7,7 @@
 #if defined(ADDRESS_SANITIZER)
 #include <sanitizer/asan_interface.h>
 
+#include "base/debug/task_trace.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -24,10 +25,35 @@
 namespace base {
 namespace debug {
 
+namespace {
+NO_SANITIZE("address")
+void TaskTraceErrorCallback(const char* error, bool*) {
+  // Use the sanitizer api to symbolize the task trace, which otherwise might
+  // not symbolize properly. This also lets us format the task trace in the
+  // same way as the address sanitizer backtraces, which also means that we can
+  // get the stack trace symbolized with asan_symbolize.py in the cases where
+  // symbolization at runtime fails.
+  std::array<const void*, 4> addresses;
+  size_t address_count = TaskTrace().GetAddresses(addresses);
+
+  AsanService::GetInstance()->Log("Task trace:");
+  size_t frame_index = 0;
+  for (size_t i = 0; i < std::min(address_count, addresses.size()); ++i) {
+    char buffer[4096] = {};
+    void* address = const_cast<void*>(addresses[i]);
+    __sanitizer_symbolize_pc(address, "%p %F %L", buffer, sizeof(buffer));
+    for (char* ptr = buffer; *ptr != 0; ptr += strlen(ptr)) {
+      AsanService::GetInstance()->Log("    #%i %s", frame_index++, ptr);
+    }
+  }
+  AsanService::GetInstance()->Log("");
+}
+}  // namespace
+
 // static
 NO_SANITIZE("address")
 AsanService* AsanService::GetInstance() {
-  static base::NoDestructor<AsanService> instance;
+  static NoDestructor<AsanService> instance;
   return instance.get();
 }
 
@@ -35,6 +61,7 @@ void AsanService::Initialize() {
   AutoLock lock(lock_);
   if (!is_initialized_) {
     __asan_set_error_report_callback(ErrorReportCallback);
+    error_callbacks_.push_back(TaskTraceErrorCallback);
     is_initialized_ = true;
   }
 }
