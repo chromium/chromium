@@ -18,7 +18,6 @@ input_method_private.json
 language_settings_private.idl
 login_state.idl
 media_player_private.json
-passwords_private.idl
 quick_unlock_private.idl
 resources_private.idl
 safe_browsing_private.idl
