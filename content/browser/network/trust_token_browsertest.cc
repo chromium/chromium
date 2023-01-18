@@ -249,9 +249,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
   GURL start_url = server_.GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
-  EXPECT_EQ(
-      "Success",
-      EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+  EXPECT_EQ("Success", EvalJs(shell(), command));
 
   auto execute_op_via_iframe = [&](base::StringPiece path,
                                    base::StringPiece trust_token) {
