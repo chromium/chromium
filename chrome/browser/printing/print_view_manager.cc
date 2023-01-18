@@ -155,13 +155,7 @@ void PrintViewManager::PrintPreviewForWebNode(content::RenderFrameHost* rfh) {
   if (print_preview_state_ != NOT_PREVIEWING)
     return;
 
-  DCHECK(rfh);
-  DCHECK(IsPrintRenderFrameConnected(rfh));
-  // All callers should already ensure this condition holds; CHECK to
-  // aggressively protect against future unsafety.
-  CHECK(rfh->IsRenderFrameLive());
-  DCHECK(!print_preview_rfh_);
-  print_preview_rfh_ = rfh;
+  SetPrintPreviewRenderFrameHost(rfh);
   print_preview_state_ = USER_INITIATED_PREVIEW;
 
   for (auto& observer : GetObservers())
@@ -324,8 +318,7 @@ bool PrintViewManager::PrintPreview(
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(std::move(print_renderer),
                                                  has_selection);
 
-  DCHECK(!print_preview_rfh_);
-  print_preview_rfh_ = rfh;
+  SetPrintPreviewRenderFrameHost(rfh);
   print_preview_state_ = USER_INITIATED_PREVIEW;
 
   for (auto& observer : GetObservers())
@@ -389,8 +382,7 @@ void PrintViewManager::SetupScriptedPrintPreview(
   // expect the established connection can unexpected fail.
   GetPrintRenderFrame(rfh);
 
-  DCHECK(!print_preview_rfh_);
-  print_preview_rfh_ = rfh;
+  SetPrintPreviewRenderFrameHost(rfh);
   print_preview_state_ = SCRIPTED_PREVIEW;
   map[rph] = base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewReply,
                             base::Unretained(this), std::move(callback));
@@ -506,6 +498,18 @@ void PrintViewManager::MaybeUnblockScriptedPreviewRPH() {
     scripted_print_preview_rph_->SetBlocked(false);
     scripted_print_preview_rph_set_blocked_ = false;
   }
+}
+
+void PrintViewManager::SetPrintPreviewRenderFrameHost(
+    content::RenderFrameHost* rfh) {
+  DCHECK_EQ(print_preview_state_, NOT_PREVIEWING);
+  DCHECK(rfh);
+  DCHECK(IsPrintRenderFrameConnected(rfh));
+  // All callers should already ensure this condition holds; CHECK to
+  // aggressively protect against future unsafety.
+  CHECK(rfh->IsRenderFrameLive());
+  DCHECK(!print_preview_rfh_);
+  print_preview_rfh_ = rfh;
 }
 
 void PrintViewManager::PrintForSystemDialogImpl() {

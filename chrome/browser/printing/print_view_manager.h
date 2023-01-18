@@ -134,6 +134,10 @@ class PrintViewManager : public PrintViewManagerBase,
 
   void MaybeUnblockScriptedPreviewRPH();
 
+  // Helper used to set `print_preview_rfh_` to `rfh`. Performs sanity checks
+  // before doing so.
+  void SetPrintPreviewRenderFrameHost(content::RenderFrameHost* rfh);
+
   // Checks whether printing is currently restricted and aborts print preview if
   // needed. Since this check is performed asynchronously, invokes `callback`
   // with an indicator whether to proceed or not.
