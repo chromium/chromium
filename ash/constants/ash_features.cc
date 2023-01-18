@@ -1420,7 +1420,7 @@ BASE_FEATURE(kMojoDBusRelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the full apps list in Phone Hub bubble.
-BASE_FEATURE(kEcheLauncher, "EcheLauncher", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEcheLauncher, "EcheLauncher", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Switch full apps list in Phone Hub from grid view to list view.
 BASE_FEATURE(kEcheLauncherListView,
