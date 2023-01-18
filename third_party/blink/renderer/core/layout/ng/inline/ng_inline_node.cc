@@ -8,6 +8,7 @@
 #include <numeric>
 
 #include "base/containers/adapters.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1038,7 +1039,7 @@ const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
     // TODO(kojii): This shouldn't happen, but is not easy to fix all cases.
     // Return nullptr so that callers can chose to fail gracefully, or
     // null-deref. crbug.com/946004
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return nullptr;
   }
 
