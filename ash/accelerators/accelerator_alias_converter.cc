@@ -18,26 +18,25 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
     const ui::Accelerator& accelerator) const {
   std::vector<ui::Accelerator> accelerator_aliases;
 
-  if (Shell::Get()->keyboard_capability()->IsTopRowKey(
-          accelerator.key_code())) {
-    // For |top_row_key|, replace the base accelerator with top-row remapped
-    // accelerator if applicable. Otherwise, only show base accelerator.
-    absl::optional<ui::Accelerator> alias = CreateTopRowAlias(accelerator);
-    if (alias.has_value()) {
-      accelerator_aliases.push_back(alias.value());
-      return accelerator_aliases;
-    }
+  // For |top_row_key|, replace the base accelerator with top-row remapped
+  // accelerator if applicable. Otherwise, only show base accelerator.
+  absl::optional<ui::Accelerator> alias = CreateTopRowAlias(accelerator);
+  if (alias.has_value()) {
+    accelerator_aliases.push_back(alias.value());
+    return accelerator_aliases;
   }
 
-  if (Shell::Get()->keyboard_capability()->IsSixPackKey(
-          accelerator.key_code())) {
-    // For |six_pack_key|, show both the base accelerator and the six-pack
-    // remapped accelerator if applicable. Otherwise, only show base
-    // accelerator.
-    absl::optional<ui::Accelerator> alias = CreateSixPackAlias(accelerator);
-    if (alias.has_value()) {
-      accelerator_aliases.push_back(alias.value());
-    }
+  // For |six_pack_key| and |reversed_six_pack_key|, show both the base
+  // accelerator and the remapped accelerator if applicable. Otherwise, only
+  // show base accelerator.
+  alias = CreateSixPackAlias(accelerator);
+  // An accelerator can never have both six pack alias and reversed six
+  // pack alias at the same time.
+  if (!alias.has_value()) {
+    alias = CreateReversedSixPackAlias(accelerator);
+  }
+  if (alias.has_value()) {
+    accelerator_aliases.push_back(alias.value());
   }
 
   // Add base accelerator.
@@ -51,7 +50,8 @@ absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAlias(
   // TODO(zhangwenyu): Handle all 4 legacy layouts and custom vivaldi layouts.
   if (accelerator.IsCmdDown() ||
       !Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys() ||
-      !ui::kLayout2TopRowKeyToFKeyMap.contains(accelerator.key_code())) {
+      !Shell::Get()->keyboard_capability()->IsTopRowKey(
+          accelerator.key_code())) {
     return absl::nullopt;
   }
 
@@ -68,7 +68,7 @@ absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAlias(
   // original accelerator.
   if (accelerator.IsCmdDown() ||
       !::features::IsImprovedKeyboardShortcutsEnabled() ||
-      !ui::kSixPackKeyToSystemKeyMap.contains(accelerator.key_code())) {
+      !ui::KeyboardCapability::IsSixPackKey(accelerator.key_code())) {
     return absl::nullopt;
   }
 
@@ -92,6 +92,48 @@ absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAlias(
   return ui::Accelerator(
       ui::kSixPackKeyToSystemKeyMap.at(accelerator.key_code()),
       updated_modifiers, accelerator.key_state());
+}
+
+absl::optional<ui::Accelerator>
+AcceleratorAliasConverter::CreateReversedSixPackAlias(
+    const ui::Accelerator& accelerator) const {
+  // To find the reversed six pack alias, an accelerator must include [Search]
+  // key, and must be one of the reversed six pack keys.
+  if (!accelerator.IsCmdDown() ||
+      !::features::IsImprovedKeyboardShortcutsEnabled() ||
+      !ui::KeyboardCapability::IsReversedSixPackKey(accelerator.key_code())) {
+    return absl::nullopt;
+  }
+
+  int modifiers = accelerator.modifiers() & ~ui::EF_COMMAND_DOWN;
+  // If modifiers only contain [Search] key, no reversed alias exists.
+  if (modifiers == 0) {
+    return absl::nullopt;
+  }
+
+  // [Back] maps back to [Insert] if modifier contains [Shift]. Otherwise,
+  // it maps back to [Delete].
+  if (accelerator.key_code() == ui::KeyboardCode::VKEY_BACK) {
+    if (!accelerator.IsShiftDown()) {
+      return ui::Accelerator(ui::KeyboardCode::VKEY_DELETE, modifiers,
+                             accelerator.key_state());
+    }
+
+    modifiers &= ~ui::EF_SHIFT_DOWN;
+    if (modifiers == 0) {
+      // Handles an edge case if the accelerator is just the reverse of
+      // [Insert].
+      return absl::nullopt;
+    } else {
+      return ui::Accelerator(ui::KeyboardCode::VKEY_INSERT, modifiers,
+                             accelerator.key_state());
+    }
+  }
+
+  // Handle modifiers other than [Back].
+  return ui::Accelerator(
+      ui::kReversedSixPackKeyToSystemKeyMap.at(accelerator.key_code()),
+      modifiers, accelerator.key_state());
 }
 
 }  // namespace ash

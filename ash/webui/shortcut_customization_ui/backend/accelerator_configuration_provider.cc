@@ -344,7 +344,7 @@ AcceleratorConfigurationProvider::CreateAcceleratorInfos(
   std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
   for (const auto& accelerator : accelerators) {
     // Get the alias accelerators by doing F-Keys remapping and
-    // six-pack-keys remapping if applicable.
+    // (reversed) six-pack-keys remapping if applicable.
     std::vector<ui::Accelerator> accelerator_aliases =
         accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
     for (const auto& accelerator_alias : accelerator_aliases) {

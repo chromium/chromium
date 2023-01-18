@@ -84,7 +84,7 @@ TEST_F(AcceleratorAliasConverterTest, TestCreateSixPackAlias) {
   EXPECT_EQ(1u, accelerator_aliases1.size());
   EXPECT_EQ(accelerator1, accelerator_aliases1[0]);
 
-  // key_code not in kSixPackKeyToSystemKeyMap prevents remapping.
+  // key_code not as six pack key prevents remapping.
   const ui::Accelerator accelerator2{ui::VKEY_TAB, ui::EF_ALT_DOWN};
   std::vector<ui::Accelerator> accelerator_aliases2 =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator2);
@@ -131,6 +131,92 @@ TEST_F(AcceleratorAliasConverterTest, TestCreateSixPackAlias) {
   EXPECT_EQ(2u, accelerator_aliases6.size());
   EXPECT_EQ(expected_accelerator6, accelerator_aliases6[0]);
   EXPECT_EQ(accelerator6, accelerator_aliases6[1]);
+}
+
+TEST_F(AcceleratorAliasConverterTest, TestCreateReversedSixPackAlias) {
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  // [Search] not in modifiers prevents remapping.
+  const ui::Accelerator accelerator1{ui::VKEY_LEFT, ui::EF_ALT_DOWN};
+  std::vector<ui::Accelerator> accelerator_alias1 =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator1);
+
+  EXPECT_EQ(1u, accelerator_alias1.size());
+  EXPECT_EQ(accelerator1, accelerator_alias1[0]);
+
+  // key_code not as reversed six pack key prevent remapping.
+  const ui::Accelerator accelerator2{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN};
+  std::vector<ui::Accelerator> accelerator_alias2 =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator2);
+
+  EXPECT_EQ(1u, accelerator_alias2.size());
+  EXPECT_EQ(accelerator2, accelerator_alias2[0]);
+
+  // [Search] as the only modifier prevents remapping.
+  const ui::Accelerator accelerator3{ui::VKEY_BACK, ui::EF_COMMAND_DOWN};
+  std::vector<ui::Accelerator> accelerator_alias3 =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator3);
+
+  EXPECT_EQ(1u, accelerator_alias3.size());
+  EXPECT_EQ(accelerator3, accelerator_alias3[0]);
+
+  // [Back] + [Shift] + [Search] only prevents remapping, which is just the
+  // reverse of [Insert].
+  const ui::Accelerator accelerator4{ui::VKEY_BACK,
+                                     ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN};
+  std::vector<ui::Accelerator> accelerator_alias4 =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator4);
+
+  EXPECT_EQ(1u, accelerator_alias4.size());
+  EXPECT_EQ(accelerator4, accelerator_alias4[0]);
+
+  // [Back] + [Shift] + [Search] + [Alt] maps back to [Insert] + [Alt].
+  const ui::Accelerator accelerator5{
+      ui::VKEY_BACK, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN};
+  const ui::Accelerator expected_accelerator_alias5{ui::VKEY_INSERT,
+                                                    ui::EF_ALT_DOWN};
+  std::vector<ui::Accelerator> accelerator_alias5 =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator5);
+
+  EXPECT_EQ(2u, accelerator_alias5.size());
+  EXPECT_EQ(expected_accelerator_alias5, accelerator_alias5[0]);
+  EXPECT_EQ(accelerator5, accelerator_alias5[1]);
+
+  // [Back] + [Search] + [Alt] maps back to [Delete] + [Alt].
+  const ui::Accelerator accelerator6{ui::VKEY_BACK,
+                                     ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN};
+  const ui::Accelerator expected_accelerator_alias6{ui::VKEY_DELETE,
+                                                    ui::EF_ALT_DOWN};
+  std::vector<ui::Accelerator> accelerator_alias6 =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator6);
+
+  EXPECT_EQ(2u, accelerator_alias6.size());
+  EXPECT_EQ(expected_accelerator_alias6, accelerator_alias6[0]);
+  EXPECT_EQ(accelerator6, accelerator_alias6[1]);
+
+  // [Left] + [Search] + [Alt] maps back to [Home] + [Alt].
+  const ui::Accelerator accelerator7{ui::VKEY_LEFT,
+                                     ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN};
+  const ui::Accelerator expected_accelerator_alias7{ui::VKEY_HOME,
+                                                    ui::EF_ALT_DOWN};
+  std::vector<ui::Accelerator> accelerator_alias7 =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator7);
+
+  EXPECT_EQ(2u, accelerator_alias7.size());
+  EXPECT_EQ(expected_accelerator_alias7, accelerator_alias7[0]);
+  EXPECT_EQ(accelerator7, accelerator_alias7[1]);
+
+  // [Left] + [Search] + [Shift] + [Alt] maps back to [Home] + [Shift] + [Alt].
+  const ui::Accelerator accelerator8{
+      ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN};
+  const ui::Accelerator expected_accelerator_alias8{
+      ui::VKEY_HOME, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN};
+  std::vector<ui::Accelerator> accelerator_alias8 =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator8);
+
+  EXPECT_EQ(2u, accelerator_alias8.size());
+  EXPECT_EQ(expected_accelerator_alias8, accelerator_alias8[0]);
+  EXPECT_EQ(accelerator8, accelerator_alias8[1]);
 }
 
 }  // namespace ash

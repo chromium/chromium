@@ -588,6 +588,112 @@ TEST_F(AcceleratorConfigurationProviderTest, SixPackKeyAcceleratorRemapped) {
                                observer.config());
 }
 
+TEST_F(AcceleratorConfigurationProviderTest,
+       ReversedSixPackKeyAcceleratorRemapped) {
+  FakeAcceleratorsUpdatedObserver observer;
+  SetUpObserver(&observer);
+  EXPECT_EQ(0, observer.num_times_notified());
+
+  // kImprovedKeyboardShortcuts is enabled.
+  EXPECT_TRUE(::features::IsImprovedKeyboardShortcutsEnabled());
+
+  const AcceleratorData test_data[] = {
+      // Below are fake shortcuts, only used for testing.
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_ALT_DOWN,
+       CYCLE_BACKWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN, NEW_TAB},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, DISABLE_CAPS_LOCK},
+
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, KEYBOARD_BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+       TAKE_WINDOW_SCREENSHOT},
+      {/*trigger_on_press=*/true, ui::VKEY_PRIOR,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, DESKS_NEW_DESK},
+      {/*trigger_on_press=*/true, ui::VKEY_RIGHT,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+       TOGGLE_FULLSCREEN},
+      {/*trigger_on_press=*/true, ui::VKEY_DOWN,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, KEYBOARD_BRIGHTNESS_DOWN},
+
+      {/*trigger_on_press=*/true, ui::VKEY_BACK,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_BACK,
+       ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+       SHOW_TASK_MANAGER},
+      {/*trigger_on_press=*/true, ui::VKEY_BACK,
+       ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, BRIGHTNESS_UP},
+  };
+
+  const AcceleratorData expected_data[] = {
+      // When [Search] is not part of original accelerator, no remapping is
+      // done. [Left]+[Alt]>[Left]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_ALT_DOWN,
+       CYCLE_BACKWARD_MRU},
+      // When [Search] is the only modifier, no remapping is done.
+      // [Left]+[Search]->[Left]+[Search].
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN, NEW_TAB},
+      // When key code is not reversed six pack key, no remapping is done.
+      // [Tab]+[Search]+[Alt]->[Tab]+[Search]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, DISABLE_CAPS_LOCK},
+
+      // [Left]+[Search]+[Alt]->[Home]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, KEYBOARD_BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_ALT_DOWN,
+       KEYBOARD_BRIGHTNESS_UP},
+      // [Left]+[Search]+[Shift]+[Alt]->[Home]+[Shift]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_LEFT,
+       ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+       TAKE_WINDOW_SCREENSHOT},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, TAKE_WINDOW_SCREENSHOT},
+      // [Prior]+[Search]+[Alt]->[Up]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_PRIOR,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, DESKS_NEW_DESK},
+      {/*trigger_on_press=*/true, ui::VKEY_UP, ui::EF_ALT_DOWN, DESKS_NEW_DESK},
+      // [Right]+[Search]+[Shift]+[Alt]->[End]+[Shift]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_RIGHT,
+       ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+       TOGGLE_FULLSCREEN},
+      {/*trigger_on_press=*/true, ui::VKEY_END,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, TOGGLE_FULLSCREEN},
+      // [Down]+[Search]+[Alt]->[Next]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_DOWN,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, KEYBOARD_BRIGHTNESS_DOWN},
+      {/*trigger_on_press=*/true, ui::VKEY_NEXT, ui::EF_ALT_DOWN,
+       KEYBOARD_BRIGHTNESS_DOWN},
+
+      // [Back]+[Search]+[Alt]->[Delete]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_BACK,
+       ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_DELETE, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      // [Back]+[Search]+[Shift]+[Alt]->[Insert]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_BACK,
+       ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+       SHOW_TASK_MANAGER},
+      {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_ALT_DOWN,
+       SHOW_TASK_MANAGER},
+
+      // If the accelerator is just the reverse of [Insert], no remapping is
+      // done. [Back]+[Search]+[Shift] -> [Back]+[Search]+[Shift].
+      {/*trigger_on_press=*/true, ui::VKEY_BACK,
+       ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, BRIGHTNESS_UP},
+  };
+
+  Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, observer.num_times_notified());
+  // Verify observer received the correct remapped accelerators.
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, expected_data,
+                               observer.config());
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, InputMethodChanged) {
   FakeAcceleratorsUpdatedObserver observer;
   SetUpObserver(&observer);

@@ -24,11 +24,11 @@ class ASH_EXPORT AcceleratorAliasConverter {
       delete;
   ~AcceleratorAliasConverter() = default;
 
-  // Create accelerator alias when the accelerator contains a top row key
-  // or six pack key. For |top_row_key|, replace the base accelerator with
-  // top-row remapped accelerator. For |six_pack_key|, show both the base
-  // accelerator and the six-pack remapped accelerator. Use a vector here
-  // since it may display two accelerators for six pack remapping case.
+  // Create accelerator alias when the accelerator contains a top row key,
+  // six pack key or reversed six pack key. For |top_row_key|, replace the base
+  // accelerator with top-row remapped accelerator. For |six_pack_key| and
+  // |reversed_six_pack_key|, show both the base accelerator and the remapped
+  // accelerator. Use a vector here since it may display two accelerators.
   std::vector<ui::Accelerator> CreateAcceleratorAlias(
       const ui::Accelerator& accelerator) const;
 
@@ -39,6 +39,10 @@ class ASH_EXPORT AcceleratorAliasConverter {
 
   // Create accelerator alias for |six_pack_key| if applicable.
   absl::optional<ui::Accelerator> CreateSixPackAlias(
+      const ui::Accelerator& accelerator) const;
+
+  // Create reversed six pack alias for |reversed_six_pack_key| if applicable.
+  absl::optional<ui::Accelerator> CreateReversedSixPackAlias(
       const ui::Accelerator& accelerator) const;
 };
 

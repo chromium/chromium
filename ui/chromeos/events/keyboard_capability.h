@@ -37,6 +37,16 @@ inline constexpr auto kSixPackKeyToSystemKeyMap =
         {KeyboardCode::VKEY_INSERT, KeyboardCode::VKEY_BACK},
     });
 
+// A reversed map between six pack keys to system keys. The only exception is
+// the [Back], since it maps back to both [Delete] and [Insert].
+inline constexpr auto kReversedSixPackKeyToSystemKeyMap =
+    base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
+        {KeyboardCode::VKEY_LEFT, KeyboardCode::VKEY_HOME},
+        {KeyboardCode::VKEY_PRIOR, KeyboardCode::VKEY_UP},
+        {KeyboardCode::VKEY_RIGHT, KeyboardCode::VKEY_END},
+        {KeyboardCode::VKEY_DOWN, KeyboardCode::VKEY_NEXT},
+    });
+
 // A keyboard util API to provide various keyboard capability information, such
 // as top row key layout, existence of certain keys, what is top right key, etc.
 class KeyboardCapability {
@@ -116,6 +126,11 @@ class KeyboardCapability {
 
   // Check if a key code is one of the six pack keys.
   static bool IsSixPackKey(const KeyboardCode& key_code);
+
+  // Check if a key code is one of the reversed six pack keys.
+  // A reversed six pack key is either [Back] or one of the keys in
+  // kReversedSixPackKeyToSystemKeyMap.
+  static bool IsReversedSixPackKey(const KeyboardCode& key_code);
 
   // Check if a key code is one of the top row keys.
   // TODO(zhangwenyu): Support all 4 legacy layouts and custom vivaldi layouts.

@@ -37,6 +37,13 @@ bool KeyboardCapability::IsSixPackKey(const KeyboardCode& key_code) {
   return base::Contains(kSixPackKeyToSystemKeyMap, key_code);
 }
 
+// static
+bool KeyboardCapability::IsReversedSixPackKey(const KeyboardCode& key_code) {
+  // [Back] maps back to both [Delete] and [Insert].
+  return base::Contains(kReversedSixPackKeyToSystemKeyMap, key_code) ||
+         key_code == ui::KeyboardCode::VKEY_BACK;
+}
+
 bool KeyboardCapability::IsTopRowKey(const KeyboardCode& key_code) const {
   // A set that includes all top row keys from different keyboards.
   // TODO(longbowei): Now only include top row keys from layout2, add more top
