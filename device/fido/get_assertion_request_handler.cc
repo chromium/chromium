@@ -574,9 +574,6 @@ void GetAssertionRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
   }
 
   DCHECK_EQ(result, AuthTokenRequester::Result::kSuccess);
-
-  auto request = std::make_unique<CtapGetAssertionRequest>(request_);
-  SpecializeRequestForAuthenticator(*request, *authenticator);
   DispatchRequestWithToken(std::move(*token_response));
 }
 
