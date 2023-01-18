@@ -117,6 +117,8 @@ target(link_target_type, "gles2_sources") {
     "context_state.h",
     "context_state_autogen.h",
     "context_state_impl_autogen.h",
+    "copy_shared_image_helper.cc",
+    "copy_shared_image_helper.h",
     "decoder_context.h",
     "display_compositor_memory_and_task_controller_on_gpu.cc",
     "display_compositor_memory_and_task_controller_on_gpu.h",
