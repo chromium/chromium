@@ -2098,7 +2098,6 @@ public class AwAutofillTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1161326")
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testUMANoServerPrediction() throws Throwable {
@@ -2109,7 +2108,6 @@ public class AwAutofillTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1161326")
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testUMAServerPredictionArriveBeforeSessionStart() throws Throwable {
