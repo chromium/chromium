@@ -35,3 +35,7 @@ fuzzable_proto_library("client_model_proto") {
   sources = [ "client_model.proto" ]
   deps = [ ":csd_proto" ]
 }
+
+proto_library("safebrowsingv5_alpha1_proto") {
+  sources = [ "safebrowsingv5_alpha1.proto" ]
+}

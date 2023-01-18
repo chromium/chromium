@@ -8,6 +8,8 @@ source_set("browser") {
   sources = [
     "hash_database_mechanism.cc",
     "hash_database_mechanism.h",
+    "hash_realtime_mechanism.cc",
+    "hash_realtime_mechanism.h",
     "ping_manager.cc",
     "ping_manager.h",
     "safe_browsing_lookup_mechanism.cc",
@@ -35,6 +37,7 @@ source_set("browser") {
     "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/common:common",
@@ -66,13 +69,17 @@ source_set("ping_manager_unittest") {
 
 source_set("safe_browsing_url_checker_unittest") {
   testonly = true
-  sources = [ "safe_browsing_url_checker_impl_unittest.cc" ]
+  sources = [
+    "hash_realtime_mechanism_unittest.cc",
+    "safe_browsing_url_checker_impl_unittest.cc",
+  ]
   deps = [
     ":browser",
     "//base/test:test_support",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:csd_proto",
