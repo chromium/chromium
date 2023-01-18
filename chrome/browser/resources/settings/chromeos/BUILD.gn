@@ -308,7 +308,6 @@ group("closure_compile_module") {
     ":closure_compile_local_module",
     "multidevice_page:closure_compile_module",
     "os_a11y_page:closure_compile_module",
-    "os_languages_page:closure_compile_module",
     "os_people_page:closure_compile_module",
     "os_privacy_page:closure_compile_module",
   ]
