@@ -231,7 +231,7 @@ void SCTReportingService::OnPreferenceChanged() {
 
   // Iterate over StoragePartitions for this Profile, and for each get the
   // NetworkContext and set the SCT auditing mode.
-  profile_->ForEachStoragePartition(
+  profile_->ForEachLoadedStoragePartition(
       base::BindRepeating(&SetSCTAuditingEnabledForStoragePartition, mode));
 
   if (mode == network::mojom::SCTAuditingMode::kDisabled)

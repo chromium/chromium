@@ -137,9 +137,9 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
   // Shut down service worker and shared worker machinery because these can keep
   // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
   // are destroyed before the BrowserContext is destroyed.
-  self_->ForEachStoragePartition(
+  self_->ForEachLoadedStoragePartition(
       base::BindRepeating(ShutdownServiceWorkerContext));
-  self_->ForEachStoragePartition(
+  self_->ForEachLoadedStoragePartition(
       base::BindRepeating(ShutdownSharedWorkerContext));
 
   // Also forcibly release keep alive refcounts on RenderProcessHosts, to ensure

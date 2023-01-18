@@ -35,7 +35,8 @@ void CommitPendingWritesForProfile(Profile* profile) {
       ->GetCookieManagerForBrowserProcess()
       ->FlushCookieStore(
           network::mojom::CookieManager::FlushCookieStoreCallback());
-  profile->ForEachStoragePartition(base::BindRepeating(FlushStoragePartition));
+  profile->ForEachLoadedStoragePartition(
+      base::BindRepeating(FlushStoragePartition));
 }
 
 void RemoveSessionCookiesForProfile(Profile* profile) {

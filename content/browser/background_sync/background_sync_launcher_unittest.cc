@@ -98,7 +98,7 @@ class BackgroundSyncLauncherTest : public testing::Test {
     auto done_closure = base::BindLambdaForTesting(
         [&]() { num_invocations_fire_background_sync_events_++; });
 
-    test_browser_context_.ForEachStoragePartition(
+    test_browser_context_.ForEachLoadedStoragePartition(
         base::BindRepeating(
             [](base::OnceClosure done_closure,
                StoragePartition* storage_partition) {

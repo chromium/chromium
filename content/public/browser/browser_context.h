@@ -156,29 +156,38 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   StoragePartition* GetStoragePartitionForUrl(const GURL& url,
                                               bool can_create = true);
 
+  // Synchronously invokes |callback| for each loaded StoragePartition.
+  // Persisted StoragePartitions (not in-memory) are loaded lazily on first
+  // use, at which point a StoragePartition object will be created that's
+  // backed by the on-disk storage. StoragePartitions will not be unloaded for
+  // the remainder of the BrowserContext's lifetime.
   using StoragePartitionCallback =
       base::RepeatingCallback<void(StoragePartition*)>;
-  void ForEachStoragePartition(StoragePartitionCallback callback);
+  void ForEachLoadedStoragePartition(StoragePartitionCallback callback);
+
+  // Returns the number of loaded StoragePartitions that exist for `this`
+  // BrowserContext.
+  // See |ForEachLoadedStoragePartition| for details about loaded
+  // StoragePartitions.
+  size_t GetLoadedStoragePartitionCount();
 
   // Disposes the given StoragePartition. Only in-memory storage partition
   // disposal is supported. Caller needs to be careful that no outstanding
   // references are left to access the disposed storage partition.
   void DisposeStoragePartition(StoragePartition* storage_partition);
 
-  // Returns the number of StoragePartitions that exist for `this`
-  // BrowserContext.
-  size_t GetStoragePartitionCount();
-
   // Starts an asynchronous best-effort attempt to delete all on-disk storage
   // related to |partition_domain| and synchronously invokes |done_callback|
-  // once all on-disk storage is deleted.
+  // once all deletable on-disk storage is deleted. |on_gc_required| will be
+  // invoked if |partition_domain| corresponds to any StoragePartitions that
+  // are loaded and can't safely be deleted. In this case the caller should
+  // attempt to delete the StoragePartition again at next browser launch.
   void AsyncObliterateStoragePartition(const std::string& partition_domain,
                                        base::OnceClosure on_gc_required,
                                        base::OnceClosure done_callback);
 
-  // Examines the on-disk storage and removes any entries that are not listed
-  // in the `active_paths`, or in use by current entries in the storage
-  // partition.
+  // Examines all on-disk StoragePartitions and removes any entries that are
+  // not loaded or listed in `active_paths`.
   //
   // The `done` closure is executed on the calling thread when garbage
   // collection is complete.

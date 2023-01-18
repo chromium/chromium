@@ -4000,7 +4000,7 @@ int LoadBasicRequest(RenderFrameHost* frame, const GURL& url) {
 }
 
 void EnsureCookiesFlushed(BrowserContext* browser_context) {
-  browser_context->ForEachStoragePartition(
+  browser_context->ForEachLoadedStoragePartition(
       base::BindRepeating([](StoragePartition* partition) {
         base::RunLoop run_loop;
         partition->GetCookieManagerForBrowserProcess()->FlushCookieStore(

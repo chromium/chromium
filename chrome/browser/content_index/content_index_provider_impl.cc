@@ -273,7 +273,7 @@ void ContentIndexProviderImpl::DidGetItem(
 void ContentIndexProviderImpl::GetAllItems(MultipleItemCallback callback) {
   // Get the number of Storage Paritions.
   std::vector<content::StoragePartition*> storage_paritions;
-  profile_->ForEachStoragePartition(base::BindRepeating(
+  profile_->ForEachLoadedStoragePartition(base::BindRepeating(
       [](std::vector<content::StoragePartition*>* storage_paritions,
          content::StoragePartition* storage_partition) {
         storage_paritions->push_back(storage_partition);

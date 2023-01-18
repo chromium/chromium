@@ -148,7 +148,7 @@ StoragePartition* BrowserContext::GetStoragePartitionForUrl(
   return GetStoragePartition(storage_partition_config, can_create);
 }
 
-void BrowserContext::ForEachStoragePartition(
+void BrowserContext::ForEachLoadedStoragePartition(
     StoragePartitionCallback callback) {
   StoragePartitionImplMap* partition_map = impl()->storage_partition_map();
   if (!partition_map)
@@ -166,7 +166,7 @@ void BrowserContext::DisposeStoragePartition(
   partition_map->DisposeInMemory(storage_partition);
 }
 
-size_t BrowserContext::GetStoragePartitionCount() {
+size_t BrowserContext::GetLoadedStoragePartitionCount() {
   StoragePartitionImplMap* partition_map = impl()->storage_partition_map();
   return partition_map ? partition_map->size() : 0;
 }

@@ -425,7 +425,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   request->url = kDevAppStartUrl;
   CreateLoaderAndRun(std::move(request));
 
-  EXPECT_THAT(profile()->GetStoragePartitionCount(), Eq(2UL));
+  EXPECT_THAT(profile()->GetLoadedStoragePartitionCount(), Eq(2UL));
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,

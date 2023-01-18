@@ -523,7 +523,7 @@ TestingProfile::~TestingProfile() {
     host_content_settings_map_->ShutdownOnUIThread();
 
   // Make sure SharedProtoDatabase doesn't post delayed tasks anymore.
-  ForEachStoragePartition(
+  ForEachLoadedStoragePartition(
       base::BindRepeating([](content::StoragePartition* storage_partition) {
         if (auto* provider =
                 storage_partition->GetProtoDatabaseProviderForTesting()) {

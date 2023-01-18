@@ -179,7 +179,7 @@ void PlatformNotificationServiceImpl::OnContentSettingChanged(
     return;
 
   auto recorder = base::MakeRefCounted<RevokeDeleteCountRecorder>();
-  profile_->ForEachStoragePartition(
+  profile_->ForEachLoadedStoragePartition(
       base::BindRepeating(
           [](scoped_refptr<RevokeDeleteCountRecorder> recorder,
              content::StoragePartition* partition) {

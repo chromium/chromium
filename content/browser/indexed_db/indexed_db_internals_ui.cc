@@ -78,7 +78,7 @@ void IndexedDBInternalsUI::GetAllBucketsAcrossAllStorageKeys(
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
   auto collect_partitions = base::BarrierCallback<IdbPartitionMetadataPtr>(
-      browser_context->GetStoragePartitionCount(),
+      browser_context->GetLoadedStoragePartitionCount(),
       base::BindOnce(
           [](GetAllBucketsAcrossAllStorageKeysCallback callback,
              std::vector<IdbPartitionMetadataPtr> partitions) {
@@ -86,7 +86,7 @@ void IndexedDBInternalsUI::GetAllBucketsAcrossAllStorageKeys(
           },
           std::move(callback)));
 
-  browser_context->ForEachStoragePartition(base::BindRepeating(
+  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
       [](base::WeakPtr<IndexedDBInternalsUI> handler,
          base::RepeatingCallback<void(IdbPartitionMetadataPtr)>
              collect_partitions,
@@ -140,7 +140,7 @@ storage::mojom::IndexedDBControl* IndexedDBInternalsUI::GetBucketControl(
       web_ui()->GetWebContents()->GetBrowserContext();
 
   storage::mojom::IndexedDBControl* control = nullptr;
-  browser_context->ForEachStoragePartition(base::BindRepeating(
+  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
       [](const base::FilePath& partition_path,
          storage::mojom::IndexedDBControl** control,
          StoragePartition* storage_partition) {
