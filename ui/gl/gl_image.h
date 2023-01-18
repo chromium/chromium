@@ -97,13 +97,12 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // Get the size of the image.
   virtual gfx::Size GetSize();
 
-  // Get the GL internal format, format, type of the image.
-  // They are aligned with glTexImage{2|3}D's parameters |internalformat|,
-  // |format|, and |type|.
+  // Get the GL internal format and GL type of the image.
+  // They are aligned with glTexImage{2|3}D's parameters |internalformat|
+  // and |type|.
   // The returned enums are based on ES2 contexts and are mostly ES3
   // compatible, except for GL_HALF_FLOAT_OES.
   virtual unsigned GetInternalFormat();
-  virtual unsigned GetDataFormat();
   virtual unsigned GetDataType();
 
   // Bind image to texture currently bound to |target|. Returns true on success.

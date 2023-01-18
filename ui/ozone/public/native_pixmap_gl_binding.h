@@ -34,6 +34,12 @@ class COMPONENT_EXPORT(OZONE_BASE) NativePixmapGLBinding {
   // and corresponding code for GLImageEGLPixmap will move to
   // NativePixmapEGLX11Binding leading to the deletion of BindTexture here.
   static bool BindTexture(gl::GLImage* image, GLenum target, GLuint texture_id);
+
+  // Converts a value that is aligned with glTexImage{2|3}D's |internalformat|
+  // parameter to the value that is correspondingly aligned with
+  // glTexImage{2|3}D's |format| parameter. The returned enum is based on ES2
+  // contexts and is mostly ES3 compatible, except for GL_HALF_FLOAT_OES.
+  static unsigned GetDataFormatFromInternalFormat(unsigned internalformat);
 };
 
 }  // namespace ui
