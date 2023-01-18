@@ -452,13 +452,15 @@ bool MixedContentChecker::ShouldBlockFetch(
           mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone ||
       settings->GetStrictMixedContentChecking();
 
+  const bool is_ip_address = GURL(url).HostIsIPAddress();
+
   mojom::blink::MixedContentContextType context_type =
       MixedContent::ContextTypeFromRequestContext(
           request_context, DecideCheckModeForPlugin(settings));
 
   switch (context_type) {
     case mojom::blink::MixedContentContextType::kOptionallyBlockable:
-      allowed = !strict_mode;
+      allowed = !strict_mode && !is_ip_address;
       if (allowed) {
         if (content_settings_client)
           content_settings_client->PassiveInsecureContentFound(url);
@@ -760,15 +762,18 @@ bool MixedContentChecker::IsMixedFormAction(
 }
 
 bool MixedContentChecker::ShouldAutoupgrade(
-    HttpsState context_https_state,
+    const FetchClientSettingsObject* fetch_client_settings_object,
     mojom::blink::RequestContextType type,
     WebContentSettingsClient* settings_client,
-    const KURL& url) {
+    const ResourceRequest& resource_request,
+    ExecutionContext* execution_context_for_logging) {
+  const HttpsState https_state = fetch_client_settings_object->GetHttpsState();
+  const KURL& request_url = resource_request.Url();
   // We are currently not autoupgrading plugin loaded content, which is why
   // check_mode_for_plugin is hardcoded to kStrict.
   if (!base::FeatureList::IsEnabled(
           blink::features::kMixedContentAutoupgrade) ||
-      context_https_state == HttpsState::kNone ||
+      https_state == HttpsState::kNone ||
       MixedContent::ContextTypeFromRequestContext(
           type, MixedContent::CheckModeForPlugin::kStrict) !=
           mojom::blink::MixedContentContextType::kOptionallyBlockable) {
@@ -778,6 +783,26 @@ bool MixedContentChecker::ShouldAutoupgrade(
     return false;
   }
 
+  // If the content we are trying to load is an IP address, we do not
+  // autoupgrade because it might not make sense to request a certificate for
+  // an IP address.
+  if (GURL(request_url).HostIsIPAddress()) {
+    if (auto* window =
+            DynamicTo<LocalDOMWindow>(execution_context_for_logging)) {
+      window->AddConsoleMessage(
+          MixedContentChecker::
+              CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
+                  fetch_client_settings_object->GlobalObjectUrl(),
+                  request_url));
+      AuditsIssue::ReportMixedContentIssue(
+          fetch_client_settings_object->GlobalObjectUrl(),
+          resource_request.Url(), resource_request.GetRequestContext(),
+          window->document()->GetFrame(),
+          MixedContentResolutionStatus::kMixedContentWarning,
+          resource_request.GetDevToolsId());
+    }
+    return false;
+  }
   return true;
 }
 
@@ -848,6 +873,22 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetchAutoupgrade(
       mojom::ConsoleMessageLevel::kWarning, message);
 }
 
+// static
+ConsoleMessage*
+MixedContentChecker::CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
+    const KURL& main_resource_url,
+    const KURL& mixed_content_url) {
+  String message = String::Format(
+      "Mixed Content: The page at '%s' was loaded over HTTPS, but requested an "
+      "insecure element '%s'. This request was "
+      "not upgraded to HTTPS because its URL's host is an IP address.",
+      main_resource_url.ElidedString().Utf8().c_str(),
+      mixed_content_url.ElidedString().Utf8().c_str());
+  return MakeGarbageCollected<ConsoleMessage>(
+      mojom::ConsoleMessageSource::kSecurity,
+      mojom::ConsoleMessageLevel::kWarning, message);
+}
+
 mojom::blink::MixedContentContextType
 MixedContentChecker::ContextTypeForInspector(LocalFrame* frame,
                                              const ResourceRequest& request) {
@@ -889,8 +930,8 @@ void MixedContentChecker::UpgradeInsecureRequest(
         resource_request.GetRequestContext();
     if (context == mojom::blink::RequestContextType::UNSPECIFIED ||
         !MixedContentChecker::ShouldAutoupgrade(
-            fetch_client_settings_object->GetHttpsState(), context,
-            settings_client, fetch_client_settings_object->GlobalObjectUrl())) {
+            fetch_client_settings_object, context, settings_client,
+            resource_request, execution_context_for_logging)) {
       return;
     }
     // We set the upgrade if insecure flag regardless of whether we autoupgrade

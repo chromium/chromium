@@ -105,10 +105,12 @@ class CORE_EXPORT MixedContentChecker final {
       const KURL&,
       ReportingDisposition = ReportingDisposition::kReport);
 
-  static bool ShouldAutoupgrade(HttpsState context_https_state,
-                                mojom::blink::RequestContextType type,
-                                WebContentSettingsClient* settings_client,
-                                const KURL& url);
+  static bool ShouldAutoupgrade(
+      const FetchClientSettingsObject* fetch_client_settings_object,
+      mojom::blink::RequestContextType type,
+      WebContentSettingsClient* settings_client,
+      const ResourceRequest& resource_request,
+      ExecutionContext* execution_context_for_logging);
 
   static mojom::blink::MixedContentContextType ContextTypeForInspector(
       LocalFrame*,
@@ -131,6 +133,10 @@ class CORE_EXPORT MixedContentChecker final {
                                 std::unique_ptr<SourceLocation>);
 
   static ConsoleMessage* CreateConsoleMessageAboutFetchAutoupgrade(
+      const KURL& main_resource_url,
+      const KURL& mixed_content_url);
+
+  static ConsoleMessage* CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
       const KURL& main_resource_url,
       const KURL& mixed_content_url);
 
