@@ -190,4 +190,20 @@ bool LayoutMultiColumnSpannerPlaceholder::NodeAtPoint(
                                                     accumulated_offset, phase);
 }
 
+LayoutPoint LayoutMultiColumnSpannerPlaceholder::Location() const {
+  NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    return layout_object_in_flow_thread_->Location();
+  }
+  return LayoutBox::Location();
+}
+
+LayoutSize LayoutMultiColumnSpannerPlaceholder::Size() const {
+  NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    return layout_object_in_flow_thread_->Size();
+  }
+  return LayoutBox::Size();
+}
+
 }  // namespace blink

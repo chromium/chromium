@@ -1544,10 +1544,12 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       if (!child_box->IsColumnSpanAll())
         continue;
       LayoutBox* placeholder = child_box->SpannerPlaceholder();
-      if (!child_fragment.BreakToken()) {
-        // Last fragment for this spanner. Update its placeholder.
-        placeholder->SetLocation(child_box->Location());
-        placeholder->SetSize(child_box->Size());
+      if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+        if (!child_fragment.BreakToken()) {
+          // Last fragment for this spanner. Update its placeholder.
+          placeholder->SetLocation(child_box->Location());
+          placeholder->SetSize(child_box->Size());
+        }
       }
 
       flow_thread->SkipColumnSpanner(child_box, flow_thread_offset);

@@ -1651,6 +1651,13 @@
       status: "stable",
     },
     {
+      // crbug.com/1353190
+      name: "LayoutNGNoCopyBack",
+      depends_on: ["LayoutMediaNGContainer", "LayoutNGReplacedNoBoxSetters"],
+      status: "stable",
+      base_feature: "LayoutNGNoCopyBack",
+    },
+    {
       name: "LayoutNGPrinting",
       depends_on: ["LayoutNG"],
       status: "stable",
