@@ -13,6 +13,10 @@ source_set("attribution") {
   sources = [
     "attribution_attestation_mediator.cc",
     "attribution_attestation_mediator.h",
+    "attribution_request_helper.cc",
+    "attribution_request_helper.h",
+    "boringssl_attestation_cryptographer.cc",
+    "boringssl_attestation_cryptographer.h",
   ]
   deps = [
     "//base",
@@ -31,6 +35,7 @@ source_set("tests") {
 
   sources = [
     "attribution_attestation_mediator_unittest.cc",
+    "attribution_request_helper_unittest.cc",
     "attribution_test_utils.cc",
     "attribution_test_utils.h",
   ]
@@ -39,6 +44,8 @@ source_set("tests") {
     ":attribution",
     "//base",
     "//base/test:test_support",
+    "//net:test_support",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/network/trust_tokens",
     "//testing/gtest",

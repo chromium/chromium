@@ -51,6 +51,11 @@ bool FakeCryptographer::IsBlindMessage(
   return potential_blind_message == base::StrCat({kBlindingKey, message});
 }
 
+std::string FakeCryptographer::UnblindMessage(
+    const std::string& blind_message) {
+  return blind_message.substr(sizeof(kBlindingKey) - 1, std::string::npos);
+}
+
 absl::optional<std::string>
 FakeCryptographer::ConfirmIssuanceAndBeginRedemption(
     base::StringPiece blind_token) {

@@ -39,7 +39,10 @@ class FakeCryptographer : public AttributionAttestationMediator::Cryptographer {
   static bool IsBlindMessage(const std::string& potential_blind_message,
                              const std::string& message);
 
-  // Returns true if `potential_token` is a token for `blind_token`
+  // Returns the message that was used to produce `blind_message`.
+  static std::string UnblindMessage(const std::string& blind_message);
+
+  // Returns true if `potential_token` is a token for `blind_token`.
   static bool IsToken(const std::string& potential_token,
                       const std::string& blind_token);
 
