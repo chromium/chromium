@@ -28,6 +28,8 @@ class PageLoadMetricsEmbedderInterface;
 
 namespace internal {
 
+enum class PageLoadTrackerPageType;
+
 // Used to track the status of PageLoadTimings received from the render process.
 //
 // If you add elements to this enum, make sure you update the enum value in
@@ -94,7 +96,7 @@ enum PageLoadTimingStatus {
   INVALID_ORDER_ACTIVATION_START_FIRST_PAINT,
 
   // New values should be added before this final entry.
-  LAST_PAGE_LOAD_TIMING_STATUS
+  LAST_PAGE_LOAD_TIMING_STATUS,
 };
 
 extern const char kPageLoadTimingStatus[];
@@ -177,7 +179,8 @@ class PageLoadMetricsUpdateDispatcher {
                      mojom::CpuTimingPtr new_cpu_timing,
                      mojom::InputTimingPtr input_timing_delta,
                      mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
-                     uint32_t soft_navigation_count);
+                     uint32_t soft_navigation_count,
+                     internal::PageLoadTrackerPageType page_type);
 
   void SetUpSharedMemoryForSmoothness(
       content::RenderFrameHost* render_frame_host,
@@ -244,7 +247,8 @@ class PageLoadMetricsUpdateDispatcher {
  private:
   using FrameTreeNodeId = int;
 
-  void UpdateMainFrameTiming(mojom::PageLoadTimingPtr new_timing);
+  void UpdateMainFrameTiming(mojom::PageLoadTimingPtr new_timing,
+                             internal::PageLoadTrackerPageType page_type);
   void UpdateSubFrameTiming(content::RenderFrameHost* render_frame_host,
                             mojom::PageLoadTimingPtr new_timing);
   void UpdateFrameCpuTiming(content::RenderFrameHost* render_frame_host,

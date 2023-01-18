@@ -188,6 +188,17 @@ void DispatchObserverTimingCallbacks(PageLoadMetricsObserverInterface* observer,
   }
 }
 
+internal::PageLoadTrackerPageType CalculatePageType(
+    const content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrerenderedMainFrame()) {
+    return internal::PageLoadTrackerPageType::kPrerenderPage;
+  } else if (navigation_handle->GetNavigatingFrameType() ==
+             content::FrameType::kFencedFrameRoot) {
+    return internal::PageLoadTrackerPageType::kFencedFramesPage;
+  }
+  return internal::PageLoadTrackerPageType::kPrimaryPage;
+}
+
 }  // namespace
 
 PageLoadTracker::PageLoadTracker(
@@ -216,60 +227,64 @@ PageLoadTracker::PageLoadTracker(
       source_id_(source_id),
       web_contents_(navigation_handle->GetWebContents()),
       is_first_navigation_in_web_contents_(is_first_navigation_in_web_contents),
+      page_type_(CalculatePageType(navigation_handle)),
       parent_tracker_(std::move(parent_tracker)) {
   DCHECK(!navigation_handle->HasCommitted());
   embedder_interface_->RegisterObservers(this);
-  if (navigation_handle->IsInPrerenderedMainFrame()) {
-    DCHECK(!started_in_foreground_);
-    DCHECK_EQ(ukm::kInvalidSourceId, source_id_);
-    prerendering_state_ = PrerenderingState::kInPrerendering;
-    InvokeAndPruneObservers("PageLoadMetricsObserver::OnPrerenderStart",
-                            base::BindRepeating(
-                                [](content::NavigationHandle* navigation_handle,
-                                   const GURL& currently_committed_url,
-                                   PageLoadMetricsObserverInterface* observer) {
-                                  return observer->OnPrerenderStart(
-                                      navigation_handle,
-                                      currently_committed_url);
-                                },
-                                navigation_handle, currently_committed_url),
-                            /*permit_forwarding=*/false);
-    base::UmaHistogramEnumeration(
-        internal::kPageLoadPrerender2Event,
-        internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
-    RecordPageType(internal::PageLoadTrackerPageType::kPrerenderPage);
-  } else if (navigation_handle->GetNavigatingFrameType() ==
-             content::FrameType::kFencedFrameRoot) {
-    DCHECK_NE(ukm::kInvalidSourceId, source_id_);
-    InvokeAndPruneObservers("PageLoadMetricsObserver::OnFencedFramesStart",
-                            base::BindRepeating(
-                                [](content::NavigationHandle* navigation_handle,
-                                   const GURL& currently_committed_url,
-                                   PageLoadMetricsObserverInterface* observer) {
-                                  return observer->OnFencedFramesStart(
-                                      navigation_handle,
-                                      currently_committed_url);
-                                },
-                                navigation_handle, currently_committed_url),
-                            /*permit_forwarding=*/true);
-    RecordPageType(internal::PageLoadTrackerPageType::kFencedFramesPage);
-  } else {
-    DCHECK_NE(ukm::kInvalidSourceId, source_id_);
-    InvokeAndPruneObservers(
-        "PageLoadMetricsObserver::OnStart",
-        base::BindRepeating(
-            [](content::NavigationHandle* navigation_handle,
-               const GURL& currently_committed_url, bool started_in_foreground,
-               PageLoadMetricsObserverInterface* observer) {
-              return observer->OnStart(navigation_handle,
-                                       currently_committed_url,
-                                       started_in_foreground);
-            },
-            navigation_handle, currently_committed_url, started_in_foreground_),
-        /*permit_forwarding=*/false);
-    RecordPageType(internal::PageLoadTrackerPageType::kPrimaryPage);
+  switch (page_type_) {
+    case internal::PageLoadTrackerPageType::kPrimaryPage:
+      DCHECK_NE(ukm::kInvalidSourceId, source_id_);
+      InvokeAndPruneObservers(
+          "PageLoadMetricsObserver::OnStart",
+          base::BindRepeating(
+              [](content::NavigationHandle* navigation_handle,
+                 const GURL& currently_committed_url,
+                 bool started_in_foreground,
+                 PageLoadMetricsObserverInterface* observer) {
+                return observer->OnStart(navigation_handle,
+                                         currently_committed_url,
+                                         started_in_foreground);
+              },
+              navigation_handle, currently_committed_url,
+              started_in_foreground_),
+          /*permit_forwarding=*/false);
+      break;
+    case internal::PageLoadTrackerPageType::kPrerenderPage:
+      DCHECK(!started_in_foreground_);
+      DCHECK_EQ(ukm::kInvalidSourceId, source_id_);
+      prerendering_state_ = PrerenderingState::kInPrerendering;
+      InvokeAndPruneObservers(
+          "PageLoadMetricsObserver::OnPrerenderStart",
+          base::BindRepeating(
+              [](content::NavigationHandle* navigation_handle,
+                 const GURL& currently_committed_url,
+                 PageLoadMetricsObserverInterface* observer) {
+                return observer->OnPrerenderStart(navigation_handle,
+                                                  currently_committed_url);
+              },
+              navigation_handle, currently_committed_url),
+          /*permit_forwarding=*/false);
+      base::UmaHistogramEnumeration(
+          internal::kPageLoadPrerender2Event,
+          internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
+      break;
+    case internal::PageLoadTrackerPageType::kFencedFramesPage:
+      DCHECK_NE(ukm::kInvalidSourceId, source_id_);
+      InvokeAndPruneObservers(
+          "PageLoadMetricsObserver::OnFencedFramesStart",
+          base::BindRepeating(
+              [](content::NavigationHandle* navigation_handle,
+                 const GURL& currently_committed_url,
+                 PageLoadMetricsObserverInterface* observer) {
+                return observer->OnFencedFramesStart(navigation_handle,
+                                                     currently_committed_url);
+              },
+              navigation_handle, currently_committed_url),
+          /*permit_forwarding=*/true);
+      break;
   }
 
+  RecordPageType(page_type_);
   base::UmaHistogramBoolean(internal::kPageLoadStartedInForeground,
                             started_in_foreground_);
 }
@@ -1232,7 +1247,7 @@ void PageLoadTracker::UpdateMetrics(
       render_frame_host, std::move(timing), std::move(metadata),
       std::move(features), resources, std::move(render_data),
       std::move(cpu_timing), std::move(input_timing_delta),
-      std::move(subresource_load_metrics), soft_navigation_count);
+      std::move(subresource_load_metrics), soft_navigation_count, page_type_);
 }
 
 void PageLoadTracker::SetPageMainFrame(content::RenderFrameHost* rfh) {

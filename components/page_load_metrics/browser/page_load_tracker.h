@@ -555,6 +555,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   uint32_t soft_navigation_count_ = 0;
 
+  const internal::PageLoadTrackerPageType page_type_;
+
   const base::WeakPtr<PageLoadTracker> parent_tracker_;
 
   base::WeakPtrFactory<PageLoadTracker> weak_factory_{this};

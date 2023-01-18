@@ -3528,14 +3528,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.PageTiming.ForegroundDuration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PageLoadMetricsAtTimingCallbackDispatch"
-    separator=".">
-  <suffix name="AtTimingCallbackDispatch"
-      label="Evaluated at the time timing update calls are dispatched to
-             observers."/>
-  <affected-histogram name="PageLoad.Internal.PageLoadTimingStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PageLoadMetricsCacheInfo" separator=".">
   <suffix name="NoStore" label="Main resource had cache-control: no-store"/>
   <affected-histogram

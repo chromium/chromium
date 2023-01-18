@@ -2338,13 +2338,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.PageLoadTimingStatus"
-    enum="PageLoadTimingStatus" expires_after="2021-01-31">
-  <owner>bmcquade@chromium.org</owner>
+<histogram name="PageLoad.Internal.PageLoadTimingStatus{Condition}"
+    enum="PageLoadTimingStatus" expires_after="2023-07-13">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>src/components/page_load_metrics/OWNERS</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
-    The status of PageLoadTiming structs received from the render process over
-    IPC.
+    The status of validity check of PageLoadTiming structs received from the
+    render process over IPC. Recorded when timing information is {Condition}.
+    Warning: this histogram was expired from 2021-01-31 to 2023-01-13; data may
+    be missing.
   </summary>
+  <token key="Condition">
+    <variant name="" summary="received on any page load"/>
+    <variant name=".AtTimingCallbackDispatch"
+        summary="dispatched on any page load"/>
+    <variant name=".OnFencedFramesPage"
+        summary="received on fenced frames pages"/>
+    <variant name=".OnPrerenderPage" summary="received on prerender pages"/>
+  </token>
 </histogram>
 
 <histogram name="PageLoad.Internal.PageType" enum="PageLoadTrackerPageType"

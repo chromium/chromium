@@ -134,7 +134,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // returns false for prerender page activation navigations, which should be
   // checked by IsPrerenderedPageActivation(). The return value remains
   // constant over the navigation lifetime.
-  virtual bool IsInPrerenderedMainFrame() = 0;
+  virtual bool IsInPrerenderedMainFrame() const = 0;
 
   // Prerender2:
   // Returns true if this navigation will activate a prerendered page. It is

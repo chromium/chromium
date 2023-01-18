@@ -11,7 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -27,6 +27,10 @@ namespace internal {
 const char kPageLoadTimingStatus[] = "PageLoad.Internal.PageLoadTimingStatus";
 const char kPageLoadTimingDispatchStatus[] =
     "PageLoad.Internal.PageLoadTimingStatus.AtTimingCallbackDispatch";
+const char kPageLoadTimingPrerenderStatus[] =
+    "PageLoad.Internal.PageLoadTimingStatus.OnPrerenderPage";
+const char kPageLoadTimingFencedFramesStatus[] =
+    "PageLoad.Internal.PageLoadTimingStatus.OnFencedFramesPage";
 
 }  // namespace internal
 
@@ -468,7 +472,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     mojom::CpuTimingPtr new_cpu_timing,
     mojom::InputTimingPtr input_timing_delta,
     mojom::SubresourceLoadMetricsPtr subresource_load_metrics,
-    uint32_t soft_navigation_count) {
+    uint32_t soft_navigation_count,
+    internal::PageLoadTrackerPageType page_type) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
     // Extensions can inject child frames into a page. We don't want to track
@@ -487,7 +492,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
   bool is_main_frame = client_->IsPageMainFrame(render_frame_host);
   if (is_main_frame) {
     UpdateMainFrameMetadata(render_frame_host, std::move(new_metadata));
-    UpdateMainFrameTiming(std::move(new_timing));
+    UpdateMainFrameTiming(std::move(new_timing), page_type);
     UpdateMainFrameRenderData(*render_data);
     if (subresource_load_metrics) {
       UpdateMainFrameSubresourceLoadMetrics(*subresource_load_metrics);
@@ -689,7 +694,8 @@ void PageLoadMetricsUpdateDispatcher::MaybeUpdateMainFrameViewportRect(
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameTiming(
-    mojom::PageLoadTimingPtr new_timing) {
+    mojom::PageLoadTimingPtr new_timing,
+    internal::PageLoadTrackerPageType page_type) {
   // Throw away IPCs that are not relevant to the current navigation.
   // Two timing structures cannot refer to the same navigation if they indicate
   // that a navigation started at different times, so a new timing struct with a
@@ -704,8 +710,18 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameTiming(
   }
 
   internal::PageLoadTimingStatus status = IsValidPageLoadTiming(*new_timing);
-  UMA_HISTOGRAM_ENUMERATION(internal::kPageLoadTimingStatus, status,
-                            internal::LAST_PAGE_LOAD_TIMING_STATUS);
+  base::UmaHistogramEnumeration(internal::kPageLoadTimingStatus, status,
+                                internal::LAST_PAGE_LOAD_TIMING_STATUS);
+  if (page_type == internal::PageLoadTrackerPageType::kPrerenderPage) {
+    base::UmaHistogramEnumeration(internal::kPageLoadTimingPrerenderStatus,
+                                  status,
+                                  internal::LAST_PAGE_LOAD_TIMING_STATUS);
+  } else if (page_type ==
+             internal::PageLoadTrackerPageType::kFencedFramesPage) {
+    base::UmaHistogramEnumeration(internal::kPageLoadTimingFencedFramesStatus,
+                                  status,
+                                  internal::LAST_PAGE_LOAD_TIMING_STATUS);
+  }
   if (status != internal::VALID) {
     RecordInternalError(ERR_BAD_TIMING_IPC_INVALID_TIMING);
     return;
@@ -876,8 +892,8 @@ void PageLoadMetricsUpdateDispatcher::DispatchTimingUpdates() {
 
   internal::PageLoadTimingStatus status =
       IsValidPageLoadTiming(*pending_merged_page_timing_);
-  UMA_HISTOGRAM_ENUMERATION(internal::kPageLoadTimingDispatchStatus, status,
-                            internal::LAST_PAGE_LOAD_TIMING_STATUS);
+  base::UmaHistogramEnumeration(internal::kPageLoadTimingDispatchStatus, status,
+                                internal::LAST_PAGE_LOAD_TIMING_STATUS);
 
   client_->OnTimingChanged();
 }

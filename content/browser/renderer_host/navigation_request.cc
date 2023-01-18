@@ -7216,7 +7216,7 @@ bool NavigationRequest::IsInOutermostMainFrame() {
   return !GetParentFrameOrOuterDocument();
 }
 
-bool NavigationRequest::IsInPrerenderedMainFrame() {
+bool NavigationRequest::IsInPrerenderedMainFrame() const {
   return GetNavigatingFrameType() == FrameType::kPrerenderMainFrame;
 }
 

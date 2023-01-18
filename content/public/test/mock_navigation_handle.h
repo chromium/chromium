@@ -55,7 +55,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsInMainFrame() const override {
     return render_frame_host_ ? !render_frame_host_->GetParent() : true;
   }
-  MOCK_METHOD0(IsInPrerenderedMainFrame, bool());
+  MOCK_CONST_METHOD0(IsInPrerenderedMainFrame, bool());
   bool IsPrerenderedPageActivation() const override {
     return is_prerendered_page_activation_;
   }
