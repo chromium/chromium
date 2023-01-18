@@ -7,12 +7,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
-#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -26,6 +24,8 @@ struct ColorProfile;
 
 namespace ash {
 
+class WallpaperColorCalculatorObserver;
+
 // Calculates colors based on a wallpaper image.
 class ASH_EXPORT WallpaperColorCalculator {
  public:
@@ -33,21 +33,24 @@ class ASH_EXPORT WallpaperColorCalculator {
   // that is executed on the |task_runner|.
   WallpaperColorCalculator(
       const gfx::ImageSkia& image,
-      const std::vector<color_utils::ColorProfile>& color_profiles);
+      const std::vector<color_utils::ColorProfile>& color_profiles,
+      scoped_refptr<base::TaskRunner> task_runner);
 
   WallpaperColorCalculator(const WallpaperColorCalculator&) = delete;
   WallpaperColorCalculator& operator=(const WallpaperColorCalculator&) = delete;
 
   ~WallpaperColorCalculator();
 
-  using WallpaperColorCallback =
-      base::OnceCallback<void(const WallpaperCalculatedColors&)>;
+  void AddObserver(WallpaperColorCalculatorObserver* observer);
+
+  void RemoveObserver(WallpaperColorCalculatorObserver* observer);
+
   // Initiates the calculation and returns false if the calculation fails to be
   // initiated. Observers may be notified synchronously or asynchronously.
   // Callers should be aware that this will make |image_| read-only.
-  [[nodiscard]] bool StartCalculation(WallpaperColorCallback callback);
+  [[nodiscard]] bool StartCalculation();
 
-  absl::optional<const WallpaperCalculatedColors> get_calculated_colors() {
+  WallpaperCalculatedColors const get_calculated_colors() {
     return calculated_colors_;
   }
 
@@ -64,11 +67,15 @@ class ASH_EXPORT WallpaperColorCalculator {
   // record duration metrics.
   void OnAsyncCalculationComplete(
       base::TimeTicks async_start_time,
-      WallpaperColorCallback callback,
+      const WallpaperCalculatedColors& calculated_colors);
+
+  // Notifies observers that a color calulation has completed. Called on the
+  // same thread that constructed |this|.
+  void NotifyCalculationComplete(
       const WallpaperCalculatedColors& calculated_colors);
 
   // The result of the color calculation.
-  absl::optional<WallpaperCalculatedColors> calculated_colors_;
+  WallpaperCalculatedColors calculated_colors_;
 
   // The image to calculate colors from.
   gfx::ImageSkia image_;
@@ -78,6 +85,8 @@ class ASH_EXPORT WallpaperColorCalculator {
 
   // The task runner to run the calculation on.
   scoped_refptr<base::TaskRunner> task_runner_;
+
+  base::ObserverList<WallpaperColorCalculatorObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<WallpaperColorCalculator> weak_ptr_factory_{this};
 };
