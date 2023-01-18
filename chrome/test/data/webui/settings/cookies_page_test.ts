@@ -141,22 +141,35 @@ suite('CrSettingsCookiesPageTest', function() {
         page.i18n('preloadingPageStandardPreloadingTitle'));
   });
 
-  test('CookiesRadioClicksRecorded', function() {
-    // TODO(crbug.com/1378703): Add historgram tests.
+  test('ThirdPartyCookiesRadioClicksRecorded', async function() {
     blockThirdParty().click();
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.BLOCK_THIRD_PARTY);
+    let result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK, result);
+    testMetricsBrowserProxy.reset();
 
     blockThirdPartyIncognito().click();
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.INCOGNITO_ONLY);
+    result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(
+        PrivacyElementInteractions.THIRD_PARTY_COOKIES_BLOCK_IN_INCOGNITO,
+        result);
+    testMetricsBrowserProxy.reset();
 
     allowThirdParty().click();
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.OFF);
+    result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.THIRD_PARTY_COOKIES_ALLOW, result);
+    testMetricsBrowserProxy.reset();
   });
 
   test('ExceptionsSearch', async function() {
