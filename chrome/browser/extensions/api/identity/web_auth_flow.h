@@ -28,10 +28,6 @@ namespace extensions {
 // across browser restarts.
 BASE_DECLARE_FEATURE(kPersistentStorageForWebAuthFlow);
 
-// When enabled, use authentication through a browser tab, instead of
-// an app window.
-BASE_DECLARE_FEATURE(kWebAuthFlowInBrowserTab);
-
 // Controller class for web based auth flows. The WebAuthFlow creates
 // a dialog window in the scope approval component app by firing an
 // event. A webview embedded in the dialog will navigate to the

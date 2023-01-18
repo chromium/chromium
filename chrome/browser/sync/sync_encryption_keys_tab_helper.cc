@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/google_accounts_private_api_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "components/sync/base/features.h"
@@ -21,33 +22,10 @@
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/origin.h"
 
 namespace {
-
-const url::Origin& GetAllowedOrigin() {
-  const url::Origin& origin = GaiaUrls::GetInstance()->gaia_origin();
-  CHECK(!origin.opaque());
-  return origin;
-}
-
-bool ShouldExposeMojoApi(content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
-    return false;
-  }
-
-  content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
-  const url::Origin rfh_origin = rfh->GetLastCommittedOrigin();
-  // Restrict to allowed origin and only if site isolation requires a dedicated
-  // process. The host is compared explicitly to confirm that the allowed origin
-  // uses a dedicated process, rather than sharing process with eTLD+1.
-  return rfh_origin == GetAllowedOrigin() &&
-         rfh->GetSiteInstance()->RequiresDedicatedProcess() &&
-         rfh->GetSiteInstance()->GetSiteURL().host() ==
-             GetAllowedOrigin().host();
-}
 
 // EncryptionKeyApi represents the actual exposure of the Mojo API (i.e.
 // chrome::mojom::SyncEncryptionKeysExtension) to the renderer. Instantiated
@@ -72,7 +50,7 @@ class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
       SetEncryptionKeysCallback callback) override {
     // Extra safeguard.
     if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
-        GetAllowedOrigin()) {
+        GetAllowedGoogleAccountsOrigin()) {
       return;
     }
 
@@ -88,7 +66,7 @@ class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
       AddTrustedRecoveryMethodCallback callback) override {
     // Extra safeguard.
     if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
-        GetAllowedOrigin()) {
+        GetAllowedGoogleAccountsOrigin()) {
       return;
     }
 
@@ -173,7 +151,7 @@ void SyncEncryptionKeysTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (ShouldExposeMojoApi(navigation_handle)) {
+  if (ShouldExposeGoogleAccountsPrivateApi(navigation_handle)) {
     EncryptionKeyApi::CreateForCurrentDocument(
         navigation_handle->GetRenderFrameHost(), sync_service_);
   } else {

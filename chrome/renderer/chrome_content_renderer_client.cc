@@ -51,6 +51,7 @@
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
+#include "chrome/renderer/google_accounts_private_api_extension.h"
 #include "chrome/renderer/loadtimes_extension_bindings.h"
 #include "chrome/renderer/media/chrome_key_systems.h"
 #include "chrome/renderer/media/flash_embed_rewrite.h"
@@ -617,6 +618,9 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 
   SyncEncryptionKeysExtension::Create(render_frame);
+  if (base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
+    GoogleAccountsPrivateApiExtension::Create(render_frame);
+  }
 
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);

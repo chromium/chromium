@@ -854,6 +854,11 @@ BASE_DECLARE_FEATURE(kSupportsRtcWakeOver24Hours);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kUseWebAppDBInsteadOfExternalPrefs);
 
+// When enabled, use authentication through a browser tab, instead of
+// an app window.
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kWebAuthFlowInBrowserTab);
+
 bool PrefServiceEnabled();
 
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in

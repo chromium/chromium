@@ -718,6 +718,7 @@ mojom("mojo_bindings") {
   sources = [
     "chrome_render_frame.mojom",
     "draggable_regions.mojom",
+    "google_accounts_private_api_extension.mojom",
     "media/webrtc_logging.mojom",
     "metrics.mojom",
     "net/net_error_page_support.mojom",

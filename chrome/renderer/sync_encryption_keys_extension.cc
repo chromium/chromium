@@ -12,18 +12,17 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
+#include "chrome/renderer/google_accounts_private_api_util.h"
 #include "components/sync/base/features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "url/origin.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
@@ -31,24 +30,6 @@
 #include "v8/include/v8-primitive.h"
 
 namespace {
-
-const url::Origin& GetAllowedOrigin() {
-  const url::Origin& origin = GaiaUrls::GetInstance()->gaia_origin();
-  CHECK(!origin.opaque());
-  return origin;
-}
-
-// The logic in this function should be consistent with the logic in
-// ShouldExposeMojoApi() in sync_encryption_keys_tab_helper.cc, because the
-// Javascript API simply exposes the Mojo API to the web page, and hence
-// the Javascript API shouldn't be available if the Mojo API isn't.
-bool ShouldExposeJavascriptApi(content::RenderFrame* render_frame) {
-  DCHECK(render_frame);
-
-  const url::Origin origin = render_frame->GetWebFrame()->GetSecurityOrigin();
-  return origin == GetAllowedOrigin() &&
-         blink::Platform::Current()->IsLockedToSite();
-}
 
 // This function is intended to convert a binary blob representing an encryption
 // key and provided by the web via a Javascript ArrayBuffer.
@@ -99,7 +80,7 @@ void SyncEncryptionKeysExtension::DidCreateScriptContext(
     return;
   }
 
-  if (ShouldExposeJavascriptApi(render_frame())) {
+  if (ShouldExposeGoogleAccountsJavascriptApi(render_frame())) {
     Install();
   }
 }

@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -78,8 +79,8 @@ class WebAuthFlowInBrowserTabParamBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   WebAuthFlowInBrowserTabParamBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(kWebAuthFlowInBrowserTab,
-                                              use_tab_feature_enabled());
+    scoped_feature_list_.InitWithFeatureState(
+        features::kWebAuthFlowInBrowserTab, use_tab_feature_enabled());
   }
 
   bool use_tab_feature_enabled() { return GetParam(); }
@@ -146,7 +147,7 @@ class WebAuthFlowGuestPartitionParamTest
     // Explicitly disable the `kWebAuthFlowInBrowserTab` feature as it is
     // incompatible with the Guest Partition tests and
     // `kPersistentStorageForWebAuthFlow`.
-    disabled_features.push_back(kWebAuthFlowInBrowserTab);
+    disabled_features.push_back(features::kWebAuthFlowInBrowserTab);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -318,7 +319,8 @@ INSTANTIATE_TEST_SUITE_P(,
 class WebAuthFlowWithBrowserTabBrowserTest : public WebAuthFlowBrowserTest {
  public:
   WebAuthFlowWithBrowserTabBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(kWebAuthFlowInBrowserTab);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebAuthFlowInBrowserTab);
   }
 
  private:

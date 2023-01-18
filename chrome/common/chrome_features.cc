@@ -1450,4 +1450,8 @@ BASE_FEATURE(kUseWebAppDBInsteadOfExternalPrefs,
              "UseWebAppDBInsteadOfExternalPrefs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebAuthFlowInBrowserTab,
+             "WebAuthFlowInBrowserTab",
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -1,0 +1,27 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+// API exposed by the browser process to the renderer process, so that the
+// browser process can react to private Google Accounts JS API injected through
+// the renderer.
+// This API should only be used in the context of accounts.google.com pages with
+// checks on both sides of the bridge, renderer and browser for extra safety.
+interface GoogleAccountsPrivateApiExtension {
+  // Registers an OAuth consent result with the browser process. The user
+  // consent grants one or more Google API permissions to a Chrome extension
+  // that requested the user consent.
+  // A `GaiaRemoteConsentFlow` flow is expected to be waiting, on the browser
+  // side, for a user input for allowing/declining the authentication through
+  // the renderer side. When the information is available, it should be
+  // propagated to the existing consent flow and react accordingly. If no flow
+  // exists, the information should be dropped.
+  // The `consent_result` string contains the result based on the user input,
+  // constructed on the server side using `OAuth2MintTokenConsentResult`. The
+  // result string is encrypted which allows protection when sent to the browser
+  // side, as it will be rejected if not properly generated, and therefore not
+  // granting any access.
+  SetConsentResult(string consent_result);
+};

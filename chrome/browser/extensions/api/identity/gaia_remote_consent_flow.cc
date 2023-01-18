@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -167,7 +168,7 @@ content::StoragePartition* GaiaRemoteConsentFlow::GetStoragePartition() {
   if (!storage_partition) {
     // `web_flow_` doesn't have a guest partition only when the Auth Through
     // Browser Tab flow is used.
-    DCHECK(base::FeatureList::IsEnabled(kWebAuthFlowInBrowserTab));
+    DCHECK(base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab));
     storage_partition = profile_->GetDefaultStoragePartition();
   }
 

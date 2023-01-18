@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/identity_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -93,10 +94,6 @@ BASE_FEATURE(kPersistentStorageForWebAuthFlow,
              "PersistentStorageForWebAuthFlow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebAuthFlowInBrowserTab,
-             "WebAuthFlowInBrowserTab",
-             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
-
 WebAuthFlow::WebAuthFlow(Delegate* delegate,
                          Profile* profile,
                          const GURL& provider_url,
@@ -135,7 +132,7 @@ void WebAuthFlow::Start() {
   DCHECK(!profile_->IsOffTheRecord());
 
   if (partition_ == WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW &&
-      base::FeatureList::IsEnabled(kWebAuthFlowInBrowserTab)) {
+      base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
     using_auth_with_browser_tab_ = true;
 
     content::WebContents::CreateParams params(profile_);
@@ -192,8 +189,9 @@ void WebAuthFlow::DetachDelegateAndDelete() {
 content::StoragePartition* WebAuthFlow::GetGuestPartition() {
   // When using the Auth through the Browser Tab, the guest partition shouldn't
   // be used, consider using `Profile::GetDefaultStoragePartition()` instead.
-  if (base::FeatureList::IsEnabled(kWebAuthFlowInBrowserTab))
+  if (base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
     return nullptr;
+  }
 
   return profile_->GetStoragePartition(
       GetWebViewPartitionConfig(partition_, profile_));
