@@ -72,7 +72,7 @@ message GarbageCollectionDirective {
   enum Type {
     UNKNOWN = 0;
     VERSION_WATERMARK = 1;
-    AGE_WATERMARK = 2;
+    DEPRECATED_AGE_WATERMARK = 2 [deprecated = true];
     DEPRECATED_MAX_ITEM_COUNT = 3 [deprecated = true];
   }
 
@@ -87,10 +87,8 @@ message GarbageCollectionDirective {
   // the client will delete ALL data, regardless of its value.
   optional int64 version_watermark = 2;
 
-  // This field specifies the watermark in terms of age in days.  The client
-  // should purge all sync entities which are older than this specific value
-  // based on last modified time.
-  optional int32 age_watermark_in_days = 3;
+  reserved 3;
+  reserved "age_watermark_in_days";
 
   reserved 4;
   reserved "max_number_of_items";

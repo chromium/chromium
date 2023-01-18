@@ -451,7 +451,6 @@ VISIT_PROTO_FIELDS(const sync_pb::DataTypeProgressMarker& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::GarbageCollectionDirective& proto) {
   VISIT(version_watermark);
-  VISIT(age_watermark_in_days);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DebugEventInfo& proto) {
