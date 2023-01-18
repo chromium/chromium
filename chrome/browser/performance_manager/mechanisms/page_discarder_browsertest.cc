@@ -21,7 +21,7 @@ namespace performance_manager {
 
 using PageDiscarderBrowserTest = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodes) {
+IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodesUrgent) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WindowedNotificationObserver load(
@@ -60,6 +60,66 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodes) {
             mechanism::PageDiscarder discarder;
             discarder.DiscardPageNodes(
                 {page_node.get()}, ::mojom::LifecycleUnitDiscardReason::URGENT,
+                base::BindOnce(
+                    [](base::OnceClosure quit_closure, bool success) {
+                      EXPECT_TRUE(success);
+                      std::move(quit_closure).Run();
+                    },
+                    std::move(quit_closure)));
+          },
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
+          std::move(quit_closure), &total));
+  run_loop.Run();
+
+  auto* new_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_TRUE(new_contents->WasDiscarded());
+  auto* pre_discard_resource_usage =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::FromWebContents(new_contents);
+  EXPECT_TRUE(pre_discard_resource_usage);
+  EXPECT_EQ(total, pre_discard_resource_usage->memory_footprint_estimate_kb());
+}
+
+IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodesProactive) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WindowedNotificationObserver load(
+      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
+      content::NotificationService::AllSources());
+  content::OpenURLParams page(embedded_test_server()->GetURL("/title1.html"),
+                              content::Referrer(),
+                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                              ui::PAGE_TRANSITION_TYPED, false);
+  auto* contents = browser()->OpenURL(page);
+  load.Wait();
+
+  uint64_t total = 0;
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<PageNode> page_node, base::OnceClosure quit_closure,
+             uint64_t* total_ptr) {
+            EXPECT_TRUE(page_node);
+
+            // Simulate that there are PMF estimates available for the frames in
+            // this page.
+            performance_manager::GraphOperations::VisitFrameTreePreOrder(
+                page_node.get(),
+                base::BindRepeating(
+                    [](uint64_t* total, const FrameNode* frame_node) {
+                      *total += 1;
+                      FrameNodeImpl::FromNode(frame_node)
+                          ->SetPrivateFootprintKbEstimate(1);
+                      return true;
+                    },
+                    total_ptr));
+
+            mechanism::PageDiscarder discarder;
+            discarder.DiscardPageNodes(
+                {page_node.get()},
+                ::mojom::LifecycleUnitDiscardReason::PROACTIVE,
                 base::BindOnce(
                     [](base::OnceClosure quit_closure, bool success) {
                       EXPECT_TRUE(success);

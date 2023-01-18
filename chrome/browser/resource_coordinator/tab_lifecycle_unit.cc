@@ -63,7 +63,8 @@ bool IsValidStateChange(LifecycleUnitState from,
       switch (to) {
         // Discard(URGENT|EXTERNAL) is called.
         case LifecycleUnitState::DISCARDED: {
-          return reason == StateChangeReason::SYSTEM_MEMORY_PRESSURE ||
+          return reason == StateChangeReason::BROWSER_INITIATED ||
+                 reason == StateChangeReason::SYSTEM_MEMORY_PRESSURE ||
                  reason == StateChangeReason::EXTENSION_INITIATED;
         }
         case LifecycleUnitState::FROZEN: {
