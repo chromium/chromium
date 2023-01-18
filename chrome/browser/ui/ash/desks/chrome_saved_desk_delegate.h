@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/saved_desk_delegate.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom-forward.h"
 #include "components/favicon_base/favicon_types.h"

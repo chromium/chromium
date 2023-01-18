@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_LIFECYCLE_HELPER_IMPL_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"  // callback_forward doesn't suffice for members.
+#include "base/functional/callback.h"  // callback_forward doesn't suffice for members.
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 
 // Simple JNI bridge to implement the PasswordManagerLifecycleHelper interface.

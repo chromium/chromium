@@ -35,7 +35,7 @@
 #include "base/mac/scoped_block.h"
 #endif
 
-// See base/callback.h for user documentation.
+// See base/functional/callback.h for user documentation.
 //
 //
 // CONCEPTS:

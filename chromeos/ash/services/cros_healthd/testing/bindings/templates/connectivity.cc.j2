@@ -16,10 +16,9 @@ namespace {{namespace}} {
 
 #include "{{module.path}}-connectivity.h"
 
-#include <base/callback_helpers.h>
-#include <base/check.h>
-#include <base/logging.h>
-
+#include "base/check.h"
+#include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "chromeos/ash/services/cros_healthd/testing/bindings/local_state.h"
 #include "chromeos/ash/services/cros_healthd/testing/bindings/remote_state.h"
 #include "chromeos/ash/services/cros_healthd/testing/bindings/utils.h"

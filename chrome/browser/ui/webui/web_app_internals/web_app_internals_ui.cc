@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"

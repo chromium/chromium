@@ -388,16 +388,16 @@ A good rule of thumb is that any method on a delegate that:
 
 should be a property on the framework object instead of a delegate method.
 
-[Bind]: ../../base/bind.h
+[Bind]: ../../base/functional/bind.h
 [BrowserListObserver]: ../../chrome/browser/ui/browser_list_observer.h
 [CallbackList]: ../../base/callback_list.h
-[Callback]: ../../base/callback.h
+[Callback]: ../../base/functional/callback.h
 [CheckedObserver]: ../../base/observer_list_types.h
 [ObserverList]: ../../base/observer_list.h
 [base::ScopedObservation]: ../../base/scoped_observation.h
 [Subscription]: ../../base/callback_list.h
 [URLRequestJobFactory::ProtocolHandler]: ../../net/url_request/url_request_job_factory.h
-[Unretained]: ../../base/bind.h
+[Unretained]: ../../base/functional/bind.h
 [ViewObserver]: ../../ui/views/view_observer.h
 [WebContentsDelegate]: ../../content/public/browser/web_contents_delegate.h
 [WebContentsObserver]: ../../content/public/browser/web_contents_observer.h

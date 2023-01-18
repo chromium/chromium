@@ -1,10 +1,9 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"

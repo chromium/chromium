@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_mapper.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
 #include "google_apis/google_api_keys.h"

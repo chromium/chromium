@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "components/headless/command_handler/headless_command_handler.h"
 #include "content/public/browser/browser_context.h"

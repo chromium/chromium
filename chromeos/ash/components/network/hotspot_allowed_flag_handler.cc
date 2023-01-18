@@ -5,8 +5,8 @@
 #include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_MOJO_SERVICE_MANAGER_CONNECTION_HELPER_H_
 #define CHROME_BROWSER_ASH_MOJO_SERVICE_MANAGER_CONNECTION_HELPER_H_
 
-#include <base/callback_helpers.h>
+#include "base/functional/callback_helpers.h"
 
 namespace ash {
 namespace mojo_service_manager {

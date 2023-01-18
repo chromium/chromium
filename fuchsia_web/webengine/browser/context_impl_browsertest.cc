@@ -5,11 +5,11 @@
 #include <lib/fdio/namespace.h>
 #include <stdint.h>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"

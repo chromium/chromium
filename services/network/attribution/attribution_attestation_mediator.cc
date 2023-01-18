@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"

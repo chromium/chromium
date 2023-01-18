@@ -149,7 +149,7 @@ _CONFIG = [
             'base::expected',
             'base::unexpected',
 
-            # //base/bind.h
+            # //base/functional/bind.h
             'base::IgnoreResult',
 
             # //base/bits.h
@@ -159,12 +159,12 @@ _CONFIG = [
             'base::ObserverList',
             'base::CheckedObserver',
 
-            # //base/callback_helpers.h.
+            # //base/functional/callback_helpers.h.
             'base::DoNothing',
             'base::SplitOnceCallback',
 
-            # //base/callback.h is allowed, but you need to use WTF::Bind or
-            # WTF::BindRepeating to create callbacks in Blink.
+            # //base/functional/callback.h is allowed, but you need to use
+            # WTF::Bind or WTF::BindRepeating to create callbacks in Blink.
             'base::BarrierClosure',
             'base::NullCallback',
             'base::OnceCallback',
