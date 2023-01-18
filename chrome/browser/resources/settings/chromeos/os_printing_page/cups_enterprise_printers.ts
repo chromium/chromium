@@ -15,27 +15,24 @@ import '../../settings_shared.css.js';
 import './cups_printer_types.js';
 import './cups_printers_browser_proxy.js';
 import './cups_printers_entry.js';
-import './cups_printers_entry_list_behavior.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
 
 import {getTemplate} from './cups_enterprise_printers.html.js';
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
 import {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
-import {CupsPrintersEntryListBehavior, CupsPrintersEntryListBehaviorInterface} from './cups_printers_entry_list_behavior.js';
+import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
 
 /**
  * If the Show more button is visible, the minimum number of printers we show
  * is 3.
  */
-const kMinVisiblePrinters: number = 3;
+const MIN_VISIBLE_PRINTERS: number = 3;
 
 /**
  * Move a printer's position in |printerArr| from |fromIndex| to |toIndex|.
@@ -48,13 +45,7 @@ export function moveEntryInPrinters(
 }
 
 const SettingsCupsEnterprisePrintersElementBase =
-    mixinBehaviors(
-        [
-          CupsPrintersEntryListBehavior,
-        ],
-        WebUiListenerMixin(ListPropertyUpdateMixin(PolymerElement))) as
-    Constructor<PolymerElement&CupsPrintersEntryListBehaviorInterface&
-                ListPropertyUpdateMixinInterface&WebUiListenerMixinInterface>;
+    CupsPrintersEntryListMixin(WebUiListenerMixin(PolymerElement));
 
 class SettingsCupsEnterprisePrintersElement extends
     SettingsCupsEnterprisePrintersElementBase {
@@ -151,10 +142,10 @@ class SettingsCupsEnterprisePrintersElement extends
 
     /**
      * The number of printers we display if hidden printers are allowed.
-     * kMinVisiblePrinters is the default value and we never show fewer printers
-     * if the Show more button is visible.
+     * MIN_VISIBLE_PRINTERS is the default value and we never show fewer
+     * printers if the Show more button is visible.
      */
-    this.visiblePrinterCounter_ = kMinVisiblePrinters;
+    this.visiblePrinterCounter_ = MIN_VISIBLE_PRINTERS;
   }
 
   override ready(): void {

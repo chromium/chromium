@@ -364,7 +364,7 @@ non_web_component_files = [
   "chromeos/os_printing_page/cups_printer_dialog_util.ts",
   "chromeos/os_printing_page/cups_printer_types.ts",
   "chromeos/os_printing_page/cups_printers_browser_proxy.ts",
-  "chromeos/os_printing_page/cups_printers_entry_list_behavior.js",
+  "chromeos/os_printing_page/cups_printers_entry_list_mixin.ts",
   "chromeos/os_printing_page/cups_printers_entry_manager.ts",
   "chromeos/os_privacy_page/media_devices_proxy.js",
   "chromeos/os_privacy_page/metrics_consent_browser_proxy.js",
