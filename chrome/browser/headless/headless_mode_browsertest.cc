@@ -32,7 +32,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/multiprocess_func_list.h"
 #include "ui/gfx/switches.h"
@@ -40,12 +39,6 @@
 namespace {
 const int kErrorResultCode = -1;
 }  // namespace
-
-HeadlessModeBrowserTest::HeadlessModeBrowserTest() {
-  base::FilePath test_data(
-      FILE_PATH_LITERAL("chrome/browser/headless/test/data"));
-  embedded_test_server()->AddDefaultHandlers(test_data);
-}
 
 void HeadlessModeBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
