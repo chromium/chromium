@@ -16,8 +16,6 @@ namespace ash {
 namespace {
 
 // TODO (jiajunz): Use shill constants after they are added.
-const char kShillTetheringBand2_4GHz[] = "2.4GHz";
-const char kShillTetheringBand5GHz[] = "5GHz";
 const char kShillNetworkingFailure[] = "network_failure";
 const char kShillWifiDriverFailure[] = "wifi_driver_failure";
 const char kShillCellularAttachFailure[] = "cellular_attach_failure";
@@ -26,14 +24,14 @@ hotspot_config::mojom::WiFiBand ShillBandToMojom(
     const std::string& shill_band) {
   using hotspot_config::mojom::WiFiBand;
 
-  if (shill_band == kShillTetheringBand2_4GHz) {
+  if (shill_band == shill::kBand2GHz) {
     return WiFiBand::k2_4GHz;
   }
-  if (shill_band == kShillTetheringBand5GHz) {
-    return WiFiBand::k5GHz;
+  if (shill_band == shill::kBandAll) {
+    return WiFiBand::kAutoChoose;
   }
   NOTREACHED() << "Unexpected shill tethering band: " << shill_band;
-  return WiFiBand::k5GHz;
+  return WiFiBand::kAutoChoose;
 }
 
 std::string MojomBandToString(hotspot_config::mojom::WiFiBand mojom_band) {
@@ -41,9 +39,9 @@ std::string MojomBandToString(hotspot_config::mojom::WiFiBand mojom_band) {
 
   switch (mojom_band) {
     case WiFiBand::k2_4GHz:
-      return kShillTetheringBand2_4GHz;
-    case WiFiBand::k5GHz:
-      return kShillTetheringBand5GHz;
+      return shill::kBand2GHz;
+    case WiFiBand::kAutoChoose:
+      return shill::kBandAll;
   }
 }
 
@@ -129,7 +127,7 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
       shill::kTetheringConfBandProperty);
   if (!wifi_band) {
     NET_LOG(ERROR) << "WiFi band not found in tethering config.";
-    result->band = hotspot_config::mojom::WiFiBand::k5GHz;
+    result->band = hotspot_config::mojom::WiFiBand::kAutoChoose;
   } else {
     result->band = ShillBandToMojom(*wifi_band);
   }

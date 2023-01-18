@@ -30,7 +30,7 @@ const char kCellularServiceName[] = "cellular_name0";
 hotspot_config::mojom::HotspotConfigPtr GenerateTestConfig() {
   auto mojom_config = hotspot_config::mojom::HotspotConfig::New();
   mojom_config->auto_disable = false;
-  mojom_config->band = hotspot_config::mojom::WiFiBand::k5GHz;
+  mojom_config->band = hotspot_config::mojom::WiFiBand::kAutoChoose;
   mojom_config->security = hotspot_config::mojom::WiFiSecurityMode::kWpa2;
   mojom_config->ssid = kHotspotConfigSSID;
   mojom_config->passphrase = kHotspotConfigPassphrase;
@@ -337,7 +337,7 @@ TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
   auto hotspot_config = hotspot_state_handler_->GetHotspotConfig();
   EXPECT_TRUE(hotspot_config);
   EXPECT_FALSE(hotspot_config->auto_disable);
-  EXPECT_EQ(hotspot_config->band, hotspot_config::mojom::WiFiBand::k5GHz);
+  EXPECT_EQ(hotspot_config->band, hotspot_config::mojom::WiFiBand::kAutoChoose);
   EXPECT_EQ(hotspot_config->security,
             hotspot_config::mojom::WiFiSecurityMode::kWpa2);
   EXPECT_EQ(hotspot_config->ssid, kHotspotConfigSSID);

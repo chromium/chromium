@@ -22,7 +22,8 @@ enum WiFiSecurityMode {
 enum WiFiBand {
   // 2.4GHz bandwidth
   k2_4GHz,
-  k5GHz,
+  // Bandwidth auto chosen based on the device. Could either be 2.4GHz or 5GHz.
+  kAutoChoose,
 };
 
 // Configuration properties for Hotspot.
@@ -32,7 +33,7 @@ struct HotspotConfig {
   bool auto_disable;
   // Security mode for WiFi downstream.
   WiFiSecurityMode security;
-  // The tethering band preference, this should be one of "2.4GHz" or "5GHz".
+  // The tethering WiFi band preference.
   WiFiBand band;
   // SSID of WiFi downstream.
   string ssid;

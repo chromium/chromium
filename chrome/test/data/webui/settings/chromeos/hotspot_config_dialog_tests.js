@@ -55,7 +55,7 @@ suite('HotspotConfigDialog', function() {
         security: WiFiSecurityMode.kWpa2,
         ssid: 'test_ssid',
         passphrase: 'test_passphrase',
-        band: WiFiBand.k5GHz,
+        band: WiFiBand.kAutoChoose,
         bssidRandomization: true,
       },
     };

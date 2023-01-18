@@ -165,7 +165,7 @@ export class HotspotConfigDialogElement extends HotspotConfigDialogElementBase {
       passphrase: this.hotspotPassword_,
       security: this.getSecurityModeFromString_(this.securityType_),
       band: this.isExtendCompatibilityToggleOn_ ? WiFiBand.k2_4GHz :
-                                                  WiFiBand.k5GHz,
+                                                  WiFiBand.kAutoChoose,
       bssidRandomization: this.isRandomizeBssidToggleOn_,
       autoDisable: castExists(this.hotspotInfo.config!.autoDisable),
     };
