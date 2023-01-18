@@ -537,6 +537,50 @@ void RemovePasspointCredentialsFailureCallback(
                  << error_name << ", message: " << error_message;
 }
 
+void SetLohsEnabledSuccessCallback(
+    arc::ArcNetHostImpl::StartLohsCallback callback) {
+  std::move(callback).Run(arc::mojom::LohsStatus::kSuccess);
+}
+
+void SetLohsEnabledFailureCallback(
+    arc::ArcNetHostImpl::StartLohsCallback callback,
+    const std::string& dbus_error_name,
+    const std::string& dbus_error_message) {
+  NET_LOG(ERROR) << "SetLohsEnabledFailureCallback, error: " << dbus_error_name
+                 << ", message: " << dbus_error_message;
+  // TODO(b/259162524): Change this to a more specific "shill configuration"
+  // error
+  std::move(callback).Run(arc::mojom::LohsStatus::kErrorGeneric);
+}
+
+void SetLohsConfigPropertySuccessCallback(
+    arc::ArcNetHostImpl::StartLohsCallback callback) {
+  auto callback_split = base::SplitOnceCallback(std::move(callback));
+  ash::ShillManagerClient::Get()->SetLOHSEnabled(
+      true /* enabled */,
+      base::BindOnce(&SetLohsEnabledSuccessCallback,
+                     std::move(callback_split.first)),
+      base::BindOnce(&SetLohsEnabledFailureCallback,
+                     std::move(callback_split.second)));
+}
+
+void SetLohsConfigPropertyFailureCallback(
+    arc::ArcNetHostImpl::StartLohsCallback callback,
+    const std::string& dbus_error_name,
+    const std::string& dbus_error_message) {
+  NET_LOG(ERROR) << "SetLohsConfigPropertyFailureCallback, error: "
+                 << dbus_error_name << ", message: " << dbus_error_message;
+  // TODO(b/259162524): Change this to a more specific "shill configuration"
+  // error
+  std::move(callback).Run(arc::mojom::LohsStatus::kErrorGeneric);
+}
+
+void StopLohsFailureCallback(const std::string& error_name,
+                             const std::string& error_message) {
+  NET_LOG(ERROR) << "StopLohsFailureCallback, error:" << error_name
+                 << ", message: " << error_message;
+}
+
 }  // namespace
 
 namespace arc {
@@ -1437,23 +1481,74 @@ void ArcNetHostImpl::NetworkListChanged() {
     NetworkPropertiesUpdated(network);
 }
 
+void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
+                               StartLohsCallback callback) {
+  NET_LOG(USER) << "Starting LOHS";
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  if (config->hexssid.empty()) {
+    NET_LOG(ERROR) << "Cannot create local only hotspot without hex ssid";
+    std::move(callback).Run(arc::mojom::LohsStatus::kErrorGeneric);
+    return;
+  }
+  dict.GetDict().Set(shill::kTetheringConfSSIDProperty,
+                     base::Value(config->hexssid));
+
+  if (config->band != arc::mojom::WifiBand::k2Ghz) {
+    // TODO(b/257880335): Support 5Ghz band as well
+    NET_LOG(ERROR) << "Unsupported band for LOHS: " << config->band
+                   << "; can only support 2.4GHz";
+    // TODO(b/259162524): Change this to a more specific "invalid argument"
+    // error
+    std::move(callback).Run(arc::mojom::LohsStatus::kErrorGeneric);
+    return;
+  }
+  dict.GetDict().Set(shill::kTetheringConfBandProperty,
+                     base::Value(shill::kBand2GHz));
+
+  if (config->security_type != arc::mojom::SecurityType::WPA_PSK) {
+    NET_LOG(ERROR) << "Unsupported security for LOHS: " << config->security_type
+                   << "; can only support WPA_PSK";
+    // TODO(b/259162524): Change this to a more specific "invalid argument"
+    // error
+    std::move(callback).Run(arc::mojom::LohsStatus::kErrorGeneric);
+    return;
+  }
+  if (!config->passphrase.has_value()) {
+    NET_LOG(ERROR) << "Cannot create local only hotspot without password";
+    // TODO(b/259162524): Change this to a more specific "invalid argument"
+    // error
+    std::move(callback).Run(arc::mojom::LohsStatus::kErrorGeneric);
+    return;
+  }
+  dict.GetDict().Set(shill::kTetheringConfSecurityProperty,
+                     base::Value(shill::kSecurityWpa2));
+  dict.GetDict().Set(shill::kTetheringConfPassphraseProperty,
+                     base::Value(config->passphrase.value()));
+
+  NET_LOG(USER) << "Set Shill Manager property: " << shill::kLOHSConfigProperty
+                << ": " << dict;
+  auto callback_split = base::SplitOnceCallback(std::move(callback));
+  ash::ShillManagerClient::Get()->SetProperty(
+      shill::kLOHSConfigProperty, dict,
+      base::BindOnce(&SetLohsConfigPropertySuccessCallback,
+                     std::move(callback_split.first)),
+      base::BindOnce(&SetLohsConfigPropertyFailureCallback,
+                     std::move(callback_split.second)));
+}
+
+void ArcNetHostImpl::StopLohs() {
+  NET_LOG(USER) << "Stopping LOHS";
+  ash::ShillManagerClient::Get()->SetLOHSEnabled(
+      false /* enabled */, base::DoNothing(),
+      base::BindOnce(&StopLohsFailureCallback));
+}
+
 void ArcNetHostImpl::OnShuttingDown() {
   DCHECK(observing_network_state_);
   GetStateHandler()->RemoveObserver(this, FROM_HERE);
   GetNetworkConnectionHandler()->RemoveObserver(this);
   observing_network_state_ = false;
-}
-
-void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
-                               StartLohsCallback callback) {
-  // TODO(b/257880335): Retrieve the actual LOHS status.
-  std::move(callback).Run(arc::mojom::LohsStatus::kErrorGeneric);
-  return;
-}
-
-void ArcNetHostImpl::StopLohs() {
-  // TODO(b/257880335): Implement the stop request.
-  return;
 }
 
 }  // namespace arc

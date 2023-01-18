@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                            ErrorCallback error_callback) override;
   void CheckTetheringReadiness(StringCallback callback,
                                ErrorCallback error_callback) override;
+  void SetLOHSEnabled(bool enabled,
+                      base::OnceClosure callback,
+                      ErrorCallback error_callback) override;
 
   ShillManagerClient::TestInterface* GetTestInterface() override;
 

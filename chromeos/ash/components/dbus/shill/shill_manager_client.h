@@ -261,6 +261,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   virtual void CheckTetheringReadiness(StringCallback callback,
                                        ErrorCallback error_callback) = 0;
 
+  // Enables or disables local only hotspot.
+  virtual void SetLOHSEnabled(bool enabled,
+                              base::OnceClosure callback,
+                              ErrorCallback error_callback) = 0;
+
   // Returns an interface for testing (stub only), or returns null.
   virtual TestInterface* GetTestInterface() = 0;
 
