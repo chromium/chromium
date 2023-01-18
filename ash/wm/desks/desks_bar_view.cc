@@ -926,8 +926,9 @@ bool DesksBarView::IsDraggingDesk() const {
 }
 
 void DesksBarView::OnSavedDeskLibraryHidden() {
-  if (mini_views_.size() == 1u)
+  if (!features::IsJellyrollEnabled() && mini_views_.size() == 1u) {
     SwitchToZeroState();
+  }
 }
 
 const char* DesksBarView::GetClassName() const {
@@ -1051,9 +1052,9 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   for (auto* mini_view : mini_views_)
     mini_view->UpdateDeskButtonVisibility();
 
-  // Switch to zero state, which happens if there would be one desk after
-  // removal, unless we are viewing the saved desk library.
-  if (mini_views_.size() == 2u &&
+  // If Jellyroll is not enabled, switch to zero state if there will be one desk
+  // after removal, unless we are viewing the saved desk library.
+  if (!features::IsJellyrollEnabled() && mini_views_.size() == 2u &&
       !overview_grid_->IsShowingSavedDeskLibrary()) {
     SwitchToZeroState();
     return;
@@ -1322,6 +1323,8 @@ DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
 }
 
 void DesksBarView::SwitchToZeroState() {
+  DCHECK(!features::IsJellyrollEnabled());
+
   // Hiding the button immediately instead of the ends of the animation while
   // switching from expanded state to zero state.
   if (vertical_dots_button_)
@@ -1346,12 +1349,7 @@ void DesksBarView::SwitchToZeroState() {
   // Keep current layout until the animation is completed since the animation
   // for going back to zero state is based on the expanded bar's current
   // layout.
-  if (features::IsJellyrollEnabled()) {
-    PerformExpandedStateToZeroStateMiniViewAnimationCrOSNext(
-        this, removed_mini_views);
-  } else {
-    PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
-  }
+  PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
 }
 
 int DesksBarView::DetermineMoveIndex(int location_screen_x) const {

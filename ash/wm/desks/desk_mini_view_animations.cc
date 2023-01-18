@@ -402,31 +402,6 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
   PositionWindowsInOverview();
 }
 
-void PerformExpandedStateToZeroStateMiniViewAnimationCrOSNext(
-    DesksBarView* bar_view,
-    std::vector<DeskMiniView*> removed_mini_views) {
-  bar_view->new_desk_button()->UpdateState(
-      CrOSNextDeskIconButton::State::kZero);
-  bar_view->library_button()->UpdateState(CrOSNextDeskIconButton::State::kZero);
-
-  for (auto* mini_view : removed_mini_views) {
-    DCHECK(mini_view->parent());
-    mini_view->parent()->RemoveChildViewT(mini_view);
-  }
-
-  new DesksBarBoundsAnimation(bar_view, /*to_zero_state=*/true);
-
-  ScaleUpAndFadeInView(bar_view->new_desk_button(),
-                       bar_view->bounds().CenterPoint().x());
-  ScaleUpAndFadeInView(bar_view->default_desk_button(),
-                       bar_view->bounds().CenterPoint().x());
-  if (auto* library_button = bar_view->library_button()) {
-    ScaleUpAndFadeInView(library_button, bar_view->bounds().CenterPoint().x());
-  }
-
-  PositionWindowsInOverview();
-}
-
 void PerformReorderDeskMiniViewAnimation(
     int old_index,
     int new_index,

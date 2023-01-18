@@ -84,10 +84,6 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
     DesksBarView* bar_view,
     std::vector<DeskMiniView*> removed_mini_views);
 
-void PerformExpandedStateToZeroStateMiniViewAnimationCrOSNext(
-    DesksBarView* bar_view,
-    std::vector<DeskMiniView*> removed_mini_views);
-
 // Performs the mini_view reorder animation. It moves the desks to make space at
 // |new_index| for the mini_view at |old_index|. Before reordering, if
 // |old_index| < |new_index|, the mini views from |old_index| + 1 to

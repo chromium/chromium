@@ -1494,7 +1494,11 @@ TEST_P(DesksTest, RemoveActiveDeskFromOverview) {
   // the overview grid. Desks bar should go back to zero state since there is a
   // single desk after removing.
   ASSERT_EQ(1u, controller->desks().size());
-  ASSERT_EQ(0u, desks_bar_view->mini_views().size());
+  if (GetParam().enable_jellyroll) {
+    ASSERT_EQ(1u, desks_bar_view->mini_views().size());
+  } else {
+    ASSERT_EQ(0u, desks_bar_view->mini_views().size());
+  }
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(4u, overview_grid->window_list().size());
@@ -5850,10 +5854,18 @@ TEST_P(DesksTest, DesksBarZeroState) {
   EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
   VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
 
-  // Should switch to zero state if there is only one desk after removing.
   CloseDeskFromMiniView(desks_bar_view->mini_views()[0], event_generator);
-  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
-  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+  if (GetParam().enable_jellyroll) {
+    // Desks bar doesn't switch to zero state even if there is only one desk
+    // after removing when feature Jellyroll is enabled.
+    EXPECT_FALSE(desks_bar_view->IsZeroState());
+    EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
+    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
+  } else {
+    // Should switch to zero state if there is only one desk after removing.
+    EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+  }
 }
 
 // Tests that buttons in the desk bar are shown and hidden correctly when
@@ -5887,13 +5899,25 @@ TEST_P(DesksTest, DesksBarButtonVisibility) {
   auto* mini_view = desks_bar_view->mini_views().front();
   CloseDeskFromMiniView(mini_view, GetEventGenerator());
   ASSERT_EQ(1u, controller->desks().size());
-  ASSERT_TRUE(desks_bar_view->IsZeroState());
+  if (GetParam().enable_jellyroll) {
+    ASSERT_FALSE(desks_bar_view->IsZeroState());
+    EXPECT_EQ(1u, desks_bar_view->mini_views().size());
 
-  // Verify that the expanded state button is not visible, while the zero state
-  // buttons are visible.
-  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
-  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
-  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+    // When feature Jellyroll is enabled, desks bar doesn't go back to zero
+    // state. Verify that the expanded state button is visible, while the
+    // zero state buttons are not visible.
+    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
+    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
+    EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
+  } else {
+    ASSERT_TRUE(desks_bar_view->IsZeroState());
+    // Verify that the expanded state button is not visible, while the zero
+    // state
+    // buttons are visible.
+    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
+    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+    EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+  }
 }
 
 TEST_P(DesksTest, NewDeskButton) {
@@ -5969,6 +5993,13 @@ TEST_P(DesksTest, ZeroStateDeskButtonText) {
   // Close desk 'test' should return to zero state and the zero state default
   // desk button should show current desk's name, which is 'Desk 1'.
   CloseDeskFromMiniView(desks_bar_view->mini_views()[0], event_generator);
+
+  if (GetParam().enable_jellyroll) {
+    // Once we leave zero state, we can't go back without exiting overview.
+    ExitOverview();
+    EnterOverview();
+    desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  }
   EXPECT_TRUE(desks_bar_view->IsZeroState());
   EXPECT_EQ(u"Desk 1", GetDefaultDeskButton(desks_bar_view)->GetText());
 
@@ -6574,10 +6605,16 @@ TEST_P(DesksTest, RemoveDeskWhileDragging) {
   StartDragDeskPreview(mini_view_1, event_generator);
   EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
 
-  // Removing the third desk will end dragging (the dragged desk is the only one
-  // left).
   RemoveDesk(mini_view_2->desk());
-  EXPECT_FALSE(desks_bar_view->IsDraggingDesk());
+  if (GetParam().enable_jellyroll) {
+    // When the feature Jellyroll is enabled, removing the third desk won't end
+    // dragging, since the desks bar doesn't switch to zero state.
+    EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+  } else {
+    // Removing the third desk will end dragging (the dragged desk is the only
+    // one left), desks bar will switch to the zero state.
+    EXPECT_FALSE(desks_bar_view->IsDraggingDesk());
+  }
 
   // Exiting overview will not have any issue.
   ExitOverview();
