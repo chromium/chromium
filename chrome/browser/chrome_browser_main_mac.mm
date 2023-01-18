@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/buildflags.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
 #import "chrome/browser/mac/keystone_glue.h"
@@ -88,7 +89,9 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
     [[KeystoneGlue defaultKeystoneGlue] registerWithKeystone];
   }
   updater::SchedulePeriodicTasks();
+#endif  // BUILDFLAG(ENABLE_UPDATER)
 
+#if !BUILDFLAG(CHROME_FOR_TESTING)
   // Disk image installation is sort of a first-run task, so it shares the
   // no first run switches.
   //
@@ -109,7 +112,7 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
       exit(0);
     }
   }
-#endif  // BUILDFLAG(ENABLE_UPDATER)
+#endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
   // Create the app delegate. This object is intentionally leaked as a global
   // singleton. It is accessed through -[NSApp delegate].
