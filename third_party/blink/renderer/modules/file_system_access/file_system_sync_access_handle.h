@@ -64,6 +64,10 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   HeapMojoRemote<mojom::blink::FileSystemAccessAccessHandleHost>
       access_handle_remote_;
 
+  // File position cursor. See
+  // https://fs.spec.whatwg.org/#filesystemsyncaccesshandle-file-position-cursor.
+  uint64_t cursor_ = 0;
+
   bool is_closed_ = false;
 };
 

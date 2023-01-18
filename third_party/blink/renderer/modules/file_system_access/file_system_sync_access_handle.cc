@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+
 namespace blink {
 
 FileSystemSyncAccessHandle::FileSystemSyncAccessHandle(
@@ -98,8 +99,12 @@ void FileSystemSyncAccessHandle::truncate(uint64_t size,
   }
 
   base::FileErrorOr<bool> result = file_delegate()->SetLength(size);
-  if (result.has_value())
+  if (result.has_value()) {
+    if (cursor_ > size) {
+      cursor_ = size;
+    }
     return;
+  }
 
   base::File::Error file_error = result.error();
   if (file_error == base::File::FILE_ERROR_NO_SPACE) {
@@ -128,7 +133,7 @@ uint64_t FileSystemSyncAccessHandle::read(
 
   size_t read_size = buffer->byteLength();
   uint8_t* read_data = static_cast<uint8_t*>(buffer->BaseAddressMaybeShared());
-  uint64_t file_offset = options->at();
+  uint64_t file_offset = options->hasAt() ? options->at() : cursor_;
   if (!base::CheckedNumeric<int64_t>(file_offset).IsValid()) {
     exception_state.ThrowTypeError("Cannot read at given offset");
     return 0;
@@ -142,7 +147,13 @@ uint64_t FileSystemSyncAccessHandle::read(
                                       "Failed to read the content");
     return 0;
   }
-  return base::as_unsigned(result.value());
+  uint64_t bytes_read = base::as_unsigned(result.value());
+  // This is guaranteed to not overflow since `file_offset` is a positive
+  // int64_t and `result` is a positive int, while `cursor_` is a uint64_t.
+  bool cursor_position_is_valid =
+      base::CheckAdd(file_offset, bytes_read).AssignIfValid(&cursor_);
+  DCHECK(cursor_position_is_valid) << "cursor position could not be determined";
+  return bytes_read;
 }
 
 uint64_t FileSystemSyncAccessHandle::write(
@@ -157,7 +168,7 @@ uint64_t FileSystemSyncAccessHandle::write(
     return 0;
   }
 
-  uint64_t file_offset = options->at();
+  uint64_t file_offset = options->hasAt() ? options->at() : cursor_;
   if (!base::CheckedNumeric<int64_t>(file_offset).IsValid()) {
     exception_state.ThrowTypeError("Cannot write at given offset");
     return 0;
@@ -196,7 +207,13 @@ uint64_t FileSystemSyncAccessHandle::write(
     return 0;
   }
 
-  return base::as_unsigned(result.value());
+  uint64_t bytes_written = base::as_unsigned(result.value());
+  // This is guaranteed to not overflow since `file_offset` is a positive
+  // int64_t and `result` is a positive int, while `cursor_` is a uint64_t.
+  bool cursor_position_is_valid =
+      base::CheckAdd(file_offset, bytes_written).AssignIfValid(&cursor_);
+  DCHECK(cursor_position_is_valid) << "cursor position could not be determined";
+  return bytes_written;
 }
 
 }  // namespace blink
