@@ -19,6 +19,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -64,10 +65,12 @@ void JNI_ConnectivityChecker_PostCallback(
 // Internet.
 class ConnectivityChecker {
  public:
-  ConnectivityChecker(Profile* profile,
-                      const GURL& url,
-                      const base::TimeDelta& timeout,
-                      const base::android::JavaRef<jobject>& java_callback);
+  ConnectivityChecker(
+      Profile* profile,
+      const GURL& url,
+      const base::TimeDelta& timeout,
+      const base::android::JavaRef<jobject>& java_callback,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   // Kicks off the asynchronous connectivity check. When the request has
   // completed, |this| is deleted.
@@ -90,6 +93,11 @@ class ConnectivityChecker {
 
   // Holds the Java object which will get the callback with the result.
   base::android::ScopedJavaGlobalRef<jobject> java_callback_;
+
+  // Holds the traffic annotation that is created in Java for all the
+  // connectivity checks. The same annotation is used for the Chrome network
+  // stack and the Android system network stack.
+  net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   // The URLFetcher that executes the connectivity check.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
@@ -122,12 +130,14 @@ ConnectivityChecker::ConnectivityChecker(
     Profile* profile,
     const GURL& url,
     const base::TimeDelta& timeout,
-    const base::android::JavaRef<jobject>& java_callback)
+    const base::android::JavaRef<jobject>& java_callback,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : shared_url_loader_factory_(profile->GetDefaultStoragePartition()
                                      ->GetURLLoaderFactoryForBrowserProcess()),
       url_(url),
       timeout_(timeout),
       java_callback_(java_callback),
+      traffic_annotation_(traffic_annotation),
       is_being_destroyed_(false) {}
 
 void ConnectivityChecker::StartAsyncCheck() {
@@ -135,8 +145,8 @@ void ConnectivityChecker::StartAsyncCheck() {
   request->url = *url_;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  url_loader_ = network::SimpleURLLoader::Create(std::move(request),
-                                                 MISSING_TRAFFIC_ANNOTATION);
+  url_loader_ =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
   url_loader_->DownloadHeadersOnly(
       shared_url_loader_factory_.get(),
       base::BindOnce(&ConnectivityChecker::OnURLLoadComplete,
@@ -163,7 +173,8 @@ void JNI_ConnectivityChecker_CheckConnectivity(
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& j_url,
     jlong j_timeout_ms,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaParamRef<jobject>& j_callback,
+    jint j_network_annotation_hash_code) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   if (!profile) {
     JNI_ConnectivityChecker_PostCallback(env, j_callback,
@@ -179,7 +190,9 @@ void JNI_ConnectivityChecker_CheckConnectivity(
 
   // This object will be deleted when the connectivity check has completed.
   ConnectivityChecker* connectivity_checker = new ConnectivityChecker(
-      profile, url, base::Milliseconds(j_timeout_ms), j_callback);
+      profile, url, base::Milliseconds(j_timeout_ms), j_callback,
+      net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
+          j_network_annotation_hash_code));
   connectivity_checker->StartAsyncCheck();
 }
 
