@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -39,18 +40,22 @@ IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
                        TestSelectedKeywordViewIsExtensionShortname) {
   const extensions::Extension* extension =
       InstallExtension(test_data_dir_.AppendASCII("omnibox"), 1);
-  ASSERT_TRUE(extension);
+  ASSERT_NE(extension, nullptr);
 
-  chrome::FocusLocationBar(browser());
-  ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  Browser* current_browser = browser();
+  chrome::FocusLocationBar(current_browser);
+  ASSERT_TRUE(ui_test_utils::IsViewFocused(current_browser, VIEW_ID_OMNIBOX));
 
   // Activate the extension's omnibox keyword.
-  InputKeys(browser(), {ui::VKEY_K, ui::VKEY_E, ui::VKEY_Y, ui::VKEY_TAB});
+  InputKeys(current_browser, {ui::VKEY_K, ui::VKEY_E, ui::VKEY_Y});
+  ui_test_utils::WaitForAutocompleteDone(current_browser);
+  InputKeys(current_browser, {ui::VKEY_TAB});
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(current_browser);
   SelectedKeywordView* selected_keyword_view =
       browser_view->toolbar()->location_bar()->selected_keyword_view();
-  ASSERT_TRUE(selected_keyword_view);
+  ASSERT_NE(selected_keyword_view, nullptr);
 
   // Verify that the label in the omnibox is the extension's shortname.
   EXPECT_EQ(extension->short_name(),
