@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 26
+// Next MinVersion: 27
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -516,6 +516,13 @@ struct WifiConfiguration {
 
     // DNS server IP addresses included in the configuration
   [MinVersion=20] array<string>? dns_servers@13;
+
+  // A list of BSSIDs that control what APs can be connected to.
+  // If null, there are no restrictions and this field is ignored.
+  // If empty, then nothing is allowed and no AP will be connected to.
+  // If non-empty, then only APs whose BSSID is included in the list can be
+  // connected to. BSSIDs should be in MAC address format.
+  [MinVersion=26] array<string>? bssid_allowlist@14;
 };
 
 [Extensible]
