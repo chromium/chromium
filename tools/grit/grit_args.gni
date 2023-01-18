@@ -23,7 +23,6 @@ _grit_defines = [
   "DEVTOOLS_GRD_PATH=" + devtools_grd_path_no_ext,
   "SHARED_INTERMEDIATE_DIR=" + shared_intermediate_dir,
   "_google_chrome=${is_chrome_branded}",
-  "_google_chrome_for_testing=${is_chrome_for_testing_branded}",
   "_use_internal_chrome_for_testing_icons=${use_internal_chrome_for_testing_icons}",
   "chromeos_ash=${is_chromeos_ash}",
   "chromeos_lacros=${is_chromeos_lacros}",

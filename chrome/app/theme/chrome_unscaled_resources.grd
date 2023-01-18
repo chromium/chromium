@@ -60,7 +60,7 @@
           </if>
         </then>
         <else> <!-- not _google_chrome -->
-          <if expr="_google_chrome_for_testing and _use_internal_chrome_for_testing_icons">
+          <if expr="_use_internal_chrome_for_testing_icons">
             <then>
               <if expr="is_linux">
                 <then>
@@ -75,7 +75,7 @@
                 </else>
               </if>
             </then>
-            <else>  <!-- not (_google_chrome_for_testing and _use_internal_chrome_for_testing_icons) -->
+            <else>  <!-- not _use_internal_chrome_for_testing_icons -->
               <if expr="is_linux">
                 <then>
                   <include name="IDR_PRODUCT_LOGO_64" file="chromium/linux/product_logo_64.png" type="BINDATA" />

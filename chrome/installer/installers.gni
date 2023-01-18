@@ -10,7 +10,7 @@ import("//build/config/sysroot.gni")
 declare_args() {
   enable_linux_installer =
       is_linux && !is_component_build && use_sysroot && !using_sanitizer &&
-      !is_chromeos_lacros && !is_chrome_for_testing_branded
+      !is_chromeos_lacros && !is_chrome_for_testing
 }
 
-enable_mac_installer = is_mac && !is_chrome_for_testing_branded
+enable_mac_installer = is_mac && !is_chrome_for_testing

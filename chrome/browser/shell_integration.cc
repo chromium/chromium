@@ -89,7 +89,7 @@ void RunCallback(DefaultWebClientWorkerCallback callback,
 }  // namespace
 
 DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
-#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#if BUILDFLAG(CHROME_FOR_TESTING)
   return SET_DEFAULT_NOT_ALLOWED;
 #else
   return GetPlatformSpecificDefaultWebClientSetPermission();

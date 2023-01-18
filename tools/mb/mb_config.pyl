@@ -3881,7 +3881,7 @@
     },
 
     'chrome_for_testing': {
-      'gn_args': 'is_chrome_for_testing_branded=true'
+      'gn_args': 'is_chrome_for_testing=true'
     },
 
     'chrome_google': {

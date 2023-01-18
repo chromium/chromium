@@ -1747,7 +1747,7 @@ static_library("ui") {
       ]
     }
 
-    if (is_chrome_for_testing_branded) {
+    if (is_chrome_for_testing) {
       sources += [
         "startup/chrome_for_testing_infobar_delegate.cc",
         "startup/chrome_for_testing_infobar_delegate.h",

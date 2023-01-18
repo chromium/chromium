@@ -27,7 +27,7 @@
 #include "content/public/common/content_switches.h"
 #include "google_apis/google_api_keys.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#if BUILDFLAG(CHROME_FOR_TESTING)
 #include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
 #endif
 
@@ -63,7 +63,7 @@ bool IsKioskModeEnabled() {
       switches::kKioskMode);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#if BUILDFLAG(CHROME_FOR_TESTING)
 bool IsGpuTest() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
              switches::kTestType) == "gpu";
@@ -88,7 +88,7 @@ void AddInfoBarsIfNecessary(Browser* browser,
   DCHECK(web_contents);
 
   if (show_bad_flags_security_warnings) {
-#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+#if BUILDFLAG(CHROME_FOR_TESTING)
     if (!IsGpuTest()) {
       ChromeForTestingInfoBarDelegate::Create();
     }

@@ -160,7 +160,7 @@
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_ENTERPRISE_WHITE" file="google_chrome/product_logo_enterprise_white.png" />
         </then>
         <else> <!-- not _google_chrome -->
-          <if expr="_google_chrome_for_testing and _use_internal_chrome_for_testing_icons">
+          <if expr="_use_internal_chrome_for_testing_icons">
             <then>
               <if expr="is_linux">
                 <then>
@@ -173,7 +173,7 @@
                 </else>
               </if> <!-- is_linux -->
             </then>
-            <else> <!-- not (_google_chrome_for_testing and _use_internal_chrome_for_testing_icons) -->
+            <else> <!-- not _use_internal_chrome_for_testing_icons -->
               <if expr="is_linux">
                 <then>
                   <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="chromium/linux/product_logo_16.png" />
@@ -185,7 +185,7 @@
                 </else>
               </if> <!-- is_linux -->
             </else>
-          </if> <!-- _google_chrome_for_testing and _use_internal_chrome_for_testing_icons -->
+          </if> <!-- _use_internal_chrome_for_testing_icons -->
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22" file="chromium/product_logo_name_22.png" />
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22_WHITE" file="chromium/product_logo_name_22_white.png" />
         </else>

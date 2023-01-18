@@ -3,7 +3,7 @@
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
-      "is_chrome_for_testing_branded": true,
+      "is_chrome_for_testing": true,
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
@@ -15,7 +15,7 @@
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
-      "is_chrome_for_testing_branded": true,
+      "is_chrome_for_testing": true,
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
@@ -27,7 +27,7 @@
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
-      "is_chrome_for_testing_branded": true,
+      "is_chrome_for_testing": true,
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
