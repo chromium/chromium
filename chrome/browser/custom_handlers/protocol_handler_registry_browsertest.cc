@@ -74,7 +74,7 @@ class ChromeRegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     // We might define browser tests for other embedders, so the test's data
     // files will be shared via //componennts
     embedded_test_server()->ServeFilesFromSourceDirectory(
-        "components/test/data/");
+        "components/test/data/custom_handlers/");
   }
 
   TestRenderViewContextMenu* CreateContextMenu(GURL url) {
@@ -315,7 +315,7 @@ class ChromeRegisterProtocolHandlerAndServiceWorkerInterceptor
     // We might define browser tests for other embedders, so the test's data
     // files will be shared via //componennts
     embedded_test_server()->ServeFilesFromSourceDirectory(
-        "components/test/data/");
+        "components/test/data/custom_handlers/");
 
     ASSERT_TRUE(embedded_test_server()->Start());
 

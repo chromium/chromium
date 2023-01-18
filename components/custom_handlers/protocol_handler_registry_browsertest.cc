@@ -105,7 +105,8 @@ class RegisterProtocolHandlerBrowserTest : public content::ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, CustomHandler) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html");
+  GURL handler_url =
+      embedded_test_server()->GetURL("/custom_handlers/custom_handler.html");
   AddProtocolHandler("news", handler_url);
 
   ASSERT_TRUE(NavigateToURL(shell(), GURL("news:test"), handler_url));
@@ -125,8 +126,8 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, CustomHandler) {
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
                        IgnoreRequestWithoutUserGesture) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/custom_handlers/title1.html")));
 
   // Ensure the registry is currently empty.
   GURL url("web+search:testing");
@@ -151,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
 // FencedFrames can not register to handle any protocols.
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, FencedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/custom_handlers/title1.html")));
 
   // Create a FencedFrame.
   content::RenderFrameHost* fenced_frame_host =
