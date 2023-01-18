@@ -475,14 +475,23 @@ void FillGlobalMotionParams(
     constexpr auto kNumGlobalMotionParams = std::size(decltype(gm.params){});
 
     for (size_t j = 0; j < kNumGlobalMotionParams; ++j) {
-      // TODO(b/247611513): Remove separate handling when gm.params[j] < 0 if
-      // V4L2 AV1 uAPI decides to make an update to make this param consistent
-      // with definition in libgav1 parser
-      if (gm.params[j] < 0) {
-        v4l2_gm->params[i][j] =
-            base::checked_cast<uint32_t>(UINT32_MAX + gm.params[j] + 1);
-      } else
-        v4l2_gm->params[i][j] = base::checked_cast<uint32_t>(gm.params[j]);
+      // TODO(b/265204534): V4L2 AV1 uAPI v4 changed |params|'s data type from
+      // uint32_t to int32_t. Remove separate handling for gm.params[j] < 0 case
+      // when the kernel related change lands.
+      static_assert(
+          std::is_same<decltype(v4l2_gm->params[0][0]), uint32_t&>::value ||
+              std::is_same<decltype(v4l2_gm->params[0][0]), int32_t&>::value,
+          "v4l2_av1_global_motion::params must be either uint32_t or int32_t");
+      if (std::is_same<decltype(v4l2_gm->params[0][0]), uint32_t&>::value) {
+        if (gm.params[j] < 0) {
+          v4l2_gm->params[i][j] =
+              base::checked_cast<uint32_t>(UINT32_MAX + gm.params[j] + 1);
+        } else {
+          v4l2_gm->params[i][j] = base::checked_cast<uint32_t>(gm.params[j]);
+        }
+      } else {
+        v4l2_gm->params[i][j] = gm.params[j];
+      }
     }
 
     conditionally_set_flags(&v4l2_gm->invalid, !libgav1::SetupShear(&gm),
@@ -864,9 +873,24 @@ void Av1Decoder::SetupFrameParams(
   static_assert(std::size(decltype(v4l2_frame_params->ref_frame_idx){}) ==
                     libgav1::kNumInterReferenceFrameTypes,
                 "Invalid size of |ref_frame_idx| array");
-  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++)
-    v4l2_frame_params->ref_frame_idx[i] =
-        base::checked_cast<__u8>(frm_header.reference_frame_index[i]);
+  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
+    // TODO(b/265204534): V4L2 AV1 uAPI v4 changed |ref_frame_idx|'s data type
+    // from uint8_t to int8_t. Remove separate handling when the kernel related
+    // change lands.
+    static_assert(
+        std::is_same<decltype(v4l2_frame_params->ref_frame_idx[0]),
+                     uint8_t&>::value ||
+            std::is_same<decltype(v4l2_frame_params->ref_frame_idx[0]),
+                         int8_t&>::value,
+        "|ref_frame_idx| must be either uint8_t or int8_t");
+    if (std::is_same<decltype(v4l2_frame_params->ref_frame_idx[0]),
+                     uint8_t&>::value) {
+      v4l2_frame_params->ref_frame_idx[i] =
+          base::checked_cast<__u8>(frm_header.reference_frame_index[i]);
+    } else {
+      v4l2_frame_params->ref_frame_idx[i] = frm_header.reference_frame_index[i];
+    }
+  }
 
   v4l2_frame_params->skip_mode_frame[0] =
       base::checked_cast<__u8>(frm_header.skip_mode_frame[0]);
