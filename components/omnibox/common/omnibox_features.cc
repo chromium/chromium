@@ -456,7 +456,7 @@ BASE_FEATURE(kUpdatedConnectionSecurityIndicators,
 // necessary.
 BASE_FEATURE(kDefaultTypedNavigationsToHttps,
              "OmniboxDefaultTypedNavigationsToHttps",
-             enabled_by_default_desktop_android);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Parameter name used to look up the delay before falling back to the HTTP URL
 // while trying an HTTPS URL. The parameter is treated as a TimeDelta, so the
