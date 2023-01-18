@@ -162,6 +162,10 @@ const char kDefaultFollowingFeedSortTypeChanged[] =
 const char kOverflowMenuDestinationUsageHistory[] =
     "overflow_menu.destination_usage_history";
 
+// List preference which tracks new destinations added to the overflow menu
+// carousel.
+const char kOverflowMenuNewDestinations[] = "overflow_menu.new_destinations";
+
 // Boolean that is true when Suggest support is enabled.
 const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 

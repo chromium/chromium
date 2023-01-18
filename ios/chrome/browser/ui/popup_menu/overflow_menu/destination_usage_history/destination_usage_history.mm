@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 
+#import <algorithm>
 #import <ostream>
+#import <set>
 
 #import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
@@ -13,7 +15,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,6 +28,11 @@ namespace {
 // for a given user. Data older than kDataExpirationWindow days will be removed
 // during the presentation of the overflow menu.
 constexpr int kDataExpirationWindow = 365;  // days (inclusive)
+
+// kNewDestinationsInsertionIndex represents the index new destinations are
+// inserted into the current ranking. Assumes the overflow menu carousel always
+// has at least four items in it.
+constexpr int kNewDestinationsInsertionIndex = 3;
 
 // kRecencyWindow represents the number of days before the present where usage
 // is considered recent.
@@ -39,6 +48,9 @@ constexpr int kInitialBufferNumClicks = 3;  // clicks
 
 // The dictionary key used for storing rankings.
 const char kRankingKey[] = "ranking";
+
+// TODO(crbug.com/989694): Remove `kDefaultRanking` below after feature
+// `kSmartSortingPriceTrackingDestination` fully launches.
 
 // The default destinations ranking, based on statistical usage of the old
 // overflow menu.
@@ -152,6 +164,21 @@ std::vector<overflow_menu::Destination> Vector(
   return vec;
 }
 
+// Converts base::Value::List ranking into std::set ranking.
+std::set<overflow_menu::Destination> Set(const base::Value::List& ranking) {
+  std::set<overflow_menu::Destination> set;
+
+  for (auto&& rank : ranking) {
+    if (!rank.is_string()) {
+      NOTREACHED();
+    }
+
+    set.insert(overflow_menu::DestinationForStringName(rank.GetString()));
+  }
+
+  return set;
+}
+
 // Converts iterable of overflow_menu::Destination `ranking` into
 // base::Value::List ranking.
 template <typename Range>
@@ -163,6 +190,21 @@ base::Value::List List(Range&& ranking) {
   }
 
   return list;
+}
+
+// Returns the difference between two vectors. Given vectors `x` and `y`,
+// returns all elements present in `x`, but not in `y`.
+template <typename T>
+std::vector<T> FindDiff(std::vector<T> x, std::vector<T> y) {
+  std::vector<T> diff;
+
+  std::sort(x.begin(), x.end());
+  std::sort(y.begin(), y.end());
+
+  std::set_difference(x.begin(), x.end(), y.begin(), y.end(),
+                      std::back_inserter(diff));
+
+  return diff;
 }
 
 }  // namespace
@@ -255,6 +297,7 @@ base::Value::List List(Range&& ranking) {
 
   const base::Value::Dict& history =
       self.prefService->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
+
   const std::string path = base::NumberToString(TodaysDay()) + "." +
                            overflow_menu::StringNameForDestination(destination);
 
@@ -262,11 +305,24 @@ base::Value::List List(Range&& ranking) {
 
   ScopedDictPrefUpdate update(self.prefService,
                               prefs::kOverflowMenuDestinationUsageHistory);
+
   update->SetByDottedPath(path, numClicks);
 
-  // User's very first time using Smart Sorting.
-  if (history.size() == 0)
-    [self injectDefaultNumClicksForAllDestinations];
+  if (IsSmartSortingPriceTrackingDestinationEnabled()) {
+    ScopedListPrefUpdate newDestinationsUpdate(
+        self.prefService, prefs::kOverflowMenuNewDestinations);
+
+    newDestinationsUpdate->EraseValue(
+        base::Value(overflow_menu::StringNameForDestination(destination)));
+  } else {
+    // TODO(crbug.com/989694): Remove this code and surrounding else-check after
+    // feature `kSmartSortingPriceTrackingDestination` fully launches.
+
+    // User's very first time using Smart Sorting.
+    if (history.size() == 0) {
+      [self injectDefaultNumClicksForAllDestinations];
+    }
+  }
 
   // Calculate new ranking and store to prefs; Calculate the new ranking
   // ahead of time so overflow menu presentation needn't run ranking algorithm
@@ -279,6 +335,9 @@ base::Value::List List(Range&& ranking) {
 }
 
 #pragma mark - Private
+
+// TODO(crbug.com/989694): Remove `injectDefaultNumClicksForAllDestinations`
+// below after feature `kSmartSortingPriceTrackingDestination` fully launches.
 
 // Injects a default number of clicks for all destinations in the history
 // dictonary.
@@ -307,6 +366,67 @@ base::Value::List List(Range&& ranking) {
   }
 }
 
+// Adds `destinations` to the locally-stored usage history with a
+// calculated number of initial clicks.
+//
+// NOTE: This method skips seeding history for destinations that already exist
+// in the usage history.
+- (void)seedHistoryWithDestinations:
+    (std::vector<overflow_menu::Destination>&)destinations {
+  // Exit early if there's no pref service. May happen during the application
+  // shutdown.
+  if (!self.prefService) {
+    return;
+  }
+
+  DCHECK_GT(kDampening, 1.0);
+  DCHECK_GT(kInitialBufferNumClicks, 1);
+
+  int defaultNumClicks =
+      (kInitialBufferNumClicks - 1) * (kDampening - 1.0) * 100.0;
+
+  std::string today = base::NumberToString(TodaysDay());
+
+  ScopedDictPrefUpdate update(self.prefService,
+                              prefs::kOverflowMenuDestinationUsageHistory);
+
+  const base::Value::Dict& history =
+      self.prefService->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
+
+  const base::Value::Dict flattenedHistory =
+      [self flattenedHistoryWithinWindow:kDataExpirationWindow];
+
+  for (overflow_menu::Destination destination : destinations) {
+    std::string destinationName =
+        overflow_menu::StringNameForDestination(destination);
+
+    // Does not seed history for destinations that already exist in the usage
+    // history.
+    if (!flattenedHistory.Find(destinationName)) {
+      const std::string path = today + "." + destinationName;
+      update->SetByDottedPath(
+          path,
+          history.FindIntByDottedPath(path).value_or(0) + defaultNumClicks);
+    }
+  }
+}
+
+// Updates the locally-stored ranking to `ranking`.
+- (void)updateStoredRanking:(std::vector<overflow_menu::Destination>&)ranking {
+  // Exit early if there's no pref service. May happen during the application
+  // shutdown.
+  if (!self.prefService) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(self.prefService,
+                              prefs::kOverflowMenuDestinationUsageHistory);
+
+  base::Value::List newRanking = List(ranking);
+
+  update->Set(kRankingKey, std::move(newRanking));
+}
+
 // Delete expired usage data (data older than `kDataExpirationWindow` days) and
 // saves back to prefs. Returns true if expired usage data was found/removed,
 // false otherwise.
@@ -326,8 +446,9 @@ base::Value::List List(Range&& ranking) {
     if (day == kRankingKey)
       continue;
 
-    if (!ValidDay(day, kDataExpirationWindow))
+    if (!ValidDay(day, kDataExpirationWindow)) {
       prunedHistory.Remove(day);
+    }
   }
 
   self.prefService->SetDict(prefs::kOverflowMenuDestinationUsageHistory,
@@ -347,12 +468,122 @@ base::Value::List List(Range&& ranking) {
   return history.FindList(kRankingKey);
 }
 
+// Compares the current list of carousel items to the current ranking.
+//
+// When the carousel has destinations not found in the current ranking, those
+// destinations are considered new. New destinations are inserted into the
+// current ranking starting at `kNewDestinationsInsertionIndex` and seeded with
+// usage history.
+//
+// When the current ranking has destinations not found in carousel, those
+// destinations are considered removed. Removed destinations are removed from
+// the current ranking.
+//
+// This method tracks new and removed destinations via Pref lists.
+- (void)runHistoryDiagnostic:
+    (std::vector<overflow_menu::Destination>&)currentDestinations {
+  // Exit early if there's no pref service. May happen during the application
+  // shutdown.
+  if (!self.prefService) {
+    return;
+  }
+  const base::Value::List* storedRanking = [self fetchCurrentRanking];
+
+  // If `currentRanking` is invalid, this is the user's first time using Smart
+  // Sorting. This means no ranking or usage history exist on the device, yet,
+  // so a ranking and usage history must be created and seeded.
+  if (!storedRanking) {
+    [self updateStoredRanking:currentDestinations];
+    [self seedHistoryWithDestinations:currentDestinations];
+
+    return;
+  }
+
+  std::vector<overflow_menu::Destination> currentRanking =
+      Vector(storedRanking);
+
+  std::vector<overflow_menu::Destination> newDestinations =
+      FindDiff(currentDestinations, currentRanking);
+
+  [self seedHistoryWithDestinations:newDestinations];
+
+  ScopedListPrefUpdate newDestinationsUpdate(
+      self.prefService, prefs::kOverflowMenuNewDestinations);
+
+  // Make other parts of Smart Sorting infrastructure aware of the newly added
+  // destinations. Newly added destinations are those that exist in the
+  // carousel, but don't exist in the current ranking.
+  for (overflow_menu::Destination newDestination : newDestinations) {
+    newDestinationsUpdate->EraseValue(
+        base::Value(overflow_menu::StringNameForDestination(newDestination)));
+    newDestinationsUpdate->Append(
+        base::Value(overflow_menu::StringNameForDestination(newDestination)));
+  }
+
+  std::vector<overflow_menu::Destination> removedDestinations =
+      FindDiff(currentRanking, currentDestinations);
+
+  std::set<overflow_menu::Destination> removed(removedDestinations.begin(),
+                                               removedDestinations.end());
+
+  // Newly-added and newly-removed destinations need to be added to, and removed
+  // from, the current ranking, respectively. This ensures the logic for
+  // detecting returning destinations works in future evaluations.
+  std::vector<overflow_menu::Destination> updatedRanking;
+
+  for (overflow_menu::Destination destination : currentRanking) {
+    if (!removed.count(destination)) {
+      updatedRanking.push_back(destination);
+    }
+  }
+
+  DCHECK_GE(currentDestinations.size(), size_t(4));
+
+  auto pos =
+      updatedRanking.begin() +
+      std::max(0, std::min(kNewDestinationsInsertionIndex,
+                           static_cast<int>(currentDestinations.size()) - 1));
+  updatedRanking.insert(pos, newDestinations.begin(), newDestinations.end());
+
+  [self updateStoredRanking:updatedRanking];
+}
+
 // Fetches the current ranking stored in Chrome Prefs and returns a sorted list
 // of OverflowMenuDestination* which match the ranking.
 - (NSArray<OverflowMenuDestination*>*)generateDestinationsList:
     (NSArray<OverflowMenuDestination*>*)unrankedDestinations {
-  return [self destinationList:[self fetchCurrentRanking]
-                       options:unrankedDestinations];
+  if (IsSmartSortingPriceTrackingDestinationEnabled()) {
+    std::vector<overflow_menu::Destination> destinations;
+
+    for (OverflowMenuDestination* destination : unrankedDestinations) {
+      overflow_menu::Destination currDestination =
+          overflow_menu::DestinationForNSStringName(
+              destination.destinationName);
+
+      destinations.push_back(currDestination);
+    }
+
+    [self runHistoryDiagnostic:destinations];
+
+    NSMutableArray<OverflowMenuDestination*>* carouselItems =
+        [[self destinationList:[self fetchCurrentRanking]
+                       options:unrankedDestinations] mutableCopy];
+
+    std::set<overflow_menu::Destination> newDestinations =
+        Set(self.prefService->GetList(prefs::kOverflowMenuNewDestinations));
+
+    for (OverflowMenuDestination* carouselItem : carouselItems) {
+      if (newDestinations.count(overflow_menu::DestinationForNSStringName(
+              carouselItem.destinationName))) {
+        carouselItem.badge = BadgeTypeNewLabel;
+      }
+    }
+
+    return carouselItems;
+  } else {
+    return [self destinationList:[self fetchCurrentRanking]
+                         options:unrankedDestinations];
+  }
 }
 
 // Runs the ranking algorithm given a `previousRanking`. If `previousRanking` is
@@ -361,7 +592,13 @@ base::Value::List List(Range&& ranking) {
 - (const base::Value::List)calculateNewRanking:
                                (const base::Value::List*)previousRanking
                       numAboveFoldDestinations:(int)numAboveFoldDestinations {
-  if (!previousRanking) {
+  if (IsSmartSortingPriceTrackingDestinationEnabled()) {
+    DCHECK_NE(previousRanking, nullptr);
+  }
+
+  // TODO(crbug.com/1405245): Remove if-else check below after feature
+  // `kSmartSortingPriceTrackingDestination` fully launches.
+  if (!IsSmartSortingPriceTrackingDestinationEnabled() && !previousRanking) {
     return List(kDefaultRanking);
   }
 

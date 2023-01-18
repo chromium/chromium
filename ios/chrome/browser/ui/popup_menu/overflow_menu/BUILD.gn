@@ -5,11 +5,13 @@
 import("//build/config/ios/swift_source_set.gni")
 
 source_set("overflow_menu_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "overflow_menu_constants.cc",
     "overflow_menu_constants.h",
+    "overflow_menu_constants.mm",
   ]
   deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("overflow_menu") {
