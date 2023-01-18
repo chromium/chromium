@@ -35,11 +35,7 @@ namespace page_load_metrics {
 namespace internal {
 
 const char kErrorEvents[] = "PageLoad.Internal.ErrorCode";
-const char kPageLoadCompletedAfterAppBackground[] =
-    "PageLoad.Internal.PageLoadCompleted.AfterAppBackground";
 const char kPageLoadPrerender2Event[] = "PageLoad.Internal.Prerender2.Event";
-const char kPageLoadStartedInForeground[] =
-    "PageLoad.Internal.NavigationStartedInForeground";
 const char kPageLoadTrackerPageType[] = "PageLoad.Internal.PageType";
 
 }  // namespace internal
@@ -86,11 +82,6 @@ bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
 }
 
 namespace {
-
-void RecordAppBackgroundPageLoadCompleted(bool completed_after_background) {
-  base::UmaHistogramBoolean(internal::kPageLoadCompletedAfterAppBackground,
-                            completed_after_background);
-}
 
 void DispatchEventsAfterBackForwardCacheRestore(
     PageLoadMetricsObserverInterface* observer,
@@ -211,7 +202,6 @@ PageLoadTracker::PageLoadTracker(
     ukm::SourceId source_id,
     base::WeakPtr<PageLoadTracker> parent_tracker)
     : did_stop_tracking_(false),
-      app_entered_background_(false),
       navigation_start_(navigation_handle->NavigationStart()),
       url_(navigation_handle->GetURL()),
       start_url_(navigation_handle->GetURL()),
@@ -283,17 +273,10 @@ PageLoadTracker::PageLoadTracker(
           /*permit_forwarding=*/true);
       break;
   }
-
   RecordPageType(page_type_);
-  base::UmaHistogramBoolean(internal::kPageLoadStartedInForeground,
-                            started_in_foreground_);
 }
 
 PageLoadTracker::~PageLoadTracker() {
-  if (app_entered_background_) {
-    RecordAppBackgroundPageLoadCompleted(true);
-  }
-
   if (did_stop_tracking_)
     return;
 
@@ -602,11 +585,6 @@ void PageLoadTracker::OnInputEvent(const blink::WebInputEvent& event) {
 
 void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
   metrics_update_dispatcher()->FlushPendingTimingUpdates();
-
-  if (!app_entered_background_) {
-    RecordAppBackgroundPageLoadCompleted(false);
-    app_entered_background_ = true;
-  }
 
   InvokeAndPruneObservers(
       "PageLoadMetricsObserver::FlushMetricsOnAppEnterBackground",

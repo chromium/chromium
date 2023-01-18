@@ -160,12 +160,12 @@ class SchemePageLoadMetricsObserverTest
 
 TEST_F(SchemePageLoadMetricsObserverTest, HTTPNavigation) {
   SimulateNavigation(url::kHttpScheme);
-  CheckHistograms(5, url::kHttpScheme);
+  CheckHistograms(4, url::kHttpScheme);
 }
 
 TEST_F(SchemePageLoadMetricsObserverTest, HTTPSNavigation) {
   SimulateNavigation(url::kHttpsScheme);
-  CheckHistograms(5, url::kHttpsScheme);
+  CheckHistograms(4, url::kHttpsScheme);
 }
 
 // Make sure no metrics are recorded for an unobserved scheme.
@@ -176,10 +176,10 @@ TEST_F(SchemePageLoadMetricsObserverTest, WebUINavigation) {
 
 TEST_F(SchemePageLoadMetricsObserverTest, HTTPForwardBackNavigation) {
   SimulateNavigation(url::kHttpScheme, ui::PAGE_TRANSITION_FORWARD_BACK);
-  CheckHistograms(5, url::kHttpScheme, false /* new_navigation */);
+  CheckHistograms(4, url::kHttpScheme, false /* new_navigation */);
 }
 
 TEST_F(SchemePageLoadMetricsObserverTest, HTTPSReloadNavigation) {
   SimulateNavigation(url::kHttpsScheme, ui::PAGE_TRANSITION_RELOAD);
-  CheckHistograms(5, url::kHttpsScheme, false /* new_navigation */);
+  CheckHistograms(4, url::kHttpsScheme, false /* new_navigation */);
 }

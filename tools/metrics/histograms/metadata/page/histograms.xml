@@ -2316,28 +2316,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.NavigationStartedInForeground"
-    enum="BooleanForeground" expires_after="2021-10-10">
-  <owner>bmcquade@chromium.org</owner>
-  <summary>Whether a navigation started in the foreground.</summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.PageLoadCompleted.AfterAppBackground"
-    enum="BooleanStartedCompleted" expires_after="M81">
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    Whether a page load completed after the app entered the background. We log a
-    'Started' value for each PageLoadTracker that is active when the app enters
-    the background, and a 'Completed' value for each of those PageLoadTrackers
-    that successfully runs its destructor. This helps to understand how many
-    trackers are destroyed while the app is in the background before they are
-    able to run their destructor. This metric is only intended to help in
-    understanding how often app background leads to data loss, and will be
-    deprecated in a subsequent release. Please contact bmcquade@chromium.org
-    before using this metric.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Internal.PageLoadTimingStatus{Condition}"
     enum="PageLoadTimingStatus" expires_after="2023-07-13">
   <owner>toyoshim@chromium.org</owner>

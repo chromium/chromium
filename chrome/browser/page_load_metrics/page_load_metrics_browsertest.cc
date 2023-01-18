@@ -2493,18 +2493,9 @@ class SessionRestorePaintWaiter : public SessionRestoreObserver {
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
                        InitialVisibilityOfSingleRestoredTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
-  histogram_tester_->ExpectTotalCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, 1);
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, true, 1);
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(new_browser));
-
-  histogram_tester_->ExpectTotalCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, 2);
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, true, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
@@ -2513,10 +2504,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestURL(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  histogram_tester_->ExpectTotalCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, 2);
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, false, 1);
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
   ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(new_browser));
@@ -2524,13 +2511,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_TRUE(tab_strip);
   ASSERT_EQ(2, tab_strip->count());
-
-  histogram_tester_->ExpectTotalCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, 4);
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, true, 2);
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, false, 2);
 }
 
 // TODO(crbug.com/882077) Disabled due to flaky timeouts on all platforms.
@@ -4076,11 +4056,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {
       kPageLoadPrerender2Event,
       PageLoadPrerenderEvent::kPrerenderActivationNavigation, 0);
 
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, true, 1);
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, false, 0);
-
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
   prerender_helper_.AddPrerender(prerender_url);
@@ -4092,11 +4067,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {
       kPageLoadPrerender2Event,
       PageLoadPrerenderEvent::kPrerenderActivationNavigation, 0);
 
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, true, 1);
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, false, 1);
-
   // Activate.
   prerender_helper_.NavigatePrimaryPage(prerender_url);
 
@@ -4106,11 +4076,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {
   histogram_tester_->ExpectBucketCount(
       kPageLoadPrerender2Event,
       PageLoadPrerenderEvent::kPrerenderActivationNavigation, 1);
-
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, true, 1);
-  histogram_tester_->ExpectBucketCount(
-      page_load_metrics::internal::kPageLoadStartedInForeground, false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest,

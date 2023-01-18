@@ -3704,7 +3704,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Clients.Scheme.HTTPS"
       label="PageLoadMetrics that are a result of a navigation to a main
              resource where the committed URL is HTTPS."/>
-  <affected-histogram name="PageLoad.Internal.NavigationStartedInForeground"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram

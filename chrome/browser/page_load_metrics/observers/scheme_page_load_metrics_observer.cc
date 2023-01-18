@@ -28,15 +28,6 @@ SchemePageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  if (currently_committed_url.scheme() == url::kHttpScheme) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "PageLoad.Clients.Scheme.HTTP.Internal.NavigationStartedInForeground",
-        started_in_foreground);
-  } else if (currently_committed_url.scheme() == url::kHttpsScheme) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "PageLoad.Clients.Scheme.HTTPS.Internal.NavigationStartedInForeground",
-        started_in_foreground);
-  }
   return started_in_foreground ? CONTINUE_OBSERVING : STOP_OBSERVING;
 }
 

@@ -580,43 +580,6 @@ TEST_F(MetricsWebContentsObserverTest, ObservePartialNavigation) {
   CheckTotalErrorEvents();
 }
 
-TEST_F(MetricsWebContentsObserverTest, FlushMetricsOnAppEnterBackground) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl));
-
-  histogram_tester_.ExpectTotalCount(
-      internal::kPageLoadCompletedAfterAppBackground, 0);
-
-  observer()->FlushMetricsOnAppEnterBackground();
-
-  histogram_tester_.ExpectTotalCount(
-      internal::kPageLoadCompletedAfterAppBackground, 1);
-  histogram_tester_.ExpectBucketCount(
-      internal::kPageLoadCompletedAfterAppBackground, false, 1);
-  histogram_tester_.ExpectBucketCount(
-      internal::kPageLoadCompletedAfterAppBackground, true, 0);
-
-  // Navigate again, which forces completion callbacks on the previous
-  // navigation to be invoked.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl2));
-
-  // Verify that, even though the page load completed, no complete timings were
-  // reported, because the TestPageLoadMetricsObserver's
-  // FlushMetricsOnAppEnterBackground implementation returned STOP_OBSERVING,
-  // thus preventing OnComplete from being invoked.
-  ASSERT_EQ(0, CountCompleteTimingReported());
-
-  DeleteContents();
-
-  histogram_tester_.ExpectTotalCount(
-      internal::kPageLoadCompletedAfterAppBackground, 2);
-  histogram_tester_.ExpectBucketCount(
-      internal::kPageLoadCompletedAfterAppBackground, false, 1);
-  histogram_tester_.ExpectBucketCount(
-      internal::kPageLoadCompletedAfterAppBackground, true, 1);
-}
-
 TEST_F(MetricsWebContentsObserverTest, StopObservingOnCommit) {
   ASSERT_TRUE(completed_filtered_urls().empty());
 
