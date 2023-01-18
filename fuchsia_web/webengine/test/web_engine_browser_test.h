@@ -48,12 +48,6 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
 
   void SetHeadlessInCommandLine(base::CommandLine* command_line);
 
-  // Connects to a browser Context.
-  void ConnectContext();
-
-  // Disconnects the current browser Context, resulting in browser teardown.
-  void DisconnectContext();
-
   void set_test_server_root(const base::FilePath& path) {
     test_server_root_ = path;
   }

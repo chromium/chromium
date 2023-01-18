@@ -8,12 +8,9 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
-#include "base/fuchsia/file_utils.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/chromecast_buildflags.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
@@ -54,6 +51,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 class DevToolsManagerDelegate final : public content::DevToolsManagerDelegate {
  public:
   explicit DevToolsManagerDelegate(WebEngineBrowserMainParts* main_parts)
@@ -108,9 +106,9 @@ static constexpr char const* kRendererSwitchesToCopy[] = {
     network::switches::kUnsafelyTreatInsecureOriginAsSecure,
 };
 
-static constexpr char const* kUtilitySwitchesToCopy[] = {
-    network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-    switches::kDataQuotaBytes,
+static constexpr char const*
+    kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy[] = {
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
 };
 
 // These are passed to every child process and should only be used when it is
@@ -119,40 +117,6 @@ static constexpr char const* kAllProcessSwitchesToCopy[] = {
     // This is used by every child process in WebEngineContentClient.
     switches::kEnableContentDirectories,
 };
-
-// Returns an absolute path to a storage subdirectory specific to a
-// browser instance, hosted under `base_path`.
-// If `relative_partition_path` is empty (i.e. for the root partition), then the
-// subpath "Default" will be used instead.
-base::FilePath GetStoragePath(const base::FilePath& base_path,
-                              const base::FilePath& relative_partition_path) {
-  DCHECK(base_path.IsAbsolute());
-
-  base::FilePath partition_path =
-      base_path.Append(relative_partition_path.empty()
-                           ? base::FilePath(FILE_PATH_LITERAL("Default"))
-                           : relative_partition_path);
-  if (!base::CreateDirectory(partition_path)) {
-    return {};
-  }
-  return partition_path;
-}
-
-// Convenience method for reading a size_t from the commandline args.
-// Returns nullopt if the switch is unset or invalid.
-absl::optional<size_t> GetSwitchAsSize(base::StringPiece switch_name) {
-  std::string str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(switch_name);
-  size_t value;
-  if (str.empty()) {
-    return absl::nullopt;
-  }
-  if (!base::StringToSizeT(str, &value)) {
-    LOG(FATAL) << "Invalid size switch --" << switch_name << ".";
-    return absl::nullopt;
-  }
-  return value;
-}
 
 }  // namespace
 
@@ -282,12 +246,13 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
                                    std::size(kRendererSwitchesToCopy));
   } else if (process_type == switches::kUtilityProcess) {
     // Although only the Network process needs
-    // kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy and kDataQuotaBytes,
-    // differentiating utility process sub-types is non-trivial.
-    // ChromeContentBrowserClient appends this switch to all Utility processes
-    // so do the same here.
-    command_line->CopySwitchesFrom(browser_command_line, kUtilitySwitchesToCopy,
-                                   std::size(kUtilitySwitchesToCopy));
+    // kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy, differentiating utility
+    // process sub-types is non-trivial. ChromeContentBrowserClient appends this
+    // switch to all Utility processes so do the same here.
+    // Do not add other switches here.
+    command_line->CopySwitchesFrom(
+        browser_command_line, kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy,
+        std::size(kUnsafelyTreatInsecureOriginAsSecureSwitchToCopy));
   }
 }
 
@@ -366,82 +331,6 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
   return throttles;
 }
 
-void WebEngineContentBrowserClient::MaybeConfigurePersistentData(
-    const base::FilePath& relative_partition_path,
-    network::mojom::NetworkContextParams* network_context_params) {
-  if (!base::DirectoryExists(
-          base::FilePath(base::kPersistedDataDirectoryPath))) {
-    return;
-  }
-  // Filenames are copied from chrome/common/chrome_constants.cc
-  // to maintain the convention established by Chrome.
-  static const base::FilePath kHttpServerPropertiesFile(
-      FILE_PATH_LITERAL("Network Persistent State"));
-  static const base::FilePath kCookiesFile(FILE_PATH_LITERAL("Cookies"));
-  static const base::FilePath kTrustTokenFile(
-      FILE_PATH_LITERAL("Trust Tokens"));
-  static const base::FilePath kTransportSecurityPersisterFile(
-      FILE_PATH_LITERAL("TransportSecurity"));
-  static const base::FilePath kSCTAuditingPendingReportsFileName(
-      FILE_PATH_LITERAL("SCT Auditing Pending Reports"));
-
-  auto data_path =
-      GetStoragePath(base::FilePath(base::kPersistedDataDirectoryPath),
-                     relative_partition_path);
-  if (data_path.empty()) {
-    return;
-  }
-  network_context_params->file_paths =
-      ::network::mojom::NetworkContextFilePaths::New();
-  network_context_params->file_paths->data_directory = data_path;
-
-  // Configure the network process' database file locations under
-  // the "Network" subdirectory of the browser /data subpartition.
-  network_context_params->file_paths->http_server_properties_file_name =
-      base::FilePath(kHttpServerPropertiesFile);
-  network_context_params->file_paths->cookie_database_name =
-      base::FilePath(kCookiesFile);
-  network_context_params->file_paths->trust_token_database_name =
-      base::FilePath(kTrustTokenFile);
-  network_context_params->file_paths->transport_security_persister_file_name =
-      base::FilePath(kTransportSecurityPersisterFile);
-  network_context_params->file_paths->sct_auditing_pending_reports_file_name =
-      base::FilePath(kSCTAuditingPendingReportsFileName);
-}
-
-void WebEngineContentBrowserClient::MaybeConfigureHttpCache(
-    bool in_memory,
-    const base::FilePath& relative_partition_path,
-    network::mojom::NetworkContextParams* network_context_params) {
-  // If no flags are specified, then the browser default HTTP cache behavior
-  // is used (in-memory; sized up to 2% of RAM).
-  absl::optional<size_t> mem_cache_maxsize =
-      GetSwitchAsSize(switches::kInMemoryHttpCacheSize);
-  absl::optional<size_t> disk_cache_maxsize =
-      GetSwitchAsSize(switches::kOnDiskHttpCacheSize);
-  bool is_cache_dir_available =
-      base::DirectoryExists(base::FilePath(base::kPersistedCacheDirectoryPath));
-  if (!in_memory && is_cache_dir_available && disk_cache_maxsize &&
-      *disk_cache_maxsize > 0u) {
-    // Configure the on-disk HTTP cache if the browser context is non-OTR,
-    // /cache is present, and a nonzero disk quota is set.
-    network_context_params->http_cache_directory =
-        GetStoragePath(base::FilePath(base::kPersistedCacheDirectoryPath),
-                       relative_partition_path);
-    network_context_params->http_cache_max_size = *disk_cache_maxsize;
-  } else if (mem_cache_maxsize) {
-    // Configure the in-memory HTTP cache.
-    if (*mem_cache_maxsize == 0u) {
-      // Disable the in-memory cache if the memory cache cap is set to zero.
-      network_context_params->http_cache_enabled = false;
-    } else {
-      // Otherwise, if there is a RAM cache quota set, then an in-memory cache
-      // can be used.
-      network_context_params->http_cache_max_size = *mem_cache_maxsize;
-    }
-  }
-}
-
 void WebEngineContentBrowserClient::ConfigureNetworkContextParams(
     content::BrowserContext* context,
     bool in_memory,
@@ -457,16 +346,6 @@ void WebEngineContentBrowserClient::ConfigureNetworkContextParams(
   // starting with the headers passed in via
   // |CreateContextParams.cors_exempt_headers|.
   network_context_params->cors_exempt_header_list = cors_exempt_headers_;
-
-  {
-    base::ScopedAllowBlocking allow_blocking;
-    if (!in_memory) {
-      MaybeConfigurePersistentData(relative_partition_path,
-                                   network_context_params);
-    }
-    MaybeConfigureHttpCache(in_memory, relative_partition_path,
-                            network_context_params);
-  }
 }
 
 std::vector<url::Origin>

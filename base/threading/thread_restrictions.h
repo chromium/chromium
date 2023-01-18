@@ -126,16 +126,15 @@ class BrowserThemePack;
 class ChromeNSSCryptoModuleDelegate;
 class DesktopNotificationBalloon;
 class FirefoxProfileLock;
-class GaiaConfig;
 class KeyStorageLinux;
 class NativeBackendKWallet;
 class NativeDesktopMediaList;
 class Profile;
 class ProfileImpl;
-class ScopedAllowBlockingForProfile;
 class StartupTabProviderImpl;
+class GaiaConfig;
 class WebEngineBrowserMainParts;
-class WebEngineContentBrowserClient;
+class ScopedAllowBlockingForProfile;
 
 namespace base {
 class File;
@@ -618,7 +617,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class remote_cocoa::
       DroppedScreenShotCopierMac;  // https://crbug.com/1148078
   friend class ::WebEngineBrowserMainParts;
-  friend class ::WebEngineContentBrowserClient;
   friend class remote_cocoa::SelectFileDialogBridge;
   friend class remoting::ScopedBypassIOThreadRestrictions;  // crbug.com/1144161
   friend class ui::DrmDisplayHostManager;

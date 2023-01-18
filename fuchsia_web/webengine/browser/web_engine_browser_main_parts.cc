@@ -219,11 +219,6 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
-  // Setting quota on "/data" is benign in incognito contexts, but indicates
-  // that the invoker probably mis-configured this instance.
-  DCHECK(!command_line->HasSwitch(switches::kDataQuotaBytes) ||
-         !command_line->HasSwitch(switches::kIncognito));
-
   // If Vulkan is not enabled then disable hardware acceleration. Otherwise gpu
   // process will be restarted several times trying to initialize GL before
   // falling back to software compositing.
@@ -250,6 +245,22 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
     legacy_metrics_client_->Start(kMetricsReportingInterval);
   }
 #endif
+
+  // Configure SysInfo to report total/free space under "/data" based on the
+  // requested soft-quota, if any. This only affects persistent instances.
+  if (command_line->HasSwitch(switches::kDataQuotaBytes)) {
+    // Setting quota on "/data" is benign in incognito contexts, but indicates
+    // that the client probably mis-configured this instance.
+    DCHECK(!command_line->HasSwitch(switches::kIncognito))
+        << "data_quota_bytes set for incognito instance.";
+
+    uint64_t quota_bytes = 0;
+    CHECK(base::StringToUint64(
+        command_line->GetSwitchValueASCII(switches::kDataQuotaBytes),
+        &quota_bytes));
+    base::SysInfo::SetAmountOfTotalDiskSpace(
+        base::FilePath(base::kPersistedDataDirectoryPath), quota_bytes);
+  }
 
   // Watch for changes to the user's locale setting.
   intl_profile_watcher_ = std::make_unique<base::FuchsiaIntlProfileWatcher>(
