@@ -40,9 +40,9 @@ void ConnectorsInternalsPageHandler::GetDeviceTrustState(
         connectors_internals::mojom::KeyInfo::New(
             connectors_internals::mojom::KeyManagerInitializedValue::
                 UNSUPPORTED,
-            connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
-            connectors_internals::mojom::KeyType::UNKNOWN, std::string(),
-            nullptr),
+            nullptr,
+            connectors_internals::mojom::KeyManagerPermanentFailure::
+                UNSPECIFIED),
         std::string());
     std::move(callback).Run(std::move(state));
     return;

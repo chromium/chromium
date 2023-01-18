@@ -28,8 +28,25 @@ class DeviceTrustKeyManager {
   };
 
   enum class PermanentFailure {
+    // A HTTP response code of 409 was returned when trying to upload a key
+    // for the first time. This means a key already exists remotely for the
+    // current device, and an admin will need to clear it before upload will
+    // succeed.
     kCreationUploadConflict = 0,
-    kInsufficientPermissions = 1
+
+    // This error is used to indicate that the browser is missing some
+    // permissions in order to set up the Device Trust connector.
+    // On Linux, this can mean that the management binary wasn't tagged with the
+    // proper Linux group.
+    kInsufficientPermissions = 1,
+
+    // A platform-specific requirement was not met.
+    // On Mac, this can mean that the current device does not support Secure
+    // Enclave.
+    kOsRestriction = 2,
+
+    // Something is missing from the installation.
+    kInvalidInstallation = 3,
   };
 
   struct KeyMetadata {

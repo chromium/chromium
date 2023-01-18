@@ -3,6 +3,10 @@
     font-weight: bold;
   }
 
+  .red {
+    color: rgb(162, 56, 32);
+  }
+
   div ~ div {
     margin-top: 5px;
   }
@@ -15,19 +19,25 @@
 <div>
   Is Enabled: <span id="enabled-string" class="bold"></span>
 </div>
-<div id="key-manager-row">
+<div id="key-manager-section">
   Key Manager Initialized: <span id="key-manager-state" class="bold"></span>
-</div>
-<div id="key-metadata-row">
-  <div>
-    Trust Level: <span id="key-trust-level" class="bold"></span>
-    Key Type: <span id="key-type" class="bold"></span>
+
+  <div id="key-permanent-failure-row">
+    <span class="bold red">Permanent Failure: </span>
+    <span id="key-permanent-failure" class="bold"></span>
   </div>
-  <div>
-    SPKI Hash: <span id="spki-hash" class="bold"></span>
-  </div>
-  <div>
-    Key Sync: <span id="key-sync" class="bold"></span>
+
+  <div id="key-loaded-rows">
+    <div>
+      Trust Level: <span id="key-trust-level" class="bold"></span>
+      Key Type: <span id="key-type" class="bold"></span>
+    </div>
+    <div>
+      SPKI Hash: <span id="spki-hash" class="bold"></span>
+    </div>
+    <div>
+      Key Sync: <span id="key-sync" class="bold"></span>
+    </div>
   </div>
 </div>
 <div>

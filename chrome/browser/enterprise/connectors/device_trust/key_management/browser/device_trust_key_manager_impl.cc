@@ -43,7 +43,8 @@ RotationStatusToPermanentFailure(KeyRotationCommand::Status status,
                                  bool is_key_creation) {
   // Permanent failures can only occur in key creation flows as, during rotation
   // flows, there is an underlying assumption that a valid key was already
-  // created successfully.
+  // created successfully. When a rotation flow fails, the browser rolls back
+  // to the valid key and the connector should still work.
   if (!is_key_creation) {
     return absl::nullopt;
   }

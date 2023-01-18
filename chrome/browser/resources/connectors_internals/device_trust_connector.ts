@@ -4,7 +4,7 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {DeviceTrustState, Int32Value, KeyInfo, KeyManagerInitializedValue, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import {DeviceTrustState, Int32Value, KeyInfo, KeyManagerInitializedValue, KeyManagerPermanentFailure, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
 import {getTemplate} from './device_trust_connector.html.js';
 
 const TrustLevelStringMap = {
@@ -17,6 +17,18 @@ const KeyTypeStringMap = {
   [KeyType.UNKNOWN]: 'Unknown',
   [KeyType.RSA]: 'RSA',
   [KeyType.EC]: 'EC',
+};
+
+const KeyPermanentFailureMap = {
+  [KeyManagerPermanentFailure.CREATION_UPLOAD_CONFLICT]:
+      'A key already exists on the server for this device.',
+  [KeyManagerPermanentFailure.INSUFFICIENT_PERMISSIONS]:
+      'The browser is missing permissions and is unable to create a Device ' +
+      'Trust key.',
+  [KeyManagerPermanentFailure.OS_RESTRICTION]:
+      'This device is missing a critical feature.',
+  [KeyManagerPermanentFailure.INVALID_INSTALLATION]:
+      'The browser is missing a critical installation dependency.',
 };
 
 export class DeviceTrustConnectorElement extends CustomElement {
@@ -38,10 +50,15 @@ export class DeviceTrustConnectorElement extends CustomElement {
   }
 
   public set keyInfo(keyInfo: KeyInfo) {
-    const initRowEl = (this.$('#key-manager-row') as HTMLElement);
+    const keySectionEl = (this.$('#key-manager-section') as HTMLElement);
     const initStateEl = (this.$('#key-manager-state') as HTMLElement);
 
-    const metadataRowEl = (this.$('#key-metadata-row') as HTMLElement);
+    const keyPermanentErrorRowEl =
+        (this.$('#key-permanent-failure-row') as HTMLElement);
+    const keyPermanentErrorValueEl =
+        (this.$('#key-permanent-failure') as HTMLElement);
+
+    const keyLoadedRows = (this.$('#key-loaded-rows') as HTMLElement);
     const trustLevelStateEl = (this.$('#key-trust-level') as HTMLElement);
     const keyTypeStateEl = (this.$('#key-type') as HTMLElement);
     const spkiHashStateEl = (this.$('#spki-hash') as HTMLElement);
@@ -49,25 +66,36 @@ export class DeviceTrustConnectorElement extends CustomElement {
 
     const initializedValue = keyInfo.isKeyManagerInitialized;
     if (initializedValue === KeyManagerInitializedValue.UNSUPPORTED) {
-      this.hideElement(initRowEl);
-      this.hideElement(metadataRowEl);
+      this.hideElement(keySectionEl);
     } else {
       const keyLoaded =
           initializedValue === KeyManagerInitializedValue.KEY_LOADED;
       initStateEl.innerText = keyLoaded ? 'true' : 'false';
-      this.showElement(initRowEl);
+      this.showElement(keySectionEl);
 
-      if (keyLoaded) {
-        trustLevelStateEl.innerText =
-            this.trustLevelToString(keyInfo.trustLevel);
-        keyTypeStateEl.innerText = this.keyTypeToString(keyInfo.keyType);
-        spkiHashStateEl.innerText = keyInfo.encodedSpkiHash;
-        keySyncStateEl.innerText =
-            this.keySyncCodeToString(keyInfo.syncKeyResponseCode);
-
-        this.showElement(metadataRowEl);
+      if (keyInfo.permanentFailure === KeyManagerPermanentFailure.UNSPECIFIED) {
+        this.hideElement(keyPermanentErrorRowEl);
       } else {
-        this.hideElement(metadataRowEl);
+        const permanentFailureMessage =
+            KeyPermanentFailureMap[keyInfo.permanentFailure] ||
+            `Unknown: ${keyInfo.permanentFailure}`;
+        keyPermanentErrorValueEl.innerText = permanentFailureMessage;
+
+        this.showElement(keyPermanentErrorRowEl);
+      }
+
+      const keyMetadata = keyInfo.loadedKeyInfo;
+      if (keyMetadata) {
+        trustLevelStateEl.innerText =
+            this.trustLevelToString(keyMetadata.trustLevel);
+        keyTypeStateEl.innerText = this.keyTypeToString(keyMetadata.keyType);
+        spkiHashStateEl.innerText = keyMetadata.encodedSpkiHash;
+        keySyncStateEl.innerText =
+            this.keySyncCodeToString(keyMetadata.syncKeyResponseCode);
+
+        this.showElement(keyLoadedRows);
+      } else {
+        this.hideElement(keyLoadedRows);
       }
     }
   }

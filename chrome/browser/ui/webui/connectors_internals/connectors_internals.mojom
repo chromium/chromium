@@ -26,31 +26,47 @@ enum KeyType {
   EC = 2,
 };
 
+// Represents the possible permanent failures encountered in the key creation
+// flow.
+enum KeyManagerPermanentFailure {
+  UNSPECIFIED = 0,
+  CREATION_UPLOAD_CONFLICT = 1,
+  INSUFFICIENT_PERMISSIONS = 2,
+  OS_RESTRICTION = 3,
+  INVALID_INSTALLATION = 4,
+};
+
 // Wrapper for an optional int32.
 struct Int32Value {
   // The int32 value.
   int32 value;
 };
 
-struct KeyInfo {
-  // Whether the key manager has loaded a key successfully.
-  KeyManagerInitializedValue is_key_manager_initialized;
-
-  // Loaded key's trust level, will be UNSPECIFIED if
-  // `is_key_manager_initialized` is not KEY_LOADED.
+struct LoadedKeyInfo {
+  // Loaded key's trust level (e.g. is it a TPM key or not).
   KeyTrustLevel trust_level;
 
-
-  // Key's algorithm, will be UNKNOWN if `is_key_manager_initialized` is not
-  // KEY_LOADED.
+  // Key's algorithm (e.g. RSA, EC).
   KeyType key_type;
 
-  // URL Base64 encoded SHA-256 hash value for the loaded key's SPKI.
+  // Base64-encoded SHA-256 hash value for the loaded key's SPKI.
   string encoded_spki_hash;
 
   // HTTP response code of the sync key request. Can be unset if the response
   // has not yet been received.
   Int32Value? sync_key_response_code;
+};
+
+struct KeyInfo {
+  // Whether the key manager has loaded a key successfully.
+  KeyManagerInitializedValue is_key_manager_initialized;
+
+  // Metadata about a key loaded by the key manager. Will only contain a value
+  // if `is_key_manager_initialized` is `KEY_LOADED`.
+  LoadedKeyInfo? loaded_key_info;
+
+  // The permanent failure type, if any.
+  KeyManagerPermanentFailure permanent_failure;
 };
 
 struct DeviceTrustState {

@@ -50,6 +50,28 @@ connectors_internals::mojom::KeyType AlgorithmToType(
   }
 }
 
+connectors_internals::mojom::KeyManagerPermanentFailure ConvertPermanentFailure(
+    absl::optional<DeviceTrustKeyManager::PermanentFailure> permanent_failure) {
+  if (!permanent_failure) {
+    return connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED;
+  }
+
+  switch (permanent_failure.value()) {
+    case DeviceTrustKeyManager::PermanentFailure::kCreationUploadConflict:
+      return connectors_internals::mojom::KeyManagerPermanentFailure::
+          CREATION_UPLOAD_CONFLICT;
+    case DeviceTrustKeyManager::PermanentFailure::kInsufficientPermissions:
+      return connectors_internals::mojom::KeyManagerPermanentFailure::
+          INSUFFICIENT_PERMISSIONS;
+    case DeviceTrustKeyManager::PermanentFailure::kOsRestriction:
+      return connectors_internals::mojom::KeyManagerPermanentFailure::
+          OS_RESTRICTION;
+    case DeviceTrustKeyManager::PermanentFailure::kInvalidInstallation:
+      return connectors_internals::mojom::KeyManagerPermanentFailure::
+          INVALID_INSTALLATION;
+  }
+}
+
 std::string HashAndEncodeString(const std::string& spki_bytes) {
   std::string encoded_string;
   base::Base64UrlEncode(crypto::SHA256HashString(spki_bytes),
@@ -77,25 +99,33 @@ connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
   if (key_manager) {
     auto metadata = key_manager->GetLoadedKeyMetadata();
     if (metadata) {
-      return connectors_internals::mojom::KeyInfo::New(
-          connectors_internals::mojom::KeyManagerInitializedValue::KEY_LOADED,
-          ParseTrustLevel(metadata->trust_level),
-          AlgorithmToType(metadata->algorithm),
-          HashAndEncodeString(metadata->spki_bytes),
-          ToMojomValue(metadata->synchronization_response_code));
-    } else {
+      if (!metadata->spki_bytes.empty()) {
+        // A key was loaded successfully.
+        return connectors_internals::mojom::KeyInfo::New(
+            connectors_internals::mojom::KeyManagerInitializedValue::KEY_LOADED,
+            connectors_internals::mojom::LoadedKeyInfo::New(
+                ParseTrustLevel(metadata->trust_level),
+                AlgorithmToType(metadata->algorithm),
+                HashAndEncodeString(metadata->spki_bytes),
+                ToMojomValue(metadata->synchronization_response_code)),
+            ConvertPermanentFailure(metadata->permanent_failure));
+      }
+
       return connectors_internals::mojom::KeyInfo::New(
           connectors_internals::mojom::KeyManagerInitializedValue::NO_KEY,
-          connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
-          connectors_internals::mojom::KeyType::UNKNOWN, std::string(),
-          nullptr);
+          nullptr, ConvertPermanentFailure(metadata->permanent_failure));
     }
+
+    return connectors_internals::mojom::KeyInfo::New(
+        connectors_internals::mojom::KeyManagerInitializedValue::NO_KEY,
+        nullptr,
+        connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return connectors_internals::mojom::KeyInfo::New(
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED,
-      connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
-      connectors_internals::mojom::KeyType::UNKNOWN, std::string(), nullptr);
+      nullptr,
+      connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED);
 }
 
 }  // namespace utils
