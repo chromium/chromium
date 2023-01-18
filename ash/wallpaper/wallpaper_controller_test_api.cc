@@ -65,7 +65,6 @@ void WallpaperControllerTestApi::EndWallpaperPreview(
 void WallpaperControllerTestApi::SetCalculatedColors(
     const WallpaperCalculatedColors& calculated_colors) {
   if (controller_->color_calculator_) {
-    controller_->color_calculator_->RemoveObserver(controller_);
     controller_->color_calculator_.reset();
   }
   controller_->SetCalculatedColors(calculated_colors);

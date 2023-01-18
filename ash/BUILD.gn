@@ -2039,7 +2039,6 @@ component("ash") {
     "wallpaper/wallpaper_utils/wallpaper_calculated_colors.h",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator.cc",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator.h",
-    "wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h",
     "wallpaper/wallpaper_utils/wallpaper_color_extraction_result.h",
     "wallpaper/wallpaper_utils/wallpaper_ephemeral_user.cc",
     "wallpaper/wallpaper_utils/wallpaper_ephemeral_user.h",

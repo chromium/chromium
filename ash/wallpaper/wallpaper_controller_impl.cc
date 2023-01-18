@@ -688,8 +688,7 @@ WallpaperControllerImpl::WallpaperControllerImpl(
 WallpaperControllerImpl::~WallpaperControllerImpl() {
   if (current_wallpaper_)
     current_wallpaper_->RemoveObserver(this);
-  if (color_calculator_)
-    color_calculator_->RemoveObserver(this);
+
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
 }
@@ -824,7 +823,6 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
 
   // Cancel any in-flight color calculation because we have a new wallpaper.
   if (color_calculator_) {
-    color_calculator_->RemoveObserver(this);
     color_calculator_.reset();
   }
 
@@ -1729,11 +1727,8 @@ void WallpaperControllerImpl::OnWallpaperResized() {
     observer.OnWallpaperResized();
 }
 
-void WallpaperControllerImpl::OnColorCalculationComplete() {
-  WallpaperCalculatedColors wallpaper_calculated_colors =
-      color_calculator_->get_calculated_colors();
-  color_calculator_.reset();
-
+void WallpaperControllerImpl::OnColorCalculationComplete(
+    const WallpaperCalculatedColors& wallpaper_calculated_colors) {
   const AccountId account_id = GetActiveAccountId();
 
   // Use |WallpaperInfo::location| as the key for storing |prominent_colors_| in
@@ -1747,6 +1742,11 @@ void WallpaperControllerImpl::OnColorCalculationComplete() {
   pref_manager_->CacheKMeanColor(account_id,
                                  wallpaper_calculated_colors.k_mean_color);
   SetCalculatedColors(wallpaper_calculated_colors);
+
+  // Release the color calculator after it has returned a result by calling this
+  // callback. There is only ever one calculator and it should always be the one
+  // which is fulfilling this callback.
+  color_calculator_.reset();
 }
 
 void WallpaperControllerImpl::OnActiveUserSessionChanged(
@@ -2713,7 +2713,6 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
 
   // Cancel any in-flight color calculation.
   if (color_calculator_) {
-    color_calculator_->RemoveObserver(this);
     color_calculator_.reset();
   }
 
@@ -2733,9 +2732,10 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
   }
 
   color_calculator_ = std::make_unique<WallpaperColorCalculator>(
-      GetWallpaper(), color_profiles_, sequenced_task_runner_);
-  color_calculator_->AddObserver(this);
-  if (!color_calculator_->StartCalculation()) {
+      GetWallpaper(), color_profiles_);
+  if (!color_calculator_->StartCalculation(
+          base::BindOnce(&WallpaperControllerImpl::OnColorCalculationComplete,
+                         weak_factory_.GetWeakPtr()))) {
     ResetCalculatedColors();
   }
 }
