@@ -241,19 +241,19 @@
 
     'chromium.dev': {
       # This should be the same with 'android-pie-arm64-rel'.
-      'android-pie-arm64-rel-swarming':  'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild',
+      'android-pie-arm64-rel-swarming':  'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
 
       # These should be the same with 'Linux Builder'.
-      'linux-rel-swarming': 'gpu_tests_release_bot',
-      'linux-ssd-rel-swarming': 'gpu_tests_release_bot',
+      'linux-rel-swarming': 'gpu_tests_release_bot_do_typecheck_reclient',
+      'linux-ssd-rel-swarming': 'gpu_tests_release_bot_do_typecheck_reclient',
 
       # This should be the same with 'Mac Builder'.
-      'mac-arm-rel-swarming': 'gpu_tests_release_bot_minimal_symbols',
-      'mac-rel-swarming': 'gpu_tests_release_bot_minimal_symbols',
+      'mac-arm-rel-swarming': 'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
+      'mac-rel-swarming': 'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
 
       # This should be the same with 'Win x64 Builder'.
-      'win-rel-swarming': 'gpu_tests_release_bot_minimal_symbols',
-      'win11-rel-swarming': 'gpu_tests_release_bot_minimal_symbols',
+      'win-rel-swarming': 'gpu_tests_release_bot_minimal_symbols_reclient',
+      'win11-rel-swarming': 'gpu_tests_release_bot_minimal_symbols_reclient',
     },
 
     'chromium.devtools-frontend': {
@@ -2581,12 +2581,6 @@
     'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient': [
       'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'arm64', 'static_angle',
       'android_fastbuild',
-    ],
-
-    'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild': [
-      'gpu_tests', 'android', 'release_bot', 'minimal_symbols', 'arm64',
-      'resource_allowlisting', 'static_angle', 'android_fastbuild',
-      'webview_google',
     ],
 
     'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage_reclient': [

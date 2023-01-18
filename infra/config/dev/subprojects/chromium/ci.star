@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os")
+load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient")
 load("//lib/builder_config.star", "builder_config")
 
 luci.bucket(
@@ -80,7 +80,8 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         name = name,
         triggered_by = ["chromium-gitiles-trigger"],
         resultdb_bigquery_exports = resultdb_bigquery_exports,
-        goma_backend = goma.backend.RBE_PROD,
+        reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+        reclient_jobs = reclient.jobs.DEFAULT,
         resultdb_index_by_timestamp = True,
         **kwargs
     )
@@ -172,7 +173,6 @@ ci_builder(
         ),
     ),
     os = os.WINDOWS_10,
-    goma_enable_ats = True,
 )
 
 ci_builder(
@@ -186,5 +186,4 @@ ci_builder(
         ),
     ),
     os = os.WINDOWS_11,
-    goma_enable_ats = True,
 )
