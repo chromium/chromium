@@ -46,7 +46,7 @@ std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
   __block id result = nil;
   __block bool did_finish = false;
   CRWWebController* web_controller =
-      static_cast<WebStateImpl*>(web_state)->GetWebController();
+      WebStateImpl::FromWebState(web_state)->GetWebController();
   [web_controller executeJavaScript:base::SysUTF8ToNSString(script)
                   completionHandler:^(id handler_result, NSError*) {
                     result = handler_result;
@@ -235,7 +235,7 @@ bool RunActionOnWebViewElementWithScript(web::WebState* web_state,
                                          ElementAction action,
                                          NSError* __autoreleasing* error) {
   CRWWebController* web_controller =
-      static_cast<WebStateImpl*>(web_state)->GetWebController();
+      WebStateImpl::FromWebState(web_state)->GetWebController();
   const char* js_action = nullptr;
   switch (action) {
     case ELEMENT_ACTION_CLICK:

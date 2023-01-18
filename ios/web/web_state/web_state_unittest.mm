@@ -563,7 +563,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   // TODO(crbug.com/1244067): Remove this workaround.
   __block BOOL called = false;
   CRWWebController* web_controller =
-      static_cast<WebStateImpl*>(web_state.get())->GetWebController();
+      WebStateImpl::FromWebState(web_state.get())->GetWebController();
   [web_controller executeJavaScript:@"0;"
                   completionHandler:^(id, NSError*) {
                     called = true;

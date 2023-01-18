@@ -2447,10 +2447,9 @@ TEST_F(WebStateObserverTest, StopFinishedNavigation) {
   // private API.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-  web::WebStateImpl* web_state_impl =
-      static_cast<web::WebStateImpl*>(web_state());
   WKWebView* web_view = base::mac::ObjCCast<WKWebView>(
-      web_state_impl->GetWebViewNavigationProxy());
+      web::WebStateImpl::FromWebState(web_state())
+          ->GetWebViewNavigationProxy());
   [web_view performSelector:@selector(_close)];
 #pragma clang diagnostic pop
 }

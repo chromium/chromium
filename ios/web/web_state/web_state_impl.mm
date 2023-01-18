@@ -56,6 +56,11 @@ void CheckForOverRealization() {
   }
 }
 
+// Key used to store an empty base::SupportsUserData::Data to all WebStateImpl
+// instances. Used by WebStateImpl::FromWebState(...) to assert the pointer is
+// pointing to a WebStateImpl instance and not another sub-class of WebState.
+const char kWebStateIsWebStateImpl[] = "WebStateIsWebStateImpl";
+
 }  // namespace
 
 void IgnoreOverRealizationCheck() {
@@ -84,6 +89,12 @@ WebStateImpl::WebStateImpl(const CreateParams& params)
 
 WebStateImpl::WebStateImpl(const CreateParams& params,
                            CRWSessionStorage* session_storage) {
+  // Store an empty base::SupportsUserData::Data that mark the current instance
+  // as a WebStateImpl. Need to be done before anything else, so that casting
+  // can safely be performed even before the end of the constructor.
+  SetUserData(kWebStateIsWebStateImpl,
+              std::make_unique<base::SupportsUserData::Data>());
+
   if (session_storage) {
     saved_ = std::make_unique<SerializedData>(this, params, session_storage);
   } else {
@@ -102,6 +113,16 @@ WebStateImpl::~WebStateImpl() {
   } else {
     saved_->TearDown();
   }
+}
+
+/* static */
+WebStateImpl* WebStateImpl::FromWebState(WebState* web_state) {
+  if (!web_state) {
+    return nullptr;
+  }
+
+  DCHECK(web_state->GetUserData(kWebStateIsWebStateImpl));
+  return static_cast<WebStateImpl*>(web_state);
 }
 
 /* static */

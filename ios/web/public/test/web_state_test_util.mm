@@ -55,9 +55,7 @@ id ExecuteJavaScript(NSString* script, web::WebState* web_state) {
 }
 
 CRWWebController* GetWebController(web::WebState* web_state) {
-  web::WebStateImpl* web_state_impl =
-      static_cast<web::WebStateImpl*>(web_state);
-  return web_state_impl->GetWebController();
+  return web::WebStateImpl::FromWebState(web_state)->GetWebController();
 }
 
 void LoadHtml(NSString* html, const GURL& url, web::WebState* web_state) {

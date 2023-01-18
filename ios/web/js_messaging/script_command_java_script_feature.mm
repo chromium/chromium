@@ -78,7 +78,7 @@ void ScriptCommandJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state);
+  WebStateImpl* web_state_impl = WebStateImpl::FromWebState(web_state);
   if (!web_state_impl) {
     return;
   }

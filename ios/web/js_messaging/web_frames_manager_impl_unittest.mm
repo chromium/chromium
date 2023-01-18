@@ -59,19 +59,19 @@ class WebFramesManagerImplTest : public WebTestWithWebState {
 
   // Notifies `web_state()` of a newly available `web_frame`.
   void SendFrameBecameAvailableMessage(std::unique_ptr<WebFrame> web_frame) {
-    WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
+    WebStateImpl* web_state_impl = WebStateImpl::FromWebState(web_state());
     web_state_impl->WebFrameBecameAvailable(std::move(web_frame));
   }
 
   // Notifies `web_state()` that the web frame with `frame_id` will become
   // unavailable.
   void SendFrameBecameUnavailableMessage(const std::string& frame_id) {
-    WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
+    WebStateImpl* web_state_impl = WebStateImpl::FromWebState(web_state());
     web_state_impl->WebFrameBecameUnavailable(frame_id);
   }
 
   WebFramesManagerImpl& GetWebFramesManager() {
-    WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
+    WebStateImpl* web_state_impl = WebStateImpl::FromWebState(web_state());
     return web_state_impl->GetWebFramesManagerImpl();
   }
 
@@ -167,7 +167,7 @@ TEST_F(WebFramesManagerImplTest, RemoveAllWebFrames) {
       /*is_main_frame=*/false, GURL("https://www.frame2.test")));
   EXPECT_EQ(3ul, GetWebFramesManager().GetAllWebFrames().size());
 
-  WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
+  WebStateImpl* web_state_impl = WebStateImpl::FromWebState(web_state());
   web_state_impl->RemoveAllWebFrames();
   EXPECT_EQ(0ul, GetWebFramesManager().GetAllWebFrames().size());
   // Check main frame.

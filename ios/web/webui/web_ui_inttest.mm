@@ -129,7 +129,7 @@ class WebUITest : public WebTestWithWebState {
 // Tests that a web UI page is loaded and that the WebState correctly reports
 // `WebStateImpl::HasWebUI`.
 TEST_F(WebUITest, LoadWebUIPage) {
-  ASSERT_TRUE(static_cast<WebStateImpl*>(web_state())->HasWebUI());
+  ASSERT_TRUE(WebStateImpl::FromWebState(web_state())->HasWebUI());
 
   EXPECT_TRUE(WaitForWebViewContainingText(web_state(), kWebUIPageText));
 }
@@ -147,7 +147,7 @@ TEST_F(WebUITest, LoadWebUIPageLoadViaLinkClick) {
     return !web_state()->IsLoading() && url.spec() == BaseUrl();
   }));
 
-  ASSERT_TRUE(static_cast<WebStateImpl*>(web_state())->HasWebUI());
+  ASSERT_TRUE(WebStateImpl::FromWebState(web_state())->HasWebUI());
 }
 
 }  // namespace web

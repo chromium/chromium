@@ -167,9 +167,8 @@ void JavaScriptContentWorld::ScriptMessageReceived(
     return;
   }
 
-  web::WebStateImpl* web_state_impl =
-      static_cast<web::WebStateImpl*>(web_state);
-  CRWWebController* web_controller = web_state_impl->GetWebController();
+  CRWWebController* web_controller =
+      web::WebStateImpl::FromWebState(web_state)->GetWebController();
   if (!web_controller) {
     return;
   }

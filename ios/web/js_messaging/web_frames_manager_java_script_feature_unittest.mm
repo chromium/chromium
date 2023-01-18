@@ -109,8 +109,7 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
   }
 
   WebFramesManagerImpl& GetWebFramesManager() {
-    WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
-    return web_state_impl->GetWebFramesManagerImpl();
+    return WebStateImpl::FromWebState(web_state())->GetWebFramesManagerImpl();
   }
 
   void SetUp() override {
@@ -256,8 +255,7 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, OnWebViewUpdated) {
   WKWebView* web_view_2 = OCMClassMock([WKWebView class]);
   WebViewWebStateMap::FromBrowserState(GetBrowserState())
       ->SetAssociatedWebViewForWebState(web_view_2, web_state());
-  WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
-  web_state_impl->RemoveAllWebFrames();
+  WebStateImpl::FromWebState(web_state())->RemoveAllWebFrames();
 
   // Send JS message of loaded/unloaded web frames in previous WKWebView (i.e.
   // web_view_). `frames_manager_` should have unregistered JS message handlers

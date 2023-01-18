@@ -69,10 +69,9 @@ id ExecuteJavaScriptForFeature(web::WebState* web_state,
   JavaScriptContentWorld* world =
       feature_manager->GetContentWorldForFeature(feature);
 
-  web::WebStateImpl* web_state_impl =
-      static_cast<web::WebStateImpl*>(web_state);
   WKWebView* web_view =
-      [web_state_impl->GetWebController() ensureWebViewCreated];
+      [web::WebStateImpl::FromWebState(web_state)->GetWebController()
+          ensureWebViewCreated];
   return web::test::ExecuteJavaScript(web_view, world->GetWKContentWorld(),
                                       script);
 }

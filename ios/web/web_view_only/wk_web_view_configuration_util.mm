@@ -19,7 +19,7 @@ namespace web {
 WKWebView* EnsureWebViewCreatedWithConfiguration(
     WebState* web_state,
     WKWebViewConfiguration* configuration) {
-  WebStateImpl* impl = static_cast<WebStateImpl*>(web_state);
+  WebStateImpl* impl = WebStateImpl::FromWebState(web_state);
   BrowserState* browser_state = impl->GetBrowserState();
   CRWWebController* web_controller = impl->GetWebController();
 

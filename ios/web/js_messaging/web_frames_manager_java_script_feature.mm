@@ -134,7 +134,7 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
       message.frameInfo, frame_id, message.frameInfo.mainFrame,
       message_frame_origin, web_state);
 
-  static_cast<web::WebStateImpl*>(web_state)->WebFrameBecameAvailable(
+  web::WebStateImpl::FromWebState(web_state)->WebFrameBecameAvailable(
       std::move(new_frame));
 }
 
@@ -155,7 +155,7 @@ void WebFramesManagerJavaScriptFeature::FrameUnavailableMessageReceived(
     return;
   }
   std::string frame_id = base::SysNSStringToUTF8(message.body);
-  static_cast<web::WebStateImpl*>(web_state)->WebFrameBecameUnavailable(
+  web::WebStateImpl::FromWebState(web_state)->WebFrameBecameUnavailable(
       frame_id);
 }
 

@@ -25,7 +25,7 @@ CRWWebController* WebTestWithWebController::web_controller() {
   if (!web_state()) {
     return nullptr;
   }
-  return static_cast<web::WebStateImpl*>(web_state())->GetWebController();
+  return web::WebStateImpl::FromWebState(web_state())->GetWebController();
 }
 
 }  // namespace web

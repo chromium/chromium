@@ -85,7 +85,7 @@ void NavigationJavaScriptFeature::ScriptMessageReceived(
   }
 
   CRWWebController* web_controller =
-      static_cast<WebStateImpl*>(web_state)->GetWebController();
+      WebStateImpl::FromWebState(web_state)->GetWebController();
 
   if (*command == "hashchange") {
     [web_controller handleNavigationHashChange];

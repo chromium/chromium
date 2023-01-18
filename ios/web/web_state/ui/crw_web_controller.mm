@@ -1815,7 +1815,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
                        forWebState:(web::WebState*)webState {
   CRWWebController* webController =
-      static_cast<web::WebStateImpl*>(webState)->GetWebController();
+      web::WebStateImpl::FromWebState(webState)->GetWebController();
   DCHECK(!webController || webState->HasOpener());
 
   [webController ensureWebViewCreatedWithConfiguration:configuration];

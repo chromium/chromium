@@ -70,6 +70,11 @@ class WebStateImpl final : public WebState {
 
   ~WebStateImpl() final;
 
+  // Cast `web_state` to WebStateImpl asserting that the conversion is
+  // safe (i.e. that the pointer points to a WebStateImpl and not another
+  // sub-class of WebState).
+  static WebStateImpl* FromWebState(WebState* web_state);
+
   // Factory function creating a WebStateImpl with a fake
   // CRWWebViewNavigationProxy for testing.
   static std::unique_ptr<WebStateImpl>
