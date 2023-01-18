@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate the user dismissing the dialog. The navigation should be resumed.
   DismissModalDialog(WarningAction::IGNORE_WARNING);
 
-  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());
   ASSERT_TRUE(navigation.was_successful());
 }
 
@@ -1062,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(
   FinishRequest(request.get(), LoginReputationClientResponse::SAFE);
   ASSERT_FALSE(request->is_modal_warning_showing());
 
-  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());
   ASSERT_TRUE(navigation.was_successful());
 }
 
@@ -1101,7 +1101,7 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate the user dismissing the dialog. The navigation should be resumed.
   DismissModalDialog(WarningAction::IGNORE_WARNING);
 
-  navigation.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation.WaitForNavigationFinished());
   ASSERT_TRUE(navigation.was_successful());
 }
 
