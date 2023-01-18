@@ -117,7 +117,7 @@ class WebAppBrowserController : public AppBrowserController,
   void OnWebAppUninstalled(const AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  void SetReadIconCallbackForTesting(base::OnceClosure callback);
+  static void SetIconLoadCallbackForTesting(base::OnceClosure callback);
 
  protected:
   // AppBrowserController:
@@ -170,7 +170,6 @@ class WebAppBrowserController : public AppBrowserController,
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
 
-  base::OnceClosure callback_for_testing_;
   mutable base::WeakPtrFactory<WebAppBrowserController> weak_ptr_factory_{this};
 };
 
