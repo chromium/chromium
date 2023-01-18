@@ -61,10 +61,9 @@ class IOSChromePasswordCheckManager
   // The elapsed time since the last full password check was performed.
   base::Time GetLastPasswordCheckTime() const;
 
-  // Obtains all unmuted compromised credentials that are present in the
-  // password store.
-  std::vector<password_manager::CredentialUIEntry>
-  GetUnmutedCompromisedCredentials() const;
+  // Obtains all insecure credentials that are present in the password store.
+  std::vector<password_manager::CredentialUIEntry> GetInsecureCredentials()
+      const;
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
   void RemoveObserver(Observer* observer) {

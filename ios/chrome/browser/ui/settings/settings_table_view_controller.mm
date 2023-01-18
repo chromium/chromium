@@ -1789,7 +1789,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Checks if there are any remaining password issues that are not muted from the
 // last time password check was run.
 - (BOOL)hasPasswordIssuesRemaining {
-  return !_passwordCheckManager->GetUnmutedCompromisedCredentials().empty();
+  return !_passwordCheckManager->GetInsecureCredentials().empty();
 }
 
 // Displays a red issue state on `_safetyCheckItem` if there is a reamining

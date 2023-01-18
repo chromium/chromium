@@ -96,7 +96,7 @@ using base::SysNSStringToUTF16;
     return;
   _consumer = consumer;
 
-  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
+  [self fetchPasswordWith:_manager->GetInsecureCredentials()];
 }
 
 - (void)disconnect {
@@ -164,7 +164,7 @@ using base::SysNSStringToUTF16;
 }
 
 - (void)didFinishEditingPasswordDetails {
-  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
+  [self fetchPasswordWith:_manager->GetInsecureCredentials()];
 }
 
 - (void)passwordDetailsViewController:
@@ -213,7 +213,7 @@ using base::SysNSStringToUTF16;
 }
 
 - (void)compromisedCredentialsDidChange {
-  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
+  [self fetchPasswordWith:_manager->GetInsecureCredentials()];
 }
 
 #pragma mark - Private

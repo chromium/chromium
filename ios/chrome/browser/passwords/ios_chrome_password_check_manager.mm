@@ -72,6 +72,14 @@ PasswordCheckState ConvertBulkCheckState(State state) {
   NOTREACHED();
   return PasswordCheckState::kIdle;
 }
+
+// Returns true if the Password Checkup feature flag is enabled.
+// TODO(crbug.com/1406871): Remove this when kIOSPasswordCheckup flag is
+// removed.
+bool IsPasswordCheckupEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordCheckup);
+}
 }  // namespace
 
 IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
@@ -142,21 +150,25 @@ base::Time IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
 }
 
 std::vector<CredentialUIEntry>
-IOSChromePasswordCheckManager::GetUnmutedCompromisedCredentials() const {
-  std::vector<CredentialUIEntry> compromised_crendentials =
+IOSChromePasswordCheckManager::GetInsecureCredentials() const {
+  std::vector<CredentialUIEntry> insecure_crendentials =
       insecure_credentials_manager_.GetInsecureCredentialEntries();
 
-  // Only filter out the muted compromised credentials if the flag is enabled.
-  if (base::FeatureList::IsEnabled(
+  // Only filter out the muted compromised credentials if the
+  // kIOSPasswordCheckup flag is disabled and the kMuteCompromisedPasswords flag
+  // is enabled. When kIOSPasswordCheckup is enabled, we want to get all the
+  // insecure credentials, not only the compromised and unmuted ones.
+  if (!IsPasswordCheckupEnabled() &&
+      base::FeatureList::IsEnabled(
           password_manager::features::kMuteCompromisedPasswords)) {
-    base::EraseIf(compromised_crendentials, [](const auto& credential) {
+    base::EraseIf(insecure_crendentials, [](const auto& credential) {
       return (credential.IsLeaked() &&
               credential.password_issues.at(InsecureType::kLeaked).is_muted) ||
              (credential.IsPhished() &&
               credential.password_issues.at(InsecureType::kPhished).is_muted);
     });
   }
-  return compromised_crendentials;
+  return insecure_crendentials;
 }
 
 void IOSChromePasswordCheckManager::OnSavedPasswordsChanged() {

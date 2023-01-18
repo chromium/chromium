@@ -195,8 +195,9 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 }
 
 - (NSAttributedString*)passwordCheckErrorInfo {
-  if (!_passwordCheckManager->GetUnmutedCompromisedCredentials().empty())
+  if (!_passwordCheckManager->GetInsecureCredentials().empty()) {
     return nil;
+  }
 
   NSString* message;
   NSDictionary* textAttributes = @{
@@ -319,10 +320,10 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
   PasswordCheckUIState passwordCheckUIState =
       [self computePasswordCheckUIStateWith:passwordCheckState];
-  NSInteger unmutedCompromisedPasswordsCount =
-      _passwordCheckManager->GetUnmutedCompromisedCredentials().size();
+  NSInteger insecurePasswordsCount =
+      _passwordCheckManager->GetInsecureCredentials().size();
   [self.consumer setPasswordCheckUIState:passwordCheckUIState
-        unmutedCompromisedPasswordsCount:unmutedCompromisedPasswordsCount];
+        unmutedCompromisedPasswordsCount:insecurePasswordsCount];
 }
 
 // Returns PasswordCheckUIState based on PasswordCheckState.
@@ -340,12 +341,12 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
     case PasswordCheckState::kOther:
-      return _passwordCheckManager->GetUnmutedCompromisedCredentials().empty()
+      return _passwordCheckManager->GetInsecureCredentials().empty()
                  ? PasswordCheckStateError
                  : PasswordCheckStateUnSafe;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
-      if (!_passwordCheckManager->GetUnmutedCompromisedCredentials().empty()) {
+      if (!_passwordCheckManager->GetInsecureCredentials().empty()) {
         return PasswordCheckStateUnSafe;
       } else if (_currentState == PasswordCheckState::kIdle) {
         // Safe state is only possible after the state transitioned from

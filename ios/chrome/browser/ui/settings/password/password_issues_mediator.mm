@@ -22,8 +22,7 @@
 
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
-  std::vector<password_manager::CredentialUIEntry>
-      _unmutedCompromisedCredentials;
+  std::vector<password_manager::CredentialUIEntry> _insecureCredentials;
 }
 
 // Object storing the time of the previous successful re-authentication.
@@ -86,9 +85,9 @@
 
 - (void)fetchPasswordIssues {
   DCHECK(self.consumer);
-  _unmutedCompromisedCredentials = _manager->GetUnmutedCompromisedCredentials();
+  _insecureCredentials = _manager->GetInsecureCredentials();
   NSMutableArray* passwords = [[NSMutableArray alloc] init];
-  for (auto credential : _unmutedCompromisedCredentials) {
+  for (auto credential : _insecureCredentials) {
     [passwords addObject:[[PasswordIssue alloc] initWithCredential:credential]];
   }
 

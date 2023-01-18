@@ -280,9 +280,9 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
     _passwordCheckItem.infoButtonHidden = YES;
     _passwordCheckItem.trailingImage = nil;
 
-    // Show unsafe state if user already ran safety check and there are
-    // compromised credentials.
-    if (!_passwordCheckManager->GetUnmutedCompromisedCredentials().empty() &&
+    // Show unsafe state if user already ran safety check and there are insecure
+    // credentials.
+    if (!_passwordCheckManager->GetInsecureCredentials().empty() &&
         PreviousSafetyCheckIssueFound()) {
       _passwordCheckRowState = PasswordCheckRowStateUnSafe;
     }
@@ -536,8 +536,8 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       self.currentPasswordCheckState == PasswordCheckState::kRunning;
   self.currentPasswordCheckState = newState;
 
-  BOOL noCompromisedPasswords =
-      self.passwordCheckManager->GetUnmutedCompromisedCredentials().empty();
+  BOOL noInsecurePasswords =
+      self.passwordCheckManager->GetInsecureCredentials().empty();
 
   switch (self.currentPasswordCheckState) {
     case PasswordCheckState::kRunning:
@@ -547,26 +547,26 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
     case PasswordCheckState::kSignedOut:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
                                     safety_check::PasswordsStatus::kSignedOut);
-      return noCompromisedPasswords ? PasswordCheckRowStateError
-                                    : PasswordCheckRowStateUnSafe;
+      return noInsecurePasswords ? PasswordCheckRowStateError
+                                 : PasswordCheckRowStateUnSafe;
     case PasswordCheckState::kOffline:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
                                     safety_check::PasswordsStatus::kOffline);
-      return noCompromisedPasswords ? PasswordCheckRowStateError
-                                    : PasswordCheckRowStateUnSafe;
+      return noInsecurePasswords ? PasswordCheckRowStateError
+                                 : PasswordCheckRowStateUnSafe;
     case PasswordCheckState::kQuotaLimit:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
                                     safety_check::PasswordsStatus::kQuotaLimit);
-      return noCompromisedPasswords ? PasswordCheckRowStateError
-                                    : PasswordCheckRowStateUnSafe;
+      return noInsecurePasswords ? PasswordCheckRowStateError
+                                 : PasswordCheckRowStateUnSafe;
     case PasswordCheckState::kOther:
       base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
                                     safety_check::PasswordsStatus::kError);
-      return noCompromisedPasswords ? PasswordCheckRowStateError
-                                    : PasswordCheckRowStateUnSafe;
+      return noInsecurePasswords ? PasswordCheckRowStateError
+                                 : PasswordCheckRowStateUnSafe;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
-      if (!noCompromisedPasswords) {
+      if (!noInsecurePasswords) {
         base::UmaHistogramEnumeration(
             kSafetyCheckMetricsPasswords,
             safety_check::PasswordsStatus::kCompromisedExist);
@@ -614,8 +614,9 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
 
 // Computes the appropriate error info to be displayed in the passwords popover.
 - (NSAttributedString*)passwordCheckErrorInfo {
-  if (!self.passwordCheckManager->GetUnmutedCompromisedCredentials().empty())
+  if (!self.passwordCheckManager->GetInsecureCredentials().empty()) {
     return nil;
+  }
 
   NSString* message;
   GURL linkURL;
@@ -1113,8 +1114,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       break;
     }
     case PasswordCheckRowStateSafe: {
-      DCHECK(self.passwordCheckManager->GetUnmutedCompromisedCredentials()
-                 .empty());
+      DCHECK(self.passwordCheckManager->GetInsecureCredentials().empty());
       UIImage* safeIconImage =
           UseSymbols()
               ? DefaultSymbolTemplateWithPointSize(
@@ -1133,8 +1133,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
-              self.passwordCheckManager->GetUnmutedCompromisedCredentials()
-                  .size()));
+              self.passwordCheckManager->GetInsecureCredentials().size()));
       UIImage* unSafeIconImage =
           UseSymbols()
               ? DefaultSymbolTemplateWithPointSize(
