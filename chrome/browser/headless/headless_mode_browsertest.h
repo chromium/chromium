@@ -14,7 +14,7 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
  public:
   static constexpr char kHeadlessSwitchValue[] = "new";
 
-  HeadlessModeBrowserTest() = default;
+  HeadlessModeBrowserTest();
 
   HeadlessModeBrowserTest(const HeadlessModeBrowserTest&) = delete;
   HeadlessModeBrowserTest& operator=(const HeadlessModeBrowserTest&) = delete;

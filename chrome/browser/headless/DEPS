@@ -1,3 +1,4 @@
 include_rules = [
   "+components/headless",
+  "+components/devtools/simple_devtools_protocol_client",
 ]
