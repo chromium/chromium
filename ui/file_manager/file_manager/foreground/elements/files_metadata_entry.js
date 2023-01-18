@@ -35,14 +35,6 @@ Polymer({
   },
 
   /**
-   * On element creation, set the files-ng attribute to enable files-ng
-   * specific CSS styling.
-   */
-  created: function() {
-    this.setAttribute('files-ng', '');
-  },
-
-  /**
    * When value is changed, it is displayed in the #valueContainer element.
    * How the value is represented depends on [[isPath]] value.
    * @param {string} newValue
