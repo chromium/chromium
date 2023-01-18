@@ -1212,30 +1212,26 @@ suite('SettingsDevicePage', function() {
       const inputSlider = audioPage.shadowRoot.querySelector(sliderSelector);
       assertTrue(isVisible(inputSlider));
       assertEquals(
-          audioPage.audioSystemProperties_.inputVolumePercent,
-          inputSlider.value);
+          audioPage.audioSystemProperties_.inputGainPercent, inputSlider.value);
 
       const minimumValue = 0;
       await simulateSliderClicked(sliderSelector, minimumValue);
 
       assertEquals(minimumValue, inputSlider.value);
       assertEquals(
-          audioPage.audioSystemProperties_.inputVolumePercent,
-          inputSlider.value);
+          audioPage.audioSystemProperties_.inputGainPercent, inputSlider.value);
       const maximumValue = 100;
       await simulateSliderClicked(sliderSelector, maximumValue);
 
       assertEquals(maximumValue, inputSlider.value);
       assertEquals(
-          audioPage.audioSystemProperties_.inputVolumePercent,
-          inputSlider.value);
+          audioPage.audioSystemProperties_.inputGainPercent, inputSlider.value);
       const middleValue = 50;
       await simulateSliderClicked(sliderSelector, middleValue);
 
       assertEquals(middleValue, inputSlider.value);
       assertEquals(
-          audioPage.audioSystemProperties_.inputVolumePercent,
-          inputSlider.value);
+          audioPage.audioSystemProperties_.inputGainPercent, inputSlider.value);
 
       // Ensure value clamps to min.
       inputSlider.value = -1;
@@ -1243,7 +1239,7 @@ suite('SettingsDevicePage', function() {
       await flushTasks();
 
       assertEquals(
-          audioPage.audioSystemProperties_.inputVolumePercent, minimumValue);
+          audioPage.audioSystemProperties_.inputGainPercent, minimumValue);
 
       // Ensure value clamps to min.
       inputSlider.value = 101;
@@ -1251,7 +1247,7 @@ suite('SettingsDevicePage', function() {
       await flushTasks();
 
       assertEquals(
-          audioPage.audioSystemProperties_.inputVolumePercent, maximumValue);
+          audioPage.audioSystemProperties_.inputGainPercent, maximumValue);
     });
 
     test('simulate noise cancellation', async function() {
