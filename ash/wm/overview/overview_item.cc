@@ -130,27 +130,6 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
   base::OnceClosure on_animation_finished_;
 };
 
-OverviewAnimationType GetExitOverviewAnimationTypeForMinimizedWindow(
-    OverviewEnterExitType type,
-    bool should_animate_when_exiting) {
-  // We should never get here when overview mode should exit immediately. The
-  // minimized window's |item_widget_| should be closed and destroyed
-  // immediately.
-  DCHECK_NE(type, OverviewEnterExitType::kImmediateExit);
-
-  // OverviewEnterExitType can only be set to kWindowMinimized in talbet mode.
-  // Fade out the minimized window without animation if switch from tablet mode
-  // to clamshell mode.
-  if (type == OverviewEnterExitType::kFadeOutExit) {
-    return Shell::Get()->tablet_mode_controller()->InTabletMode()
-               ? OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER
-               : OVERVIEW_ANIMATION_NONE;
-  }
-  return should_animate_when_exiting
-             ? OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT
-             : OVERVIEW_ANIMATION_RESTORE_WINDOW_ZERO;
-}
-
 // Applies |new_bounds_in_screen| to |widget|, animating and observing the
 // transform if necessary.
 void SetWidgetBoundsAndMaybeAnimateTransform(
@@ -319,8 +298,7 @@ void OverviewItem::RestoreWindow(bool reset_transform,
   }
 
   OverviewAnimationType animation_type =
-      GetExitOverviewAnimationTypeForMinimizedWindow(
-          enter_exit_type, should_animate_when_exiting_);
+      GetExitOverviewAnimationTypeForMinimizedWindow(enter_exit_type);
   FadeOutWidgetFromOverview(std::move(item_widget_), animation_type);
 }
 
@@ -1357,6 +1335,36 @@ void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
   gfx::Transform label_transform;
   label_transform.Translate(origin.x(), origin.y());
   widget_window->SetTransform(label_transform);
+}
+
+OverviewAnimationType
+OverviewItem::GetExitOverviewAnimationTypeForMinimizedWindow(
+    OverviewEnterExitType type) {
+  // We should never get here when overview mode should exit immediately. The
+  // minimized window's `item_widget_` should be closed and destroyed
+  // immediately.
+  DCHECK_NE(type, OverviewEnterExitType::kImmediateExit);
+
+  // If the managed window has been hidden by the saved desk library, then
+  // we must avoid animating a minimized window. See http://b/260001863.
+  if (ScopedOverviewHideWindows* hide_windows =
+          overview_session_->hide_windows_for_saved_desks_grid()) {
+    if (hide_windows->HasWindow(item_widget_->GetNativeWindow())) {
+      return OVERVIEW_ANIMATION_NONE;
+    }
+  }
+
+  // OverviewEnterExitType can only be set to `kWindowMinimized` in tablet mode.
+  // Fade out the minimized window without animation if switch from tablet mode
+  // to clamshell mode.
+  if (type == OverviewEnterExitType::kFadeOutExit) {
+    return Shell::Get()->tablet_mode_controller()->InTabletMode()
+               ? OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER
+               : OVERVIEW_ANIMATION_NONE;
+  }
+  return should_animate_when_exiting_
+             ? OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT
+             : OVERVIEW_ANIMATION_RESTORE_WINDOW_ZERO;
 }
 
 void OverviewItem::AnimateOpacity(float opacity,
