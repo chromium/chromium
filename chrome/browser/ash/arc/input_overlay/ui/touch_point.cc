@@ -38,22 +38,21 @@ constexpr float kHaloThickness = 3;
 constexpr SkColor kFocusRingColor = gfx::kGoogleBlue300;
 
 constexpr SkColor kOutsideStrokeColor =
-    SkColorSetA(SK_ColorWHITE, /*a=*/0xCC /*80%*/);
+    SkColorSetA(SK_ColorWHITE, 0xCC /*80%*/);
 constexpr SkColor kOutsideStrokeColorHover =
-    SkColorSetA(SK_ColorWHITE, /*a=*/0xCC /*80%*/);
+    SkColorSetA(SK_ColorWHITE, 0xCC /*80%*/);
 constexpr SkColor kOutsideStrokeColorDrag = gfx::kGoogleBlue200;
 
-constexpr SkColor kInsideStrokeColor =
-    SkColorSetA(SK_ColorBLACK, /*a=*/0x33 /*20%*/);
+constexpr SkColor kInsideStrokeColor = SkColorSetA(SK_ColorBLACK, 0x33 /*20%*/);
 constexpr SkColor kInsideStrokeColorHover =
-    SkColorSetA(SK_ColorBLACK, /*a=*/0x33 /*20%*/);
+    SkColorSetA(SK_ColorBLACK, 0x33 /*20%*/);
 constexpr SkColor kInsideStrokeColorDrag =
-    SkColorSetA(SK_ColorBLACK, /*a=*/0x66 /*40%*/);
+    SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
 constexpr SkColor kCenterColor = SkColorSetRGB(0x12, 0x6D, 0xFF);
 constexpr SkColor kCenterColorHover20White =
-    SkColorSetA(SK_ColorWHITE, /*a=*/0x33 /*20%*/);
+    SkColorSetA(SK_ColorWHITE, 0x33 /*20%*/);
 constexpr SkColor kCenterColorDrag30White =
-    SkColorSetA(SK_ColorWHITE, /*a=*/0x4D /*30%*/);
+    SkColorSetA(SK_ColorWHITE, 0x4D /*30%*/);
 
 // Draw the cross shape path with round corner. It starts from bottom to up on
 // line #0 and draws clock-wisely.

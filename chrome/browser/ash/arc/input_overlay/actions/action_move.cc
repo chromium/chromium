@@ -113,10 +113,6 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
     auto* action_move = static_cast<ActionMove*>(action_);
     action_move->set_move_distance(radius / 2);
-    if (show_circle() && !circle_) {
-      auto circle = std::make_unique<ActionCircle>(radius);
-      circle_ = AddChildView(std::move(circle));
-    }
     center_.set_x(radius);
     center_.set_y(radius);
     UpdateTrashButtonPosition();

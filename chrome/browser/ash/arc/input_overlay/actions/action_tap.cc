@@ -52,13 +52,6 @@ class ActionTap::ActionTapView : public ActionView {
   ~ActionTapView() override = default;
 
   void SetViewContent(BindingOption binding_option) override {
-    // Add circle if it doesn't exist.
-    int radius = action_->GetUIRadius();
-    if (show_circle() && !circle_) {
-      auto circle = std::make_unique<ActionCircle>(radius);
-      circle_ = AddChildView(std::move(circle));
-    }
-
     InputElement* input_binding = nullptr;
     switch (binding_option) {
       case BindingOption::kCurrent:
@@ -152,8 +145,6 @@ class ActionTap::ActionTapView : public ActionView {
     int width = std::max(
         radius * 2, radius * 2 - kLabelPositionToSide + label_size.width());
     if (action_->on_left_or_middle_side()) {
-      if (show_circle())
-        circle_->SetPosition(gfx::Point());
       label->SetPosition(
           gfx::Point(label_size.width() > kLabelPositionToSide
                          ? width - label_size.width()
@@ -162,8 +153,6 @@ class ActionTap::ActionTapView : public ActionView {
       center_.set_x(radius);
       center_.set_y(radius);
     } else {
-      if (show_circle())
-        circle_->SetPosition(gfx::Point(width - radius * 2, 0));
       label->SetPosition(
           gfx::Point(0, radius * 2 - label_size.height() - kLabelMargin));
       center_.set_x(width - radius);

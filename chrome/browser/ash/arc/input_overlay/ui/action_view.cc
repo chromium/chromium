@@ -85,8 +85,6 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
       AddTouchPoint();
   }
 
-  if (show_circle() && circle_)
-    circle_->SetDisplayMode(mode);
   if (!editing_label) {
     for (auto* label : labels_)
       label->SetDisplayMode(mode);

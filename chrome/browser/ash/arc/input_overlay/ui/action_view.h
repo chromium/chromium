@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/action_circle.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_button.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
@@ -105,7 +104,6 @@ class ActionView : public views::View {
     unbind_label_index_ = label_index;
   }
   int unbind_label_index() { return unbind_label_index_; }
-  bool show_circle() const { return show_circle_; }
 
  protected:
   void UpdateTrashButtonPosition();
@@ -120,13 +118,11 @@ class ActionView : public views::View {
   bool editable_ = false;
   // Three-dot button to show the |ActionEditMenu|.
   raw_ptr<ActionEditButton> menu_entry_ = nullptr;
-  // The circle view shows up for editing the action.
-  raw_ptr<ActionCircle> circle_ = nullptr;
   // Labels for mapping hints.
   std::vector<ActionLabel*> labels_;
   // Current display mode.
   DisplayMode current_display_mode_ = DisplayMode::kNone;
-  // Center position of the circle view.
+  // Center position of the touch point view.
   gfx::Point center_;
   // TODO(cuicuirunan): Enable or remove this after MVP.
   bool show_edit_button_ = false;
@@ -158,11 +154,6 @@ class ActionView : public views::View {
   raw_ptr<TouchPoint> touch_point_ = nullptr;
   // TODO(b/250900717): Update when the final UX/UI is ready.
   raw_ptr<views::ImageButton> trash_button_ = nullptr;
-
-  // TODO(cuicuiruan) As requested, we remove the action circle for edit mode
-  // for now. We will remove the circle permanently once the future design for
-  // MVP confirm that circle is not needed anymore.
-  bool show_circle_ = false;
 
   // TODO(b/260937747): Update or remove when removing flags
   // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
