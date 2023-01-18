@@ -54,7 +54,6 @@ void AutoEnrollmentCheckScreen::ClearState() {
   connect_request_subscription_ = {};
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 
-  auto_enrollment_state_ = policy::AutoEnrollmentState::kIdle;
   captive_portal_state_ = NetworkState::PortalState::kUnknown;
 }
 
@@ -88,14 +87,10 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   network_state_handler->RequestPortalDetection();
 
   // Perform an initial UI update.
-  policy::AutoEnrollmentState new_auto_enrollment_state =
-      auto_enrollment_controller_->state();
-
   if (!UpdateCaptivePortalState(new_captive_portal_state))
-    UpdateAutoEnrollmentState(new_auto_enrollment_state);
+    UpdateAutoEnrollmentState(auto_enrollment_controller_->state());
 
   captive_portal_state_ = new_captive_portal_state;
-  auto_enrollment_state_ = new_auto_enrollment_state;
 
   // Make sure gears are in motion in the background.
   // Note that if a previous auto-enrollment check ended with a failure,
@@ -168,7 +163,6 @@ void AutoEnrollmentCheckScreen::UpdateState(
 
   // Save the new state.
   captive_portal_state_ = new_captive_portal_state;
-  auto_enrollment_state_ = new_auto_enrollment_state;
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.

@@ -128,8 +128,6 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
 
   NetworkState::PortalState captive_portal_state_ =
       NetworkState::PortalState::kUnknown;
-  policy::AutoEnrollmentState auto_enrollment_state_ =
-      policy::AutoEnrollmentState::kIdle;
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
