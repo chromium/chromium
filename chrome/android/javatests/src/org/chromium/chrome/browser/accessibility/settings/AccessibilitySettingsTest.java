@@ -37,7 +37,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.TextScalePreference;
-import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -82,8 +82,8 @@ public class AccessibilitySettingsTest {
         TextScalePreference textScalePref =
                 (TextScalePreference) accessibilitySettings.findPreference(
                         AccessibilitySettings.PREF_TEXT_SCALE);
-        ChromeBaseCheckBoxPreference forceEnableZoomPref =
-                (ChromeBaseCheckBoxPreference) accessibilitySettings.findPreference(
+        ChromeSwitchPreference forceEnableZoomPref =
+                (ChromeSwitchPreference) accessibilitySettings.findPreference(
                         AccessibilitySettings.PREF_FORCE_ENABLE_ZOOM);
         NumberFormat percentFormat = NumberFormat.getPercentInstance();
         // Arbitrary value 0.4f to be larger and smaller than threshold.
@@ -243,7 +243,7 @@ public class AccessibilitySettingsTest {
     }
 
     private static void userSetForceEnableZoom(final AccessibilitySettings accessibilitySettings,
-            final ChromeBaseCheckBoxPreference forceEnableZoomPref, final boolean enabled) {
+            final ChromeSwitchPreference forceEnableZoomPref, final boolean enabled) {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 () -> accessibilitySettings.onPreferenceChange(forceEnableZoomPref, enabled));
     }

@@ -8,20 +8,23 @@ found in the LICENSE file.
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:padding="@dimen/page_zoom_view_level_padding"
     android:gravity="center"
     android:orientation="vertical" >
 
     <TextView
         android:id="@+id/page_zoom_current_zoom_level"
-        style="@style/TextAppearance.TextMedium"
+        style="@style/TextAppearance.TextLarge"
         android:background="@drawable/page_zoom_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:elevation="@dimen/page_zoom_view_elevation"
         android:layout_marginBottom="@dimen/page_zoom_view_level_margin"
         android:padding="@dimen/page_zoom_view_level_padding"
         android:textAlignment="center"
         android:accessibilityLiveRegion="assertive" />
 
     <include layout="@layout/page_zoom_slider" />
-    
+
 </LinearLayout>

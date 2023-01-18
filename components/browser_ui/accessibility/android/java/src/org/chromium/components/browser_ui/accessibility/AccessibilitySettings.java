@@ -14,7 +14,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
-import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -34,7 +33,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private TextScalePreference mTextScalePref;
     private PageZoomPreference mPageZoomDefaultZoomPref;
     private ChromeSwitchPreference mPageZoomAlwaysShowPref;
-    private ChromeBaseCheckBoxPreference mForceEnableZoomPref;
+    private ChromeSwitchPreference mForceEnableZoomPref;
     private boolean mRecordFontSizeChangeOnStop;
     private AccessibilitySettingsDelegate mDelegate;
     private BooleanPreferenceDelegate mReaderForAccessibilityDelegate;
@@ -96,13 +95,12 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     mFontSizePrefs.getUserFontScaleFactor(), false);
         }
 
-        mForceEnableZoomPref =
-                (ChromeBaseCheckBoxPreference) findPreference(PREF_FORCE_ENABLE_ZOOM);
+        mForceEnableZoomPref = (ChromeSwitchPreference) findPreference(PREF_FORCE_ENABLE_ZOOM);
         mForceEnableZoomPref.setOnPreferenceChangeListener(this);
         mForceEnableZoomPref.setChecked(mFontSizePrefs.getForceEnableZoom());
 
-        ChromeBaseCheckBoxPreference readerForAccessibilityPref =
-                (ChromeBaseCheckBoxPreference) findPreference(PREF_READER_FOR_ACCESSIBILITY);
+        ChromeSwitchPreference readerForAccessibilityPref =
+                (ChromeSwitchPreference) findPreference(PREF_READER_FOR_ACCESSIBILITY);
         mReaderForAccessibilityDelegate = mDelegate.getReaderForAccessibilityDelegate();
         if (mReaderForAccessibilityDelegate != null) {
             readerForAccessibilityPref.setChecked(mReaderForAccessibilityDelegate.isEnabled());
@@ -111,8 +109,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             getPreferenceScreen().removePreference(readerForAccessibilityPref);
         }
 
-        ChromeBaseCheckBoxPreference accessibilityTabSwitcherPref =
-                (ChromeBaseCheckBoxPreference) findPreference(
+        ChromeSwitchPreference accessibilityTabSwitcherPref =
+                (ChromeSwitchPreference) findPreference(
                         AccessibilityConstants.ACCESSIBILITY_TAB_SWITCHER);
         mAccessibilityTabSwitcherDelegate = mDelegate.getAccessibilityTabSwitcherDelegate();
         if (mAccessibilityTabSwitcherDelegate != null) {

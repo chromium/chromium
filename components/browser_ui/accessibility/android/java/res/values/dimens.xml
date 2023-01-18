@@ -8,7 +8,6 @@ found in the LICENSE file.
     <dimen name="page_zoom_preview_image_size">24dp</dimen>
 
     <dimen name="page_zoom_view_margins">32dp</dimen>
-    <dimen name="page_zoom_view_padding">4dp</dimen>
     <dimen name="page_zoom_view_level_margin">8dp</dimen>
     <dimen name="page_zoom_view_level_padding">12dp</dimen>
     <dimen name="page_zoom_view_elevation">4dp</dimen>

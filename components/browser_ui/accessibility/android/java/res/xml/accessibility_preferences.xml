@@ -21,17 +21,17 @@ found in the LICENSE file.
         android:summary="@string/page_zoom_always_show_preference_summary"
         android:title="@string/page_zoom_always_show_preference_title" />
 
-    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="force_enable_zoom"
         android:summary="@string/force_enable_zoom_summary"
         android:title="@string/force_enable_zoom_title" />
 
-    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="reader_for_accessibility"
         android:summary="@string/reader_for_accessibility_summary"
         android:title="@string/reader_for_accessibility_title" />
 
-    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="accessibility_tab_switcher"
         android:summary="@string/accessibility_tab_switcher_summary"
         android:title="@string/accessibility_tab_switcher_title" />

@@ -19,7 +19,7 @@
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size"
         android:src="@drawable/ic_remove"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/page_zoom_ripple"
         android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
         android:tint="@color/default_icon_color_tint_list" />
 
@@ -35,7 +35,7 @@
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size"
         android:src="@drawable/ic_add"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/page_zoom_ripple"
         android:contentDescription="@string/page_zoom_increase_zoom_button_text"
         android:tint="@color/default_icon_color_tint_list" />
 

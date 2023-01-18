@@ -69,6 +69,7 @@ android_resources("java_resources") {
     "java/res/anim/slide_out_child_bottom.xml",
     "java/res/drawable/ic_zoom.xml",
     "java/res/drawable/page_zoom_background.xml",
+    "java/res/drawable/page_zoom_ripple.xml",
     "java/res/layout/custom_preference.xml",
     "java/res/layout/page_zoom_preference.xml",
     "java/res/layout/page_zoom_slider.xml",
