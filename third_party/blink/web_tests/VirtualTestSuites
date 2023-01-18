@@ -967,7 +967,6 @@
       "wpt_internal/storage/quota/partitioned-webkitTemporaryStorage-usage-details.tentative.sub.html",
       "wpt_internal/storage/quota/partitioned-webkitPersistentStorage-quota-usage-details.tentative.sub.html",
       "wpt_internal/storage/quota/partitioned-webkitStorageInfo-temporary-quota-usage-details.tentative.sub.html",
-      "wpt_internal/storage/quota/partitioned-webkitStorageInfo-persistent-quota-usage-details.tentative.sub.html",
       "external/wpt/FileAPI/BlobURL/cross-partition.tentative.https.html",
       "external/wpt/storage/partitioned-estimate-usage-details-caches.tentative.https.sub.html",
       "external/wpt/storage/partitioned-estimate-usage-details-indexeddb.tentative.https.sub.html",
