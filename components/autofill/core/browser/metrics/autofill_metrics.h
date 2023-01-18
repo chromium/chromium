@@ -1139,11 +1139,6 @@ class AutofillMetrics {
   // filling a form.
   static void LogAddressSuggestionsCount(size_t num_suggestions);
 
-  // Log the index of the selected Autofill suggestion in the popup.
-  static void LogAutofillSuggestionAcceptedIndex(int index,
-                                                 PopupType popup_type,
-                                                 bool off_the_record);
-
   // Log the reason for which the Autofill popup disappeared.
   static void LogAutofillPopupHidingReason(PopupHidingReason reason);
 

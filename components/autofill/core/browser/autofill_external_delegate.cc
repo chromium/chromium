@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -294,7 +295,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
       break;
     default:
       if (suggestion.frontend_id > 0) {  // Denotes an Autofill suggestion.
-        AutofillMetrics::LogAutofillSuggestionAcceptedIndex(
+        autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, driver_->IsIncognito());
       }
       FillAutofillFormData(suggestion.frontend_id, false);
