@@ -11,6 +11,7 @@
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,9 +35,10 @@ using HPRTLookupRequestCallback =
 using HPRTLookupResponseCallback =
     base::OnceCallback<void(bool, absl::optional<SBThreatType>)>;
 
-// This class implements the lookup request for hash-prefix real-time lookups.
-// For testing purposes, the request is currently sent to the Safe Browsing
-// server directly. In the future, it will be sent to a proxy via OHTTP.
+// This class implements the backoff logic and lookup request for hash-prefix
+// real-time lookups. For testing purposes, the request is currently sent to the
+// Safe Browsing server directly. In the future, it will be sent to a proxy via
+// OHTTP.
 // TODO(1407283): Update "For testing purposes..." portion of description.
 class HashRealTimeService : public KeyedService {
  public:
@@ -53,6 +55,11 @@ class HashRealTimeService : public KeyedService {
   static bool CanCheckUrl(
       const GURL& url,
       network::mojom::RequestDestination request_destination);
+
+  // Returns true if the lookups are currently in backoff mode due to too many
+  // prior errors. If this happens, the checking falls back to hash-based
+  // database method.
+  virtual bool IsInBackoffMode() const;
 
   // Start the lookup for |url|, and call |response_callback| on
   // |callback_task_runner| when response is received.
@@ -81,8 +88,9 @@ class HashRealTimeService : public KeyedService {
       std::unique_ptr<V5::SearchHashesRequest> request) const;
 
   // Called when the response from the Safe Browsing V5 remote endpoint is
-  // received. This is responsible for parsing the response, determining the
-  // most severe threat type, and calling the callback.
+  // received. This is responsible for parsing the response, determining if
+  // there were errors and updating backoff if relevant, determining the most
+  // severe threat type, and calling the callback.
   //  - |url| is used to match the full hashes in the response with the URL's
   //    full hashes.
   //  - |url_loader| is the loader that was used to send the request.
@@ -113,10 +121,19 @@ class HashRealTimeService : public KeyedService {
   static bool IsThreatTypeMoreSevere(const V5::ThreatType& threat_type,
                                      int baseline_severity);
 
+  // In addition to attempting to parse the |response_body| as described in the
+  // |ParseResponse| function comments, this updates the backoff state depending
+  // on the lookup success.
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, bool>
+  ParseResponseAndUpdateBackoff(
+      int net_error,
+      int http_error,
+      std::unique_ptr<std::string> response_body) const;
+
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
-  // returns the response proto if no error was encountered. Returns
-  // absl::nullopt otherwise.
-  absl::optional<std::unique_ptr<V5::SearchHashesResponse>> ParseResponse(
+  // returns either the response proto or a bool representing whether the error
+  // encountered was retriable.
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, bool> ParseResponse(
       int net_error,
       int http_error,
       std::unique_ptr<std::string> response_body) const;
@@ -135,6 +152,9 @@ class HashRealTimeService : public KeyedService {
 
   // All requests that are sent but haven't received a response yet.
   PendingHPRTLookupRequests pending_requests_;
+
+  // Helper object that manages backoff state.
+  std::unique_ptr<BackoffOperator> backoff_operator_;
 
   base::WeakPtrFactory<HashRealTimeService> weak_factory_{this};
 };

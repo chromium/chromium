@@ -616,6 +616,62 @@ TEST_F(HashRealTimeServiceTest, TestLookup_MultipleRequestsAtOnce) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HashRealTimeServiceTest, TestBackoffMode) {
+  auto perform_lookup = [this](bool make_fail) {
+    GURL url = GURL("https://example.test");
+    auto request = std::make_unique<V5::SearchHashesRequest>();
+    for (const auto& hash_prefix : UrlToHashPrefixes(url)) {
+      request->add_hash_prefixes(hash_prefix);
+    }
+    std::string request_url = GetExpectedRequestUrl(request);
+    if (make_fail) {
+      test_url_loader_factory_->AddResponse(request_url, "",
+                                            net::HTTP_INTERNAL_SERVER_ERROR);
+    } else {
+      SetUpLookupResponse(request_url, {});
+    }
+
+    base::MockCallback<HPRTLookupResponseCallback> response_callback;
+    EXPECT_CALL(response_callback, Run(testing::_, testing::_));
+    service_->StartLookup(url, response_callback.Get(),
+                          base::SequencedTaskRunner::GetCurrentDefault());
+    task_environment_.RunUntilIdle();
+  };
+  auto perform_failing_lookup = [perform_lookup]() { perform_lookup(true); };
+  auto perform_successful_lookup = [perform_lookup]() {
+    perform_lookup(false);
+  };
+  auto assert_backoff_mode_status = [this](bool expected_backoff_mode_status) {
+    EXPECT_EQ(service_->IsInBackoffMode(), expected_backoff_mode_status);
+  };
+
+  // Failing lookups 1 and 2 don't trigger backoff mode. Lookup 3 does.
+  perform_failing_lookup();
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/false);
+  perform_failing_lookup();
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/false);
+  perform_failing_lookup();
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/true);
+
+  // Backoff mode should still be set until 5 minutes later.
+  task_environment_.FastForwardBy(base::Seconds(299));
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/true);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/false);
+
+  // Backoff mode only occurs after 3 *consecutive* failures.
+  perform_failing_lookup();
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/false);
+  perform_failing_lookup();
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/false);
+  perform_successful_lookup();
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/false);
+  perform_failing_lookup();
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/false);
+  perform_failing_lookup();
+  assert_backoff_mode_status(/*expected_backoff_mode_status=*/false);
+}
+
 TEST_F(HashRealTimeServiceTest, TestIsThreatTypeMoreSevere) {
   struct TestCase {
     V5::ThreatType candidate_threat_type;

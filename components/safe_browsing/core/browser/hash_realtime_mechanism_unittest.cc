@@ -62,8 +62,12 @@ class MockHashRealTimeService : public HashRealTimeService {
             /*threat_type=*/url_details_[url].threat_type));
   }
 
+  bool IsInBackoffMode() const override { return is_in_backoff_mode_; }
+  void EnableBackoffMode() { is_in_backoff_mode_ = true; }
+
  private:
   base::flat_map<std::string, UrlDetail> url_details_;
+  bool is_in_backoff_mode_ = false;
   base::WeakPtrFactory<MockHashRealTimeService> weak_factory_{this};
 };
 
@@ -276,6 +280,24 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
   auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
   hash_rt_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                         /*should_fail_lookup=*/false);
+  database_manager_->SetAllowlistResultForUrl(url, false);
+  base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
+      callback;
+  auto result = mechanism->StartCheck(callback.Get());
+  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
+  EXPECT_EQ(result.is_safe_synchronously, false);
+
+  EXPECT_CALL(callback, Run(Matches(url, SB_THREAT_TYPE_URL_PHISHING)))
+      .Times(1);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_BackoffMode) {
+  GURL url("https://example.test/");
+  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  hash_rt_service_->EnableBackoffMode();
+  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                         /*delayed_callback=*/false);
   database_manager_->SetAllowlistResultForUrl(url, false);
   base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
       callback;

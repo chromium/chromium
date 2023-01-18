@@ -25,7 +25,18 @@ namespace safe_browsing {
 
 namespace {
 
+const size_t kNumFailuresToEnforceBackoff = 3;
+const size_t kMinBackOffResetDurationInSeconds = 5 * 60;   //  5 minutes.
+const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
+
 const size_t kLookupTimeoutDurationInSeconds = 3;
+
+// TODO(1392143): [Also TODO(thefrog)] For now, we say that no error is
+// retriable. Once ErrorIsRetriable is correct for SBv4, we will refactor it out
+// and reuse it here.
+bool ErrorIsRetriable(int net_error, int http_error) {
+  return false;
+}
 
 SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
   switch (threat_type) {
@@ -51,7 +62,13 @@ SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
 
 HashRealTimeService::HashRealTimeService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {}
+    : url_loader_factory_(url_loader_factory),
+      backoff_operator_(std::make_unique<BackoffOperator>(
+          /*num_failures_to_enforce_backoff=*/kNumFailuresToEnforceBackoff,
+          /*min_backoff_reset_duration_in_seconds=*/
+          kMinBackOffResetDurationInSeconds,
+          /*max_backoff_reset_duration_in_seconds=*/
+          kMaxBackOffResetDurationInSeconds)) {}
 
 HashRealTimeService::~HashRealTimeService() = default;
 
@@ -115,6 +132,11 @@ bool HashRealTimeService::IsThreatTypeMoreSevere(
   return candidate_severity < baseline_severity;
 }
 
+bool HashRealTimeService::IsInBackoffMode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return backoff_operator_->IsInBackoffMode();
+}
+
 void HashRealTimeService::StartLookup(
     const GURL& url,
     HPRTLookupResponseCallback response_callback,
@@ -161,8 +183,8 @@ void HashRealTimeService::OnURLLoaderComplete(
     response_code = url_loader->ResponseInfo()->headers->response_code();
   }
 
-  auto response =
-      ParseResponse(net_error, response_code, std::move(response_body));
+  auto response = ParseResponseAndUpdateBackoff(net_error, response_code,
+                                                std::move(response_body));
   absl::optional<SBThreatType> sb_threat_type;
   if (response.has_value()) {
     sb_threat_type =
@@ -177,6 +199,22 @@ void HashRealTimeService::OnURLLoaderComplete(
 
   delete pending_request_it->first;
   pending_requests_.erase(pending_request_it);
+}
+
+base::expected<std::unique_ptr<V5::SearchHashesResponse>, bool>
+HashRealTimeService::ParseResponseAndUpdateBackoff(
+    int net_error,
+    int response_code,
+    std::unique_ptr<std::string> response_body) const {
+  auto response =
+      ParseResponse(net_error, response_code, std::move(response_body));
+  if (response.has_value()) {
+    backoff_operator_->ReportSuccess();
+  } else if (!response.error()) {
+    // Error is not retriable, so increase backoff.
+    backoff_operator_->ReportError();
+  }
+  return response;
 }
 
 void HashRealTimeService::RemoveFullHashDetailsWithInvalidEnums(
@@ -201,7 +239,7 @@ void HashRealTimeService::RemoveFullHashDetailsWithInvalidEnums(
   }
 }
 
-absl::optional<std::unique_ptr<V5::SearchHashesResponse>>
+base::expected<std::unique_ptr<V5::SearchHashesResponse>, bool>
 HashRealTimeService::ParseResponse(
     int net_error,
     int response_code,
@@ -210,18 +248,19 @@ HashRealTimeService::ParseResponse(
   bool net_and_http_ok = net_error == net::OK && response_code == net::HTTP_OK;
   if (net_and_http_ok && response->ParseFromString(*response_body)) {
     if (!response->has_cache_duration()) {
-      return absl::nullopt;
+      return base::unexpected(/*retriable*/ false);
     }
     for (const auto& full_hash : response->full_hashes()) {
       if (full_hash.full_hash().length() !=
           hash_realtime_utils::kFullHashLength) {
-        return absl::nullopt;
+        return base::unexpected(/*retriable*/ false);
       }
     }
     RemoveFullHashDetailsWithInvalidEnums(response);
     return std::move(response);
   }
-  return absl::nullopt;
+  return base::unexpected(/*retriable*/ !net_and_http_ok &&
+                          ErrorIsRetriable(net_error, response_code));
 }
 
 std::unique_ptr<network::ResourceRequest>

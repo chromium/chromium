@@ -39,8 +39,8 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
   // This function has to be static because it is called in UI thread. This
   // function starts a hash-prefix real-time lookup if |lookup_service_on_ui| is
-  // available. Otherwise, it hops back to the IO thread and performs the
-  // hash-based database check.
+  // available and is not in backoff mode. Otherwise, it hops back to the IO
+  // thread and performs the hash-based database check.
   static void StartLookupOnUIThread(
       base::WeakPtr<HashRealTimeMechanism> weak_checker_on_io,
       const GURL& url,
