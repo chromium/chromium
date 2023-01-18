@@ -182,8 +182,8 @@ scoped_refptr<gles2::TexturePassthrough> D3DImageBacking::CreateGLTexture(
                                     /*use_angle_rgbx_format=*/false);
   }
   auto image = base::MakeRefCounted<gl::GLImageD3D>(
-      size, gl_format_desc.image_internal_format, gl_format_desc.data_type,
-      d3d11_texture, array_slice, plane_index, swap_chain);
+      size, gl_format_desc.image_internal_format, d3d11_texture, array_slice,
+      plane_index, swap_chain);
   if (!image->Initialize()) {
     LOG(ERROR) << "GLImageD3D::Initialize failed";
     api->glDeleteTexturesFn(1, &service_id);

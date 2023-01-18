@@ -22,7 +22,6 @@ class GLImagePbuffer final : public gl::GLImage {
   // gl::GLImage implementation.
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;
-  unsigned GetDataType() override;
   gl::GLImage::Type GetType() const override;
   bool BindTexImage(unsigned target) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

@@ -20,7 +20,6 @@ class GL_EXPORT GLImageStub : public GLImage {
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;
-  unsigned GetDataType() override;
   bool BindTexImage(unsigned target) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,

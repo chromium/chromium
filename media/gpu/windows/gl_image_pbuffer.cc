@@ -19,9 +19,6 @@ gfx::Size GLImagePbuffer::GetSize() {
 unsigned GLImagePbuffer::GetInternalFormat() {
   return GL_BGRA_EXT;
 }
-unsigned GLImagePbuffer::GetDataType() {
-  return GL_UNSIGNED_BYTE;
-}
 gl::GLImage::Type GLImagePbuffer::GetType() const {
   return gl::GLImage::Type::PBUFFER;
 }

@@ -50,8 +50,8 @@ class GLImageD3DTestDelegate : public GLImageTestDelegateBase {
     HRESULT hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &d3d11_texture);
     EXPECT_TRUE(SUCCEEDED(hr));
 
-    auto image = base::MakeRefCounted<GLImageD3D>(
-        size, internal_format, data_type, std::move(d3d11_texture));
+    auto image = base::MakeRefCounted<GLImageD3D>(size, internal_format,
+                                                  std::move(d3d11_texture));
     EXPECT_TRUE(image->Initialize());
     return image;
   }

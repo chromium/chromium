@@ -74,10 +74,6 @@ unsigned GLImageEGLPixmap::GetInternalFormat() {
   return gl::BufferFormatToGLInternalFormat(format_);
 }
 
-unsigned GLImageEGLPixmap::GetDataType() {
-  return GL_UNSIGNED_BYTE;
-}
-
 bool GLImageEGLPixmap::BindTexImage(unsigned target) {
   if (!surface_)
     return false;

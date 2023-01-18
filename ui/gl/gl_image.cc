@@ -48,11 +48,6 @@ unsigned GLImage::GetInternalFormat() {
   return GL_NONE;
 }
 
-unsigned GLImage::GetDataType() {
-  NOTREACHED();
-  return GL_NONE;
-}
-
 bool GLImage::BindTexImage(unsigned target) {
   NOTREACHED();
   return false;

@@ -19,7 +19,6 @@ namespace gl {
 
 GLImageD3D::GLImageD3D(const gfx::Size& size,
                        unsigned internal_format,
-                       unsigned data_type,
                        Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
                        size_t array_slice,
                        size_t plane_index,
@@ -27,7 +26,6 @@ GLImageD3D::GLImageD3D(const gfx::Size& size,
     : GLImage(),
       size_(size),
       internal_format_(internal_format),
-      data_type_(data_type),
       texture_(std::move(texture)),
       array_slice_(array_slice),
       plane_index_(plane_index),
@@ -79,10 +77,6 @@ gfx::Size GLImageD3D::GetSize() {
 
 unsigned GLImageD3D::GetInternalFormat() {
   return internal_format_;
-}
-
-unsigned GLImageD3D::GetDataType() {
-  return data_type_;
 }
 
 bool GLImageD3D::BindTexImage(unsigned target) {

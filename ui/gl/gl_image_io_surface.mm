@@ -122,10 +122,6 @@ unsigned GLImageIOSurface::GetInternalFormat() {
   return BufferFormatToGLInternalFormat(format_);
 }
 
-unsigned GLImageIOSurface::GetDataType() {
-  return BufferFormatToGLDataType(format_);
-}
-
 bool GLImageIOSurface::BindTexImage(unsigned target) {
   LOG(ERROR) << "GLImageIOSurface::BindTexImage should not be reached.";
   NOTREACHED();

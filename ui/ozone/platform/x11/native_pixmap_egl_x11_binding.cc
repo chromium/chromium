@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/x11/native_pixmap_egl_x11_binding.h"
 
+#include <GL/gl.h>
+
 #include <unistd.h>
 
 #include "base/logging.h"
@@ -123,7 +125,7 @@ GLenum NativePixmapEGLX11Binding::GetDataFormat() {
 }
 
 GLenum NativePixmapEGLX11Binding::GetDataType() {
-  return gl_image_->GetDataType();
+  return GL_UNSIGNED_BYTE;
 }
 
 }  // namespace ui
