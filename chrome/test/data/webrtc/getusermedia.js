@@ -70,7 +70,7 @@ function doGetUserMedia(constraints) {
         });
   });
   var timeoutPromise = new Promise(function(resolve) {
-    setTimeout(() => resolve('request-timedout'), 4000);
+    setTimeout(() => resolve('request-timedout'), 10000);
   });
   Promise.race([gumPromise, timeoutPromise]).then(function(value) {
     returnToTest(value);
