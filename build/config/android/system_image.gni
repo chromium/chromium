@@ -31,7 +31,7 @@ template("system_image_stub_apk") {
       "--aapt2-path",
       rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
       "--min-sdk-version=$default_min_sdk_version",
-      "--target-sdk-version=$default_min_sdk_version",
+      "--target-sdk-version=$default_android_sdk_version",
       "--android-manifest",
       rebase_path(_manifest_path, root_build_dir),
       "--arsc-path",
