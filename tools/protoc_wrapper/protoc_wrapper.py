@@ -94,10 +94,6 @@ def main(argv):
                       'codesearch.')
   parser.add_argument("--plugin",
                       help="Relative path to custom generator plugin.")
-  #   TODO(crbug.com/1237958): Remove allow_optional when proto rolls to 3.15.
-  parser.add_argument("--allow-optional",
-                      action='store_true',
-                      help="Enables experimental_allow_proto3_optional.")
   parser.add_argument("--plugin-options",
                       help="Custom generator plugin options.")
   parser.add_argument("--cc-options",
@@ -154,9 +150,6 @@ def main(argv):
     # end.
     if options.cc_options:
       cc_options_list.append(options.cc_options)
-
-    if options.allow_optional:
-      protoc_cmd += ["--experimental_allow_proto3_optional"]
 
     cc_options = FormatGeneratorOptions(','.join(cc_options_list))
     protoc_cmd += ["--cpp_out", cc_options + cc_out_dir]

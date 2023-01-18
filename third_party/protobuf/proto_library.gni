@@ -35,10 +35,6 @@
 #       Generates a "_py_runtime"-suffixed target for test targets that need the
 #       Python stubs available at runtime.
 #
-#   TODO(crbug.com/1237958): Remove allow_optional when proto rolls to 3.15.
-#   allow_optional (optional, default false)
-#       Enables experimental_allow_proto3_optional.
-#
 #   cc_generator_options (optional)
 #       List of extra flags passed to the protocol compiler.  If you need to
 #       add an EXPORT macro to a protobuf's C++ header, set the
@@ -386,9 +382,6 @@ template("proto_library") {
           "--cc-options",
           invoker.cc_generator_options,
         ]
-      }
-      if (defined(invoker.allow_optional) && invoker.allow_optional == true) {
-        args += [ "--allow-optional" ]
       }
       if (defined(invoker.cc_include)) {
         args += [

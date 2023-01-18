@@ -21,7 +21,6 @@ config("disable_deprecated_declarations") {
 proto_library("proto") {
   sources = [ "src/OOPClasses/Protos/gtx.proto" ]
   cc_generator_options = "lite"
-  allow_optional = true
 }
 
 source_set("oop_classes") {
