@@ -334,7 +334,7 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     SetPolicy();
     NavigateToUrl(redirect_url);
 
-    first_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(first_navigation.WaitForNavigationFinished());
   }
 
   std::string test_header_ = kChallenge;
@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
   SetPolicy();
   NavigateToUrl(navigation_url);
 
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
   SetPolicy(/*as_empty_list=*/true);
   NavigateToUrl(navigation_url);
 
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationPrefNotSet) {
 
   NavigateToUrl(navigation_url);
 
-  navigation_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
