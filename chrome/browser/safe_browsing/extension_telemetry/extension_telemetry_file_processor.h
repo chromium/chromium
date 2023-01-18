@@ -1,0 +1,101 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_FILE_PROCESSOR_H_
+#define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_FILE_PROCESSOR_H_
+
+#include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/values.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
+
+namespace safe_browsing {
+
+// Given an extension root path, the FileProcessor does the following:
+//   - Computes and retrieves the installed file hashes
+//   - Retrieves the manifest.json file contents
+// The FileProcessor is also instantiated on a separate thread due to its
+// expensive operations, such as file reading and hashing.
+class ExtensionTelemetryFileProcessor {
+ public:
+  // TODO(richche): Add in logic to find latest version folder here or in the
+  // caller.
+  // Parameters:
+  // - max_files_to_process: max number of files processed per extension
+  // - max_file_size: max file size limit for extension files
+  // - extension_root_dir: root directory of extension files
+  explicit ExtensionTelemetryFileProcessor(const uint32_t max_files_to_process,
+                                           const int64_t max_file_size,
+                                           base::FilePath extension_root_dir);
+
+  ExtensionTelemetryFileProcessor(const ExtensionTelemetryFileProcessor&) =
+      delete;
+  ExtensionTelemetryFileProcessor& operator=(
+      const ExtensionTelemetryFileProcessor&) = delete;
+
+  virtual ~ExtensionTelemetryFileProcessor();
+
+  // Selects and processes installed extension files. Returns files data in a
+  // Dict:
+  // <file path 1, file hash 1>
+  // ...
+  // <file path N, file hash N>
+  // <manifest.json, file contents>
+  // Each file path is relative starting from the extension root. Manifest.json
+  // file is unhashed.
+  base::Value::Dict ProcessExtension();
+
+  void SetMaxFilesReadForTest(int64_t max_files_read);
+
+ protected:
+  struct FileExtensionsComparator;
+
+  using SortedFilePaths =
+      base::flat_set<base::FilePath, FileExtensionsComparator>;
+
+  // TODO(richche): Process other types of files until |max_files_to_process_|
+  // limit is reached.
+  // Retrieves installed extension files to process. Allowed
+  // files:
+  //   - Only JavaScript, HTML, CSS files and sorted in that file type
+  //   order
+  //   - Ignore empty files
+  //   - Ignore files over max_file_size_ limit
+  SortedFilePaths RetrieveFilePaths();
+
+  // Hashes the given list of extension files and returns a Dict of <relative
+  // file path, file hash> until |max_files_to_process_| is reached.
+  base::Value::Dict ComputeHashes(const SortedFilePaths& file_paths);
+
+  // Returns true if a file has JS, HTML, or CSS extension.
+  bool IsAllowedType(const base::FilePath& file_path);
+
+  // Returns true if a file is not empty and within the |max_file_size_|.
+  bool IsWithinSizeLimit(const base::FilePath& file_path);
+
+  // Max number of files processed per extension.
+  size_t max_files_to_process_;
+
+  // Max file size limit for extension files.
+  int64_t max_file_size_;
+
+  // Max number of files read limit enforced in case an extension has too many
+  // files.
+  int64_t max_files_read_;
+
+  // Root directory path where the extension files are installed.
+  base::FilePath extension_root_dir_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<ExtensionTelemetryFileProcessor> weak_factory_{this};
+};
+
+}  // namespace safe_browsing
+#endif  // CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_FILE_PROCESSOR_H_
