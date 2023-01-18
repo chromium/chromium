@@ -354,6 +354,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   } else {
     SetV8Flags("--no-harmony-rab-gsab");
   }
+  SetV8FlagsIfOverridden(features::kJavaScriptStringIsWellFormed,
+                         "--harmony-string-is-well-formed",
+                         "--no-harmony-string-is-well-formed");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");

@@ -52,6 +52,7 @@ GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptSymbolAsWeakMapKey);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptChangeArrayByCopy);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRabGsab);
+GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptStringIsWellFormed);
 
 }  // namespace features
 
