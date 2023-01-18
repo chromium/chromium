@@ -216,7 +216,8 @@ class WPTExpectationsUpdater(object):
         if issue_number == 'None':
             raise ScriptError('No issue on current branch.')
 
-        build_to_status = self.get_latest_try_jobs(True)
+        build_to_status = self.git_cl.latest_try_jobs(
+            builder_names=self._get_try_bots(), patchset=self.patchset)
         _log.debug('Latest try jobs: %r', build_to_status)
         if not build_to_status:
             raise ScriptError('No try job information was collected.')
@@ -313,16 +314,6 @@ class WPTExpectationsUpdater(object):
     def get_issue_number(self):
         """Returns current CL number. Can be replaced in unit tests."""
         return self.git_cl.get_issue_number()
-
-    def get_latest_try_jobs(self, exclude_flag_specific):
-        """Returns the latest finished try jobs as Build objects."""
-        builder_names = self._get_try_bots()
-        if exclude_flag_specific:
-            all_flag_specific = self.host.builders.all_flag_specific_try_builder_names("*")
-            builder_names = [b for b in builder_names if b not in all_flag_specific]
-
-        return self.git_cl.latest_try_jobs(builder_names=builder_names,
-                                           patchset=self.patchset)
 
     def get_failing_results_dicts(self, build, test_suite):
         """Returns a list of nested dicts of failing test results.
