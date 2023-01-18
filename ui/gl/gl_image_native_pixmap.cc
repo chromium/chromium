@@ -436,10 +436,6 @@ unsigned GLImageNativePixmap::GetInternalFormat() {
   return GLInternalFormat(format_);
 }
 
-unsigned GLImageNativePixmap::GetDataType() {
-  return gl::BufferFormatToGLDataType(format_);
-}
-
 void GLImageNativePixmap::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t process_tracing_id,

@@ -98,6 +98,7 @@
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/video_types.h"
+#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
@@ -3224,8 +3225,8 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
   image_ = image;
   decoder_->texture_manager()->SetLevelInfo(
       texture_ref_.get(), Target(), 0, image_->GetInternalFormat(),
-      size.width(), size.height(), 1, 0, format, image->GetDataType(),
-      gfx::Rect(size));
+      size.width(), size.height(), 1, 0, format,
+      gl::BufferFormatToGLDataType(buffer_format), gfx::Rect(size));
   decoder_->texture_manager()->SetLevelImage(texture_ref_.get(), Target(), 0,
                                              image_.get(), Texture::BOUND);
 

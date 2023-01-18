@@ -23,8 +23,8 @@ namespace ui {
 // A binding maintained between GLImageNativePixmap and GL Textures in Ozone.
 class NativePixmapEGLBinding : public NativePixmapGLBinding {
  public:
-  explicit NativePixmapEGLBinding(
-      scoped_refptr<gl::GLImageNativePixmap> gl_image);
+  NativePixmapEGLBinding(scoped_refptr<gl::GLImageNativePixmap> gl_image,
+                         gfx::BufferFormat format);
   ~NativePixmapEGLBinding() override;
 
   static std::unique_ptr<NativePixmapGLBinding> Create(
@@ -49,6 +49,8 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
   // subclass NativePixmap to NativePixmapEGLBinding once we stop using them
   // elsewhere eg. VDA decoders in media.
   scoped_refptr<gl::GLImageNativePixmap> gl_image_;
+
+  gfx::BufferFormat format_;
 };
 
 }  // namespace ui

@@ -6,13 +6,15 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_image_native_pixmap.h"
 
 namespace ui {
 
 NativePixmapEGLBinding::NativePixmapEGLBinding(
-    scoped_refptr<gl::GLImageNativePixmap> gl_image)
-    : gl_image_(std::move(gl_image)) {}
+    scoped_refptr<gl::GLImageNativePixmap> gl_image,
+    gfx::BufferFormat format)
+    : gl_image_(std::move(gl_image)), format_(format) {}
 NativePixmapEGLBinding::~NativePixmapEGLBinding() = default;
 
 // static
@@ -31,7 +33,8 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     return nullptr;
   }
 
-  auto binding = std::make_unique<NativePixmapEGLBinding>(std::move(gl_image));
+  auto binding = std::make_unique<NativePixmapEGLBinding>(std::move(gl_image),
+                                                          plane_format);
   if (!binding->BindTexture(target, texture_id)) {
     return nullptr;
   }
@@ -54,7 +57,7 @@ GLenum NativePixmapEGLBinding::GetDataFormat() {
 }
 
 GLenum NativePixmapEGLBinding::GetDataType() {
-  return gl_image_->GetDataType();
+  return gl::BufferFormatToGLDataType(format_);
 }
 
 }  // namespace ui

@@ -11,6 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -131,10 +132,10 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
 
   // Bind the image.
   EXPECT_TRUE(image->BindTexImage(GL_TEXTURE_2D));
-  gl_.decoder()->SetLevelInfo(texture_id, 0 /* level */,
-                              image->GetInternalFormat(), size.width(),
-                              size.height(), 1 /* depth */, GL_RGB,
-                              image->GetDataType(), gfx::Rect(size));
+  gl_.decoder()->SetLevelInfo(
+      texture_id, 0 /* level */, image->GetInternalFormat(), size.width(),
+      size.height(), 1 /* depth */, GL_RGB,
+      gl::BufferFormatToGLDataType(format), gfx::Rect(size));
 
   // TODO(crbug.com/1323341): This call is likely unnecessary, but it's not
   // currently possible to actually run the test to completion to verify. See
