@@ -19,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "base/win/windows_version.h"
 #include "net/base/winsock_init.h"
 #include "net/base/winsock_util.h"
 
@@ -281,10 +280,6 @@ NetworkChangeNotifier::ConnectionCost
 NetworkChangeNotifierWin::GetCurrentConnectionCost() {
   InitializeConnectionCost();
 
-  // Pre-Win10 use the default logic.
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return NetworkChangeNotifier::GetCurrentConnectionCost();
-
   // If we don't have the event sink we aren't registered for automatic updates.
   // In that case, we need to update the value at the time it is requested.
   if (!network_cost_manager_event_sink_)
@@ -294,12 +289,6 @@ NetworkChangeNotifierWin::GetCurrentConnectionCost() {
 }
 
 bool NetworkChangeNotifierWin::InitializeConnectionCostOnce() {
-  // Pre-Win10 this information cannot be retrieved and cached.
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    SetCurrentConnectionCost(CONNECTION_COST_UNKNOWN);
-    return true;
-  }
-
   HRESULT hr =
       ::CoCreateInstance(CLSID_NetworkListManager, nullptr, CLSCTX_ALL,
                          IID_INetworkCostManager, &network_cost_manager_);

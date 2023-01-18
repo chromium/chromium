@@ -67,7 +67,6 @@
 #elif BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_mac.h"
 #elif BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "net/cert/cert_verify_proc_win.h"
 #endif
 
@@ -351,17 +350,6 @@ void RecordEkuHistogram(const CertVerifyResult& verify_result) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Net.Certificate.LeafExtendedKeyUsage.", histogram_suffix}),
       eku_status);
-}
-
-bool AreSHA1IntermediatesAllowed() {
-#if BUILDFLAG(IS_WIN)
-  // TODO(rsleevi): Remove this once https://crbug.com/588789 is resolved
-  // for Windows 7/2008 users.
-  // Note: This must be kept in sync with cert_verify_proc_unittest.cc
-  return base::win::GetVersion() < base::win::Version::WIN8;
-#else
-  return false;
-#endif
 }
 
 // Inspects the signature algorithms in a single certificate |cert|.
@@ -655,13 +643,10 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   // Current SHA-1 behaviour:
   // - Reject all SHA-1
   // - ... unless it's not publicly trusted and SHA-1 is allowed
-  // - ... or SHA-1 is in the intermediate and SHA-1 intermediates are
-  //   allowed for that platform. See https://crbug.com/588789
   bool current_sha1_issue =
       (verify_result->is_issued_by_known_root ||
        !(flags & VERIFY_ENABLE_SHA1_LOCAL_ANCHORS)) &&
-      (verify_result->has_sha1_leaf ||
-       (verify_result->has_sha1 && !AreSHA1IntermediatesAllowed()));
+      (verify_result->has_sha1_leaf || verify_result->has_sha1);
 
   if (current_sha1_issue) {
     verify_result->cert_status |= CERT_STATUS_WEAK_SIGNATURE_ALGORITHM;

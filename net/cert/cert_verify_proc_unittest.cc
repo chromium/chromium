@@ -298,20 +298,6 @@ bool ScopedTestRootCanTrustIntermediateCert(
          verify_proc_type == CERT_VERIFY_PROC_ANDROID;
 }
 
-// TODO(crbug.com/649017): This is not parameterized by the CertVerifyProc
-// because the CertVerifyProc::Verify() does this unconditionally based on the
-// platform.
-bool AreSHA1IntermediatesAllowed() {
-#if BUILDFLAG(IS_WIN)
-  // TODO(rsleevi): Remove this once https://crbug.com/588789 is resolved
-  // for Windows 7/2008 users.
-  // Note: This must be kept in sync with cert_verify_proc.cc
-  return base::win::GetVersion() < base::win::Version::WIN8;
-#else
-  return false;
-#endif
-}
-
 std::string MakeRandomHexString(size_t num_bytes) {
   std::vector<char> rand_bytes;
   rand_bytes.resize(num_bytes);
@@ -1810,15 +1796,9 @@ TEST_P(CertVerifyProcInternalTest, Sha1IntermediateUsesServerGatedCrypto) {
                      "www.example.com", flags, CRLSet::BuiltinCRLSet().get(),
                      CertificateList(), &verify_result);
 
-  if (AreSHA1IntermediatesAllowed()) {
-    EXPECT_THAT(error, IsOk());
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-  } else {
-    EXPECT_NE(error, OK);
-    EXPECT_TRUE(verify_result.cert_status &
-                CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-  }
+  EXPECT_NE(error, OK);
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
 }
 
 // Basic test for returning the chain in CertVerifyResult. Note that the
@@ -5816,7 +5796,7 @@ TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
 }
 
-TEST(CertVerifyProcTest, RejectsPublicSHA1IntermediatesUnlessAllowed) {
+TEST(CertVerifyProcTest, RejectsPublicSHA1Intermediates) {
   scoped_refptr<X509Certificate> cert(ImportCertFromFile(
       GetTestCertsDirectory(), "39_months_after_2015_04.pem"));
   ASSERT_TRUE(cert);
@@ -5833,14 +5813,8 @@ TEST(CertVerifyProcTest, RejectsPublicSHA1IntermediatesUnlessAllowed) {
       cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
       CertificateList(), &verify_result, NetLogWithSource());
-  if (AreSHA1IntermediatesAllowed()) {
-    EXPECT_THAT(error, IsOk());
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-  } else {
-    EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-    EXPECT_TRUE(verify_result.cert_status &
-                CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
-  }
+  EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
 }
 
 TEST(CertVerifyProcTest, RejectsPrivateSHA1UnlessFlag) {

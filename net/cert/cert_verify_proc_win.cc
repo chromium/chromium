@@ -18,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_local.h"
 #include "base/win/registry.h"
-#include "base/win/windows_version.h"
 #include "crypto/capi_util.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/sha2.h"
@@ -269,26 +268,23 @@ void GetCertChainInfo(PCCERT_CHAIN_CONTEXT chain_context,
   PCCERT_CONTEXT verified_cert = nullptr;
   std::vector<PCCERT_CONTEXT> verified_chain;
 
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    // Recheck signatures in the event junk data was provided.
-    for (DWORD i = 0; i < num_elements - 1; ++i) {
-      PCCERT_CONTEXT issuer = element[i + 1]->pCertContext;
+  // Recheck signatures in the event junk data was provided.
+  for (DWORD i = 0; i < num_elements - 1; ++i) {
+    PCCERT_CONTEXT issuer = element[i + 1]->pCertContext;
 
-      // If Issuer isn't ECC, skip this certificate.
-      if (strcmp(issuer->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId,
-                 szOID_ECC_PUBLIC_KEY)) {
-        continue;
-      }
+    // If Issuer isn't ECC, skip this certificate.
+    if (strcmp(issuer->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId,
+               szOID_ECC_PUBLIC_KEY)) {
+      continue;
+    }
 
-      PCCERT_CONTEXT cert = element[i]->pCertContext;
-      if (!CryptVerifyCertificateSignatureEx(
-              NULL, X509_ASN_ENCODING, CRYPT_VERIFY_CERT_SIGN_SUBJECT_CERT,
-              const_cast<PCERT_CONTEXT>(cert),
-              CRYPT_VERIFY_CERT_SIGN_ISSUER_CERT,
-              const_cast<PCERT_CONTEXT>(issuer), 0, nullptr)) {
-        verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
-        break;
-      }
+    PCCERT_CONTEXT cert = element[i]->pCertContext;
+    if (!CryptVerifyCertificateSignatureEx(
+            NULL, X509_ASN_ENCODING, CRYPT_VERIFY_CERT_SIGN_SUBJECT_CERT,
+            const_cast<PCERT_CONTEXT>(cert), CRYPT_VERIFY_CERT_SIGN_ISSUER_CERT,
+            const_cast<PCERT_CONTEXT>(issuer), 0, nullptr)) {
+      verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
+      break;
     }
   }
 
@@ -933,16 +929,8 @@ void AuthRootVersionChecker::RefreshWatch() {
   if (!key_.Valid())
     return;
 
-  if (base::win::GetVersion() < base::win::Version::WIN8) {
-    // On Windows 7 and earlier, using RegNotifyChangeKeyValue from a worker
-    // thread will abandon the notification if that thread ends. Rather than
-    // marshalling to a persistent thread, on these versions, `ShouldUpdate()`
-    // just takes a less-optimized path.
-    return;
-  }
-
-  // On Windows 8 or later, any thread can monitor the registry for changes,
-  // and monitoring is not abandoned if the thread ends.
+  // On Windows, any thread can monitor the registry for changes, and monitoring
+  // is not abandoned if the thread ends.
   DWORD flags = REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_THREAD_AGNOSTIC;
   RegNotifyChangeKeyValue(key_.Handle(), FALSE, flags, event_.Get(), TRUE);
 }
@@ -954,30 +942,8 @@ bool AuthRootVersionChecker::ShouldUpdate() {
   if (!key_.Valid())
     return false;
 
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    // On Win 8+, just check if the event is signaled.
-    return WaitForSingleObject(event_.Get(), 0) == WAIT_OBJECT_0;
-  }
-
-  // On Win 7 and earlier, check the last modification time of the registry.
-  // This is less efficient than using the event, but a simpler implementation
-  // than needing to marshal RegNotifyChangeKeyValue to a persistent thread.
-  FILETIME current_timestamp = {0, 0};
-  LSTATUS result = RegQueryInfoKeyW(key_.Handle(), nullptr, nullptr, nullptr,
-                                    nullptr, nullptr, nullptr, nullptr, nullptr,
-                                    nullptr, nullptr, &current_timestamp);
-
-  // If for some reason things failed, rather than constantly querying the
-  // registry every time, fail closed and just use the stale value.
-  if (result != ERROR_SUCCESS)
-    return false;
-
-  base::Time update_time = base::Time::FromFileTime(current_timestamp);
-  if (update_time > last_update_) {
-    last_update_ = update_time;
-    return true;
-  }
-  return false;
+  // Check if the event is signaled.
+  return WaitForSingleObject(event_.Get(), 0) == WAIT_OBJECT_0;
 }
 
 void AuthRootVersionChecker::UpdateAuthRootVersion() {
