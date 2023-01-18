@@ -23,6 +23,7 @@
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
@@ -31,6 +32,7 @@
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_application_menu_model.h"
@@ -149,6 +151,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
@@ -225,6 +228,10 @@ std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
   app->sticky = true;
   apps.push_back(std::move(app));
   return apps;
+}
+
+int GetPrimaryDisplayId() {
+  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
 }
 
 bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {
@@ -702,6 +709,17 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
             syncer::OS_PREFERENCES, init_sync_list,
             std::make_unique<syncer::FakeSyncChangeProcessor>());
     EXPECT_FALSE(error.has_value());
+  }
+
+  syncer::SyncData CreateStringPrefsSyncData(const std::string& pref_name,
+                                             const std::string& pref_value) {
+    sync_pb::EntitySpecifics specifics;
+    specifics.mutable_os_preference()->mutable_preference()->set_name(
+        pref_name);
+    specifics.mutable_os_preference()->mutable_preference()->set_value(
+        base::StringPrintf("\"%s\"", pref_value.c_str()));
+    return syncer::SyncData::CreateRemoteData(
+        specifics, syncer::ClientTagHash::FromHashed("unused"));
   }
 
   void SetAppIconLoader(std::unique_ptr<AppIconLoader> loader) {
@@ -1605,6 +1623,145 @@ class ChromeShelfControllerMultiProfileWithArcTest
       const ChromeShelfControllerMultiProfileWithArcTest&) = delete;
   ~ChromeShelfControllerMultiProfileWithArcTest() override = default;
 };
+
+TEST_F(ChromeShelfControllerTest, DefaultShelfPrefValues) {
+  StartPrefSyncService(syncer::SyncDataList());
+  InitShelfController();
+
+  // Verify shelf prefs are initialized to default values if they're not set
+  // either locally nor in sync data.
+  PrefService* const prefs = browser()->profile()->GetPrefs();
+  EXPECT_EQ(ash::ShelfAlignment::kBottom,
+            ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
+  EXPECT_EQ(ash::ShelfAutoHideBehavior::kNever,
+            ash::GetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId()));
+
+  // Verify that shelf pref values don't change locally if they change in sync
+  // after local value has been initialized.
+  syncer::SyncChangeList os_change_list;
+  os_change_list.emplace_back(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateStringPrefsSyncData(ash::prefs::kShelfAlignment,
+                                ash::kShelfAlignmentLeft));
+  os_change_list.emplace_back(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateStringPrefsSyncData(ash::prefs::kShelfAutoHideBehavior,
+                                ash::kShelfAutoHideBehaviorAlways));
+  GetPrefSyncService()->ProcessSyncChanges(FROM_HERE, os_change_list);
+
+  EXPECT_EQ(ash::ShelfAlignment::kBottom,
+            ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
+  EXPECT_EQ(ash::ShelfAutoHideBehavior::kNever,
+            ash::GetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId()));
+}
+
+TEST_F(ChromeShelfControllerTest, ShelfPrefsInitializedFromSyncData) {
+  // Add shelf prefs to synced pref data, and start syncing.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateStringPrefsSyncData(ash::prefs::kShelfAlignment,
+                                                ash::kShelfAlignmentLeft));
+  sync_list.push_back(CreateStringPrefsSyncData(
+      ash::prefs::kShelfAutoHideBehavior, ash::kShelfAutoHideBehaviorAlways));
+  StartPrefSyncService(std::move(sync_list));
+
+  // Verify local shelf state is initialized to reflect values in sync data if
+  // shelf controller gets initialized after initial sync pref values have been
+  // received.
+  InitShelfController();
+
+  PrefService* const prefs = browser()->profile()->GetPrefs();
+  EXPECT_EQ(ash::ShelfAlignment::kLeft,
+            ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
+  EXPECT_EQ(ash::ShelfAutoHideBehavior::kAlways,
+            ash::GetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId()));
+
+  // Verify further synced shelf prefs changes do not affect local shelf state.
+  syncer::SyncChangeList os_change_list;
+  os_change_list.emplace_back(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateStringPrefsSyncData(ash::prefs::kShelfAlignment,
+                                ash::kShelfAlignmentBottom));
+  os_change_list.emplace_back(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateStringPrefsSyncData(ash::prefs::kShelfAutoHideBehavior,
+                                ash::kShelfAutoHideBehaviorNever));
+  GetPrefSyncService()->ProcessSyncChanges(FROM_HERE, os_change_list);
+
+  EXPECT_EQ(ash::ShelfAlignment::kLeft,
+            ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
+  EXPECT_EQ(ash::ShelfAutoHideBehavior::kAlways,
+            ash::GetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId()));
+}
+
+TEST_F(ChromeShelfControllerTest,
+       ShelfControllerUpdatesShelfPrefAfterInitialPrefSync) {
+  // Initialize shelf controller, and verify shelf state reflects default values
+  // before initial synced prefs have been received.
+  InitShelfController();
+
+  PrefService* const prefs = browser()->profile()->GetPrefs();
+  EXPECT_EQ(ash::ShelfAlignment::kBottom,
+            ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
+  EXPECT_EQ(ash::ShelfAutoHideBehavior::kNever,
+            ash::GetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId()));
+
+  // If initial sync data contains shelf prefs, local shelf state should be
+  // updated to reflect shelf state in the initial sync data.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateStringPrefsSyncData(ash::prefs::kShelfAlignment,
+                                                ash::kShelfAlignmentLeft));
+  sync_list.push_back(CreateStringPrefsSyncData(
+      ash::prefs::kShelfAutoHideBehavior, ash::kShelfAutoHideBehaviorAlways));
+  StartPrefSyncService(std::move(sync_list));
+
+  EXPECT_EQ(ash::ShelfAlignment::kLeft,
+            ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
+  EXPECT_EQ(ash::ShelfAutoHideBehavior::kAlways,
+            ash::GetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId()));
+
+  // Verify further synced shelf prefs changes do not affect local shelf state.
+  syncer::SyncChangeList os_change_list;
+  os_change_list.emplace_back(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateStringPrefsSyncData(ash::prefs::kShelfAlignment,
+                                ash::kShelfAlignmentBottom));
+  os_change_list.emplace_back(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateStringPrefsSyncData(ash::prefs::kShelfAutoHideBehavior,
+                                ash::kShelfAutoHideBehaviorNever));
+  GetPrefSyncService()->ProcessSyncChanges(FROM_HERE, os_change_list);
+
+  EXPECT_EQ(ash::ShelfAlignment::kLeft,
+            ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
+  EXPECT_EQ(ash::ShelfAutoHideBehavior::kAlways,
+            ash::GetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId()));
+}
+
+TEST_F(ChromeShelfControllerTest, SyncedShelfPrefsDontOverrideLocalPref) {
+  // Initialize shelf prefs before shelf controller gets initialized.
+  PrefService* const prefs = browser()->profile()->GetPrefs();
+  ash::SetShelfAlignmentPref(prefs, GetPrimaryDisplayId(),
+                             ash::ShelfAlignment::kLeft);
+  ash::SetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId(),
+                                    ash::ShelfAutoHideBehavior::kAlways);
+
+  // Set initial sync data to conflict with the local shelf prefs.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateStringPrefsSyncData(ash::prefs::kShelfAlignment,
+                                                ash::kShelfAlignmentBottom));
+  sync_list.push_back(CreateStringPrefsSyncData(
+      ash::prefs::kShelfAutoHideBehavior, ash::kShelfAutoHideBehaviorNever));
+  StartPrefSyncService(std::move(sync_list));
+
+  // Initialize shelf controller, and verify shelf state reflects initially set
+  // local prefs.
+  InitShelfController();
+
+  EXPECT_EQ(ash::ShelfAlignment::kLeft,
+            ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
+  EXPECT_EQ(ash::ShelfAutoHideBehavior::kAlways,
+            ash::GetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId()));
+}
 
 TEST_F(ChromeShelfControllerTest, PreinstalledApps) {
   InitShelfController();

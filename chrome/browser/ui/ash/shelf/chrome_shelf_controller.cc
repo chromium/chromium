@@ -1234,6 +1234,10 @@ void ChromeShelfController::OnSyncModelUpdated() {
 void ChromeShelfController::OnIsSyncingChanged() {
   UpdatePinnedAppsFromSync();
 
+  InitLocalShelfPrefsIfOsPrefsAreSyncing();
+}
+
+void ChromeShelfController::InitLocalShelfPrefsIfOsPrefsAreSyncing() {
   // Wait until the initial sync happens.
   auto* pref_service = PrefServiceSyncableFromProfile(profile());
   bool is_syncing = pref_service->AreOsPrefsSyncing();
@@ -1529,7 +1533,6 @@ void ChromeShelfController::AttachProfile(Profile* profile_to_attach) {
   profile_ = profile_to_attach;
   latest_active_profile_ = profile_to_attach;
 
-  shelf_prefs_->AttachProfile(profile_to_attach);
   AddAppUpdaterAndIconLoader(profile_to_attach);
 
   pref_change_registrar_.Init(profile()->GetPrefs());
@@ -1548,6 +1551,8 @@ void ChromeShelfController::AttachProfile(Profile* profile_to_attach) {
     app_list_syncable_service->AddObserverAndStart(this);
 
   PrefServiceSyncableFromProfile(profile())->AddObserver(this);
+  InitLocalShelfPrefsIfOsPrefsAreSyncing();
+  shelf_prefs_->AttachProfile(profile_to_attach);
 }
 
 void ChromeShelfController::ReleaseProfile() {
