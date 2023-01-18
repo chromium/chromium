@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController {
   void OnCheckTetheringReadiness(
       HotspotStateHandler::CheckTetheringReadinessResult result);
   void PerformSetTetheringEnabled(bool enabled);
-  void OnSetTetheringEnabledSuccess();
+  void OnSetTetheringEnabledSuccess(const std::string& result);
   void OnSetTetheringEnabledFailure(const std::string& error_name,
                                     const std::string& error_message);
   void CompleteCurrentRequest(

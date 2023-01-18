@@ -260,6 +260,8 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
   SetReadinessCheckResultReady();
   SetValidHotspotCapabilities();
   AddActiveCellularService();
+  helper()->manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(mojom::HotspotControlResult::kSuccess, EnableHotspot());
@@ -275,6 +277,10 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
 }
 
 TEST_F(CrosHotspotConfigTest, DisableHotspot) {
+  helper()->manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(mojom::HotspotControlResult::kSuccess, DisableHotspot());
 }
 

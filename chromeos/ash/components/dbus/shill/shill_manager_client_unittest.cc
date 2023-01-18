@@ -328,8 +328,14 @@ TEST_F(ShillManagerClientTest, GetService) {
 }
 
 TEST_F(ShillManagerClientTest, SetTetheringEnabled) {
+  const char kEnabledResult[] = "success";
+
   // Create response.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter writer(response.get());
+  writer.AppendString(kEnabledResult);
+
+  // Set expectation.
   PrepareForMethodCall(shill::kSetTetheringEnabledFunction,
                        base::BindRepeating(&ExpectBoolArgument, true),
                        response.get());
@@ -338,7 +344,12 @@ TEST_F(ShillManagerClientTest, SetTetheringEnabled) {
   base::MockCallback<ShillManagerClient::ErrorCallback> mock_error_callback;
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
   client_->SetTetheringEnabled(
-      /*enabled=*/true, run_loop.QuitClosure(), mock_error_callback.Get());
+      /*enabled=*/true,
+      base::BindLambdaForTesting([&](const std::string& enabled_result) {
+        EXPECT_EQ(kEnabledResult, enabled_result);
+        run_loop.QuitClosure();
+      }),
+      mock_error_callback.Get());
 
   // Run the message loop.
   run_loop.RunUntilIdle();

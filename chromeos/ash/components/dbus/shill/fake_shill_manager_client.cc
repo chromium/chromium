@@ -504,17 +504,17 @@ void FakeShillManagerClient::RemovePasspointCredentials(
     ErrorCallback error_callback) {}
 
 void FakeShillManagerClient::SetTetheringEnabled(bool enabled,
-                                                 base::OnceClosure callback,
+                                                 StringCallback callback,
                                                  ErrorCallback error_callback) {
   switch (simulate_tethering_enable_result_) {
     case FakeShillSimulatedResult::kSuccess:
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(callback));
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    simulate_enable_tethering_result_string_));
       return;
     case FakeShillSimulatedResult::kFailure:
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(error_callback),
-                                    simulate_enable_tethering_error_,
+          FROM_HERE, base::BindOnce(std::move(error_callback), "Error",
                                     "Simulated failure"));
       return;
     case FakeShillSimulatedResult::kTimeout:
@@ -842,10 +842,10 @@ void FakeShillManagerClient::SetSimulateConfigurationResult(
 
 void FakeShillManagerClient::SetSimulateTetheringEnableResult(
     FakeShillSimulatedResult tethering_enable_result,
-    const std::string& tethering_enable_error) {
+    const std::string& result_string) {
   simulate_tethering_enable_result_ = tethering_enable_result;
-  if (simulate_tethering_enable_result_ == FakeShillSimulatedResult::kFailure) {
-    simulate_enable_tethering_error_ = tethering_enable_error;
+  if (simulate_tethering_enable_result_ == FakeShillSimulatedResult::kSuccess) {
+    simulate_enable_tethering_result_string_ = result_string;
   }
 }
 

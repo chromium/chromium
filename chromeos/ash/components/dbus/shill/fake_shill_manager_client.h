@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override;
   void SetTetheringEnabled(bool enabled,
-                           base::OnceClosure callback,
+                           StringCallback callback,
                            ErrorCallback error_callback) override;
   void CheckTetheringReadiness(StringCallback callback,
                                ErrorCallback error_callback) override;
@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       FakeShillSimulatedResult configuration_result) override;
   void SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult tethering_enable_result,
-      const std::string& tethering_enable_error) override;
+      const std::string& result_string) override;
   void SetSimulateCheckTetheringReadinessResult(
       FakeShillSimulatedResult tethering_readiness_result,
       const std::string& readiness_status) override;
@@ -194,7 +194,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       FakeShillSimulatedResult::kSuccess;
   FakeShillSimulatedResult simulate_tethering_enable_result_ =
       FakeShillSimulatedResult::kSuccess;
-  std::string simulate_enable_tethering_error_;
+  std::string simulate_enable_tethering_result_string_;
   FakeShillSimulatedResult simulate_check_tethering_readiness_result_ =
       FakeShillSimulatedResult::kSuccess;
   std::string simulate_tethering_readiness_status_;

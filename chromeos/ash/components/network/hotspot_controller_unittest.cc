@@ -142,6 +142,8 @@ TEST_F(HotspotControllerTest, EnableTetheringCapabilitiesNotAllowed) {
 TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
   SetValidTetheringCapabilities();
   AddActiveCellularServivce();
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
@@ -179,7 +181,7 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
   // Simulate enable tethering operation fail with kShillNetworkingFailure
   // error.
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kFailure, kShillNetworkingFailure);
+      FakeShillSimulatedResult::kSuccess, kShillNetworkingFailure);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNetworkSetupFailure,
@@ -187,6 +189,8 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
 }
 
 TEST_F(HotspotControllerTest, DisableTetheringSuccess) {
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             DisableHotspot());
 }
@@ -194,6 +198,8 @@ TEST_F(HotspotControllerTest, DisableTetheringSuccess) {
 TEST_F(HotspotControllerTest, QueuedRequests) {
   SetValidTetheringCapabilities();
   AddActiveCellularServivce();
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
 
   hotspot_config::mojom::HotspotControlResult enable_result, disable_result;

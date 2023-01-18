@@ -81,16 +81,16 @@ enum HotspotControlResult {
   kReadinessCheckFailed,
   // Invalid tethering configuration.
   kInvalidConfiguration,
-  // Upstream is not ready.
-  kUpstreamNotReady,
+  // Upstream network is not available.
+  kUpstreamNotAvailable,
   // Network setup failure
   kNetworkSetupFailure,
   // Wifi driver setup failure.
   kWifiDriverFailure,
   // Cellular attach failure.
   kCellularAttachFailure,
-  // No upstream cellular connection.
-  kNoUpstreamConnection,
+  // Failed due to Shill operation error,
+  kShillOperationFailed,
   kUnknownFailure,
 };
 

@@ -93,8 +93,9 @@ void HotspotController::PerformSetTetheringEnabled(bool enabled) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HotspotController::OnSetTetheringEnabledSuccess() {
-  CompleteCurrentRequest(hotspot_config::mojom::HotspotControlResult::kSuccess);
+void HotspotController::OnSetTetheringEnabledSuccess(
+    const std::string& result) {
+  CompleteCurrentRequest(SetTetheringEnabledResultToMojom(result));
 }
 
 void HotspotController::OnSetTetheringEnabledFailure(
@@ -102,7 +103,8 @@ void HotspotController::OnSetTetheringEnabledFailure(
     const std::string& error_message) {
   NET_LOG(ERROR) << "Enable/disable tethering failed: " << error_name
                  << ", message: " << error_message;
-  CompleteCurrentRequest(SetTetheringEnabledResultToMojom(error_name));
+  CompleteCurrentRequest(
+      hotspot_config::mojom::HotspotControlResult::kShillOperationFailed);
 }
 
 void HotspotController::CompleteCurrentRequest(

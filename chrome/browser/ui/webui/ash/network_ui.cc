@@ -631,7 +631,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     ShillManagerClient::Get()->SetTetheringEnabled(
         enabled,
         base::BindOnce(&HotspotConfigMessageHandler::RespondStringResult,
-                       weak_ptr_factory_.GetWeakPtr(), callback_id, "success"),
+                       weak_ptr_factory_.GetWeakPtr(), callback_id),
         base::BindOnce(&HotspotConfigMessageHandler::RespondError,
                        weak_ptr_factory_.GetWeakPtr(), callback_id,
                        kSetTetheringEnabled));
