@@ -13,13 +13,8 @@
 namespace blink {
 namespace {
 
-class NGFieldsetLayoutAlgorithmTest
-    : public NGBaseLayoutAlgorithmTest,
-      private ScopedLayoutNGBlockFragmentationForTest {
+class NGFieldsetLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
  protected:
-  NGFieldsetLayoutAlgorithmTest()
-      : ScopedLayoutNGBlockFragmentationForTest(true) {}
-
   const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(

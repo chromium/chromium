@@ -4331,16 +4331,6 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   if (element && element->IsFormControlElement())
     return;
 
-  // Make sure that we don't attempt to create a LayoutNG multicol container
-  // when the feature isn't enabled. There is a mechanism that causes us to fall
-  // back to legacy layout if columns are specified when
-  // LayoutNGBlockFragmentation is disabled, but then there are cases where
-  // we'll override this and force NG anyway (if the layout type isn't
-  // implemented in the legacy engine, which is the case for things like custom
-  // layout).
-  DCHECK(!IsLayoutNGObject() ||
-         RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled());
-
   auto* flow_thread = LayoutMultiColumnFlowThread::CreateAnonymous(
       GetDocument(), StyleRef(), !IsLayoutNGObject());
   AddChild(flow_thread);

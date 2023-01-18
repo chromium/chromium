@@ -409,46 +409,6 @@ bool DefinitelyNewFormattingContext(const Node& node,
   return false;
 }
 
-inline bool NeedsLegacyBlockFragmentation(const Element& element,
-                                          const ComputedStyle& style) {
-  if (!style.InsideFragmentationContextWithNondeterministicEngine()) {
-    return false;
-  }
-
-  // If we're inside an NG block fragmentation context, all fragmentable boxes
-  // must be laid out by NG natively. We only allow legacy layout objects if
-  // they are monolithic (e.g. replaced content, inline-table, and so
-  // on).
-
-  // Inline display types end up on a line, and are therefore monolithic, so we
-  // can allow those.
-  if (style.IsDisplayInlineType()) {
-    return false;
-  }
-
-  if (style.IsDisplayTableType() &&
-      !RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled()) {
-    return true;
-  }
-
-  if (style.IsDisplayGridBox() &&
-      !RuntimeEnabledFeatures::LayoutNGGridFragmentationEnabled()) {
-    return true;
-  }
-
-  // display:flex (and variants) require legacy fallback if NG flex
-  // fragmentation isn't enabled. The same applies to button elements, as they
-  // use flex layout (albeit with some exceptions, but we'll ignore those here).
-  if ((style.IsDisplayFlexibleBox() ||
-       style.IsDeprecatedFlexboxUsingFlexLayout() ||
-       IsA<HTMLButtonElement>(element)) &&
-      !RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled()) {
-    return true;
-  }
-
-  return false;
-}
-
 bool CalculateStyleShouldForceLegacyLayout(const Element& element,
                                            const ComputedStyle& style) {
   Document& document = element.GetDocument();
@@ -457,20 +417,8 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     return false;
   }
 
-  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-    // Disable NG for the entire subtree if we're establishing a multicol
-    // container.
-    if (style.SpecifiesColumns()) {
-      return true;
-    }
-  }
-
   if (document.Printing() && element == document.documentElement() &&
       !RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
-    return true;
-  }
-
-  if (NeedsLegacyBlockFragmentation(element, style)) {
     return true;
   }
 

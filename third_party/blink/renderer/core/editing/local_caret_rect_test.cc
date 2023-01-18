@@ -921,8 +921,6 @@ TEST_F(LocalCaretRectTest, MultiColumnSingleText) {
   //    def jkl
   const auto& target = *GetElementById("target");
   const Text& text = *To<Text>(target.firstChild());
-  const bool block_fragmentation_enabled =
-      RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled();
 
   // Note: Legacy layout caret rect is in stitch coordinate space == as if
   // columns are laid out vertically.
@@ -949,59 +947,43 @@ TEST_F(LocalCaretRectTest, MultiColumnSingleText) {
             LocalCaretRectOf(Position(text, 7)).rect);
 
   // "ghi " in column 2
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(0, 2, 1, 10)
-                                        : PhysicalRect(0, 32, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 2, 1, 10),
             LocalCaretRectOf(Position(text, 8)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(10, 2, 1, 10)
-                                        : PhysicalRect(10, 32, 1, 10),
+  EXPECT_EQ(PhysicalRect(10, 2, 1, 10),
             LocalCaretRectOf(Position(text, 9)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(20, 2, 1, 10)
-                                        : PhysicalRect(20, 32, 1, 10),
+  EXPECT_EQ(PhysicalRect(20, 2, 1, 10),
             LocalCaretRectOf(Position(text, 10)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(30, 2, 1, 10)
-                                        : PhysicalRect(30, 32, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 2, 1, 10),
             LocalCaretRectOf(Position(text, 11)).rect);
 
   // "jkl " in column 2
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(0, 17, 1, 10)
-                                        : PhysicalRect(0, 47, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 17, 1, 10),
             LocalCaretRectOf(Position(text, 12)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(10, 17, 1, 10)
-                                        : PhysicalRect(10, 47, 1, 10),
+  EXPECT_EQ(PhysicalRect(10, 17, 1, 10),
             LocalCaretRectOf(Position(text, 13)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(20, 17, 1, 10)
-                                        : PhysicalRect(20, 47, 1, 10),
+  EXPECT_EQ(PhysicalRect(20, 17, 1, 10),
             LocalCaretRectOf(Position(text, 14)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(30, 17, 1, 10)
-                                        : PhysicalRect(30, 47, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 17, 1, 10),
             LocalCaretRectOf(Position(text, 15)).rect);
 
   // "mno " in column 3
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(0, 2, 1, 10)
-                                        : PhysicalRect(0, 62, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 2, 1, 10),
             LocalCaretRectOf(Position(text, 16)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(10, 2, 1, 10)
-                                        : PhysicalRect(10, 62, 1, 10),
+  EXPECT_EQ(PhysicalRect(10, 2, 1, 10),
             LocalCaretRectOf(Position(text, 17)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(20, 2, 1, 10)
-                                        : PhysicalRect(20, 62, 1, 10),
+  EXPECT_EQ(PhysicalRect(20, 2, 1, 10),
             LocalCaretRectOf(Position(text, 18)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(30, 2, 1, 10)
-                                        : PhysicalRect(30, 62, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 2, 1, 10),
             LocalCaretRectOf(Position(text, 19)).rect);
 
   // "pqr" in column 3
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(0, 17, 1, 10)
-                                        : PhysicalRect(0, 77, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 17, 1, 10),
             LocalCaretRectOf(Position(text, 20)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(10, 17, 1, 10)
-                                        : PhysicalRect(10, 77, 1, 10),
+  EXPECT_EQ(PhysicalRect(10, 17, 1, 10),
             LocalCaretRectOf(Position(text, 21)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(20, 17, 1, 10)
-                                        : PhysicalRect(20, 77, 1, 10),
+  EXPECT_EQ(PhysicalRect(20, 17, 1, 10),
             LocalCaretRectOf(Position(text, 22)).rect);
-  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(30, 17, 1, 10)
-                                        : PhysicalRect(30, 77, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 17, 1, 10),
             LocalCaretRectOf(Position(text, 23)).rect);
 }
 

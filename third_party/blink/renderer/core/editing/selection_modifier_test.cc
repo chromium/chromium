@@ -132,8 +132,6 @@ TEST_F(SelectionModifierTest, MoveByLineHorizontal) {
 }
 
 TEST_F(SelectionModifierTest, MoveByLineMultiColumnSingleText) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
-      block_fragmentation(RuntimeEnabledFeatures::LayoutNGEnabled());
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");

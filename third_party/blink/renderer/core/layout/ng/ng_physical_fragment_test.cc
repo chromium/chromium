@@ -22,9 +22,6 @@ class NGPhysicalFragmentTest : public NGLayoutTest {
   static bool IsNGViewEnabled() {
     return RuntimeEnabledFeatures::LayoutNGPrintingEnabled();
   }
-
- private:
-  ScopedLayoutNGBlockFragmentationForTest enable_block_fragmentation_{true};
 };
 
 TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeBasic) {

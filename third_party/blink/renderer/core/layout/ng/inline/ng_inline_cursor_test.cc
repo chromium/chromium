@@ -323,8 +323,6 @@ TEST_P(NGInlineCursorTest, CulledInlineWithoutRoot) {
 }
 
 TEST_P(NGInlineCursorTest, CursorForMovingAcrossFragmentainer) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
-      block_fragmentation(true);
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
@@ -537,8 +535,6 @@ TEST_P(NGInlineCursorTest, Next) {
 }
 
 TEST_P(NGInlineCursorTest, NextIncludingFragmentainer) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
-      block_fragmentation(true);
   // TDOO(yosin): Remove style for <b> once NGFragmentItem don't do culled
   // inline.
   LoadAhem();
@@ -1050,8 +1046,6 @@ TEST_P(NGInlineCursorTest, Previous) {
 }
 
 TEST_P(NGInlineCursorTest, PreviousIncludingFragmentainer) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
-      block_fragmentation(true);
   // TDOO(yosin): Remove style for <b> once NGFragmentItem don't do culled
   // inline.
   LoadAhem();
@@ -1245,13 +1239,7 @@ TEST_P(NGInlineCursorTest, MoveToVisualFirstOrLast) {
   EXPECT_EQ("NGPhysicalTextFragment 'some'", cursor2.Current()->ToString());
 }
 
-class NGInlineCursorBlockFragmentationTest
-    : public NGLayoutTest,
-      private ScopedLayoutNGBlockFragmentationForTest {
- public:
-  NGInlineCursorBlockFragmentationTest()
-      : ScopedLayoutNGBlockFragmentationForTest(true) {}
-};
+class NGInlineCursorBlockFragmentationTest : public NGLayoutTest {};
 
 TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   // This creates 3 columns, 1 line in each column.

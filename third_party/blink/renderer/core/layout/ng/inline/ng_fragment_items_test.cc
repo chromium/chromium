@@ -46,7 +46,6 @@ b AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 }
 
 TEST_F(NGFragmentItemsTest, IsContainerForCulledInline) {
-  ScopedLayoutNGBlockFragmentationForTest ng_block_frag(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       #multicol {

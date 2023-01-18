@@ -421,7 +421,6 @@ TEST_F(NGAnchorQueryTest, Scroll) {
 }
 
 TEST_F(NGAnchorQueryTest, FragmentedContainingBlock) {
-  ScopedLayoutNGBlockFragmentationForTest block_fragmentation(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {

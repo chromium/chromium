@@ -1888,11 +1888,8 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
   if (layout_object_ && layout_object_->ChildPaintBlockedByDisplayLock())
     return;
 
-  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-    if (has_line_boxes)
-      DCHECK(HasItems());
-  } else {
-    DCHECK_EQ(HasItems(), has_line_boxes);
+  if (has_line_boxes) {
+    DCHECK(HasItems());
   }
 
   if (has_line_boxes) {

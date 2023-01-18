@@ -1674,35 +1674,6 @@ TEST_P(PaintLayerTest, CompositingContainerFloatingIframe) {
   }
 }
 
-TEST_P(PaintLayerTest, CompositingContainerSelfPaintingNonStackedFloat) {
-  // Self-painting non-stacked layers don't exist in
-  // LayoutNGBlockFragmentation.
-  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
-    return;
-
-  SetBodyInnerHTML(R"HTML(
-    <div id='container' style='position: relative'>
-      <span id='span' style='opacity: 0.9'>
-        <div id='target' style='columns: 1; float: left'></div>
-      </span>
-    </div>
-  )HTML");
-
-  // The target layer is self-painting, but not stacked.
-  PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_TRUE(target->IsSelfPaintingLayer());
-  EXPECT_FALSE(target->GetLayoutObject().IsStacked());
-
-  PaintLayer* container = GetPaintLayerByElementId("container");
-  PaintLayer* span = GetPaintLayerByElementId("span");
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(span, target->ContainingLayer());
-  } else {
-    EXPECT_EQ(container, target->ContainingLayer());
-  }
-  EXPECT_EQ(span, target->CompositingContainer());
-}
-
 TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
   SetBodyInnerHTML(R"HTML(
     <div id='columns' style='overflow: hidden; width: 80px; height: 80px;
@@ -1725,34 +1696,17 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
 
   EXPECT_EQ(extra_layer, spanner->Parent());
   EXPECT_EQ(columns, spanner->ContainingLayer());
-  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-    EXPECT_EQ(columns, extra_layer->Parent());
-    EXPECT_EQ(columns, extra_layer->ContainingLayer());
-    EXPECT_EQ(PhysicalOffset(50, 50), spanner->LocationWithoutPositionOffset());
-    EXPECT_EQ(PhysicalOffset(0, 0),
-              spanner->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(PhysicalOffset(100, 100),
-              extra_layer->LocationWithoutPositionOffset());
-    EXPECT_EQ(PhysicalOffset(0, 0),
-              extra_layer->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(PhysicalOffset(-100, 100),
-              extra_layer->VisualOffsetFromAncestor(columns));
-  } else {
-    EXPECT_EQ(columns, extra_layer->Parent()->Parent());
-    EXPECT_EQ(columns, extra_layer->ContainingLayer()->Parent());
-    EXPECT_EQ(PhysicalOffset(0, 0), spanner->LocationWithoutPositionOffset());
-    EXPECT_EQ(PhysicalOffset(50, 50),
-              spanner->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(PhysicalOffset(0, 0),
-              extra_layer->LocationWithoutPositionOffset());
-    EXPECT_EQ(PhysicalOffset(100, 100),
-              extra_layer->GetLayoutObject().OffsetForInFlowPosition());
-    // -60 = 2nd-column-x(40) - scroll-offset-x(200) + x-location(100)
-    // 20 = y-location(100) - column-height(80)
-    EXPECT_EQ(PhysicalOffset(-60, 20),
-              extra_layer->VisualOffsetFromAncestor(columns));
-  }
-
+  EXPECT_EQ(columns, extra_layer->Parent());
+  EXPECT_EQ(columns, extra_layer->ContainingLayer());
+  EXPECT_EQ(PhysicalOffset(50, 50), spanner->LocationWithoutPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0),
+            spanner->GetLayoutObject().OffsetForInFlowPosition());
+  EXPECT_EQ(PhysicalOffset(100, 100),
+            extra_layer->LocationWithoutPositionOffset());
+  EXPECT_EQ(PhysicalOffset(0, 0),
+            extra_layer->GetLayoutObject().OffsetForInFlowPosition());
+  EXPECT_EQ(PhysicalOffset(-100, 100),
+            extra_layer->VisualOffsetFromAncestor(columns));
   EXPECT_EQ(gfx::Vector2d(200, 0),
             spanner->ContainingLayer()->PixelSnappedScrolledContentOffset());
   EXPECT_EQ(PhysicalOffset(-150, 50),
@@ -2038,32 +1992,18 @@ TEST_P(PaintLayerTest, SetNeedsRepaintSelfPaintingUnderNonSelfPainting) {
                          ->Layer();
   auto* span_layer = GetPaintLayerByElementId("span");
   auto* floating_layer = GetPaintLayerByElementId("floating");
-  auto* multicol_layer = GetPaintLayerByElementId("multicol");
-
-  // Multicol doesn't trigger creation of a (non-self-painting) PaintLayer when
-  // LayoutNGBlockFragmentation is enabled.
-  if (!multicol_layer)
-    ASSERT_TRUE(RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled());
 
   EXPECT_FALSE(html_layer->SelfNeedsRepaint());
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
   EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
-  if (multicol_layer) {
-    EXPECT_FALSE(multicol_layer->SelfNeedsRepaint());
-    multicol_layer->SetNeedsRepaint();
-  } else {
-    EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
-    floating_layer->SetNeedsRepaint();
-  }
+  EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
+  floating_layer->SetNeedsRepaint();
   EXPECT_TRUE(html_layer->DescendantNeedsRepaint());
   if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_TRUE(span_layer->DescendantNeedsRepaint());
   else
     EXPECT_TRUE(span_layer->SelfNeedsRepaint());
-  if (multicol_layer)
-    EXPECT_TRUE(multicol_layer->SelfNeedsRepaint());
-  else
-    EXPECT_TRUE(floating_layer->SelfNeedsRepaint());
+  EXPECT_TRUE(floating_layer->SelfNeedsRepaint());
 }
 
 TEST_P(PaintLayerTest, HitTestPseudoElementWithContinuation) {

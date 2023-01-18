@@ -1014,10 +1014,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 // Helper function for checking if we need to handle legacy fragmentation cases
 // for container queries.
 inline bool HasFullNGFragmentationSupport() {
-  return RuntimeEnabledFeatures::LayoutNGPrintingEnabled() &&
-         RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled() &&
-         RuntimeEnabledFeatures::LayoutNGGridFragmentationEnabled() &&
-         RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled();
+  return RuntimeEnabledFeatures::LayoutNGPrintingEnabled();
 }
 
 void PossiblyScheduleNthPseudoInvalidations(Node& node);

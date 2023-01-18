@@ -341,8 +341,6 @@ TEST_F(NGCaretPositionTest, GeneratedZeroWidthSpace) {
 
 // See also ParameterizedLocalCaretRectTest.MultiColumnSingleText
 TEST_F(NGCaretPositionTest, MultiColumnSingleText) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
-      block_fragmentation(true);
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");

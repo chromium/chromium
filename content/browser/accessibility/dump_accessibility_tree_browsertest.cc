@@ -151,26 +151,6 @@ class DumpAccessibilityTreeWithoutLayoutNGTest
   }
 };
 
-class DumpAccessibilityTreeWithLayoutNGBlockFragmentationTest
-    : public DumpAccessibilityTreeTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "LayoutNGBlockFragmentation");
-  }
-};
-
-class DumpAccessibilityTreeWithoutLayoutNGBlockFragmentationTest
-    : public DumpAccessibilityTreeTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
-                                    "LayoutNGBlockFragmentation");
-  }
-};
-
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
@@ -200,18 +180,6 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeWithoutLayoutNGTest,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
-    DumpAccessibilityTreeTestPassToString());
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityTreeWithLayoutNGBlockFragmentationTest,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
-    DumpAccessibilityTreeTestPassToString());
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityTreeWithoutLayoutNGBlockFragmentationTest,
     ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
@@ -314,16 +282,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunCSSTest(FILE_PATH_LITERAL("marker-hyphens.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithLayoutNGBlockFragmentationTest,
-                       AccessibilityCSSMarkerCrash) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSMarkerCrash) {
   RunCSSTest(FILE_PATH_LITERAL("marker-crash.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeWithoutLayoutNGBlockFragmentationTest,
-    AccessibilityCSSMarkerCrash) {
-  RunCSSTest(
-      FILE_PATH_LITERAL("marker-crash-without-layout-ng-block-frag.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

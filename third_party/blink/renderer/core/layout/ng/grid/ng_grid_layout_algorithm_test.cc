@@ -27,14 +27,10 @@ namespace {
 
 }  // namespace
 
-class NGGridLayoutAlgorithmTest
-    : public NGBaseLayoutAlgorithmTest,
-      private ScopedLayoutNGBlockFragmentationForTest,
-      private ScopedLayoutNGSubgridForTest {
+class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
+                                  private ScopedLayoutNGSubgridForTest {
  protected:
-  NGGridLayoutAlgorithmTest()
-      : ScopedLayoutNGBlockFragmentationForTest(true),
-        ScopedLayoutNGSubgridForTest(true) {}
+  NGGridLayoutAlgorithmTest() : ScopedLayoutNGSubgridForTest(true) {}
 
   void SetUp() override { NGBaseLayoutAlgorithmTest::SetUp(); }
 

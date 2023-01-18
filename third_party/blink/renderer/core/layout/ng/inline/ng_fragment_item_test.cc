@@ -423,7 +423,6 @@ TEST_F(NGFragmentItemTest, EllipsizedAtomicInline) {
 }
 
 TEST_F(NGFragmentItemTest, LineFragmentId) {
-  ScopedLayoutNGBlockFragmentationForTest ng_block_frag(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #columns {

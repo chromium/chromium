@@ -1,7 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++group
-++++++++listMarker name='%E2%80%A2 '
-++++++genericContainer ignored
-++++++++genericContainer ignored

@@ -83,14 +83,6 @@ bool NGFragmentItems::IsSubSpan(const Span& span) const {
 
 void NGFragmentItems::FinalizeAfterLayout(
     const HeapVector<Member<const NGLayoutResult>, 1>& results) {
-#if DCHECK_IS_ON()
-  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-    for (const auto& result : results) {
-      CheckNoItemsAreAssociated(
-          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
-    }
-  }
-#endif
   struct LastItem {
     const NGFragmentItem* item;
     wtf_size_t fragment_id;
@@ -145,10 +137,6 @@ void NGFragmentItems::FinalizeAfterLayout(
       const bool is_first = last_item_result.is_new_entry;
       if (is_first) {
         item.SetFragmentId(0);
-#if DCHECK_IS_ON()
-        if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
-          DCHECK_EQ(layout_object->FirstInlineFragmentItemIndex(), 0u);
-#endif
         layout_object->SetFirstInlineFragmentItemIndex(item_index);
         continue;
       }

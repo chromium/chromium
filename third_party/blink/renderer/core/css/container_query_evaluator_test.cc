@@ -675,7 +675,6 @@ TEST_F(ContainerQueryEvaluatorTest, LegacyPrinting) {
 TEST_F(ContainerQueryEvaluatorTest, Printing) {
   ScopedLayoutNGForTest ng_scope(true);
   ScopedLayoutNGPrintingForTest ng_printing_scope(true);
-  ScopedLayoutNGBlockFragmentationForTest ng_block_fragmentation_scope(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>

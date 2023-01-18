@@ -698,7 +698,6 @@
     },
     {
       name: "CSSGridTemplatePropertyInterpolation",
-      depends_on: ["LayoutNGGridFragmentation"],
       status: "stable",
     },
     {
@@ -1636,10 +1635,6 @@
       base_feature: "LayoutNG",
     },
     {
-      name: "LayoutNGBlockFragmentation",
-      status: "stable",
-    },
-    {
       name: "LayoutNGBlockInInline",
       depends_on: ["LayoutNG"],
       status: "stable",
@@ -1651,22 +1646,8 @@
       status: "stable",
     },
     {
-      // Block fragmentation support in the flex layout algorithm.
-      // https://drafts.csswg.org/css-flexbox-1/#pagination
-      name: "LayoutNGFlexFragmentation",
-      depends_on: ["LayoutNG", "LayoutNGBlockFragmentation"],
-      status: "stable",
-    },
-    {
-      // Block fragmentation support in the grid layout algorithm.
-      // https://drafts.csswg.org/css-grid-1/#pagination
-      name: "LayoutNGGridFragmentation",
-      depends_on: ["LayoutNG","LayoutNGBlockFragmentation"],
-      status: "stable",
-    },
-    {
       name: "LayoutNGPrinting",
-      depends_on: ["LayoutNG","LayoutNGBlockFragmentation"],
+      depends_on: ["LayoutNG"],
       status: "stable",
       base_feature: "LayoutNGPrinting",
     },
@@ -1683,13 +1664,6 @@
       name: "LayoutNGSubgrid",
       depends_on: ["LayoutNG"],
       status: "test"
-    },
-    {
-      // Block fragmentation support in the table layout algorithm.
-      // https://drafts.csswg.org/css-tables-3/#fragmentation
-      name: "LayoutNGTableFragmentation",
-      depends_on: ["LayoutNG","LayoutNGBlockFragmentation"],
-      status: "stable",
     },
     {
       // Merge UpdateAfterLayout() calls for LayoutReplaced into one in

@@ -190,7 +190,6 @@ TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
 }
 
 TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRoot) {
-  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
   SetBodyInnerHTML(R"HTML(
     <div id="multicol" style="columns:3;">
       <div id="child"></div>
@@ -211,7 +210,6 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRoot) {
 }
 
 TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
-  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
   SetBodyInnerHTML(R"HTML(
     <div id="outer" style="columns:3;">
       <div id="foo">
@@ -246,7 +244,6 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
 }
 
 TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootFieldset) {
-  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
   SetBodyInnerHTML(R"HTML(
     <fieldset id="fieldset" style="columns:3;">
       <legend id="legend"></legend>
@@ -313,8 +310,6 @@ TEST_F(NGPhysicalBoxFragmentTest,
 }
 
 TEST_F(NGPhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
-  ScopedLayoutNGBlockFragmentationForTest block_frag(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       body {
