@@ -3817,12 +3817,29 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.{Store}PasswordNotes.CountNotesPerCredential2"
     units="count" expires_after="2023-06-01">
+  <obsolete>
+    Obsolete since Jan 2022 as emitting credentials with 0 notes is not
+    required. Replaced by
+    PasswordManager.{Store}PasswordNotes.CountNotesPerCredential3
+  </obsolete>
   <owner>derinel@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     Total number of notes attached to a password in the password manager's
     {Store}. Recorded once for each credential at most once per day for regular
     profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
+<histogram name="PasswordManager.{Store}PasswordNotes.CountNotesPerCredential3"
+    units="count" expires_after="2023-06-01">
+  <owner>derinel@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Total number of notes attached to a password in the password manager's
+    {Store}. Recorded once for credentials with 1+ notes at most once per day
+    for regular profiles.
   </summary>
   <token key="Store" variants="Store"/>
 </histogram>
