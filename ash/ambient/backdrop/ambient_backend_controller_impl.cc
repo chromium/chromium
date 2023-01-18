@@ -55,6 +55,36 @@ constexpr char kProtoMimeType[] = "application/protobuf";
 // Max body size in bytes to download.
 constexpr int kMaxBodySizeBytes = 1 * 1024 * 1024;  // 1 MiB
 
+constexpr net::NetworkTrafficAnnotationTag kAmbientBackendControllerNetworkTag =
+    net::DefineNetworkTrafficAnnotation("ambient_backend_controller", R"(
+        semantics {
+          sender: "Ambient photo"
+          description:
+            "Download ambient image weather icon from Google."
+          trigger:
+            "Triggered periodically when the battery is charged and the user "
+            "is idle."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "assistive-eng@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-01-13"
+        }
+        policy {
+         cookies_allowed: NO
+         setting:
+           "This feature is off by default and can be overridden by user."
+         policy_exception_justification:
+           "This feature is set by user settings.ambient_mode.enabled pref. "
+           "The user setting is per device and cannot be overriden by admin."
+        })");
+
 std::string GetClientId() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetPrimaryUserPrefService();
@@ -440,7 +470,7 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();
   loader_ptr->Start(std::move(resource_request), /*request_body=*/absl::nullopt,
-                    NO_TRAFFIC_ANNOTATION_YET,
+                    kAmbientBackendControllerNetworkTag,
                     base::BindOnce(response_handler, std::move(callback),
                                    std::move(backdrop_url_loader)));
 }
@@ -485,7 +515,8 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();
   loader_ptr->Start(
-      std::move(resource_request), request.body, NO_TRAFFIC_ANNOTATION_YET,
+      std::move(resource_request), request.body,
+      kAmbientBackendControllerNetworkTag,
       base::BindOnce(&AmbientBackendControllerImpl::OnScreenUpdateInfoFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(backdrop_url_loader)));
@@ -526,7 +557,8 @@ void AmbientBackendControllerImpl::StartToGetSettings(
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();
   loader_ptr->Start(
-      std::move(resource_request), request.body, NO_TRAFFIC_ANNOTATION_YET,
+      std::move(resource_request), request.body,
+      kAmbientBackendControllerNetworkTag,
       base::BindOnce(&AmbientBackendControllerImpl::OnGetSettings,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(backdrop_url_loader)));
@@ -570,7 +602,8 @@ void AmbientBackendControllerImpl::StartToUpdateSettings(
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();
   loader_ptr->Start(
-      std::move(resource_request), request.body, NO_TRAFFIC_ANNOTATION_YET,
+      std::move(resource_request), request.body,
+      kAmbientBackendControllerNetworkTag,
       base::BindOnce(&AmbientBackendControllerImpl::OnUpdateSettings,
                      weak_factory_.GetWeakPtr(), std::move(callback), settings,
                      std::move(backdrop_url_loader)));
@@ -622,7 +655,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
   auto* loader_ptr = backdrop_url_loader.get();
   loader_ptr->Start(
       std::move(resource_request), /*request_body=*/absl::nullopt,
-      NO_TRAFFIC_ANNOTATION_YET,
+      kAmbientBackendControllerNetworkTag,
       base::BindOnce(&AmbientBackendControllerImpl::OnPersonalAlbumsFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(backdrop_url_loader)));
@@ -678,7 +711,8 @@ void AmbientBackendControllerImpl::StartToGetGooglePhotosAlbumsPreview(
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();
   loader_ptr->Start(
-      std::move(resource_request), request.body, NO_TRAFFIC_ANNOTATION_YET,
+      std::move(resource_request), request.body,
+      kAmbientBackendControllerNetworkTag,
       base::BindOnce(
           &AmbientBackendControllerImpl::OnGetGooglePhotosAlbumsPreview,
           weak_factory_.GetWeakPtr(), std::move(callback),
