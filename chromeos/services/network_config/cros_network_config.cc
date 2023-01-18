@@ -3649,6 +3649,12 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
   }
   NET_LOG(USER) << "RemoveCustomApn: Setting user APNs for: " << network_guid
                 << ": " << new_apns.size();
+  if (!new_apns.empty() && !DoesDefaultApnExist(new_apns)) {
+    NET_LOG(ERROR)
+        << "RemoveCustomApn: Cannot remove the APN because there is one or more"
+        << " remaining APNs but no remaining APN with a default type.";
+    return;
+  }
 
   network_metadata_store->SetCustomApnList(network_guid, new_apns.Clone());
   SetPropertiesInternal(
