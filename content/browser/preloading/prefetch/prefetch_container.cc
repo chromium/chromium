@@ -112,6 +112,14 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
     PreloadingAttempt* attempt,
     absl::optional<PrefetchStatus> old_prefetch_status,
     PrefetchStatus new_prefetch_status) {
+  if (old_prefetch_status &&
+      (old_prefetch_status.value() == PrefetchStatus::kPrefetchUsedNoProbe ||
+       old_prefetch_status.value() == PrefetchStatus::kPrefetchResponseUsed)) {
+    // Skip this update if the triggering outcome has already been updated
+    // to kSuccess.
+    return;
+  }
+
   if (attempt) {
     switch (new_prefetch_status) {
       case PrefetchStatus::kPrefetchNotFinishedInTime:
@@ -122,17 +130,16 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
         // next navigation.
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         break;
+      case PrefetchStatus::kPrefetchUsedNoProbe:
       case PrefetchStatus::kPrefetchResponseUsed:
-        if (old_prefetch_status &&
-            old_prefetch_status.value() !=
-                PrefetchStatus::kPrefetchSuccessful &&
-            old_prefetch_status.value() !=
-                PrefetchStatus::kPrefetchUsedNoProbe) {
-          // If the new prefetch status is |kPrefetchResponseUsed| but the
-          // previous status is not |kPrefetchSuccessful|, then temporarily
-          // update the triggering outcome to |kReady| to ensure valid
-          // triggering outcome state transitions. This can occur in cases
-          // where the prefetch is served before the body is fully received.
+        if (old_prefetch_status && old_prefetch_status.value() !=
+                                       PrefetchStatus::kPrefetchSuccessful) {
+          // If the new prefetch status is |kPrefetchResponseUsed| or
+          // |kPrefetchUsedNoProbe| but the previous status is not
+          // |kPrefetchSuccessful|, then temporarily update the triggering
+          // outcome to |kReady| to ensure valid triggering outcome state
+          // transitions. This can occur in cases where the prefetch is served
+          // before the body is fully received.
           attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         }
 
@@ -162,7 +169,35 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
         // heldback. This is covered by attempt's holdback status. For these two
         // reasons this PrefetchStatus does not fire a `SetTriggeringOutcome`.
         break;
-      default:
+      case PrefetchStatus::kPrefetchNotEligibleGoogleDomain:
+      case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
+      case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
+      case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
+      case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+      case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+      case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
+      case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+      case PrefetchStatus::kPrefetchProxyNotAvailable:
+      case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
+      case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
+      case PrefetchStatus::kPrefetchIsStale:
+      case PrefetchStatus::kPrefetchNotUsedProbeFailed:
+      case PrefetchStatus::kNavigatedToLinkNotOnSRP:
+      case PrefetchStatus::kPrefetchUsedNoProbeWithNSP:
+      case PrefetchStatus::kPrefetchUsedProbeSuccessWithNSP:
+      case PrefetchStatus::kPrefetchNotUsedProbeFailedWithNSP:
+      case PrefetchStatus::kPrefetchUsedNoProbeNSPAttemptDenied:
+      case PrefetchStatus::kPrefetchUsedProbeSuccessNSPAttemptDenied:
+      case PrefetchStatus::kPrefetchNotUsedProbeFailedNSPAttemptDenied:
+      case PrefetchStatus::kPrefetchUsedNoProbeNSPNotStarted:
+      case PrefetchStatus::kPrefetchUsedProbeSuccessNSPNotStarted:
+      case PrefetchStatus::kPrefetchNotUsedProbeFailedNSPNotStarted:
+      case PrefetchStatus::kPrefetchIsStaleWithNSP:
+      case PrefetchStatus::kPrefetchIsStaleNSPAttemptDenied:
+      case PrefetchStatus::kPrefetchIsStaleNSPNotStarted:
+      case PrefetchStatus::kSubresourceThrottled:
+      case PrefetchStatus::kPrefetchPositionIneligible:
         NOTIMPLEMENTED();
     }
   }
@@ -431,7 +466,7 @@ void PrefetchContainer::OnPrefetchProbeResult(
 
   switch (probe_result) {
     case PrefetchProbeResult::kNoProbing:
-      prefetch_status_ = PrefetchStatus::kPrefetchUsedNoProbe;
+      SetPrefetchStatus(PrefetchStatus::kPrefetchUsedNoProbe);
       break;
     case PrefetchProbeResult::kDNSProbeSuccess:
     case PrefetchProbeResult::kTLSProbeSuccess:
