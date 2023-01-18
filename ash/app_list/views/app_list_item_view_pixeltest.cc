@@ -12,6 +12,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/shell.h"
@@ -53,11 +54,45 @@ class AppListItemViewPixelTest : public AshTestBase,
         /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
   }
 
+  // Creates multiple folders that contain from 1 app to `max_items` apps
+  // respectively.
+  void CreateFoldersContainingDifferentNumOfItems(int max_items) {
+    AppListFolderItem* folder_item;
+    for (int i = 1; i <= max_items; ++i) {
+      if (i == 1) {
+        folder_item = app_list_test_model_->CreateSingleItemFolder("folder_id",
+                                                                   "item_id");
+      } else {
+        folder_item = app_list_test_model_->CreateAndPopulateFolderWithApps(i);
+      }
+      // Update the notification state of the first app in the folder to
+      // simulate that there exists an app with notifications in the folder.
+      folder_item->item_list()->item_at(0)->UpdateNotificationBadge(
+          has_notification());
+    }
+  }
+
   void CreateAppListItem(const std::string& name) {
     AppListItem* item = app_list_test_model_->CreateAndAddItem(name + "_id");
     item->SetName(name);
     item->SetIsNewInstall(is_new_install());
     item->UpdateNotificationBadge(has_notification());
+  }
+
+  void ShowAppList() {
+    if (use_tablet_mode()) {
+      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    } else {
+      GetAppListTestHelper()->ShowAppList();
+    }
+  }
+
+  AppsGridView* GetAppsGridView() {
+    if (use_tablet_mode()) {
+      return GetAppListTestHelper()->GetRootPagedAppsGridView();
+    }
+
+    return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
 
   AppListItemView* GetItemViewAt(size_t index) {
@@ -85,7 +120,7 @@ class AppListItemViewPixelTest : public AshTestBase,
   bool is_new_install() const { return std::get<3>(GetParam()); }
   bool has_notification() const { return std::get<4>(GetParam()); }
 
- private:
+ protected:
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
 };
@@ -103,13 +138,116 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
   CreateAppListItem("App");
   CreateAppListItem("App with a loooooooong name");
 
-  if (use_tablet_mode())
-    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  else
-    GetAppListTestHelper()->ShowAppList();
+  ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(), GetItemViewAt(0), GetItemViewAt(1)));
+}
+
+// Verifies the layout of the item icons inside a folder.
+TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
+  // Skip the case where the apps are newly installed as it doesn't change the
+  // folder icons.
+  if (is_new_install()) {
+    return;
+  }
+
+  // Set the maximum number of the items in a folder that we want to test to 4.
+  const int max_items_in_folder = 4;
+  CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
+  ShowAppList();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GenerateScreenshotName(), GetItemViewAt(0), GetItemViewAt(1),
+      GetItemViewAt(2), GetItemViewAt(3)));
+}
+
+// Verifies the folder icon is extended when an app is dragged upon it.
+TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
+  // Skip the case where the apps are newly installed as it doesn't change the
+  // folder icons.
+  if (is_new_install()) {
+    return;
+  }
+
+  // Set the maximum number of the items in a folder that we want to test to 4.
+  const int max_items_in_folder = 4;
+  CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
+  CreateAppListItem("App");
+  ShowAppList();
+
+  // For tablet mode, simulate that a drag starts and enter the cardified state.
+  if (use_tablet_mode()) {
+    GetAppListTestHelper()
+        ->GetRootPagedAppsGridView()
+        ->MaybeStartCardifiedView();
+  }
+
+  // Simulate that there is an app dragged onto it for each folder.
+  for (int i = 0; i < max_items_in_folder; ++i) {
+    GetItemViewAt(i)->OnDraggedViewEnter();
+  }
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GenerateScreenshotName(), GetItemViewAt(0), GetItemViewAt(1),
+      GetItemViewAt(2), GetItemViewAt(3)));
+
+  // Reset the states.
+  for (int i = 0; i < max_items_in_folder; ++i) {
+    GetItemViewAt(i)->OnDraggedViewExit();
+  }
+  if (use_tablet_mode()) {
+    GetAppListTestHelper()->GetRootPagedAppsGridView()->MaybeEndCardifiedView();
+  }
+}
+
+// Vefifies the dragged folder icon proxy is correctly created.
+TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
+  // Skip the case where the apps are newly installed or have notifications as
+  // they don't change the folder icons.
+  if (is_new_install() || has_notification()) {
+    return;
+  }
+
+  // Set the maximum number of the items in a folder that we want to test to 4.
+  const int max_items_in_folder = 4;
+  CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
+  ShowAppList();
+
+  auto* event_generator = GetEventGenerator();
+  AppsGridView* apps_grid_view = GetAppsGridView();
+
+  for (int i = 0; i < max_items_in_folder; ++i) {
+    gfx::Point folder_icon_center =
+        GetItemViewAt(i)->GetIconBoundsInScreen().CenterPoint();
+
+    // Start dragging the folder icon.
+    if (use_tablet_mode()) {
+      event_generator->PressTouch(folder_icon_center);
+      GetItemViewAt(i)->FireTouchDragTimerForTest();
+      event_generator->MoveTouchBy(0, 20);
+      std::unique_ptr<test::AppsGridViewTestApi> test_api =
+          std::make_unique<test::AppsGridViewTestApi>(apps_grid_view);
+      test_api->WaitForItemMoveAnimationDone();
+    } else {
+      event_generator->MoveMouseTo(folder_icon_center);
+      event_generator->PressLeftButton();
+      GetItemViewAt(i)->FireMouseDragTimerForTest();
+      event_generator->MoveMouseBy(0, 20);
+    }
+
+    std::string filename = base::NumberToString(i + 1) + "_items_folder";
+    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+        base::JoinString({GenerateScreenshotName(), filename}, "."),
+        apps_grid_view->app_drag_icon_proxy_for_test()->GetWidgetForTesting()));
+
+    // Release the drag.
+    if (use_tablet_mode()) {
+      event_generator->ReleaseTouch();
+    } else {
+      event_generator->ReleaseLeftButton();
+    }
+  }
 }
 
 }  // namespace ash
