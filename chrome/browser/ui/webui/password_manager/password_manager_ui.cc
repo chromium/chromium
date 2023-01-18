@@ -14,11 +14,13 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/password_manager_resources.h"
 #include "chrome/grit/password_manager_resources_map.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -61,6 +63,15 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"cancel", IDS_CANCEL},
       {"changePassword", IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_BUTTON},
       {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
+      {"checkupCanceled", IDS_PASSWORD_MANAGER_UI_CHECKUP_CANCELED},
+      {"checkupErrorGeneric", IDS_PASSWORD_MANAGER_UI_CHECKUP_OTHER_ERROR},
+      {"checkupErrorNoPasswords", IDS_PASSWORD_MANAGER_UI_CHECKUP_NO_PASSWORDS},
+      {"checkupErrorOffline", IDS_PASSWORD_MANAGER_UI_CHECKUP_OFFLINE},
+      {"checkupErrorQuota", IDS_PASSWORD_MANAGER_UI_CHECKUP_QUOTA_LIMIT},
+      {"checkupErrorSignedOut", IDS_PASSWORD_MANAGER_UI_CHECKUP_SIGNED_OUT},
+      {"compromisedRowWithError",
+       IDS_PASSWORD_MANAGER_UI_CHECKUP_COMPROMISED_SECTION},
+      {"checkupProgress", IDS_PASSWORD_MANAGER_UI_CHECKUP_PROGRESS},
       {"checkupTitle", IDS_PASSWORD_MANAGER_UI_CHECKUP_TITLE},
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"close", IDS_CLOSE},
@@ -96,11 +107,15 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_DESCRIPTION},
       {"justNow", IDS_PASSWORD_MANAGER_UI_JUST_NOW},
       {"leakedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_LEAKED},
+      {"localPasswordManager",
+       IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
       {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
       {"notesLabel", IDS_PASSWORD_MANAGER_UI_NOTES_LABEL},
       {"passwordCopiedToClipboard",
        IDS_PASSWORD_MANAGER_UI_PASSWORD_COPIED_TO_CLIPBOARD},
       {"passwordLabel", IDS_PASSWORD_MANAGER_UI_PASSWORD_LABEL},
+      {"passwordManager",
+       IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT},
       {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
       {"phishedAndLeakedPassword",
        IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED_AND_LEAKED},
@@ -145,6 +160,13 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
                          profile, web_ui->GetWebContents()->GetURL())
                          .has_value());
 
+  source->AddString(
+      "checkupUrl",
+      base::UTF8ToUTF16(
+          password_manager::GetPasswordCheckupURL(
+              password_manager::PasswordCheckupReferrer::kPasswordCheck)
+              .spec()));
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.
   source->AddResourcePath("images/password_manager_logo.svg",
@@ -165,6 +187,8 @@ void AddPluralStrings(content::WebUI* web_ui) {
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   plural_string_handler->AddLocalizedString(
       "checkedPasswords", IDS_PASSWORD_MANAGER_UI_CHECKUP_RESULT);
+  plural_string_handler->AddLocalizedString(
+      "checkingPasswords", IDS_PASSWORD_MANAGER_UI_CHECKUP_RUNNING_LABEL);
   plural_string_handler->AddLocalizedString(
       "compromisedPasswords",
       IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT);

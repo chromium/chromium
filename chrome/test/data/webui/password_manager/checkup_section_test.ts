@@ -26,6 +26,7 @@ class CheckupTestPluralStringProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'checkedPasswords',
+      'checkingPasswords',
       'compromisedPasswords',
       'reusedPasswords',
       'weakPasswords',
@@ -78,50 +79,60 @@ suite('CheckupSectionTest', function() {
     assertTrue(isVisible(section.$.checkupResult));
     assertTrue(isVisible(section.$.refreshButton));
     assertFalse(section.$.refreshButton.disabled);
-    assertTrue(isVisible(section.$.lastCheckupTime));
-    assertEquals(elapsedTime, section.$.lastCheckupTime.textContent!.trim());
+    assertTrue(isVisible(section.$.checkupStatusSubLabel));
+    assertEquals(
+        elapsedTime, section.$.checkupStatusSubLabel.textContent!.trim());
     assertFalse(isVisible(section.$.retryButton));
     assertFalse(isVisible(section.$.spinner));
   });
 
   test('Running state', async function() {
+    passwordManager.data.checkStatus = makePasswordCheckStatus(
+        {state: PasswordCheckState.RUNNING, totalNumber: 10, checked: 4});
+
+    const section = document.createElement('checkup-section');
+    document.body.appendChild(section);
+    assertEquals(10, await pluralString.whenCalled('checkingPasswords'));
+    await flushTasks();
+
+    assertFalse(isVisible(section.$.checkupResult));
+    assertTrue(isVisible(section.$.refreshButton));
+    assertTrue(section.$.refreshButton.disabled);
+    assertTrue(isVisible(section.$.checkupStatusSubLabel));
+    assertEquals(
+        section.i18n('checkupProgress', 4, 10),
+        section.$.checkupStatusSubLabel.textContent!.trim());
+    assertFalse(isVisible(section.$.retryButton));
+    assertTrue(isVisible(section.$.spinner));
+  });
+
+  test('check NO_PASSWORDS state', async function() {
     passwordManager.data.checkStatus =
-        makePasswordCheckStatus({state: PasswordCheckState.RUNNING});
+        makePasswordCheckStatus({state: PasswordCheckState.NO_PASSWORDS});
 
     const section = document.createElement('checkup-section');
     document.body.appendChild(section);
     await flushTasks();
 
     assertFalse(isVisible(section.$.checkupResult));
-    assertTrue(isVisible(section.$.refreshButton));
-    assertTrue(section.$.refreshButton.disabled);
-    assertFalse(isVisible(section.$.lastCheckupTime));
+    assertFalse(isVisible(section.$.refreshButton));
+    assertTrue(isVisible(section.$.checkupStatusLabel));
+    assertTrue(isVisible(section.$.checkupStatusSubLabel));
+    assertEquals(
+        section.i18n(
+            'checkupErrorNoPasswords', section.i18n('localPasswordManager')),
+        section.$.checkupStatusSubLabel.textContent!.trim());
     assertFalse(isVisible(section.$.retryButton));
-    assertTrue(isVisible(section.$.spinner));
+    assertFalse(isVisible(section.$.spinner));
   });
 
-  [PasswordCheckState.NO_PASSWORDS, PasswordCheckState.QUOTA_LIMIT].forEach(
-      state =>
-          test(`State whcih prevents running check ${state}`, async function() {
-            passwordManager.data.checkStatus =
-                makePasswordCheckStatus({state: state});
-
-            const section = document.createElement('checkup-section');
-            document.body.appendChild(section);
-            await flushTasks();
-
-            assertTrue(isVisible(section.$.checkupResult));
-            assertFalse(isVisible(section.$.refreshButton));
-            assertFalse(isVisible(section.$.lastCheckupTime));
-            assertFalse(isVisible(section.$.retryButton));
-            assertFalse(isVisible(section.$.spinner));
-          }));
-
-  [PasswordCheckState.CANCELED, PasswordCheckState.OFFLINE,
-   PasswordCheckState.SIGNED_OUT, PasswordCheckState.OTHER_ERROR]
-      .forEach(state => test(`Error state ${state}`, async function() {
-                 passwordManager.data.checkStatus =
-                     makePasswordCheckStatus({state: state});
+  [{state: PasswordCheckState.QUOTA_LIMIT, message: 'checkupErrorQuota'},
+   {state: PasswordCheckState.OFFLINE, message: 'checkupErrorOffline'},
+   {state: PasswordCheckState.SIGNED_OUT, message: 'checkupErrorSignedOut'},
+   {state: PasswordCheckState.OTHER_ERROR, message: 'checkupErrorGeneric'}]
+      .forEach(status => test(`Error state ${status.state}`, async function() {
+                 passwordManager.data.checkStatus = makePasswordCheckStatus(
+                     {state: status.state, lastCheck: 'One week ago'});
 
                  const section = document.createElement('checkup-section');
                  document.body.appendChild(section);
@@ -129,9 +140,19 @@ suite('CheckupSectionTest', function() {
 
                  assertTrue(isVisible(section.$.checkupResult));
                  assertFalse(isVisible(section.$.refreshButton));
-                 assertFalse(isVisible(section.$.lastCheckupTime));
+                 assertTrue(isVisible(section.$.checkupStatusSubLabel));
+                 assertEquals(
+                     passwordManager.data.checkStatus.elapsedTimeSinceLastCheck,
+                     section.$.checkupStatusSubLabel.textContent!.trim());
                  assertTrue(isVisible(section.$.retryButton));
                  assertFalse(isVisible(section.$.spinner));
+                 assertEquals(
+                     section.i18n('compromisedRowWithError'),
+                     section.$.compromisedRow.label);
+                 assertEquals(
+                     section.i18n(
+                         status.message, section.i18n('localPasswordManager')),
+                     section.$.compromisedRow.subLabel);
                }));
 
   test('Start check', async function() {
@@ -195,9 +216,9 @@ suite('CheckupSectionTest', function() {
     assertEquals('weakPasswords', section.$.weakRow.label);
 
     // Expect a proper attribute for front icon color
-    assertTrue(section.$.compromisedRow.hasAttribute('compromised'));
-    assertFalse(section.$.reusedRow.hasAttribute('has-issues'));
-    assertTrue(section.$.weakRow.hasAttribute('has-issues'));
+    assertTrue(section.$.compromisedRow.hasAttribute('show-red-icon'));
+    assertFalse(section.$.reusedRow.hasAttribute('show-yellow-icon'));
+    assertTrue(section.$.weakRow.hasAttribute('show-yellow-icon'));
 
     // Expect a proper rear icon state
     assertFalse(section.$.compromisedRow.hasAttribute('hide-icon'));

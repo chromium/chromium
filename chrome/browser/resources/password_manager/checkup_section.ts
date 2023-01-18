@@ -14,7 +14,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,8 +27,9 @@ const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
 export interface CheckupSectionElement {
   $: {
-    checkupResult: HTMLAnchorElement,
-    lastCheckupTime: HTMLAnchorElement,
+    checkupResult: HTMLElement,
+    checkupStatusLabel: HTMLElement,
+    checkupStatusSubLabel: HTMLElement,
     refreshButton: CrIconButtonElement,
     retryButton: CrButtonElement,
     spinner: PaperSpinnerLiteElement,
@@ -181,10 +182,36 @@ export class CheckupSectionElement extends I18nMixin
     this.insecureCredentialsChangedListener_ = null;
   }
 
-  private async onStatusChanged_() {
-    this.checkedPasswordsText_ =
-        await PluralStringProxyImpl.getInstance().getPluralString(
-            'checkedPasswords', this.status_.totalNumberOfPasswords || 0);
+  private async onStatusChanged_(
+      newStatus: chrome.passwordsPrivate.PasswordCheckStatus,
+      oldStatus: chrome.passwordsPrivate.PasswordCheckStatus) {
+    // if state is unchanged - nothing to do.
+    if (oldStatus !== undefined && oldStatus.state === newStatus.state) {
+      return;
+    }
+    switch (newStatus.state) {
+      case CheckState.IDLE:
+      case CheckState.OFFLINE:
+      case CheckState.SIGNED_OUT:
+      case CheckState.QUOTA_LIMIT:
+      case CheckState.OTHER_ERROR:
+      case CheckState.NO_PASSWORDS:
+        this.checkedPasswordsText_ =
+            await PluralStringProxyImpl.getInstance().getPluralString(
+                'checkedPasswords', this.status_.totalNumberOfPasswords || 0);
+        return;
+      case CheckState.CANCELED:
+        this.checkedPasswordsText_ = this.i18n('checkupCanceled');
+        return;
+      case CheckState.RUNNING:
+        this.checkedPasswordsText_ =
+            await PluralStringProxyImpl.getInstance().getPluralString(
+                'checkingPasswords', this.status_.totalNumberOfPasswords || 0);
+        return;
+      default:
+        assertNotReached(
+            'Can\'t find a title for state: ' + this.status_.state);
+    }
   }
 
   private async onCompromisedPasswordsChanged_() {
@@ -216,20 +243,28 @@ export class CheckupSectionElement extends I18nMixin
     return this.status_.state === CheckState.IDLE;
   }
 
+  private didCompromiseCheckFail_(): boolean {
+    return [
+      CheckState.OFFLINE,
+      CheckState.SIGNED_OUT,
+      CheckState.QUOTA_LIMIT,
+      CheckState.OTHER_ERROR,
+    ].includes(this.status_.state);
+  }
+
   private showRetryButton_(): boolean {
     return !this.computeIsCheckRunning_() && !this.computeIsCheckSuccessful_();
   }
 
   private showCheckButton_(): boolean {
-    return this.status_.state !== CheckState.NO_PASSWORDS &&
-        this.status_.state !== CheckState.QUOTA_LIMIT;
+    return this.status_.state !== CheckState.NO_PASSWORDS;
   }
 
   /**
    * Starts/Restarts bulk password check.
    */
   private onPasswordCheckButtonClick_() {
-    PasswordManagerImpl.getInstance().startBulkPasswordCheck();
+    PasswordManagerImpl.getInstance().startBulkPasswordCheck().catch(() => {});
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.START_CHECK_MANUALLY);
   }
@@ -249,8 +284,13 @@ export class CheckupSectionElement extends I18nMixin
     return 'checkup_result_banner_error';
   }
 
-  private getIcon_(issues: chrome.passwordsPrivate.PasswordUiEntry[]): string {
-    return issues.length ? 'cr:error' : 'cr:check-circle';
+  private getIcon_(
+      issues: chrome.passwordsPrivate.PasswordUiEntry[],
+      checkForError: boolean): string {
+    if (checkForError && this.didCompromiseCheckFail_()) {
+      return 'cr:error';
+    }
+    return !!issues && issues.length ? 'cr:error' : 'cr:check-circle';
   }
 
   private hasAnyIssues_(): boolean {
@@ -267,10 +307,39 @@ export class CheckupSectionElement extends I18nMixin
     return !!issues.length;
   }
 
+  private getCompromisedSectionLabel_(): string {
+    if (this.status_ && this.didCompromiseCheckFail_()) {
+      // In case of an error, don't show "No compromised passwords" title since
+      // this might be a lie.
+      return !this.compromisedPasswords_ || !this.compromisedPasswords_.length ?
+          this.i18n('compromisedRowWithError') :
+          this.compromisedPasswordsText_;
+    }
+    return this.compromisedPasswordsText_;
+  }
+
   private getCompromisedSectionSublabel_(): string {
-    return this.compromisedPasswords_.length ?
-        this.i18n('compromisedPasswordsTitle') :
-        this.i18n('compromisedPasswordsEmpty');
+    const brandingName = this.i18n('localPasswordManager');
+    switch (this.status_.state) {
+      case CheckState.IDLE:
+      case CheckState.NO_PASSWORDS:
+      case CheckState.RUNNING:
+      case CheckState.CANCELED:
+        return this.compromisedPasswords_.length ?
+            this.i18n('compromisedPasswordsTitle') :
+            this.i18n('compromisedPasswordsEmpty');
+      case CheckState.OFFLINE:
+        return this.i18n('checkupErrorOffline', brandingName);
+      case CheckState.SIGNED_OUT:
+        return this.i18n('checkupErrorSignedOut', brandingName);
+      case CheckState.QUOTA_LIMIT:
+        return this.i18n('checkupErrorQuota', brandingName);
+      case CheckState.OTHER_ERROR:
+        return this.i18n('checkupErrorGeneric', brandingName);
+      default:
+        assertNotReached(
+            'Can\'t find a title for state: ' + this.status_.state);
+    }
   }
 
   private getReusedSectionSublabel_(): string {
@@ -307,6 +376,31 @@ export class CheckupSectionElement extends I18nMixin
     }
 
     Router.getInstance().navigateTo(Page.CHECKUP_DETAILS, CheckupSubpage.WEAK);
+  }
+
+  private showCheckupSublabel_(): boolean {
+    return this.computeIsCheckRunning_();
+  }
+
+  private getCheckupSublabelValue_(): string {
+    assert(this.status_);
+    if (!this.computeIsCheckRunning_()) {
+      return this.status_.state === CheckState.NO_PASSWORDS ?
+          this.i18n(
+              'checkupErrorNoPasswords', this.i18n('localPasswordManager')) :
+          this.status_.elapsedTimeSinceLastCheck || '';
+    }
+    return this.i18n(
+        'checkupProgress', this.status_.alreadyProcessed || 0,
+        this.status_.totalNumberOfPasswords || 0);
+  }
+
+  private showCheckupResult_(): boolean {
+    assert(this.status_);
+    if (this.computeIsCheckRunning_()) {
+      return false;
+    }
+    return this.status_.state !== CheckState.NO_PASSWORDS;
   }
 }
 

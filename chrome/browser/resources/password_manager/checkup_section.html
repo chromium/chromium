@@ -6,10 +6,6 @@
   #checkupStatus {
     align-items: center;
     display: flex;
-    height: 52px;
-  }
-
-  #checkupStatus[check-successful] {
     height: 72px;
   }
 
@@ -58,11 +54,11 @@
     --cr-link-row-icon-width: 16px;
   }
 
-  cr-link-row[has-issues] {
+  cr-link-row[show-yellow-icon] {
     --cr-link-row-start-icon-color: var(--google-yellow-700);
   }
 
-  cr-link-row[compromised] {
+  cr-link-row[show-red-icon] {
     --cr-link-row-start-icon-color: var(--google-red-600);
   }
 
@@ -80,14 +76,13 @@
           src="./images/[[bannerImage_]].svg">
     </picture>
   </div>
-  <div class="hr" id="checkupStatus" check-successful$="[[isCheckSuccessful_]]">
+  <div class="hr" id="checkupStatus">
     <paper-spinner-lite id="spinner" active hidden="[[!isCheckRunning_]]">
     </paper-spinner-lite>
     <div id="labelWrapper">
       <div id="checkupStatusLabel" class="title">[[checkedPasswordsText_]]</div>
-      <div id="lastCheckupTime" class="cr-secondary-text label"
-          hidden="[[!isCheckSuccessful_]]">
-        [[status_.elapsedTimeSinceLastCheck]]
+      <div id="checkupStatusSubLabel" class="cr-secondary-text label">
+        [[getCheckupSublabelValue_(status_)]]
       </div>
     </div>
     <div id="checkupButtons" hidden="[[!showCheckButton_(status_)]]">
@@ -101,26 +96,27 @@
       </cr-button>
     </div>
   </div>
-  <div id="checkupResult" hidden="[[isCheckRunning_]]">
+  <div id="checkupResult" hidden="[[!showCheckupResult_(status_)]]">
     <cr-link-row id="compromisedRow" class="hr"
-        start-icon="[[getIcon_(compromisedPasswords_)]]"
-        label="[[compromisedPasswordsText_]]"
+        start-icon="[[getIcon_(compromisedPasswords_, 'true', status_)]]"
+        label="[[getCompromisedSectionLabel_(status_, compromisedPasswordsText_)]]"
         sub-label="[[getCompromisedSectionSublabel_(compromisedPasswords_)]]"
-        compromised$="[[hasIssues_(compromisedPasswords_)]]"
+        show-yellow-icon$="[[didCompromiseCheckFail_(status_)]]"
+        show-red-icon$="[[hasIssues_(compromisedPasswords_)]]"
         hide-icon$="[[!hasIssues_(compromisedPasswords_)]]"
         on-click="onCompromisedClick_">
     </cr-link-row>
     <cr-link-row id="reusedRow" start-icon="[[getIcon_(reusedPasswords_)]]"
         label="[[reusedPasswordsText_]]" class="hr"
         sub-label="[[getReusedSectionSublabel_(reusedPasswords_)]]"
-        has-issues$="[[hasIssues_(reusedPasswords_)]]"
+        show-yellow-icon$="[[hasIssues_(reusedPasswords_)]]"
         hide-icon$="[[!hasIssues_(reusedPasswords_)]]"
         on-click="onReusedClick_">
     </cr-link-row>
     <cr-link-row id="weakRow" start-icon="[[getIcon_(weakPasswords_)]]"
         label="[[weakPasswordsText_]]" class="hr"
         sub-label="[[getWeakSectionSublabel_(weakPasswords_)]]"
-        has-issues$="[[hasIssues_(weakPasswords_)]]"
+        show-yellow-icon$="[[hasIssues_(weakPasswords_)]]"
         hide-icon$="[[!hasIssues_(weakPasswords_)]]"
         on-click="onWeakClick_">
     </cr-link-row>
