@@ -198,28 +198,20 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
 
   /**
    * Gets languages available for translate, spell checking, input and locale.
-   * @param {function(!Array<!chrome.languageSettingsPrivate.Language>)}
-   *     callback
+   * @return {!Promise<!Array<!chrome.languageSettingsPrivate.Language>>}
    */
-  getLanguageList(callback) {
-    setTimeout(function() {
-      callback(
-          /** @type {!Array<!chrome.languageSettingsPrivate.Language>} */ (
-              JSON.parse(JSON.stringify(this.languages))));
-    }.bind(this));
+  getLanguageList() {
+    return Promise.resolve(JSON.parse(JSON.stringify(this.languages)));
   }
 
   /**
    * Gets languages that should always be automatically translated.
-   * @param {function(!Array<!string>)}
-   *     callback
+   * @return {!Promise<!Array<!string>>}
    */
-  getAlwaysTranslateLanguages(callback) {
-    setTimeout(function() {
-      callback(
-          /** @type {!Array<!string>} */ (
-              this.settingsPrefs_.get('prefs.translate_allowlists.value')));
-    }.bind(this));
+  getAlwaysTranslateLanguages() {
+    const alwaysTranslateMap =
+        this.settingsPrefs_.get('prefs.translate_allowlists.value');
+    return Promise.resolve(Object.keys(alwaysTranslateMap));
   }
 
   /**
@@ -247,15 +239,11 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
 
   /**
    * Gets languages that should never be offered to translate.
-   * @param {function(!Array<!string>)}
-   *     callback
+   * @return {!Promise<!Array<!string>>}
    */
-  getNeverTranslateLanguages(callback) {
-    setTimeout(() => {
-      callback(
-          /** @type {!Array<!string>} */ (this.settingsPrefs_.get(
-              'prefs.translate_blocked_languages.value')));
-    });
+  getNeverTranslateLanguages() {
+    return Promise.resolve(
+        this.settingsPrefs_.get('prefs.translate_blocked_languages.value'));
   }
 
   /**
@@ -367,10 +355,10 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
 
   /**
    * Gets the translate target language (in most cases, the display locale).
-   * @param {function(string):void} callback
+   * @return {!Promise<string>}
    */
-  getTranslateTargetLanguage(callback) {
-    callback('en');
+  getTranslateTargetLanguage() {
+    return Promise.resolve('en');
   }
 
   /**
@@ -384,21 +372,20 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
 
   /**
    * Gets the current status of the chosen spell check dictionaries.
-   * @param {function(!Array<
-   *     !chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>):void}
-   *     callback
+   * @return {!Promise<!Array<
+   *     !chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>>}
    */
-  getSpellcheckDictionaryStatuses(callback) {
-    callback([]);
+  getSpellcheckDictionaryStatuses() {
+    return Promise.resolve([]);
   }
 
   /**
    * Gets the custom spell check words, in sorted order.
-   * @param {function(!Array<string>):void} callback
+   * @return {!Promise<string>}
    */
-  getSpellcheckWords(callback) {
-    callback([]);
+  getSpellcheckWords() {
     this.methodCalled('getSpellcheckWords');
+    return Promise.resolve([]);
   }
 
   /**
@@ -422,11 +409,10 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   /**
    * Gets all supported input methods, including third-party IMEs. Chrome OS
    * only.
-   * @param {function(!chrome.languageSettingsPrivate.InputMethodLists):void}
-   *     callback
+   * @return {!Promise<!chrome.languageSettingsPrivate.InputMethodLists>}
    */
-  getInputMethodLists(callback) {
-    callback({
+  getInputMethodLists() {
+    return Promise.resolve({
       componentExtensionImes:
           /** @type {!Array<!chrome.languageSettingsPrivate.InputMethod>} */ (
               JSON.parse(JSON.stringify(this.componentExtensionImes))),

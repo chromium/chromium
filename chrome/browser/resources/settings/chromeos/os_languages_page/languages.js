@@ -272,39 +272,33 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         CrSettingsPrefs.initialized.then(result => args.initialized = result));
 
     // Get the language list.
-    promises.push(new Promise(resolve => {
-                    this.languageSettingsPrivate_.getLanguageList(resolve);
-                  }).then(result => args.supportedLanguages = result));
+    promises.push(this.languageSettingsPrivate_.getLanguageList().then(
+        result => args.supportedLanguages = result));
 
     // Get the translate target language.
-    promises.push(new Promise(resolve => {
-                    this.languageSettingsPrivate_.getTranslateTargetLanguage(
-                        resolve);
-                  }).then(result => args.translateTarget = result));
-
     promises.push(
-        new Promise(resolve => {
-          this.languageSettingsPrivate_.getInputMethodLists(function(lists) {
-            resolve(lists.componentExtensionImes.concat(
-                lists.thirdPartyExtensionImes));
-          });
-        }).then(result => args.supportedInputMethods = result));
+        this.languageSettingsPrivate_.getTranslateTargetLanguage().then(
+            result => args.translateTarget = result));
+
+    promises.push(this.languageSettingsPrivate_.getInputMethodLists().then(
+        lists => args.supportedInputMethods =
+            lists.componentExtensionImes.concat(
+                lists.thirdPartyExtensionImes)));
+
 
     promises.push(new Promise(resolve => {
                     this.inputMethodPrivate_.getCurrentInputMethod(resolve);
                   }).then(result => args.currentInputMethodId = result));
 
     // Get the list of language-codes to always translate.
-    promises.push(new Promise(resolve => {
-                    this.languageSettingsPrivate_.getAlwaysTranslateLanguages(
-                        resolve);
-                  }).then(result => args.alwaysTranslateCodes = result));
+    promises.push(
+        this.languageSettingsPrivate_.getAlwaysTranslateLanguages().then(
+            result => args.alwaysTranslateCodes = result));
 
     // Get the list of language-codes to never translate.
-    promises.push(new Promise(resolve => {
-                    this.languageSettingsPrivate_.getNeverTranslateLanguages(
-                        resolve);
-                  }).then(result => args.neverTranslateCodes = result));
+    promises.push(
+        this.languageSettingsPrivate_.getNeverTranslateLanguages().then(
+            result => args.neverTranslateCodes = result));
 
     // Fetch the starting UI language, which affects which actions should be
     // enabled.
@@ -327,7 +321,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
           this.onSpellcheckDictionariesChanged_.bind(this);
       this.languageSettingsPrivate_.onSpellcheckDictionariesChanged.addListener(
           this.boundOnSpellcheckDictionariesChanged_);
-      this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses(
+      this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses().then(
           this.boundOnSpellcheckDictionariesChanged_);
 
       this.resolver_.resolve();
@@ -397,14 +391,12 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     this.set('languages.enabled', enabledLanguageStates);
 
     if (this.boundOnSpellcheckDictionariesChanged_) {
-      this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses(
+      this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses().then(
           this.boundOnSpellcheckDictionariesChanged_);
     }
 
     // Update translate target language.
-    new Promise(resolve => {
-      this.languageSettingsPrivate_.getTranslateTargetLanguage(resolve);
-    }).then(result => {
+    this.languageSettingsPrivate_.getTranslateTargetLanguage().then(result => {
       this.set('languages.translateTarget', result);
     });
   }
@@ -1177,19 +1169,13 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   }
 
   /** @private */
-  updateSupportedInputMethods_() {
-    const promise = new Promise(resolve => {
-      this.languageSettingsPrivate_.getInputMethodLists(function(lists) {
-        resolve(
-            lists.componentExtensionImes.concat(lists.thirdPartyExtensionImes));
-      });
-    });
-    promise.then(result => {
-      const supportedInputMethods = result;
-      this.createInputMethodModel_(supportedInputMethods);
-      this.set('languages.inputMethods.supported', supportedInputMethods);
-      this.updateEnabledInputMethods_();
-    });
+  async updateSupportedInputMethods_() {
+    const lists = await this.languageSettingsPrivate_.getInputMethodLists();
+    const supportedInputMethods =
+        lists.componentExtensionImes.concat(lists.thirdPartyExtensionImes);
+    this.createInputMethodModel_(supportedInputMethods);
+    this.set('languages.inputMethods.supported', supportedInputMethods);
+    this.updateEnabledInputMethods_();
   }
 
   /** @private */
