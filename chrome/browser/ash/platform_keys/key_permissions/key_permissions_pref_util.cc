@@ -54,10 +54,13 @@ bool IsUserKeyMarkedCorporateInPref(
   const base::Value* prefs_entry =
       GetPrefsEntry(base::Base64Encode(public_key_spki_der), profile_prefs);
   if (prefs_entry) {
-    const base::Value* key_usage = prefs_entry->FindKey(kPrefKeyUsage);
-    if (!key_usage || !key_usage->is_string())
+    const std::string* key_usage =
+        prefs_entry->GetDict().FindString(kPrefKeyUsage);
+    if (!key_usage) {
       return false;
-    return key_usage->GetString() == kPrefKeyUsageCorporate;
+    }
+
+    return *key_usage == kPrefKeyUsageCorporate;
   }
   return false;
 }
