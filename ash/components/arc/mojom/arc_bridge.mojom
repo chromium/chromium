@@ -15,7 +15,6 @@ import "ash/components/arc/mojom/backup_settings.mojom";
 import "ash/components/arc/mojom/bluetooth.mojom";
 import "ash/components/arc/mojom/boot_phase_monitor.mojom";
 import "ash/components/arc/mojom/camera.mojom";
-import "ash/components/arc/mojom/cert_store.mojom";
 import "ash/components/arc/mojom/clipboard.mojom";
 import "ash/components/arc/mojom/compatibility_mode.mojom";
 import "ash/components/arc/mojom/crash_collector.mojom";
@@ -64,7 +63,7 @@ import "ash/components/arc/mojom/wallpaper.mojom";
 import "ash/components/arc/mojom/webapk.mojom";
 
 // Next MinVersion: 63
-// Deprecated method IDs: 101, 105, 121, 132, 154, 160
+// Deprecated method IDs: 101, 105, 121, 132, 136, 153, 154, 160
 // Next method ID: 168
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
@@ -113,10 +112,6 @@ interface ArcBridgeHost {
   // Notifies Chrome that the CameraInstance is ready.
   [MinVersion=46] OnCameraInstanceReady@151(
       pending_remote<CameraInstance> instance_remote);
-
-  // Notifies Chrome that the CertStoreInstance interface is ready.
-  [MinVersion=31] OnCertStoreInstanceReady@136(
-      pending_remote<CertStoreInstance> instance_remote);
 
   // Notifies Chrome that the ClipboardInstance interface is ready.
   [MinVersion=2] OnClipboardInstanceReady@109(
@@ -255,10 +250,6 @@ interface ArcBridgeHost {
   // Notifies Chrome that the SharesheetInstance interface is ready.
   [MinVersion=52] OnSharesheetInstanceReady@157(
       pending_remote<SharesheetInstance> instance_remote);
-
-  // Notifies Chrome that the SmartCardManagerInstance interface is ready.
-  [MinVersion=48] OnSmartCardManagerInstanceReady@153(
-      pending_remote<SmartCardManagerInstance> instance_remote);
 
   // Notifies Chrome that the StorageManagerInstance interface is ready.
   [MinVersion=12] OnStorageManagerInstanceReady@118(

@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/process/process_handle.h"
-#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
