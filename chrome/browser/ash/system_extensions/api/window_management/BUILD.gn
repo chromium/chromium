@@ -31,7 +31,6 @@ source_set("window_management") {
     "//chrome/browser/ui",
     "//components/keyed_service/content",
     "//components/services/app_service/public/cpp:instance_update",
-    "//components/services/app_service/public/mojom",
     "//content/public/browser",
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/aura",

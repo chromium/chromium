@@ -37,7 +37,6 @@ source_set("extensions") {
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:types",
-    "//components/services/app_service/public/mojom",
     "//components/sync/model",
     "//components/webapps/browser:browser",
     "//content/public/browser",

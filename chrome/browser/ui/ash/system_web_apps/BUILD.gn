@@ -28,7 +28,6 @@ source_set("system_web_apps") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common",
-    "//components/services/app_service/public/mojom",
     "//content/public/browser",
     "//ui/base",
     "//ui/display",

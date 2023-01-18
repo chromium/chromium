@@ -331,7 +331,6 @@ static_library("common_lib") {
     deps += [
       "//chrome/common/apps/platform_apps",
       "//components/app_constants",
-      "//components/services/app_service/public/mojom",
     ]
     public_deps += [
       "//chrome/common/extensions/api",

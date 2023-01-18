@@ -275,7 +275,6 @@ cast_source_set("browser") {
     "//components/proxy_config",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
-    "//components/services/app_service/public/mojom",
     "//components/services/heap_profiling",
     "//components/services/heap_profiling/public/cpp",
     "//components/services/heap_profiling/public/mojom",

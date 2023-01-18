@@ -55,7 +55,6 @@ source_set("constants_impl") {
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//components/services/app_service/public/mojom",
     "//extensions/common:export_impl",
   ]
 

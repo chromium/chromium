@@ -68,10 +68,7 @@ component("app_types") {
 
   defines = [ "IS_APP_TYPES_IMPL" ]
 
-  public_deps = [
-    "//components/services/app_service/public/mojom",
-    "//components/services/app_service/public/protos",
-  ]
+  public_deps = [ "//components/services/app_service/public/protos" ]
 
   deps = [
     ":icon_types",
@@ -102,10 +99,7 @@ component("app_update") {
 
   defines = [ "IS_APP_UPDATE_IMPL" ]
 
-  public_deps = [
-    "//components/account_id:account_id",
-    "//components/services/app_service/public/mojom",
-  ]
+  public_deps = [ "//components/account_id:account_id" ]
 
   deps = [
     ":app_types",
@@ -168,8 +162,6 @@ source_set("icon_loader") {
     "icon_loader.h",
   ]
 
-  public_deps = [ "//components/services/app_service/public/mojom" ]
-
   deps = [
     ":app_types",
     ":icon_types",
@@ -199,8 +191,6 @@ component("icon_types") {
 
   defines = [ "IS_ICON_TYPES_IMPL" ]
 
-  public_deps = [ "//components/services/app_service/public/mojom" ]
-
   deps = [ "//ui/gfx" ]
 }
 
@@ -214,7 +204,7 @@ component("run_on_os_login") {
 
   defines = [ "IS_LOGIN_MODE_IMPL" ]
 
-  public_deps = [ "//components/services/app_service/public/mojom" ]
+  deps = [ "//base:base" ]
 }
 
 source_set("intents") {
@@ -230,7 +220,6 @@ source_set("intents") {
   deps = [
     ":app_types",
     "//base",
-    "//components/services/app_service/public/mojom",
     "//third_party/blink/public/common",
     "//url",
   ]
@@ -253,7 +242,8 @@ source_set("preferred_app") {
 
   deps = [
     ":app_types",
-    "//components/services/app_service/public/mojom",
+    "//base:base",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -274,7 +264,6 @@ source_set("preferred_apps") {
     ":intents",
     ":preferred_app",
     "//base",
-    "//components/services/app_service/public/mojom",
     "//content/public/browser",
     "//url",
   ]
@@ -291,7 +280,7 @@ source_set("test_support") {
   deps = [
     ":app_types",
     ":intents",
-    "//components/services/app_service/public/mojom",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -303,14 +292,12 @@ source_set("types") {
 
   deps = [
     ":app_types",
-    "//components/services/app_service/public/mojom",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
 source_set("crosapi_utils") {
   sources = [ "crosapi_utils.h" ]
-
-  deps = [ "//components/services/app_service/public/mojom" ]
 }
 
 source_set("unit_tests") {

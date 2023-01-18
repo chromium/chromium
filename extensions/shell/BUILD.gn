@@ -52,7 +52,6 @@ source_set("app_shell_lib") {
     "//components/origin_trials:common",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/services/app_service/public/mojom",
     "//components/sessions",
     "//components/storage_monitor",
     "//components/update_client",

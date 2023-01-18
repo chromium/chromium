@@ -51,7 +51,6 @@ component("app_restore") {
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:intents",
-    "//components/services/app_service/public/mojom",
     "//components/sessions:session_id",
     "//components/tab_groups",
     "//ui/aura",
