@@ -15,10 +15,10 @@ constexpr char FakeApplicationConfigManager::kFakeAgentUrl[] =
 
 // static
 chromium::cast::ApplicationConfig FakeApplicationConfigManager::CreateConfig(
-    const std::string& id,
+    base::StringPiece id,
     const GURL& url) {
   chromium::cast::ApplicationConfig app_config;
-  app_config.set_id(id);
+  app_config.set_id(std::string(id));
   app_config.set_display_name("Dummy test app");
   app_config.set_web_url(url.spec());
   app_config.set_agent_url(kFakeAgentUrl);
@@ -40,7 +40,7 @@ void FakeApplicationConfigManager::AddAppConfig(
   id_to_config_[app_config.id()] = std::move(app_config);
 }
 
-void FakeApplicationConfigManager::AddApp(const std::string& id,
+void FakeApplicationConfigManager::AddApp(base::StringPiece id,
                                           const GURL& url) {
   AddAppConfig(CreateConfig(id, url));
 }

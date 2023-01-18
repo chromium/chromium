@@ -21,6 +21,7 @@
 #include <utility>
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
 #include "base/fuchsia/startup_context.h"
 #include "base/guid.h"
 #include "base/logging.h"
@@ -58,10 +59,6 @@ class CastComponentV1 : public fuchsia::sys::ComponentController {
         delete this;
       });
     }
-
-    // TODO(crbug.com/1332972): Migrate the CFv2 code not to need this routed
-    // via the Cast activity's incoming services.
-    OfferFromStartupContext<chromium::cast::ApplicationConfigManager>();
 
     // Offer the Cast component its own LogSink.
     OfferFromStartupContext<fuchsia::logger::LogSink>();
@@ -187,9 +184,8 @@ class PendingCastComponentV1 {
     // Request the application's configuration, including the identity of the
     // Agent that should provide component-specific resources, e.g. API
     // bindings.
-    // TODO(https://crbug.com/1065707): Access the ApplicationConfigManager via
-    // the Runner's incoming service directory once it is available there.
-    startup_context_->svc()->Connect(application_config_manager_.NewRequest());
+    base::ComponentContextForProcess()->svc()->Connect(
+        application_config_manager_.NewRequest());
     application_config_manager_.set_error_handler([this](zx_status_t status) {
       ZX_LOG(ERROR, status) << "ApplicationConfigManager disconnected.";
       delete this;

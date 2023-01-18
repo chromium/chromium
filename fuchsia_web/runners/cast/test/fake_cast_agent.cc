@@ -33,6 +33,9 @@ void FakeCastAgent::OnStart() {
   ASSERT_EQ(outgoing()->AddPublicService(
                 cors_exempt_header_provider_bindings_.GetHandler(this)),
             ZX_OK);
+  ASSERT_EQ(outgoing()->AddPublicService(
+                app_config_manager_bindings_.GetHandler(&app_config_manager_)),
+            ZX_OK);
 
   for (const auto& [name, on_connect_closure] : on_connect_) {
     ASSERT_EQ(outgoing()->AddPublicService(

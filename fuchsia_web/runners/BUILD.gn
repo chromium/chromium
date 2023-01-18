@@ -186,6 +186,7 @@ fuchsia_package_installer("cast_runner") {
 }
 
 source_set("cast_runner_test_core") {
+  visibility += [ "//fuchsia_web/runners/cast/test:*" ]
   testonly = true
   sources = [
     "cast/fake_api_bindings.cc",

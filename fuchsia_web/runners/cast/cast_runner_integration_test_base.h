@@ -52,6 +52,10 @@ class CastRunnerIntegrationTest : public testing::Test {
     return *cast_runner_services_;
   }
 
+  FakeApplicationConfigManager& app_config_manager() {
+    return cast_runner_launcher().fake_cast_agent().app_config_manager();
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};

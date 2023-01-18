@@ -31,14 +31,14 @@ class FakeApplicationConfigManager
   // Creates a config for a dummy application with the specified |id| and |url|.
   // Callers should updated the returned config as necessary and then register
   // the app by calling AddAppConfig().
-  static chromium::cast::ApplicationConfig CreateConfig(const std::string& id,
+  static chromium::cast::ApplicationConfig CreateConfig(base::StringPiece id,
                                                         const GURL& url);
 
   // Adds |app_config| to the list of apps.
   void AddAppConfig(chromium::cast::ApplicationConfig app_config);
 
   // Associates a Cast application |id| with the |url|.
-  void AddApp(const std::string& id, const GURL& url);
+  void AddApp(base::StringPiece id, const GURL& url);
 
   // chromium::cast::ApplicationConfigManager interface.
   void GetConfig(std::string id, GetConfigCallback config_callback) override;

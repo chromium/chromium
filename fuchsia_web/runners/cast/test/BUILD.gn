@@ -28,6 +28,7 @@ source_set("integration") {
     "//base",
     "//fuchsia_web/common",
     "//fuchsia_web/runners:cast_runner_core",
+    "//fuchsia_web/runners:cast_runner_test_core",
     "//fuchsia_web/runners/cast/fidl",
     "//media/fuchsia/audio:test_support",
     "//media/fuchsia/audio:test_support_components",

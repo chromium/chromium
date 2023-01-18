@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
+#include "fuchsia_web/runners/cast/fake_application_config_manager.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 
 namespace test {
@@ -38,6 +39,12 @@ class FakeCastAgent final : public ::component_testing::LocalComponentImpl,
   // ::component_testing::LocalComponentImpl implementation.
   void OnStart() override;
 
+  // Returns the fake ApplicationConfigManager implementation that will be
+  // served by this fake CastAgent component.
+  FakeApplicationConfigManager& app_config_manager() {
+    return app_config_manager_;
+  }
+
  private:
   // chromium::cast::CorsExemptHeaderProvider implementation.
   void GetCorsExemptHeaderNames(
@@ -45,9 +52,15 @@ class FakeCastAgent final : public ::component_testing::LocalComponentImpl,
 
   bool is_started_ = false;
 
+  // Used to publish a stub CorsExemptHeaderProvider to the Cast runtime.
   fidl::BindingSet<chromium::cast::CorsExemptHeaderProvider>
       cors_exempt_header_provider_bindings_;
 
+  // Used to configure the `ApplicationConfig`s reported to the Cast runtime.
+  FakeApplicationConfigManager app_config_manager_;
+  fidl::BindingSet<FakeApplicationConfigManager> app_config_manager_bindings_;
+
+  // Used by individual tests to very that other services are connected-to.
   base::flat_map<std::string, base::RepeatingClosure> on_connect_;
 };
 

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 
@@ -25,9 +26,7 @@ PendingCastComponent::PendingCastComponent(
 
   // Request the application's configuration, including the identity of the
   // Agent that should provide component-specific resources, e.g. API bindings.
-  // TODO(https://crbug.com/1065707): Access the ApplicationConfigManager via
-  // the Runner's incoming service directory once it is available there.
-  params_.startup_context->svc()->Connect(
+  base::ComponentContextForProcess()->svc()->Connect(
       application_config_manager_.NewRequest());
   application_config_manager_.set_error_handler([this](zx_status_t status) {
     ZX_LOG(ERROR, status) << "ApplicationConfigManager disconnected.";

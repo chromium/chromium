@@ -102,6 +102,7 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
   realm_builder.AddRoute(
       Route{.capabilities =
                 {
+                    Protocol{chromium::cast::ApplicationConfigManager::Name_},
                     Protocol{chromium::cast::CorsExemptHeaderProvider::Name_},
                     Protocol{fuchsia::camera3::DeviceWatcher::Name_},
                     Protocol{fuchsia::legacymetrics::MetricsRecorder::Name_},
