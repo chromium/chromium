@@ -3150,7 +3150,7 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
   if (ShouldThrottleRendering() || !frame_->GetDocument()->IsActive())
     return;
 
-  TRACE_EVENT0("blink,benchmark",
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
                "LocalFrameView::updateStyleAndLayoutIfNeededRecursive");
 
   UpdateStyleAndLayout();
