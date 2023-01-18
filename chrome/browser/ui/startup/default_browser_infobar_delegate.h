@@ -57,7 +57,6 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
-  bool OKButtonTriggersUACPrompt() const override;
   bool Accept() override;
 
   // The WebContents's corresponding profile.

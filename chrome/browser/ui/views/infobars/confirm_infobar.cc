@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/elevation_icon_setter.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -42,11 +41,6 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     ok_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_OK,
                                &ConfirmInfoBar::OkButtonPressed);
     ok_button_->SetProminent(true);
-    if (delegate_ptr->OKButtonTriggersUACPrompt()) {
-      elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(
-          ok_button_,
-          base::BindOnce(&ConfirmInfoBar::Layout, base::Unretained(this)));
-    }
     ok_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         delegate_ptr->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_OK));
@@ -89,10 +83,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   link_ = AddChildView(CreateLink(delegate_ptr->GetLinkText()));
 }
 
-ConfirmInfoBar::~ConfirmInfoBar() {
-  // Ensure |elevation_icon_setter_| is destroyed before |ok_button_|.
-  elevation_icon_setter_.reset();
-}
+ConfirmInfoBar::~ConfirmInfoBar() = default;
 
 void ConfirmInfoBar::Layout() {
   InfoBarView::Layout();

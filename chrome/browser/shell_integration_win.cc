@@ -41,7 +41,6 @@
 #include "base/win/scoped_propvariant.h"
 #include "base/win/shlwapi.h"
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
@@ -68,8 +67,7 @@ BASE_FEATURE(kWin10UnattendedDefault,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool CanSetAsDefaultDirectly() {
-  return base::win::GetVersion() >= base::win::Version::WIN10 &&
-         base::FeatureList::IsEnabled(kWin10UnattendedDefault);
+  return base::FeatureList::IsEnabled(kWin10UnattendedDefault);
 }
 
 // Helper function for GetAppId to generates profile id
@@ -753,16 +751,10 @@ GetPlatformSpecificDefaultWebClientSetPermission() {
   return SET_DEFAULT_INTERACTIVE;
 }
 
-bool IsElevationNeededForSettingDefaultSchemeClient() {
-  return base::win::GetVersion() < base::win::Version::WIN8;
-}
-
 std::u16string GetApplicationNameForScheme(const GURL& url) {
-  // Windows 8 or above has a new scheme association query.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    std::u16string application_name = GetAppForSchemeUsingAssocQuery(url);
-    if (!application_name.empty())
-      return application_name;
+  std::u16string application_name = GetAppForSchemeUsingAssocQuery(url);
+  if (!application_name.empty()) {
+    return application_name;
   }
 
   return GetAppForSchemeUsingRegistry(url);

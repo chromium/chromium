@@ -61,10 +61,6 @@ std::u16string ConfirmInfoBarDelegate::GetButtonTooltip(
   return std::u16string();
 }
 
-bool ConfirmInfoBarDelegate::OKButtonTriggersUACPrompt() const {
-  return false;
-}
-
 #if BUILDFLAG(IS_IOS)
 bool ConfirmInfoBarDelegate::UseIconBackgroundTint() const {
   return true;

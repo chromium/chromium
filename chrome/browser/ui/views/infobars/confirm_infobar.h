@@ -9,8 +9,6 @@
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-class ElevationIconSetter;
-
 namespace views {
 class Label;
 class MdTextButton;
@@ -53,7 +51,6 @@ class ConfirmInfoBar : public InfoBarView {
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   raw_ptr<views::MdTextButton> extra_button_ = nullptr;
   raw_ptr<views::Link> link_ = nullptr;
-  std::unique_ptr<ElevationIconSetter> elevation_icon_setter_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INFOBARS_CONFIRM_INFOBAR_H_

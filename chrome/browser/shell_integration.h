@@ -73,10 +73,6 @@ GetPlatformSpecificDefaultWebClientSetPermission();
 // GetDefaultWebClientSetPermission() if this distinction is important.
 bool CanSetAsDefaultBrowser();
 
-// Returns true if making the running browser the default client for any
-// scheme requires elevated privileges.
-bool IsElevationNeededForSettingDefaultSchemeClient();
-
 // Returns a string representing the application to be launched given the
 // scheme of the requested url. This string may be a name or a path, but
 // neither is guaranteed and it should only be used as a display string.

@@ -100,12 +100,6 @@ bool CanSetAsDefaultBrowser() {
   return GetDefaultWebClientSetPermission() != SET_DEFAULT_NOT_ALLOWED;
 }
 
-#if !BUILDFLAG(IS_WIN)
-bool IsElevationNeededForSettingDefaultSchemeClient() {
-  return false;
-}
-#endif  // !BUILDFLAG(IS_WIN)
-
 base::CommandLine CommandLineArgsForLauncher(
     const GURL& url,
     const std::string& extension_app_id,

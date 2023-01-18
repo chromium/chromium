@@ -93,13 +93,6 @@ std::u16string DefaultBrowserInfoBarDelegate::GetButtonLabel(
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL);
 }
 
-// Setting an app as the default browser doesn't require elevation directly, but
-// it does require registering it as the protocol handler for "http", so if
-// protocol registration in general requires elevation, this does as well.
-bool DefaultBrowserInfoBarDelegate::OKButtonTriggersUACPrompt() const {
-  return shell_integration::IsElevationNeededForSettingDefaultSchemeClient();
-}
-
 bool DefaultBrowserInfoBarDelegate::Accept() {
   action_taken_ = true;
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Accept"));
