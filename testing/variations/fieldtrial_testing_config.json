@@ -7441,21 +7441,6 @@
             ]
         }
     ],
-    "OmniboxDefaultTypedNavigationsToHttps": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxDefaultTypedNavigationsToHttps"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxImplementationChangeIOS": [
         {
             "platforms": [
