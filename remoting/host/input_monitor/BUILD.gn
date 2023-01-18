@@ -7,6 +7,8 @@ import("//remoting/build/config/remoting_build.gni")
 
 source_set("input_monitor") {
   public = [ "local_input_monitor.h" ]
+  deps = []
+  defines = []
 
   sources = [
     "local_hotkey_input_monitor.h",
@@ -15,7 +17,25 @@ source_set("input_monitor") {
     "local_pointer_input_monitor.h",
   ]
 
-  deps = [
+  if (remoting_use_x11) {
+    defines += [ "REMOTING_USE_X11" ]
+  } else if (remoting_use_wayland) {
+    defines += [ "REMOTING_USE_WAYLAND" ]
+  }
+
+  if (remoting_use_x11 || remoting_use_wayland) {
+    sources += [
+      "local_hotkey_input_monitor_linux.cc",
+      "local_keyboard_input_monitor_linux.cc",
+      "local_mouse_input_monitor_linux.cc",
+    ]
+    deps += [
+      "//base",
+      "//remoting/host/linux:wayland",
+    ]
+  }
+
+  deps += [
     "//remoting/host:client_session_control",
     "//remoting/proto",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -42,7 +62,6 @@ source_set("input_monitor") {
       "local_hotkey_input_monitor_x11.h",
       "local_input_monitor_x11_common.cc",
       "local_input_monitor_x11_common.h",
-      "local_keyboard_input_monitor_x11.cc",
       "local_mouse_input_monitor_x11.cc",
       "local_mouse_input_monitor_x11.h",
     ]
@@ -50,12 +69,6 @@ source_set("input_monitor") {
     deps += [
       "//ui/events/devices/x11",
       "//ui/gfx/x",
-    ]
-  } else if (remoting_use_wayland && is_linux) {
-    sources += [
-      "local_hotkey_input_monitor_wayland.cc",
-      "local_keyboard_input_monitor_wayland.cc",
-      "local_mouse_input_monitor_wayland.cc",
     ]
   }
 

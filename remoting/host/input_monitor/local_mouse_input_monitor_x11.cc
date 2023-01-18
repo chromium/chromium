@@ -126,14 +126,4 @@ void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   connection_->Flush();
 }
 
-std::unique_ptr<LocalPointerInputMonitor> LocalPointerInputMonitor::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    LocalInputMonitor::PointerMoveCallback on_mouse_move,
-    base::OnceClosure disconnect_callback) {
-  return std::make_unique<LocalMouseInputMonitorX11>(
-      caller_task_runner, input_task_runner, std::move(on_mouse_move));
-}
-
 }  // namespace remoting

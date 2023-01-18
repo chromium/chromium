@@ -10,6 +10,7 @@ import("//remoting/build/config/remoting_features.gni")
 import("//remoting/build/config/remoting_logging.gni")
 
 assert(!remoting_use_x11 || is_linux, "X11 is only supported on Linux")
+assert(!remoting_use_wayland || is_linux, "Wayland is only supported on Linux")
 
 group("all_tests") {
   testonly = true
@@ -480,6 +481,7 @@ static_library("common") {
 
   if (is_linux) {
     sources += [
+      "desktop_resizer_linux.cc",
       "linux/audio_pipe_reader.cc",
       "linux/audio_pipe_reader.h",
       "linux/certificate_watcher.cc",
@@ -495,6 +497,15 @@ static_library("common") {
     }
   }
 
+  if (remoting_use_x11 || remoting_use_wayland) {
+    deps += [ "//remoting/host/linux:wayland" ]
+    sources += [
+      "curtain_mode_linux.cc",
+      "desktop_display_info_loader_linux.cc",
+      "input_injector_linux.cc",
+      "keyboard_layout_monitor_linux.cc",
+    ]
+  }
   if (remoting_use_x11) {
     defines += [ "REMOTING_USE_X11" ]
     sources += [
@@ -510,7 +521,6 @@ static_library("common") {
       "x11_display_util.h",
     ]
     deps += [
-      "//remoting/host/linux:wayland",
       "//remoting/host/linux:x11",
       "//ui/base/x",
       "//ui/events/platform/x11",
@@ -563,14 +573,6 @@ static_library("common") {
     public_configs = [ ":xkbcommon" ]
   }
 
-  if (is_linux &&
-      ((!remoting_use_x11 && !remoting_use_wayland) || is_chromeos)) {
-    # On Linux, exactly one of desktop_resizer_{linux,x11}.cc should be
-    # compiled in. The _linux version is a no-op and should be used on
-    # platforms without X11.
-    sources += [ "desktop_resizer_linux.cc" ]
-  }
-
   if (is_linux) {
     sources += [
       "audio_capturer_linux.cc",
@@ -583,14 +585,11 @@ static_library("common") {
     ]
     if (remoting_use_x11) {
       sources += [
-        "curtain_mode_linux.cc",
-        "keyboard_layout_monitor_linux.cc",
         "linux/keyboard_layout_monitor_utils.cc",
         "linux/keyboard_layout_monitor_utils.h",
       ]
     } else if (remoting_use_wayland) {
       sources += [
-        "linux/curtain_mode_wayland.cc",
         "linux/keyboard_layout_monitor_utils.cc",
         "linux/keyboard_layout_monitor_utils.h",
         "linux/keyboard_layout_monitor_wayland.cc",

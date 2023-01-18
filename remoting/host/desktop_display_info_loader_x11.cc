@@ -1,9 +1,12 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "remoting/host/desktop_display_info_loader_x11.h"
+
 #include <algorithm>
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/x11_display_util.h"
@@ -14,6 +17,7 @@
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
+
 namespace remoting {
 
 namespace {
@@ -104,11 +108,6 @@ void DesktopDisplayInfoLoaderX11::LoadMonitors() {
   } else {
     LOG(ERROR) << "RRGetMonitors request failed.";
   }
-}
-
-// static
-std::unique_ptr<DesktopDisplayInfoLoader> DesktopDisplayInfoLoader::Create() {
-  return std::make_unique<DesktopDisplayInfoLoaderX11>();
 }
 
 }  // namespace remoting

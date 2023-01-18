@@ -9,7 +9,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/client_session_control.h"
+#include "remoting/host/linux/wayland_utils.h"
+
+#if defined(REMOTING_USE_X11)
 #include "remoting/host/linux/x11_util.h"
+#endif
 
 namespace remoting {
 
@@ -27,17 +31,30 @@ class CurtainModeLinux : public CurtainMode {
 CurtainModeLinux::CurtainModeLinux() = default;
 
 bool CurtainModeLinux::Activate() {
+  bool activated = false;
+#if defined(REMOTING_USE_WAYLAND)
+  if (IsRunningWayland()) {
+    // Our wayland implementation runs headlessly on a session with a previously
+    // unused / new display socket, so we can assume that the session is
+    // curtained.
+    activated = true;
+  }
+#endif
+
+#if defined(REMOTING_USE_X11)
   // We can't curtain the session in run-time in Linux.
   // Either the session is running in a virtual session (i.e. always curtained),
   // or it is attached to the physical console (i.e. impossible to curtain).
   x11::Connection* connection = x11::Connection::Get();
-  if (!IsVirtualSession(connection)) {
+  if (IsVirtualSession(connection)) {
+    activated = true;
+  } else {
     LOG(ERROR) << "Curtain-mode is not supported when running on non-virtual "
                   "X server";
-    return false;
+    activated = false;
   }
-
-  return true;
+#endif
+  return activated;
 }
 
 // static

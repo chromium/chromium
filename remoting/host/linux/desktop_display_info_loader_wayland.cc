@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "remoting/host/linux/desktop_display_info_loader_wayland.h"
+
 #include "base/sequence_checker.h"
 #include "remoting/host/linux/wayland_manager.h"
 
@@ -20,11 +21,6 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWayland::GetCurrentDisplayInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return WaylandManager::Get()->GetCurrentDisplayInfo();
-}
-
-// static
-std::unique_ptr<DesktopDisplayInfoLoader> DesktopDisplayInfoLoader::Create() {
-  return std::make_unique<DesktopDisplayInfoLoaderWayland>();
 }
 
 }  // namespace remoting

@@ -509,9 +509,4 @@ DesktopResizerX11::OutputInfoList DesktopResizerX11::GetDisabledOutputs() {
   return disabled_outputs;
 }
 
-// static
-std::unique_ptr<DesktopResizer> DesktopResizer::Create() {
-  return std::make_unique<DesktopResizerX11>();
-}
-
 }  // namespace remoting

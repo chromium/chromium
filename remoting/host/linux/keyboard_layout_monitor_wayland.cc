@@ -184,10 +184,4 @@ void KeyboardLayoutMonitorWayland::ProcessModifiersAndNotifyCallbacks(
   layout_changed_callback_.Run(GenerateProtocolLayoutMessage());
 }
 
-std::unique_ptr<KeyboardLayoutMonitor> KeyboardLayoutMonitor::Create(
-    base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback,
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner) {
-  return std::make_unique<KeyboardLayoutMonitorWayland>(std::move(callback));
-}
-
 }  // namespace remoting

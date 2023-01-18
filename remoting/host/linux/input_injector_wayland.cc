@@ -505,16 +505,4 @@ void InputInjectorWayland::Core::Start(
   clipboard_.Start(std::move(client_clipboard));
 }
 
-// static
-std::unique_ptr<InputInjector> InputInjector::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-  return std::make_unique<InputInjectorWayland>(input_task_runner);
-}
-
-// static
-bool InputInjector::SupportsTouchEvents() {
-  return false;
-}
-
 }  // namespace remoting

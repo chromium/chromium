@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace remoting {
@@ -17,6 +18,7 @@ std::unique_ptr<LocalKeyboardInputMonitor> LocalKeyboardInputMonitor::Create(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     LocalInputMonitor::KeyPressedCallback on_key_event_callback,
     base::OnceClosure disconnect_callback) {
+  NOTIMPLEMENTED();
   return nullptr;
 }
 

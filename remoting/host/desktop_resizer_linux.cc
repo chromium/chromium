@@ -8,6 +8,18 @@
 
 #include "base/notreached.h"
 
+#if defined(REMOTING_USE_X11)
+#include "remoting/host/desktop_resizer_x11.h"
+#endif
+
+#if defined(REMOTING_USE_WAYLAND)
+#include "remoting/host/linux/desktop_resizer_wayland.h"
+#endif
+
+#if defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
+#include "remoting/host/linux/wayland_utils.h"
+#endif
+
 namespace remoting {
 
 namespace {
@@ -52,7 +64,19 @@ class DesktopResizerLinux : public DesktopResizer {
 
 // static
 std::unique_ptr<DesktopResizer> DesktopResizer::Create() {
-  return std::make_unique<DesktopResizerLinux>();
+  std::unique_ptr<DesktopResizer> resizer;
+#if defined(REMOTING_USE_WAYLAND)
+  if (IsRunningWayland()) {
+    resizer = std::make_unique<DesktopResizerWayland>();
+  }
+#elif defined(REMOTING_USE_X11)
+  resizer = std::make_unique<DesktopResizerX11>();
+#elif BUILDFLAG(IS_CHROMEOS)
+  resizer = std::make_unique<DesktopResizerLinux>();
+#else
+#error "Invalid config detected."
+#endif
+  return resizer;
 }
 
 }  // namespace remoting

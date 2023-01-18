@@ -628,18 +628,4 @@ void InputInjectorX11::Core::Stop() {
   }
 }
 
-// static
-std::unique_ptr<InputInjector> InputInjector::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-  auto injector = std::make_unique<InputInjectorX11>(main_task_runner);
-  injector->Init();
-  return std::move(injector);
-}
-
-// static
-bool InputInjector::SupportsTouchEvents() {
-  return false;
-}
-
 }  // namespace remoting

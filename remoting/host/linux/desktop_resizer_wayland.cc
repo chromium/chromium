@@ -41,9 +41,4 @@ void DesktopResizerWayland::SetVideoLayout(
   NOTIMPLEMENTED();
 }
 
-// static
-std::unique_ptr<DesktopResizer> DesktopResizer::Create() {
-  return std::make_unique<DesktopResizerWayland>();
-}
-
 }  // namespace remoting

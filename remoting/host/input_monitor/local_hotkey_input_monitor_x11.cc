@@ -121,13 +121,4 @@ void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   }
 }
 
-std::unique_ptr<LocalHotkeyInputMonitor> LocalHotkeyInputMonitor::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    base::OnceClosure disconnect_callback) {
-  return std::make_unique<LocalHotkeyInputMonitorX11>(
-      caller_task_runner, input_task_runner, std::move(disconnect_callback));
-}
-
 }  // namespace remoting
