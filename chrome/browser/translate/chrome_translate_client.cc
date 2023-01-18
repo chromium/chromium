@@ -185,8 +185,9 @@ translate::TranslateManager* ChromeTranslateClient::GetManagerFromWebContents(
     content::WebContents* web_contents) {
   ChromeTranslateClient* chrome_translate_client =
       FromWebContents(web_contents);
-  if (!chrome_translate_client)
+  if (!chrome_translate_client) {
     return nullptr;
+  }
   return chrome_translate_client->GetTranslateManager();
 }
 
@@ -231,8 +232,9 @@ bool ChromeTranslateClient::ShowTranslateUI(
   DCHECK(web_contents());
   DCHECK(translate_manager_);
 
-  if (error_type != translate::TranslateErrors::NONE)
+  if (error_type != translate::TranslateErrors::NONE) {
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
+  }
 
 // Translate uses a bubble UI on desktop and an infobar on Android (here)
 // and iOS (in ios/chrome/browser/translate/chrome_ios_translate_client.mm).
@@ -347,8 +349,10 @@ void ChromeTranslateClient::WebContentsDestroyed() {
 
 void ChromeTranslateClient::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  translate::TranslateBrowserMetrics::ReportLanguageDetectionContentLength(
-      details.contents.size());
+  if (details.has_run_lang_detection) {
+    translate::TranslateBrowserMetrics::ReportLanguageDetectionContentLength(
+        details.contents.size());
+  }
 
   if (!web_contents()->GetBrowserContext()->IsOffTheRecord() &&
       IsTranslatableURL(details.url)) {
@@ -383,22 +387,25 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
                                         error_type, is_user_gesture);
   }
 
-  if (web_contents() != browser->tab_strip_model()->GetActiveWebContents())
+  if (web_contents() != browser->tab_strip_model()->GetActiveWebContents()) {
     return ShowTranslateBubbleResult::WEB_CONTENTS_NOT_ACTIVE;
+  }
 
   // This ShowBubble function is also used for updating the existing bubble.
   // However, with the bubble shown, any browser windows are NOT activated
   // because the bubble takes the focus from the other widgets including the
   // browser windows. So it is checked that |browser| is the last activated
   // browser, not is now activated.
-  if (browser != chrome::FindLastActive())
+  if (browser != chrome::FindLastActive()) {
     return ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_ACTIVE;
+  }
 
   // During auto-translating, the bubble should not be shown.
   if (!is_user_gesture && (step == translate::TRANSLATE_STEP_TRANSLATING ||
                            step == translate::TRANSLATE_STEP_AFTER_TRANSLATE)) {
-    if (GetLanguageState().InTranslateNavigation())
+    if (GetLanguageState().InTranslateNavigation()) {
       return ShowTranslateBubbleResult::SUCCESS;
+    }
   }
 
   return TranslateBubbleFactory::Show(browser->window(), web_contents(), step,

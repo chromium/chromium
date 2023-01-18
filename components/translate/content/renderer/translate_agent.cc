@@ -217,6 +217,7 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
     LanguageDetectionDetails details;
     details.adopted_language = language;
     details.contents = contents;
+    details.has_run_lang_detection = true;
     ResetPage();
     GetTranslateHandler()->RegisterPage(
         receiver_.BindNewPipeAndPassRemote(
