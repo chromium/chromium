@@ -143,6 +143,8 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
   if (!visit.image_url.is_empty()) {
     visit_mojom->image_url = visit.image_url;
   }
+  visit_mojom->is_known_to_sync =
+      visit.annotated_visit.visit_row.is_known_to_sync;
 
   // Add the raw URLs and visit times so the UI can perform deletion.
   auto& annotated_visit = visit.annotated_visit;

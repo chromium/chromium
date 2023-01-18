@@ -66,6 +66,12 @@ class PageFavicon extends PolymerElement {
        * this defined, in which case we fallback to the favicon.
        */
       imageUrl: Object,
+
+      /**
+       * Whether this visit is known to sync already. Used for the purpose of
+       * fetching higher quality favicons in that case.
+       */
+      isKnownToSync: Boolean,
     };
   }
 
@@ -75,6 +81,7 @@ class PageFavicon extends PolymerElement {
 
   url: Url;
   imageUrl: Url;
+  isKnownToSync: boolean;
 
   //============================================================================
   // Helper methods
@@ -91,7 +98,7 @@ class PageFavicon extends PolymerElement {
     }
     return `background-image:${
         getFaviconForPageURL(
-            this.url.url, false, '', /** --favicon-size */ 16)}`;
+            this.url.url, this.isKnownToSync, '', /** --favicon-size */ 16)}`;
   }
 }
 
