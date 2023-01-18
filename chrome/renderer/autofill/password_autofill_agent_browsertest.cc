@@ -393,10 +393,9 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     password3.username = username3_;
     fill_data_.additional_logins.push_back(std::move(password3));
 
-    // We need to set the origin so it matches the frame URL and the action so
-    // it matches the form action, otherwise we won't autocomplete.
+    // We need to set the origin so it matches the frame URL, otherwise we won't
+    // autocomplete.
     UpdateUrlForHTML(kFormHTML);
-    fill_data_.action = GURL("http://www.bidule.com");
 
     LoadHTML(kFormHTML);
 
@@ -867,9 +866,8 @@ TEST_F(PasswordAutofillAgentTest, InitialAutocompleteForEmptyAction) {
   // Retrieve the input elements so the test can access them.
   UpdateUsernameAndPasswordElements();
 
-  // Set the expected form origin and action URLs.
+  // Set the expected form origin.
   UpdateUrlForHTML(kEmptyActionFormHTML);
-  fill_data_.action = GURL();
 
   // Simulate the browser sending back the login info, it triggers the
   // autocomplete.
@@ -3934,8 +3932,7 @@ TEST_F(PasswordAutofillAgentTest, FillOnLoadWith) {
 // Tests that the password form is filled as expected on load even if form/field
 // attributes were changed between from load and filling.
 TEST_F(PasswordAutofillAgentTest, FillOnLoadFormChanged) {
-  // Simulate JavaScript changed field names and form name.
-  fill_data_.name += u"1";
+  // Simulate JavaScript changed field names.
   fill_data_.username_field.name += u"1";
   fill_data_.password_field.name += u"1";
 

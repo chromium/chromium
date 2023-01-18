@@ -398,7 +398,6 @@ struct PasswordAndMetadata {
 struct PasswordFormFillData {
   FormRendererId form_renderer_id;
   url.mojom.Url url;
-  url.mojom.Url action;
   FormFieldData username_field;
   FormFieldData password_field;
   bool username_may_use_prefilled_placeholder;

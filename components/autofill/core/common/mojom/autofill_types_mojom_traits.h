@@ -519,10 +519,6 @@ struct StructTraits<autofill::mojom::PasswordFormFillDataDataView,
     return r.url;
   }
 
-  static const GURL& action(const autofill::PasswordFormFillData& r) {
-    return r.action;
-  }
-
   static const autofill::FormFieldData& username_field(
       const autofill::PasswordFormFillData& r) {
     return r.username_field;

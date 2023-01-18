@@ -32,7 +32,6 @@ void SetPasswordFormFillData(const std::string& url,
                              const char* additional_password,
                              PasswordFormFillData* form_data) {
   form_data->url = GURL(url);
-  form_data->name = base::UTF8ToUTF16(form_name);
   form_data->form_renderer_id = FormRendererId(unique_renderer_id);
   autofill::FormFieldData username;
   username.name = base::UTF8ToUTF16(username_field);

@@ -55,15 +55,8 @@ struct PasswordFormFillData {
   // correspondingly.
   FormRendererId form_renderer_id;
 
-  // The name of the form.
-  std::u16string name;
-
   // An URL consisting of the scheme, host, port and path; the rest is stripped.
   GURL url;
-
-  // The action target of the form; like |url|, consists of the scheme, host,
-  // port and path; the rest is stripped.
-  GURL action;
 
   // Username and password input fields in the form.
   FormFieldData username_field;

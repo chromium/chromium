@@ -357,12 +357,13 @@ bool StructTraits<autofill::mojom::PasswordFormFillDataDataView,
     Read(autofill::mojom::PasswordFormFillDataDataView data,
          autofill::PasswordFormFillData* out) {
   if (!data.ReadFormRendererId(&out->form_renderer_id) ||
-      !data.ReadUrl(&out->url) || !data.ReadAction(&out->action) ||
+      !data.ReadUrl(&out->url) ||
       !data.ReadUsernameField(&out->username_field) ||
       !data.ReadPasswordField(&out->password_field) ||
       !data.ReadPreferredRealm(&out->preferred_realm) ||
-      !data.ReadAdditionalLogins(&out->additional_logins))
+      !data.ReadAdditionalLogins(&out->additional_logins)) {
     return false;
+  }
 
   out->uses_account_store = data.uses_account_store();
   out->wait_for_username = data.wait_for_username();
