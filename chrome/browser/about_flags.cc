@@ -2739,6 +2739,7 @@ constexpr char kVmPerBootShaderCacheName[] = "vm-per-boot-shader-cache";
 constexpr char kClipboardHistoryReorderInternalName[] =
     "clipboard-history-reorder";
 constexpr char kWelcomeScreenInternalName[] = "welcome-screen";
+constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -3588,7 +3589,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"speak-on-mute-detection", flag_descriptions::kSpeakOnMuteName,
      flag_descriptions::kSpeakOnMuteDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSpeakOnMuteEnabled)},
-    {"bluetooth-use-floss", flag_descriptions::kBluetoothUseFlossName,
+    {kBluetoothUseFlossInternalName, flag_descriptions::kBluetoothUseFlossName,
      flag_descriptions::kBluetoothUseFlossDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(floss::features::kFlossEnabled)},
     {"bluetooth-use-llprivacy", flag_descriptions::kBluetoothUseLLPrivacyName,
@@ -9558,6 +9559,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return (channel != version_info::Channel::DEV &&
             channel != version_info::Channel::CANARY &&
             channel != version_info::Channel::UNKNOWN);
+  }
+
+  // Disable and prevent users from enabling Floss on boards that were
+  // explicitly built without it (b/228902194 for more info).
+  if (!strcmp(kBluetoothUseFlossInternalName, entry.internal_name)) {
+    return base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+        floss::features::kFlossEnabled.name,
+        base::FeatureList::OVERRIDE_DISABLE_FEATURE);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
