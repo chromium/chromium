@@ -47,6 +47,12 @@ export interface PrivacySandboxBrowserProxy {
 
   /** Sets |topic| to |allowed| for the Topics API.*/
   setTopicAllowed(topic: CanonicalTopic, allowed: boolean): void;
+
+  /**
+   * Informs the Privacy Sandbox Service that the user interacted with the
+   * Topics toggle.
+   */
+  topicsToggleChanged(newToggleValue: boolean): void;
 }
 
 export class PrivacySandboxBrowserProxyImpl implements
@@ -66,6 +72,10 @@ export class PrivacySandboxBrowserProxyImpl implements
   setTopicAllowed(topic: CanonicalTopic, allowed: boolean) {
     chrome.send(
         'setTopicAllowed', [topic.topicId, topic.taxonomyVersion, allowed]);
+  }
+
+  topicsToggleChanged(newToggleValue: boolean) {
+    chrome.send('topicsToggleChanged', [newToggleValue]);
   }
 
   static getInstance(): PrivacySandboxBrowserProxy {

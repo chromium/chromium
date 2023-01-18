@@ -31,11 +31,14 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
                            SetTopicAllowed);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            GetTopicsState);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
+                           TopicsToggleChanged);
 
   void HandleSetFledgeJoiningAllowed(const base::Value::List& args);
   void HandleGetFledgeState(const base::Value::List& args);
   void HandleSetTopicAllowed(const base::Value::List& args);
   void HandleGetTopicsState(const base::Value::List& args);
+  void HandleTopicsToggleChanged(const base::Value::List& args);
 
   PrivacySandboxService* GetPrivacySandboxService();
 

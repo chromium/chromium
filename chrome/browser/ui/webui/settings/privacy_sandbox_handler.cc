@@ -56,6 +56,10 @@ void PrivacySandboxHandler::RegisterMessages() {
       "getTopicsState",
       base::BindRepeating(&PrivacySandboxHandler::HandleGetTopicsState,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "topicsToggleChanged",
+      base::BindRepeating(&PrivacySandboxHandler::HandleTopicsToggleChanged,
+                          base::Unretained(this)));
 }
 
 void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
@@ -100,6 +104,14 @@ void PrivacySandboxHandler::HandleGetTopicsState(
   topics_state.Set(kTopTopics, std::move(top_topics_list));
   topics_state.Set(kBlockedTopics, std::move(blocked_topics_list));
   ResolveJavascriptCallback(args[0], std::move(topics_state));
+}
+
+void PrivacySandboxHandler::HandleTopicsToggleChanged(
+    const base::Value::List& args) {
+  AllowJavascript();
+  const int toggle_value = args[0].GetBool();
+
+  GetPrivacySandboxService()->TopicsToggleChanged(toggle_value);
 }
 
 void PrivacySandboxHandler::OnFledgeJoiningSitesRecieved(

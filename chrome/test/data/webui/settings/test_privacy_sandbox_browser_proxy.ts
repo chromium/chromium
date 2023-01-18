@@ -16,6 +16,7 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
       'setFledgeJoiningAllowed',
       'getTopicsState',
       'setTopicAllowed',
+      'topicsToggleChanged',
     ]);
 
     this.fledgeState_ = {
@@ -55,5 +56,9 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
 
   setTopicAllowed(topic: CanonicalTopic, allowed: boolean) {
     this.methodCalled('setTopicAllowed', [topic, allowed]);
+  }
+
+  topicsToggleChanged(newToggleValue: boolean) {
+    this.methodCalled('topicsToggleChanged', [newToggleValue]);
   }
 }

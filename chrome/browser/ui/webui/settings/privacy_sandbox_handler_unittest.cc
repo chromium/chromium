@@ -52,6 +52,7 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               SetTopicAllowed,
               (privacy_sandbox::CanonicalTopic, bool),
               (override));
+  MOCK_METHOD(void, TopicsToggleChanged, (bool), (const override));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(
@@ -264,6 +265,18 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
                      data.arg3()->FindListKey("topTopics")->GetList());
   ValidateTopicsInfo(kBlockedTopics,
                      data.arg3()->FindListKey("blockedTopics")->GetList());
+}
+
+TEST_F(PrivacySandboxHandlerTestMockService, TopicsToggleChanged) {
+  std::vector<bool> states = {true, false};
+  for (bool state : states) {
+    testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
+    EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsToggleChanged(state));
+
+    base::Value::List args;
+    args.Append(state);
+    handler()->HandleTopicsToggleChanged(args);
+  }
 }
 
 }  // namespace settings

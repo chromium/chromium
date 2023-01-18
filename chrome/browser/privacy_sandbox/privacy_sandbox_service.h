@@ -286,7 +286,8 @@ class PrivacySandboxService : public KeyedService {
   // so that the current topics consent information can be updated.
   // TODO (crbug.com/1378703): Determine whether changes to the preference,
   // such as by policy or extensions, should also call here.
-  void TopicsToggleChanged(bool new_value) const;
+  // Virtual for mocking in tests.
+  virtual void TopicsToggleChanged(bool new_value) const;
 
   // Whether the current profile requires consent for Topics to operate.
   void TopicsConsentRequired() const;

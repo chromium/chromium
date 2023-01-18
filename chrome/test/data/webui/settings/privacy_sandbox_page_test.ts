@@ -184,6 +184,8 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertTrue(isChildVisible(page, '#currentTopicsDescription'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertTrue(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
+    assertEquals(
+        0, testPrivacySandboxBrowserProxy.getCallCount('topicsToggleChanged'));
 
     page.$.topicsToggle.click();
     await flushTasks();
@@ -201,6 +203,8 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         'Settings.PrivacySandbox.Topics.Enabled',
         await metricsBrowserProxy.whenCalled('recordAction'));
+    assertTrue((await testPrivacySandboxBrowserProxy.whenCalled(
+        'topicsToggleChanged'))[0]);
   });
 
   test('disableTopicsToggle', async function() {
@@ -215,6 +219,8 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertTrue(isChildVisible(page, '#currentTopicsDescription'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
+    assertEquals(
+        0, testPrivacySandboxBrowserProxy.getCallCount('topicsToggleChanged'));
 
     page.$.topicsToggle.click();
     await flushTasks();
@@ -231,6 +237,8 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         'Settings.PrivacySandbox.Topics.Disabled',
         await metricsBrowserProxy.whenCalled('recordAction'));
+    assertFalse((await testPrivacySandboxBrowserProxy.whenCalled(
+        'topicsToggleChanged'))[0]);
   });
 
   test('learnMoreDialog', async function() {
