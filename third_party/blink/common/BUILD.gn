@@ -466,7 +466,10 @@ group("common_unittests_data") {
 static_library("test_support") {
   testonly = true
 
-  sources = [ "origin_trials/scoped_test_origin_trial_policy.cc" ]
+  sources = [
+    "interest_group/test_interest_group_builder.cc",
+    "origin_trials/scoped_test_origin_trial_policy.cc",
+  ]
 
   deps = [ "//third_party/blink/public:test_headers" ]
 

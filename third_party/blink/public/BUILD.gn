@@ -101,6 +101,7 @@ if (is_android) {
 source_set("test_headers") {
   testonly = true
   sources = [
+    "common/interest_group/test_interest_group_builder.h",
     "common/origin_trials/scoped_test_origin_trial_policy.h",
     "platform/scheduler/test/renderer_scheduler_test_support.h",
     "platform/scheduler/test/web_fake_thread_scheduler.h",
