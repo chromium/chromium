@@ -9,10 +9,8 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/api/storage/settings_sync_processor.h"
-#include "chrome/browser/extensions/api/storage/settings_sync_util.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/sync_data.h"
-#include "components/sync/model/sync_error.h"
+#include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
@@ -254,7 +252,7 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
         FROM_HERE, std::string("Sync is inactive for ") + extension_id_);
   }
 
-  std::vector<syncer::SyncError> errors;
+  std::vector<syncer::ModelError> errors;
   value_store::ValueStoreChangeList changes;
 
   for (const std::unique_ptr<SettingSyncData>& sync_change : *sync_changes) {
@@ -266,18 +264,17 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
     {
       ReadResult maybe_settings = Get(key);
       if (!maybe_settings.status().ok()) {
-        errors.push_back(syncer::SyncError(
-            FROM_HERE, syncer::SyncError::DATATYPE_ERROR,
+        errors.emplace_back(
+            FROM_HERE,
             base::StringPrintf("Error getting current sync state for %s/%s: %s",
                                extension_id_.c_str(), key.c_str(),
-                               maybe_settings.status().message.c_str()),
-            sync_processor_->type()));
+                               maybe_settings.status().message.c_str()));
         continue;
       }
       current_value = maybe_settings.settings().Extract(key);
     }
 
-    syncer::SyncError error;
+    absl::optional<syncer::ModelError> error;
 
     DCHECK(sync_change->change_type().has_value());
 
@@ -318,8 +315,8 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
         break;
     }
 
-    if (error.IsSet()) {
-      errors.push_back(error);
+    if (error) {
+      errors.push_back(*error);
     }
   }
 
@@ -331,28 +328,27 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
   // TODO(kalman): Something sensible with multiple errors.
   if (errors.empty())
     return absl::nullopt;
-  return syncer::ConvertToModelError(errors[0]);
+  return errors[0];
 }
 
-syncer::SyncError SyncableSettingsStorage::OnSyncAdd(
+absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncAdd(
     const std::string& key,
     base::Value new_value,
     value_store::ValueStoreChangeList* changes) {
   WriteResult result =
       HandleResult(delegate_->Set(IGNORE_QUOTA, key, new_value));
   if (!result.status().ok()) {
-    return syncer::SyncError(
-        FROM_HERE, syncer::SyncError::DATATYPE_ERROR,
+    return syncer::ModelError(
+        FROM_HERE,
         base::StringPrintf("Error pushing sync add to local settings: %s",
-                           result.status().message.c_str()),
-        sync_processor_->type());
+                           result.status().message.c_str()));
   }
   changes->push_back(
       value_store::ValueStoreChange(key, absl::nullopt, std::move(new_value)));
-  return syncer::SyncError();
+  return absl::nullopt;
 }
 
-syncer::SyncError SyncableSettingsStorage::OnSyncUpdate(
+absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncUpdate(
     const std::string& key,
     base::Value old_value,
     base::Value new_value,
@@ -360,32 +356,30 @@ syncer::SyncError SyncableSettingsStorage::OnSyncUpdate(
   WriteResult result =
       HandleResult(delegate_->Set(IGNORE_QUOTA, key, new_value));
   if (!result.status().ok()) {
-    return syncer::SyncError(
-        FROM_HERE, syncer::SyncError::DATATYPE_ERROR,
+    return syncer::ModelError(
+        FROM_HERE,
         base::StringPrintf("Error pushing sync update to local settings: %s",
-                           result.status().message.c_str()),
-        sync_processor_->type());
+                           result.status().message.c_str()));
   }
   changes->push_back(value_store::ValueStoreChange(key, std::move(old_value),
                                                    std::move(new_value)));
-  return syncer::SyncError();
+  return absl::nullopt;
 }
 
-syncer::SyncError SyncableSettingsStorage::OnSyncDelete(
+absl::optional<syncer::ModelError> SyncableSettingsStorage::OnSyncDelete(
     const std::string& key,
     base::Value old_value,
     value_store::ValueStoreChangeList* changes) {
   WriteResult result = HandleResult(delegate_->Remove(key));
   if (!result.status().ok()) {
-    return syncer::SyncError(
-        FROM_HERE, syncer::SyncError::DATATYPE_ERROR,
+    return syncer::ModelError(
+        FROM_HERE,
         base::StringPrintf("Error pushing sync remove to local settings: %s",
-                           result.status().message.c_str()),
-        sync_processor_->type());
+                           result.status().message.c_str()));
   }
   changes->push_back(
       value_store::ValueStoreChange(key, std::move(old_value), absl::nullopt));
-  return syncer::SyncError();
+  return absl::nullopt;
 }
 
 }  // namespace extensions

@@ -9,11 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
-
-class SyncError;
 
 // A minimal error object for use by USS model type code.
 class ModelError {
@@ -38,8 +35,6 @@ class ModelError {
   base::Location location_;
   std::string message_;
 };
-
-absl::optional<ModelError> ConvertToModelError(const SyncError& sync_error);
 
 // Typedef for a simple error handler callback.
 using ModelErrorHandler = base::RepeatingCallback<void(const ModelError&)>;

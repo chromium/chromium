@@ -13,13 +13,12 @@
 
 #include "base/values.h"
 #include "chrome/browser/extensions/api/storage/setting_sync_data.h"
-#include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
-class SyncError;
 class ModelError;
 }  // namespace syncer
 
@@ -102,16 +101,19 @@ class SyncableSettingsStorage : public value_store::ValueStore {
       base::Value::Dict local_state);
 
   // Called when an Add/Update/Remove comes from sync.
-  syncer::SyncError OnSyncAdd(const std::string& key,
-                              base::Value new_value,
-                              value_store::ValueStoreChangeList* changes);
-  syncer::SyncError OnSyncUpdate(const std::string& key,
-                                 base::Value old_value,
-                                 base::Value new_value,
-                                 value_store::ValueStoreChangeList* changes);
-  syncer::SyncError OnSyncDelete(const std::string& key,
-                                 base::Value old_value,
-                                 value_store::ValueStoreChangeList* changes);
+  absl::optional<syncer::ModelError> OnSyncAdd(
+      const std::string& key,
+      base::Value new_value,
+      value_store::ValueStoreChangeList* changes);
+  absl::optional<syncer::ModelError> OnSyncUpdate(
+      const std::string& key,
+      base::Value old_value,
+      base::Value new_value,
+      value_store::ValueStoreChangeList* changes);
+  absl::optional<syncer::ModelError> OnSyncDelete(
+      const std::string& key,
+      base::Value old_value,
+      value_store::ValueStoreChangeList* changes);
 
   // Observer to settings changes.
   SequenceBoundSettingsChangedCallback observer_;
