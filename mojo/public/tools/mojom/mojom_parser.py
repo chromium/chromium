@@ -61,7 +61,7 @@ def _ResolveRelativeImportPath(path, roots):
   raise ValueError('"%s" does not exist in any of %s' % (path, roots))
 
 
-def _RebaseAbsolutePath(path, roots):
+def RebaseAbsolutePath(path, roots):
   """Rewrites an absolute file path as relative to an absolute directory path in
   roots.
 
@@ -294,7 +294,7 @@ def _ParseMojoms(mojom_files,
   loaded_modules = {}
   input_dependencies = defaultdict(set)
   mojom_files_to_parse = dict((os.path.normcase(abs_path),
-                               _RebaseAbsolutePath(abs_path, input_root_paths))
+                               RebaseAbsolutePath(abs_path, input_root_paths))
                               for abs_path in mojom_files)
   abs_paths = dict(
       (path, abs_path) for abs_path, path in mojom_files_to_parse.items())

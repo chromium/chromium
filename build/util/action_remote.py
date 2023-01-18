@@ -14,6 +14,8 @@ import subprocess
 import sys
 from enum import Enum
 
+from mojo.public.tools.mojom.mojom_parser import RebaseAbsolutePath
+
 
 class CustomProcessor(Enum):
   mojom_parser = 'mojom_parser'
@@ -22,8 +24,8 @@ class CustomProcessor(Enum):
     return self.value
 
 
-def _process_build_metadata_json(bm_file, exec_root, working_dir, output_root,
-                                 re_outputs, processed_inputs):
+def _process_build_metadata_json(bm_file, input_roots, output_root, re_outputs,
+                                 processed_inputs):
   """Recursively find mojom_parser inputs from a build_metadata file."""
   if bm_file in processed_inputs:
     return
@@ -31,7 +33,6 @@ def _process_build_metadata_json(bm_file, exec_root, working_dir, output_root,
   processed_inputs.add(bm_file)
 
   bm_dir = os.path.dirname(bm_file)
-  wd_rel = os.path.relpath(working_dir, exec_root)
 
   with open(bm_file) as f:
     bm = json.load(f)
@@ -41,8 +42,9 @@ def _process_build_metadata_json(bm_file, exec_root, working_dir, output_root,
     src = os.path.normpath(os.path.join(bm_dir, s))
     if src not in processed_inputs and os.path.exists(src):
       processed_inputs.add(src)
-    src_module = os.path.normpath(
-        os.path.join(output_root, os.path.join(wd_rel, src + "-module")))
+    src_module = os.path.join(
+        output_root,
+        RebaseAbsolutePath(os.path.abspath(src), input_roots) + "-module")
     if src_module in re_outputs:
       continue
     if src_module not in processed_inputs and os.path.exists(src_module):
@@ -51,8 +53,8 @@ def _process_build_metadata_json(bm_file, exec_root, working_dir, output_root,
   # Recurse into build_metadata deps.
   for d in bm["deps"]:
     dep = os.path.normpath(os.path.join(bm_dir, d))
-    _process_build_metadata_json(dep, exec_root, working_dir, output_root,
-                                 re_outputs, processed_inputs)
+    _process_build_metadata_json(dep, input_roots, output_root, re_outputs,
+                                 processed_inputs)
 
 
 def _get_mojom_parser_inputs(exec_root, output_files, extra_args):
@@ -67,12 +69,17 @@ def _get_mojom_parser_inputs(exec_root, output_files, extra_args):
   argparser = argparse.ArgumentParser()
   argparser.add_argument('--check-imports', dest='check_imports', required=True)
   argparser.add_argument('--output-root', dest='output_root', required=True)
+  argparser.add_argument('--input-root',
+                         default=[],
+                         action='append',
+                         dest='input_root_paths')
   mojom_parser_args, _ = argparser.parse_known_args(args=extra_args)
 
+  input_roots = list(map(os.path.abspath, mojom_parser_args.input_root_paths))
+  output_root = os.path.abspath(mojom_parser_args.output_root)
   processed_inputs = set()
-  _process_build_metadata_json(mojom_parser_args.check_imports, exec_root,
-                               os.getcwd(), mojom_parser_args.output_root,
-                               output_files, processed_inputs)
+  _process_build_metadata_json(mojom_parser_args.check_imports, input_roots,
+                               output_root, output_files, processed_inputs)
 
   # Rebase paths onto rewrapper exec root.
   return map(lambda dep: os.path.normpath(os.path.relpath(dep, exec_root)),
