@@ -119,7 +119,7 @@ export class AcceleratorRowElement extends PolymerElement {
   }
 
   private showDialog(): void {
-    if (isCustomizationDisabled()) {
+    if (isCustomizationDisabled() || this.isTextLayout()) {
       return;
     }
 

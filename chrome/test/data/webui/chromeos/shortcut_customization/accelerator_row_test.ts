@@ -153,6 +153,35 @@ suite('acceleratorRowTest', function() {
     assertFalse(showDialogListenerCalled);
   });
 
+  test('DontShowDialogForTextAccelerators', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    rowElement = initAcceleratorRowElement();
+    waitAfterNextRender(rowElement);
+    const accelerators = [createTextAcceleratorInfo([{
+      text: stringToMojoString16('ctrl'),
+      type: TextAcceleratorPartType.kModifier,
+    }])];
+
+    rowElement.acceleratorInfos = accelerators;
+    rowElement.source = AcceleratorSource.kBrowser;
+    rowElement.layoutStyle = LayoutStyle.kText;
+
+    let showDialogListenerCalled = false;
+    rowElement.addEventListener('show-edit-dialog', () => {
+      showDialogListenerCalled = true;
+    });
+
+    await flushTasks();
+
+    const rowContainer =
+        rowElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    rowContainer.click();
+
+    await flushTasks();
+
+    assertFalse(showDialogListenerCalled);
+  });
+
   test('ShowTextAccelerator', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
     rowElement = initAcceleratorRowElement();
