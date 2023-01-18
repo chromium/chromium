@@ -225,7 +225,7 @@ void ReferenceLines::SetLeftLabel(float left) {
 }
 
 void ReferenceLines::SetVerticalTicksInterval(float interval) {
-  interval == std::abs(interval) >= 1 ? 0 : std::abs(interval);
+  interval = std::abs(interval) >= 1 ? 0 : std::abs(interval);
   if (interval == vertical_ticks_interval_)
     return;
 
