@@ -22,6 +22,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -280,6 +281,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));
+
+  html_source->AddBoolean(
+      "turnOffSyncAllowedForManagedProfiles",
+      base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
 
   html_source->AddBoolean("showImportPasswords",
                           base::FeatureList::IsEnabled(

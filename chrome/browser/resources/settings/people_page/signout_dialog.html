@@ -31,11 +31,13 @@
           $i18n{cancel}
         </cr-button>
         <cr-button id="disconnectConfirm" class="action-button"
-            hidden="[[syncStatus.domain]]" on-click="onDisconnectConfirm_">
+            hidden="[[isClearProfileConfirmButtonVisible_(syncStatus.domain)]]"
+            on-click="onDisconnectConfirm_">
           $i18n{syncDisconnect}
         </cr-button>
         <cr-button id="disconnectManagedProfileConfirm"
-            class="action-button" hidden="[[!syncStatus.domain]]"
+            class="action-button"
+            hidden="[[!isClearProfileConfirmButtonVisible_(syncStatus.domain)]]"
             on-click="onDisconnectConfirm_">
           $i18n{syncDisconnectConfirm}
         </cr-button>

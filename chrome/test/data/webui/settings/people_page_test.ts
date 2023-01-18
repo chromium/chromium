@@ -142,7 +142,10 @@ suite('SigninDisallowedTests', function() {
 
 suite('SyncStatusTests', function() {
   setup(async function() {
-    loadTimeData.overrideValues({signinAllowed: true});
+    loadTimeData.overrideValues({
+      signinAllowed: true,
+      turnOffSyncAllowedForManagedProfiles: false,
+    });
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
@@ -315,9 +318,12 @@ suite('SyncStatusTests', function() {
   });
   // </if>
 
-  test('SignOutDialogManagedProfile', async function() {
+  test('SignOutDialogManagedProfileTurnOffSyncDisallowed', async function() {
     let accountControl = null;
     await syncBrowserProxy.whenCalled('getSyncStatus');
+    loadTimeData.overrideValues({
+      turnOffSyncAllowedForManagedProfiles: false,
+    });
     simulateSyncStatus({
       signedIn: true,
       domain: 'example.com',
@@ -348,7 +354,6 @@ suite('SyncStatusTests', function() {
 
     syncBrowserProxy.resetResolver('signOut');
 
-
     disconnectManagedProfileConfirm!.click();
 
     await new Promise(function(resolve) {
@@ -356,6 +361,51 @@ suite('SyncStatusTests', function() {
     });
     const deleteProfile = await syncBrowserProxy.whenCalled('signOut');
     assertTrue(deleteProfile);
+  });
+
+  test('SignOutDialogManagedProfileTurnOffSyncAllowed', async function() {
+    let accountControl = null;
+    await syncBrowserProxy.whenCalled('getSyncStatus');
+    loadTimeData.overrideValues({
+      turnOffSyncAllowedForManagedProfiles: true,
+    });
+    simulateSyncStatus({
+      signedIn: true,
+      domain: 'example.com',
+      syncSystemEnabled: true,
+      statusAction: StatusAction.NO_ACTION,
+    });
+
+    assertFalse(!!peoplePage.shadowRoot!.querySelector('#dialog'));
+    accountControl =
+        peoplePage.shadowRoot!.querySelector('settings-sync-account-control')!;
+    await waitBeforeNextRender(accountControl);
+    const turnOffButton =
+        accountControl.shadowRoot!.querySelector<HTMLElement>('#turn-off')!;
+    turnOffButton.click();
+    flush();
+
+    await flushTasks();
+    const signoutDialog =
+        peoplePage.shadowRoot!.querySelector('settings-signout-dialog')!;
+    assertTrue(signoutDialog.$.dialog.open);
+    assertTrue(!!signoutDialog.shadowRoot!.querySelector('#deleteProfile'));
+
+    const disconnectConfirm =
+        signoutDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#disconnectConfirm');
+    assertTrue(!!disconnectConfirm);
+    assertFalse(disconnectConfirm!.hidden);
+
+    syncBrowserProxy.resetResolver('signOut');
+
+    disconnectConfirm!.click();
+
+    await new Promise(function(resolve) {
+      listenOnce(window, 'popstate', resolve);
+    });
+    const deleteProfile = await syncBrowserProxy.whenCalled('signOut');
+    assertFalse(deleteProfile);
   });
 
   test('getProfileStatsCount', async function() {
