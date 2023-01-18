@@ -4530,7 +4530,7 @@
 
     # experiment windows cross. crbug.com/1213717
     'reclient_win_cross': {
-      'gn_args': 'use_remoteexec=true rbe_cfg_dir="../../buildtools/reclient_cfgs/win-cross-experiments"',
+      'gn_args': 'use_remoteexec=true rbe_cfg_dir="../../buildtools/reclient_cfgs/win-cross"',
     },
 
     # Historically, a 'release' bot had DCHECKs turned off. DCHECKs are now
