@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -69,7 +70,8 @@ void TestWebUI::SetBindings(int bindings) {
 
 const std::vector<std::string>& TestWebUI::GetRequestableSchemes() {
   NOTIMPLEMENTED();
-  return std::move(std::vector<std::string>());
+  static base::NoDestructor<std::vector<std::string>> dummy;
+  return *dummy;
 }
 
 void TestWebUI::AddRequestableScheme(const char* scheme) {
