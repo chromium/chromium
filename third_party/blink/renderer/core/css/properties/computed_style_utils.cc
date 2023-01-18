@@ -3346,33 +3346,25 @@ CSSValueList* ComputedStyleUtils::ValuesForScrollTimelineShorthand(
     bool allow_visited_style) {
   CHECK_EQ(scrollTimelineShorthand().length(), 2u);
   CHECK_EQ(scrollTimelineShorthand().properties()[0],
-           &GetCSSPropertyScrollTimelineAxis());
-  CHECK_EQ(scrollTimelineShorthand().properties()[1],
            &GetCSSPropertyScrollTimelineName());
+  CHECK_EQ(scrollTimelineShorthand().properties()[1],
+           &GetCSSPropertyScrollTimelineAxis());
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
-  const CSSValue* axis =
-      GetCSSPropertyScrollTimelineAxis().CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style);
   const CSSValue* name =
       GetCSSPropertyScrollTimelineName().CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style);
+  const CSSValue* axis =
+      GetCSSPropertyScrollTimelineAxis().CSSValueFromComputedStyle(
+          style, layout_object, allow_visited_style);
 
-  DCHECK(axis);
   DCHECK(name);
+  DCHECK(axis);
 
-  // Append any value that's not the initial value.
+  list->Append(*name);
+
   if (To<CSSIdentifierValue>(*axis).GetValueID() != CSSValueID::kBlock) {
-    list->Append(*axis);
-  }
-  if (!(IsA<CSSIdentifierValue>(name) &&
-        To<CSSIdentifierValue>(*name).GetValueID() == CSSValueID::kNone)) {
-    list->Append(*name);
-  }
-
-  // If both values were the initial value, we append axis.
-  if (!list->length()) {
     list->Append(*axis);
   }
 
