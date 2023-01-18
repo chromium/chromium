@@ -302,6 +302,8 @@ src/webgpu/shader/execution/expression/binary/bitwise.spec.ts
 src/webgpu/shader/execution/expression/binary/bool_logical.spec.ts
 src/webgpu/shader/execution/expression/binary/f32_arithmetic.spec.ts
 src/webgpu/shader/execution/expression/binary/f32_logical.spec.ts
+src/webgpu/shader/execution/expression/binary/i32_arithmetic.spec.ts
+src/webgpu/shader/execution/expression/binary/u32_arithmetic.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/builtin.ts
 src/webgpu/shader/execution/expression/call/builtin/abs.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/acos.spec.ts
@@ -463,7 +465,6 @@ src/webgpu/web_platform/reftests/canvas_clear.html.ts
 src/webgpu/web_platform/reftests/canvas_complex.html.ts
 src/webgpu/web_platform/reftests/canvas_composite_alpha.html.ts
 src/webgpu/web_platform/reftests/canvas_image_rendering.html.ts
-src/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.html.ts
 src/webgpu/web_platform/reftests/create-pattern-data-url.ts
 src/webgpu/web_platform/reftests/resize_observer.html.ts
 src/webgpu/web_platform/worker/worker.spec.ts
