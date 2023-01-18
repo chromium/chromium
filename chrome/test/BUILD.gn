@@ -6168,6 +6168,10 @@ test("unit_tests") {
     deps += [ "//chromeos/dbus/tpm_manager:tpm_manager" ]
   }
 
+  if (enable_server_based_recognition) {
+    deps += [ "//chrome/services/speech/internal:unit_tests" ]
+  }
+
   public_deps = []
 
   if (is_win) {
