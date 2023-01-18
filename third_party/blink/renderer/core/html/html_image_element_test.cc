@@ -40,13 +40,10 @@ class TestFrameClient : public EmptyLocalFrameClient {
 
 }  // namespace
 
-class HTMLImageElementTest : public PageTestBase,
-                             private ScopedLayoutNGForTest {
+class HTMLImageElementTest : public PageTestBase {
  protected:
   static constexpr int kViewportWidth = 500;
   static constexpr int kViewportHeight = 600;
-
-  HTMLImageElementTest() : ScopedLayoutNGForTest(false) {}
 
   void SetUp() override {
     test_frame_client_ = MakeGarbageCollected<TestFrameClient>();
