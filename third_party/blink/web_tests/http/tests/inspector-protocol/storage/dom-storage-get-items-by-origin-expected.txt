@@ -1,0 +1,8 @@
+Tests that getting DOMStorage items by origin doesn't return an error response
+
+Get DOM storage items
+{
+    entries : [
+    ]
+}
+

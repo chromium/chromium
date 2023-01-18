@@ -231,8 +231,9 @@ Response InspectorDOMStorageAgent::FindStorageArea(
   String storage_key = storage_id->getStorageKey("");
   bool is_local_storage = storage_id->getIsLocalStorage();
   LocalFrame* const frame =
-      storage_key ? FrameWithStorageKey(storage_key, *inspected_frames_)
-                  : inspected_frames_->FrameWithSecurityOrigin(security_origin);
+      !storage_key.empty()
+          ? FrameWithStorageKey(storage_key, *inspected_frames_)
+          : inspected_frames_->FrameWithSecurityOrigin(security_origin);
 
   if (!frame) {
     return Response::ServerError("Frame not found for the given storage id");
