@@ -1931,7 +1931,8 @@ CreateNotRestoredExplanation(
     const BackForwardCacheCanStoreDocumentResult::NotRestoredReasons
         not_restored_reasons,
     const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features,
-    const std::set<BackForwardCache::DisabledReason>& disabled_reasons) {
+    const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap&
+        disabled_reasons) {
   auto reasons = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
 
@@ -1951,7 +1952,7 @@ CreateNotRestoredExplanation(
     } else if (not_restored_reason ==
                BackForwardCacheMetrics::NotRestoredReason::
                    kDisableForRenderFrameHostCalled) {
-      for (auto disabled_reason : disabled_reasons) {
+      for (const auto& [disabled_reason, _] : disabled_reasons) {
         auto reason =
             Page::BackForwardCacheNotRestoredExplanation::Create()
                 .SetType(

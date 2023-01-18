@@ -6,10 +6,14 @@
 #define CONTENT_PUBLIC_BROWSER_BACK_FORWARD_CACHE_H_
 
 #include <cstdint>
+#include <map>
+#include <set>
 
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -75,7 +79,7 @@ class CONTENT_EXPORT BackForwardCache {
     bool operator!=(const DisabledReason&) const;
   };
 
-  // Prevents the |render_frame_host| from entering the BackForwardCache. A
+  // Prevents the `render_frame_host` from entering the BackForwardCache. A
   // RenderFrameHost can only enter the BackForwardCache if the main one and all
   // its children can. This action can not be undone. Any document that is
   // assigned to this same RenderFrameHost in the future will not be cached
@@ -88,15 +92,25 @@ class CONTENT_EXPORT BackForwardCache {
   //
   // If the page is already in the cache an eviction is triggered.
   //
-  // |render_frame_host|: non-null.
-  // |reason|: Describes who is disabling this and why.
-  static void DisableForRenderFrameHost(RenderFrameHost* render_frame_host,
-                                        DisabledReason reason);
+  // `render_frame_host`: non-null.
+  // `reason`: Describes who is disabling this and why.
+  // `source_id`: see
+  // `BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap` for what it
+  // means and when it's set.
+  static void DisableForRenderFrameHost(
+      RenderFrameHost* render_frame_host,
+      DisabledReason reason,
+      absl::optional<ukm::SourceId> source_id = absl::nullopt);
+
   // Helper function to be used when it is not always possible to guarantee the
-  // |render_frame_host| to be still alive when this is called. In this case,
-  // its |id| can be used.
-  static void DisableForRenderFrameHost(GlobalRenderFrameHostId id,
-                                        DisabledReason reason);
+  // `render_frame_host` to be still alive when this is called. In this case,
+  // its `id` can be used.
+  // For what `source_id` means and when it's set, see
+  // `BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap`.
+  static void DisableForRenderFrameHost(
+      GlobalRenderFrameHostId id,
+      DisabledReason reason,
+      absl::optional<ukm::SourceId> source_id = absl::nullopt);
 
   // List of reasons the BackForwardCache was disabled for a specific test. If a
   // test needs to be disabled for a reason not covered below, please add to

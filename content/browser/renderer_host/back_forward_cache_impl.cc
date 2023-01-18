@@ -37,6 +37,7 @@
 #include "content/public/browser/visibility.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
@@ -1217,20 +1218,23 @@ bool BackForwardCache::IsBackForwardCacheFeatureEnabled() {
 // static
 void BackForwardCache::DisableForRenderFrameHost(
     RenderFrameHost* render_frame_host,
-    BackForwardCache::DisabledReason reason) {
-  DisableForRenderFrameHost(render_frame_host->GetGlobalId(), reason);
+    DisabledReason reason,
+    absl::optional<ukm::SourceId> source_id) {
+  DisableForRenderFrameHost(render_frame_host->GetGlobalId(), reason,
+                            source_id);
 }
 
 // static
 void BackForwardCache::DisableForRenderFrameHost(
     GlobalRenderFrameHostId id,
-    BackForwardCache::DisabledReason reason) {
+    DisabledReason reason,
+    absl::optional<ukm::SourceId> source_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_bfcache_disabled_test_observer)
     g_bfcache_disabled_test_observer->OnDisabledForFrameWithReason(id, reason);
 
   if (auto* rfh = RenderFrameHostImpl::FromID(id))
-    rfh->DisableBackForwardCache(reason);
+    rfh->DisableBackForwardCache(reason, source_id);
 }
 
 void BackForwardCacheImpl::DisableForTesting(DisableForTestingReason reason) {

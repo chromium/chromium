@@ -71,6 +71,7 @@
 #include "content/common/input/input_injector.mojom-forward.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_client.mojom.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
@@ -1628,15 +1629,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Prevents this frame (along with its parents/children) from being added to
   // the BackForwardCache. If the frame is already in the cache an eviction is
   // triggered.
-  void DisableBackForwardCache(BackForwardCache::DisabledSource source,
-                               BackForwardCache::DisabledReasonType reason);
-  void DisableBackForwardCache(BackForwardCache::DisabledReason reason);
+  // For what `source_id` means and when it's set, see `DisabledReasonsMap` from
+  // `back_forward_cache_can_store_document_result.h`.
+  void DisableBackForwardCache(
+      BackForwardCache::DisabledReason reason,
+      absl::optional<ukm::SourceId> source_id = absl::nullopt);
 
   bool is_evicted_from_back_forward_cache() {
     return is_evicted_from_back_forward_cache_;
   }
 
-  const std::set<BackForwardCache::DisabledReason>&
+  const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap&
   back_forward_cache_disabled_reasons() const {
     return back_forward_cache_disabled_reasons_;
   }
@@ -4359,9 +4362,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool is_evicted_from_back_forward_cache_ = false;
   base::OneShotTimer back_forward_cache_eviction_timer_;
 
-  // The reasons given in BackForwardCache::DisableForRenderFrameHost. This is a
-  // breakdown of NotRestoredReason::kDisableForRenderFrameHostCalled.
-  std::set<BackForwardCache::DisabledReason>
+  // The map that stores the disabled reasons and the associated UKM source ID.
+  // The reasons are given in BackForwardCache::DisableForRenderFrameHost, which
+  // is a breakdown of NotRestoredReason::kDisableForRenderFrameHostCalled.
+  BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap
       back_forward_cache_disabled_reasons_;
 
   // Tracks whether the RenderFrameHost had ever been restored from back/forward

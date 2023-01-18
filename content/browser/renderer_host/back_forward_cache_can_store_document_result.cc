@@ -271,10 +271,10 @@ bool BackForwardCacheCanStoreDocumentResult::CanRestore() const {
 
 namespace {
 std::string DisabledReasonsToString(
-    const std::set<BackForwardCache::DisabledReason>& reasons,
+    const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap& reasons,
     bool for_not_restored_reasons = false) {
   std::vector<std::string> descriptions;
-  for (const auto& reason : reasons) {
+  for (const auto& [reason, _] : reasons) {
     std::string string_to_add;
     if (for_not_restored_reasons) {
       // When |for_not_restored_reasons| is true, prepare a string to report to
@@ -564,10 +564,11 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
 
 void BackForwardCacheCanStoreDocumentResult::
     NoDueToDisableForRenderFrameHostCalled(
-        const std::set<BackForwardCache::DisabledReason>& reasons) {
+        const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap&
+            reasons) {
   // This should only be called with non-empty reasons.
   DCHECK(reasons.size());
-  for (const BackForwardCache::DisabledReason& reason : reasons) {
+  for (const auto& reason : reasons) {
     disabled_reasons_.insert(reason);
     // This will be a no-op after the first time but it's written like this to
     // guarantee that we do not set it without a reason.
@@ -605,8 +606,7 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
   not_restored_reasons_.PutAll(other.not_restored_reasons_);
   blocklisted_features_.PutAll(other.blocklisted_features());
-  for (const BackForwardCache::DisabledReason& reason :
-       other.disabled_reasons()) {
+  for (const auto& reason : other.disabled_reasons()) {
     disabled_reasons_.insert(reason);
   }
   if (other.browsing_instance_swap_result_)

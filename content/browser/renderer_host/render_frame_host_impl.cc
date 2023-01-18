@@ -1984,8 +1984,9 @@ void RenderFrameHostImpl::StartBackForwardCacheEvictionTimer() {
 }
 
 void RenderFrameHostImpl::DisableBackForwardCache(
-    BackForwardCache::DisabledReason reason) {
-  back_forward_cache_disabled_reasons_.insert(reason);
+    BackForwardCache::DisabledReason reason,
+    absl::optional<ukm::SourceId> source_id) {
+  back_forward_cache_disabled_reasons_[reason].insert(source_id);
   MaybeEvictFromBackForwardCache();
 }
 

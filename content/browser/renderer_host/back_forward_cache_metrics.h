@@ -287,7 +287,7 @@ class BackForwardCacheMetrics
   void RecordHistoryNavigationUMA(NavigationRequest* navigation,
                                   bool back_forward_cache_allowed) const;
   // Records UKM for a history navigation.
-  void RecordHistoryNavigationUKM(NavigationRequest* navigation) const;
+  void RecordHistoryNavigationUKM(NavigationRequest* navigation);
 
   // Record metrics for the number of reloads after history navigation. In
   // particular we are interested in number of reloads after a restore from
@@ -302,8 +302,8 @@ class BackForwardCacheMetrics
   // (`browsing_instance_swap_result_` is not set).  Returns false otherwise.
   bool DidSwapBrowsingInstance() const;
 
-  // Main frame document sequence number that identifies all NavigationEntries
-  // this metrics object is associated with.
+  // Main frame document sequence number that identifies all
+  // NavigationEntries this metrics object is associated with.
   const int64_t document_sequence_number_;
 
   // NavigationHandle's ID for the last cross-document main frame navigation

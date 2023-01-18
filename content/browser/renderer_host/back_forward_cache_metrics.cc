@@ -17,11 +17,13 @@
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/debug_utils.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/reload_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "ui/accessibility/ax_event.h"
 #include "url/gurl.h"
@@ -235,8 +237,19 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   browsing_instance_swap_result_ = absl::nullopt;
 }
 
+namespace {
+
+void RecordDisabledForRenderFrameHostReasonUKM(ukm::SourceId source_id,
+                                               uint64_t reason) {
+  ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason(source_id)
+      .SetReason2(reason)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+}  // namespace
+
 void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
-    NavigationRequest* navigation) const {
+    NavigationRequest* navigation) {
   DCHECK(IsCrossDocumentMainFrameHistoryNavigation(navigation));
   // We've visited an entry associated with this main frame document before,
   // so record metrics to determine whether it might be a back-forward cache
@@ -288,12 +301,19 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
 
   builder.Record(ukm::UkmRecorder::Get());
 
-  for (const BackForwardCache::DisabledReason& reason :
+  for (const auto& [reason, associated_source_ids] :
        page_store_result_->disabled_reasons()) {
-    ukm::builders::BackForwardCacheDisabledForRenderFrameHostReason
-        rfh_reason_builder(source_id);
-    rfh_reason_builder.SetReason2(MetricValue(reason));
-    rfh_reason_builder.Record(ukm::UkmRecorder::Get());
+    uint64_t reason_value = MetricValue(reason);
+    // We always record the event under the source id that was obtained from
+    // the navigation.
+    RecordDisabledForRenderFrameHostReasonUKM(source_id, reason_value);
+
+    for (const auto& associated_source_id : associated_source_ids) {
+      if (associated_source_id.has_value()) {
+        RecordDisabledForRenderFrameHostReasonUKM(associated_source_id.value(),
+                                                  reason_value);
+      }
+    }
   }
 
   for (const uint64_t reason :
@@ -486,8 +506,7 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
         feature);
   }
 
-  for (const BackForwardCache::DisabledReason& reason :
-       page_store_result_->disabled_reasons()) {
+  for (const auto& [reason, _] : page_store_result_->disabled_reasons()) {
     // Use SparseHistogram instead of other simple macros for metrics. The
     // reasons cannot be represented as a unified enum because they come from
     // multiple sources. At first they were represented as strings but that
