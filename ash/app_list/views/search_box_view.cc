@@ -319,8 +319,9 @@ void SearchBoxView::UpdateKeyboardVisibility() {
 void SearchBoxView::HandleQueryChange(const std::u16string& query,
                                       bool initiated_by_user) {
   // Randomly select a new placeholder text when we get an empty new query.
-  if (query.empty() && features::IsProductivityLauncherEnabled())
+  if (query.empty()) {
     UpdatePlaceholderTextAndAccessibleName();
+  }
 
   MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 
@@ -527,16 +528,6 @@ void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
                                                  true /* default_selection */);
   } else {
     result_selection_controller_->ClearSelection();
-  }
-
-  // Remove accessibility hint for classic launcher when search box is active
-  // because there are no apps to navigate to.
-  if (!features::IsProductivityLauncherEnabled()) {
-    if (active) {
-      search_box()->SetAccessibleName(std::u16string());
-    } else {
-      UpdatePlaceholderTextAndAccessibleName();
-    }
   }
 
   delegate_->ActiveChanged(this);
@@ -794,15 +785,11 @@ bool SearchBoxView::HasValidQuery() {
 }
 
 int SearchBoxView::GetSearchBoxIconSize() {
-  if (features::IsProductivityLauncherEnabled())
-    return kBubbleLauncherSearchBoxIconSize;
-  return kClassicSearchBoxIconSize;
+  return kBubbleLauncherSearchBoxIconSize;
 }
 
 int SearchBoxView::GetSearchBoxButtonSize() {
-  if (features::IsProductivityLauncherEnabled())
-    return kBubbleLauncherSearchBoxButtonSizeDip;
-  return kClassicSearchBoxButtonSizeDip;
+  return kBubbleLauncherSearchBoxButtonSizeDip;
 }
 
 void SearchBoxView::CloseButtonPressed() {

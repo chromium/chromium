@@ -449,10 +449,7 @@ const char* SearchResultListView::GetClassName() const {
 }
 
 void SearchResultListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // With productivity launcher disabled, the parent search result page view
-  // will have the list box role.
-  if (ash::features::IsProductivityLauncherEnabled())
-    node_data->role = ax::mojom::Role::kListBox;
+  node_data->role = ax::mojom::Role::kListBox;
 }
 
 int SearchResultListView::GetHeightForWidth(int w) const {

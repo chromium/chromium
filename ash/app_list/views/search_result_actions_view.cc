@@ -58,7 +58,6 @@ class SearchResultActionButton : public IconButton {
 
   // IconButton:
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnThemeChanged() override;
 
   // Updates the button visibility upon state change of the button or the
   // search result view associated with it.
@@ -114,15 +113,6 @@ void SearchResultActionButton::OnGestureEvent(ui::GestureEvent* event) {
   }
   if (!event->handled())
     Button::OnGestureEvent(event);
-}
-
-void SearchResultActionButton::OnThemeChanged() {
-  absl::optional<ScopedLightModeAsDefault> default_light_mode;
-  // Non-productivity launcher search UI has light background.
-  if (!features::IsProductivityLauncherEnabled())
-    default_light_mode.emplace();
-
-  IconButton::OnThemeChanged();
 }
 
 void SearchResultActionButton::UpdateOnStateChanged() {
@@ -264,10 +254,7 @@ void SearchResultActionsView::CreateImageButton(
       base::BindRepeating(
           &SearchResultActionsViewDelegate::OnSearchResultActionActivated,
           base::Unretained(delegate_), action_index),
-      features::IsProductivityLauncherEnabled()
-          ? IconButton::Type::kMediumFloating
-          : IconButton::Type::kLargeFloating,
-      icon, action.tooltip_text));
+      IconButton::Type::kMediumFloating, icon, action.tooltip_text));
   button->set_tag(action_index);
   subscriptions_.push_back(button->AddStateChangedCallback(
       base::BindRepeating(&SearchResultActionsView::UpdateButtonsOnStateChanged,

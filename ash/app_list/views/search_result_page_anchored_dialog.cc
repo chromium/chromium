@@ -38,18 +38,12 @@ SearchResultPageAnchoredDialog::SearchResultPageAnchoredDialog(
 
   widget_ = new views::Widget();
   views::Widget::InitParams params;
-  // Pre-productivity launcher uses DialogDelegateView for the dialog, while the
-  // productivity launcher expects a frameless widget.
-  if (features::IsProductivityLauncherEnabled()) {
+
     params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
     params.layer_type = ui::LAYER_NOT_DRAWN;
     params.parent = parent->GetNativeWindow();
     params.delegate = dialog.release();
-  } else {
-    params = views::DialogDelegateView::GetDialogWidgetInitParams(
-        dialog.release(), parent->GetNativeWindow(), parent->GetNativeWindow(),
-        gfx::Rect());
-  }
+
   widget_->Init(std::move(params));
 
   // The |dialog| ownership is passed to the window hierarchy.

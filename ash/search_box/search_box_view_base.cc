@@ -136,8 +136,8 @@ class SearchBoxImageButton : public views::ImageButton {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
 
-    SetPreferredSize(gfx::Size(kClassicSearchBoxButtonSizeDip,
-                               kClassicSearchBoxButtonSizeDip));
+    SetPreferredSize(gfx::Size(kBubbleLauncherSearchBoxButtonSizeDip,
+                               kBubbleLauncherSearchBoxButtonSizeDip));
     SetImageHorizontalAlignment(ALIGN_CENTER);
     SetImageVerticalAlignment(ALIGN_MIDDLE);
 
