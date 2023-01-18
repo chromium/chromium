@@ -30,6 +30,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -94,6 +95,8 @@ class RenderViewContextMenu
     : public RenderViewContextMenuBase,
       public custom_handlers::ProtocolHandlerRegistry::Observer {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitFullscreenMenuItem);
+
   using ExecutePluginActionCallback =
       base::OnceCallback<void(content::RenderFrameHost*,
                               blink::mojom::PluginActionType)>;

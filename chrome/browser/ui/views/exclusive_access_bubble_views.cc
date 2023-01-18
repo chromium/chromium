@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
@@ -29,6 +30,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -51,6 +53,8 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   // Create the contents view.
   auto content_view = std::make_unique<SubtleNotificationView>();
   view_ = content_view.get();
+  view_->SetProperty(views::kElementIdentifierKey,
+                     kExclusiveAccessBubbleViewElementId);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Technically the exit fullscreen key on ChromeOS is F11 and the

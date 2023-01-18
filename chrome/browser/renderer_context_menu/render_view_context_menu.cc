@@ -191,6 +191,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -713,6 +714,9 @@ void RenderViewContextMenu::AddSpellCheckServiceItem(ui::SimpleMenuModel* menu,
                               IDS_CONTENT_CONTEXT_SPELLING_ASK_GOOGLE);
   }
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kExitFullscreenMenuItem);
 
 RenderViewContextMenu::RenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
@@ -1843,6 +1847,10 @@ void RenderViewContextMenu::AppendExitFullscreenItem() {
 
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN,
                                   IDS_CONTENT_CONTEXT_EXIT_FULLSCREEN);
+  menu_model_.SetElementIdentifierAt(
+      menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN)
+          .value(),
+      kExitFullscreenMenuItem);
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 }
 
