@@ -150,34 +150,23 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
        controller_.local_credentials()) {
     // TODO(crbug.com/1382017): Make sure the alignment works for different use
     // cases. (e.g. long username, federated credentials)
-    RichHoverButton* row =
-        container_view->AddChildView(std::make_unique<RichHoverButton>(
-            base::BindRepeating(
-                [](ManagePasswordsView* view,
-                   const password_manager::PasswordForm& password_form) {
-                  view->currently_selected_password_ = password_form;
-                  view->RecreateLayout();
-                },
-                base::Unretained(this), password_form),
-            /*main_image_icon=*/GetFaviconImageModel(),
-            /*title_text=*/GetDisplayUsername(password_form),
-            /*secondary_text=*/std::u16string(),
-            /*tooltip_text=*/std::u16string(),
-            /*subtitle_text=*/std::u16string(),
-            /*action_image_icon=*/
-            ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
-                                           ui::kColorIcon),
-            /*state_icon=*/absl::nullopt));
-
-    views::Label* password_label = row->secondary_label();
-    if (password_form.federation_origin.opaque()) {
-      password_label->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
-      password_label->SetObscured(true);
-      password_label->SetElideBehavior(gfx::TRUNCATE);
-    } else {
-      password_label->SetTextStyle(views::style::STYLE_SECONDARY);
-      password_label->SetElideBehavior(gfx::ELIDE_HEAD);
-    }
+    container_view->AddChildView(std::make_unique<RichHoverButton>(
+        base::BindRepeating(
+            [](ManagePasswordsView* view,
+               const password_manager::PasswordForm& password_form) {
+              view->currently_selected_password_ = password_form;
+              view->RecreateLayout();
+            },
+            base::Unretained(this), password_form),
+        /*main_image_icon=*/GetFaviconImageModel(),
+        /*title_text=*/GetDisplayUsername(password_form),
+        /*secondary_text=*/std::u16string(),
+        /*tooltip_text=*/std::u16string(),
+        /*subtitle_text=*/std::u16string(),
+        /*action_image_icon=*/
+        ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
+                                       ui::kColorIcon),
+        /*state_icon=*/absl::nullopt));
   }
   return container_view;
 }
