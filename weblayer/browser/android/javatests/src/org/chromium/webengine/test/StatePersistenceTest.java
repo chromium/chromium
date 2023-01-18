@@ -21,9 +21,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.chromium.webengine.FragmentParams;
 import org.chromium.webengine.Tab;
 import org.chromium.webengine.WebEngine;
+import org.chromium.webengine.WebEngineParams;
 import org.chromium.webengine.WebSandbox;
 
 import java.util.Set;
@@ -68,10 +68,10 @@ public class StatePersistenceTest {
     @Test
     @SmallTest
     public void tabsPersistAcrossSessions() throws Exception {
-        FragmentParams params = (new FragmentParams.Builder())
-                                        .setPersistenceId("pid1234")
-                                        .setProfileName("pn12345")
-                                        .build();
+        WebEngineParams params = (new WebEngineParams.Builder())
+                                         .setPersistenceId("pid1234")
+                                         .setProfileName("pn12345")
+                                         .build();
         WebEngine webEngine = runOnUiThreadBlocking(
                 () -> mActivityTestRule.getWebSandbox().createWebEngine(params))
                                       .get();
@@ -107,10 +107,10 @@ public class StatePersistenceTest {
     public void incognitoModeNotInterferingWithPerisitenceState() throws Exception {
         String perisistenceId = "pid1234";
         String profileName = "pn12345";
-        FragmentParams params = (new FragmentParams.Builder())
-                                        .setPersistenceId(perisistenceId)
-                                        .setProfileName(profileName)
-                                        .build();
+        WebEngineParams params = (new WebEngineParams.Builder())
+                                         .setPersistenceId(perisistenceId)
+                                         .setProfileName(profileName)
+                                         .build();
         // Create an initial WebEngine state and associate it with a persistence ID.
         WebEngine webEngine = runOnUiThreadBlocking(
                 () -> mActivityTestRule.getWebSandbox().createWebEngine(params))
@@ -121,11 +121,11 @@ public class StatePersistenceTest {
         runOnUiThreadBlocking(() -> webEngine.close());
 
         // Recreate a WebEngine in incognito mode.
-        FragmentParams paramsIncognito = (new FragmentParams.Builder())
-                                                 .setPersistenceId(perisistenceId)
-                                                 .setProfileName(profileName)
-                                                 .setIsIncognito(true)
-                                                 .build();
+        WebEngineParams paramsIncognito = (new WebEngineParams.Builder())
+                                                  .setPersistenceId(perisistenceId)
+                                                  .setProfileName(profileName)
+                                                  .setIsIncognito(true)
+                                                  .build();
         WebEngine webEngineIncognito = runOnUiThreadBlocking(
                 () -> mActivityTestRule.getWebSandbox().createWebEngine(paramsIncognito))
                                                .get();

@@ -226,7 +226,6 @@ android_library("webengine_java") {
   sources = [
     "org/chromium/webengine/CookieManager.java",
     "org/chromium/webengine/ExceptionHelper.java",
-    "org/chromium/webengine/FragmentParams.java",
     "org/chromium/webengine/Navigation.java",
     "org/chromium/webengine/NavigationObserver.java",
     "org/chromium/webengine/NavigationObserverDelegate.java",
@@ -241,6 +240,7 @@ android_library("webengine_java") {
     "org/chromium/webengine/TabRegistry.java",
     "org/chromium/webengine/ThreadCheck.java",
     "org/chromium/webengine/WebEngine.java",
+    "org/chromium/webengine/WebEngineParams.java",
     "org/chromium/webengine/WebFragment.java",
     "org/chromium/webengine/WebMessageCallback.java",
     "org/chromium/webengine/WebMessageReplyProxy.java",

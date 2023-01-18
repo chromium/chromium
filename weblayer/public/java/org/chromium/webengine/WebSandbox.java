@@ -349,8 +349,8 @@ public class WebSandbox {
         if (mWebSandboxService == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
-        FragmentParams params =
-                (new FragmentParams.Builder()).setProfileName(DEFAULT_PROFILE_NAME).build();
+        WebEngineParams params =
+                (new WebEngineParams.Builder()).setProfileName(DEFAULT_PROFILE_NAME).build();
         return createWebEngine(params, tag);
     }
 
@@ -358,7 +358,7 @@ public class WebSandbox {
      * Asynchronously creates a new WebEngine based on {@code params}.
      */
     @Nullable
-    public ListenableFuture<WebEngine> createWebEngine(FragmentParams params) {
+    public ListenableFuture<WebEngine> createWebEngine(WebEngineParams params) {
         ThreadCheck.ensureOnUiThread();
         return createWebEngine(params, createNewTag());
     }
@@ -366,7 +366,7 @@ public class WebSandbox {
     /**
      * Asynchronously creates a new WebEngine based on {@code params} and gives it a {@code tag}.
      */
-    public ListenableFuture<WebEngine> createWebEngine(FragmentParams params, String tag) {
+    public ListenableFuture<WebEngine> createWebEngine(WebEngineParams params, String tag) {
         if (mActiveWebEngines.containsKey(tag)) {
             throw new IllegalArgumentException("Tag already associated with a WebEngine");
         }

@@ -12,7 +12,7 @@ import org.chromium.webengine.interfaces.IWebEngineParams;
 /**
  * Parameters for {@link WebSandbox#createFragment}.
  */
-public class FragmentParams {
+public class WebEngineParams {
     @Nullable
     private String mProfileName;
 
@@ -30,12 +30,12 @@ public class FragmentParams {
     }
 
     /**
-     * A Builder class to help create FragmentParams.
+     * A Builder class to help create WebEngineParams.
      */
     public static final class Builder {
-        private FragmentParams mParams = new FragmentParams();
+        private WebEngineParams mParams = new WebEngineParams();
 
-        public FragmentParams build() {
+        public WebEngineParams build() {
             return mParams;
         }
 
