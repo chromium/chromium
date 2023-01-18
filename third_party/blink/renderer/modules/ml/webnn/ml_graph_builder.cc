@@ -190,9 +190,9 @@ absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
     const uint32_t input_width,
     const uint32_t filter_height,
     const uint32_t filter_width,
-    const Vector<int32_t>& padding,
-    const Vector<int32_t>& strides,
-    const Vector<int32_t>& dilations,
+    const Vector<uint32_t>& padding,
+    const Vector<uint32_t>& strides,
+    const Vector<uint32_t>& dilations,
     const V8MLAutoPad auto_pad,
     ExceptionState& exception_state) {
   // Validate padding and get its values.
@@ -201,23 +201,10 @@ absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
                                       "The length of padding should be 4.");
     return absl::nullopt;
   }
-  if (std::any_of(padding.begin(), padding.end(),
-                  [](int32_t x) { return x < 0; })) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "All paddings should be greater than or equal to 0.");
-    return absl::nullopt;
-  }
-  // The current WebNN spec defines the paddings as signed integer:
-  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-padding
-  // However, there is a proposal of using unsigned integer:
-  // https://github.com/webmachinelearning/webnn/pull/294.
-  // Before the change merged, the signed integers are checked_cast to
-  // unsigned integers for output shape calculation.
-  uint32_t padding_beginning_height = base::checked_cast<uint32_t>(padding[0]);
-  uint32_t padding_ending_height = base::checked_cast<uint32_t>(padding[1]);
-  uint32_t padding_beginning_width = base::checked_cast<uint32_t>(padding[2]);
-  uint32_t padding_ending_width = base::checked_cast<uint32_t>(padding[3]);
+  uint32_t padding_beginning_height = padding[0];
+  uint32_t padding_ending_height = padding[1];
+  uint32_t padding_beginning_width = padding[2];
+  uint32_t padding_ending_width = padding[3];
 
   // Validate strides and get its values.
   if (strides.size() != 2) {
@@ -226,20 +213,13 @@ absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
     return absl::nullopt;
   }
   if (std::any_of(strides.begin(), strides.end(),
-                  [](int32_t x) { return x < 1; })) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "All strides should be greater than or equal to 1.");
+                  [](uint32_t x) { return x == 0; })) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "All strides should be greater than 0.");
     return absl::nullopt;
   }
-  // The current WebNN spec defines the strides as signed integer:
-  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-strides
-  // However, there is a proposal of using unsigned integer:
-  // https://github.com/webmachinelearning/webnn/pull/294
-  // Before the change merged, the signed integers are checked_cast to
-  // unsigned integers for output shape calculation.
-  const uint32_t stride_height = base::checked_cast<uint32_t>(strides[0]);
-  const uint32_t stride_width = base::checked_cast<uint32_t>(strides[1]);
+  const uint32_t stride_height = strides[0];
+  const uint32_t stride_width = strides[1];
 
   // Validate dilations and get its values.
   if (dilations.size() != 2) {
@@ -248,20 +228,14 @@ absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
     return absl::nullopt;
   }
   if (std::any_of(dilations.begin(), dilations.end(),
-                  [](int32_t x) { return x < 1; })) {
+                  [](uint32_t x) { return x == 0; })) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "All dilations should be greater than or equal to 1.");
+        "All dilations should be greater than 0.");
     return absl::nullopt;
   }
-  // The current WebNN spec defines the dilations as signed integer:
-  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-dilations
-  // However, there is a proposal of using unsigned integer:
-  // https://github.com/webmachinelearning/webnn/pull/294
-  // Before the change merged, the signed integers are checked_cast to
-  // unsigned integers for output shape calculation.
-  const uint32_t dilation_height = base::checked_cast<uint32_t>(dilations[0]);
-  const uint32_t dilation_width = base::checked_cast<uint32_t>(dilations[1]);
+  const uint32_t dilation_height = dilations[0];
+  const uint32_t dilation_width = dilations[1];
 
   // When the autoPad is other than "explicit", the values in the
   // options.padding array are ignored and the explicit padding values need to
@@ -351,12 +325,7 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
 
   // Validate windowDimensions and get its values. If not present, the window
   // dimensions are assumed to be the height and width dimensions of the input
-  // shape. The current WebNN spec defines the windowDimensions as signed
-  // integer: https://www.w3.org/TR/webnn/#dom-mlpool2doptions-windowdimensions
-  // However, there is a proposal of using unsigned integer:
-  // https://github.com/webmachinelearning/webnn/pull/294
-  // Before the change merged, the signed integers are checked_cast to
-  // unsigned integers for output shape calculation.
+  // shape.
   uint32_t window_height = input_height;
   uint32_t window_width = input_width;
   if (options->hasWindowDimensions()) {
@@ -368,15 +337,14 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
     }
     if (std::any_of(options->windowDimensions().begin(),
                     options->windowDimensions().end(),
-                    [](int32_t x) { return x < 1; })) {
+                    [](uint32_t x) { return x == 0; })) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
-          "All window dimensions should be greater than or equal to 1.");
+          "All window dimensions should be greater than 0.");
       return nullptr;
     }
-    window_height =
-        base::checked_cast<uint32_t>(options->windowDimensions()[0]);
-    window_width = base::checked_cast<uint32_t>(options->windowDimensions()[1]);
+    window_height = options->windowDimensions()[0];
+    window_width = options->windowDimensions()[1];
   }
 
   // Reuse ValidateAndCalculateConv2dOutputSizes to calculate pool2d output
@@ -413,22 +381,14 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
     }
     if (std::any_of(options->outputSizes().begin(),
                     options->outputSizes().end(),
-                    [](int32_t x) { return x < 1; })) {
+                    [](uint32_t x) { return x == 0; })) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
           "All output sizes should be greater than 0.");
       return nullptr;
     }
-    // The current WebNN spec defines the output sizes as signed integer:
-    // https://www.w3.org/TR/webnn/#dom-mlpool2doptions-outputsizes
-    // However, there is a proposal of using unsigned integer:
-    // https://github.com/webmachinelearning/webnn/pull/294
-    // Before the change merged, the signed integers are checked_cast to
-    // unsigned integers for output shape calculation.
-    uint32_t user_output_height =
-        base::checked_cast<uint32_t>(options->outputSizes()[0]);
-    uint32_t user_output_width =
-        base::checked_cast<uint32_t>(options->outputSizes()[1]);
+    uint32_t user_output_height = options->outputSizes()[0];
+    uint32_t user_output_width = options->outputSizes()[1];
 
     // Check whether the user supplied output sizes is either floor or ceil
     // rounding of the calculated output sizes. The backend implementation
@@ -718,10 +678,9 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
     }
   }
   // Validate groups.
-  if (options->groups() < 1) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The groups should be greater than or equal to 1.");
+  if (options->groups() == 0) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The groups should be greater than 0.");
     return nullptr;
   }
   if (input_channels % options->groups() != 0 ||
@@ -1104,19 +1063,13 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
                                         "The length of sizes should be 2.");
       return nullptr;
     } else if (std::any_of(options->sizes().begin(), options->sizes().end(),
-                           [](int32_t x) { return x <= 0; })) {
+                           [](uint32_t x) { return x == 0; })) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                         "All sizes should be greater than 0.");
       return nullptr;
     }
-    // The current WebNN spec defines the sizes as signed integer:
-    // https://www.w3.org/TR/webnn/#dom-mlresample2doptions-sizes
-    // And an issue has been filed to track it:
-    // https://github.com/webmachinelearning/webnn/issues/300
-    // Before this issue is fixed, the signed integers are checked_cast to
-    // unsigned integers for output shape.
-    output_shape[axes[0]] = base::checked_cast<uint32_t>(options->sizes()[0]);
-    output_shape[axes[1]] = base::checked_cast<uint32_t>(options->sizes()[1]);
+    output_shape[axes[0]] = options->sizes()[0];
+    output_shape[axes[1]] = options->sizes()[1];
   } else {
     const auto scales = options->getScalesOr({1.0f, 1.0f});
     if (scales.size() != 2) {

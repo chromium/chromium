@@ -13,11 +13,11 @@ enum MLConv2dFilterOperandLayout { "oihw", "hwio", "ohwi", "ihwo" };
 enum MLAutoPad { "explicit", "same-upper", "same-lower" };
 
 dictionary MLConv2dOptions {
-  sequence<long> padding;
-  sequence<long> strides;
-  sequence<long> dilations;
+  sequence<[EnforceRange] unsigned long> padding;
+  sequence<[EnforceRange] unsigned long> strides;
+  sequence<[EnforceRange] unsigned long> dilations;
   MLAutoPad autoPad = "explicit";
-  long groups = 1;
+  [EnforceRange] unsigned long groups = 1;
   MLInputOperandLayout inputLayout = "nchw";
   MLConv2dFilterOperandLayout filterLayout = "oihw";
   MLOperand bias;
@@ -38,14 +38,14 @@ enum MLRoundingType {
 };
 
 dictionary MLPool2dOptions {
-  sequence<long> windowDimensions;
-  sequence<long> padding;
-  sequence<long> strides;
-  sequence<long> dilations;
+  sequence<[EnforceRange] unsigned long> windowDimensions;
+  sequence<[EnforceRange] unsigned long> padding;
+  sequence<[EnforceRange] unsigned long> strides;
+  sequence<[EnforceRange] unsigned long> dilations;
   MLAutoPad autoPad = "explicit";
   MLInputOperandLayout layout = "nchw";
   MLRoundingType roundingType = "floor";
-  sequence<long> outputSizes;
+  sequence<[EnforceRange] unsigned long> outputSizes;
 };
 
 dictionary MLClampOptions {
@@ -58,7 +58,7 @@ enum MLInterpolationMode {"nearest-neighbor", "linear" };
 dictionary MLResample2dOptions {
   MLInterpolationMode mode = "nearest-neighbor";
   sequence<float> scales;
-  sequence<long> sizes;
+  sequence<[EnforceRange] unsigned long> sizes;
   sequence<long> axes;
 };
 

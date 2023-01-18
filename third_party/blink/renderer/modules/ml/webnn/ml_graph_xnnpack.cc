@@ -418,24 +418,21 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
       static_cast<const MLConv2dOptions*>(conv2d->Options());
 
   // Set strides of XNNPACK conv2d, default to 1.
-  const Vector<int32_t> default_strides({1, 1});
-  const uint32_t stride_height =
-      base::checked_cast<uint32_t>(options->getStridesOr(default_strides)[0]);
-  const uint32_t stride_width =
-      base::checked_cast<uint32_t>(options->getStridesOr(default_strides)[1]);
+  const Vector<uint32_t> default_strides({1, 1});
+  const uint32_t stride_height = options->getStridesOr(default_strides)[0];
+  const uint32_t stride_width = options->getStridesOr(default_strides)[1];
 
   // Set dilations of XNNPACK conv2d, default to 1.
-  const Vector<int32_t> default_dilations({1, 1});
-  const uint32_t dilation_height = base::checked_cast<uint32_t>(
-      options->getDilationsOr(default_dilations)[0]);
-  const uint32_t dilation_width = base::checked_cast<uint32_t>(
-      options->getDilationsOr(default_dilations)[1]);
+  const Vector<uint32_t> default_dilations({1, 1});
+  const uint32_t dilation_height =
+      options->getDilationsOr(default_dilations)[0];
+  const uint32_t dilation_width = options->getDilationsOr(default_dilations)[1];
 
   // Set input and filter sizes of XNNPACK conv2d.
   uint32_t input_height, input_width;
   uint32_t filter_height, filter_width;
   uint32_t input_channels, output_channels;
-  const uint32_t groups = base::checked_cast<uint32_t>(options->groups());
+  const uint32_t groups = options->groups();
   bool depthwise = false;
   if (options->inputLayout().AsEnum() == V8MLInputOperandLayout::Enum::kNhwc) {
     const auto* input = conv2d->Inputs()[0].Get();
@@ -496,15 +493,11 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
   if (options->autoPad().AsEnum() == V8MLAutoPad::Enum::kExplicit) {
     // WebNN padding sizes are in [beginning_height, ending_height,
     // beginning_width, ending_width], default to 0.
-    const Vector<int32_t> default_pads({0, 0, 0, 0});
-    pad_top =
-        base::checked_cast<uint32_t>(options->getPaddingOr(default_pads)[0]);
-    pad_bottom =
-        base::checked_cast<uint32_t>(options->getPaddingOr(default_pads)[1]);
-    pad_left =
-        base::checked_cast<uint32_t>(options->getPaddingOr(default_pads)[2]);
-    pad_right =
-        base::checked_cast<uint32_t>(options->getPaddingOr(default_pads)[3]);
+    const Vector<uint32_t> default_pads({0, 0, 0, 0});
+    pad_top = options->getPaddingOr(default_pads)[0];
+    pad_bottom = options->getPaddingOr(default_pads)[1];
+    pad_left = options->getPaddingOr(default_pads)[2];
+    pad_right = options->getPaddingOr(default_pads)[3];
   } else {
     auto padding_sizes_height = MLGraphBuilder::CalculatePaddingForAutoPad(
         options->autoPad().AsEnum(), input_height, filter_height, stride_height,

@@ -343,7 +343,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     EXPECT_TRUE(options->hasInputLayout());
     EXPECT_EQ(options->inputLayout(), V8MLInputOperandLayout::Enum::kNchw);
     EXPECT_TRUE(options->hasGroups());
-    EXPECT_EQ(options->groups(), 1);
+    EXPECT_EQ(options->groups(), 1u);
     EXPECT_FALSE(options->hasPadding());
     EXPECT_FALSE(options->hasStrides());
     auto* output = BuildConv2d(scope, builder, input, filter, options);
@@ -642,22 +642,6 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
               "The length of padding should be 4.");
   }
   {
-    // Test throwing exception when one padding value is smaller than 0.
-    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
-                             V8MLOperandType::Enum::kFloat32);
-    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
-                                 V8MLOperandType::Enum::kFloat32);
-    auto* options = MLConv2dOptions::Create();
-    options->setPadding({0, 1, 2, -2});
-    auto* output =
-        builder->conv2d(input, filter, options, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "All paddings should be greater than or equal to 0.");
-  }
-  {
     // Test throwing exception when the length of strides is not 2.
     auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
                              V8MLOperandType::Enum::kFloat32);
@@ -687,7 +671,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "All strides should be greater than or equal to 1.");
+              "All strides should be greater than 0.");
   }
   {
     // Test throwing exception when the length of dilations is not 2.
@@ -712,14 +696,14 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
                                  V8MLOperandType::Enum::kFloat32);
     auto* options = MLConv2dOptions::Create();
-    options->setDilations({1, -1});
+    options->setDilations({1, 0});
     auto* output =
         builder->conv2d(input, filter, options, scope.GetExceptionState());
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "All dilations should be greater than or equal to 1.");
+              "All dilations should be greater than 0.");
   }
   {
     // Test throwing exception when input_channels % groups() != 0.
@@ -770,7 +754,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The groups should be greater than or equal to 1.");
+              "The groups should be greater than 0.");
   }
   {
     // Test throwing exception due to overflow when calculating the padding
@@ -1265,7 +1249,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
-                "All window dimensions should be greater than or equal to 1.");
+                "All window dimensions should be greater than 0.");
     }
     {
       // Test throwing exception when the input height is too small to fill the
@@ -1325,19 +1309,6 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
                 "The length of padding should be 4.");
     }
     {
-      // Test throwing exception when one padding value is smaller than 0.
-      auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
-                               V8MLOperandType::Enum::kFloat32);
-      auto* options = MLPool2dOptions::Create();
-      options->setPadding({0, 2, 2, -1});
-      auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
-      EXPECT_EQ(output, nullptr);
-      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-                DOMExceptionCode::kDataError);
-      EXPECT_EQ(scope.GetExceptionState().Message(),
-                "All paddings should be greater than or equal to 0.");
-    }
-    {
       // Test throwing exception when the length of strides is not 2.
       auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
                                V8MLOperandType::Enum::kFloat32);
@@ -1361,7 +1332,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
-                "All strides should be greater than or equal to 1.");
+                "All strides should be greater than 0.");
     }
     {
       // Test throwing exception when the length of dilations is not 2.
@@ -1381,13 +1352,13 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       auto* input = BuildInput(scope, builder, "input", {1, 2, 5, 5},
                                V8MLOperandType::Enum::kFloat32);
       auto* options = MLPool2dOptions::Create();
-      options->setDilations({1, -1});
+      options->setDilations({1, 0});
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
       EXPECT_EQ(output, nullptr);
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
-                "All dilations should be greater than or equal to 1.");
+                "All dilations should be greater than 0.");
     }
   }
 }

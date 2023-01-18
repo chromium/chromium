@@ -107,15 +107,15 @@ Vector<T> ToVector(const ::google::protobuf::RepeatedField<T>& inputs) {
 void ProtobufToConv2dOptions(const webnn_proto::conv2dOptions& data,
                              MLConv2dOptions* options) {
   if (data.padding_size() > 0) {
-    options->setPadding(ToVector<int32_t>(data.padding()));
+    options->setPadding(ToVector<uint32_t>(data.padding()));
   }
 
   if (data.strides_size() > 0) {
-    options->setStrides(ToVector<int32_t>(data.strides()));
+    options->setStrides(ToVector<uint32_t>(data.strides()));
   }
 
   if (data.dilations_size() > 0) {
-    options->setDilations(ToVector<int32_t>(data.dilations()));
+    options->setDilations(ToVector<uint32_t>(data.dilations()));
   }
 
   if (data.has_autopad()) {

@@ -34,11 +34,11 @@ enum MLConv2dFilterOperandLayout {
 }
 
 message conv2dOptions {
-  repeated int32 padding = 1;
-  repeated int32 strides = 2;
-  repeated int32 dilations = 3;
+  repeated uint32 padding = 1;
+  repeated uint32 strides = 2;
+  repeated uint32 dilations = 3;
   optional MLAutoPad autoPad = 4 [default = EXPLICIT];
-  optional int32 groups = 5 [default = 1];
+  optional uint32 groups = 5 [default = 1];
   optional MLInputOperandLayout inputLayout = 6 [default = NCHW];
   optional MLConv2dFilterOperandLayout filterLayout = 7 [default = OIHW];
 }
