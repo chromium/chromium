@@ -765,7 +765,9 @@ bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||                     \
     (BUILDFLAG(IS_ANDROID) &&                                               \
-     (BUILDFLAG(ENABLE_ARM_CFI_TABLE) || defined(ARCH_CPU_ARM64))) ||       \
+     ((defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) ||       \
+      (defined(ARCH_CPU_ARM64) &&                                           \
+       BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)))) ||                      \
     (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) &&                  \
      BUILDFLAG(IS_CHROMEOS_DEVICE))
 #if BUILDFLAG(IS_WIN)
