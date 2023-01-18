@@ -2324,7 +2324,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         if (getToolbarManager().back()) {
-            BackPressManager.record(BackPressHandler.Type.TOOLBAR_TAB_CONTROLLER);
+            BackPressManager.record(BackPressHandler.Type.TAB_HISTORY);
             return true;
         }
 

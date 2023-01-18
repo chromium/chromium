@@ -233,7 +233,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             }
 
             if (mToolbarManager != null && mToolbarManager.back()) {
-                BackPressManager.record(BackPressHandler.Type.TOOLBAR_TAB_CONTROLLER);
+                BackPressManager.record(BackPressHandler.Type.TAB_HISTORY);
                 return true;
             }
         }

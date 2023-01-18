@@ -184,7 +184,7 @@ import java.util.List;
  */
 public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserver, TintObserver,
                                        MenuButtonDelegate, ChromeAccessibilityUtil.Observer,
-                                       TabObscuringHandler.Observer {
+                                       TabObscuringHandler.Observer, BackPressHandler {
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final TabCountProvider mTabCountProvider;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
@@ -303,6 +303,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     private final VrModeObserver mVrModeObserver;
     private ObservableSupplierImpl<Boolean> mIsProgressBarVisibleSupplier =
+            new ObservableSupplierImpl<>();
+
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
 
     private boolean mIsDestroyed;
@@ -576,11 +579,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     return profile != null ? TrackerFactory.getTrackerForProfile(profile) : null;
                 },
                 mBottomControlsCoordinatorSupplier, ToolbarManager::homepageUrl,
-                this::updateButtonStatus, mActivityTabProvider);
+                this::updateButtonStatus);
         // clang-format on
         if (backPressManager != null && BackPressManager.isEnabled()) {
-            backPressManager.addHandler(
-                    mToolbarTabController, BackPressHandler.Type.TOOLBAR_TAB_CONTROLLER);
+            backPressManager.addHandler(this, BackPressHandler.Type.TAB_HISTORY);
         }
 
         BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
@@ -1315,11 +1317,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mTabContentManager, mCompositorViewHolder,
                 mCompositorViewHolder::getDynamicResourceLoader, mTabCreatorManager,
                 mShareDelegateSupplier, mLayoutStateProviderSupplier, mSnackbarManager);
-        mBottomControlsCoordinatorSupplier.set(new BottomControlsCoordinator(mActivity,
-                mWindowAndroid, mLayoutManager, mCompositorViewHolder.getResourceManager(),
-                mBrowserControlsSizer, mFullscreenManager,
-                (ScrollingBottomViewResourceFrameLayout) root, mTabGroupUi, mTabObscuringHandler,
-                mOverlayPanelVisibilitySupplier, mConstraintsProxy));
+        var bottomControlsCoordinator = new BottomControlsCoordinator(mActivity, mWindowAndroid,
+                mLayoutManager, mCompositorViewHolder.getResourceManager(), mBrowserControlsSizer,
+                mFullscreenManager, (ScrollingBottomViewResourceFrameLayout) root, mTabGroupUi,
+                mTabObscuringHandler, mOverlayPanelVisibilitySupplier, mConstraintsProxy);
+        mBottomControlsCoordinatorSupplier.set(bottomControlsCoordinator);
+        bottomControlsCoordinator.getHandleBackPressChangedSupplier().addObserver(
+                (x) -> { onBackPressStateChanged(); });
     }
 
     /**
@@ -1534,8 +1538,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLocationBar.destroy();
             mLocationBar = null;
         }
-
-        mToolbarTabController.destroy();
 
         mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
         mToolbar.destroy();
@@ -1907,6 +1909,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mToolbar.updateButtonVisibility();
         mToolbar.updateBackButtonVisibility(currentTab != null && currentTab.canGoBack());
+        onBackPressStateChanged();
         mToolbar.updateForwardButtonVisibility(currentTab != null && currentTab.canGoForward());
         updateReloadState(tabCrashed);
         updateBookmarkButtonStatus();
@@ -2133,6 +2136,29 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         layoutParams.topMargin = margin;
         mControlContainer.setLayoutParams(layoutParams);
+    }
+
+    private void onBackPressStateChanged() {
+        mBackPressStateSupplier.set(mToolbarTabController.canGoBack());
+    }
+
+    @Override
+    public void handleBackPress() {
+        boolean ret = back();
+        if (!ret) {
+            var bc = mBottomControlsCoordinatorSupplier.get();
+            var tab = mActivityTabProvider.get();
+            var msg = String.format(
+                    "Bottom control %s, back press state %s; tab %s, back press state %s", bc,
+                    bc != null && Boolean.TRUE.equals(bc.getHandleBackPressChangedSupplier().get()),
+                    tab, mBackPressStateSupplier.get());
+            assert false : msg;
+        }
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
     }
 
     /** Returns {@link LocationBar} for access in tests. */

@@ -10292,7 +10292,7 @@ others/histograms.xml -->
   <int value="1" label="(01) VR_DELEGATE"/>
   <int value="2" label="(02) AR_DELEGATE"/>
   <int value="3" label="(03) SCENE_OVERLAY"/>
-  <int value="4" label="(04) START_SURFACE_MEDIATOR"/>
+  <int value="4" label="(04) START_SURFACE_MEDIATOR (tab switcher)"/>
   <int value="5" label="(05) SELECTION_POPUP"/>
   <int value="6" label="(06) MANUAL_FILLING"/>
   <int value="7" label="(07) FULLSCREEN"/>
@@ -10300,7 +10300,7 @@ others/histograms.xml -->
   <int value="9" label="(10) TAB_MODAL_HANDLER"/>
   <int value="10" label="(11) TAB_SWITCHER_TO_BROWSING"/>
   <int value="11" label="(12) CLOSE_WATCHER"/>
-  <int value="12" label="(14) TOOLBAR_TAB_CONTROLLER"/>
+  <int value="12" label="(14) TAB_HISTORY (and bottom controls)"/>
   <int value="13" label="(15) TAB_RETURN_TO_CHROME_START_SURFACE"/>
   <int value="14" label="(16) SHOW_READING_LIST"/>
   <int value="15" label="(17) MINIMIZE_APP_AND_CLOSE_TAB"/>
