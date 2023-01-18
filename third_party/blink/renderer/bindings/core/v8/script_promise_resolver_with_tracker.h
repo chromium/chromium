@@ -72,17 +72,17 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
     resolver_->Reject(value);
   }
 
-  void RejectWithDOMException(ExceptionState& exception_state,
-                              DOMExceptionCode exception_code,
-                              const String& message,
-                              ResultEnumType result) {
+  void RecordAndThrowDOMException(ExceptionState& exception_state,
+                                  DOMExceptionCode exception_code,
+                                  const String& message,
+                                  ResultEnumType result) {
     RecordResultAndLatency(result);
     exception_state.ThrowDOMException(exception_code, message);
   }
 
-  void RejectWithTypeError(ExceptionState& exception_state,
-                           const String& message,
-                           ResultEnumType result) {
+  void RecordAndThrowTypeError(ExceptionState& exception_state,
+                               const String& message,
+                               ResultEnumType result) {
     RecordResultAndLatency(result);
     exception_state.ThrowTypeError(message);
   }

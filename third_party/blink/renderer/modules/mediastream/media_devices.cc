@@ -383,11 +383,11 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
-    resolver->RejectWithDOMException(exception_state,
-                                     DOMExceptionCode::kNotSupportedError,
-                                     "No media device client available; "
-                                     "is this a detached window?",
-                                     UserMediaRequestResult::kContextDestroyed);
+    resolver->RecordAndThrowDOMException(
+        exception_state, DOMExceptionCode::kNotSupportedError,
+        "No media device client available; "
+        "is this a detached window?",
+        UserMediaRequestResult::kContextDestroyed);
     return ScriptPromise();
   }
 
@@ -451,7 +451,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   String error_message;
   if (!request->IsSecureContextUse(error_message)) {
-    resolver->RejectWithDOMException(
+    resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotSupportedError, error_message,
         UserMediaRequestResult::kInsecureContext);
     return ScriptPromise();
@@ -473,7 +473,7 @@ ScriptPromise MediaDevices::getDisplayMediaSet(
 
   ExecutionContext* const context = GetExecutionContext();
   if (!context) {
-    resolver->RejectWithDOMException(
+    resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "No media device client available; is this a detached window?",
         UserMediaRequestResult::kContextDestroyed);
@@ -497,7 +497,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
       script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(6));
 
   if (!window) {
-    resolver->RejectWithDOMException(
+    resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "No local DOM window; is this a detached window?",
         UserMediaRequestResult::kContextDestroyed);
@@ -522,14 +522,14 @@ ScriptPromise MediaDevices::getDisplayMedia(
           : DisplayCapturePolicyResult::kDisallowed);
 
   if (!capture_allowed_by_permissions_policy) {
-    resolver->RejectWithDOMException(
+    resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotAllowedError,
         kFeaturePolicyBlocked, UserMediaRequestResult::kNotAllowedError);
     return ScriptPromise();
   }
 
   if (options->hasAutoSelectAllScreens() && options->autoSelectAllScreens()) {
-    resolver->RejectWithTypeError(
+    resolver->RecordAndThrowTypeError(
         exception_state,
         "The autoSelectAllScreens property is not allowed for usage with "
         "getDisplayMedia.",
@@ -540,7 +540,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
   if (CaptureController* const capture_controller =
           options->getControllerOr(nullptr)) {
     if (capture_controller->IsBound()) {
-      resolver->RejectWithDOMException(
+      resolver->RecordAndThrowDOMException(
           exception_state, DOMExceptionCode::kInvalidStateError,
           "setFocusBehavior() can only be called before getDisplayMedia() or"
           "immediately after.",
