@@ -53,9 +53,6 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // Called when output node's volume changed.
     virtual void OutputNodeVolumeChanged(uint64_t node_id, int volume);
 
-    // Called when input node's gain changed.
-    virtual void InputNodeGainChanged(uint64_t node_id, int volume);
-
     // Called when hotword is triggered.
     virtual void HotwordTriggered(uint64_t tv_sec, uint64_t tv_nsec);
 

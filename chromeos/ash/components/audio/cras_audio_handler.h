@@ -269,15 +269,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Gets the audio devices back in |device_list|.
   void GetAudioDevices(AudioDeviceList* device_list) const;
 
-  // Gets the primary active output device in |device|.
-  // Returns true if the primary active output device is successfully obtained.
-  // Returns false if no active device is obtained or |device| is null.
   bool GetPrimaryActiveOutputDevice(AudioDevice* device) const;
-
-  // Gets the primary active input device in |device|.
-  // Returns true if the primary active input device is successfully obtained.
-  // Returns false if no active device is obtained or |device| is null.
-  bool GetPrimaryActiveInputDevice(AudioDevice* device) const;
 
   // Returns the device matched with |type|. Assuming there is only one device
   // matched the |type|, if there is more than one matched devices, it will
@@ -480,7 +472,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void ActiveOutputNodeChanged(uint64_t node_id) override;
   void ActiveInputNodeChanged(uint64_t node_id) override;
   void OutputNodeVolumeChanged(uint64_t node_id, int volume) override;
-  void InputNodeGainChanged(uint64_t node_id, int gain) override;
   void HotwordTriggered(uint64_t tv_sec, uint64_t tv_nsec) override;
   void BluetoothBatteryChanged(const std::string& address,
                                uint32_t level) override;
