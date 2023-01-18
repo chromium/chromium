@@ -305,8 +305,11 @@ void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
 
   config_.kf_mode = AOM_KF_DISABLED;
 
-  config_.rc_max_quantizer = 0;
-  config_.rc_min_quantizer = 0;
+  // Initial max/min qp values were suggested by the codecs team. The intent is
+  // to set a reasonable default for the first key frame before WebRTC begins
+  // sending us updated max/min qp values based on the network conditions.
+  config_.rc_max_quantizer = 52;
+  config_.rc_min_quantizer = 10;
   config_.rc_dropframe_thresh = 0;
   config_.rc_undershoot_pct = 50;
   config_.rc_overshoot_pct = 50;
