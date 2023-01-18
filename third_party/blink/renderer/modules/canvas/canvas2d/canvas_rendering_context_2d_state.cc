@@ -70,10 +70,10 @@ bool StringToNumWithUnit(String spacing,
 }
 
 CanvasRenderingContext2DState::CanvasRenderingContext2DState()
-    : stroke_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
-      fill_style_(MakeGarbageCollected<CanvasStyle>(SK_ColorBLACK)),
+    : stroke_style_(MakeGarbageCollected<CanvasStyle>(Color::kBlack)),
+      fill_style_(MakeGarbageCollected<CanvasStyle>(Color::kBlack)),
       shadow_blur_(0.0),
-      shadow_color_(SK_ColorTRANSPARENT),
+      shadow_color_(Color::kTransparent),
       global_alpha_(1.0),
       line_dash_offset_(0.0),
       unparsed_font_(defaultFont),
@@ -237,9 +237,10 @@ void CanvasRenderingContext2DState::UpdateLineDash() const {
   line_dash_dirty_ = false;
 }
 
-void CanvasRenderingContext2DState::SetStrokeColor(RGBA32 color) {
-  if (stroke_style_->IsEquivalentRGBA(color))
+void CanvasRenderingContext2DState::SetStrokeColor(Color color) {
+  if (stroke_style_->IsEquivalentColor(color)) {
     return;
+  }
 
   if (stroke_style_->is_shared()) {
     SetStrokeStyle(MakeGarbageCollected<CanvasStyle>(color));
@@ -290,9 +291,10 @@ void CanvasRenderingContext2DState::SetStrokeStyle(CanvasStyle* style) {
   stroke_style_dirty_ = true;
 }
 
-void CanvasRenderingContext2DState::SetFillColor(RGBA32 color) {
-  if (fill_style_->IsEquivalentRGBA(color))
+void CanvasRenderingContext2DState::SetFillColor(Color color) {
+  if (fill_style_->IsEquivalentColor(color)) {
     return;
+  }
 
   if (fill_style_->is_shared()) {
     SetFillStyle(MakeGarbageCollected<CanvasStyle>(color));
@@ -348,8 +350,9 @@ void CanvasRenderingContext2DState::UpdateStrokeStyle() const {
 
   DCHECK(stroke_style_);
   stroke_style_->ApplyToFlags(stroke_flags_);
+  Color stroke_flag_color = stroke_style_->PaintColor();
   stroke_flags_.setColor(
-      ScaleAlpha(stroke_style_->PaintColor(), global_alpha_));
+      stroke_flag_color.CombineWithAlpha(global_alpha_).toSkColor4f());
   stroke_style_dirty_ = false;
 }
 
@@ -359,7 +362,9 @@ void CanvasRenderingContext2DState::UpdateFillStyle() const {
 
   DCHECK(fill_style_);
   fill_style_->ApplyToFlags(fill_flags_);
-  fill_flags_.setColor(ScaleAlpha(fill_style_->PaintColor(), global_alpha_));
+  Color fill_flag_color = fill_style_->PaintColor();
+  fill_flags_.setColor(
+      fill_flag_color.CombineWithAlpha(global_alpha_).toSkColor4f());
   fill_style_dirty_ = false;
 }
 
@@ -543,10 +548,10 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
   // incorporate the global alpha, which isn't applicable here.
   cc::PaintFlags fill_flags_for_filter;
   fill_style_->ApplyToFlags(fill_flags_for_filter);
-  fill_flags_for_filter.setColor(fill_style_->PaintColor());
+  fill_flags_for_filter.setColor(fill_style_->PaintColor().toSkColor4f());
   cc::PaintFlags stroke_flags_for_filter;
   stroke_style_->ApplyToFlags(stroke_flags_for_filter);
-  stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
+  stroke_flags_for_filter.setColor(stroke_style_->PaintColor().toSkColor4f());
 
   FilterEffectBuilder filter_effect_builder(
       gfx::RectF(gfx::SizeF(canvas_size)),
@@ -615,10 +620,10 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   // incorporate the global alpha, which isn't applicable here.
   cc::PaintFlags fill_flags_for_filter;
   fill_style_->ApplyToFlags(fill_flags_for_filter);
-  fill_flags_for_filter.setColor(fill_style_->PaintColor());
+  fill_flags_for_filter.setColor(fill_style_->PaintColor().toSkColor4f());
   cc::PaintFlags stroke_flags_for_filter;
   stroke_style_->ApplyToFlags(stroke_flags_for_filter);
-  stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
+  stroke_flags_for_filter.setColor(stroke_style_->PaintColor().toSkColor4f());
 
   FilterEffectBuilder filter_effect_builder(
       gfx::RectF(gfx::SizeF(canvas_size)),
@@ -663,7 +668,7 @@ sk_sp<SkDrawLooper>& CanvasRenderingContext2DState::ShadowOnlyDrawLooper()
   if (!shadow_only_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow_offset_, ClampTo<float>(shadow_blur_),
-                                  Color::FromSkColor(shadow_color_),
+                                  shadow_color_,
                                   DrawLooperBuilder::kShadowIgnoresTransforms,
                                   DrawLooperBuilder::kShadowRespectsAlpha);
     shadow_only_draw_looper_ = draw_looper_builder.DetachDrawLooper();
@@ -676,7 +681,7 @@ CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper() const {
   if (!shadow_and_foreground_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow_offset_, ClampTo<float>(shadow_blur_),
-                                  Color::FromSkColor(shadow_color_),
+                                  shadow_color_,
                                   DrawLooperBuilder::kShadowIgnoresTransforms,
                                   DrawLooperBuilder::kShadowRespectsAlpha);
     draw_looper_builder.AddUnmodifiedContent();
@@ -690,11 +695,9 @@ sk_sp<PaintFilter>& CanvasRenderingContext2DState::ShadowOnlyImageFilter()
   using ShadowMode = DropShadowPaintFilter::ShadowMode;
   if (!shadow_only_image_filter_) {
     const auto sigma = BlurRadiusToStdDev(shadow_blur_);
-    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
     shadow_only_image_filter_ = sk_make_sp<DropShadowPaintFilter>(
         shadow_offset_.x(), shadow_offset_.y(), sigma, sigma,
-        SkColor4f::FromColor(shadow_color_), ShadowMode::kDrawShadowOnly,
-        nullptr);
+        shadow_color_.toSkColor4f(), ShadowMode::kDrawShadowOnly, nullptr);
   }
   return shadow_only_image_filter_;
 }
@@ -707,8 +710,8 @@ CanvasRenderingContext2DState::ShadowAndForegroundImageFilter() const {
     // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
     shadow_and_foreground_image_filter_ = sk_make_sp<DropShadowPaintFilter>(
         shadow_offset_.x(), shadow_offset_.y(), sigma, sigma,
-        SkColor4f::FromColor(shadow_color_),
-        ShadowMode::kDrawShadowAndForeground, nullptr);
+        shadow_color_.toSkColor4f(), ShadowMode::kDrawShadowAndForeground,
+        nullptr);
   }
   return shadow_and_foreground_image_filter_;
 }
@@ -735,7 +738,7 @@ void CanvasRenderingContext2DState::SetShadowBlur(double shadow_blur) {
   ShadowParameterChanged();
 }
 
-void CanvasRenderingContext2DState::SetShadowColor(SkColor shadow_color) {
+void CanvasRenderingContext2DState::SetShadowColor(Color shadow_color) {
   shadow_color_ = shadow_color;
   ShadowParameterChanged();
 }

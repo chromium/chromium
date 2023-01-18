@@ -77,7 +77,7 @@ bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
   }
 }
 
-CanvasStyle::CanvasStyle(RGBA32 rgba) : type_(kColorRGBA), rgba_(rgba) {}
+CanvasStyle::CanvasStyle(Color color) : type_(kColor), color_(color) {}
 
 CanvasStyle::CanvasStyle(CanvasGradient* gradient)
     : type_(kGradient), gradient_(gradient) {}
@@ -88,7 +88,7 @@ CanvasStyle::CanvasStyle(CanvasPattern* pattern)
 void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags) const {
   ImageDrawOptions draw_options;
   switch (type_) {
-    case kColorRGBA:
+    case kColor:
       flags.setShader(nullptr);
       break;
     case kGradient:
@@ -104,11 +104,12 @@ void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags) const {
   }
 }
 
-RGBA32 CanvasStyle::PaintColor() const {
-  if (type_ == kColorRGBA)
-    return rgba_;
+Color CanvasStyle::PaintColor() const {
+  if (type_ == kColor) {
+    return color_;
+  }
   DCHECK(type_ == kGradient || type_ == kImagePattern);
-  return Color::kBlack.Rgb();
+  return Color::kBlack;
 }
 
 void CanvasStyle::Trace(Visitor* visitor) const {

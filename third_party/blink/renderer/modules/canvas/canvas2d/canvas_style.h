@@ -48,7 +48,7 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   // Only CanvasRenderingContext2DState is allowed to mutate this.
   using PassKey = base::PassKey<CanvasRenderingContext2DState>;
 
-  explicit CanvasStyle(RGBA32);
+  explicit CanvasStyle(Color);
   explicit CanvasStyle(CanvasGradient*);
   explicit CanvasStyle(CanvasPattern*);
 
@@ -59,17 +59,17 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   bool is_shared() const { return shared_; }
 
   String GetColorAsString() const {
-    DCHECK_EQ(type_, kColorRGBA);
-    return Color::FromRGBA32(rgba_).SerializeAsCanvasColor();
+    DCHECK_EQ(type_, kColor);
+    return color_.SerializeAsCanvasColor();
   }
   CanvasGradient* GetCanvasGradient() const { return gradient_.Get(); }
   CanvasPattern* GetCanvasPattern() const { return pattern_; }
 
   void ApplyToFlags(cc::PaintFlags&) const;
-  RGBA32 PaintColor() const;
+  Color PaintColor() const;
 
-  bool IsEquivalentRGBA(RGBA32 rgba) const {
-    return type_ == kColorRGBA && rgba_ == rgba;
+  bool IsEquivalentColor(Color color) const {
+    return type_ == kColor && color_ == color;
   }
 
   bool IsEquivalentPattern(CanvasPattern* pattern) const {
@@ -80,10 +80,10 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
     return type_ == kGradient && gradient_ == gradient;
   }
 
-  void SetColor(PassKey key, RGBA32 color) {
+  void SetColor(PassKey key, Color color) {
     DCHECK(!shared_);
-    type_ = kColorRGBA;
-    rgba_ = color;
+    type_ = kColor;
+    color_ = color;
     gradient_ = nullptr;
     pattern_ = nullptr;
   }
@@ -105,15 +105,13 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   void Trace(Visitor*) const;
 
  private:
-  enum Type { kColorRGBA, kGradient, kImagePattern };
+  enum Type { kColor, kGradient, kImagePattern };
 
   Type type_;
 
   bool shared_ = false;
 
-  // TODO(https://1351544): The CanvasStyle should be Color, not an SkColor or
-  // an SkColor4f.
-  RGBA32 rgba_;
+  Color color_;
 
   Member<CanvasGradient> gradient_;
   Member<CanvasPattern> pattern_;

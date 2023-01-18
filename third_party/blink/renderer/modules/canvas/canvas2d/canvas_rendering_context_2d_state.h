@@ -133,13 +133,13 @@ class CanvasRenderingContext2DState final
   void ClearResolvedFilter();
   void ValidateFilterState() const;
 
-  void SetStrokeColor(RGBA32 color);
+  void SetStrokeColor(Color color);
   void SetStrokePattern(CanvasPattern* pattern);
   void SetStrokeGradient(CanvasGradient* gradient);
   void SetStrokeStyle(CanvasStyle*);
   CanvasStyle* StrokeStyle() const { return stroke_style_.Get(); }
 
-  void SetFillColor(RGBA32 color);
+  void SetFillColor(Color color);
   void SetFillPattern(CanvasPattern* pattern);
   void SetFillGradient(CanvasGradient* gradient);
   void SetFillStyle(CanvasStyle*);
@@ -221,8 +221,8 @@ class CanvasRenderingContext2DState final
   void SetShadowBlur(double);
   double ShadowBlur() const { return shadow_blur_; }
 
-  void SetShadowColor(SkColor);
-  SkColor ShadowColor() const { return shadow_color_; }
+  void SetShadowColor(Color);
+  Color ShadowColor() const { return shadow_color_; }
 
   void SetGlobalAlpha(double);
   double GlobalAlpha() const { return global_alpha_; }
@@ -282,7 +282,7 @@ class CanvasRenderingContext2DState final
 
   gfx::Vector2dF shadow_offset_;
   double shadow_blur_;
-  SkColor shadow_color_;
+  Color shadow_color_;
   mutable sk_sp<SkDrawLooper> empty_draw_looper_;
   mutable sk_sp<SkDrawLooper> shadow_only_draw_looper_;
   mutable sk_sp<SkDrawLooper> shadow_and_foreground_draw_looper_;
@@ -348,7 +348,7 @@ class CanvasRenderingContext2DState final
 };
 
 ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
-  return SkColorGetA(shadow_color_) &&
+  return (!shadow_color_.IsTransparent()) &&
          (shadow_blur_ || !shadow_offset_.IsZero());
 }
 
