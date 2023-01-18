@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if VIZ_DEBUGGER_IS_ON()
@@ -102,65 +104,67 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
   size_t const kNumLogSubmission = static_cast<size_t>(
       std::min(GetInternal()->GetLogsTailIdx(), GetInternal()->GetLogsSize()));
 
-  absl::optional<base::Value> global_dict = GetInternal()->FrameAsJson(
-      frame_counter_, gfx::Size(window_x_, window_y_), base::TimeTicks());
+  absl::optional<base::Value> maybe_global_dict_val =
+      GetInternal()->FrameAsJson(
+          frame_counter_, gfx::Size(window_x_, window_y_), base::TimeTicks());
+  EXPECT_TRUE(maybe_global_dict_val);
+  EXPECT_TRUE(maybe_global_dict_val->is_dict());
+  const base::Value::Dict& global_dict = maybe_global_dict_val->GetDict();
+
   GetInternal()->GetRWLock()->WriteUnLock();
   frame_counter_++;
 
-  EXPECT_TRUE(global_dict->is_dict());
-
-  base::StringToUint64(global_dict->FindKey("frame")->GetString().c_str(),
-                       &counter_);
+  base::StringToUint64(global_dict.FindString("frame")->c_str(), &counter_);
   static const int kNoVal = -1;
-  int expected_version =
-      global_dict->FindKey("version")->GetIfInt().value_or(kNoVal);
+  int expected_version = global_dict.FindInt("version").value_or(kNoVal);
   // Check to update these unit tests if a backwards compatible change has
   // been made.
   EXPECT_EQ(1, expected_version);
 
-  window_x_ = global_dict->FindKey("windowx")->GetIfInt().value_or(kNoVal);
-  window_y_ = global_dict->FindKey("windowy")->GetIfInt().value_or(kNoVal);
+  window_x_ = global_dict.FindInt("windowx").value_or(kNoVal);
+  window_y_ = global_dict.FindInt("windowy").value_or(kNoVal);
 
-  base::Value* list_source = global_dict->FindListKey("new_sources");
-  EXPECT_TRUE(list_source->is_list());
+  const base::Value::List* list_source = global_dict.FindList("new_sources");
+  EXPECT_TRUE(list_source);
 
-  for (const auto& local_dict : list_source->GetList()) {
+  for (const auto& local_dict_val : *list_source) {
+    const base::Value::Dict& local_dict = local_dict_val.GetDict();
     StaticSource ss;
-    ss.file = local_dict.FindKey("file")->GetString();
-    ss.func = local_dict.FindKey("func")->GetString();
-    ss.anno = local_dict.FindKey("anno")->GetString();
-    ss.line = local_dict.FindKey("line")->GetIfInt().value_or(kNoVal);
-    ss.index = local_dict.FindKey("index")->GetIfInt().value_or(kNoVal);
+    ss.file = *local_dict.FindString("file");
+    ss.func = *local_dict.FindString("func");
+    ss.anno = *local_dict.FindString("anno");
+    ss.line = local_dict.FindInt("line").value_or(kNoVal);
+    ss.index = local_dict.FindInt("index").value_or(kNoVal);
     sources_cache_.push_back(ss);
   }
 
-  base::Value* draw_call_list = global_dict->FindListKey("drawcalls");
-  EXPECT_TRUE(draw_call_list->is_list());
+  const base::Value::List* draw_call_list = global_dict.FindList("drawcalls");
+  EXPECT_TRUE(draw_call_list);
 
-  auto func_common_call = [](const base::Value& dict, int* draw_index,
+  auto func_common_call = [](const base::Value::Dict& dict, int* draw_index,
                              int* source_index, int* thread_id,
                              VizDebugger::DrawOption* option) {
-    *draw_index = dict.FindKey("drawindex")->GetIfInt().value_or(kNoVal);
-    *source_index = dict.FindKey("source_index")->GetIfInt().value_or(kNoVal);
-    *thread_id = dict.FindKey("thread_id")->GetIfInt().value_or(kNoVal);
+    *draw_index = dict.FindInt("drawindex").value_or(kNoVal);
+    *source_index = dict.FindInt("source_index").value_or(kNoVal);
+    *thread_id = dict.FindInt("thread_id").value_or(kNoVal);
 
-    const base::Value* option_dict = dict.FindDictKey("option");
+    const base::Value::Dict* option_dict = dict.FindDict("option");
 
     uint32_t red;
     uint32_t green;
     uint32_t blue;
-    std::sscanf(option_dict->FindKey("color")->GetString().c_str(), "#%x%x%x",
-                &red, &green, &blue);
+    std::sscanf(option_dict->FindString("color")->c_str(), "#%x%x%x", &red,
+                &green, &blue);
 
     option->color_r = red;
     option->color_g = green;
     option->color_b = blue;
-    option->color_a = static_cast<uint8_t>(
-        option_dict->FindKey("alpha")->GetIfInt().value_or(kNoVal));
+    option->color_a =
+        static_cast<uint8_t>(option_dict->FindInt("alpha").value_or(kNoVal));
   };
 
   for (size_t i = 0; i < kNumDrawCallSubmission; i++) {
-    const base::Value& local_dict = draw_call_list->GetList()[i];
+    const base::Value::Dict& local_dict = (*draw_call_list)[i].GetDict();
     int draw_index;
     int source_index;
     int thread_id;
@@ -168,62 +172,59 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
     func_common_call(local_dict, &draw_index, &source_index, &thread_id,
                      &option);
 
-    const base::Value* list_size = local_dict.FindListKey("size");
-    EXPECT_TRUE(list_size->is_list());
-    int size_x = list_size->GetList()[0].GetIfInt().value_or(kNoVal);
-    int size_y = list_size->GetList()[1].GetIfInt().value_or(kNoVal);
+    const base::Value::List* list_size = local_dict.FindList("size");
+    EXPECT_TRUE(list_size);
+    int size_x = (*list_size)[0].GetIfInt().value_or(kNoVal);
+    int size_y = (*list_size)[1].GetIfInt().value_or(kNoVal);
 
-    const base::Value* list_pos = local_dict.FindListKey("pos");
-    EXPECT_TRUE(list_pos->is_list());
-    float pos_x = list_pos->GetList()[0].GetIfDouble().value_or(kNoVal);
-    float pos_y = list_pos->GetList()[1].GetIfDouble().value_or(kNoVal);
-
-    const base::Value* buffer_id = local_dict.FindKey("buff_id");
+    const base::Value::List* list_pos = local_dict.FindList("pos");
+    EXPECT_TRUE(list_pos);
+    float pos_x = (*list_pos)[0].GetIfDouble().value_or(kNoVal);
+    float pos_y = (*list_pos)[1].GetIfDouble().value_or(kNoVal);
 
     float uv_pos_x = 0.0;
     float uv_pos_y = 0.0;
     float uv_size_w = 1.0;
     float uv_size_h = 1.0;
-    const base::Value* list_uv_pos = local_dict.FindListKey("uv_pos");
-    const base::Value* list_uv_size = local_dict.FindListKey("uv_size");
-    if (local_dict.FindListKey("uv_pos")->GetIfList() &&
-        local_dict.FindListKey("uv_size")->GetIfList()) {
-      EXPECT_TRUE(list_uv_pos->is_list());
-      uv_pos_x = list_uv_pos->GetList()[0].GetIfDouble().value_or(0.0f);
-      uv_pos_y = list_uv_pos->GetList()[1].GetIfDouble().value_or(0.0f);
+    const base::Value::List* list_uv_pos = local_dict.FindList("uv_pos");
+    const base::Value::List* list_uv_size = local_dict.FindList("uv_size");
+    if (list_uv_pos && list_uv_size) {
+      uv_pos_x = (*list_uv_pos)[0].GetIfDouble().value_or(0.0f);
+      uv_pos_y = (*list_uv_pos)[1].GetIfDouble().value_or(0.0f);
 
-      EXPECT_TRUE(list_uv_size->is_list());
-      uv_size_w = list_uv_size->GetList()[0].GetIfDouble().value_or(1.0f);
-      uv_size_h = list_uv_size->GetList()[1].GetIfDouble().value_or(1.0f);
+      uv_size_w = (*list_uv_size)[0].GetIfDouble().value_or(1.0f);
+      uv_size_h = (*list_uv_size)[1].GetIfDouble().value_or(1.0f);
     }
 
+    const absl::optional<int> buffer_id = local_dict.FindInt("buff_id");
     VizDebuggerInternal::DrawCall draw_call(
         draw_index, source_index, thread_id, option, gfx::Size(size_x, size_y),
-        gfx::Vector2dF(pos_x, pos_y), buffer_id ? buffer_id->GetInt() : -1,
+        gfx::Vector2dF(pos_x, pos_y), buffer_id ? buffer_id.value() : -1,
         gfx::RectF(uv_pos_x, uv_pos_y, uv_size_w, uv_size_h));
 
     draw_rect_calls_cache_.push_back(draw_call);
   }
 
-  base::Value* buffer_map_dict = global_dict->FindKey("buff_map");
+  const base::Value::Dict* buffer_map_dict = global_dict.FindDict("buff_map");
   if (buffer_map_dict) {
-    for (base::Value::Dict::iterator itr = buffer_map_dict->GetDict().begin();
-         itr != buffer_map_dict->GetDict().end(); itr++) {
-      base::Value* buffer_dict = buffer_map_dict->FindKey(itr->first);
+    for (base::Value::Dict::const_iterator itr = buffer_map_dict->begin();
+         itr != buffer_map_dict->end(); itr++) {
+      const base::Value::Dict* buffer_dict =
+          buffer_map_dict->FindDict(itr->first);
       EXPECT_TRUE(buffer_dict);
-      int width = buffer_dict->FindKey("width")->GetIfInt().value_or(kNoVal);
-      int height = buffer_dict->FindKey("height")->GetIfInt().value_or(kNoVal);
-      base::Value* buffer_info = buffer_dict->FindKey("buffer");
-      EXPECT_TRUE(buffer_info->is_list());
+      int width = buffer_dict->FindInt("width").value_or(kNoVal);
+      int height = buffer_dict->FindInt("height").value_or(kNoVal);
+      const base::Value::List* buffer_info = buffer_dict->FindList("buffer");
+      EXPECT_TRUE(buffer_info);
       VizDebuggerInternal::BufferInfo buff;
       buff.bitmap.setInfo(SkImageInfo::Make(
           width, height, kBGRA_8888_SkColorType, kUnpremul_SkAlphaType));
       buff.bitmap.allocPixels();
-      for (size_t i = 0; i < buffer_info->GetList().size() / 4; i++) {
-        uint8_t temp1 = buffer_info->GetList()[i * 4].GetInt();
-        uint8_t temp2 = buffer_info->GetList()[i * 4 + 1].GetInt();
-        uint8_t temp3 = buffer_info->GetList()[i * 4 + 2].GetInt();
-        uint8_t temp4 = buffer_info->GetList()[i * 4 + 3].GetInt();
+      for (size_t i = 0; i < buffer_info->size() / 4; i++) {
+        uint8_t temp1 = (*buffer_info)[i * 4].GetInt();
+        uint8_t temp2 = (*buffer_info)[i * 4 + 1].GetInt();
+        uint8_t temp3 = (*buffer_info)[i * 4 + 2].GetInt();
+        uint8_t temp4 = (*buffer_info)[i * 4 + 3].GetInt();
         *buff.bitmap.getAddr32(i % width, i / width) =
             SkColorSetARGB(temp4, temp1, temp2, temp3);
       }
@@ -236,11 +237,11 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
     }
   }
 
-  base::Value* text_call_list = global_dict->FindListKey("text");
-  EXPECT_TRUE(text_call_list->is_list());
+  const base::Value::List* text_call_list = global_dict.FindList("text");
+  EXPECT_TRUE(text_call_list);
 
   for (size_t i = 0; i < kNumTextCallSubmission; i++) {
-    const base::Value& local_dict = text_call_list->GetList()[i];
+    const base::Value::Dict& local_dict = (*text_call_list)[i].GetDict();
     int draw_index;
     int source_index;
     int thread_id;
@@ -249,23 +250,23 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
     func_common_call(local_dict, &draw_index, &source_index, &thread_id,
                      &option);
 
-    const base::Value* list_pos = local_dict.FindListKey("pos");
-    EXPECT_TRUE(list_pos->is_list());
-    float pos_x = list_pos->GetList()[0].GetIfDouble().value_or(kNoVal);
-    float pos_y = list_pos->GetList()[1].GetIfDouble().value_or(kNoVal);
+    const base::Value::List* list_pos = local_dict.FindList("pos");
+    EXPECT_TRUE(list_pos);
+    float pos_x = (*list_pos)[0].GetIfDouble().value_or(kNoVal);
+    float pos_y = (*list_pos)[1].GetIfDouble().value_or(kNoVal);
 
     VizDebuggerInternal::DrawTextCall text_call(
         draw_index, source_index, thread_id, option,
-        gfx::Vector2dF(pos_x, pos_y), local_dict.FindKey("text")->GetString());
+        gfx::Vector2dF(pos_x, pos_y), *local_dict.FindString("text"));
 
     draw_text_calls_cache_.push_back(text_call);
   }
 
-  base::Value* log_call_list = global_dict->FindListKey("logs");
-  EXPECT_TRUE(log_call_list->is_list());
+  const base::Value::List* log_call_list = global_dict.FindList("logs");
+  EXPECT_TRUE(log_call_list);
 
   for (size_t i = 0; i < kNumLogSubmission; i++) {
-    const base::Value& local_dict = log_call_list->GetList()[i];
+    const base::Value::Dict& local_dict = (*log_call_list)[i].GetDict();
     int draw_index;
     int source_index;
     int thread_id;
@@ -273,9 +274,9 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
     func_common_call(local_dict, &draw_index, &source_index, &thread_id,
                      &option);
 
-    VizDebuggerInternal::LogCall log_call(
-        draw_index, source_index, thread_id, option,
-        local_dict.FindKey("value")->GetString());
+    VizDebuggerInternal::LogCall log_call(draw_index, source_index, thread_id,
+                                          option,
+                                          *local_dict.FindString("value"));
 
     log_calls_cache_.push_back(log_call);
   }
