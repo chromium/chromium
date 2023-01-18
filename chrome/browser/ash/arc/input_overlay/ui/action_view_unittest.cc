@@ -61,16 +61,15 @@ class ActionViewTest : public views::ViewsTestBase {
   ActionViewTest() = default;
 
   void PressLeftMouseAtActionView() {
-    // Press down at the center of the action view. For ActionMove view, the
-    // center is same as the touch down position.
-    local_location_ = action_view_->bounds().CenterPoint();
+    // Press down at the center of the touch point.
+    local_location_ = action_view_->touch_point()->bounds().CenterPoint();
     const auto root_location = action_->touch_down_positions()[0];
     root_location_ = gfx::Point((int)root_location.x(), (int)root_location.y());
     auto press =
         ui::MouseEvent(ui::ET_MOUSE_PRESSED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
-    action_view_->OnMousePressed(press);
+    action_view_->touch_point()->ApplyMousePressed(press);
   }
 
   void MouseDragActionViewBy(const gfx::Vector2d& move) {
@@ -79,7 +78,7 @@ class ActionViewTest : public views::ViewsTestBase {
     auto drag =
         ui::MouseEvent(ui::ET_MOUSE_DRAGGED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
-    action_view_->OnMouseDragged(drag);
+    action_view_->touch_point()->ApplyMouseDragged(drag);
   }
 
   void ReleaseLeftMouse() {
@@ -87,10 +86,12 @@ class ActionViewTest : public views::ViewsTestBase {
         ui::MouseEvent(ui::ET_MOUSE_RELEASED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
-    action_view_->OnMouseReleased(release);
+    action_view_->touch_point()->ApplyMouseReleased(release);
   }
 
   void TouchPressAtActionView() {
+    // Press down at the center of the touch point, which is the touch down
+    // position.
     const auto& root_location = action_->touch_down_positions()[0];
     root_location_ = gfx::Point((int)root_location.x(), (int)root_location.y());
 
@@ -98,7 +99,7 @@ class ActionViewTest : public views::ViewsTestBase {
         root_location_.x(), root_location_.y(), ui::EF_NONE,
         base::TimeTicks::Now(),
         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, 0));
-    action_view_->OnGestureEvent(&scroll_begin);
+    action_view_->touch_point()->ApplyGestureEvent(&scroll_begin);
   }
 
   void TouchMoveAtActionViewBy(const gfx::Vector2d& move) {
@@ -108,7 +109,7 @@ class ActionViewTest : public views::ViewsTestBase {
                          base::TimeTicks::Now(),
                          ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE,
                                                  move.x(), move.y()));
-    action_view_->OnGestureEvent(&scroll_update);
+    action_view_->touch_point()->ApplyGestureEvent(&scroll_update);
   }
 
   void TouchReleaseAtActionView() {
@@ -116,7 +117,7 @@ class ActionViewTest : public views::ViewsTestBase {
         ui::GestureEvent(root_location_.x(), root_location_.y(), ui::EF_NONE,
                          base::TimeTicks::Now(),
                          ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
-    action_view_->OnGestureEvent(&scroll_end);
+    action_view_->touch_point()->ApplyGestureEvent(&scroll_end);
   }
 
   raw_ptr<ActionView> action_view_;
@@ -197,9 +198,9 @@ TEST_F(ActionViewTest, TestDragMove) {
 TEST_F(ActionViewTest, TestArrowKeyMove) {
   // Arrow key left single press & release.
   auto updated_pos = action_->touch_down_positions()[0];
-  action_view_->OnKeyPressed(
+  action_view_->touch_point()->OnKeyPressed(
       ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_LEFT, ui::EF_NONE));
-  action_view_->OnKeyReleased(
+  action_view_->touch_point()->OnKeyReleased(
       ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_LEFT, ui::EF_NONE));
   action_->BindPending();
   auto move_left = gfx::Vector2d(-kArrowKeyMoveDistance, 0);
@@ -209,9 +210,9 @@ TEST_F(ActionViewTest, TestArrowKeyMove) {
 
   // Arrow key down single press & release.
   updated_pos = action_->touch_down_positions()[0];
-  action_view_->OnKeyPressed(
+  action_view_->touch_point()->OnKeyPressed(
       ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE));
-  action_view_->OnKeyReleased(
+  action_view_->touch_point()->OnKeyReleased(
       ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_DOWN, ui::EF_NONE));
   action_->BindPending();
   auto move_down = gfx::Vector2d(0, kArrowKeyMoveDistance);
@@ -224,11 +225,11 @@ TEST_F(ActionViewTest, TestArrowKeyMove) {
   int key_press_times = 5;
   auto move_right = gfx::Vector2d(kArrowKeyMoveDistance, 0);
   for (int i = 0; i < key_press_times; i++) {
-    action_view_->OnKeyPressed(
+    action_view_->touch_point()->OnKeyPressed(
         ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE));
     updated_pos += move_right;
   }
-  action_view_->OnKeyReleased(
+  action_view_->touch_point()->OnKeyReleased(
       ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_RIGHT, ui::EF_NONE));
   action_->BindPending();
   EXPECT_POINTF_NEAR(updated_pos, action_->touch_down_positions()[0],

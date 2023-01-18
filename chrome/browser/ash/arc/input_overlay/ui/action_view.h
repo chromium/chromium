@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_circle.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_button.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view.h"
@@ -29,8 +30,8 @@ constexpr int kDefaultLabelIndex = -1;
 // ActionView is the view for each action.
 class ActionView : public views::View {
  public:
-  explicit ActionView(Action* action,
-                      DisplayOverlayController* display_overlay_controller);
+  ActionView(Action* action,
+             DisplayOverlayController* display_overlay_controller);
   ActionView(const ActionView&) = delete;
   ActionView& operator=(const ActionView&) = delete;
   ~ActionView() override;
@@ -44,6 +45,7 @@ class ActionView : public views::View {
   virtual void OnBindingToMouse(std::string mouse_action) = 0;
   // Each type of the actions shows different edit menu.
   virtual void OnMenuEntryPressed() = 0;
+  virtual void AddTouchPoint() = 0;
 
   // TODO(cuicuiruan): Remove virtual for post MVP once edit menu is ready for
   // |ActionMove|.
@@ -82,18 +84,19 @@ class ActionView : public views::View {
   bool ShouldShowErrorMsg(ui::DomCode code,
                           ActionLabel* editing_label = nullptr);
 
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
-  bool OnKeyReleased(const ui::KeyEvent& event) override;
+  bool ApplyMousePressed(const ui::MouseEvent& event);
+  bool ApplyMouseDragged(const ui::MouseEvent& event);
+  void ApplyMouseReleased(const ui::MouseEvent& event);
+  void ApplyGestureEvent(ui::GestureEvent* event);
+  bool ApplyKeyPressed(const ui::KeyEvent& event);
+  bool ApplyKeyReleased(const ui::KeyEvent& event);
+
   void OnFocus() override;
   void OnBlur() override;
 
   Action* action() { return action_; }
   const std::vector<ActionLabel*>& labels() const { return labels_; }
+  TouchPoint* touch_point() { return touch_point_; }
   void set_editable(bool editable) { editable_ = editable; }
   DisplayOverlayController* display_overlay_controller() {
     return display_overlay_controller_;
@@ -106,6 +109,8 @@ class ActionView : public views::View {
 
  protected:
   void UpdateTrashButtonPosition();
+
+  void AddTouchPoint(ActionType action_type);
 
   // Reference to the action of this UI.
   raw_ptr<Action> action_ = nullptr;
@@ -134,6 +139,8 @@ class ActionView : public views::View {
   void RemoveTrashButton();
   void OnTrashButtonPressed();
 
+  void RemoveTouchPoint();
+
   // Drag operations.
   void OnDragStart(const ui::LocatedEvent& event);
   bool OnDragUpdate(const ui::LocatedEvent& event);
@@ -145,6 +152,10 @@ class ActionView : public views::View {
   int unbind_label_index_ = kDefaultLabelIndex;
   // The position when starting to drag.
   gfx::Point start_drag_event_pos_;
+  // Touch point only shows up in the edit mode for users to align the position.
+  // This view owns the touch point as one of its children and |touch_point_|
+  // is for quick access.
+  raw_ptr<TouchPoint> touch_point_ = nullptr;
   // TODO(b/250900717): Update when the final UX/UI is ready.
   raw_ptr<views::ImageButton> trash_button_ = nullptr;
 

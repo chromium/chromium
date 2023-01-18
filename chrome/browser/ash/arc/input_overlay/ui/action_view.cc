@@ -74,7 +74,7 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
     if (!IsInputBound(action_->GetCurrentDisplayedInput()))
       SetVisible(false);
     if (allow_reposition_)
-      SetFocusBehavior(FocusBehavior::NEVER);
+      RemoveTouchPoint();
   }
   if (mode == DisplayMode::kEdit) {
     AddEditButton();
@@ -82,7 +82,7 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
     if (!IsInputBound(*action_->current_input()))
       SetVisible(true);
     if (allow_reposition_)
-      SetFocusBehavior(FocusBehavior::ALWAYS);
+      AddTouchPoint();
   }
 
   if (show_circle() && circle_)
@@ -185,25 +185,25 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
   return false;
 }
 
-bool ActionView::OnMousePressed(const ui::MouseEvent& event) {
+bool ActionView::ApplyMousePressed(const ui::MouseEvent& event) {
   if (!allow_reposition_)
     return false;
   OnDragStart(event);
   return true;
 }
 
-bool ActionView::OnMouseDragged(const ui::MouseEvent& event) {
+bool ActionView::ApplyMouseDragged(const ui::MouseEvent& event) {
   return allow_reposition_ ? OnDragUpdate(event) : false;
 }
 
-void ActionView::OnMouseReleased(const ui::MouseEvent& event) {
+void ActionView::ApplyMouseReleased(const ui::MouseEvent& event) {
   if (!allow_reposition_)
     return;
   OnDragEnd();
   RecordInputOverlayActionReposition(RepositionType::kMouseDragRepostion);
 }
 
-void ActionView::OnGestureEvent(ui::GestureEvent* event) {
+void ActionView::ApplyGestureEvent(ui::GestureEvent* event) {
   if (!allow_reposition_)
     return;
   switch (event->type()) {
@@ -227,7 +227,7 @@ void ActionView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-bool ActionView::OnKeyPressed(const ui::KeyEvent& event) {
+bool ActionView::ApplyKeyPressed(const ui::KeyEvent& event) {
   auto current_pos = origin();
   if (!allow_reposition_ ||
       !UpdatePositionByArrowKey(event.key_code(), current_pos)) {
@@ -238,7 +238,7 @@ bool ActionView::OnKeyPressed(const ui::KeyEvent& event) {
   return true;
 }
 
-bool ActionView::OnKeyReleased(const ui::KeyEvent& event) {
+bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
   if (!allow_reposition_ || !ash::IsArrowKeyEvent(event))
     return View::OnKeyReleased(event);
 
@@ -318,6 +318,21 @@ void ActionView::OnTrashButtonPressed() {
     return;
 
   display_overlay_controller_->OnActionTrashButtonPressed(action_);
+}
+
+void ActionView::AddTouchPoint(ActionType action_type) {
+  if (touch_point_)
+    return;
+
+  touch_point_ = TouchPoint::Show(this, action_type, center_);
+}
+
+void ActionView::RemoveTouchPoint() {
+  if (!touch_point_)
+    return;
+
+  RemoveChildViewT(touch_point_);
+  touch_point_ = nullptr;
 }
 
 void ActionView::UpdateTrashButtonPosition() {

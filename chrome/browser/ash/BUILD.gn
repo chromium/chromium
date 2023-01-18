@@ -412,6 +412,8 @@ source_set("ash") {
     "arc/input_overlay/ui/menu_entry_view.h",
     "arc/input_overlay/ui/message_view.cc",
     "arc/input_overlay/ui/message_view.h",
+    "arc/input_overlay/ui/touch_point.cc",
+    "arc/input_overlay/ui/touch_point.h",
     "arc/input_overlay/util.cc",
     "arc/input_overlay/util.h",
     "arc/instance_throttle/arc_active_window_throttle_observer.cc",

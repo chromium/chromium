@@ -139,6 +139,8 @@ class ActionTap::ActionTapView : public ActionView {
     menu_entry_->RequestFocus();
   }
 
+  void AddTouchPoint() override { ActionView::AddTouchPoint(ActionType::TAP); }
+
   void ChildPreferredSizeChanged(View* child) override {
     DCHECK_EQ(1u, labels_.size());
     if (static_cast<ActionLabel*>(child) != labels_[0])
