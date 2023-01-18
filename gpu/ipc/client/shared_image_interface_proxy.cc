@@ -167,9 +167,6 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  // IO surface needs sync token.
-  DCHECK_NE(buffer_handle.type, gfx::IO_SURFACE_BUFFER);
-
   // TODO(kylechar): Verify buffer_handle works for size+format.
 
   auto mailbox = Mailbox::GenerateForSharedImage();
