@@ -579,7 +579,15 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
             if (mBatchEditNestCount == 1) {
                 mPreBatchEditState.copyFrom(mCurrentState);
             } else if (mDeletePostfixOnNextBeginImeCommand > 0) {
+                // Note: in languages that rely on character composition, the last incomplete
+                // character may not be recognized as part of the string, but it may still be
+                // accounted for by the mDeletePostfixOnNextBeginImeCommand.
+                // In such case, the text below is actually shorter than the user input, and the
+                // computed string boundaries enter negative index space.
                 int len = mDelegate.getText().length();
+                if (mDeletePostfixOnNextBeginImeCommand > len) {
+                    mDeletePostfixOnNextBeginImeCommand = len;
+                }
                 mDelegate.getText().delete(len - mDeletePostfixOnNextBeginImeCommand, len);
             }
             mDeletePostfixOnNextBeginImeCommand = 0;
