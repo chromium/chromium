@@ -906,13 +906,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       [self autofillManagerFromWebState:webState webFrame:frame];
   if (!autofillManager || !success || forms.empty())
     return;
-  // AutofillDriverIOSWebFrame will keep a refcountable AutofillDriverIOS.
-  // This is a workaround crbug.com/892612. On submission,
-  // AutofillDownloadManager and CreditCardSaveManager expect
-  // BrowserAutofillManager and AutofillDriver to live after web frame deletion
-  // so AutofillAgent will keep the latest submitted AutofillDriver alive.
+  // AutofillDriverIOSWebFrame keeps a refcountable AutofillDriverIOS. This is a
+  // workaround crbug.com/892612. On submission, AutofillDownloadManager starts
+  // asynchronous tasks, which would be cancelled immediately if the
+  // BrowserAutofillManager (which owns AutofillDownloadManager) was destroyed
+  // immediately. For that reason, AutofillAgent keeps the latest submitted
+  // AutofillDriver alive.
   // TODO(crbug.com/892612): remove this workaround once life cycle of
-  // BrowserAutofillManager is fixed.
+  // AutofillDownloadManager is fixed.
   DCHECK(frame);
   _last_submitted_autofill_driver =
       autofill::AutofillDriverIOSWebFrame::FromWebFrame(frame)
