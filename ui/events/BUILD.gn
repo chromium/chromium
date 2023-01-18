@@ -512,6 +512,8 @@ static_library("test_support") {
     "test/motion_event_test_utils.h",
     "test/platform_event_source_test_api.cc",
     "test/platform_event_source_test_api.h",
+    "test/scoped_event_waiter.cc",
+    "test/scoped_event_waiter.h",
     "test/test_event.cc",
     "test/test_event.h",
     "test/test_event_handler.cc",
@@ -631,6 +633,7 @@ if (!is_ios) {
       "mojom/mojom_traits_unittest.cc",
       "platform/platform_event_source_unittest.cc",
       "scoped_target_handler_unittest.cc",
+      "test/scoped_event_waiter_unittest.cc",
     ]
 
     if (is_mac) {
