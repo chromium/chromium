@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
+#include "base/values.h"
 
 class PrefService;
 
@@ -24,6 +25,16 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
                                   mojom::Keyboard* keyboard) override;
   void UpdateKeyboardSettings(PrefService* pref_service,
                               const mojom::Keyboard& keyboard) override;
+
+ private:
+  mojom::KeyboardSettingsPtr GetNewKeyboardSettings(
+      const mojom::Keyboard& keyboard);
+  mojom::KeyboardSettingsPtr RetreiveKeyboardSettings(
+      PrefService* prefs,
+      const mojom::Keyboard& keyboard,
+      const base::Value::Dict& settings_dict);
+
+  bool IsValidModifier(int val);
 };
 
 }  // namespace ash
