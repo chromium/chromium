@@ -2437,6 +2437,7 @@
     {
       name: "RTCSvcScalabilityMode",
       status: "experimental",
+      base_feature: "RTCSvcScalabilityMode",
     },
     {
       name: "SanitizerAPI",
