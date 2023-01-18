@@ -12,7 +12,7 @@ import {toSandboxedURL} from '../../common/js/url_constants.js';
  * When tapped, 'files-safe-media-tap-inside', 'files-safe-media-tap-outside'
  * events are fired depending on the position of the tap.
  */
-const FilesSafeMedia = Polymer({
+export const FilesSafeMedia = Polymer({
   _template: html`{__html_template__}`,
 
   is: 'files-safe-media',

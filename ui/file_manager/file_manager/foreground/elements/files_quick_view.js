@@ -14,6 +14,8 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {toSandboxedURL} from '../../common/js/url_constants.js';
 
+import {FilesSafeMedia} from './files_safe_media.js';
+
 export const FilesQuickView = Polymer({
   _template: html`{__html_template__}`,
 
@@ -164,7 +166,8 @@ export const FilesQuickView = Polymer({
     // Remove the video's untrusted <iframe> child. The <iframe> contains the
     // <video> element. Removing the <iframe> removes the <video>: that stops
     // the video and its audio track playing: crbug.com/970192
-    const video = this.$.contentPanel.querySelector('#videoSafeMedia');
+    const video = /** @type {?FilesSafeMedia} */
+        (this.$.contentPanel.querySelector('#videoSafeMedia'));
     if (video) {
       video.src = /** @type {!FilePreviewContent} */ ({
         data: null,
@@ -359,10 +362,10 @@ export const FilesQuickView = Polymer({
     if (this.isAudio_(type)) {
       return sourceContent;
     }
-    return {
+    return /** @type {!FilePreviewContent} */ ({
       data: null,
       dataType: '',
-    };
+    });
   },
 
   /**
