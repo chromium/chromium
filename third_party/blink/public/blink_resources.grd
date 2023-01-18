@@ -20,6 +20,7 @@
         <include name="IDR_UASTYLE_THEME_MAC_CSS" file="../renderer/core/html/resources/mac.css" type="BINDATA" compress="brotli"/>
       </if>
       <include name="IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS" file="../renderer/core/html/resources/input_multiple_fields.css" type="BINDATA" compress="brotli"/>
+      <include name="IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_INLINE_FLEX_CSS" file="../renderer/core/html/resources/input_multiple_fields_inline_flex.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_THEME_FORCED_COLORS_CSS" file="../renderer/core/html/resources/forced_colors.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_POPOVER_CSS" file="../renderer/core/css/popover.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_SELECTMENU_CSS" file="../renderer/core/html/resources/selectmenu.css" flattenhtml="true" type="BINDATA" compress="brotli"/>

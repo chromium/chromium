@@ -10,7 +10,7 @@
 test(function(t) {
   const axInputElement =
       accessibilityController.accessibleElementById("dateInput");
-  const axButton = axInputElement.childAtIndex(1);
+  const axButton = axInputElement.childAtIndex(0).childAtIndex(1);
   assert_true(axButton.hasDefaultAction());
 
 }, "Test there is a default action for the button in input type=date");
@@ -18,7 +18,7 @@ test(function(t) {
 test(function(t) {
   const axInputElement =
       accessibilityController.accessibleElementById("timeInput");
-  const axButton = axInputElement.childAtIndex(1);
+  const axButton = axInputElement.childAtIndex(0).childAtIndex(1);
   assert_true(axButton.hasDefaultAction());
 
 }, "Test there is a default action for the button in input type=time");

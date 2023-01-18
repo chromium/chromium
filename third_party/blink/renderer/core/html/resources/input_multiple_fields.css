@@ -14,8 +14,6 @@ input[type="datetime-local" i],
 input[type="month" i],
 input[type="time" i],
 input[type="week" i] {
-    align-items: center;
-    display: inline-flex;
     font-family: monospace;
     overflow: hidden;
     padding: 0;
@@ -29,6 +27,12 @@ input::-webkit-datetime-edit {
     -webkit-user-modify: read-only !important;
     display: inline-block;
     overflow: hidden;
+}
+
+input::-internal-datetime-container {
+    display: flex;
+    align-items: center;
+    -internal-align-self-block: center;
 }
 
 input::-webkit-datetime-edit-fields-wrapper {

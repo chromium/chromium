@@ -1,0 +1,17 @@
+/* Copyright 2014 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* This stylesheet is used to revert to the old behavior before
+ * http://crrev.com/c/2555698. Once the new behavior is launched without
+ * issues, this should be removed. */
+
+input[type="date" i],
+input[type="datetime-local" i],
+input[type="month" i],
+input[type="time" i],
+input[type="week" i] {
+    align-items: center;
+    display: inline-flex;
+}
