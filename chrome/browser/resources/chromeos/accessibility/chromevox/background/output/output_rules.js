@@ -7,7 +7,7 @@
  */
 import {AbstractRole, ChromeVoxRole, CustomRole} from '../../common/role_type.js';
 
-import {OutputCustomEvent, OutputEventType} from './output_types.js';
+import {OutputCustomEvent, OutputEventType, OutputFormatType} from './output_types.js';
 
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
@@ -117,13 +117,28 @@ export class AncestryOutputRule extends OutputRule {
    */
   constructor(eventType, nodeRole, parentRole, formatName) {
     super(eventType);
+    /** @private {string|undefined} */
+    this.formatName_ = formatName;
+
     this.populateRole(nodeRole, parentRole, formatName);
     this.populateNavigation(formatName);
   }
+
   /** @param {string|undefined} formatName */
   populateNavigation(formatName) {
     if (formatName && OutputRule.RULES[this.event_][this.role_][formatName]) {
       this.navigation_ = formatName;
+    }
+  }
+
+  /** @param {boolean} tryBraille */
+  populateOutput(tryBraille) {
+    const rule = OutputRule.RULES[this.event_][this.role_][this.formatName_];
+    if (rule && rule.speak) {
+      this.output_ = OutputFormatType.SPEAK;
+    }
+    if (rule && tryBraille && rule.braille) {
+      this.output_ = OutputFormatType.BRAILLE;
     }
   }
 }

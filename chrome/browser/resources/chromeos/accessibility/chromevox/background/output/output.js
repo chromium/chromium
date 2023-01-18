@@ -877,16 +877,11 @@ export class Output {
       // First, look up the event type's format block.
       const eventBlock = OutputRule.RULES[rule.event];
 
+      rule.populateOutput(this.formatOptions_.braille);
       if (eventBlock[rule.role][formatName]) {
-        rule.output = eventBlock[rule.role][formatName].speak ?
-            outputTypes.OutputFormatType.SPEAK :
-            undefined;
         if (this.formatOptions_.braille) {
           buff = [];
           formatLog.bufferClear();
-          if (eventBlock[rule.role][formatName].braille) {
-            rule.output = outputTypes.OutputFormatType.BRAILLE;
-          }
         }
 
         excludeRoles.add(formatNode.role);
