@@ -23,12 +23,12 @@
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
@@ -81,7 +81,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }  // namespace
 
 @interface BookmarksEditorViewController () <
-    BookmarkFolderViewControllerDelegate,
+    BookmarksFolderChooserViewControllerDelegate,
     BookmarkModelBridgeObserver,
     BookmarkTextFieldItemDelegate> {
   // Flag to ignore bookmark model changes notifications.
@@ -105,7 +105,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 // The folder picker view controller.
 // Redefined to be readwrite.
-@property(nonatomic, strong) BookmarkFolderViewController* folderViewController;
+@property(nonatomic, strong)
+    BookmarksFolderChooserViewController* folderViewController;
 
 @property(nonatomic, assign) Browser* browser;
 
@@ -449,8 +450,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
   std::set<const BookmarkNode*> editedNodes;
   editedNodes.insert(self.bookmark);
-  BookmarkFolderViewController* folderViewController =
-      [[BookmarkFolderViewController alloc]
+  BookmarksFolderChooserViewController* folderViewController =
+      [[BookmarksFolderChooserViewController alloc]
           initWithBookmarkModel:self.bookmarkModel
                allowsNewFolders:YES
                     editedNodes:editedNodes
@@ -553,9 +554,9 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   return footerView;
 }
 
-#pragma mark - BookmarkFolderViewControllerDelegate
+#pragma mark - BookmarksFolderChooserViewControllerDelegate
 
-- (void)folderPicker:(BookmarkFolderViewController*)folderPicker
+- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const BookmarkNode*)folder {
   [self changeFolder:folder];
   // This delegate method can be called on two occasions:
@@ -571,7 +572,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   self.folderViewController = nil;
 }
 
-- (void)folderPickerDidCancel:(BookmarkFolderViewController*)folderPicker {
+- (void)folderPickerDidCancel:
+    (BookmarksFolderChooserViewController*)folderPicker {
   // This delegate method can only be called from the folder picker, which is
   // the only view controller on top of this bookmark editor (`self`). Thus the
   // call to `popViewControllerAnimated:`.
@@ -580,7 +582,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   self.folderViewController = nil;
 }
 
-- (void)folderPickerDidDismiss:(BookmarkFolderViewController*)folderPicker {
+- (void)folderPickerDidDismiss:
+    (BookmarksFolderChooserViewController*)folderPicker {
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;
   [self dismissBookmarkEditView];

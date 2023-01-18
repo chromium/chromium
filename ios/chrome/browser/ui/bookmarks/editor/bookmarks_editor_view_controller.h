@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @class BookmarksEditorViewController;
-@class BookmarkFolderViewController;
 class Browser;
 @protocol SnackbarCommands;
 

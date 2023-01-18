@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
@@ -32,6 +31,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -74,7 +74,7 @@ enum class PresentedState {
 @interface BookmarkInteractionController () <
     BookmarksEditorViewControllerDelegate,
     BookmarksFolderEditorViewControllerDelegate,
-    BookmarkFolderViewControllerDelegate,
+    BookmarksFolderChooserViewControllerDelegate,
     BookmarkHomeViewControllerDelegate,
     TableViewPresentationControllerDelegate> {
   // The browser bookmarks are presented in.
@@ -121,7 +121,8 @@ enum class PresentedState {
 
 // A reference to the potentially presented folder selector. This will be
 // non-nil when `currentPresentedState` is FOLDER_SELECTION.
-@property(nonatomic, strong) BookmarkFolderViewController* folderSelector;
+@property(nonatomic, strong)
+    BookmarksFolderChooserViewController* folderSelector;
 
 @property(nonatomic, copy) void (^folderSelectionCompletionBlock)
     (const bookmarks::BookmarkNode*);
@@ -295,7 +296,7 @@ enum class PresentedState {
   self.folderSelectionCompletionBlock = [block copy];
 
   std::set<const BookmarkNode*> editedNodes;
-  self.folderSelector = [[BookmarkFolderViewController alloc]
+  self.folderSelector = [[BookmarksFolderChooserViewController alloc]
       initWithBookmarkModel:self.bookmarkModel
            allowsNewFolders:YES
                 editedNodes:editedNodes
@@ -520,9 +521,9 @@ enum class PresentedState {
   [self.delegate bookmarkInteractionControllerWillCommitTitleOrUrlChange:self];
 }
 
-#pragma mark - BookmarkFolderViewControllerDelegate
+#pragma mark - BookmarksFolderChooserViewControllerDelegate
 
-- (void)folderPicker:(BookmarkFolderViewController*)folderPicker
+- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const bookmarks::BookmarkNode*)folder {
   [self dismissFolderSelectionAnimated:YES];
 
@@ -531,11 +532,13 @@ enum class PresentedState {
   }
 }
 
-- (void)folderPickerDidCancel:(BookmarkFolderViewController*)folderPicker {
+- (void)folderPickerDidCancel:
+    (BookmarksFolderChooserViewController*)folderPicker {
   [self dismissFolderSelectionAnimated:YES];
 }
 
-- (void)folderPickerDidDismiss:(BookmarkFolderViewController*)folderPicker {
+- (void)folderPickerDidDismiss:
+    (BookmarksFolderChooserViewController*)folderPicker {
   [self dismissFolderSelectionAnimated:YES];
 }
 

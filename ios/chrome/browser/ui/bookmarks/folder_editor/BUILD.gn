@@ -23,6 +23,7 @@ source_set("folder_editor") {
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/bookmarks/folder_chooser",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/icons",
@@ -35,4 +36,6 @@ source_set("folder_editor") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+  allow_circular_includes_from =
+      [ "//ios/chrome/browser/ui/bookmarks/folder_chooser" ]
 }

@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_shared_state.h"
@@ -48,6 +47,7 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
@@ -123,19 +123,20 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 }  // namespace
 
-@interface BookmarkHomeViewController () <BookmarkFolderViewControllerDelegate,
-                                          BookmarkHomeConsumer,
-                                          BookmarkHomeSharedStateObserver,
-                                          BookmarkInteractionControllerDelegate,
-                                          BookmarkModelBridgeObserver,
-                                          BookmarkTableCellTitleEditDelegate,
-                                          TableViewURLDragDataSource,
-                                          TableViewURLDropDelegate,
-                                          UIGestureRecognizerDelegate,
-                                          UISearchControllerDelegate,
-                                          UISearchResultsUpdating,
-                                          UITableViewDataSource,
-                                          UITableViewDelegate> {
+@interface BookmarkHomeViewController () <
+    BookmarksFolderChooserViewControllerDelegate,
+    BookmarkHomeConsumer,
+    BookmarkHomeSharedStateObserver,
+    BookmarkInteractionControllerDelegate,
+    BookmarkModelBridgeObserver,
+    BookmarkTableCellTitleEditDelegate,
+    TableViewURLDragDataSource,
+    TableViewURLDropDelegate,
+    UIGestureRecognizerDelegate,
+    UISearchControllerDelegate,
+    UISearchResultsUpdating,
+    UITableViewDataSource,
+    UITableViewDelegate> {
   // Bridge to register for bookmark changes.
   std::unique_ptr<BookmarkModelBridge> _bridge;
 
@@ -161,7 +162,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // The view controller used to pick a folder in which to move the selected
 // bookmarks.
-@property(nonatomic, strong) BookmarkFolderViewController* folderSelector;
+@property(nonatomic, strong)
+    BookmarksFolderChooserViewController* folderSelector;
 
 // FaviconLoader is a keyed service that uses LargeIconService to retrieve
 // favicon images.
@@ -634,13 +636,13 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK(nodes.size() > 0);
   const BookmarkNode* editedNode = *(nodes.begin());
   const BookmarkNode* selectedFolder = editedNode->parent();
-  self.folderSelector =
-      [[BookmarkFolderViewController alloc] initWithBookmarkModel:self.bookmarks
-                                                 allowsNewFolders:YES
-                                                      editedNodes:nodes
-                                                     allowsCancel:YES
-                                                   selectedFolder:selectedFolder
-                                                          browser:self.browser];
+  self.folderSelector = [[BookmarksFolderChooserViewController alloc]
+      initWithBookmarkModel:self.bookmarks
+           allowsNewFolders:YES
+                editedNodes:nodes
+               allowsCancel:YES
+             selectedFolder:selectedFolder
+                    browser:self.browser];
   self.folderSelector.delegate = self;
   self.folderSelector.snackbarCommandsHandler = self.snackbarCommandsHandler;
   UINavigationController* navController = [[BookmarkNavigationController alloc]
@@ -881,9 +883,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self refreshContents];
 }
 
-#pragma mark - BookmarkFolderViewControllerDelegate
+#pragma mark - BookmarksFolderChooserViewControllerDelegate
 
-- (void)folderPicker:(BookmarkFolderViewController*)folderPicker
+- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const BookmarkNode*)folder {
   DCHECK(folder);
   DCHECK(!folder->is_url());
@@ -900,14 +902,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.folderSelector = nil;
 }
 
-- (void)folderPickerDidCancel:(BookmarkFolderViewController*)folderPicker {
+- (void)folderPickerDidCancel:
+    (BookmarksFolderChooserViewController*)folderPicker {
   [self setTableViewEditing:NO];
   [self.navigationController dismissViewControllerAnimated:YES completion:NULL];
   self.folderSelector.delegate = nil;
   self.folderSelector = nil;
 }
 
-- (void)folderPickerDidDismiss:(BookmarkFolderViewController*)folderPicker {
+- (void)folderPickerDidDismiss:
+    (BookmarksFolderChooserViewController*)folderPicker {
   self.folderSelector.delegate = nil;
   self.folderSelector = nil;
 }

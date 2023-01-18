@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 
 #import <memory>
 #import <vector>
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 using bookmarks::BookmarkNode;
 
-@interface BookmarkFolderViewController () <
+@interface BookmarksFolderChooserViewController () <
     BookmarksFolderEditorViewControllerDelegate,
     BookmarkModelBridgeObserver,
     UITableViewDataSource,
@@ -99,7 +99,7 @@ using bookmarks::BookmarkNode;
 
 @end
 
-@implementation BookmarkFolderViewController
+@implementation BookmarksFolderChooserViewController
 
 @synthesize allowsCancel = _allowsCancel;
 @synthesize allowsNewFolders = _allowsNewFolders;
@@ -448,11 +448,11 @@ using bookmarks::BookmarkNode;
 
 - (void)delayedNotifyDelegateOfSelection {
   self.view.userInteractionEnabled = NO;
-  __weak BookmarkFolderViewController* weakSelf = self;
+  __weak BookmarksFolderChooserViewController* weakSelf = self;
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)),
       dispatch_get_main_queue(), ^{
-        BookmarkFolderViewController* strongSelf = weakSelf;
+        BookmarksFolderChooserViewController* strongSelf = weakSelf;
         // Early return if the controller has been deallocated.
         if (!strongSelf) {
           return;

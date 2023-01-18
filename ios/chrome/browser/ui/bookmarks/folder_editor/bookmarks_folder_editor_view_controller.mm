@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -55,7 +55,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @interface BookmarksFolderEditorViewController () <
-    BookmarkFolderViewControllerDelegate,
+    BookmarksFolderChooserViewControllerDelegate,
     BookmarkModelBridgeObserver,
     BookmarkTextFieldItemDelegate> {
   std::unique_ptr<BookmarkModelBridge> _modelBridge;
@@ -69,7 +69,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, assign) Browser* browser;
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 @property(nonatomic, assign) const BookmarkNode* folder;
-@property(nonatomic, strong) BookmarkFolderViewController* folderViewController;
+@property(nonatomic, strong)
+    BookmarksFolderChooserViewController* folderViewController;
 @property(nonatomic, assign) const BookmarkNode* parentFolder;
 @property(nonatomic, weak) UIBarButtonItem* doneItem;
 @property(nonatomic, strong) BookmarkTextFieldItem* titleItem;
@@ -281,8 +282,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self.folder) {
     editedNodes.insert(self.folder);
   }
-  BookmarkFolderViewController* folderViewController =
-      [[BookmarkFolderViewController alloc]
+  BookmarksFolderChooserViewController* folderViewController =
+      [[BookmarksFolderChooserViewController alloc]
           initWithBookmarkModel:self.bookmarkModel
                allowsNewFolders:NO
                     editedNodes:editedNodes
@@ -298,9 +299,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                        animated:YES];
 }
 
-#pragma mark - BookmarkFolderViewControllerDelegate
+#pragma mark - BookmarksFolderChooserViewControllerDelegate
 
-- (void)folderPicker:(BookmarkFolderViewController*)folderPicker
+- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const BookmarkNode*)folder {
   self.parentFolder = folder;
   [self updateParentFolderState];
@@ -309,13 +310,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.folderViewController = nil;
 }
 
-- (void)folderPickerDidCancel:(BookmarkFolderViewController*)folderPicker {
+- (void)folderPickerDidCancel:
+    (BookmarksFolderChooserViewController*)folderPicker {
   [self.navigationController popViewControllerAnimated:YES];
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;
 }
 
-- (void)folderPickerDidDismiss:(BookmarkFolderViewController*)folderPicker {
+- (void)folderPickerDidDismiss:
+    (BookmarksFolderChooserViewController*)folderPicker {
   self.folderViewController.delegate = nil;
   self.folderViewController = nil;
   [self dismiss];

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_FOLDER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_FOLDER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 #include <set>
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@class BookmarkFolderViewController;
+@class BookmarksFolderChooserViewController;
 class Browser;
 @protocol SnackbarCommands;
 
@@ -19,16 +19,18 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-@protocol BookmarkFolderViewControllerDelegate
+@protocol BookmarksFolderChooserViewControllerDelegate
 // Called when a bookmark folder is selected. `folder` is the newly selected
 // folder.
-- (void)folderPicker:(BookmarkFolderViewController*)folderPicker
+- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
     didFinishWithFolder:(const bookmarks::BookmarkNode*)folder;
 // Called when the user is done with the picker, either by tapping the Cancel or
 // the Back button.
-- (void)folderPickerDidCancel:(BookmarkFolderViewController*)folderPicker;
+- (void)folderPickerDidCancel:
+    (BookmarksFolderChooserViewController*)folderPicker;
 // Called when the user dismisses the picker by swiping down.
-- (void)folderPickerDidDismiss:(BookmarkFolderViewController*)folderPicker;
+- (void)folderPickerDidDismiss:
+    (BookmarksFolderChooserViewController*)folderPicker;
 @end
 
 // A folder selector view controller.
@@ -36,10 +38,11 @@ class BookmarkNode;
 // This controller monitors the state of the bookmark model, so changes to the
 // bookmark model can affect this controller's state.
 // The bookmark model is assumed to be loaded, thus also not to be NULL.
-@interface BookmarkFolderViewController
+@interface BookmarksFolderChooserViewController
     : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 
-@property(nonatomic, weak) id<BookmarkFolderViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<BookmarksFolderChooserViewControllerDelegate>
+    delegate;
 
 // Handler for Snackbar Commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
@@ -69,4 +72,4 @@ class BookmarkNode;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_FOLDER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_VIEW_CONTROLLER_H_

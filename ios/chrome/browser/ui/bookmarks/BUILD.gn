@@ -27,7 +27,6 @@ source_set("bookmarks") {
     "synced_bookmarks_bridge.mm",
   ]
   deps = [
-    ":bookmarks_ui",
     ":constants",
     ":core",
     "resources:bookmark_blue_check",
@@ -65,6 +64,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/bookmarks/cells",
     "//ios/chrome/browser/ui/bookmarks/editor",
+    "//ios/chrome/browser/ui/bookmarks/folder_chooser",
     "//ios/chrome/browser/ui/bookmarks/folder_editor",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/default_promo:utils",
@@ -133,47 +133,6 @@ source_set("core") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("bookmarks_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "bookmark_folder_view_controller.h",
-    "bookmark_folder_view_controller.mm",
-  ]
-  deps = [
-    ":constants",
-    ":core",
-    "//base",
-    "//base:i18n",
-    "//components/bookmarks/browser",
-    "//components/strings",
-    "//components/url_formatter",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/bookmarks",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/flags:system_flags",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/bookmarks/cells",
-    "//ios/chrome/browser/ui/bookmarks/folder_editor",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/icons",
-    "//ios/chrome/browser/ui/image_util",
-    "//ios/chrome/browser/ui/keyboard",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:presentation",
-    "//ios/chrome/browser/ui/table_view:styler",
-    "//ios/chrome/browser/ui/table_view:utils",
-    "//ios/chrome/browser/ui/table_view:views",
-    "//ios/chrome/common/ui/util",
-    "//ui/base",
-  ]
-  allow_circular_includes_from = [
-    "//ios/chrome/browser/ui/bookmarks/cells",
-    "//ios/chrome/browser/ui/bookmarks/folder_editor",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -193,7 +152,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":bookmarks",
-    ":bookmarks_ui",
     ":constants",
     ":core",
     "//base",
@@ -226,7 +184,6 @@ source_set("eg2_tests") {
     "bookmarks_accessibility_egtest.mm",
     "bookmarks_egtest.mm",
     "bookmarks_entries_egtest.mm",
-    "bookmarks_folders_egtest.mm",
     "bookmarks_promo_egtest.mm",
     "bookmarks_search_egtest.mm",
     "managed_bookmarks_egtest.mm",

@@ -8,9 +8,43 @@ source_set("folder_chooser") {
     "bookmarks_folder_chooser_coordinator.h",
     "bookmarks_folder_chooser_coordinator.mm",
     "bookmarks_folder_chooser_coordinator_delegate.h",
+    "bookmarks_folder_chooser_view_controller.h",
+    "bookmarks_folder_chooser_view_controller.mm",
   ]
   deps = [
     "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/ui/bookmarks:constants",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks/cells",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "bookmarks_folder_chooser_egtest.mm" ]
+  deps = [
+    "//components/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/bookmarks:constants",
+    "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

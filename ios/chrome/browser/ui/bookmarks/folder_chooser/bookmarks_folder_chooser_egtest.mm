@@ -40,10 +40,10 @@ using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark folders integration tests for Chrome.
-@interface BookmarksFoldersTestCase : WebHttpServerChromeTestCase
+@interface BookmarksFolderTestCase : WebHttpServerChromeTestCase
 @end
 
-@implementation BookmarksFoldersTestCase
+@implementation BookmarksFolderTestCase
 
 - (void)setUp {
   [super setUp];
