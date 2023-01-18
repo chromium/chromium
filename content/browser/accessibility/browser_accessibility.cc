@@ -907,9 +907,6 @@ const ui::AXUniqueId& BrowserAccessibility::GetUniqueId() const {
   // This is not the same as GetData().id which comes from Blink, because
   // those ids are only unique within the Blink process. We need one that is
   // unique for the browser process.
-  // TODO(accessibility) We should be able to get rid of this, because node IDs
-  // are actually unique within their renderer process, and each renderer
-  // process has its own OS-level window, which is all the uniqueness we need.
   return unique_id_;
 }
 

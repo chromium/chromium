@@ -324,8 +324,7 @@ void AXEventGenerator::OnRoleChanged(AXTree* tree,
                                      ax::mojom::Role old_role,
                                      ax::mojom::Role new_role) {
   DCHECK_EQ(tree_, tree);
-  AddEvent(node, new_role == ax::mojom::Role::kAlert ? Event::ALERT
-                                                     : Event::ROLE_CHANGED);
+  AddEvent(node, Event::ROLE_CHANGED);
 }
 
 void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
@@ -757,7 +756,6 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
       new_tree_data.sel_focus_object_id != old_tree_data.sel_focus_object_id ||
       new_tree_data.sel_focus_offset != old_tree_data.sel_focus_offset ||
       new_tree_data.sel_focus_affinity != old_tree_data.sel_focus_affinity) {
-    LOG(ERROR) << "********** Document selection changed: " << tree->root();
     AddEvent(tree->root(), Event::DOCUMENT_SELECTION_CHANGED);
 
     // A special event is also fired internally for selection changes in text

@@ -1979,7 +1979,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_uniqueID(LONG* id) {
   // convention here and when we fire events via
   // ::NotifyWinEvent().
   *id = -GetUniqueId();
-  DCHECK(*id < 0);
   return S_OK;
 }
 
