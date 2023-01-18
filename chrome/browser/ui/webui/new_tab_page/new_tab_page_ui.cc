@@ -95,7 +95,6 @@ using content::WebContents;
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
-constexpr char kSignedOutNtpModulesSwitch[] = "signed-out-ntp-modules";
 
 void AddRawStringOrDefault(content::WebUIDataSource* source,
                            const char key[],
@@ -886,17 +885,10 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
 void NewTabPageUI::OnLoad() {
   base::Value::Dict update;
   update.Set("navigationStartTime", navigation_start_time_.ToJsTime());
-
-  // Only enable modules if account credentials are available as most modules
-  // won't have data to render otherwise. We can override this behavior with the
-  // "--signed-out-ntp-modules" command line switch, e.g. to allow modules in
-  // perf tests, which do not support sign-in.
-  update.Set("modulesEnabled",
-             !module_id_names_.empty() &&
-                 !base::FeatureList::IsEnabled(ntp_features::kNtpModulesLoad) &&
-                 (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                      kSignedOutNtpModulesSwitch) ||
-                  HasCredentials(profile_)));
+  update.Set(
+      "modulesEnabled",
+      ntp::HasModulesEnabled(module_id_names_,
+                             IdentityManagerFactory::GetForProfile(profile_)));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
 }

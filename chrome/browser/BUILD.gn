@@ -3905,6 +3905,8 @@ static_library("browser") {
       "new_tab_page/modules/drive/drive_service_factory.h",
       "new_tab_page/modules/feed/feed_handler.cc",
       "new_tab_page/modules/feed/feed_handler.h",
+      "new_tab_page/modules/modules_switches.cc",
+      "new_tab_page/modules/modules_switches.h",
       "new_tab_page/modules/new_tab_page_modules.cc",
       "new_tab_page/modules/new_tab_page_modules.h",
       "new_tab_page/modules/photos/photos_handler.cc",

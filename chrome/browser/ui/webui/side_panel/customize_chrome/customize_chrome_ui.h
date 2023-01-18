@@ -57,6 +57,7 @@ class CustomizeChromeUI
   std::unique_ptr<CartHandler> cart_handler_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
+  const std::vector<std::pair<const std::string, int>> module_id_names_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandlerFactory>
       page_factory_receiver_;
 

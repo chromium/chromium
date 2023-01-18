@@ -8,11 +8,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace ntp {
 
@@ -64,6 +69,18 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
 #endif
 
   return details;
+}
+
+bool HasModulesEnabled(
+    std::vector<std::pair<const std::string, int>> module_id_names,
+    signin::IdentityManager* identity_manager) {
+  return !module_id_names.empty() &&
+         !base::FeatureList::IsEnabled(ntp_features::kNtpModulesLoad) &&
+         (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kSignedOutNtpModulesSwitch) ||
+          (/* Can be null if Chrome signin is disabled. */ identity_manager &&
+           identity_manager->GetAccountsInCookieJar()
+                   .signed_in_accounts.size() > 0));
 }
 
 }  // namespace ntp

@@ -9,10 +9,22 @@
 #include <utility>
 #include <vector>
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace ntp {
 
 const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
     bool drive_module_enabled);
+
+// Modules are considered enabled if there are actual modules enabled and
+// account credentials are available (as most modules won't have data to
+// render otherwise) or if the "--signed-out-ntp-modules" command line switch
+// override is provided.
+bool HasModulesEnabled(
+    std::vector<std::pair<const std::string, int>> module_id_names,
+    signin::IdentityManager* identity_manager);
 
 }  // namespace ntp
 

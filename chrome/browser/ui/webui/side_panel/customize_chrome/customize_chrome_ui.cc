@@ -8,8 +8,11 @@
 #include <utility>
 
 #include "chrome/browser/cart/cart_handler.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -27,6 +30,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
+      module_id_names_(ntp::MakeModuleIdNames(
+          NewTabPageUI::IsDriveModuleEnabledForProfile(profile_))),
       page_factory_receiver_(this) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUICustomizeChromeSidePanelHost);
@@ -74,6 +79,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
+  source->AddBoolean(
+      "modulesEnabled",
+      ntp::HasModulesEnabled(module_id_names_,
+                             IdentityManagerFactory::GetForProfile(profile_)));
+
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kSidePanelCustomizeChromeResources,
@@ -111,6 +121,6 @@ void CustomizeChromeUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
       std::move(pending_page_handler), std::move(pending_page),
-      NtpCustomBackgroundServiceFactory::GetForProfile(profile_),
-      web_contents_);
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_), web_contents_,
+      module_id_names_);
 }

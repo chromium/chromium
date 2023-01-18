@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_colors.h"
 #include "chrome/common/pref_names.h"
@@ -40,15 +39,15 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
         pending_page_handler,
     mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
     NtpCustomBackgroundService* ntp_custom_background_service,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    const std::vector<std::pair<const std::string, int>> module_id_names)
     : ntp_custom_background_service_(ntp_custom_background_service),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile_)),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
-      module_id_names_(ntp::MakeModuleIdNames(
-          NewTabPageUI::IsDriveModuleEnabledForProfile(profile_))),
+      module_id_names_(module_id_names),
       page_(std::move(pending_page)),
       receiver_(this, std::move(pending_page_handler)) {
   CHECK(ntp_custom_background_service_);

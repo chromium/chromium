@@ -41,7 +41,8 @@ class CustomizeChromePageHandler
           pending_page_handler,
       mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
       NtpCustomBackgroundService* ntp_custom_background_service,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      const std::vector<std::pair<const std::string, int>> module_id_names);
 
   CustomizeChromePageHandler(const CustomizeChromePageHandler&) = delete;
   CustomizeChromePageHandler& operator=(const CustomizeChromePageHandler&) =
