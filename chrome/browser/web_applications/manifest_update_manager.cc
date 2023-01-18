@@ -50,6 +50,12 @@ GetUpdatePendingCallbackMutableForTesting() {
   return g_update_pending_callback.get();
 }
 
+ManifestUpdateManager::ResultCallback* GetResultCallbackMutableForTesting() {
+  static base::NoDestructor<ManifestUpdateManager::ResultCallback>
+      g_result_callback;
+  return g_result_callback.get();
+}
+
 }  // namespace
 
 class ManifestUpdateManager::PreUpdateWebContentsObserver
@@ -99,6 +105,13 @@ constexpr const char kDisableManifestUpdateThrottle[] =
 void ManifestUpdateManager::SetUpdatePendingCallbackForTesting(
     UpdatePendingCallback callback) {
   *GetUpdatePendingCallbackMutableForTesting() =  // IN-TEST
+      std::move(callback);
+}
+
+// static
+void ManifestUpdateManager::SetResultCallbackForTesting(
+    ResultCallback callback) {
+  *GetResultCallbackMutableForTesting() =  // IN-TEST
       std::move(callback);
 }
 
@@ -386,12 +399,6 @@ void ManifestUpdateManager::OnUpdateStopped(const GURL& url,
   NotifyResult(url, app_id, result);
 }
 
-void ManifestUpdateManager::SetResultCallbackForTesting(
-    ResultCallback callback) {
-  DCHECK(result_callback_for_testing_.is_null());
-  result_callback_for_testing_ = std::move(callback);
-}
-
 void ManifestUpdateManager::NotifyResult(const GURL& url,
                                          const absl::optional<AppId>& app_id,
                                          ManifestUpdateResult result) {
@@ -400,8 +407,9 @@ void ManifestUpdateManager::NotifyResult(const GURL& url,
   if (result != ManifestUpdateResult::kNoAppInScope) {
     base::UmaHistogramEnumeration("Webapp.Update.ManifestUpdateResult", result);
   }
-  if (result_callback_for_testing_)
-    std::move(result_callback_for_testing_).Run(url, result);
+  if (*GetResultCallbackMutableForTesting()) {
+    std::move(*GetResultCallbackMutableForTesting()).Run(url, result);
+  }
 }
 
 void ManifestUpdateManager::ResetManifestThrottleForTesting(

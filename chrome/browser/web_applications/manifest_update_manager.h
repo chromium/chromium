@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -59,6 +60,10 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   static void SetUpdatePendingCallbackForTesting(
       UpdatePendingCallback callback);
 
+  using ResultCallback =
+      base::OnceCallback<void(const GURL& url, ManifestUpdateResult result)>;
+  static void SetResultCallbackForTesting(ResultCallback callback);
+
   static bool& BypassWindowCloseWaitingForTesting();
 
   ManifestUpdateManager();
@@ -88,10 +93,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  // |app_id| will be nullptr when |result| is kNoAppInScope.
-  using ResultCallback =
-      base::OnceCallback<void(const GURL& url, ManifestUpdateResult result)>;
-  void SetResultCallbackForTesting(ResultCallback callback);
   void set_time_override_for_testing(base::Time time_override) {
     time_override_for_testing_ = time_override;
   }
@@ -196,7 +197,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   base::flat_map<AppId, base::Time> last_update_check_;
 
   absl::optional<base::Time> time_override_for_testing_;
-  ResultCallback result_callback_for_testing_;
 
   bool started_ = false;
   bool hang_update_checks_for_testing_ = false;

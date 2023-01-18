@@ -245,22 +245,19 @@ constexpr int kMac = 2;     // Mac-only rule.
 constexpr int kNotWin = 3;  // All platforms except Windows.
 constexpr int kNotMac = 4;  // All platforms except Mac.
 
-ManifestUpdateManager& GetManifestUpdateManager(Browser* browser) {
-  return WebAppProvider::GetForTest(browser->profile())
-      ->manifest_update_manager();
+ManifestUpdateManager& GetManifestUpdateManager(Profile* profile) {
+  return WebAppProvider::GetForTest(profile)->manifest_update_manager();
 }
 
 class UpdateCheckResultAwaiter {
  public:
-  explicit UpdateCheckResultAwaiter(Browser* browser, const GURL& url)
-      : browser_(browser), url_(url) {
+  explicit UpdateCheckResultAwaiter(const GURL& url) : url_(url) {
     SetCallback();
   }
 
   void SetCallback() {
-    GetManifestUpdateManager(browser_).SetResultCallbackForTesting(
-        base::BindOnce(&UpdateCheckResultAwaiter::OnResult,
-                       base::Unretained(this)));
+    ManifestUpdateManager::SetResultCallbackForTesting(base::BindOnce(
+        &UpdateCheckResultAwaiter::OnResult, base::Unretained(this)));
   }
 
   ManifestUpdateResult AwaitNextResult() && {
@@ -278,7 +275,6 @@ class UpdateCheckResultAwaiter {
   }
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
   const raw_ref<const GURL> url_;
   base::RunLoop run_loop_;
   absl::optional<ManifestUpdateResult> result_;
@@ -608,12 +604,12 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void SetTimeOverride(base::Time time_override) {
-    GetManifestUpdateManager(browser()).set_time_override_for_testing(
-        time_override);
+    GetManifestUpdateManager(browser()->profile())
+        .set_time_override_for_testing(time_override);
   }
 
   ManifestUpdateResult GetResultAfterPageLoad(const GURL& url) {
-    UpdateCheckResultAwaiter awaiter(browser(), url);
+    UpdateCheckResultAwaiter awaiter(url);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return std::move(awaiter).AwaitNextResult();
   }
@@ -745,10 +741,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest, CheckIsThrottled) {
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckCancelledByWebContentsDestroyed) {
   AppId app_id = InstallWebApp();
-  GetManifestUpdateManager(browser()).hang_update_checks_for_testing();
+  GetManifestUpdateManager(browser()->profile())
+      .hang_update_checks_for_testing();
 
   GURL url = GetAppURL();
-  UpdateCheckResultAwaiter awaiter(browser(), url);
+  UpdateCheckResultAwaiter awaiter(url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   chrome::CloseTab(browser());
   EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
@@ -760,13 +757,14 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckCancelledByAppUninstalled) {
   AppId app_id = InstallWebApp();
-  GetManifestUpdateManager(browser()).hang_update_checks_for_testing();
+  GetManifestUpdateManager(browser()->profile())
+      .hang_update_checks_for_testing();
 
   GURL url = GetAppURL();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::RunLoop run_loop;
-  UpdateCheckResultAwaiter awaiter(browser(), url);
+  UpdateCheckResultAwaiter awaiter(url);
   GetProvider().install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
@@ -4197,7 +4195,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
       }));
 
   // Now navigate to the same url and allow the update mechanism to run.
-  UpdateCheckResultAwaiter result_awaiter(browser(), app_url);
+  UpdateCheckResultAwaiter result_awaiter(app_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
             ManifestUpdateResult::kAppUpToDate);
@@ -4386,7 +4384,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 
   // Close the PWA window. This will fire the window close notifier that the PWA
   // has been waiting for, triggering the manifest update to take effect.
-  UpdateCheckResultAwaiter result_awaiter(web_app_browser, url);
+  UpdateCheckResultAwaiter result_awaiter(url);
   CloseBrowserSynchronously(web_app_browser);
   EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
             ManifestUpdateResult::kAppUpdated);
@@ -4454,7 +4452,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 
   // Close the PWA window. This will fire the window close notifier that the PWA
   // has been waiting for, triggering the manifest update to take effect.
-  UpdateCheckResultAwaiter result_awaiter(web_app_browser, url);
+  UpdateCheckResultAwaiter result_awaiter(url);
   CloseBrowserSynchronously(web_app_browser);
   EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
             ManifestUpdateResult::kAppUpdated);
