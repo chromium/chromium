@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/platform/platform_channel.h"
 
 namespace arc {
 namespace keymaster {
@@ -39,13 +38,6 @@ void CertStoreBridge::UpdatePlaceholderKeysInKeymaster(
   }
 }
 
-void CertStoreBridge::GetSecurityTokenOperation(
-    mojo::PendingReceiver<mojom::SecurityTokenOperation> operation_receiver,
-    GetSecurityTokenOperationCallback callback) {
-  VLOG(2) << "CertStoreBridge::GetSecurityTokenOperation";
-  std::move(callback).Run();
-}
-
 void CertStoreBridge::BindToInvitation(mojo::OutgoingInvitation* invitation) {
   VLOG(2) << "CertStoreBridge::BootstrapMojoConnection";
 
@@ -69,38 +61,6 @@ void CertStoreBridge::BindToInvitation(mojo::OutgoingInvitation* invitation) {
   cert_store_proxy_.set_disconnect_handler(
       base::BindOnce(&mojo::Remote<keymaster::mojom::CertStoreInstance>::reset,
                      base::Unretained(&cert_store_proxy_)));
-}
-
-void CertStoreBridge::OnBootstrapMojoConnection(bool result) {
-  if (!result) {
-    cert_store_proxy_.reset();
-    return;
-  }
-
-  auto receiver =
-      std::make_unique<mojo::Receiver<keymaster::mojom::CertStoreHost>>(this);
-  mojo::PendingRemote<keymaster::mojom::CertStoreHost> host_proxy;
-  receiver->Bind(host_proxy.InitWithNewPipeAndPassReceiver());
-
-  cert_store_proxy_->Init(
-      std::move(host_proxy),
-      base::BindOnce(&CertStoreBridge::OnConnectionReady,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
-}
-
-void CertStoreBridge::OnConnectionReady(
-    std::unique_ptr<mojo::Receiver<mojom::CertStoreHost>> receiver) {
-  VLOG(2) << "CertStoreBridge::OnConnectionReady";
-  DCHECK(!receiver_);
-  receiver->set_disconnect_handler(base::BindOnce(
-      &CertStoreBridge::OnConnectionClosed, base::Unretained(this)));
-  receiver_ = std::move(receiver);
-}
-
-void CertStoreBridge::OnConnectionClosed() {
-  VLOG(2) << "CertStoreBridge::OnConnectionClosed";
-  DCHECK(receiver_);
-  receiver_.reset();
 }
 
 }  // namespace keymaster

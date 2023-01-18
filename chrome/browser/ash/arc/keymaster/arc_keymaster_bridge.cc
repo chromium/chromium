@@ -114,7 +114,6 @@ void ArcKeymasterBridge::GetServerAfterBootstrap(GetServerCallback callback,
 void ArcKeymasterBridge::OnBootstrapMojoConnection(
     BootstrapMojoConnectionCallback callback,
     bool result) {
-  cert_store_bridge_->OnBootstrapMojoConnection(result);
   if (result) {
     DVLOG(1) << "Success bootstrapping Mojo in arc-keymasterd.";
   } else {

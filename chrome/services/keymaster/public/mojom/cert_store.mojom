@@ -42,28 +42,11 @@ struct ChromeOsKey {
   KeyData key_data;
 };
 
-// Interface exposed by Chrome.
-// Next method ID: 1
-interface CertStoreHost {
-  // Returns an interface to SecurityTokenOperation.
-  GetSecurityTokenOperation@0(
-      pending_receiver<SecurityTokenOperation> operation) => ();
-};
 
 // Interface exposed by arc-keymaster daemon.
 // Next method ID: 2
+// Deprecated method IDs: 0
 interface CertStoreInstance {
-  // Establishes full-duplex communication with the host.
-  Init@0(pending_remote<CertStoreHost> host_remote) => ();
-
   // Updates info about the latest set of keys owned by Chrome OS.
   UpdatePlaceholderKeys@1(array<ChromeOsKey> keys) => (bool success);
-};
-
-// Implemented in Chrome.
-// Nothing is using this interface. It is only kept to avoid changing
-// CertStoreHost.
-// Deprecated method IDs: 0
-// Next method ID: 1
-interface SecurityTokenOperation {
 };
