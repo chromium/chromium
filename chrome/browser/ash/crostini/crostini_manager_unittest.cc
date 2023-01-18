@@ -793,6 +793,37 @@ TEST_F(CrostiniManagerTest, SetCreateOptionsUsed) {
       create_options->GetDict().FindBool(prefs::kCrostiniCreateOptionsUsedKey));
 }
 
+TEST_F(CrostiniManagerTest, FetchCreateOptions_MergesSharePaths) {
+  guest_os::AddContainerToPrefs(profile_.get(), crostini::DefaultContainerId(),
+                                {});
+  CrostiniManager::RestartOptions options;
+  options.share_paths = {base::FilePath("ah"), base::FilePath("ah"),
+                         base::FilePath("ah"), base::FilePath("ah")};
+  options.container_username = "penguininadesert";
+  options.ansible_playbook = base::FilePath("pob.yaml");
+  options.disk_size_bytes = 9001;
+  options.image_server_url = "https://suspiciouswebsite.com";
+  options.image_alias = "nothingtoseehereofficer";
+
+  EXPECT_TRUE(crostini_manager()->RegisterCreateOptions(
+      crostini::DefaultContainerId(), options));
+
+  CrostiniManager::RestartOptions options2;
+  options2.share_paths = {base::FilePath("oh")};
+  EXPECT_FALSE(crostini_manager()->FetchCreateOptions(
+      crostini::DefaultContainerId(), &options2));
+  EXPECT_TRUE(options.container_username == options2.container_username);
+  EXPECT_THAT(
+      options2.share_paths,
+      testing::ContainerEq(std::vector<base::FilePath>(
+          {base::FilePath("oh"), base::FilePath("ah"), base::FilePath("ah"),
+           base::FilePath("ah"), base::FilePath("ah")})));
+  EXPECT_TRUE(options.ansible_playbook == options2.ansible_playbook);
+  EXPECT_TRUE(options.disk_size_bytes == options2.disk_size_bytes);
+  EXPECT_TRUE(options.image_server_url == options2.image_server_url);
+  EXPECT_TRUE(options.image_alias == options2.image_alias);
+}
+
 TEST_F(CrostiniManagerTest, FetchCreateOptions_FalseWhenUnused) {
   guest_os::AddContainerToPrefs(profile_.get(), crostini::DefaultContainerId(),
                                 {});
