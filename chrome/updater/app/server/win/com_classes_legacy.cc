@@ -1004,6 +1004,7 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
 
             const base::Time last_checked_time =
                 base::MakeRefCounted<const PersistedData>(
+                    GetUpdaterScope(),
                     AppServerSingletonInstance()->prefs()->GetPrefService())
                     ->GetLastChecked();
             if (last_checked_time.is_null())

@@ -50,8 +50,8 @@ constexpr char kLastOSVersion[] = "last_os_version";
 
 namespace updater {
 
-PersistedData::PersistedData(PrefService* pref_service)
-    : pref_service_(pref_service) {
+PersistedData::PersistedData(UpdaterScope scope, PrefService* pref_service)
+    : scope_(scope), pref_service_(pref_service) {
   DCHECK(pref_service_);
   DCHECK(
       pref_service_->FindPreference(update_client::kPersistedDataPreference));
@@ -137,8 +137,8 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
   // values. Else, this is the global pref store and reflecting the value in
   // registry is correct. Clients should transition to requesting the
   // registration info for their application via RPC.
-  SetRegistryKey(UpdaterScopeToHKeyRoot(GetUpdaterScope()),
-                 GetAppClientStateKey(base::SysUTF8ToWide(ap)), L"ap",
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::SysUTF8ToWide(id)), L"ap",
                  base::SysUTF8ToWide(ap));
 #endif
 }

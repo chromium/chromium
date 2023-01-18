@@ -130,7 +130,8 @@ RemoveUninstalledAppsTask::RemoveUninstalledAppsTask(
     UpdaterScope scope)
     : config_(config),
       persisted_data_(
-          base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
+          base::MakeRefCounted<PersistedData>(scope,
+                                              config_->GetPrefService())),
       update_client_(update_client::UpdateClientFactory(config_)),
       scope_(scope) {}
 

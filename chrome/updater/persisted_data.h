@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -43,7 +44,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // Constructs a provider using the specified |pref_service|.
   // The associated preferences are assumed to already be registered.
   // The |pref_service| must outlive the instance of this class.
-  explicit PersistedData(PrefService* pref_service);
+  PersistedData(UpdaterScope scope, PrefService* pref_service);
   PersistedData(const PersistedData&) = delete;
   PersistedData& operator=(const PersistedData&) = delete;
 
@@ -129,6 +130,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const UpdaterScope scope_;
   raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned by this class.
 };
 

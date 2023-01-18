@@ -370,7 +370,7 @@ bool SetRegistryKey(HKEY root,
                     const std::wstring& name,
                     const std::wstring& value) {
   base::win::RegKey rkey;
-  LONG result = rkey.Open(root, key.c_str(), Wow6432(KEY_WRITE));
+  LONG result = rkey.Create(root, key.c_str(), Wow6432(KEY_WRITE));
   if (result != ERROR_SUCCESS) {
     VLOG(1) << "Failed to open (" << root << ") " << key << ": " << result;
     return false;

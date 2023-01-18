@@ -219,7 +219,8 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
 UpdateServiceImpl::UpdateServiceImpl(scoped_refptr<Configurator> config)
     : config_(config),
       persisted_data_(
-          base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
+          base::MakeRefCounted<PersistedData>(GetUpdaterScope(),
+                                              config_->GetPrefService())),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       update_client_(update_client::UpdateClientFactory(config)) {}
 
@@ -318,16 +319,18 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
             /*is_system_install_scenario*/ false);
       },
       config_));
-  new_tasks.push_back(base::BindOnce(
-      &CheckForUpdatesTask::Run,
-      base::MakeRefCounted<CheckForUpdatesTask>(
-          config_, base::BindOnce(&UpdateServiceImpl::ForceInstall, this,
-                                  base::DoNothing()))));
   new_tasks.push_back(
       base::BindOnce(&CheckForUpdatesTask::Run,
                      base::MakeRefCounted<CheckForUpdatesTask>(
-                         config_, base::BindOnce(&UpdateServiceImpl::UpdateAll,
-                                                 this, base::DoNothing()))));
+                         config_, GetUpdaterScope(),
+                         base::BindOnce(&UpdateServiceImpl::ForceInstall, this,
+                                        base::DoNothing()))));
+  new_tasks.push_back(
+      base::BindOnce(&CheckForUpdatesTask::Run,
+                     base::MakeRefCounted<CheckForUpdatesTask>(
+                         config_, GetUpdaterScope(),
+                         base::BindOnce(&UpdateServiceImpl::UpdateAll, this,
+                                        base::DoNothing()))));
   new_tasks.push_back(
       base::BindOnce(&AutoRunOnOsUpgradeTask::Run,
                      base::MakeRefCounted<AutoRunOnOsUpgradeTask>(

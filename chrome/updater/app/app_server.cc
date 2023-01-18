@@ -125,8 +125,8 @@ void AppServer::MaybeUninstall() {
   if (!prefs_)
     return;
 
-  auto persisted_data =
-      base::MakeRefCounted<PersistedData>(prefs_->GetPrefService());
+  auto persisted_data = base::MakeRefCounted<PersistedData>(
+      updater_scope(), prefs_->GetPrefService());
   if (ShouldUninstall(persisted_data->GetAppIds(), server_starts_,
                       persisted_data->GetHadApps())) {
     base::CommandLine command_line(
@@ -158,10 +158,10 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   if (!SwapInNewVersion())
     return false;
   if (!global_prefs->GetMigratedLegacyUpdaters()) {
-    if (!MigrateLegacyUpdaters(
-            base::BindRepeating(&PersistedData::RegisterApp,
-                                base::MakeRefCounted<PersistedData>(
-                                    global_prefs->GetPrefService())))) {
+    if (!MigrateLegacyUpdaters(base::BindRepeating(
+            &PersistedData::RegisterApp,
+            base::MakeRefCounted<PersistedData>(
+                updater_scope(), global_prefs->GetPrefService())))) {
       return false;
     }
     global_prefs->SetMigratedLegacyUpdaters();

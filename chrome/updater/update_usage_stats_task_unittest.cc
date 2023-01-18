@@ -75,7 +75,8 @@ class UpdateUsageStatsTaskTest : public testing::Test {
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     update_client::RegisterPrefs(pref_service_->registry());
-    persisted_data_ = base::MakeRefCounted<PersistedData>(pref_service_.get());
+    persisted_data_ = base::MakeRefCounted<PersistedData>(GetTestScope(),
+                                                          pref_service_.get());
   }
 
   void SetAppUsageStats(const std::string& app_id, bool enabled) {

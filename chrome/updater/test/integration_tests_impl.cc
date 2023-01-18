@@ -442,7 +442,7 @@ void SetExistenceCheckerPath(UpdaterScope scope,
                              const std::string& app_id,
                              const base::FilePath& path) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
-  base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService())
+  base::MakeRefCounted<PersistedData>(scope, global_prefs->GetPrefService())
       ->SetExistenceCheckerPath(app_id, path);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
@@ -474,17 +474,19 @@ void ExpectLogRotated(UpdaterScope scope) {
 }
 
 void ExpectRegistered(UpdaterScope scope, const std::string& app_id) {
-  ASSERT_TRUE(base::Contains(base::MakeRefCounted<PersistedData>(
-                                 CreateGlobalPrefs(scope)->GetPrefService())
-                                 ->GetAppIds(),
-                             app_id));
+  ASSERT_TRUE(
+      base::Contains(base::MakeRefCounted<PersistedData>(
+                         scope, CreateGlobalPrefs(scope)->GetPrefService())
+                         ->GetAppIds(),
+                     app_id));
 }
 
 void ExpectNotRegistered(UpdaterScope scope, const std::string& app_id) {
-  ASSERT_FALSE(base::Contains(base::MakeRefCounted<PersistedData>(
-                                  CreateGlobalPrefs(scope)->GetPrefService())
-                                  ->GetAppIds(),
-                              app_id));
+  ASSERT_FALSE(
+      base::Contains(base::MakeRefCounted<PersistedData>(
+                         scope, CreateGlobalPrefs(scope)->GetPrefService())
+                         ->GetAppIds(),
+                     app_id));
 }
 
 void ExpectAppVersion(UpdaterScope scope,
@@ -492,7 +494,7 @@ void ExpectAppVersion(UpdaterScope scope,
                       const base::Version& version) {
   const base::Version app_version =
       base::MakeRefCounted<PersistedData>(
-          CreateGlobalPrefs(scope)->GetPrefService())
+          scope, CreateGlobalPrefs(scope)->GetPrefService())
           ->GetProductVersion(app_id);
   EXPECT_TRUE(app_version.IsValid());
   EXPECT_EQ(version, app_version);
@@ -694,17 +696,19 @@ void RunRecoveryComponent(UpdaterScope scope,
 }
 
 void ExpectLastChecked(UpdaterScope updater_scope) {
-  EXPECT_FALSE(base::MakeRefCounted<PersistedData>(
-                   CreateGlobalPrefs(updater_scope)->GetPrefService())
-                   ->GetLastChecked()
-                   .is_null());
+  EXPECT_FALSE(
+      base::MakeRefCounted<PersistedData>(
+          updater_scope, CreateGlobalPrefs(updater_scope)->GetPrefService())
+          ->GetLastChecked()
+          .is_null());
 }
 
 void ExpectLastStarted(UpdaterScope updater_scope) {
-  EXPECT_FALSE(base::MakeRefCounted<PersistedData>(
-                   CreateGlobalPrefs(updater_scope)->GetPrefService())
-                   ->GetLastStarted()
-                   .is_null());
+  EXPECT_FALSE(
+      base::MakeRefCounted<PersistedData>(
+          updater_scope, CreateGlobalPrefs(updater_scope)->GetPrefService())
+          ->GetLastStarted()
+          .is_null());
 }
 
 std::set<base::FilePath::StringType> GetTestProcessNames() {

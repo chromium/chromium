@@ -51,7 +51,8 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     update_client::RegisterPrefs(pref_service_->registry());
     RegisterPersistedDataPrefs(pref_service_->registry());
-    persisted_data_ = base::MakeRefCounted<PersistedData>(pref_service_.get());
+    persisted_data_ = base::MakeRefCounted<PersistedData>(GetTestScope(),
+                                                          pref_service_.get());
     SetupCmdExe(GetTestScope(), cmd_exe_command_line_, temp_programfiles_dir_);
   }
 

@@ -70,7 +70,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     // an `Update` task for `kQualificationAppId`.
     VLOG(2) << "Registration response: " << result;
     base::MakeRefCounted<CheckForUpdatesTask>(
-        config_,
+        config_, GetUpdaterScope(),
         base::BindOnce(&UpdateServiceImpl::Update,
                        base::MakeRefCounted<UpdateServiceImpl>(config_),
                        kQualificationAppId, "",
@@ -83,8 +83,8 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
   }
 
   void QualificationDone(base::OnceClosure callback) {
-    auto persisted_data =
-        base::MakeRefCounted<PersistedData>(local_prefs_->GetPrefService());
+    auto persisted_data = base::MakeRefCounted<PersistedData>(
+        GetUpdaterScope(), local_prefs_->GetPrefService());
     const base::Version qualification_app_version =
         persisted_data->GetProductVersion(kQualificationAppId);
     VLOG(0) << "qualification_app_version: " << qualification_app_version;

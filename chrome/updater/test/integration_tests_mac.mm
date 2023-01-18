@@ -322,8 +322,8 @@ void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
 
 void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
-  auto persisted_data =
-      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+  auto persisted_data = base::MakeRefCounted<PersistedData>(
+      scope, global_prefs->GetPrefService());
 
   // Keystone should not be migrated.
   EXPECT_FALSE(

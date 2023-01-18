@@ -79,8 +79,8 @@ void AppRecover::FirstTaskRun() {
 }
 
 std::vector<RegistrationRequest> AppRecover::RecordRegisteredApps() const {
-  scoped_refptr<PersistedData> data =
-      base::MakeRefCounted<PersistedData>(global_prefs_->GetPrefService());
+  scoped_refptr<PersistedData> data = base::MakeRefCounted<PersistedData>(
+      updater_scope(), global_prefs_->GetPrefService());
   std::vector<RegistrationRequest> apps;
   bool found_browser_registration = false;
   for (const std::string& app : data->GetAppIds()) {

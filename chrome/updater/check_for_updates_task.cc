@@ -20,6 +20,7 @@
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/update_service_impl.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
@@ -68,11 +69,13 @@ bool ShouldSkipCheck(scoped_refptr<Configurator> config,
 
 CheckForUpdatesTask::CheckForUpdatesTask(
     scoped_refptr<Configurator> config,
+    UpdaterScope scope,
     base::OnceCallback<void(UpdateService::Callback)> update_checker)
     : config_(config),
       update_checker_(std::move(update_checker)),
       persisted_data_(
-          base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
+          base::MakeRefCounted<PersistedData>(scope,
+                                              config_->GetPrefService())),
       update_client_(update_client::UpdateClientFactory(config_)) {}
 
 CheckForUpdatesTask::~CheckForUpdatesTask() = default;
