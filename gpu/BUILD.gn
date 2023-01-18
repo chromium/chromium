@@ -513,6 +513,12 @@ test("gpu_unittests") {
     "command_buffer/service/gl_context_virtual_unittest.cc",
     "command_buffer/service/gl_surface_mock.cc",
     "command_buffer/service/gl_surface_mock.h",
+    "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_buffers.cc",
+    "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_commands.cc",
+    "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_discardable_textures.cc",
+    "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_drawing.cc",
+    "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_framebuffers.cc",
+    "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_textures.cc",
     "command_buffer/service/gles2_cmd_decoder_unittest.cc",
     "command_buffer/service/gles2_cmd_decoder_unittest.h",
     "command_buffer/service/gles2_cmd_decoder_unittest_1.cc",
@@ -636,19 +642,6 @@ test("gpu_unittests") {
 
   if (is_linux || is_chromeos || is_android || is_chromeos) {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
-  }
-
-  # TODO(geofflang): Run passthrough command decoder unittests on more platforms
-  # once initialization of ANGLE's NULL context is supported
-  if ((is_win || ((is_linux || is_chromeos) && !use_ozone)) && !is_asan) {
-    sources += [
-      "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_buffers.cc",
-      "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_commands.cc",
-      "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_discardable_textures.cc",
-      "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_drawing.cc",
-      "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_framebuffers.cc",
-      "command_buffer/service/gles2_cmd_decoder_passthrough_unittest_textures.cc",
-    ]
   }
 
   if (use_dawn) {

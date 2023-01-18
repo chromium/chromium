@@ -83,6 +83,7 @@ class GpuFenceManagerTest : public GpuServiceTest {
     if (display_)
       display_->Shutdown();
     egl_.reset();
+    gl::ClearBindingsEGL();
   }
 
   void SetupFeatureInfo(const char* gl_extensions,
