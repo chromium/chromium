@@ -504,18 +504,15 @@ void WindowTreeHost::UnlockMouse(Window* window) {
 
 std::unique_ptr<WindowTreeHost::VideoCaptureLock>
 WindowTreeHost::CreateVideoCaptureLock() {
-  if (!NativeWindowOcclusionTracker::
-          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
-    return nullptr;
-  }
-  // Throtting doesn't actually change the visibility, so no need for the lock.
-  if (ShouldThrottleWhenOccluded())
-    return nullptr;
-
   ++video_capture_count_;
   MaybeUpdateComposibleVisibilityForVideoLockCountChange();
+  OnVideoCaptureLockChanged();
   // WrapUnique() is used as constructor is private.
   return base::WrapUnique(new VideoCaptureLock(this));
+}
+
+bool WindowTreeHost::HasVideoCaptureLocks() const {
+  return video_capture_count_ > 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -754,9 +751,18 @@ void WindowTreeHost::DecrementVideoCaptureCount() {
   DCHECK_GT(video_capture_count_, 0);
   --video_capture_count_;
   MaybeUpdateComposibleVisibilityForVideoLockCountChange();
+  OnVideoCaptureLockChanged();
 }
 
 void WindowTreeHost::MaybeUpdateComposibleVisibilityForVideoLockCountChange() {
+  // Throttling doesn't actually change the visibility, so no need for the
+  // lock.
+  if (!NativeWindowOcclusionTracker::
+          IsNativeWindowOcclusionTrackingAlwaysEnabled(this) ||
+      ShouldThrottleWhenOccluded()) {
+    return;
+  }
+
   // Should only be called if the occlusion is applied to the compositor.
   DCHECK(!ShouldThrottleWhenOccluded());
 

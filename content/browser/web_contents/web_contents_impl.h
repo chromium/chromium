@@ -2348,6 +2348,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Stores WebContents::CreateParams::lock_picture_in_picture_aspect_ratio.
   bool pip_lock_aspect_ratio_ = false;
 
+  // Pip might require the content window to continue rendering. This handle
+  // ensures that rendering continues despite occlusion or hidden window state.
+  base::ScopedClosureRunner pip_capture_handle_;
+
   VisibleTimeRequestTrigger visible_time_request_trigger_;
 
   // Stores the information whether last navigation was prerender activation for

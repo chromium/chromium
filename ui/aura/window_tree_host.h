@@ -296,8 +296,9 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   virtual std::string GetUniqueId() const = 0;
 #endif
 
-  // See VideoCaptureLock for details. This may return null.
+  // See VideoCaptureLock for details.
   std::unique_ptr<VideoCaptureLock> CreateVideoCaptureLock();
+  bool HasVideoCaptureLocks() const;
 
 #if BUILDFLAG(IS_WIN)
   // Returns whether a host's window is on the current workspace or not,
@@ -352,6 +353,11 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   void OnHostDisplayChanged();
   void OnHostCloseRequested();
   void OnHostLostWindowCapture();
+
+  // Called when the video capture count has changed. This can happen when locks
+  // are created or destroyed. Users might need this signal to decide whether
+  //  to change their states depending on whether there is capture.
+  virtual void OnVideoCaptureLockChanged() {}
 
   // Sets the currently displayed cursor.
   virtual void SetCursorNative(gfx::NativeCursor cursor) = 0;
