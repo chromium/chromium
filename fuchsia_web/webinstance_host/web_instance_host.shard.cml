@@ -13,7 +13,7 @@
   capabilities: [
     {
       directory: "web_instances",
-      rights: [ "r*" ],
+      rights: [ "rw*" ],
       path: "/web_instances",
     },
   ],
