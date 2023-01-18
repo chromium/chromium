@@ -1237,6 +1237,13 @@ void NativeWidgetNSWindowBridge::OnDisplayMetricsChanged(
 void NativeWidgetNSWindowBridge::FullscreenControllerTransitionStart(
     bool is_target_fullscreen) {
   host_->OnWindowFullscreenTransitionStart(is_target_fullscreen);
+  if (!is_target_fullscreen) {
+    // Immersive full screen needs to be disabled synchronously during the
+    // fullscreen transition. So disable it right away, rather than waiting for
+    // the browser process to signal us to disable immersive fullscreen after
+    // being informed of the start of the transition.
+    DisableImmersiveFullscreen();
+  }
 }
 
 void NativeWidgetNSWindowBridge::FullscreenControllerTransitionComplete(
