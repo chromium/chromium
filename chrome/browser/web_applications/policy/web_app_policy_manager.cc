@@ -508,7 +508,6 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   install_options.install_as_shortcut =
       install_as_shortcut ? install_as_shortcut->GetBool() : false;
 
-#if BUILDFLAG(IS_CHROMEOS)
   const base::Value* custom_name = entry.FindKey(kCustomNameKey);
   if (custom_name) {
     install_options.override_name = custom_name->GetString();
@@ -533,7 +532,6 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return install_options;
 }
@@ -582,7 +580,6 @@ void WebAppPolicyManager::OverrideManifest(
 void WebAppPolicyManager::MaybeOverrideManifest(
     content::RenderFrameHost* frame_host,
     blink::mojom::ManifestPtr& manifest) const {
-#if BUILDFLAG(IS_CHROMEOS)
   // This doesn't override the manifest properly on a non primary page since it
   // checks the url from PreRedirectionURLObserver that works only on a primary
   // page.
@@ -628,7 +625,6 @@ void WebAppPolicyManager::MaybeOverrideManifest(
   GURL install_url = pre_redirect->last_url();
   if (base::Contains(custom_manifest_values_by_url_, install_url))
     OverrideManifest(install_url, manifest);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebAppPolicyManager::OnAppsSynchronized(

@@ -534,6 +534,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
 #endif
 

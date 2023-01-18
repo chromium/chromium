@@ -772,6 +772,7 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/isolated_web_app_url_loader_factory_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
     "os_integration/shortcut_sub_manager_browsertest.cc",
+    "policy/web_app_policy_manager_browsertest.cc",
     "preinstalled_web_app_manager_browsertest.cc",
     "preinstalled_web_apps_browsertest.cc",
     "user_uninstalled_preinstalled_web_app_prefs_browsertest.cc",
@@ -787,10 +788,6 @@ source_set("web_applications_browser_tests") {
     sources += [
       "os_integration/web_app_file_handler_registration_linux_browsertest.cc",
     ]
-  }
-
-  if (is_chromeos) {
-    sources += [ "policy/web_app_policy_manager_browsertest.cc" ]
   }
 
   if (is_chromeos_ash) {

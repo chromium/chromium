@@ -153,28 +153,6 @@ class WebAppPolicyManagerBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
-  WebAppPolicyManager& policy_manager =
-      WebAppProvider::GetForTest(profile())->policy_manager();
-
-  base::Value::List list;
-  list.Append(GetCustomAppIconAndNameItem());
-  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
-                                 std::move(list));
-
-  // Policy is for kInstallUrl, but we pretend to get a manifest
-  // from kStartUrl.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kStartUrl)));
-
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  policy_manager.MaybeOverrideManifest(RenderFrameHost(), manifest);
-
-  EXPECT_EQ(std::u16string(), manifest->name.value_or(std::u16string()));
-  EXPECT_EQ(0u, manifest->icons.size());
-}
-
 IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
                        OverrideManifestWithCustomName) {
   WebAppPolicyManager& policy_manager =
@@ -209,6 +187,26 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
 
   EXPECT_EQ(1u, manifest->icons.size());
   EXPECT_EQ(GURL(kDefaultCustomIconUrl), manifest->icons[0].src);
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
+  WebAppPolicyManager& policy_manager =
+      WebAppProvider::GetForTest(profile())->policy_manager();
+
+  base::Value::List list;
+  list.Append(GetCustomAppIconAndNameItem());
+  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                 std::move(list));
+
+  // Policy is for kInstallUrl, but we pretend to get a manifest
+  // from kStartUrl.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kStartUrl)));
+
+  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
+  policy_manager.MaybeOverrideManifest(RenderFrameHost(), manifest);
+
+  EXPECT_EQ(std::u16string(), manifest->name.value_or(std::u16string()));
+  EXPECT_EQ(0u, manifest->icons.size());
 }
 
 // Scenario: App with install_url kInstallUrl has a start_url kStartUrl
@@ -266,8 +264,6 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
   EXPECT_EQ(1u, manifest->icons.size());
   EXPECT_EQ(GURL(kDefaultCustomIconUrl), manifest->icons[0].src);
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
