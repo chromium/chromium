@@ -334,6 +334,35 @@ ci.builder(
 )
 
 ci.builder(
+    name = "lacros-arm-generic-rel-skylab-fyi",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+                "checkout_lacros_sdk",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            target_bits = 32,
+            target_platform = "chromeos",
+            target_cros_boards = "kevin:jacuzzi:arm-generic",
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
+        skylab_upload_location = builder_config.skylab_upload_location(
+            gs_bucket = "lacros-arm-generic-rel-skylab-try",
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros",
+        short_name = "arm",
+    ),
+)
+
+ci.builder(
     name = "lacros-arm64-generic-rel-skylab-fyi",
     # Some tests on this bot depend on being unauthenticated with GS, so
     # don't run the tests inside a luci-auth context to avoid having the

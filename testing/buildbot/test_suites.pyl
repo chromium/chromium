@@ -7065,6 +7065,14 @@
       },
     },
 
+    'lacros_arm_generic_rel_skylab_fyi': {
+      'lacros_skylab': {
+        'variants': [
+          'CROS_JACUZZI_PUBLIC',
+          'CROS_KEVIN_PUBLIC',
+        ]
+      },
+    },
 
     'lacros_device_arm_tests': {
       'lacros_all_tast_tests': {

@@ -417,6 +417,7 @@
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_lacros_rel_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_skylab_reclient',
+      'lacros-arm-generic-rel-skylab-fyi': 'chromeos_arm-generic_lacros_rel_skylab_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
       'linux-annotator-rel': 'release_bot_reclient',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
@@ -2077,6 +2078,10 @@
 
     'chromeos_arm-generic_lacros_rel_reclient': [
       'chromeos_arm-generic-crostoolchain_reclient', 'lacros', 'release',
+    ],
+
+    'chromeos_arm-generic_lacros_rel_skylab_reclient': [
+      'chromeos_arm-generic-crostoolchain_reclient', 'lacros', 'release','is_skylab',
     ],
 
     'chromeos_arm-generic_reclient': [

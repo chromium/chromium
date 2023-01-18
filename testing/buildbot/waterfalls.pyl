@@ -3307,6 +3307,15 @@
         },
         'os_type': 'chromeos'
       },
+      'lacros-arm-generic-rel-skylab-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_arm_generic_rel_skylab_fyi',
+        },
+        'os_type': 'chromeos',
+      },
       'lacros-arm64-generic-rel-skylab-fyi': {
         'additional_compile_targets': [
           'chrome',
