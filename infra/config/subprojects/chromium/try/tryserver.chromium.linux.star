@@ -322,6 +322,13 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-wpt-content-shell-leak-detection",
+    mirrors = [
+        "ci/linux-wpt-content-shell-leak-detection",
+    ],
+)
+
+try_.builder(
     name = "linux-wpt-fyi-rel",
     mirrors = ["ci/linux-wpt-fyi-rel"],
     goma_backend = None,

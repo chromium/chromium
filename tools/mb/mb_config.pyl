@@ -1183,6 +1183,7 @@
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-webkit-msan-rel': 'msan_release_bot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_trybot',
+      'linux-wpt-content-shell-leak-detection': 'release_trybot',
       'linux-wpt-fyi-rel': 'release_trybot_reclient',
       'linux-wpt-identity-fyi-rel': 'release_trybot_reclient',
       'linux-wpt-input-fyi-rel': 'release_trybot_reclient',

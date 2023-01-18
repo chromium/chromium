@@ -552,6 +552,15 @@
       "use_goma": true
     }
   },
+  "linux-wpt-content-shell-leak-detection": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_goma": true
+    }
+  },
   "linux-wpt-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,
