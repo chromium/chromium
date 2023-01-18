@@ -2356,6 +2356,12 @@ Try tapping the mic to ask me anything.
         <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screen saver page in Personalization app.">
           Screen saver
         </message>
+        <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_PREVIEW_BUTTON" desc="Label for the button to preview screen saver.">
+          Preview
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_PREVIEW_DOWNLOADING" desc="Label for the button while screen saver preview is loading.">
+          Downloading image
+        </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">
           When your screen is idle, show photos, time, weather, and media info.
         </message>

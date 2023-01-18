@@ -155,12 +155,14 @@ export class AmbientPreview extends WithPersonalizationStore {
   }
 
   private getScreenSaverPreviewClass_(): string {
-    return this.screenSaverPreviewActive_ ? 'disabled' : '';
+    return this.screenSaverPreviewActive_ ? 'previewButtonDisabled' :
+                                            'previewButton';
   }
 
   private getScreenSaverPreviewText_(): string {
-    // // TODO(b/262277167) replace temporary strings
-    return this.screenSaverPreviewActive_ ? 'Downloading' : 'Preview';
+    return this.screenSaverPreviewActive_ ?
+        this.i18n('screenSaverPreviewDownloading') :
+        this.i18n('screenSaverPreviewButton');
   }
 
   private computeScreenSaverPreviewActive_(): boolean {
