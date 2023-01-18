@@ -139,7 +139,7 @@ std::unique_ptr<TextLogUploadList::UploadInfo> TryParseCsvLogEntry(
 std::unique_ptr<TextLogUploadList::UploadInfo> TryParseJsonLogEntry(
     const base::Value& dict) {
   // Parse upload_id.
-  const base::Value* upload_id_value = dict.FindKey(kJsonLogKeyUploadId);
+  const base::Value* upload_id_value = dict.GetDict().Find(kJsonLogKeyUploadId);
   if (upload_id_value && !upload_id_value->is_string())
     return nullptr;
 
