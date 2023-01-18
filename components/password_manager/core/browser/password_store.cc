@@ -530,10 +530,8 @@ void PasswordStore::InjectAffiliationAndBrandingInformation(
     std::move(callback).Run(std::move(forms_or_error));
     return;
   }
-  affiliated_match_helper_->get_affiliation_service()
-      ->InjectAffiliationAndBrandingInformation(
-          std::move(absl::get<LoginsResult>(forms_or_error)),
-          AffiliationService::StrategyOnCacheMiss::FAIL, std::move(callback));
+  affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
+      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
 }
 
 }  // namespace password_manager

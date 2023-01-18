@@ -47,19 +47,6 @@ class MockAffiliationService : public AffiliationService {
   MOCK_METHOD(void, TrimCacheForFacetURI, (const FacetURI&), (override));
   MOCK_METHOD(void, TrimUnusedCache, (std::vector<FacetURI>), (override));
   MOCK_METHOD(void, GetAllGroups, (GroupsCallback), (override, const));
-
-  void ExpectCallToInjectAffiliationAndBrandingInformation(
-      const std::vector<AffiliationAndBrandingInformation>& results_to_inject);
-
-  void InjectAffiliationAndBrandingInformation(
-      std::vector<std::unique_ptr<PasswordForm>> forms,
-      AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
-      PasswordFormsOrErrorCallback result_callback) override;
-
- private:
-  MOCK_METHOD(std::vector<AffiliationAndBrandingInformation>,
-              OnInjectAffiliationAndBrandingInformationCalled,
-              ());
 };
 
 }  // namespace password_manager

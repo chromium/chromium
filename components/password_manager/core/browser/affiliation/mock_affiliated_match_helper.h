@@ -18,6 +18,14 @@ namespace password_manager {
 
 class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
  public:
+  // This struct mirrors the corresponding affiliation and branding information
+  // related fields from PasswordForm.
+  struct AffiliationAndBrandingInformation {
+    std::string affiliated_web_realm;
+    std::string app_display_name;
+    GURL app_icon_url;
+  };
+
   MockAffiliatedMatchHelper();
   explicit MockAffiliatedMatchHelper(AffiliationService* affiliation_service);
 
@@ -34,14 +42,25 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
       const PasswordFormDigest& expected_observed_form,
       const std::vector<std::string>& results_to_return);
 
+  void ExpectCallToInjectAffiliationAndBrandingInformation(
+      const std::vector<AffiliationAndBrandingInformation>& results_to_inject);
+
  private:
   MOCK_METHOD(std::vector<std::string>,
               OnGetAffiliatedAndroidRealmsCalled,
               (const PasswordFormDigest&));
 
+  MOCK_METHOD(std::vector<AffiliationAndBrandingInformation>,
+              OnInjectAffiliationAndBrandingInformationCalled,
+              ());
+
   void GetAffiliatedAndroidAndWebRealms(
       const PasswordFormDigest& observed_form,
       AffiliatedRealmsCallback result_callback) override;
+
+  void InjectAffiliationAndBrandingInformation(
+      std::vector<std::unique_ptr<PasswordForm>> forms,
+      PasswordFormsOrErrorCallback result_callback) override;
 };
 
 }  // namespace password_manager

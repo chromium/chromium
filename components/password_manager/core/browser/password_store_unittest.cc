@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/os_crypt/os_crypt_mocker.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
@@ -616,10 +615,11 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
   /* clang-format on */
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto owning_mock_match_helper = std::make_unique<MockAffiliatedMatchHelper>(
-      mock_affiliation_service.get());
-  MockAffiliatedMatchHelper* mock_helper = owning_mock_match_helper.get();
+  MockAffiliationService mock_affiliation_service;
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -642,7 +642,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
   }
 
   std::vector<std::string> no_affiliated_android_realms;
-  mock_helper->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
       observed_form, no_affiliated_android_realms);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -717,10 +717,11 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
       }};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto owning_mock_match_helper = std::make_unique<MockAffiliatedMatchHelper>(
-      mock_affiliation_service.get());
-  MockAffiliatedMatchHelper* mock_helper = owning_mock_match_helper.get();
+  MockAffiliationService mock_affiliation_service;
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -760,7 +761,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
   affiliated_android_realms.push_back(kTestAndroidRealm2);
   affiliated_android_realms.push_back(kTestAndroidRealm3);
 
-  mock_helper->ExpectCallToGetAffiliatedAndroidRealms(
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
       observed_form, affiliated_android_realms);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -775,10 +776,12 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
 
 TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper = std::make_unique<MockAffiliatedMatchHelper>(
-      mock_affiliation_service.get());
-  store->Init(/*prefs=*/nullptr, std::move(mock_match_helper));
+  MockAffiliationService mock_affiliation_service;
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
+  store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
 
   PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
                                 kTestWebRealm1,
@@ -801,11 +804,12 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
   std::vector<std::unique_ptr<PasswordForm>> expected_results;
   expected_results.push_back(std::make_unique<PasswordForm>(*credential));
 
-  std::vector<MockAffiliationService::AffiliationAndBrandingInformation>
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
       affiliation_info_for_results = {
           {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)}};
-  mock_affiliation_service->ExpectCallToInjectAffiliationAndBrandingInformation(
-      affiliation_info_for_results);
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation(
+          std::move(affiliation_info_for_results));
 
   expected_results[0]->affiliated_web_realm = kTestWebRealm1;
   expected_results[0]->app_display_name = kTestAndroidName1;
@@ -823,10 +827,11 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
 
 TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto owning_mock_match_helper = std::make_unique<MockAffiliatedMatchHelper>(
-      mock_affiliation_service.get());
-  MockAffiliatedMatchHelper* mock_helper = owning_mock_match_helper.get();
+  MockAffiliationService mock_affiliation_service;
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
 
   PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
@@ -851,13 +856,14 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
   expected_results.push_back(std::make_unique<PasswordForm>(*credential));
   expected_results[0]->is_affiliation_based_match = true;
 
-  mock_helper->ExpectCallToGetAffiliatedAndroidRealms(observed_form,
-                                                      {kTestAndroidRealm1});
-  std::vector<MockAffiliationService::AffiliationAndBrandingInformation>
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
+      observed_form, {kTestAndroidRealm1});
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
       affiliation_info_for_results = {
           {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)}};
-  mock_affiliation_service->ExpectCallToInjectAffiliationAndBrandingInformation(
-      affiliation_info_for_results);
+  mock_affiliated_match_helper
+      ->ExpectCallToInjectAffiliationAndBrandingInformation(
+          std::move(affiliation_info_for_results));
 
   expected_results[0]->affiliated_web_realm = kTestWebRealm1;
   expected_results[0]->app_display_name = kTestAndroidName1;
@@ -910,10 +916,11 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
        u"password2"}};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto owning_mock_match_helper = std::make_unique<MockAffiliatedMatchHelper>(
-      mock_affiliation_service.get());
-  MockAffiliatedMatchHelper* mock_helper = owning_mock_match_helper.get();
+  MockAffiliationService mock_affiliation_service;
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -945,8 +952,8 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
   std::vector<std::string> affiliated_realms = {kTestWebRealm1, kTestWebRealm2,
                                                 kTestAffiliatedRealm};
 
-  mock_helper->ExpectCallToGetAffiliatedAndroidRealms(observed_form,
-                                                      affiliated_realms);
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
+      observed_form, affiliated_realms);
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(mock_consumer,
@@ -1232,9 +1239,10 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
             std::move(reply).Run(true);
           })));
 
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto mock_match_helper = std::make_unique<MockAffiliatedMatchHelper>(
-      mock_affiliation_service.get());
+  MockAffiliationService mock_affiliation_service;
+  auto mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+  MockAffiliatedMatchHelper* match_helper = mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(mock_match_helper));
 
   static constexpr PasswordFormData kTestCredentials[] = {
@@ -1263,7 +1271,7 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   for (const auto& credential : all_credentials)
     expected_results.push_back(std::make_unique<PasswordForm>(*credential));
 
-  std::vector<MockAffiliationService::AffiliationAndBrandingInformation>
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
       affiliation_info_for_results = {
           {kTestWebRealm1, kTestAndroidName1, GURL(kTestAndroidIconURL1)},
           {kTestWebRealm2, kTestAndroidName2, GURL(kTestAndroidIconURL2)},
@@ -1272,7 +1280,7 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
           {/* Pretend affiliation or branding info is unavailable. */},
           {/* Pretend affiliation or branding info is unavailable. */}};
 
-  mock_affiliation_service->ExpectCallToInjectAffiliationAndBrandingInformation(
+  match_helper->ExpectCallToInjectAffiliationAndBrandingInformation(
       affiliation_info_for_results);
 
   for (size_t i = 0; i < expected_results.size(); ++i) {
@@ -1483,10 +1491,11 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
 
 TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  auto mock_affiliation_service = std::make_unique<MockAffiliationService>();
-  auto owning_mock_match_helper = std::make_unique<MockAffiliatedMatchHelper>(
-      mock_affiliation_service.get());
-  MockAffiliatedMatchHelper* mock_helper = owning_mock_match_helper.get();
+  MockAffiliationService mock_affiliation_service;
+  auto owning_mock_match_helper =
+      std::make_unique<MockAffiliatedMatchHelper>(&mock_affiliation_service);
+  MockAffiliatedMatchHelper* mock_affiliated_match_helper =
+      owning_mock_match_helper.get();
   store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
   WaitForPasswordStore();
 
@@ -1497,8 +1506,8 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
                                       kTestWebRealm1, GURL(kTestWebRealm1)};
 
   // Add affiliated android form corresponding to a 'observed_form'.
-  mock_helper->ExpectCallToGetAffiliatedAndroidRealms(observed_form,
-                                                      {kTestAndroidRealm1});
+  mock_affiliated_match_helper->ExpectCallToGetAffiliatedAndroidRealms(
+      observed_form, {kTestAndroidRealm1});
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(mock_consumer, OnGetPasswordStoreResults).Times(0);

@@ -22,6 +22,7 @@ class FaviconLoader;
 
 namespace password_manager {
 class AffiliationService;
+class AffiliatedMatchHelper;
 }
 
 namespace syncer {
@@ -135,8 +136,8 @@ class CredentialProviderService
   // Sync Service to observe.
   syncer::SyncService* sync_service_ = nullptr;
 
-  // Affiliation service to provide affiliations.
-  password_manager::AffiliationService* affiliation_service_ = nullptr;
+  // Helper which injects branding information from affiliation service.
+  std::unique_ptr<password_manager::AffiliatedMatchHelper> affiliated_helper_;
 
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.

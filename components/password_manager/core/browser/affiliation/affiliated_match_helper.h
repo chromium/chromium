@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
@@ -36,6 +38,11 @@ class AffiliatedMatchHelper {
   using AffiliatedRealmsCallback =
       base::OnceCallback<void(const std::vector<std::string>&)>;
 
+  // Callback to return PasswordForms with injected branding information.
+  using PasswordFormsOrErrorCallback = base::OnceCallback<void(
+      absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
+                    PasswordStoreBackendError>)>;
+
   // The |password_store| must outlive |this|. Both arguments must be non-NULL,
   // except in tests which do not Initialize() the object.
   explicit AffiliatedMatchHelper(AffiliationService* affiliation_service);
@@ -50,6 +57,13 @@ class AffiliatedMatchHelper {
   virtual void GetAffiliatedAndroidAndWebRealms(
       const PasswordFormDigest& observed_form,
       AffiliatedRealmsCallback result_callback);
+
+  // Retrieves affiliation and branding information about the Android
+  // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
+  // |app_icon_url| of forms, and invokes |result_callback|.
+  virtual void InjectAffiliationAndBrandingInformation(
+      std::vector<std::unique_ptr<PasswordForm>> forms,
+      PasswordFormsOrErrorCallback result_callback);
 
   // Returns whether or not |form| represents a valid Web credential for the
   // purposes of affiliation-based matching.
@@ -68,6 +82,17 @@ class AffiliatedMatchHelper {
   void CompleteGetAffiliatedAndroidAndWebRealms(
       const FacetURI& original_facet_uri,
       AffiliatedRealmsCallback result_callback,
+      const AffiliatedFacets& results,
+      bool success);
+
+  // Called back by AffiliationService to supply the list of facets
+  // affiliated with the Android credential in |form|. Injects affiliation and
+  // branding information by setting |affiliated_web_realm|, |app_display_name|
+  // and |app_icon_url| on |form| if |success| is true and |results| is
+  // non-empty. Invokes |barrier_closure|.
+  void CompleteInjectAffiliationAndBrandingInformation(
+      PasswordForm* form,
+      base::OnceClosure barrier_closure,
       const AffiliatedFacets& results,
       bool success);
 

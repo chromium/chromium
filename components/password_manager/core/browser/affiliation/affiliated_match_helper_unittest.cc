@@ -15,6 +15,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_move_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
@@ -123,6 +125,11 @@ const char kTestAndroidRealmBeta2[] =
     "android://hash@com.example.beta.android/";
 const char kTestAndroidRealmBeta3[] =
     "android://hash@com.yetanother.beta.android/";
+
+const char kTestAndroidFacetURIGamma[] =
+    "android://hash@com.example.gamma.android";
+const char kTestAndroidRealmGamma[] =
+    "android://hash@com.example.gamma.android/";
 
 const char16_t kTestUsername[] = u"JohnDoe";
 const char16_t kTestPassword[] = u"secret";
@@ -315,6 +322,66 @@ TEST_P(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealmsAndWebsites) {
                   GetTestObservedWebForm(kTestWebRealmAlpha1, nullptr)),
               testing::UnorderedElementsAre(kTestWebRealmAlpha2,
                                             kTestAndroidRealmAlpha3));
+}
+
+TEST_P(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
+  std::vector<std::unique_ptr<PasswordForm>> forms;
+  forms.push_back(std::make_unique<PasswordForm>(
+      GetTestAndroidCredentials(kTestAndroidRealmAlpha3)));
+  forms.push_back(std::make_unique<PasswordForm>(
+      GetTestAndroidCredentials(kTestAndroidRealmBeta2)));
+  forms.push_back(std::make_unique<PasswordForm>(
+      GetTestAndroidCredentials(kTestAndroidRealmGamma)));
+
+  PasswordFormDigest digest = {PasswordForm::Scheme::kHtml, kTestWebRealmBeta1,
+                               GURL()};
+  PasswordForm web_form;
+  web_form.scheme = digest.scheme;
+  web_form.signon_realm = digest.signon_realm;
+  web_form.url = digest.url;
+  forms.push_back(std::make_unique<PasswordForm>(web_form));
+
+  size_t expected_form_count = forms.size();
+
+  mock_affiliation_service()
+      ->ExpectCallToGetAffiliationsAndBrandingAndSucceedWithResult(
+          FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
+          StrategyOnCacheMiss::FAIL, GetTestEquivalenceClassAlpha());
+  mock_affiliation_service()
+      ->ExpectCallToGetAffiliationsAndBrandingAndSucceedWithResult(
+          FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2),
+          StrategyOnCacheMiss::FAIL, GetTestEquivalenceClassBeta());
+  mock_affiliation_service()
+      ->ExpectCallToGetAffiliationsAndBrandingAndSucceedWithResult(
+          FacetURI::FromCanonicalSpec(kTestAndroidFacetURIGamma),
+          StrategyOnCacheMiss::FAIL, {});
+
+  absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
+                PasswordStoreBackendError>
+      result;
+  base::MockCallback<AffiliatedMatchHelper::PasswordFormsOrErrorCallback>
+      mock_reply;
+  EXPECT_CALL(mock_reply, Run).WillOnce(MoveArg(&result));
+  match_helper()->InjectAffiliationAndBrandingInformation(std::move(forms),
+                                                          mock_reply.Get());
+
+  auto result_forms =
+      std::move(absl::get<std::vector<std::unique_ptr<PasswordForm>>>(result));
+
+  ASSERT_EQ(expected_form_count, result_forms.size());
+  EXPECT_THAT(result_forms[0]->affiliated_web_realm,
+              testing::AnyOf(kTestWebRealmAlpha1, kTestWebRealmAlpha2));
+  EXPECT_EQ(kTestAndroidFacetNameAlpha3, result_forms[0]->app_display_name);
+  EXPECT_EQ(kTestAndroidFacetIconURLAlpha3,
+            result_forms[0]->app_icon_url.possibly_invalid_spec());
+
+  EXPECT_THAT(result_forms[1]->affiliated_web_realm,
+              testing::Eq(kTestWebRealmBeta1));
+  EXPECT_EQ(kTestAndroidFacetNameBeta2, result_forms[1]->app_display_name);
+  EXPECT_EQ(kTestAndroidFacetIconURLBeta2,
+            result_forms[1]->app_icon_url.possibly_invalid_spec());
+
+  EXPECT_THAT(result_forms[2]->affiliated_web_realm, testing::IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,
