@@ -115,7 +115,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       return sk_make_sp<ShaderPaintFilter>(
           PaintShader::MakeImage(image, SkTileMode::kClamp, SkTileMode::kClamp,
                                  nullptr),
-          /*alpha=*/255, PaintFlags::FilterQuality::kNone,
+          /*alpha=*/1.0f, PaintFlags::FilterQuality::kNone,
           SkImageFilters::Dither::kNo, &crop_rect);
     }
     case PaintFilter::Type::kMatrix:

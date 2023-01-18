@@ -186,7 +186,7 @@ void PaintOpBufferSerializer::SerializePreamble(SkCanvas* canvas,
 bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
                                                   SkCanvas* canvas,
                                                   const PlaybackParams& params,
-                                                  uint8_t alpha) {
+                                                  float alpha) {
   // Skip ops outside the current clip if they have images. This saves
   // performing an unnecessary expensive decode.
   bool skip_op = PaintOp::OpHasDiscardableImages(op) &&
@@ -273,12 +273,12 @@ bool PaintOpBufferSerializer::SerializeOpWithFlags(
     SkCanvas* canvas,
     const PaintOpWithFlags& flags_op,
     const PlaybackParams& params,
-    uint8_t alpha) {
+    float alpha) {
   // We use a null |image_provider| here because images are decoded during
   // serialization.
-  const ScopedRasterFlags scoped_flags(
-      &flags_op.flags, nullptr, canvas->getTotalMatrix(),
-      options_.max_texture_size, alpha / 255.0f);
+  const ScopedRasterFlags scoped_flags(&flags_op.flags, nullptr,
+                                       canvas->getTotalMatrix(),
+                                       options_.max_texture_size, alpha);
   const PaintFlags* flags_to_serialize = scoped_flags.flags();
   if (!flags_to_serialize)
     return true;

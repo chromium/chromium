@@ -86,11 +86,11 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   bool WillSerializeNextOp(const PaintOp& op,
                            SkCanvas* canvas,
                            const PlaybackParams& params,
-                           uint8_t alpha);
+                           float alpha);
   bool SerializeOpWithFlags(SkCanvas* canvas,
                             const PaintOpWithFlags& flags_op,
                             const PlaybackParams& params,
-                            uint8_t alpha);
+                            float alpha);
   bool SerializeOp(SkCanvas* canvas,
                    const PaintOp& op,
                    const PaintFlags* flags_to_serialize,

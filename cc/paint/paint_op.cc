@@ -1418,7 +1418,7 @@ void SaveLayerAlphaOp::Raster(const SaveLayerAlphaOp* op,
   absl::optional<SkPaint> paint;
   if (op->alpha != 1.0f) {
     paint.emplace();
-    paint->setAlpha(op->alpha * 255.0f);
+    paint->setAlphaf(op->alpha);
   }
   SkCanvas::SaveLayerRec rec(unset ? nullptr : &op->bounds,
                              base::OptionalToPtr(paint));

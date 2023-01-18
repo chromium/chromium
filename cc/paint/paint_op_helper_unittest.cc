@@ -294,7 +294,7 @@ TEST(PaintOpHelper, SaveLayerAlphaToString) {
   SaveLayerAlphaOp op(SkRect::MakeXYWH(1, 2, 3, 4), 1.0f);
   std::string str = PaintOpHelper::ToString(op);
   EXPECT_EQ(str,
-            "SaveLayerAlphaOp(bounds=[1.000,2.000 3.000x4.000], alpha=255)");
+            "SaveLayerAlphaOp(bounds=[1.000,2.000 3.000x4.000], alpha=1.000)");
 }
 
 TEST(PaintOpHelper, ScaleToString) {
@@ -523,7 +523,7 @@ TEST(PaintOpHelperFilters, ShaderPaintFilter) {
                              /*tx=*/SkTileMode::kClamp,
                              /*ty=*/SkTileMode::kRepeat,
                              /*local_matrix=*/nullptr),
-      /*alpha=*/255, PaintFlags::FilterQuality::kMedium,
+      /*alpha=*/1.0f, PaintFlags::FilterQuality::kMedium,
       SkImageFilters::Dither::kYes, &crop_rect);
   EXPECT_EQ(
       PaintOpHelper::ToString(filter),
@@ -534,7 +534,7 @@ TEST(PaintOpHelperFilters, ShaderPaintFilter) {
       "0.000x0.000], start_point=[0.000,0.000], end_point=[0.000,0.000], "
       "start_degrees=0, end_degrees=0, image=<paint image>, record=(nil), "
       "id=4294967295, tile_scale=(nil), colors=(nil), positions=(nil)], "
-      "alpha=255, filter_quality=kMedium_SkFilterQuality, dither=kYes, "
+      "alpha=1.000, filter_quality=kMedium_SkFilterQuality, dither=kYes, "
       "crop_rect=[0.000,0.000 100.000x100.000])");
 }
 

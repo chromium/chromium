@@ -1252,7 +1252,7 @@ void PaintOpReader::ReadShaderPaintFilter(
   using Dither = SkImageFilters::Dither;
 
   sk_sp<PaintShader> shader;
-  uint8_t alpha = 255;
+  float alpha = 1.0f;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kNone;
   Dither dither = Dither::kNo;
 

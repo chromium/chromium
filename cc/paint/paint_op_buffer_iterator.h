@@ -226,12 +226,8 @@ class CC_PAINT_EXPORT PaintOpBuffer::PlaybackFoldingIterator
 
   explicit operator bool() const { return !!current_op_; }
 
-  // Guaranteed to be 255 for all ops without flags.
-  uint8_t alpha() const {
-    return static_cast<uint8_t>(current_alpha_ * 255.0f);
-  }
-
-  float alphaf() const { return current_alpha_; }
+  // Guaranteed to be 1.0f for all ops without flags.
+  float alpha() const { return current_alpha_; }
 
  private:
   void FindNextOp();

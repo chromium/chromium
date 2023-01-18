@@ -567,10 +567,10 @@ TEST(RasterSourceTest, RasterPartialClear) {
   recording_source->SetRequiresClear(true);
 
   // First record everything as white.
-  const unsigned alpha_dark = 10u;
+  const float alpha_dark = 0.04f;
   PaintFlags white_flags;
   white_flags.setColor(SK_ColorWHITE);
-  white_flags.setAlphaf(alpha_dark / 255.0f);
+  white_flags.setAlphaf(alpha_dark);
   recording_source->add_draw_rect_with_flags(gfx::Rect(layer_bounds),
                                              white_flags);
   recording_source->Rerecord();
@@ -593,7 +593,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
       gfx::AxisTransform2d(contents_scale, gfx::Vector2dF()),
       RasterSource::PlaybackSettings());
 
-  SkColor pixel_dark = SkColorSetARGB(alpha_dark, 255, 255, 255);
+  SkColor pixel_dark = SkColor4f{1, 1, 1, alpha_dark}.toSkColor();
   for (int i = 0; i < bitmap.width(); ++i) {
     for (int j = 0; j < bitmap.height(); ++j)
       EXPECT_COLOR_EQ(pixel_dark, bitmap.getColor(i, j)) << i << "," << j;
@@ -605,8 +605,8 @@ TEST(RasterSourceTest, RasterPartialClear) {
   recording_source_light->SetRequiresClear(true);
 
   // Record everything as a slightly lighter white.
-  const unsigned alpha_light = 18u;
-  white_flags.setAlphaf(alpha_light / 255.0f);
+  const float alpha_light = 0.1f;
+  white_flags.setAlphaf(alpha_light);
   recording_source_light->add_draw_rect_with_flags(gfx::Rect(layer_bounds),
                                                    white_flags);
   recording_source_light->Rerecord();
@@ -625,7 +625,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
       RasterSource::PlaybackSettings());
 
   // Test that the whole playback_rect was cleared and repainted with new alpha.
-  SkColor pixel_light = SkColorSetARGB(alpha_light, 255, 255, 255);
+  SkColor pixel_light = SkColor4f{1, 1, 1, alpha_light}.toSkColor();
   for (int i = 0; i < playback_rect.width(); ++i) {
     for (int j = 0; j < playback_rect.height(); ++j)
       EXPECT_COLOR_EQ(pixel_light, bitmap.getColor(i, j)) << i << "," << j;

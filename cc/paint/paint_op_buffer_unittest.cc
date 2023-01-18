@@ -54,6 +54,7 @@ using ::testing::Contains;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::FloatEq;
 using ::testing::Key;
 using ::testing::Le;
 using ::testing::Matcher;
@@ -136,7 +137,7 @@ class PaintOpAppendTest : public ::testing::Test {
   PaintOpAppendTest() {
     rect_ = SkRect::MakeXYWH(2, 3, 4, 5);
     flags_.setColor(SK_ColorMAGENTA);
-    flags_.setAlphaf(100.0f / 255.0f);
+    flags_.setAlphaf(0.25f);
   }
 
   void PushOps(PaintOpBuffer* buffer) {
@@ -242,10 +243,10 @@ TEST(PaintOpBufferTest, SaveDrawRestore) {
   float alpha = 0.4f;
   buffer.push<SaveLayerAlphaOp>(alpha);
 
-  int paint_flags_alpha = 50;
+  float paint_flags_alpha = 0.25f;
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlphaf(paint_flags_alpha / 255.0f);
+  draw_flags.setAlphaf(paint_flags_alpha);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   buffer.push<DrawRectOp>(rect, draw_flags);
@@ -260,8 +261,8 @@ TEST(PaintOpBufferTest, SaveDrawRestore) {
 
   // Expect the alpha from the draw and the save layer to be folded together.
   // Since alpha is stored in a uint8_t and gets rounded, so use tolerance.
-  float expected_alpha = alpha * paint_flags_alpha / 255.0f;
-  EXPECT_LE(std::abs(expected_alpha - canvas.paint_.getAlphaf()), 0.01f);
+  float expected_alpha = alpha * paint_flags_alpha;
+  EXPECT_NEAR(expected_alpha, canvas.paint_.getAlphaf(), 0.01f);
 }
 
 // Verify that we don't optimize SaveLayerAlpha / DrawTextBlob / Restore.
@@ -295,7 +296,7 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_BadFlags) {
 
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlphaf(50.0f / 255.0f);
+  draw_flags.setAlphaf(0.25f);
   draw_flags.setBlendMode(SkBlendMode::kSrc);
   EXPECT_FALSE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -322,7 +323,7 @@ TEST(PaintOpBufferTest, SaveDrawRestore_BadFlags255Alpha) {
 
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlphaf(50.0f / 255.0f);
+  draw_flags.setAlphaf(0.25f);
   draw_flags.setBlendMode(SkBlendMode::kColorBurn);
   EXPECT_FALSE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -347,7 +348,7 @@ TEST(PaintOpBufferTest, SaveDrawRestoreFail_TooManyOps) {
 
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlphaf(50.0f / 255.0f);
+  draw_flags.setAlphaf(0.25f);
   draw_flags.setBlendMode(SkBlendMode::kSrcOver);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
@@ -387,10 +388,10 @@ TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpNotADrawOp) {
 TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpRecordWithSingleOp) {
   PaintOpBuffer sub_buffer;
 
-  int paint_flags_alpha = 50;
+  float paint_flags_alpha = 0.25f;
   PaintFlags draw_flags;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlphaf(paint_flags_alpha / 255.0f);
+  draw_flags.setAlphaf(paint_flags_alpha);
   EXPECT_TRUE(draw_flags.SupportsFoldingAlpha());
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   sub_buffer.push<DrawRectOp>(rect, draw_flags);
@@ -410,7 +411,7 @@ TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpRecordWithSingleOp) {
   EXPECT_EQ(0, canvas.restore_count_);
   EXPECT_EQ(rect, canvas.draw_rect_);
 
-  float expected_alpha = alpha * paint_flags_alpha / 255.f;
+  float expected_alpha = alpha * paint_flags_alpha;
   EXPECT_LE(std::abs(expected_alpha - canvas.paint_.getAlphaf()), 0.01f);
 }
 
@@ -1143,7 +1144,7 @@ std::vector<PaintFlags> test_flags = {
     [] {
       PaintFlags flags;
       flags.setColor(SK_ColorCYAN);
-      flags.setAlphaf(103.0f / 255.0f);
+      flags.setAlphaf(0.25f);
       flags.setStrokeWidth(0.32f);
       flags.setStrokeMiter(7.98f);
       flags.setBlendMode(SkBlendMode::kSrcOut);
@@ -2113,7 +2114,7 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
     written = nullptr;
 
     PaintFlags override_flags = static_cast<const PaintOpWithFlags&>(op).flags;
-    override_flags.setAlphaf(override_flags.getAlpha() * 0.5f / 255.0f);
+    override_flags.setAlphaf(override_flags.getAlphaf() * 0.5f);
     bytes_written = op.Serialize(output_.get(), output_size_,
                                  options_provider.serialize_options(),
                                  &override_flags, SkM44(), SkM44());
@@ -2292,8 +2293,9 @@ TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
   buffer.push<SaveLayerAlphaOp>(alpha);
 
   PaintFlags draw_flags;
+  float draw_rect_alpha = 0.25f;
   draw_flags.setColor(SkColors::kMagenta);
-  draw_flags.setAlphaf(50.0f / 255.0f);
+  draw_flags.setAlphaf(draw_rect_alpha);
   SkRect rect = SkRect::MakeXYWH(1, 2, 3, 4);
   buffer.push<DrawRectOp>(rect, draw_flags);
   buffer.push<RestoreOp>();
@@ -2317,21 +2319,17 @@ TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
 
   EXPECT_THAT(
       deserialized_buffer,
-      Pointee(ElementsAre(
-          PaintOpIs<SaveOp>(), PaintOpIs<ClipRectOp>(),
-          AllOf(PaintOpIs<DrawRectOp>(),
-                // Expect the alpha from the draw and the save layer to be
-                // folded together. Since alpha is stored in a uint8_t and
-                // gets rounded, so use tolerance.
-                ResultOf(
-                    [alpha](const PaintOp& op) {
-                      float expected_alpha = alpha * 50;
-                      return std::abs(
-                          expected_alpha -
-                          static_cast<const DrawRectOp&>(op).flags.getAlpha());
-                    },
-                    Le(1.f))),
-          PaintOpIs<RestoreOp>())));
+      Pointee(ElementsAre(PaintOpIs<SaveOp>(), PaintOpIs<ClipRectOp>(),
+                          AllOf(PaintOpIs<DrawRectOp>(),
+                                // Expect the alpha from the draw and the save
+                                // layer to be folded together.
+                                ResultOf(
+                                    [](const PaintOp& op) {
+                                      return static_cast<const DrawRectOp&>(op)
+                                          .flags.getAlphaf();
+                                    },
+                                    FloatEq(alpha * draw_rect_alpha))),
+                          PaintOpIs<RestoreOp>())));
 }
 
 // Test generic PaintOp deserializing failure cases.

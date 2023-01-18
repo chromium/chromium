@@ -693,15 +693,21 @@ class CC_PAINT_EXPORT ShaderPaintFilter final : public PaintFilter {
   using Dither = SkImageFilters::Dither;
 
   ShaderPaintFilter(sk_sp<PaintShader> shader,
-                    uint8_t alpha,
+                    float alpha,
                     PaintFlags::FilterQuality filter_quality,
                     SkImageFilters::Dither dither,
                     const CropRect* crop_rect = nullptr);
+  // This declaration prevents int alpha from being passed.
+  ShaderPaintFilter(sk_sp<PaintShader>,
+                    unsigned alpha,
+                    PaintFlags::FilterQuality,
+                    SkImageFilters::Dither,
+                    const CropRect* = nullptr) = delete;
 
   ~ShaderPaintFilter() override;
 
   const PaintShader& shader() const { return *shader_; }
-  uint8_t alpha() const { return alpha_; }
+  float alpha() const { return alpha_; }
   PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
   SkImageFilters::Dither dither() const { return dither_; }
 
@@ -714,7 +720,7 @@ class CC_PAINT_EXPORT ShaderPaintFilter final : public PaintFilter {
 
  private:
   sk_sp<PaintShader> shader_;
-  uint8_t alpha_;
+  float alpha_;
   PaintFlags::FilterQuality filter_quality_;
   SkImageFilters::Dither dither_;
 };

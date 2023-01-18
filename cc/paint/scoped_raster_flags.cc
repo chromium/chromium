@@ -119,10 +119,8 @@ void ScopedRasterFlags::AdjustStrokeIfNeeded(const SkMatrix& ctm) {
     // Use modulated hairline when possible, as it is faster and produces
     // results closer to the original intent.
     MutableFlags()->setStrokeWidth(0);
-    MutableFlags()->setAlphaf(
-        std::round(flags()->getAlpha() *
-                   std::sqrt(stroke_vec.x() * stroke_vec.y())) /
-        255.0f);
+    MutableFlags()->setAlphaf(flags()->getAlphaf() *
+                              std::sqrt(stroke_vec.x() * stroke_vec.y()));
     return;
   }
 

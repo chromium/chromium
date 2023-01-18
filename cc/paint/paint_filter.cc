@@ -1028,7 +1028,7 @@ bool TurbulencePaintFilter::EqualsForTesting(
 }
 
 ShaderPaintFilter::ShaderPaintFilter(sk_sp<PaintShader> shader,
-                                     uint8_t alpha,
+                                     float alpha,
                                      PaintFlags::FilterQuality filter_quality,
                                      SkImageFilters::Dither dither,
                                      const CropRect* crop_rect)
@@ -1039,10 +1039,10 @@ ShaderPaintFilter::ShaderPaintFilter(sk_sp<PaintShader> shader,
       dither_(dither) {
   sk_sp<SkShader> sk_shader = shader_->GetSkShader(filter_quality_);
   // Combine the alpha multiply into the SkShader if it's not opaque
-  if (alpha < 255) {
+  if (alpha < 1.0f) {
     // The blend effectively produces (shader * alpha), the rgb of the secondary
     // color are ignored.
-    SkColor4f color{1.0f, 1.0f, 1.0f, alpha / 255.0f};
+    SkColor4f color{1.0f, 1.0f, 1.0f, alpha};
     // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
     sk_shader = SkShaders::Blend(SkBlendMode::kDstIn, std::move(sk_shader),
                                  SkShaders::Color(color.toSkColor()));
@@ -1067,7 +1067,7 @@ sk_sp<PaintFilter> ShaderPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
   PaintFlags orig_flags;
   orig_flags.setShader(shader_);
-  orig_flags.setAlphaf(alpha_ / 255.0f);
+  orig_flags.setAlphaf(alpha_);
   orig_flags.setFilterQuality(filter_quality_);
   orig_flags.setDither(dither_ == SkImageFilters::Dither::kYes);
 
@@ -1077,7 +1077,7 @@ sk_sp<PaintFilter> ShaderPaintFilter::SnapshotWithImagesInternal(
   if (snapshot) {
     // Ref the updated paint shader so that it can outlive ScopedRasterFlags
     return sk_make_sp<ShaderPaintFilter>(
-        sk_ref_sp(snapshot->getShader()), snapshot->getAlpha(),
+        sk_ref_sp(snapshot->getShader()), snapshot->getAlphaf(),
         snapshot->getFilterQuality(),
         snapshot->isDither() ? Dither::kYes : Dither::kNo, GetCropRect());
   } else {

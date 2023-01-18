@@ -241,11 +241,11 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
       auto* context = canvas->recordingContext();
       const ScopedRasterFlags scoped_flags(
           &flags_op.flags, new_params.image_provider, canvas->getTotalMatrix(),
-          context ? context->maxTextureSize() : 0, iter.alphaf());
+          context ? context->maxTextureSize() : 0, iter.alpha());
       if (const auto* raster_flags = scoped_flags.flags())
         flags_op.RasterWithFlags(canvas, raster_flags, new_params);
     } else {
-      DCHECK_EQ(iter.alpha(), 255);
+      DCHECK_EQ(iter.alpha(), 1.0f);
       op->Raster(canvas, new_params);
     }
 
