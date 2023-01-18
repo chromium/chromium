@@ -952,6 +952,9 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
   if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
     downloadsMenus.splice(4, 1);
     photosTwoMenus.splice(5, 1);
+  } else {
+    downloadsMenus.splice(5, 1);
+    photosTwoMenus.splice(6, 1);
   }
 
   const photosTwo = new TestEntryInfo({
@@ -1000,6 +1003,8 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     ];
     if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
       photosMenus.splice(5, 1);
+    } else {
+      photosMenus.splice(6, 1);
     }
     // Check the context menu is on desired state for MyFiles.
     await checkContextMenu(
@@ -1043,6 +1048,8 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     ];
     if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
       photosMenus.splice(5, 1);
+    } else {
+      photosMenus.splice(6, 1);
     }
 
     // Check the context menu is on desired state for MyFiles.
@@ -1094,6 +1101,9 @@ testcase.dirContextMenuMyFiles = async () => {
   if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
     downloadsMenus.splice(4, 1);
     photosMenus.splice(5, 1);
+  } else {
+    downloadsMenus.splice(5, 1);
+    photosMenus.splice(6, 1);
   }
 
   // Open Files app on local Downloads.
