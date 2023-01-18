@@ -2,9 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+window.deferredRequest = null;
+window.continueEmbedding = (allowRequest) => {
+  if (window.deferredRequest) {
+    if (allowRequest) {
+      window.deferredRequest.allow('main.html');
+    } else {
+      window.deferredRequest.deny();
+    }
+  }
+};
+
 chrome.app.runtime.onEmbedRequested.addListener(function(request) {
   if (!request.embedderId)
     request.deny();
+
+  if (request.data.deferRequest) {
+    window.deferredRequest = request;
+    return;
+  }
+
   if (!request.data.foo) {
     request.allow('main.html');
     return;
