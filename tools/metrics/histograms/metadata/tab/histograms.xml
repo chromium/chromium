@@ -1717,6 +1717,19 @@ chromium-metrics-reviews@google.com.
   <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
 </histogram>
 
+<histogram name="Tabs.RestoreTabStateException" enum="RestoreTabStateException"
+    expires_after="2023-06-25">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    [Android] TabState restoration may fail resulting in fallback restoration
+    from the TabStateList or aborting restoration altogether. TabState
+    restoration occurs on startup when restoring tab state from disk or when
+    merging multi-instance modes together. This histogram is emitted when
+    TabState restoration fails to indicate the cause of the failure.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.SadTab.Feedback.Event" enum="SadTabEvent"
     expires_after="2023-07-09">
   <owner>sonnyrao@chromium.org</owner>

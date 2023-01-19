@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabpersistence;
 import android.os.SystemClock;
 import android.util.Pair;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -29,7 +30,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
@@ -48,6 +52,20 @@ public class TabStateFileManager {
     private static final long KEY_CHECKER = 0;
     /** Overrides the Chrome channel/package name to test a variant channel-specific behaviour. */
     private static String sChannelNameOverrideForTest;
+
+    /**
+     * Enum representing the exception that occurred during {@link restoreTabState}.
+     */
+    @IntDef({RestoreTabStateException.FILE_NOT_FOUND_EXCEPTION,
+            RestoreTabStateException.CLOSED_BY_INTERRUPT_EXCEPTION,
+            RestoreTabStateException.IO_EXCEPTION, RestoreTabStateException.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface RestoreTabStateException {
+        int FILE_NOT_FOUND_EXCEPTION = 0;
+        int CLOSED_BY_INTERRUPT_EXCEPTION = 1;
+        int IO_EXCEPTION = 2;
+        int NUM_ENTRIES = 3;
+    }
 
     /**
      * Restore a TabState file for a particular Tab.  Checks if the Tab exists as a regular tab
@@ -94,12 +112,23 @@ public class TabStateFileManager {
             tabState = readState(stream, isEncrypted);
         } catch (FileNotFoundException exception) {
             Log.e(TAG, "Failed to restore tab state for tab: " + tabFile);
+            recordRestoreTabStateException(RestoreTabStateException.FILE_NOT_FOUND_EXCEPTION);
+        } catch (ClosedByInterruptException exception) {
+            Log.e(TAG, "Failed to restore tab state.", exception);
+            recordRestoreTabStateException(RestoreTabStateException.CLOSED_BY_INTERRUPT_EXCEPTION);
         } catch (IOException exception) {
             Log.e(TAG, "Failed to restore tab state.", exception);
+            recordRestoreTabStateException(RestoreTabStateException.IO_EXCEPTION);
         } finally {
             StreamUtil.closeQuietly(stream);
         }
         return tabState;
+    }
+
+    private static void recordRestoreTabStateException(
+            @RestoreTabStateException int restoreTabStateException) {
+        RecordHistogram.recordEnumeratedHistogram("Tabs.RestoreTabStateException",
+                restoreTabStateException, RestoreTabStateException.NUM_ENTRIES);
     }
 
     /**
