@@ -10,7 +10,11 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
@@ -77,7 +81,28 @@ base::Time ComputeRelaunchWindowStartForDay(
     } else {
       --window_start_exploded.hour;
     }
-    CHECK(base::Time::FromLocalExploded(window_start_exploded, &window_start));
+
+    // The adjusted time could still fail `Time::FromLocalExploded`. This
+    // happens on ARM devices in ChromeOS. Once it happens, it could be sticky
+    // and creates a crash loop. Return the unadjusted time in this case.
+    // See http://crbug/1307913
+    if (!base::Time::FromLocalExploded(window_start_exploded, &window_start)) {
+      LOG(ERROR) << "FromLocalExploded failed with time=" << time
+                 << ", now=" << base::Time::Now()
+                 << ", year=" << window_start_exploded.year
+                 << ", month=" << window_start_exploded.month
+                 << ", day=" << window_start_exploded.day_of_month;
+
+      base::debug::Alias(&window_start_exploded);
+
+      // Dump once per chrome run.
+      static bool dumped = false;
+      if (!dumped) {
+        dumped = base::debug::DumpWithoutCrashing();
+      }
+
+      return time;
+    }
   }
   return window_start;
 }
