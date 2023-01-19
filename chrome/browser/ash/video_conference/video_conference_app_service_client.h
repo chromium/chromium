@@ -16,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 
 namespace apps {
@@ -96,6 +97,9 @@ class VideoConferenceAppServiceClient
 
   // Returns the current camera/microphone permission status for `app_id`.
   VideoConferencePermissions GetAppPermission(const AppIdString& app_id);
+
+  // Returns the AppType of `app_id`.
+  apps::AppType GetAppType(const AppIdString& app_id);
 
   // Returns AppState of `app_id`; adds if doesn't exist yet.
   AppState& GetOrAddAppState(const AppIdString& app_id);

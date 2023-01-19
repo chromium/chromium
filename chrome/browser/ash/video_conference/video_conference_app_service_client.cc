@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -128,6 +129,14 @@ void VideoConferenceAppServiceClient::SetSystemMediaDeviceStatus(
 
 void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
     const apps::CapabilityAccessUpdate& update) {
+  const AppIdString& app_id = update.AppId();
+  // Only track Arc++ apps for now. All other apps are tracked by
+  // VideoConferenceManagerClientImpl. We should only expand to more types after
+  // confirming its compatibility with VideoConferenceManagerClientImpl.
+  if (GetAppType(app_id) != apps::AppType::kArc) {
+    return;
+  }
+
   // For now, we only care about camera/microphone accessing.
   if (!update.CameraChanged() && !update.MicrophoneChanged()) {
     return;
@@ -136,7 +145,6 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
   const bool is_capturing_camera = update.Camera().value_or(false);
   const bool is_capturing_microphone = update.Microphone().value_or(false);
 
-  const AppIdString& app_id = update.AppId();
   // We only want to start tracking a app if it starts to accessing
   // microphone/camera.
   if (!is_capturing_camera && !is_capturing_microphone &&
@@ -257,6 +265,15 @@ VideoConferenceAppServiceClient::GetAppPermission(const AppIdString& app_id) {
     }
   });
   return permissions;
+}
+
+apps::AppType VideoConferenceAppServiceClient::GetAppType(
+    const AppIdString& app_id) {
+  apps::AppType type = apps::AppType::kUnknown;
+  app_registry_->ForOneApp(app_id, [&type](const apps::AppUpdate& update) {
+    type = update.AppType();
+  });
+  return type;
 }
 
 VideoConferenceAppServiceClient::AppState&

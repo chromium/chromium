@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +27,7 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/user_manager/user_manager.h"
@@ -45,9 +47,10 @@ constexpr char kAppName2[] = "random_app_name_2";
 
 // Creates an app with given id and permissions.
 apps::AppPtr MakeApp(const AppIdString& app_id,
-                     bool has_camera_permission = false,
-                     bool has_microphone_permission = false) {
-  apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
+                     bool has_camera_permission,
+                     bool has_microphone_permission,
+                     apps::AppType app_type) {
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
   if (app_id == kAppId1) {
     app->name = kAppName1;
   }
@@ -149,9 +152,11 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
 
   // This function creates an app with given id and name, and adds the app into
   // AppRegistryCache of current profile.
-  void InstallApp(const std::string& app_id) {
+  void InstallApp(const std::string& app_id,
+                  apps::AppType app_type = apps::AppType::kArc) {
     std::vector<apps::AppPtr> deltas;
-    deltas.push_back(MakeApp(app_id));
+    deltas.push_back(MakeApp(app_id, /*has_camera_permission=*/false,
+                             /*has_microphone_permission=*/false, app_type));
     app_registry_cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
                                 /*should_notify_initialized=*/false);
   }
@@ -161,8 +166,8 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
                           bool has_camera_permission,
                           bool has_microphone_permission) {
     std::vector<apps::AppPtr> deltas;
-    deltas.push_back(
-        MakeApp(app_id, has_camera_permission, has_microphone_permission));
+    deltas.push_back(MakeApp(app_id, has_camera_permission,
+                             has_microphone_permission, GetAppType(app_id)));
     app_registry_cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
                                 /*should_notify_initialized=*/false);
   }
@@ -189,6 +194,10 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
 
   std::string GetAppName(const AppIdString& app_id) {
     return client_->GetAppName(app_id);
+  }
+
+  apps::AppType GetAppType(const AppIdString& app_id) {
+    return client_->GetAppType(app_id);
   }
 
   VideoConferenceAppServiceClient::VideoConferencePermissions GetAppPermission(
@@ -234,6 +243,16 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppName) {
 
   // AppName should be correct if installed.
   EXPECT_EQ(GetAppName(kAppId1), kAppName1);
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppType) {
+  // AppType should be kUnknown if it is not installed.
+  EXPECT_EQ(GetAppType(kAppId1), apps::AppType::kUnknown);
+
+  InstallApp(kAppId1);
+
+  // AppType for the test app installed should be Arc.
+  EXPECT_EQ(GetAppType(kAppId1), apps::AppType::kArc);
 }
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppPermission) {
@@ -550,6 +569,33 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
   EXPECT_FALSE(state.is_capturing_camera);
   EXPECT_FALSE(state.is_capturing_microphone);
   EXPECT_FALSE(state.is_capturing_screen);
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
+                       OnlyCertainAppsAreTracked) {
+  for (const auto type :
+       {apps::AppType::kUnknown, apps::AppType::kBuiltIn,
+        apps::AppType::kCrostini, apps::AppType::kChromeApp,
+        apps::AppType::kWeb, apps::AppType::kMacOs, apps::AppType::kPluginVm,
+        apps::AppType::kStandaloneBrowser, apps::AppType::kRemote,
+        apps::AppType::kBorealis, apps::AppType::kSystemWeb,
+        apps::AppType::kStandaloneBrowserChromeApp, apps::AppType::kExtension,
+        apps::AppType::kStandaloneBrowserExtension,
+        apps::AppType::kBruschetta}) {
+    // Create a fake id.
+    const std::string app_id = base::NumberToString(static_cast<int>(type));
+    // Install the app with given type.
+    InstallApp(app_id, type);
+    // Start the app.
+    FakeAppInstance instance(instance_registry_, app_id);
+    instance.Start();
+
+    // has-camera, has-mic should not start tracking of the app only because
+    // that we are not tracking the AppType listed above.
+    SetAppCapabilityAccess(app_id, true, true);
+
+    EXPECT_TRUE(GetMediaApps().empty());
+  }
 }
 
 }  // namespace ash
