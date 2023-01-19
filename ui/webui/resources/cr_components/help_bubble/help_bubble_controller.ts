@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {InsetsF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {HelpBubbleElement} from './help_bubble.js';
 import {HelpBubbleParams} from './help_bubble.mojom-webui.js';
@@ -23,6 +24,7 @@ export class HelpBubbleController {
   private anchor_: HTMLElement|null = null;
   private showing_: boolean = false;
   private bubble_: HelpBubbleElement|null = null;
+  private padding_: InsetsF = new InsetsF();
 
   constructor(nativeId: string, root: ShadowRoot) {
     assert(nativeId && root);
@@ -51,7 +53,7 @@ export class HelpBubbleController {
     return this.nativeId_;
   }
 
-  track(trackable: Trackable): boolean {
+  track(trackable: Trackable, padding: InsetsF): boolean {
     assert(!this.anchor_);
 
     let anchor: HTMLElement|null = null;
@@ -71,6 +73,7 @@ export class HelpBubbleController {
 
     anchor.dataset['nativeId'] = this.nativeId_;
     this.anchor_ = anchor;
+    this.padding_ = padding;
     return true;
   }
 
@@ -131,6 +134,7 @@ export class HelpBubbleController {
     this.bubble_.titleText = params.titleText || '';
     this.bubble_.progress = params.progress || null;
     this.bubble_.buttons = params.buttons;
+    this.bubble_.padding = this.padding_;
 
     if (params.timeout) {
       this.bubble_.timeoutMs = Number(params.timeout!.microseconds / 1000n);

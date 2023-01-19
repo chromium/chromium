@@ -21,6 +21,7 @@ import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_ico
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {isWindows} from '//resources/js/platform.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {InsetsF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {getTemplate} from './help_bubble.html.js';
 import {HelpBubbleArrowPosition, HelpBubbleButtonParams, Progress} from './help_bubble.mojom-webui.js';
@@ -107,6 +108,7 @@ export class HelpBubbleElement extends PolymerElement {
   timeoutTimerId: number|null = null;
   debouncedUpdate: ResizeListener|EventListenerOrEventListenerObject|null =
       null;
+  padding: InsetsF = new InsetsF();
 
   /**
    * HTMLElement corresponding to |this.nativeId|.
@@ -395,22 +397,22 @@ export class HelpBubbleElement extends PolymerElement {
       case HelpBubbleArrowPosition.TOP_LEFT:
       case HelpBubbleArrowPosition.TOP_CENTER:
       case HelpBubbleArrowPosition.TOP_RIGHT:
-        offsetY += anchorRect.height + ANCHOR_OFFSET;
+        offsetY += anchorRect.height + ANCHOR_OFFSET + this.padding.bottom;
         break;
       case HelpBubbleArrowPosition.BOTTOM_LEFT:
       case HelpBubbleArrowPosition.BOTTOM_CENTER:
       case HelpBubbleArrowPosition.BOTTOM_RIGHT:
-        offsetY -= (helpBubbleRect.height + ANCHOR_OFFSET);
+        offsetY -= (helpBubbleRect.height + ANCHOR_OFFSET + this.padding.top);
         break;
       case HelpBubbleArrowPosition.LEFT_TOP:
       case HelpBubbleArrowPosition.LEFT_CENTER:
       case HelpBubbleArrowPosition.LEFT_BOTTOM:
-        offsetX += anchorRect.width + ANCHOR_OFFSET;
+        offsetX += anchorRect.width + ANCHOR_OFFSET + this.padding.right;
         break;
       case HelpBubbleArrowPosition.RIGHT_TOP:
       case HelpBubbleArrowPosition.RIGHT_CENTER:
       case HelpBubbleArrowPosition.RIGHT_BOTTOM:
-        offsetX -= (helpBubbleRect.width + ANCHOR_OFFSET);
+        offsetX -= (helpBubbleRect.width + ANCHOR_OFFSET + this.padding.left);
         break;
       default:
         assertNotReached();

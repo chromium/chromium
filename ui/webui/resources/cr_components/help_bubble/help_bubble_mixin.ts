@@ -20,7 +20,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
@@ -129,9 +129,19 @@ export const HelpBubbleMixin = dedupingMixin(
          * nativeId to a new element/selector. If the help bubble is already
          * showing, the registration will fail and return null. If successful,
          * this method returns the new controller.
+         *
+         * Optionally, an object may be supplied to add to the default margin
+         * around the anchor element in all 4 directions, e.g. {"top":5}
+         * adds 5 pixels to the margin at the top off the anchor element.
+         * The margin is used when calculating how far the help bubble should
+         * be spaced from the anchor element. Larger values equate to a larger
+         * visual gap. These values must be positive integers in the range
+         * [0, 20]. This option should be used sparingly where the help
+         * bubble would otherwise conceal important UI.
          */
-        registerHelpBubble(nativeId: string, trackable: Trackable):
-            HelpBubbleController|null {
+        registerHelpBubble(
+            nativeId: string, trackable: Trackable,
+            padding: Padding = {}): HelpBubbleController|null {
           if (this.helpBubbleControllerById_.has(nativeId)) {
             const ctrl = this.helpBubbleControllerById_.get(nativeId);
             if (ctrl && ctrl.isShowing()) {
@@ -141,7 +151,7 @@ export const HelpBubbleMixin = dedupingMixin(
           }
           const controller =
               new HelpBubbleController(nativeId, this.shadowRoot!);
-          controller.track(trackable);
+          controller.track(trackable, paddingToInsets(padding));
           this.helpBubbleControllerById_.set(nativeId, controller);
           // This can be called before or after `connectedCallback()`, so if the
           // component isn't connected and the observer set up yet, delay
@@ -419,7 +429,7 @@ export const HelpBubbleMixin = dedupingMixin(
     });
 
 export interface HelpBubbleMixinInterface {
-  registerHelpBubble(nativeId: string, trackable: Trackable):
+  registerHelpBubble(nativeId: string, trackable: Trackable, padding?: Padding):
       HelpBubbleController|null;
   unregisterHelpBubble(nativeId: string): void;
   isHelpBubbleShowing(): boolean;
@@ -432,4 +442,24 @@ export interface HelpBubbleMixinInterface {
   notifyHelpBubbleAnchorActivated(anchorId: string): boolean;
   notifyHelpBubbleAnchorCustomEvent(anchorId: string, customEvent: string):
       boolean;
+}
+
+export interface Padding {
+  top?: number;
+  left?: number;
+  bottom?: number;
+  right?: number;
+}
+
+export function paddingToInsets(padding: Padding) {
+  const insets = new InsetsF();
+  insets.top = clampPadding(padding.top);
+  insets.left = clampPadding(padding.left);
+  insets.bottom = clampPadding(padding.bottom);
+  insets.right = clampPadding(padding.right);
+  return insets;
+}
+
+function clampPadding(n: number = 0) {
+  return Math.max(0, Math.min(20, n));
 }
