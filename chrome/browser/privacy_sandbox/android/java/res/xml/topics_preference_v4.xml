@@ -15,8 +15,7 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="topics_heading"
         android:title="@string/settings_topics_page_current_topics_heading"
-        android:summary="@string/settings_topics_page_current_topics_description"
-        app:allowDividerAbove="true" />
+        android:summary="@string/settings_topics_page_current_topics_description" />
 
     <PreferenceCategory
         android:key="current_topics"

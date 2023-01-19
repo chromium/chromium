@@ -15,8 +15,7 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="fledge_heading"
         android:title="@string/settings_fledge_page_current_sites_heading"
-        android:summary="@string/settings_fledge_page_current_sites_description"
-        app:allowDividerAbove="true" />
+        android:summary="@string/settings_fledge_page_current_sites_description" />
 
     <PreferenceCategory
         android:key="current_fledge_sites"
