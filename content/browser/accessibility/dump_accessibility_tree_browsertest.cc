@@ -142,16 +142,6 @@ void DumpAccessibilityTreeTestWithIgnoredNodes::ChooseFeatures(
 
 class DumpAccessibilityTreeTestExceptUIA : public DumpAccessibilityTreeTest {};
 
-class DumpAccessibilityTreeWithoutLayoutNGTest
-    : public DumpAccessibilityTreeTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
-                                    "LayoutNG");
-  }
-};
-
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
@@ -175,12 +165,6 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTestWithIgnoredNodes,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
-    DumpAccessibilityTreeTestPassToString());
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityTreeWithoutLayoutNGTest,
     ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
@@ -1708,17 +1692,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
-                       AccessibilityContenteditableBr) {
-  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityContenteditableFontSize) {
-  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-font-size.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
                        AccessibilityContenteditableFontSize) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-font-size.html"));
 }
@@ -1741,30 +1715,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
-                       AccessibilityContenteditableDocsLi) {
-  RunHtmlTest(
-      FILE_PATH_LITERAL("contenteditable-docs-li-disable-ng-layout.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityContenteditableLiContainsPresentation) {
   RunHtmlTest(
       FILE_PATH_LITERAL("contenteditable-li-contains-presentation.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
-                       AccessibilityContenteditableLiContainsPresentation) {
-  RunHtmlTest(FILE_PATH_LITERAL(
-      "contenteditable-li-contains-presentation-disable-ng-layout.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityContenteditableSpans) {
-  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-spans.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithoutLayoutNGTest,
                        AccessibilityContenteditableSpans) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-spans.html"));
 }
