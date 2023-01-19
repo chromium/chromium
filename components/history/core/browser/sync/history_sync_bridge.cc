@@ -169,6 +169,9 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
   row.originator_visit_id =
       specifics.redirect_entries(redirect_index).originator_visit_id();
 
+  // Definitionally, any visit from Sync is known to sync.
+  row.is_known_to_sync = true;
+
   // Reconstruct the page transition - first get the core type.
   int page_transition = syncer::FromSyncPageTransition(
       specifics.page_transition().core_transition());

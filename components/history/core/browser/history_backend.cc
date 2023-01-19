@@ -1231,7 +1231,8 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     absl::optional<std::string> originator_cache_guid,
     absl::optional<VisitID> originator_visit_id,
     absl::optional<VisitID> originator_referring_visit,
-    absl::optional<VisitID> originator_opener_visit) {
+    absl::optional<VisitID> originator_opener_visit,
+    bool is_known_to_sync) {
   // See if this URL is already in the DB.
   URLRow url_info(url);
   URLID url_id = db_->GetRowForURL(url, &url_info);
@@ -1282,6 +1283,8 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     visit_info.originator_referring_visit = *originator_referring_visit;
   if (originator_opener_visit.has_value())
     visit_info.originator_opener_visit = *originator_opener_visit;
+  visit_info.is_known_to_sync = is_known_to_sync;
+
   visit_info.visit_id = db_->AddVisit(&visit_info, visit_source);
 
   if (visit_info.visit_time < first_recorded_time_)
@@ -1544,6 +1547,7 @@ VisitID HistoryBackend::AddSyncedVisit(
   DCHECK_EQ(visit.url_id, 0);
   DCHECK(!visit.visit_time.is_null());
   DCHECK(!visit.originator_cache_guid.empty());
+  DCHECK(visit.is_known_to_sync);
 
   if (!db_) {
     return kInvalidVisitID;
@@ -1553,12 +1557,13 @@ VisitID HistoryBackend::AddSyncedVisit(
     return kInvalidVisitID;
   }
 
-  auto [url_id, visit_id] = AddPageVisit(
-      url, visit.visit_time, visit.referring_visit, visit.transition, hidden,
-      VisitSource::SOURCE_SYNCED, IsTypedIncrement(visit.transition),
-      visit.opener_visit, title, visit.visit_duration,
-      visit.originator_cache_guid, visit.originator_visit_id,
-      visit.originator_referring_visit, visit.originator_opener_visit);
+  auto [url_id, visit_id] =
+      AddPageVisit(url, visit.visit_time, visit.referring_visit,
+                   visit.transition, hidden, VisitSource::SOURCE_SYNCED,
+                   IsTypedIncrement(visit.transition), visit.opener_visit,
+                   title, visit.visit_duration, visit.originator_cache_guid,
+                   visit.originator_visit_id, visit.originator_referring_visit,
+                   visit.originator_opener_visit, visit.is_known_to_sync);
 
   if (visit_id == kInvalidVisitID) {
     // Adding the page visit failed, do not continue.
@@ -1592,6 +1597,7 @@ VisitID HistoryBackend::UpdateSyncedVisit(
   DCHECK_EQ(visit.url_id, 0);
   DCHECK(!visit.visit_time.is_null());
   DCHECK(!visit.originator_cache_guid.empty());
+  DCHECK(visit.is_known_to_sync);
 
   if (!db_) {
     return kInvalidVisitID;

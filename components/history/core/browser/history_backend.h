@@ -798,7 +798,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       absl::optional<std::string> originator_cache_guid = absl::nullopt,
       absl::optional<VisitID> originator_visit_id = absl::nullopt,
       absl::optional<VisitID> originator_referring_visit = absl::nullopt,
-      absl::optional<VisitID> originator_opener_visit = absl::nullopt);
+      absl::optional<VisitID> originator_opener_visit = absl::nullopt,
+      bool is_known_to_sync = false);
 
   // Returns a redirect-or-referral chain in `redirects` for the VisitID
   // `cur_visit`. `cur_visit` is assumed to be valid. Assumes that

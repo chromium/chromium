@@ -455,8 +455,10 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   EXPECT_EQ(backend()->GetURLs()[0].url(), local_url);
   EXPECT_EQ(backend()->GetURLs()[1].url(), remote_url);
   EXPECT_EQ(backend()->GetVisits()[0].url_id, backend()->GetURLs()[0].id());
+  EXPECT_FALSE(backend()->GetVisits()[0].is_known_to_sync);
   EXPECT_EQ(backend()->GetVisits()[1].url_id, backend()->GetURLs()[1].id());
   EXPECT_EQ(backend()->GetVisits()[1].originator_cache_guid, remote_cache_guid);
+  EXPECT_TRUE(backend()->GetVisits()[1].is_known_to_sync);
 }
 
 TEST_F(HistorySyncBridgeTest, MergesRemoteChanges) {

@@ -542,6 +542,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
             ReferrerURLIs(url1.spec())))));
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       UploadsMarkVisitAsKnownToSync) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to some URL, and make sure it shows up on the server.
+  GURL url1 =
+      embedded_test_server()->GetURL("www.host1.com", "/sync/simple.html");
+  NavigateToURL(url1, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  ASSERT_TRUE(WaitForServerHistory(UnorderedElementsAre(
+      AllOf(StandardFieldsArePopulated(), UrlIs(url1.spec())))));
+
+  // Now also verify that the local visit is marked as known to sync.
+  history::VisitVector visits =
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1);
+  ASSERT_EQ(visits.size(), 1U);
+  EXPECT_TRUE(visits[0].is_known_to_sync);
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsServerRedirect) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -674,6 +692,30 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
   EXPECT_TRUE(
       typed_urls_helper::GetUrlFromClient(/*index=*/0, url_both, &row_both));
   EXPECT_EQ(row_both.visit_count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       DownloadsAndMarksRemoteVisitAsKnownToSync) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // This simple test only has a single remote visit.
+  const GURL url_remote("https://www.url-remote.com");
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
+
+  // Turn on Sync - this should download the single remote visit.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // The "remote" URLs should have one visit marked as known to Sync.
+  history::URLRow row_remote;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote,
+                                                  &row_remote));
+  EXPECT_EQ(row_remote.visit_count(), 1);
+
+  history::VisitVector visits =
+      typed_urls_helper::GetVisitsFromClient(/*index=*/0, row_remote.id());
+  ASSERT_EQ(visits.size(), 1U);
+  EXPECT_TRUE(visits[0].is_known_to_sync);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,

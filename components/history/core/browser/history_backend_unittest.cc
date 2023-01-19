@@ -4309,8 +4309,8 @@ TEST_F(HistoryBackendTest, AddSyncedVisitAddsOnlyValidURLs) {
       ui::PAGE_TRANSITION_CHAIN_END);
 
   // Note: Per AddSyncedVisit() preconditions (DCHECKs), the passed visit MUST
-  // have visit_time and originator_cache_guid, but MUST NOT have visit_id or
-  // url_id.
+  // have visit_time, originator_cache_guid, and is_known_to_sync, but MUST NOT
+  // have visit_id or url_id.
 
   // First, try to add some visits with unwanted URLs. These should *not* get
   // added to the DB.
@@ -4320,6 +4320,7 @@ TEST_F(HistoryBackendTest, AddSyncedVisitAddsOnlyValidURLs) {
   foreign_visit.visit_time = base::Time::Now();
   foreign_visit.transition = kLink;
   foreign_visit.originator_cache_guid = "originator";
+  foreign_visit.is_known_to_sync = true;
   EXPECT_EQ(kInvalidVisitID,
             backend_->AddSyncedVisit(GURL("chrome://settings"), u"Settings",
                                      /*hidden=*/false, foreign_visit,
@@ -4341,6 +4342,22 @@ TEST_F(HistoryBackendTest, AddSyncedVisitAddsOnlyValidURLs) {
       foreign_visit.transition, added_visit.transition));
   EXPECT_EQ(foreign_visit.originator_cache_guid,
             added_visit.originator_cache_guid);
+  EXPECT_TRUE(added_visit.is_known_to_sync);
+}
+
+TEST_F(HistoryBackendTest, AddSyncedVisitWritesIsKnownToSync) {
+  VisitRow foreign_visit;
+  foreign_visit.visit_time = base::Time::Now();
+  foreign_visit.originator_cache_guid = "originator";
+  foreign_visit.is_known_to_sync = true;
+
+  VisitID added_id = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
+      absl::nullopt, absl::nullopt);
+  ASSERT_NE(added_id, kInvalidVisitID);
+  VisitRow added_visit;
+  ASSERT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
+  EXPECT_TRUE(added_visit.is_known_to_sync);
 }
 
 TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
@@ -4367,6 +4384,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
   foreign_visit1.visit_time = base::Time::Now();
   foreign_visit1.transition = kLink;
   foreign_visit1.originator_cache_guid = "originator";
+  foreign_visit1.is_known_to_sync = true;
   VisitID foreign_visit_id1 = backend_->AddSyncedVisit(
       GURL("https://remote1.url"), u"Title 1", /*hidden=*/false, foreign_visit1,
       absl::nullopt, absl::nullopt);
@@ -4388,6 +4406,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {
   foreign_visit2.visit_time = base::Time::Now();
   foreign_visit2.transition = kLink;
   foreign_visit2.originator_cache_guid = "originator";
+  foreign_visit2.is_known_to_sync = true;
   VisitID foreign_visit_id2 = backend_->AddSyncedVisit(
       GURL("https://remote2.url"), u"Title 2", /*hidden=*/true, foreign_visit2,
       absl::nullopt, absl::nullopt);
@@ -4438,6 +4457,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsWorksInBatches) {
     foreign_visit.visit_time = base::Time::Now();
     foreign_visit.transition = kLink;
     foreign_visit.originator_cache_guid = "originator";
+    foreign_visit.is_known_to_sync = true;
     backend_->AddSyncedVisit(GURL("https://remote.url"), /*title=*/u"",
                              /*hidden=*/false, foreign_visit, absl::nullopt,
                              absl::nullopt);
@@ -4483,6 +4503,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
     foreign_visit.visit_time = base::Time::Now();
     foreign_visit.transition = kLink;
     foreign_visit.originator_cache_guid = "originator";
+    foreign_visit.is_known_to_sync = true;
     backend_->AddSyncedVisit(GURL("https://remote.url"), /*title=*/u"",
                              /*hidden=*/false, foreign_visit, absl::nullopt,
                              absl::nullopt);
@@ -4510,6 +4531,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteFutureVisits) {
     foreign_visit.visit_time = base::Time::Now();
     foreign_visit.transition = kLink;
     foreign_visit.originator_cache_guid = "originator";
+    foreign_visit.is_known_to_sync = true;
     new_foreign_visit_ids.push_back(backend_->AddSyncedVisit(
         GURL("https://remote.url"), /*title=*/u"",
         /*hidden=*/false, foreign_visit, absl::nullopt, absl::nullopt));
