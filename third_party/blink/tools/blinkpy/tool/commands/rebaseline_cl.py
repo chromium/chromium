@@ -76,14 +76,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             optparse.make_option('--no-fill-missing',
                                  dest='fill_missing',
                                  action='store_false'),
-            optparse.make_option(
-                '--use-blink-try-bots-only',
-                dest='use_blink_try_bots_only',
-                action='store_true',
-                default=False,
-                help='Use only the try jobs results for rebaselining. '
-                'Default behavior is to use results from both CQ builders '
-                'and try bots.'),
             self.test_name_file_option,
             optparse.make_option(
                 '--builders',
@@ -102,7 +94,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             self.results_directory_option,
         ])
         self.git_cl = None
-        self._use_blink_try_bots_only = False
         self._builders = []
         self._resultdb_fetcher = False
 
@@ -121,7 +112,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if not self.check_ok_to_run():
             return 1
 
-        self._use_blink_try_bots_only = options.use_blink_try_bots_only
         self._builders = options.builders
 
         build_resolver = BuildResolver(
@@ -224,8 +214,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             try_builders.update(
                 self._tool.builders.builders_for_rebaselining())
 
-        if self._use_blink_try_bots_only:
-            try_builders = try_builders - self.cq_try_bots
         return set([
             builder for builder in try_builders
             if not self._tool.builders.uses_wptrunner(builder)

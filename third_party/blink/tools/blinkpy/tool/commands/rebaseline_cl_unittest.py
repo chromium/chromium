@@ -286,7 +286,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'verbose': False,
             'builders': [],
             'patchset': None,
-            'use_blink_try_bots_only': False,
             'flag_specific': None,
             'resultDB': None
         }
