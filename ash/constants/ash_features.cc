@@ -598,12 +598,17 @@ BASE_FEATURE(kDisableLacrosTtsSupport,
              "DisableLacrosTtsSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Disables the DNS proxy service for ChromeOS.
+BASE_FEATURE(kDisableDnsProxy,
+             "DisableDnsProxy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables indicators to hint where displays are connected.
 BASE_FEATURE(kDisplayAlignAssist,
              "DisplayAlignAssist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable DNS over HTTPS (DoH) with identifiers. Only available on ChromeOS.
+// Enable DNS over HTTPS(DoH) with identifiers.Only available on ChromeOS.
 BASE_FEATURE(kDnsOverHttpsWithIdentifiers,
              "DnsOverHttpsWithIdentifiers",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -707,6 +712,7 @@ BASE_FEATURE(kEnableBackgroundBlur,
 
 // Enables the DNS proxy service providing support split and secure DNS
 // for ChromeOS.
+// TODO(b/265091596): Remove.
 BASE_FEATURE(kEnableDnsProxy,
              "EnableDnsProxy",
              base::FEATURE_ENABLED_BY_DEFAULT);

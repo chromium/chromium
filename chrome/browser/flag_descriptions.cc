@@ -5111,6 +5111,11 @@ const char kEnableCrOSActionRecorderDescription[] =
     "visiting will be logged locally into an encrypted file. Should not be "
     "enabled. Be aware that hash option only provides a thin layer of privacy.";
 
+const char kDisableDnsProxyName[] = "Disable DNS proxy service for ChromeOS";
+const char kDisableDnsProxyDescription[] =
+    "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "
+    "Chrome browser.";
+
 const char kEnableDnsProxyName[] = "Enable DNS proxy service";
 const char kEnableDnsProxyDescription[] =
     "When enabled, standard DNS queries will be proxied through the system "

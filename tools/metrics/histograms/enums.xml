@@ -57757,6 +57757,7 @@ from previous Chrome versions.
   <int value="-1871185948" label="VrLaunchIntents:disabled"/>
   <int value="-1870961970" label="enable-filemanager-mtp"/>
   <int value="-1869845022" label="force-show-update-menu-item"/>
+  <int value="-1869700024" label="DisableDnsProxy:enabled"/>
   <int value="-1869432243" label="GoogleBrandedContextMenu:disabled"/>
   <int value="-1868978829" label="spurious-power-button-accel-count"/>
   <int value="-1868957045" label="SyncUSSAutofillWalletMetadata:enabled"/>
@@ -58791,6 +58792,7 @@ from previous Chrome versions.
       label="AutofillLocalCardMigrationShowFeedback:disabled"/>
   <int value="-1282488703" label="LocationBarModelOptimizations:enabled"/>
   <int value="-1282433319" label="WebRtcAllowInputVolumeAdjustment:enabled"/>
+  <int value="-1281491005" label="DisableDnsProxy:disabled"/>
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
   <int value="-1280673966" label="PluginVmFullscreen:disabled"/>
   <int value="-1280274244" label="OmniboxClosePopupWithEscape:disabled"/>

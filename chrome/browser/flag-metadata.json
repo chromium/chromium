@@ -1410,6 +1410,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "disable-dns-proxy",
+    "owners": [ "cros-networking@google.com" ],
+    "expiry_milestone": 121
+  },
+   {
     "name": "disable-explicit-dma-fences",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & debugging on ChromeOS, which has no way to
