@@ -76,7 +76,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   BOOL _visible;
 
   // Tracks if a drag action is in progress.
-  BOOL _isDragActionInProgress;
+  BOOL _dragActionInProgress;
+
+  //  Tracks if a drop animation is in progress.
+  BOOL _dropAnimationInProgress;
 }
 
 - (instancetype)init {
@@ -93,7 +96,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   _available = YES;
   _visible = YES;
-  _isDragActionInProgress = NO;
+  _dragActionInProgress = NO;
+  _dropAnimationInProgress = NO;
 
   [self configureCollectionView];
   [self configureEmptyCollectionViewLabel];
@@ -120,7 +124,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)dragSessionEnabled:(BOOL)enabled {
-  _isDragActionInProgress = enabled;
+  if (_dropAnimationInProgress) {
+    return;
+  }
+
+  _dragActionInProgress = enabled;
 
   [UIView animateWithDuration:kPinnedViewDragAnimationTime
                    animations:^{
@@ -138,7 +146,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   // The view is visible if `_items` is not empty or if a drag action is in
   // progress.
-  bool visible = _available && (_items.count || _isDragActionInProgress);
+  bool visible = _available && (_items.count || _dragActionInProgress);
   if (visible == _visible) {
     return;
   }
@@ -437,8 +445,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
     NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
     // Drop synchronously if local object is available.
+    __weak __typeof(self) weakSelf = self;
     if (item.dragItem.localObject) {
-      [coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath];
+      _dropAnimationInProgress = YES;
+      [[coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath]
+          addCompletion:^(UIViewAnimatingPosition finalPosition) {
+            [weakSelf collectionViewDropAnimationDidEnd];
+          }];
+
       // The sourceIndexPath is non-nil if the drop item is from this same
       // collection view.
       [self.dragDropHandler dropItem:item.dragItem
@@ -674,7 +688,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 // Updates the collection view after moving an item to the given `index`.
 - (void)updateCollectionViewAfterMovingItemToIndex:(NSUInteger)index {
-  // TODO(crbug.com/1382015): Implement selected halo.
   // Bring back selected halo only for the moved cell, which lost it during
   // the move (drag & drop).
   if (self.selectedIndex != index) {
@@ -710,6 +723,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)resetCollectionViewBackground {
   self.collectionView.backgroundColor = _backgroundColor;
   self.collectionView.backgroundView.hidden = NO;
+}
+
+// Updates the view when the drop animation did end.
+- (void)collectionViewDropAnimationDidEnd {
+  _dropAnimationInProgress = NO;
+  [self dragSessionEnabled:NO];
 }
 
 @end
