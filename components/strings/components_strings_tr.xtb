@@ -61,7 +61,7 @@
 <translation id="112840717907525620">Politika önbelleği uygun</translation>
 <translation id="1130564665089811311">Sayfayı çevir düğmesi, bu sayfayı Google Çeviri'yle çevirmek için Enter'a basın</translation>
 <translation id="1131264053432022307">Kopyalanan Resim</translation>
-<translation id="1142846828089312304">Gizli modda üçüncü taraf çerezleri engelle</translation>
+<translation id="1142846828089312304">Gizli modda üçüncü taraf çerezlerini engelle</translation>
 <translation id="1147769322402934017">Çevrimiçi resim galerileri</translation>
 <translation id="1150979032973867961">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Bilgisayarınızın işletim sistemi, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="1151972924205500581">Şifre gerekiyor</translation>
@@ -1755,7 +1755,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="541416427766103491">Yığınlayıcı 4</translation>
 <translation id="5414511064953050917">Yine de taşı</translation>
 <translation id="5421136146218899937">Tarama verilerini temizle...</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Hiçbir site engellenmiyor}=1{1 site engellendi}other{# site engellendi}}</translation>
+<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Hiçbir site engellenmiyor}=1{1 site engelleniyor}other{# site engelleniyor}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> size bildirim göndermek istiyor</translation>
 <translation id="5428105026674456456">İspanyolca</translation>
 <translation id="5430298929874300616">Yer işaretini kaldır</translation>
@@ -1865,7 +1865,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="571510845185711675">Veterinerler</translation>
 <translation id="5720705177508910913">Geçerli kullanıcı</translation>
 <translation id="5723287205918986743">Savunma sanayii</translation>
-<translation id="5725567311035061582">Çerezleri ve site verilerini yönetme</translation>
+<translation id="5725567311035061582">Çerezleri ve site verilerini yönet</translation>
 <translation id="5730040223043577876">Chrome, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
 <translation id="5736165827969430182">Metaller ve madencilik</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Kartı Google Hesabınıza kaydedin}other{Kartları Google Hesabınıza kaydedin}}</translation>
@@ -2873,7 +2873,7 @@ Ek ayrıntılar:
 <translation id="829335040383910391">ses</translation>
 <translation id="8294431847097064396">Kaynak</translation>
 <translation id="8296205692406981542">Bölgesel parklar ve bahçeler</translation>
-<translation id="8297545700510100061">Çerezler ve diğer site verileri sizi hatırlamamız için kullanılır, örneğin oturumunuzu açmak veya reklamları kişiselleştirmek için. Çerezleri <ph name="SETTINGS" /> sayfasından yönetebilirsiniz.</translation>
+<translation id="8297545700510100061">Çerezler ve diğer site verileri sizi hatırlamamız için kullanılır, örneğin oturumunuzu açmak veya reklamları kişiselleştirmek için. Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="SETTINGS" /> sayfasından öğrenebilirsiniz.</translation>
 <translation id="8298115750975731693">Kullandığınız kablosuz bağlantı ağı (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> adresini ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="8299269255470343364">Japonca</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" bölümü gösterildi</translation>
