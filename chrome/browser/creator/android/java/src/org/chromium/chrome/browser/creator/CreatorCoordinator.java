@@ -96,6 +96,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
             mCreatorToolbarModelChangeProcessor;
 
     private final SnackbarManager mSnackbarManager;
+    private final CreatorSnackbarController mCreatorSnackbarController;
     private final WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
     private ScrimCoordinator mScrim;
@@ -122,7 +123,8 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
 
     /**
-     * The constructor for the CreatorCoordinator.
+     * Constructor for the CreatorCoordinator.
+     *
      * @param activity The Creator Activity this is a part of.
      * @param webFeedId The ID that is is used to create the feed.
      * @param snackbarManager the snackbarManager that is used for the feed.
@@ -150,6 +152,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mCreatorWebContents = creatorWebContents;
         mCreatorOpenTab = creatorOpenTab;
         mBottomsheetShareDelegateSupplier = bottomsheetShareDelegateSupplier;
+        mCreatorSnackbarController = new CreatorSnackbarController(mActivity, mSnackbarManager);
 
         mProfileView =
                 (View) LayoutInflater.from(mActivity).inflate(R.layout.creator_profile, null);
@@ -177,11 +180,12 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 mCreatorModel, (CreatorToolbarView) mLayoutView, CreatorToolbarViewBinder::bind);
         setUpToolbarListener();
 
-        mMediator = new CreatorMediator(mActivity, mCreatorModel);
+        mMediator = new CreatorMediator(mActivity, mCreatorModel, mCreatorSnackbarController);
     }
 
     /**
      * Create a FeedStream and bind it to the RecyclerView
+     *
      * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
      * @param HelpAndFeedbackLauncher Interface for launching a help and feedback page.
      * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
@@ -335,6 +339,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     /**
      * Entry point for preview tab flow. This will create an creator tab and show it in the
      * bottom sheet.
+     *
      * @param url The URL to be shown.
      */
     public void requestOpenSheet(GURL url) {
@@ -496,6 +501,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         /**
          * Generates a favicon for a given URL. If no favicon was could be found or generated from
          * the URL, a default favicon will be shown.
+         *
          * @param url The URL for which favicon is to be generated.
          * @param callback The callback to be invoked to display the final image.
          * @param profile The profile for which favicon service is used.

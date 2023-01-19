@@ -202,6 +202,9 @@
       <message name="IDS_DELETE" desc="Label for a delete button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Delete
       </message>
+      <message name="IDS_DISMISS" desc="Label for a dismiss button. Used in multiple contexts. [CHAR_LIMIT=20]">
+        Dismiss
+      </message>
       <message name="IDS_REMOVE" desc="Label for a button to remove an item (e.g. a bookmark) from a list. [CHAR_LIMIT=20]">
         Remove
       </message>

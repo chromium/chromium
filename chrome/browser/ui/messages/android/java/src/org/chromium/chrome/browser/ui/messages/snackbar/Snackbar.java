@@ -109,6 +109,10 @@ public class Snackbar {
     public static final int UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO = 53;
     public static final int UMA_PRIVACY_SANDBOX_ADD_SITE = 54;
     public static final int UMA_PRIVACY_SANDBOX_REMOVE_SITE = 55;
+    public static final int UMA_CREATOR_FOLLOW_SUCCESS = 56;
+    public static final int UMA_CREATOR_FOLLOW_FAILURE = 57;
+    public static final int UMA_CREATOR_UNFOLLOW_SUCCESS = 58;
+    public static final int UMA_CREATOR_UNFOLLOW_FAILURE = 59;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;

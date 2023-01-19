@@ -94836,6 +94836,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="53" label="UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO"/>
   <int value="54" label="UMA_PRIVACY_SANDBOX_ADD_SITE"/>
   <int value="55" label="UMA_PRIVACY_SANDBOX_REMOVE_SITE"/>
+  <int value="56" label="UMA_CREATOR_FOLLOW_SUCCESS"/>
+  <int value="57" label="UMA_CREATOR_FOLLOW_FAILURE"/>
+  <int value="58" label="UMA_CREATOR_UNFOLLOW_SUCCESS"/>
+  <int value="59" label="UMA_CREATOR_UNFOLLOW_FAILURE"/>
 </enum>
 
 <enum name="SnapshotItemId">

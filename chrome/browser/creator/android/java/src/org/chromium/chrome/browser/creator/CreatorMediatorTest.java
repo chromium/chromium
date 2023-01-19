@@ -64,6 +64,8 @@ public class CreatorMediatorTest {
     @Mock
     private SnackbarManager mSnackbarManager;
     @Mock
+    private CreatorSnackbarController mCreatorSnackbarController;
+    @Mock
     private Profile mProfile;
     @Mock
     private WebContentsCreator mCreatorWebContents;
@@ -107,7 +109,8 @@ public class CreatorMediatorTest {
                 mShareDelegateSupplier);
         mCreatorModel = mCreatorCoordinator.getCreatorModel();
 
-        mCreatorMediator = new CreatorMediator(mActivity, mCreatorModel);
+        mCreatorMediator =
+                new CreatorMediator(mActivity, mCreatorModel, mCreatorSnackbarController);
     }
 
     @Test
