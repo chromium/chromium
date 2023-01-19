@@ -105,20 +105,6 @@ def CheckNoDisallowedJS(input_api, output_api):
   return presubmit_support.DisallowNewJsFiles(input_api, output_api,
                                               lambda f: not allow_js(f))
 
-def CheckJsModulizer(input_api, output_api):
-  affected = input_api.AffectedFiles()
-  affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
-
-  results = []
-  if 'js_modulizer.py' in affected_files:
-    presubmit_path = input_api.PresubmitLocalPath()
-    sources = [input_api.os_path.join('tools', 'js_modulizer_test.py')]
-    tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
-    results += input_api.canned_checks.RunUnitTests(
-        input_api, output_api, tests, run_on_python2=False)
-  return results
-
-
 def CheckGenerateGrd(input_api, output_api):
   affected = input_api.AffectedFiles()
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
