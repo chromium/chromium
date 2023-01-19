@@ -1119,6 +1119,8 @@ source_set("ash") {
     "file_manager/trash_io_task.h",
     "file_manager/url_util.cc",
     "file_manager/url_util.h",
+    "file_manager/volume.cc",
+    "file_manager/volume.h",
     "file_manager/volume_manager.cc",
     "file_manager/volume_manager.h",
     "file_manager/volume_manager_factory.cc",
