@@ -190,38 +190,6 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
     WGPUDevice device,
     WGPUBackendType backend_type,
     std::vector<WGPUTextureFormat> view_formats) {
-#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  if (backend_type == WGPUBackendType_OpenGLES) {
-    // GLImageNativePixmap is only compiled on below os.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
-    if (!gl_image_native_pixmap_) {
-      SharedContextState* shared_context_state =
-          factory()->GetSharedContextState();
-      ui::ScopedMakeCurrent smc(shared_context_state->context(),
-                                shared_context_state->surface());
-      gl_image_native_pixmap_ = gl::GLImageNativePixmap::CreateFromTexture(
-          size(), ToBufferFormat(format()), texture_.GetServiceId());
-      if (!gl_image_native_pixmap_) {
-        DLOG(ERROR) << "Unable to create a GLImage";
-        return nullptr;
-      }
-    }
-    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
-    if (IsPassthrough()) {
-      gl_representation = ProduceGLTexturePassthrough(manager, tracker);
-    } else {
-      gl_representation = ProduceGLTexture(manager, tracker);
-    }
-    return std::make_unique<DawnEGLImageRepresentation>(
-        std::move(gl_representation), gl_image_native_pixmap_->GetEGLImage(),
-        manager, this, tracker, device);
-#else
-    DLOG(ERROR) << "Dawn representation not supported";
-    return nullptr;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
-  }
-#endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;

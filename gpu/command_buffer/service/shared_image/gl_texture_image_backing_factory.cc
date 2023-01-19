@@ -118,8 +118,9 @@ bool GLTextureImageBackingFactory::IsSupported(
     usage = usage & ~SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  constexpr uint32_t kInvalidUsages =
-      SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_SCANOUT;
+  constexpr uint32_t kInvalidUsages = SHARED_IMAGE_USAGE_VIDEO_DECODE |
+                                      SHARED_IMAGE_USAGE_SCANOUT |
+                                      SHARED_IMAGE_USAGE_WEBGPU;
   if (usage & kInvalidUsages) {
     return false;
   }
@@ -141,18 +142,6 @@ bool GLTextureImageBackingFactory::IsSupported(
        (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
        (usage & SHARED_IMAGE_USAGE_RASTER))) {
     return false;
-  }
-
-  // Linux and ChromeOS support WebGPU/Compat on GL. All other platforms
-  // do not support WebGPU on GL.
-  if (usage & SHARED_IMAGE_USAGE_WEBGPU) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
-    if (use_webgpu_adapter_ != WebGPUAdapterName::kCompat) {
-      return false;
-    }
-#else
-    return false;
-#endif
   }
 
   return CanCreateSharedImage(size, pixel_data, GetFormatInfo(format),
