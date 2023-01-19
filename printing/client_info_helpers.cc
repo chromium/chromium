@@ -4,6 +4,7 @@
 
 #include "printing/client_info_helpers.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/optional_util.h"
@@ -20,9 +21,9 @@ bool ValidateClientType(mojom::IppClientInfo::ClientType type) {
 }
 
 bool ValidateStringMember(const std::string* value, size_t max_length) {
-  static const RE2 kStringRegex = "[a-zA-Z0-9_.-]*";
+  static const base::NoDestructor<RE2> kStringRegex("[a-zA-Z0-9_.-]*");
   return value == nullptr ||
-         (value->size() <= max_length && RE2::FullMatch(*value, kStringRegex));
+         (value->size() <= max_length && RE2::FullMatch(*value, *kStringRegex));
 }
 
 // Returns true if all members of `client_info` are valid.

@@ -25,6 +25,10 @@ if (is_win || enable_print_preview) {
              "set enable_pdf=true.")
 }
 
+config("strict") {
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
 # Lower-dependency base printing files which are needed by both :printing and
 # //printing/backend without incurring deeper UI dependencies (e.g.,
 # //ui/accessibility).  New files should normally be added to :printing, and
@@ -40,6 +44,9 @@ component("printing_base") {
     "units.cc",
     "units.h",
   ]
+
+  configs += [ ":strict" ]
+
   if (use_cups_ipp || is_chromeos) {
     sources += [
       "printer_query_result.h",
@@ -77,6 +84,9 @@ if (enable_oop_printing && (is_linux || is_chromeos)) {
       "sandbox/print_backend_sandbox_hook_linux.cc",
       "sandbox/print_backend_sandbox_hook_linux.h",
     ]
+
+    configs += [ ":strict" ]
+
     deps = [
       "//base",
       "//printing/buildflags",
@@ -98,6 +108,8 @@ if (enable_oop_printing && (is_linux || is_chromeos)) {
 source_set("native_drawing_context") {
   sources = [ "native_drawing_context.h" ]
 
+  configs += [ ":strict" ]
+
   deps = [ "//base" ]
 }
 
@@ -110,6 +122,8 @@ component("metafile") {
     "metafile_skia.cc",
     "metafile_skia.h",
   ]
+
+  configs += [ ":strict" ]
 
   defines = [ "IS_PRINTING_METAFILE_IMPL" ]
   public_deps = [
@@ -165,6 +179,8 @@ component("printing") {
     "printing_context_factory_for_test.h",
     "pwg_raster_settings.h",
   ]
+
+  configs += [ ":strict" ]
 
   cflags = []
   defines = [ "IS_PRINTING_IMPL" ]
