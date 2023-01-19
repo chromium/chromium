@@ -15,6 +15,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -862,7 +863,9 @@ class ProxyResolverV8::Context {
   }
 
   mutable base::Lock lock_;
-  ProxyResolverV8::JSBindings* js_bindings_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION ProxyResolverV8::JSBindings* js_bindings_;
   raw_ptr<v8::Isolate> isolate_;
   v8::Persistent<v8::External> v8_this_;
   v8::Persistent<v8::Context> v8_context_;

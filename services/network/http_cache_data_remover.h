@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "services/network/conditional_cache_deletion_helper.h"
@@ -64,7 +65,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HttpCacheDataRemover {
 
   HttpCacheDataRemoverCallback done_callback_;
 
-  disk_cache::Backend* backend_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION disk_cache::Backend* backend_;
 
   std::unique_ptr<ConditionalCacheDeletionHelper> deletion_helper_;
 

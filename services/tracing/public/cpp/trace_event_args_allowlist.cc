@@ -5,6 +5,7 @@
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -21,7 +22,9 @@ struct AllowlistEntry {
   // Pattern to match the interested trace event name.
   const char* event_name;
   // List of patterns that match the allowlisted arguments.
-  const char* const* arg_name_filter;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const char* const* arg_name_filter;
 };
 
 const char* const kScopedBlockingCallAllowedArgs[] = {

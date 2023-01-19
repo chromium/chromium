@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_parameters.h"
@@ -67,7 +68,9 @@ class FakeLoopbackGroupMember : public LoopbackGroupMember {
 
   int64_t at_frame_ = 0;
 
-  Snooper* snooper_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION Snooper* snooper_ = nullptr;
 };
 
 }  // namespace audio

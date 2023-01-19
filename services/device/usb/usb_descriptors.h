@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 
@@ -27,8 +28,12 @@ struct CombinedInterfaceInfo {
 
   bool IsValid() const;
 
-  const mojom::UsbInterfaceInfo* interface = nullptr;
-  const mojom::UsbAlternateInterfaceInfo* alternate = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const mojom::UsbInterfaceInfo* interface = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const mojom::UsbAlternateInterfaceInfo* alternate = nullptr;
 };
 
 struct UsbDeviceDescriptor {

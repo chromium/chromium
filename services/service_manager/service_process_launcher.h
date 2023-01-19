@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -66,7 +67,9 @@ class ServiceProcessLauncher {
  private:
   class ProcessState;
 
-  ServiceProcessLauncherDelegate* const delegate_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION ServiceProcessLauncherDelegate* const delegate_;
   const base::FilePath service_path_;
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   scoped_refptr<ProcessState> state_;

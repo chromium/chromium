@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace network {
@@ -44,7 +45,9 @@ class ScopedBoringsslBytes {
 
  private:
   size_t len_ = 0;
-  uint8_t* ptr_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer, #addr-of
+  RAW_PTR_EXCLUSION uint8_t* ptr_ = nullptr;
 };
 
 }  // namespace network
