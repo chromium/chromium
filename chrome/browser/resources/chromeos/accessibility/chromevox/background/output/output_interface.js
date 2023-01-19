@@ -19,6 +19,8 @@ const EventType = chrome.automation.EventType;
 export class OutputInterface {
   /**
    * Appends output to the |buff|.
+   *
+   * This function is public only to output classes.
    * @param {!Array<Spannable>} buff
    * @param {string|!Spannable} value
    * @param {{annotation: Array<*>, isUnique: (boolean|undefined)}=} opt_options
@@ -26,27 +28,23 @@ export class OutputInterface {
   append(buff, value, opt_options) {}
 
   /**
+   * This function is public only to output classes.
    * @param {string} text
    * @param {!AutomationNode} contextNode
    * @param {!Array<Spannable>} buff
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
-  assignLocaleAndAppend_(text, contextNode, buff, options) {}
+  assignLocaleAndAppend(text, contextNode, buff, options) {}
 
   /**
    * Find the earcon for a given node (including ancestry).
+   *
+   * This function is public only to output classes.
    * @param {!AutomationNode} node
    * @param {!AutomationNode=} opt_prevNode
    * @return {outputTypes.OutputAction}
    */
-  findEarcon_(node, opt_prevNode) {}
-
-  /**
-   * Format the node given the format specifier.
-   * @param {!outputTypes.OutputFormattingData} params All the required and
-   *     optional parameters for formatting.
-   */
-  format_(params) {}
+  findEarcon(node, opt_prevNode) {}
 
   /**
    * @param {!AutomationNode} node
@@ -60,6 +58,8 @@ export class OutputInterface {
   /**
    * Renders the given range using optional context previous range and event
    * type.
+   *
+   * This function is public only to output classes.
    * @param {!CursorRange} range
    * @param {CursorRange} prevRange
    * @param {EventType|outputTypes.OutputEventType} type
@@ -67,7 +67,7 @@ export class OutputInterface {
    * @param {!OutputFormatLogger} formatLog
    * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
    */
-  render_(range, prevRange, type, buff, formatLog, optionalArgs) {}
+  render(range, prevRange, type, buff, formatLog, optionalArgs) {}
 
   /**
    * @param {string} token

@@ -16,7 +16,7 @@ import {EarconId} from '../../common/earcon_id.js';
 import {Msgs} from '../../common/msgs.js';
 import {PhoneticData} from '../phonetic_data.js';
 
-import {OutputFormatParserObserver} from './output_format_parser.js';
+import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputInterface} from './output_interface.js';
 import {OutputRoleInfo} from './output_role_info.js';
@@ -41,6 +41,17 @@ export class OutputFormatter {
     this.output_ = output;
     /** @private {!outputTypes.OutputFormattingData} */
     this.params_ = params;
+  }
+
+  /**
+   * Format the node given the format specifier.
+   * @param {!OutputInterface} output
+   * @param {!outputTypes.OutputFormattingData} params All the required and
+   *     optional parameters for formatting.
+   */
+  static format(output, params) {
+    const formatter = new OutputFormatter(output, params);
+    new OutputFormatParser(formatter).parse(params.outputFormat);
   }
 
   /** @override */
@@ -260,7 +271,7 @@ export class OutputFormatter {
       formatLog.writeTokenWithValue(token, value);
     } else {
       formatLog.write(token);
-      this.output_.format_({
+      OutputFormatter.format(this.output_, {
         node,
         outputFormat: ` @cell_summary($if($tableCellAriaRowIndex,
                   $tableCellAriaRowIndex, $tableCellRowIndex),
@@ -285,7 +296,7 @@ export class OutputFormatter {
     const msg = outputTypes.OutputPropertyMap.CHECKED[node.checked];
     if (msg) {
       formatLog.writeToken(token);
-      this.output_.format_({
+      OutputFormatter.format(this.output_, {
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
@@ -313,7 +324,7 @@ export class OutputFormatter {
       const attrib = cond.value.slice(1);
       if (AutomationUtil.isTruthy(node, attrib)) {
         formatLog.write(attrib + '==true => ');
-        this.output_.format_({
+        OutputFormatter.format(this.output_, {
           node,
           outputFormat: cond.nextSibling || '',
           outputBuffer: buff,
@@ -321,7 +332,7 @@ export class OutputFormatter {
         });
       } else if (AutomationUtil.isFalsey(node, attrib)) {
         formatLog.write(attrib + '==false => ');
-        this.output_.format_({
+        OutputFormatter.format(this.output_, {
           node,
           outputFormat: cond.nextSibling.nextSibling || '',
           outputBuffer: buff,
@@ -334,7 +345,7 @@ export class OutputFormatter {
       const attrib = cond.value.slice(1);
       if (AutomationUtil.isFalsey(node, attrib)) {
         formatLog.write(attrib + '==false => ');
-        this.output_.format_({
+        OutputFormatter.format(this.output_, {
           node,
           outputFormat: cond.nextSibling || '',
           outputBuffer: buff,
@@ -342,7 +353,7 @@ export class OutputFormatter {
         });
       } else if (AutomationUtil.isTruthy(node, attrib)) {
         formatLog.write(attrib + '==true => ');
-        this.output_.format_({
+        OutputFormatter.format(this.output_, {
           node,
           outputFormat: cond.nextSibling.nextSibling || '',
           outputBuffer: buff,
@@ -407,7 +418,7 @@ export class OutputFormatter {
       prev = CursorRange.fromNode(node);
     }
     formatLog.writeToken(token);
-    this.output_.render_(
+    this.output_.render(
         subrange, prev, outputTypes.OutputCustomEvent.NAVIGATE, buff, formatLog,
         {suppressStartEndAncestry: true});
   }
@@ -451,7 +462,7 @@ export class OutputFormatter {
       const formatString = tree.firstChild.nextSibling || '';
       if (node) {
         formatLog.writeToken(token);
-        this.output_.format_({
+        OutputFormatter.format(this.output_, {
           node,
           outputFormat: formatString,
           outputBuffer: buff,
@@ -534,7 +545,7 @@ export class OutputFormatter {
 
     const unjoined = [];
     formatLog.write('joinedDescendants {');
-    this.output_.format_({
+    OutputFormatter.format(this.output_, {
       node,
       outputFormat: '$descendants',
       outputBuffer: unjoined,
@@ -602,7 +613,7 @@ export class OutputFormatter {
           return;
         }
         let msgBuff = [];
-        this.output_.format_({
+        OutputFormatter.format(this.output_, {
           node,
           outputFormat: curArg,
           outputBuffer: msgBuff,
@@ -647,7 +658,7 @@ export class OutputFormatter {
         return;
       }
       const argBuff = [];
-      this.output_.format_({
+      OutputFormatter.format(this.output_, {
         node,
         outputFormat: arg,
         outputBuffer: argBuff,
@@ -674,7 +685,7 @@ export class OutputFormatter {
     const formatLog = data.outputFormatLogger;
 
     options.annotation.push(token);
-    const earcon = node ? this.output_.findEarcon_(node, prevNode) : null;
+    const earcon = node ? this.output_.findEarcon(node, prevNode) : null;
     if (earcon) {
       options.annotation.push(earcon);
     }
@@ -687,7 +698,7 @@ export class OutputFormatter {
     }
 
     if (LocalStorage.get('languageSwitching')) {
-      this.output_.assignLocaleAndAppend_(node.name || '', node, buff, options);
+      this.output_.assignLocaleAndAppend(node.name || '', node, buff, options);
     } else {
       this.output_.append(buff, node.name || '', options);
     }
@@ -734,7 +745,7 @@ export class OutputFormatter {
       formatLog.writeTokenWithValue(token, node.name);
     } else {
       formatLog.writeToken(token);
-      this.output_.format_({
+      OutputFormatter.format(this.output_, {
         node,
         outputFormat: '$descendants',
         outputBuffer: buff,
@@ -847,7 +858,7 @@ export class OutputFormatter {
     const msg = outputTypes.OutputPropertyMap.PRESSED[node.checked];
     if (msg) {
       formatLog.writeToken(token);
-      this.output_.format_({
+      OutputFormatter.format(this.output_, {
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
@@ -869,7 +880,7 @@ export class OutputFormatter {
     const msg = outputTypes.OutputPropertyMap.RESTRICTION[node.restriction];
     if (msg) {
       formatLog.writeToken(token);
-      this.output_.format_({
+      OutputFormatter.format(this.output_, {
         node,
         outputFormat: '@' + msg,
         outputBuffer: buff,
@@ -924,7 +935,7 @@ export class OutputFormatter {
         const stateInfo = outputTypes.OUTPUT_STATE_INFO[state];
         if (stateInfo && !stateInfo.isRoleSpecific && stateInfo.on) {
           formatLog.writeToken(token);
-          this.output_.format_({
+          OutputFormatter.format(this.output_, {
             node,
             outputFormat: '$' + state,
             outputBuffer: buff,
@@ -969,7 +980,7 @@ export class OutputFormatter {
 
     if (node.name && token === 'nameOrTextContent') {
       formatLog.writeToken(token);
-      this.output_.format_({
+      OutputFormatter.format(this.output_, {
         node,
         outputFormat: '$name',
         outputBuffer: buff,
