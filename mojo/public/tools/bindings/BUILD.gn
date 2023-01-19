@@ -100,8 +100,9 @@ action("precompile_templates") {
   outputs = [
     "$target_gen_dir/cpp_templates.zip",
     "$target_gen_dir/java_templates.zip",
-    "$target_gen_dir/mojolpm_templates.zip",
+    "$target_gen_dir/js_interface_binder_templates.zip",
     "$target_gen_dir/js_templates.zip",
+    "$target_gen_dir/mojolpm_templates.zip",
     "$target_gen_dir/ts_templates.zip",
   ]
   args = [
