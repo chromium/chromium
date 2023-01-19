@@ -11,6 +11,12 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
+namespace ash::network_config {
+namespace mojom = ::chromeos::network_config::mojom;
+}
+
+namespace ash::sync_wifi {
+
 namespace {
 
 bool IsAutoconnectEnabled(
@@ -27,13 +33,6 @@ bool IsAutoconnectEnabled(
 }
 
 }  // namespace
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace ash::network_config {
-namespace mojom = ::chromeos::network_config::mojom;
-}
-
-namespace ash::sync_wifi {
 
 std::string DecodeHexString(const std::string& base_16) {
   std::string decoded;

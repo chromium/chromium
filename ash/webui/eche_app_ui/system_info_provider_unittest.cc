@@ -16,9 +16,8 @@
 namespace ash {
 namespace eche_app {
 
-using chromeos::network_config::mojom::ConnectionStateType;
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
 namespace network_config = ::chromeos::network_config;
+using network_config::mojom::ConnectionStateType;
 
 const char kFakeDeviceName[] = "Guanru's Chromebook";
 const char kFakeBoardName[] = "atlas";
@@ -271,9 +270,8 @@ class SystemInfoProviderTest : public testing::Test {
   std::vector<network_config::mojom::NetworkStatePropertiesPtr>
   GetWifiNetworkStateList() {
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> result;
-    auto network =
-        ::chromeos::network_config::mojom::NetworkStateProperties::New();
-    network->type = chromeos::network_config::mojom::NetworkType::kWiFi;
+    auto network = network_config::mojom::NetworkStateProperties::New();
+    network->type = network_config::mojom::NetworkType::kWiFi;
     network->connection_state = kFakeWifiConnectionState;
     result.emplace_back(std::move(network));
     return result;
@@ -293,7 +291,7 @@ class SystemInfoProviderTest : public testing::Test {
  private:
   // base::test::TaskEnvironment task_environment_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
-  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+  mojo::Remote<network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
 };
 

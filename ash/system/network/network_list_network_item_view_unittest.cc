@@ -20,7 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,15 +36,14 @@ namespace ash {
 
 namespace {
 
-using chromeos::network_config::CrosNetworkConfigTestHelper;
-
-using chromeos::network_config::mojom::ActivationStateType;
-using chromeos::network_config::mojom::ConnectionStateType;
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
-using chromeos::network_config::mojom::NetworkType;
-using chromeos::network_config::mojom::OncSource;
-using chromeos::network_config::mojom::PortalState;
-using chromeos::network_config::mojom::SecurityType;
+using ::chromeos::network_config::mojom::ActivationStateType;
+using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using ::chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::OncSource;
+using ::chromeos::network_config::mojom::PortalState;
+using ::chromeos::network_config::mojom::SecurityType;
+using network_config::CrosNetworkConfigTestHelper;
 
 const std::string kWiFiName = "WiFi";
 const std::string kCellularName = "cellular";

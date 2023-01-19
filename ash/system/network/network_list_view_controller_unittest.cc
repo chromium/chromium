@@ -33,7 +33,7 @@
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -71,11 +71,8 @@ using ::chromeos::network_config::mojom::PolicySource;
 using ::chromeos::network_config::mojom::SIMInfoPtr;
 using ::chromeos::network_config::mojom::VpnProviderPtr;
 using network_config::CrosNetworkConfigTestHelper;
-
-using ::testing::_;
 using ::testing::IsNull;
 using ::testing::NotNull;
-using ::testing::Return;
 
 const std::string kCellularName = "cellular";
 const std::string kCellularName2 = "cellular_2";

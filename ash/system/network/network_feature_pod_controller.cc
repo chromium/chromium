@@ -252,8 +252,7 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
 
   TrayNetworkStateModel* model =
       Shell::Get()->system_tray_model()->network_state_model();
-  const chromeos::network_config::mojom::NetworkStateProperties*
-      default_network = model->default_network();
+  const NetworkStateProperties* default_network = model->default_network();
 
   const bool toggled =
       default_network ||
@@ -385,8 +384,7 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
 }
 
 std::u16string NetworkFeaturePodController::ComputeButtonLabel(
-    const chromeos::network_config::mojom::NetworkStateProperties* network)
-    const {
+    const NetworkStateProperties* network) const {
   if (!network) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_LABEL);
@@ -397,8 +395,7 @@ std::u16string NetworkFeaturePodController::ComputeButtonLabel(
 }
 
 std::u16string NetworkFeaturePodController::ComputeButtonSubLabel(
-    const chromeos::network_config::mojom::NetworkStateProperties* network)
-    const {
+    const NetworkStateProperties* network) const {
   if (!network ||
       network->connection_state == ConnectionStateType::kNotConnected) {
     return l10n_util::GetStringUTF16(

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_NETWORK_CONFIG_TEST_NETWORK_CONFIGURATION_OBSERVER_H_
-#define CHROMEOS_SERVICES_NETWORK_CONFIG_TEST_NETWORK_CONFIGURATION_OBSERVER_H_
+#ifndef CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_TEST_NETWORK_CONFIGURATION_OBSERVER_H_
+#define CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_TEST_NETWORK_CONFIGURATION_OBSERVER_H_
 
 #include <unordered_map>
 
@@ -11,13 +11,12 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
 
-namespace chromeos::network_config {
+namespace ash::network_config {
 
-class TestNetworkConfigurationObserver
-    : public ash::NetworkConfigurationObserver {
+class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
  public:
   explicit TestNetworkConfigurationObserver(
-      ash::NetworkConfigurationHandler* network_configuration_handler);
+      NetworkConfigurationHandler* network_configuration_handler);
   ~TestNetworkConfigurationObserver() override;
 
   TestNetworkConfigurationObserver(const TestNetworkConfigurationObserver&) =
@@ -37,11 +36,11 @@ class TestNetworkConfigurationObserver
   std::unordered_map<std::string, base::Value::Dict> user_settings_;
   unsigned int on_configuration_modified_call_count_ = 0;
 
-  base::ScopedObservation<ash::NetworkConfigurationHandler,
-                          ash::NetworkConfigurationObserver>
+  base::ScopedObservation<NetworkConfigurationHandler,
+                          NetworkConfigurationObserver>
       network_configuration_observation_{this};
 };
 
-}  // namespace chromeos::network_config
+}  // namespace ash::network_config
 
-#endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_TEST_NETWORK_CONFIGURATION_OBSERVER_H_
+#endif  // CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_TEST_NETWORK_CONFIGURATION_OBSERVER_H_

@@ -38,22 +38,19 @@
 #include "ui/views/view_utils.h"
 
 namespace ash {
+
 namespace {
 
-using chromeos::network_config::IsInhibited;
-using chromeos::network_config::NetworkTypeMatchesType;
-using chromeos::network_config::StateIsConnected;
-
-using chromeos::network_config::mojom::ActivationStateType;
-using chromeos::network_config::mojom::CellularStateProperties;
-using chromeos::network_config::mojom::ConnectionStateType;
-using chromeos::network_config::mojom::NetworkStateProperties;
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
-using chromeos::network_config::mojom::NetworkType;
-using chromeos::network_config::mojom::OncSource;
-using chromeos::network_config::mojom::PortalState;
-using chromeos::network_config::mojom::ProxyMode;
-using chromeos::network_config::mojom::SecurityType;
+using ::chromeos::network_config::IsInhibited;
+using ::chromeos::network_config::NetworkTypeMatchesType;
+using ::chromeos::network_config::StateIsConnected;
+using ::chromeos::network_config::mojom::ActivationStateType;
+using ::chromeos::network_config::mojom::CellularStateProperties;
+using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using ::chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::OncSource;
+using ::chromeos::network_config::mojom::SecurityType;
 
 const int kMobileNetworkBatteryIconSize = 20;
 const int kPowerStatusPaddingRight = 10;

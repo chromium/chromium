@@ -3,18 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_test_helper.h"
+
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
 namespace network_diagnostics {
-
-namespace {
-
-// TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
-namespace network_config = ::chromeos::network_config;
-
-}  // namespace
 
 NetworkDiagnosticsTestHelper::NetworkDiagnosticsTestHelper()
     : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {

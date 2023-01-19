@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
@@ -23,9 +23,7 @@ namespace ash::network_health {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace network_config = ::chromeos::network_config;
-
 namespace network_health = ::chromeos::network_health;
 
 // Constant values for fake devices and services.
@@ -190,7 +188,8 @@ class NetworkHealthServiceTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_;
+  ash::network_config::CrosNetworkConfigTestHelper
+      cros_network_config_test_helper_;
   NetworkHealthServiceTestImpl network_health_;
 };
 

@@ -11,8 +11,7 @@
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/services/network_config/cros_network_config.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -46,8 +45,7 @@ class NetworkDiagnosticsTestHelper : public ::testing::Test {
   // are dependent on them.
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> helper_;
-  std::unique_ptr<::chromeos::network_config::CrosNetworkConfig>
-      cros_network_config_;
+  std::unique_ptr<network_config::CrosNetworkConfig> cros_network_config_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
   std::string wifi_path_;

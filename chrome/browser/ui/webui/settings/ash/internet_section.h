@@ -26,9 +26,10 @@ namespace ash::settings {
 
 class SearchTagRegistry;
 
-class InternetSection : public OsSettingsSection,
-                        public network_config::CrosNetworkConfigObserver,
-                        public hotspot_config::CrosHotspotConfigObserver {
+class InternetSection
+    : public OsSettingsSection,
+      public chromeos::network_config::CrosNetworkConfigObserver,
+      public hotspot_config::CrosHotspotConfigObserver {
  public:
   InternetSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~InternetSection() override;

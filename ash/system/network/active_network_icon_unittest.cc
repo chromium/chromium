@@ -16,17 +16,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-using chromeos::network_config::mojom::ConnectionStateType;
-using chromeos::network_config::mojom::NetworkType;
-
 namespace ash {
 
 namespace {
+
+using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::NetworkType;
 
 const char kShillManagerClientStubCellularDevice[] =
     "/device/stub_cellular_device";
@@ -119,10 +119,9 @@ class ActiveNetworkIconTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  gfx::ImageSkia ImageForNetwork(
-      chromeos::network_config::mojom::NetworkType type,
-      chromeos::network_config::mojom::ConnectionStateType connection_state,
-      int signal_strength = 100) {
+  gfx::ImageSkia ImageForNetwork(NetworkType type,
+                                 ConnectionStateType connection_state,
+                                 int signal_strength = 100) {
     std::string id = base::StringPrintf("reference_%d", reference_count_++);
     chromeos::network_config::mojom::NetworkStatePropertiesPtr
         reference_properties =
@@ -167,7 +166,7 @@ class ActiveNetworkIconTest : public AshTestBase {
   network_icon::IconType icon_type() { return icon_type_; }
 
  private:
-  chromeos::network_config::CrosNetworkConfigTestHelper network_config_helper_;
+  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<ActiveNetworkIcon> active_network_icon_;
 

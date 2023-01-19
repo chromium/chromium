@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,8 +33,6 @@
 namespace ash {
 
 namespace {
-
-using chromeos::network_config::CrosNetworkConfigTestHelper;
 
 const char kStubCellularDevicePath[] = "/device/stub_cellular_device";
 const char kStubCellularDeviceName[] = "stub_cellular_device";
@@ -132,7 +130,7 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  CrosNetworkConfigTestHelper network_config_helper_;
+  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   base::test::ScopedFeatureList feature_list_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;

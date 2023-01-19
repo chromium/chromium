@@ -22,7 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -55,8 +55,8 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
 
   // testing::Test:
   void SetUp() override {
-    network_config_helper_ = std::make_unique<
-        chromeos::network_config::CrosNetworkConfigTestHelper>();
+    network_config_helper_ =
+        std::make_unique<network_config::CrosNetworkConfigTestHelper>();
     AshTestBase::SetUp();
     // Networking stubs may have asynchronous initialization.
     base::RunLoop().RunUntilIdle();
@@ -133,7 +133,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
   }
 
  private:
-  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+  std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;

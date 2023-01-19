@@ -9,7 +9,7 @@
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_service.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom-forward.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 

@@ -17,7 +17,7 @@
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -48,8 +48,8 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     shill_clients::InitializeFakes();
     hermes_clients::InitializeFakes();
     NetworkHandler::Initialize();
-    network_config_helper_ = std::make_unique<
-        chromeos::network_config::CrosNetworkConfigTestHelper>();
+    network_config_helper_ =
+        std::make_unique<network_config::CrosNetworkConfigTestHelper>();
 
     AshTestBase::SetUp();
 
@@ -109,7 +109,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
   // Ownership passed to Shell owned CellularSetupNotifier instance.
   base::MockOneShotTimer* mock_notification_timer_;
 
-  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+  std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
 };
 

@@ -20,17 +20,17 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
-using chromeos::network_config::mojom::ConnectionStateType;
+namespace ash {
+
+namespace {
+
 using chromeos::network_config::mojom::DeviceStateProperties;
 using chromeos::network_config::mojom::DeviceStatePropertiesPtr;
 using chromeos::network_config::mojom::DeviceStateType;
 using chromeos::network_config::mojom::FilterType;
 using chromeos::network_config::mojom::NetworkFilter;
-using chromeos::network_config::mojom::NetworkStateProperties;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
-
-namespace {
 
 const int kUpdateFrequencyMs = 1000;
 
@@ -49,8 +49,6 @@ NetworkStatePropertiesPtr GetConnectingOrConnected(
 }
 
 }  // namespace
-
-namespace ash {
 
 class TrayNetworkStateModel::Impl
     : public chromeos::network_config::CrosNetworkConfigObserver {
@@ -199,9 +197,8 @@ void TrayNetworkStateModel::SetNetworkTypeEnabledState(NetworkType type,
 }
 
 bool TrayNetworkStateModel::IsBuiltinVpnProhibited() const {
-  return TrayNetworkStateModel::GetDeviceState(
-             chromeos::network_config::mojom::NetworkType::kVPN) ==
-         chromeos::network_config::mojom::DeviceStateType::kProhibited;
+  return TrayNetworkStateModel::GetDeviceState(NetworkType::kVPN) ==
+         DeviceStateType::kProhibited;
 }
 
 chromeos::network_config::mojom::CrosNetworkConfig*

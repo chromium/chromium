@@ -15,6 +15,7 @@ static_library("network_health") {
     "signal_strength_tracker.h",
   ]
   public_deps = [
+    "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_health/public/mojom",
     "//chromeos/services/network_health/public/mojom:types",
   ]
@@ -22,8 +23,7 @@ static_library("network_health") {
     "//base",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/components/network",
-    "//chromeos/services/network_config:in_process_instance",
-    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/ash/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/mojom",
     "//components/device_event_log",
     "//mojo/public/cpp/bindings",
@@ -57,8 +57,7 @@ source_set("unit_tests") {
     ":network_health",
     "//base",
     "//base/test:test_support",
-    "//chromeos/services/network_config/public/cpp",
-    "//chromeos/services/network_config/public/cpp:test_support",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/services/network_health/public/mojom",
     "//chromeos/services/network_health/public/mojom:types",

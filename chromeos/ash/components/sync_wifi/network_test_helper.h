@@ -13,8 +13,8 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
-#include "chromeos/services/network_config/cros_network_config.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
 namespace user_manager {

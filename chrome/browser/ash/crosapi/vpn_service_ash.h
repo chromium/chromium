@@ -62,7 +62,7 @@ class VpnProvidersObserver
   explicit VpnProvidersObserver(Delegate*);
   ~VpnProvidersObserver() override;
 
-  // chromeos::network_config::CrosNetworkConfigObserver:
+  // ash::network_config::CrosNetworkConfigObserver:
   void OnVpnProvidersChanged() override;
 
  private:

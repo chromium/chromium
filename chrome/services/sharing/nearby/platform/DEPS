@@ -4,7 +4,6 @@
 
 include_rules = [
   '+ash/constants/ash_features.h',
-  '+chromeos/services/network_config',
   '+device/bluetooth/public',
   '+services/network/public',
   '+third_party/abseil-cpp/absl/strings/string_view.h',
@@ -23,3 +22,9 @@ include_rules = [
   '+components/sync_preferences/testing_pref_service_syncable.h',
   '+third_party/cros_system_api/dbus/shill/dbus-constants.h',
 ]
+
+specific_include_rules = {
+  "wifi_lan_medium_unittest\.cc": [
+    "+chromeos/ash/services/network_config/in_process_instance.h",
+  ],
+}

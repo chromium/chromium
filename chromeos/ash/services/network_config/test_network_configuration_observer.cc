@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_config/test_network_configuration_observer.h"
+#include "chromeos/ash/services/network_config/test_network_configuration_observer.h"
 
 #include "chromeos/components/onc/onc_utils.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos::network_config {
+namespace ash::network_config {
 
 namespace {
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-using ::ash::NetworkConfigurationHandler;
 
 constexpr char kUIDataKeyUserSettings[] = "user_settings";
+
 }
 
 TestNetworkConfigurationObserver::TestNetworkConfigurationObserver(
@@ -60,4 +59,4 @@ TestNetworkConfigurationObserver::GetOnConfigurationModifiedCallCount() const {
   return on_configuration_modified_call_count_;
 }
 
-}  // namespace chromeos::network_config
+}  // namespace ash::network_config

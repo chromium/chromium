@@ -26,10 +26,10 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
 namespace {
 
 using chromeos::network_config::mojom::DeviceStateProperties;
-using chromeos::network_config::mojom::DeviceStateType;
 using chromeos::network_config::mojom::NetworkType;
 
 int GetAddESimTooltipMessageId() {

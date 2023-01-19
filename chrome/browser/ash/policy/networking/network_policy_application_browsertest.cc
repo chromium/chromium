@@ -31,7 +31,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
-#include "chromeos/services/network_config/cros_network_config.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -52,17 +52,14 @@
 
 namespace policy {
 
-using ::testing::Contains;
+namespace {
+
+namespace network_mojom = ::chromeos::network_config::mojom;
+using ::base::test::DictionaryHasValue;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::SizeIs;
-
-namespace network_mojom = ::chromeos::network_config::mojom;
-
-namespace {
-
-using ::base::test::DictionaryHasValue;
 
 constexpr char kUserProfilePath[] = "user_profile";
 constexpr char kSharedProfilePath[] = "/profile/default";
@@ -394,7 +391,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   void CrosNetworkConfigSetProperties(
       const std::string& guid,
       network_mojom::ConfigPropertiesPtr properties) {
-    chromeos::network_config::CrosNetworkConfig cros_network_config;
+    ash::network_config::CrosNetworkConfig cros_network_config;
 
     base::test::TestFuture<bool, std::string> set_properties_future;
     cros_network_config.SetProperties(
@@ -409,7 +406,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   // using cros_network_config.
   network_mojom::ManagedPropertiesPtr CrosNetworkConfigGetManagedProperties(
       const std::string& guid) {
-    chromeos::network_config::CrosNetworkConfig cros_network_config;
+    ash::network_config::CrosNetworkConfig cros_network_config;
 
     base::test::TestFuture<network_mojom::ManagedPropertiesPtr>
         get_managed_properties_future;

@@ -1,6 +1,5 @@
 include_rules = [
   "+chromeos/ash/components/dbus/hermes",
-  "+chromeos/services/network_config/public",
   "+components/device_event_log",
   "+components/onc",
   "+third_party/cros_system_api",

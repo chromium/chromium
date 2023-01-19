@@ -38,7 +38,6 @@ using ::chromeos::network_config::NetworkTypeMatchesType;
 using ::chromeos::network_config::mojom::ActivationStateType;
 using ::chromeos::network_config::mojom::CellularStateProperties;
 using ::chromeos::network_config::mojom::ConnectionStateType;
-using ::chromeos::network_config::mojom::DeviceStateProperties;
 using ::chromeos::network_config::mojom::DeviceStateType;
 using ::chromeos::network_config::mojom::NetworkStateProperties;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;

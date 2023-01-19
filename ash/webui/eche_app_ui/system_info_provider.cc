@@ -19,6 +19,9 @@
 namespace ash {
 namespace eche_app {
 
+namespace network_config = ::chromeos::network_config;
+using network_config::mojom::ConnectionStateType;
+
 const char kJsonDeviceNameKey[] = "device_name";
 const char kJsonBoardNameKey[] = "board_name";
 const char kJsonTabletModeKey[] = "tablet_mode";
@@ -30,10 +33,6 @@ const char kJsonMeasureLatencyKey[] = "measure_latency";
 const char kJsonSendStartSignalingKey[] = "send_start_signaling";
 const char kJsonDisableStunServerKey[] = "disable_stun_server";
 const char kJsonCheckAndroidNetworkInfoKey[] = "check_android_network_info";
-
-using chromeos::network_config::mojom::ConnectionStateType;
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace network_config = ::chromeos::network_config;
 
 const std::map<ConnectionStateType, const char*> CONNECTION_STATE_TYPE{
     {ConnectionStateType::kOnline, "online"},
@@ -178,7 +177,7 @@ void SystemInfoProvider::OnTabletModeEnded() {
 
 // network_config::mojom::CrosNetworkConfigObserver implementation:
 void SystemInfoProvider::OnNetworkStateChanged(
-    chromeos::network_config::mojom::NetworkStatePropertiesPtr network) {
+    network_config::mojom::NetworkStatePropertiesPtr network) {
   PA_LOG(INFO) << "echeapi SystemInfoProvider OnNetworkStateChanged";
   FetchWifiNetworkList();
 }
@@ -220,7 +219,7 @@ void SystemInfoProvider::FetchWifiNetworkList() {
 
 void SystemInfoProvider::OnWifiNetworkList(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
-  using chromeos::network_config::mojom::NetworkType;
+  using network_config::mojom::NetworkType;
 
   for (const auto& network : networks) {
     if (network->type == NetworkType::kWiFi) {

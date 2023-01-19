@@ -21,8 +21,8 @@
 #include "chromeos/ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 #include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
-#include "chromeos/services/network_config/in_process_instance.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
@@ -202,7 +202,7 @@ class WifiLanMediumTest : public ::testing::Test {
   // Boiler plate to set up a test CrosNetworkConfig mojo service.
   void InitializeCrosNetworkConfig(bool use_managed_config_handler) {
     cros_network_config_helper_ =
-        std::make_unique<chromeos::network_config::CrosNetworkConfigTestHelper>(
+        std::make_unique<ash::network_config::CrosNetworkConfigTestHelper>(
             /*initialize=*/false);
 
     if (use_managed_config_handler) {
@@ -248,7 +248,7 @@ class WifiLanMediumTest : public ::testing::Test {
     cros_network_config_helper_->network_state_helper().ClearDevices();
     cros_network_config_helper_->network_state_helper().ClearServices();
 
-    chromeos::network_config::BindToInProcessInstance(
+    ash::network_config::BindToInProcessInstance(
         cros_network_config_.BindNewPipeAndPassReceiver());
 
     base::RunLoop().RunUntilIdle();
@@ -322,7 +322,7 @@ class WifiLanMediumTest : public ::testing::Test {
   std::unique_ptr<ash::UIProxyConfigService> ui_proxy_config_service_;
   std::unique_ptr<ash::ManagedNetworkConfigurationHandler>
       managed_network_config_handler_;
-  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+  std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       cros_network_config_helper_;
   mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_config/cros_network_config.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
 
 #include <cmath>
 #include <vector>
@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_name_util.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -49,57 +50,21 @@
 #include "components/onc/onc_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-using user_manager::UserManager;
-
-namespace chromeos {
-namespace network_config {
+namespace ash::network_config {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-using ::ash::CellularESimProfileHandler;
-using ::ash::CellularInhibitor;
-using ::ash::ConnectCallbackMode;
-using ::ash::DeviceState;
-using ::ash::GetSimSlotInfosWithUpdatedEid;
-using ::ash::HermesManagerClient;
-using ::ash::IsSimPrimary;
-using ::ash::LoginState;
-using ::ash::ManagedNetworkConfigurationHandler;
-using ::ash::NetworkCertificateHandler;
-using ::ash::NetworkConnectionHandler;
-using ::ash::NetworkDeviceHandler;
-using ::ash::NetworkHandler;
-using ::ash::NetworkMetadataStore;
-using ::ash::NetworkProfile;
-using ::ash::NetworkProfileHandler;
-using ::ash::NetworkState;
-using ::ash::NetworkStateHandler;
-using ::ash::NetworkTypePattern;
-using ::ash::ShillManagerClient;
-namespace network_handler = ::ash::network_handler;
-namespace network_util {
-using ::ash::network_util::FormattedMacAddress;
-using ::ash::network_util::TranslateONCTypeToShill;
-}  // namespace network_util
-namespace network_name_util {
-using ::ash::network_name_util::GetESimProfileName;
-using ::ash::network_name_util::GetNetworkName;
-}  // namespace network_name_util
-namespace onc {
-using ::ash::onc::kNetworkTechnologyTable;
-using ::ash::onc::kVPNTypeTable;
-using ::ash::onc::StringTranslationEntry;
-using ::ash::onc::TranslateStringToONC;
-}  // namespace onc
-namespace sync_wifi {
-using ::ash::sync_wifi::IsEligibleForSync;
-}
+namespace mojom = ::chromeos::network_config::mojom;
+using ::chromeos::network_config::GetApnProperties;
+using ::chromeos::network_config::OncApnTypesToMojo;
+using ::chromeos::network_config::UserApnListToOnc;
+using ::user_manager::UserManager;
 
 // Error strings from networking_private_api.cc. TODO(1004434): Enumerate
 // these in mojo.
@@ -1189,7 +1154,7 @@ mojom::ManagedProxySettingsPtr GetManagedProxySettings(
 }
 
 mojom::ApnState OncApnStateTypeToMojo(const std::string* state) {
-  DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(features::IsApnRevampEnabled());
   // State can be empty, because database/modem APNs won't have a state.
   if (!state || state->empty() || *state == ::onc::cellular_apn::kStateEnabled)
     return mojom::ApnState::kEnabled;
@@ -1201,7 +1166,7 @@ mojom::ApnState OncApnStateTypeToMojo(const std::string* state) {
 }
 
 std::string MojoApnStateTypeToOnc(mojom::ApnState state) {
-  DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(features::IsApnRevampEnabled());
   switch (state) {
     case mojom::ApnState::kDisabled:
       return ::onc::cellular_apn::kStateDisabled;
@@ -1214,7 +1179,7 @@ std::string MojoApnStateTypeToOnc(mojom::ApnState state) {
 
 std::string MojoApnAuthenticationTypeToOnc(
     mojom::ApnAuthenticationType authentication_type) {
-  DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(features::IsApnRevampEnabled());
   switch (authentication_type) {
     case mojom::ApnAuthenticationType::kAutomatic:
       return ::onc::cellular_apn::kAuthenticationTypeAutomatic;
@@ -1229,7 +1194,7 @@ std::string MojoApnAuthenticationTypeToOnc(
 }
 
 std::string MojoApnIpTypeToOnc(mojom::ApnIpType ip_type) {
-  DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(features::IsApnRevampEnabled());
   switch (ip_type) {
     case mojom::ApnIpType::kAutomatic:
       return ::onc::cellular_apn::kIpTypeAutomatic;
@@ -1246,7 +1211,7 @@ std::string MojoApnIpTypeToOnc(mojom::ApnIpType ip_type) {
 
 std::vector<std::string> MojoApnTypesToOnc(
     const std::vector<mojom::ApnType>& apn_types) {
-  DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(features::IsApnRevampEnabled());
   DCHECK(!apn_types.empty());
   std::vector<std::string> apn_types_result;
   apn_types_result.reserve(apn_types.size());
@@ -1292,7 +1257,7 @@ mojom::ManagedApnPropertiesPtr GetManagedApnProperties(const base::Value* dict,
 mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
   if (!value)
     return nullptr;
-  bool is_apn_revamp_enabled = ash::features::IsApnRevampEnabled();
+  bool is_apn_revamp_enabled = features::IsApnRevampEnabled();
   if (value->is_list()) {
     auto result = mojom::ManagedApnList::New();
     std::vector<mojom::ApnPropertiesPtr> active;
@@ -1326,7 +1291,7 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
 bool DoesDefaultApnExist(const base::Value::List& apns) {
   for (const base::Value& apn : apns) {
     mojom::ApnPropertiesPtr apn_ptr =
-        GetApnProperties(apn.GetDict(), ash::features::IsApnRevampEnabled());
+        GetApnProperties(apn.GetDict(), features::IsApnRevampEnabled());
     for (const mojom::ApnType& type : apn_ptr->apn_types) {
       if (type == mojom::ApnType::kDefault) {
         return true;
@@ -1803,7 +1768,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       const base::Value* apn_dict =
           GetDictionary(cellular_dict, ::onc::cellular::kLastGoodAPN);
       if (apn_dict) {
-        bool is_apn_revamp_enabled = ash::features::IsApnRevampEnabled();
+        bool is_apn_revamp_enabled = features::IsApnRevampEnabled();
         cellular->last_good_apn =
             GetApnProperties(apn_dict->GetDict(), is_apn_revamp_enabled);
         if (is_apn_revamp_enabled) {
@@ -2093,7 +2058,7 @@ base::Value::Dict MojoApnToOnc(const mojom::ApnProperties& apn_props) {
   SetString(::onc::cellular_apn::kPassword, apn_props.password, &apn);
   SetString(::onc::cellular_apn::kUsername, apn_props.username, &apn);
   SetString(::onc::cellular_apn::kAttach, apn_props.attach, &apn);
-  if (ash::features::IsApnRevampEnabled()) {
+  if (features::IsApnRevampEnabled()) {
     SetString(::onc::cellular_apn::kId, apn_props.id, &apn);
     apn.Set(::onc::cellular_apn::kState,
             MojoApnStateTypeToOnc(apn_props.state));
@@ -2703,7 +2668,7 @@ void CrosNetworkConfig::SetProperties(const std::string& guid,
     network = eap_state;
   }
 
-  if (!ash::features::IsApnRevampEnabled() &&
+  if (!features::IsApnRevampEnabled() &&
       network->type() == shill::kTypeCellular &&
       properties->type_config->is_cellular()) {
     UpdateCustomApnList(network, properties.get());
@@ -3067,7 +3032,7 @@ void CrosNetworkConfig::SelectCellularMobileNetworkFailure(
 void CrosNetworkConfig::UpdateCustomApnList(
     const NetworkState* network,
     const mojom::ConfigProperties* properties) {
-  DCHECK(!ash::features::IsApnRevampEnabled());
+  DCHECK(!features::IsApnRevampEnabled());
 
   const mojom::CellularConfigProperties& cellular_config =
       *properties->type_config->get_cellular();
@@ -3111,7 +3076,7 @@ std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomApnList(
   for (const auto& apn : *custom_apn_list) {
     DCHECK(apn.is_dict());
 
-    bool is_apn_revamp_enabled = ash::features::IsApnRevampEnabled();
+    bool is_apn_revamp_enabled = features::IsApnRevampEnabled();
     mojom::ApnPropertiesPtr mojo_apn =
         GetApnProperties(apn.GetDict(), is_apn_revamp_enabled);
     if (is_apn_revamp_enabled) {
@@ -3526,7 +3491,7 @@ void CrosNetworkConfig::SetTrafficCountersAutoReset(
 
 void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
                                         mojom::ApnPropertiesPtr apn) {
-  if (!ash::features::IsApnRevampEnabled()) {
+  if (!features::IsApnRevampEnabled()) {
     receivers_.ReportBadMessage(
         "CreateCustomApn cannot be called if the APN Revamp feature flag is "
         "disabled.");
@@ -3538,7 +3503,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
   if (!network || network->profile_path().empty()) {
     NET_LOG(ERROR) << "CreateCustomApn: Called with unconfigured network: "
                    << network_guid << ".";
-    ash::CellularNetworkMetricsLogger::LogCreateCustomApnResult(
+    CellularNetworkMetricsLogger::LogCreateCustomApnResult(
         /*success=*/false, std::move(apn));
     return;
   }
@@ -3589,7 +3554,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
-            ash::CellularNetworkMetricsLogger::LogCreateCustomApnResult(
+            CellularNetworkMetricsLogger::LogCreateCustomApnResult(
                 success, std::move(apn));
           },
           network_guid, std::move(apn)));
@@ -3597,7 +3562,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
 
 void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
                                         const std::string& apn_id) {
-  if (!ash::features::IsApnRevampEnabled()) {
+  if (!features::IsApnRevampEnabled()) {
     receivers_.ReportBadMessage(
         "RemoveCustomApn: Cannot be called if the APN Revamp feature flag is "
         "disabled.");
@@ -3609,7 +3574,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
   if (!network || network->profile_path().empty()) {
     NET_LOG(ERROR) << "RemoveCustomApn: Called with unconfigured network: "
                    << network_guid << ".";
-    ash::CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+    CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
         /*success=*/false, /*apn_types=*/{});
     return;
   }
@@ -3623,7 +3588,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
   if (!current_apns || current_apns->empty()) {
     NET_LOG(ERROR) << "RemoveCustomApn: Called for network: " << network_guid
                    << " that does not have any user APNs.";
-    ash::CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+    CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
         /*success=*/false, /*apn_types=*/{});
     return;
   }
@@ -3643,7 +3608,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
       })) {
     NET_LOG(ERROR) << "RemoveCustomApn: Called for network: " << network_guid
                    << " that does have an user APNs with id: " << apn_id << '.';
-    ash::CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+    CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
         /*success=*/false, std::move(removed_apn_apn_types));
     return;
   }
@@ -3668,7 +3633,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
-            ash::CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
+            CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
                 success, std::move(apn_types));
           },
           network_guid, std::move(removed_apn_apn_types)));
@@ -3676,7 +3641,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
 
 void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
                                         mojom::ApnPropertiesPtr apn) {
-  if (!ash::features::IsApnRevampEnabled()) {
+  if (!features::IsApnRevampEnabled()) {
     receivers_.ReportBadMessage(
         "ModifyCustomApn: Cannot be called if the APN Revamp feature flag is "
         "disabled.");
@@ -3688,7 +3653,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
   if (!network || network->profile_path().empty()) {
     NET_LOG(ERROR) << "ModifyCustomApn: Called with unconfigured network: "
                    << network_guid << ".";
-    ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+    CellularNetworkMetricsLogger::LogModifyCustomApnResult(
         /*success=*/false, /*old_apn_types=*/{}, /*apn_state=*/absl::nullopt,
         /*old_apn_state=*/absl::nullopt);
     return;
@@ -3698,7 +3663,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
     NET_LOG(ERROR)
         << "ModifyCustomApn: Called with an APN without ID for network: "
         << network_guid << '.';
-    ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+    CellularNetworkMetricsLogger::LogModifyCustomApnResult(
         /*success=*/false, /*old_apn_types=*/{}, /*apn_state=*/absl::nullopt,
         /*old_apn_state=*/absl::nullopt);
     return;
@@ -3713,7 +3678,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
   if (!old_custom_apns || old_custom_apns->empty()) {
     NET_LOG(ERROR) << "ModifyCustomApn: Called for network: " << network_guid
                    << " that does not have any user APNs.";
-    ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+    CellularNetworkMetricsLogger::LogModifyCustomApnResult(
         /*success=*/false, /*old_apn_types=*/{}, /*apn_state=*/absl::nullopt,
         /*old_apn_state=*/absl::nullopt);
     return;
@@ -3745,7 +3710,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
     NET_LOG(ERROR) << "ModifyCustomApn: Called for network: " << network_guid
                    << " that does have an user APNs with id: " << *apn->id
                    << '.';
-    ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+    CellularNetworkMetricsLogger::LogModifyCustomApnResult(
         /*success=*/false, /*old_apn_types=*/{}, /*apn_state=*/absl::nullopt,
         /*old_apn_state=*/absl::nullopt);
     return;
@@ -3770,7 +3735,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
             }
             // TODO(b/162365553) Add test coverage for the case when there is a
             // failure from shill.
-            ash::CellularNetworkMetricsLogger::LogModifyCustomApnResult(
+            CellularNetworkMetricsLogger::LogModifyCustomApnResult(
                 success, old_apn_types, apn_state, old_apn_state);
           },
           network_guid, std::move(modified_apn_old_apn_types), apn->state,
@@ -3877,5 +3842,4 @@ const std::string& CrosNetworkConfig::GetServicePathFromGuid(
   return network ? network->path() : base::EmptyString();
 }
 
-}  // namespace network_config
-}  // namespace chromeos
+}  // namespace ash::network_config

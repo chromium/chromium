@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/lan_connectivity_routine.h"
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"

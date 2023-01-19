@@ -27,7 +27,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "extensions/common/value_builder.h"
@@ -1111,7 +1111,7 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
        ShouldOnlyFetchTheActiveNetworks) {
   MockCrosNetworkConfig network_config_mock;
-  chromeos::network_config::OverrideInProcessInstanceForTesting(
+  ash::network_config::OverrideInProcessInstanceForTesting(
       &network_config_mock);
 
   TestFuture<chromeos::network_config::mojom::NetworkFilterPtr,
@@ -1130,8 +1130,7 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
   auto [filter, callback] = get_network_state_future.Take();
   EXPECT_EQ(filter->filter,
             chromeos::network_config::mojom::FilterType::kActive);
-  EXPECT_EQ(filter->network_type,
-            chromeos::network_config::mojom::NetworkType::kAll);
+  EXPECT_EQ(filter->network_type, NetworkType::kAll);
   EXPECT_EQ(filter->limit, chromeos::network_config::mojom::kNoLimit);
 
   // We must invoke the callback to satisfy the Mojom contract

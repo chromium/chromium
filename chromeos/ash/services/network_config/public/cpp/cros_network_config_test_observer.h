@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_OBSERVER_H_
-#define CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_OBSERVER_H_
+#ifndef CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_OBSERVER_H_
+#define CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_OBSERVER_H_
 
 #include <string>
 
@@ -12,10 +12,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace network_config {
+namespace ash::network_config {
 
-class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
+class CrosNetworkConfigTestObserver
+    : public chromeos::network_config::mojom::CrosNetworkConfigObserver {
  public:
   CrosNetworkConfigTestObserver();
 
@@ -25,11 +25,14 @@ class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
 
   ~CrosNetworkConfigTestObserver() override;
 
-  mojo::PendingRemote<mojom::CrosNetworkConfigObserver> GenerateRemote();
+  mojo::PendingRemote<
+      chromeos::network_config::mojom::CrosNetworkConfigObserver>
+  GenerateRemote();
 
-  // mojom::CrosNetworkConfigObserver:
+  // chromeos::network_config::mojom::CrosNetworkConfigObserver:
   void OnActiveNetworksChanged(
-      std::vector<mojom::NetworkStatePropertiesPtr> networks) override;
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks) override;
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
       override;
@@ -51,14 +54,16 @@ class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
   int GetPolicyAppliedCount(const std::string& userhash) const;
   void ResetNetworkChanges();
 
-  mojo::Receiver<mojom::CrosNetworkConfigObserver>& receiver() {
+  mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>&
+  receiver() {
     return receiver_;
   }
 
   void FlushForTesting();
 
  private:
-  mojo::Receiver<mojom::CrosNetworkConfigObserver> receiver_{this};
+  mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
+      receiver_{this};
   int active_networks_changed_ = 0;
   base::flat_map<std::string, int> guid_to_networks_changed_count_map_;
   base::flat_map<std::string, int> userhash_to_policies_applied_count_map_;
@@ -68,7 +73,6 @@ class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
   int network_certificates_changed_ = 0;
 };
 
-}  // namespace network_config
-}  // namespace chromeos
+}  // namespace ash::network_config
 
-#endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_OBSERVER_H_
+#endif  // CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_OBSERVER_H_

@@ -21,7 +21,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
@@ -101,8 +101,8 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
     // Initialize CrosNetworkConfigTestHelper here, so we can initialize
     // a unique network handler and also use NetworkConnectTestDelegate to
     // initialize NetworkConnect.
-    network_config_helper_ = std::make_unique<
-        chromeos::network_config::CrosNetworkConfigTestHelper>();
+    network_config_helper_ =
+        std::make_unique<network_config::CrosNetworkConfigTestHelper>();
 
     NetworkHandler::Initialize();
     base::RunLoop().RunUntilIdle();
@@ -264,7 +264,7 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
     return ash_test_helper()->bluetooth_config_test_helper();
   }
 
-  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+  std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
   std::unique_ptr<NetworkDetailedViewController>

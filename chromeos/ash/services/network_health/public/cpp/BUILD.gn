@@ -29,8 +29,8 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     "//base/test:test_support",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/ash/services/network_health",
-    "//chromeos/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_health/public/mojom:types",
     "//testing/gtest",
   ]

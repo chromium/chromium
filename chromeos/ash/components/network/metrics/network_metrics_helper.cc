@@ -18,11 +18,6 @@ namespace ash {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace network_config {
-namespace mojom = ::chromeos::network_config::mojom;
-}
-
 const char kNetworkMetricsPrefix[] = "Network.Ash.";
 const char kAllConnectionResultSuffix[] = ".ConnectionResult.All";
 const char kUserInitiatedConnectionResultSuffix[] =
@@ -108,7 +103,7 @@ const std::vector<std::string> GetWifiNetworkTypeHistograms(
   std::vector<std::string> wifi_histograms{kWifi};
 
   if (network_state->GetMojoSecurity() ==
-      network_config::mojom::SecurityType::kNone) {
+      chromeos::network_config::mojom::SecurityType::kNone) {
     wifi_histograms.emplace_back(kWifiOpen);
   } else {
     wifi_histograms.emplace_back(kWifiPasswordProtected);

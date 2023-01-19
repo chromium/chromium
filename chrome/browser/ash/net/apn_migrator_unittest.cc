@@ -21,7 +21,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "components/onc/onc_constants.h"
@@ -30,17 +30,18 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+
+namespace {
+
 using ::chromeos::network_config::FakeCrosNetworkConfig;
-using ::chromeos::network_config::OverrideInProcessInstanceForTesting;
+using network_config::OverrideInProcessInstanceForTesting;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Return;
-using ::testing::SaveArg;
 using ::testing::Truly;
 using ::testing::WithArg;
 
-namespace {
 constexpr char kCellularName1[] = "cellular_device_1";
 constexpr char kTestCellularPath1[] = "/device/cellular_device_1";
 constexpr char kTestCellularIccid1[] = "test_iccid_1";
@@ -61,6 +62,7 @@ constexpr char kCellularServicePattern[] =
             "Strength": 0, "Cellular.NetworkTechnology": "LTE",
             "Cellular.ActivationState": "activated", "Cellular.ICCID": "%s",
             "Profile": "%s"})";
+
 }  // namespace
 
 class ApnMigratorTest : public testing::Test {
@@ -162,7 +164,7 @@ class ApnMigratorTest : public testing::Test {
 
 TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
 
   const std::string cellular_service_path_1 =
       AddTestCellularDeviceAndService(kCellularName1, kTestCellularPath1,
@@ -209,7 +211,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
 
 TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_AlreadyMigratedNetworks) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   const std::string cellular_service_path_1 =
       AddTestCellularDeviceAndService(kCellularName1, kTestCellularPath1,
@@ -302,7 +304,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_AlreadyMigratedNetworks) {
 
 TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworksWithoutCustomApns) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   const std::string cellular_service_path_1 =
       AddTestCellularDeviceAndService(kCellularName1, kTestCellularPath1,
@@ -364,7 +366,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworksWithoutCustomApns) {
 
 TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetwork) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   const std::string cellular_service_path_1 =
       AddTestCellularDeviceAndService(kCellularName1, kTestCellularPath1,

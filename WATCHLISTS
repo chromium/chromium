@@ -794,9 +794,7 @@
     },
     'chromeos_net': {
       'filepath': 'ash/system/network/|'\
-                  'chromeos/ash/components/dbus/shill/|'\
-                  'chromeos/ash/components/network/|'\
-                  'chromeos/services/network_config/|'\
+                  'ash/webui/common/resources/network/|'\
                   'chrome/browser/ash/net/|'\
                   'chrome/browser/extensions/api/networking_private/|'\
                   'chrome/browser/resources/chromeos/internet_config_dialog/|'\
@@ -806,9 +804,12 @@
                   'chrome/browser/ui/ash/network/|'\
                   'chrome/browser/ui/webui/ash/network|'\
                   'chrome/test/data/webui/cr_components/chromeos/network/|'\
+                  'chromeos/ash/components/dbus/shill/|'\
+                  'chromeos/ash/components/network/|'\
+                  'chromeos/ash/services/network_config/|'\
+                  'chromeos/services/network_config/|'\
                   'components/onc/|'\
-                  'extensions/browser/api/networking_private/|'\
-                  'ash/webui/common/resources/network/'
+                  'extensions/browser/api/networking_private/',
     },
     'chromeos_tast_control': {
       'filepath': 'chromeos/tast_control.gni',

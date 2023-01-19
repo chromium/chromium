@@ -2,28 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
 
 static_library("network_config") {
   sources = [
     "cros_network_config.cc",
     "cros_network_config.h",
   ]
-
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/network",
+    "//chromeos/services/network_config/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
   deps = [
     "//ash/constants",
-    "//base",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/login/login_state",
-    "//chromeos/ash/components/network",
     "//chromeos/ash/components/sync_wifi:network_eligibility_checker",
     "//chromeos/services/network_config/public/cpp",
-    "//chromeos/services/network_config/public/mojom",
     "//components/captive_portal/core",
     "//components/device_event_log",
     "//components/onc",
-    "//components/proxy_config",
     "//components/user_manager",
     "//dbus",
     "//net",
@@ -32,65 +35,63 @@ static_library("network_config") {
 
 component("in_process_instance") {
   output_name = "network_config_in_process_instance"
-
+  defines = [ "IS_IN_PROCESS_NETWORK_CONFIG_IMPL" ]
   sources = [
     "in_process_instance.cc",
     "in_process_instance.h",
   ]
-
-  defines = [ "IS_IN_PROCESS_NETWORK_CONFIG_IMPL" ]
-
   public_deps = [
+    "//base",
     "//chromeos/services/network_config/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
-
   deps = [
     ":network_config",
     "//chromeos/ash/components/network",
-    "//chromeos/services/network_config/public/mojom",
-    "//mojo/public/cpp/bindings",
   ]
 }
 
 source_set("test_support") {
   testonly = true
-  deps = [
-    "//ash/constants:constants",
-    "//chromeos/ash/components/network",
-    "//chromeos/components/onc",
-    "//chromeos/services/network_config/public/mojom",
-    "//components/onc",
-  ]
   sources = [
     "test_apn_data.cc",
     "test_apn_data.h",
     "test_network_configuration_observer.cc",
     "test_network_configuration_observer.h",
   ]
+  public_deps = [
+    "//chromeos/ash/components/network",
+    "//chromeos/components/onc",
+    "//chromeos/services/network_config/public/mojom",
+  ]
+  deps = [
+    "//ash/constants:constants",
+    "//components/onc",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-
   sources = [ "cros_network_config_unittest.cc" ]
-
   deps = [
     ":network_config",
     ":test_support",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/shill:test_support",
     "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/services/network_config/public/cpp:test_support",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//chromeos/components/onc",
+    "//chromeos/services/network_config/public/mojom",
     "//components/captive_portal/core",
     "//components/onc",
     "//components/prefs:test_support",
+    "//components/proxy_config",
     "//components/sync_preferences:test_support",
-    "//mojo/public/cpp/bindings",
-    "//services/network/public/mojom:mojom_ip_address",
+    "//net",
     "//testing/gtest",
     "//third_party/re2",
   ]

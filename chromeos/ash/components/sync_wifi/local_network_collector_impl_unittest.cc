@@ -21,17 +21,12 @@
 #include "chromeos/ash/components/sync_wifi/network_type_conversions.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/ash/components/sync_wifi/test_data_generator.h"
-#include "chromeos/services/network_config/cros_network_config.h"
-#include "chromeos/services/network_config/in_process_instance.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace ash::network_config {
-namespace mojom = ::chromeos::network_config::mojom;
-}
 
 namespace ash::sync_wifi {
 
@@ -97,7 +92,7 @@ class LocalNetworkCollectorImplTest : public testing::Test {
 
   void OnGetManagedPropertiesResult(
       bool expected_autoconnect,
-      network_config::mojom::ManagedPropertiesPtr properties) {
+      chromeos::network_config::mojom::ManagedPropertiesPtr properties) {
     EXPECT_EQ(
         expected_autoconnect,
         properties->type_properties->get_wifi()->auto_connect->active_value);

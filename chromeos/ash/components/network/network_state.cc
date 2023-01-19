@@ -29,7 +29,13 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
+namespace ash {
+
 namespace {
+
+namespace network_config {
+namespace mojom = ::chromeos::network_config::mojom;
+}
 
 // TODO(tbarzic): Add payment portal method values to shill/dbus-constants.
 constexpr char kPaymentPortalMethodPost[] = "POST";
@@ -55,13 +61,6 @@ bool IsValidConnectionState(const std::string& connection_state) {
 }
 
 }  // namespace
-
-namespace ash {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace network_config {
-namespace mojom = ::chromeos::network_config::mojom;
-}
 
 NetworkState::NetworkState(const std::string& path)
     : ManagedState(MANAGED_TYPE_NETWORK, path) {}

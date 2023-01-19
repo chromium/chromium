@@ -38,7 +38,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #endif
 
 class SyncServiceFactoryTest : public testing::Test {
@@ -184,7 +184,7 @@ class SyncServiceFactoryTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sets up  and  tears down the Chrome OS networking mojo service as needed
   // for the WIFI_CONFIGURATIONS sync service.
-  chromeos::network_config::CrosNetworkConfigTestHelper network_config_helper_;
+  ash::network_config::CrosNetworkConfigTestHelper network_config_helper_;
 #endif
 };
 

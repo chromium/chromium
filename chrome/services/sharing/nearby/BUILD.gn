@@ -47,7 +47,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
-    "//chromeos/services/network_config/public/cpp:test_support",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/nearby:connections_test_util",

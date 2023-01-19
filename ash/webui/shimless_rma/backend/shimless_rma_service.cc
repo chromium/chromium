@@ -26,17 +26,11 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/version/version_loader.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-
-using chromeos::network_config::mojom::ConnectionStateType;
-using chromeos::network_config::mojom::FilterType;
-using chromeos::network_config::mojom::NetworkFilter;
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
-using chromeos::network_config::mojom::NetworkType;
 
 namespace ash {
 namespace shimless_rma {
@@ -64,7 +58,7 @@ bool HaveAllowedNetworkConnection() {
   return network && network->IsConnectedState() && !metered;
 }
 
-chromeos::network_config::mojom::NetworkFilterPtr GetConfiguredWiFiFilter() {
+network_mojom::NetworkFilterPtr GetConfiguredWiFiFilter() {
   return network_mojom::NetworkFilter::New(
       network_mojom::FilterType::kConfigured, network_mojom::NetworkType::kWiFi,
       network_mojom::kNoLimit);
@@ -273,8 +267,7 @@ void ShimlessRmaService::ForgetNewNetworkConnections(
 }
 
 void ShimlessRmaService::OnForgetNewNetworkConnections(
-    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-        networks) {
+    std::vector<network_mojom::NetworkStatePropertiesPtr> networks) {
   DCHECK(existing_saved_network_guids_.has_value());
   DCHECK(pending_network_guids_to_forget_.empty());
 

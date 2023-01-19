@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
   ConnectionStatus GetConnectionStatus() override;
   assistant_client::MdnsResponder* GetMdnsResponder() override;
 
-  // network_config::CrosNetworkConfigObserver:
+  // chromeos::network_config::CrosNetworkConfigObserver:
   void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks) override;

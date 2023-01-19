@@ -9,8 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_vpn_provider_manager.h"
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
-
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -21,7 +21,7 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -103,8 +103,8 @@ class CellularMetricsLoggerTest : public testing::Test {
         new testing::NiceMock<MockManagedNetworkConfigurationHandler>);
     cellular_esim_profile_handler_ =
         std::make_unique<TestCellularESimProfileHandler>();
-    network_config_helper_ = std::make_unique<
-        chromeos::network_config::CrosNetworkConfigTestHelper>();
+    network_config_helper_ =
+        std::make_unique<network_config::CrosNetworkConfigTestHelper>();
 
     network_state_test_helper_.hermes_manager_test()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath), kTestEidName, /*is_active=*/true,
@@ -272,7 +272,7 @@ class CellularMetricsLoggerTest : public testing::Test {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   NetworkStateTestHelper network_state_test_helper_{
       false /* use_default_devices_and_services */};
-  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+  std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<TestCellularESimProfileHandler>

@@ -2295,7 +2295,7 @@ In this simplified format, a descriptive enum is used to describe the effective
 policy source and whether it is enforced or recommended.
 
 The conversion code can be found in cros_network_config.cc:GetManagedDictionary
-https://source.chromium.org/chromium/chromium/src/+/main:chromeos/services/network_config/cros_network_config.cc
+https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/network_config/cros_network_config.cc
 
 ```
 enum PolicySource {

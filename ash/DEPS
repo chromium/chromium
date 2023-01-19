@@ -97,6 +97,7 @@ include_rules = [
   "+chromeos/ash/services/nearby/public",
   "+chromeos/ash/services/multidevice_setup/public",
   "+chromeos/ash/services/secure_channel/public",
+  "+chromeos/ash/services/network_config/public",
   "+chromeos/services/machine_learning/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",

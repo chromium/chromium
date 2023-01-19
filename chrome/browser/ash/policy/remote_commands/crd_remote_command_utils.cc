@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -24,7 +24,6 @@ using chromeos::network_config::mojom::CrosNetworkConfig;
 using chromeos::network_config::mojom::FilterType;
 using chromeos::network_config::mojom::kNoLimit;
 using chromeos::network_config::mojom::NetworkFilter;
-using chromeos::network_config::mojom::NetworkStateProperties;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;

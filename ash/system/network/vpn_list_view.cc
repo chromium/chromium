@@ -57,6 +57,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+namespace ash {
+
+namespace {
+
 using chromeos::network_config::mojom::ConnectionStateType;
 using chromeos::network_config::mojom::FilterType;
 using chromeos::network_config::mojom::NetworkFilter;
@@ -67,9 +71,6 @@ using chromeos::network_config::mojom::VpnProvider;
 using chromeos::network_config::mojom::VpnProviderPtr;
 using chromeos::network_config::mojom::VPNStatePropertiesPtr;
 using chromeos::network_config::mojom::VpnType;
-
-namespace ash {
-namespace {
 
 // Layout constants for QsRevamp.
 constexpr auto kQsContainerShortMargin = gfx::Insets::TLBR(0, 0, 2, 0);

@@ -20,12 +20,13 @@
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
-#include "chromeos/services/network_config/cros_network_config.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "components/onc/onc_constants.h"
@@ -40,6 +41,7 @@
 
 namespace ash {
 namespace diagnostics {
+
 namespace {
 
 constexpr char kEth0DevicePath[] = "/device/eth0";
@@ -58,9 +60,6 @@ constexpr char kNetworkDataError[] = "ChromeOS.DiagnosticsUi.Error.Network";
 // Due to how CrosNetworkConfig notifies observers of changes, the
 // expectation_not_met_error will be triggered 4 times for every change.
 constexpr int kExpectationNotMetErrorCount = 4;
-
-// TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
-namespace network_config = ::chromeos::network_config;
 
 class FakeNetworkListObserver : public mojom::NetworkListObserver {
  public:

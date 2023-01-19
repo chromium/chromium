@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/captive_portal",
+  "+components/onc",
+  "+components/user_manager",
+]
+
+specific_include_rules = {
+ "cros_network_config_unittest.cc": [
+    "+components/proxy_config",
+    "+components/sync_preferences/testing_pref_service_syncable.h",
+    "+third_party/re2"
+  ],
+}

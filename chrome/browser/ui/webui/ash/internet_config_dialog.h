@@ -9,7 +9,7 @@
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

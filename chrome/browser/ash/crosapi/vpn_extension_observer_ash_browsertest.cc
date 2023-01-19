@@ -7,8 +7,8 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "content/public/test/browser_test.h"
 
@@ -34,7 +34,7 @@ class VpnExtensionObserverBrowserTest
 };
 
 class ExtensionEventWaiter
-    : public cros_network::CrosNetworkConfigTestObserver {
+    : public ash::network_config::CrosNetworkConfigTestObserver {
  public:
   using VpnProviders = std::vector<cros_network::mojom::VpnProviderPtr>;
 

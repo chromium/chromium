@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 
 namespace ash {
@@ -16,9 +16,8 @@ namespace network_diagnostics {
 namespace {
 
 namespace mojom = ::chromeos::network_diagnostics::mojom;
-
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace network_config = ::chromeos::network_config;
+using ::ash::network_config::BindToInProcessInstance;
 
 mojom::CaptivePortalProblem GetProblemFromPortalState(
     network_config::mojom::PortalState portal_state) {
@@ -44,7 +43,7 @@ mojom::CaptivePortalProblem GetProblemFromPortalState(
 }  // namespace
 
 CaptivePortalRoutine::CaptivePortalRoutine() {
-  network_config::BindToInProcessInstance(
+  BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
 }
 

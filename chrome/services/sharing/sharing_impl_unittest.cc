@@ -20,7 +20,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -41,8 +41,8 @@ class SharingImplTest : public testing::Test {
                                       /*io_task_runner=*/nullptr);
 
     // Set up CrosNetworkConfig mojo service.
-    cros_network_config_test_helper_ = std::make_unique<
-        chromeos::network_config::CrosNetworkConfigTestHelper>();
+    cros_network_config_test_helper_ =
+        std::make_unique<ash::network_config::CrosNetworkConfigTestHelper>();
     mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
         cros_network_config_remote;
     ash::GetNetworkConfigService(
@@ -145,7 +145,7 @@ class SharingImplTest : public testing::Test {
   mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder_;
   bluetooth::FakeAdapter bluetooth_adapter_;
   sharing::MockWebRtcDependencies webrtc_dependencies_;
-  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+  std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       cros_network_config_test_helper_;
   mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_self_owned_receiver_ref_;

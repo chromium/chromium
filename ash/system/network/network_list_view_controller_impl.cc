@@ -42,7 +42,6 @@ using bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
 using bluetooth_config::mojom::BluetoothSystemState;
 using ::chromeos::network_config::NetworkTypeMatchesType;
 using ::chromeos::network_config::StateIsConnected;
-using ::chromeos::network_config::mojom::CrosNetworkConfig;
 using ::chromeos::network_config::mojom::DeviceStateProperties;
 using ::chromeos::network_config::mojom::DeviceStateType;
 using ::chromeos::network_config::mojom::FilterType;

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,10 +20,6 @@ namespace network_diagnostics {
 namespace {
 
 namespace mojom = ::chromeos::network_diagnostics::mojom;
-
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
-namespace network_config = ::chromeos::network_config;
-
 using chromeos::network_config::mojom::CrosNetworkConfig;
 using chromeos::network_config::mojom::FilterType;
 using chromeos::network_config::mojom::NetworkFilter;
@@ -32,7 +28,7 @@ using chromeos::network_config::mojom::NetworkType;
 
 void GetNetworkConfigService(
     mojo::PendingReceiver<CrosNetworkConfig> receiver) {
-  chromeos::network_config::BindToInProcessInstance(std::move(receiver));
+  network_config::BindToInProcessInstance(std::move(receiver));
 }
 
 // Represents the point below which the NIC signal strength is so
@@ -82,7 +78,7 @@ void SignalStrengthRoutine::FetchActiveWirelessNetworks() {
   // |remote_cros_network_config_| is a mojo::Remote owned by |this|.
   remote_cros_network_config_->GetNetworkStateList(
       NetworkFilter::New(FilterType::kActive, NetworkType::kWireless,
-                         network_config::mojom::kNoLimit),
+                         chromeos::network_config::mojom::kNoLimit),
       base::BindOnce(&SignalStrengthRoutine::OnNetworkStateListReceived,
                      base::Unretained(this)));
 }
@@ -91,9 +87,9 @@ void SignalStrengthRoutine::FetchActiveWirelessNetworks() {
 void SignalStrengthRoutine::OnNetworkStateListReceived(
     std::vector<NetworkStatePropertiesPtr> networks) {
   for (const NetworkStatePropertiesPtr& network : networks) {
-    if (network_config::StateIsConnected(network->connection_state)) {
+    if (chromeos::network_config::StateIsConnected(network->connection_state)) {
       signal_strength_ =
-          network_config::GetWirelessSignalStrength(network.get());
+          chromeos::network_config::GetWirelessSignalStrength(network.get());
       break;
     }
   }

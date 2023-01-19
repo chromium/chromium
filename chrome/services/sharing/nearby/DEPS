@@ -4,13 +4,11 @@
 
 include_rules = [
   "+chrome/browser/nearby_sharing/logging",
-  "+chromeos/services/network_config/public/mojom",
   "+third_party/nearby",
 ]
 
 specific_include_rules = {
   "nearby_connections_unittest.cc": [
     "+ash/public/cpp/network_config_service.h",
-    "+chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h",
   ],
 }

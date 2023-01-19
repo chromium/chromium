@@ -4,6 +4,10 @@
 
 // These are shared enums used by cros_network_config.
 
+// NOTE: This mojom exists in two places and must be kept in sync:
+//       Chromium: chromeos/services/network_config/public/mojom/
+//       ChromeOS: src/platform2/diagnostics/mojom/external/
+
 module chromeos.network_config.mojom;
 
 // Connection state of visible networks.

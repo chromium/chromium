@@ -29,7 +29,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -39,6 +39,7 @@
 #include "ui/views/controls/button/image_button.h"
 
 namespace ash {
+
 namespace {
 
 const char* kStubCellularDevice = "/device/stub_cellular_device";
@@ -379,7 +380,7 @@ class NetworkFeaturePodControllerTest
     return network_state_helper()->ConfigureService(shill_json_string);
   }
 
-  chromeos::network_config::CrosNetworkConfigTestHelper network_config_helper_;
+  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   base::test::ScopedFeatureList feature_list_;
   std::string cellular_path_;
   std::string ethernet_path_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_config/cros_network_config.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
 
 #include <tuple>
 
@@ -39,11 +39,11 @@
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_observer.h"
+#include "chromeos/ash/services/network_config/test_apn_data.h"
+#include "chromeos/ash/services/network_config/test_network_configuration_observer.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
-#include "chromeos/services/network_config/test_apn_data.h"
-#include "chromeos/services/network_config/test_network_configuration_observer.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
@@ -56,36 +56,12 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace chromeos {
-namespace network_config {
+namespace ash::network_config {
 
 namespace {
 
-using ApnTypes = ash::CellularNetworkMetricsLogger::ApnTypes;
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-using ::ash::CellularInhibitor;
-using ::ash::FakeShillDeviceClient;
-using ::ash::HermesEuiccClient;
-using ::ash::LoginState;
-using ::ash::ManagedNetworkConfigurationHandler;
-using ::ash::NetworkCertificateHandler;
-using ::ash::NetworkCertLoader;
-using ::ash::NetworkConfigurationHandler;
-using ::ash::NetworkHandler;
-using ::ash::NetworkHandlerTestHelper;
-using ::ash::NetworkMetadataStore;
-using ::ash::NetworkProfileHandler;
-using ::ash::NetworkState;
-using ::ash::NetworkStateHandler;
-using ::ash::NetworkTypePattern;
-using ::ash::SystemTokenCertDbStorage;
-namespace network_handler {
-using ::ash::network_handler::ErrorCallback;
-}
-namespace policy_util {
-using ::ash::policy_util::kFakeCredential;
-}
+namespace mojom = ::chromeos::network_config::mojom;
+using ApnTypes = CellularNetworkMetricsLogger::ApnTypes;
 
 constexpr int kSimRetriesLeft = 3;
 constexpr char kCellularGuid[] = "cellular_guid";
@@ -317,17 +293,18 @@ class CrosNetworkConfigTest : public testing::Test {
         /*global_network_config=*/base::Value(base::Value::Type::DICT));
 
     const std::string user_policy_ssid = "wifi2";
-    base::Value wifi2_onc = onc::ReadDictionaryFromJson(base::StringPrintf(
-        R"({"GUID": "wifi2_guid", "Type": "WiFi",
+    base::Value wifi2_onc =
+        chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
+            R"({"GUID": "wifi2_guid", "Type": "WiFi",
                 "Name": "wifi2", "Priority": 0,
                 "WiFi": { "Passphrase": "fake", "SSID": "%s", "HexSSID": "%s",
                           "Security": "WPA-PSK", "AutoConnect": true}})",
-        user_policy_ssid.c_str(),
-        base::HexEncode(user_policy_ssid.c_str(), user_policy_ssid.size())
-            .c_str()));
+            user_policy_ssid.c_str(),
+            base::HexEncode(user_policy_ssid.c_str(), user_policy_ssid.size())
+                .c_str()));
 
     base::Value wifi_eap_onc =
-        onc::ReadDictionaryFromJson(R"({ "GUID": "wifi_eap",
+        chromeos::onc::ReadDictionaryFromJson(R"({ "GUID": "wifi_eap",
       "Name": "wifi_eap",
       "Type": "WiFi",
       "WiFi": {
@@ -348,13 +325,14 @@ class CrosNetworkConfigTest : public testing::Test {
       }
 }  )");
 
-    base::Value openvpn_onc = onc::ReadDictionaryFromJson(base::StringPrintf(
-        R"({ "GUID": "openvpn_guid", "Name": "openvpn", "Type": "VPN", "VPN": {
+    base::Value openvpn_onc =
+        chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
+            R"({ "GUID": "openvpn_guid", "Name": "openvpn", "Type": "VPN", "VPN": {
           "Host": "my.vpn.example.com", "Type": "OpenVPN", "OpenVPN": {
           "Auth": "MD5", "Cipher": "AES-192-CBC", "ClientCertType": "None",
           "CompressionAlgorithm": "LZO", "KeyDirection": "1",
           "TLSAuthContents": "%s"}}})",
-        kOpenVPNTLSAuthContents));
+            kOpenVPNTLSAuthContents));
 
     base::Value::List user_policy_onc;
     user_policy_onc.Append(std::move(wifi2_onc));
@@ -948,20 +926,20 @@ class CrosNetworkConfigTest : public testing::Test {
   void AssertCreateCustomApnResultBucketCount(size_t num_success,
                                               size_t num_failure) {
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram,
-        true, num_success);
+        CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram, true,
+        num_success);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram,
-        false, num_failure);
+        CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram, false,
+        num_failure);
     histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::
+        CellularNetworkMetricsLogger::
             kCreateCustomApnAuthenticationTypeHistogram,
         num_success);
     histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::kCreateCustomApnIpTypeHistogram,
+        CellularNetworkMetricsLogger::kCreateCustomApnIpTypeHistogram,
         num_success);
     histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::kCreateCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kCreateCustomApnApnTypesHistogram,
         num_success);
   }
 
@@ -973,93 +951,93 @@ class CrosNetworkConfigTest : public testing::Test {
       ApnTypes apn_types,
       size_t apn_types_count) {
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::
+        CellularNetworkMetricsLogger::
             kCreateCustomApnAuthenticationTypeHistogram,
         auth_type, auth_type_count);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kCreateCustomApnIpTypeHistogram,
-        ip_type, ip_type_count);
+        CellularNetworkMetricsLogger::kCreateCustomApnIpTypeHistogram, ip_type,
+        ip_type_count);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kCreateCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kCreateCustomApnApnTypesHistogram,
         apn_types, apn_types_count);
   }
 
   void AssertRemoveCustomApnResultBucketCount(size_t num_success,
                                               size_t num_failure) {
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kRemoveCustomApnResultHistogram,
-        true, num_success);
+        CellularNetworkMetricsLogger::kRemoveCustomApnResultHistogram, true,
+        num_success);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kRemoveCustomApnResultHistogram,
-        false, num_failure);
+        CellularNetworkMetricsLogger::kRemoveCustomApnResultHistogram, false,
+        num_failure);
     histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::kRemoveCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kRemoveCustomApnApnTypesHistogram,
         num_success);
   }
 
   void AssertRemoveCustomApnPropertiesBucketCount(ApnTypes apn_types,
                                                   size_t apn_types_count) {
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kRemoveCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kRemoveCustomApnApnTypesHistogram,
         apn_types, apn_types_count);
   }
 
   void AssertApnHistogramCounts(const ApnHistogramCounts& count) {
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kModifyCustomApnResultHistogram,
-        true, count.num_modify_success);
-    histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kModifyCustomApnResultHistogram,
-        false, count.num_modify_failure);
-    histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kModifyCustomApnResultHistogram, true,
         count.num_modify_success);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kModifyCustomApnResultHistogram, false,
+        count.num_modify_failure);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
+        count.num_modify_success);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
         ApnTypes::kAttach, count.num_modify_type_attach);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
         ApnTypes::kDefault, count.num_modify_type_default);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kModifyCustomApnApnTypesHistogram,
         ApnTypes::kDefaultAndAttach, count.num_modify_type_default_and_attach);
 
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kEnableCustomApnResultHistogram,
-        true, count.num_enable_success);
-    histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kEnableCustomApnResultHistogram,
-        false, count.num_enable_failure);
-    histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kEnableCustomApnResultHistogram, true,
         count.num_enable_success);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kEnableCustomApnResultHistogram, false,
+        count.num_enable_failure);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
+        count.num_enable_success);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
         ApnTypes::kAttach, count.num_enable_type_attach);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
         ApnTypes::kDefault, count.num_enable_type_default);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kEnableCustomApnApnTypesHistogram,
         ApnTypes::kDefaultAndAttach, count.num_enable_type_default_and_attach);
 
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kDisableCustomApnResultHistogram,
-        true, count.num_disable_success);
-    histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kDisableCustomApnResultHistogram,
-        false, count.num_disable_failure);
-    histogram_tester_.ExpectTotalCount(
-        ash::CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kDisableCustomApnResultHistogram, true,
         count.num_disable_success);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kDisableCustomApnResultHistogram, false,
+        count.num_disable_failure);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
+        count.num_disable_success);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
         ApnTypes::kAttach, count.num_disable_type_attach);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
         ApnTypes::kDefault, count.num_disable_type_default);
     histogram_tester_.ExpectBucketCount(
-        ash::CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
+        CellularNetworkMetricsLogger::kDisableCustomApnApnTypesHistogram,
         ApnTypes::kDefaultAndAttach, count.num_disable_type_default_and_attach);
   }
 
@@ -1840,7 +1818,7 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2116,7 +2094,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2155,7 +2133,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2238,7 +2216,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2275,7 +2253,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
 
 TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2402,7 +2380,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2441,7 +2419,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
 
 TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2648,7 +2626,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
 
 TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Configure a cellular network with a last good APN and disconnected
   // as connection status
@@ -2704,7 +2682,7 @@ TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {
 
 TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
+  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
   // Configure a cellular network with a last good APN and disconnected
   // as connection status
   helper()->ConfigureService(base::StringPrintf(
@@ -3558,5 +3536,4 @@ TEST_F(CrosNetworkConfigTest, Shutdown) {
   NetworkHandler::Get()->managed_network_configuration_handler()->Shutdown();
 }
 
-}  // namespace network_config
-}  // namespace chromeos
+}  // namespace ash::network_config

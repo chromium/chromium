@@ -8,7 +8,7 @@
 #include "chromeos/ash/components/phonehub/phone_status_model.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 
 namespace ash {
 namespace phonehub {
@@ -24,13 +24,10 @@ using multidevice_setup::MultiDeviceSetupClient;
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 
-// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
-namespace network_config = ::chromeos::network_config;
-
 }  // namespace
 
 TetherControllerImpl::TetherNetworkConnector::TetherNetworkConnector() {
-  chromeos::network_config::BindToInProcessInstance(
+  network_config::BindToInProcessInstance(
       cros_network_config_.BindNewPipeAndPassReceiver());
 }
 
@@ -50,7 +47,7 @@ void TetherControllerImpl::TetherNetworkConnector::StartDisconnect(
 }
 
 void TetherControllerImpl::TetherNetworkConnector::GetNetworkStateList(
-    network_config::mojom::NetworkFilterPtr filter,
+    chromeos::network_config::mojom::NetworkFilterPtr filter,
     GetNetworkStateListCallback callback) {
   cros_network_config_->GetNetworkStateList(std::move(filter),
                                             std::move(callback));
@@ -77,7 +74,7 @@ TetherControllerImpl::TetherControllerImpl(
       connector_(std::move(connector)) {
   // Receive updates when devices (e.g., Tether, Ethernet, Wi-Fi) go on/offline
   // This class only cares about Tether devices.
-  chromeos::network_config::BindToInProcessInstance(
+  network_config::BindToInProcessInstance(
       cros_network_config_.BindNewPipeAndPassReceiver());
   cros_network_config_->AddObserver(receiver_.BindNewPipeAndPassRemote());
 
@@ -270,7 +267,8 @@ void TetherControllerImpl::OnDisconnectCompleted(bool success) {
 }
 
 void TetherControllerImpl::OnActiveNetworksChanged(
-    std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
+    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+        networks) {
   // Active networks either changed externally (e.g via OS Settings or a new
   // actve network added), or as a result of a call to AttemptConnection() or
   // Disconnect(). This is needed for the case of
@@ -332,17 +330,18 @@ void TetherControllerImpl::OnGetDeviceStateList(
 void TetherControllerImpl::FetchVisibleTetherNetwork() {
   // Return the connected, connecting, or connectable Tether network.
   connector_->GetNetworkStateList(
-      network_config::mojom::NetworkFilter::New(FilterType::kVisible,
-                                                NetworkType::kTether,
-                                                /*limit=*/0),
+      chromeos::network_config::mojom::NetworkFilter::New(FilterType::kVisible,
+                                                          NetworkType::kTether,
+                                                          /*limit=*/0),
       base::BindOnce(&TetherControllerImpl::OnVisibleTetherNetworkFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TetherControllerImpl::OnVisibleTetherNetworkFetched(
-    std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
-  network_config::mojom::NetworkStatePropertiesPtr previous_tether_network =
-      std::move(tether_network_);
+    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+        networks) {
+  chromeos::network_config::mojom::NetworkStatePropertiesPtr
+      previous_tether_network = std::move(tether_network_);
 
   if (!networks.empty()) {
     // The number of tether networks is expected to be at most 1, though some

@@ -27,9 +27,4 @@ class CrosNetworkConfigObserver : public mojom::CrosNetworkConfigObserver {
 
 }  // namespace chromeos::network_config
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::network_config {
-using ::chromeos::network_config::CrosNetworkConfigObserver;
-}
-
 #endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_OBSERVER_H_

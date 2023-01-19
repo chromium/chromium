@@ -13,8 +13,8 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/ash/services/network_health/network_health_constants.h"
-#include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
@@ -25,8 +25,6 @@ namespace ash::network_health {
 namespace {
 
 namespace mojom = ::chromeos::network_health::mojom;
-
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace network_config = ::chromeos::network_config;
 
 constexpr mojom::NetworkState DeviceStateToNetworkState(
@@ -123,7 +121,7 @@ bool NetworkListsMatch(const std::vector<mojom::NetworkPtr>& networks_a,
 }  // namespace
 
 NetworkHealthService::NetworkHealthService() {
-  network_config::BindToInProcessInstance(
+  ash::network_config::BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   remote_cros_network_config_->AddObserver(
       cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());

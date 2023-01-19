@@ -35,7 +35,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -154,7 +154,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
     int prepare_for_shutdown_count() { return prepare_for_shutdown_count_; }
 
    private:
-    chromeos::network_config::CrosNetworkConfigTestHelper
+    network_config::CrosNetworkConfigTestHelper
         cros_network_config_test_helper_;
     std::unique_ptr<bluetooth::FakeAdapter> fake_adapter_;
     std::unique_ptr<sharing::MockWebRtcDependencies> webrtc_dependencies_;

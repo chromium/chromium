@@ -13,10 +13,6 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
 using ConnectionStatus = assistant_client::NetworkProvider::ConnectionStatus;
-using NetworkStatePropertiesPtr =
-    chromeos::network_config::mojom::NetworkStatePropertiesPtr;
-using ConnectionStateType =
-    chromeos::network_config::mojom::ConnectionStateType;
 
 namespace ash::libassistant {
 
@@ -45,7 +41,7 @@ NetworkProviderImpl::~NetworkProviderImpl() = default;
 void NetworkProviderImpl::OnActiveNetworksChanged(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
   const bool is_any_network_online = base::Contains(
-      networks, ConnectionStateType::kOnline,
+      networks, network_config::mojom::ConnectionStateType::kOnline,
       &network_config::mojom::NetworkStateProperties::connection_state);
 
   if (is_any_network_online)

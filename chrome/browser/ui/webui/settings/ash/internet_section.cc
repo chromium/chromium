@@ -33,7 +33,6 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace ash::network_config {
 namespace mojom = chromeos::network_config::mojom;
 }

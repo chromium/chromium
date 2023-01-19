@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_config/test_apn_data.h"
+#include "chromeos/ash/services/network_config/test_apn_data.h"
 
 #include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/network/policy_util.h"
@@ -10,13 +10,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos::network_config {
+namespace ash::network_config {
+
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace policy_util {
-using ::ash::policy_util::kFakeCredential;
-}
+namespace mojom = ::chromeos::network_config::mojom;
 
 // TODO(b/162365553) Remove when shill constants are added.
 constexpr char kShillApnId[] = "id";
@@ -81,7 +79,7 @@ mojom::ApnPropertiesPtr TestApnData::AsMojoApn() const {
   apn->username = username;
   apn->password = password;
   apn->attach = attach;
-  if (ash::features::IsApnRevampEnabled()) {
+  if (features::IsApnRevampEnabled()) {
     apn->id = id.empty() ? absl::nullopt : absl::optional<std::string>(id);
     apn->authentication_type = mojo_authentication_type;
     apn->ip_type = mojo_ip_type;
@@ -98,7 +96,7 @@ base::Value::Dict TestApnData::AsOncApn() const {
   apn.Set(::onc::cellular_apn::kUsername, username);
   apn.Set(::onc::cellular_apn::kPassword, password);
   apn.Set(::onc::cellular_apn::kAttach, attach);
-  if (ash::features::IsApnRevampEnabled()) {
+  if (features::IsApnRevampEnabled()) {
     apn.Set(::onc::cellular_apn::kId, id);
     apn.Set(::onc::cellular_apn::kState, onc_state);
     apn.Set(::onc::cellular_apn::kAuthenticationType, onc_authentication_type);
@@ -119,7 +117,7 @@ base::Value::Dict TestApnData::AsShillApn() const {
   apn.Set(shill::kApnUsernameProperty, username);
   apn.Set(shill::kApnPasswordProperty, password);
   apn.Set(shill::kApnAttachProperty, attach);
-  if (ash::features::IsApnRevampEnabled()) {
+  if (features::IsApnRevampEnabled()) {
     apn.Set(kShillApnId, id);
     apn.Set(kShillApnAuthenticationType, onc_authentication_type);
     apn.Set(shill::kApnIpTypeProperty, onc_ip_type);
@@ -152,7 +150,7 @@ bool TestApnData::MojoApnEquals(const mojom::ApnProperties& apn) const {
   ret &= MatchOptionalString(password, apn.password);
   ret &= MatchOptionalString(attach, apn.attach);
 
-  if (ash::features::IsApnRevampEnabled()) {
+  if (features::IsApnRevampEnabled()) {
     ret &= mojo_authentication_type == apn.authentication_type;
     ret &= mojo_ip_type == apn.ip_type;
     ret &= mojo_apn_types == apn.apn_types;
@@ -178,7 +176,7 @@ bool TestApnData::OncApnEquals(const base::Value::Dict& onc_apn,
   }
 
   ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAttach, attach);
-  if (ash::features::IsApnRevampEnabled()) {
+  if (features::IsApnRevampEnabled()) {
     const std::string* state = onc_apn.FindString(::onc::cellular_apn::kState);
     if (has_state_field) {
       ret &= state && onc_state == *state;
@@ -203,4 +201,4 @@ bool TestApnData::OncApnEquals(const base::Value::Dict& onc_apn,
   return ret;
 }
 
-}  // namespace chromeos::network_config
+}  // namespace ash::network_config

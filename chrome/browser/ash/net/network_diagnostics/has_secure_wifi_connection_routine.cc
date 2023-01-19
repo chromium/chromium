@@ -9,7 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,10 +21,6 @@ namespace network_diagnostics {
 namespace {
 
 namespace mojom = ::chromeos::network_diagnostics::mojom;
-
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
-namespace network_config = ::chromeos::network_config;
-
 using chromeos::network_config::mojom::CrosNetworkConfig;
 using chromeos::network_config::mojom::FilterType;
 using chromeos::network_config::mojom::NetworkFilter;
@@ -34,7 +30,7 @@ using chromeos::network_config::mojom::SecurityType;
 
 void GetNetworkConfigService(
     mojo::PendingReceiver<CrosNetworkConfig> receiver) {
-  chromeos::network_config::BindToInProcessInstance(std::move(receiver));
+  network_config::BindToInProcessInstance(std::move(receiver));
 }
 
 constexpr SecurityType kSecureWiFiEncryptions[] = {SecurityType::kWpaEap,
@@ -104,7 +100,7 @@ void HasSecureWiFiConnectionRoutine::FetchActiveWiFiNetworks() {
   DCHECK(remote_cros_network_config_);
   remote_cros_network_config_->GetNetworkStateList(
       NetworkFilter::New(FilterType::kActive, NetworkType::kWiFi,
-                         network_config::mojom::kNoLimit),
+                         chromeos::network_config::mojom::kNoLimit),
       base::BindOnce(
           &HasSecureWiFiConnectionRoutine::OnNetworkStateListReceived,
           base::Unretained(this)));
@@ -114,7 +110,7 @@ void HasSecureWiFiConnectionRoutine::FetchActiveWiFiNetworks() {
 void HasSecureWiFiConnectionRoutine::OnNetworkStateListReceived(
     std::vector<NetworkStatePropertiesPtr> networks) {
   for (const NetworkStatePropertiesPtr& network : networks) {
-    if (network_config::StateIsConnected(network->connection_state)) {
+    if (chromeos::network_config::StateIsConnected(network->connection_state)) {
       wifi_connected_ = true;
       wifi_security_ = network->type_state->get_wifi()->security;
       break;

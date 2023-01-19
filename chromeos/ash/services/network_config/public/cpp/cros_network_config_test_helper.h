@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_HELPER_H_
-#define CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_HELPER_H_
+#ifndef CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_HELPER_H_
+#define CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_HELPER_H_
 
 #include <memory>
 
@@ -15,10 +15,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
-class NetworkDeviceHandler;
-}
 
-namespace chromeos {
+class NetworkDeviceHandler;
 
 namespace network_config {
 
@@ -40,46 +38,38 @@ class CrosNetworkConfigTestHelper {
 
   ~CrosNetworkConfigTestHelper();
 
-  static mojom::NetworkStatePropertiesPtr CreateStandaloneNetworkProperties(
+  static chromeos::network_config::mojom::NetworkStatePropertiesPtr
+  CreateStandaloneNetworkProperties(
       const std::string& id,
-      mojom::NetworkType type,
-      mojom::ConnectionStateType connection_state,
+      chromeos::network_config::mojom::NetworkType type,
+      chromeos::network_config::mojom::ConnectionStateType connection_state,
       int signal_strength = 0);
 
-  ash::NetworkStateTestHelper& network_state_helper() {
+  NetworkStateTestHelper& network_state_helper() {
     return network_state_helper_;
   }
 
-  ash::NetworkDeviceHandler* network_device_handler() {
+  NetworkDeviceHandler* network_device_handler() {
     return network_state_helper_.network_device_handler();
   }
 
-  ash::CellularInhibitor* cellular_inhibitor() {
-    return cellular_inhibitor_.get();
-  }
+  CellularInhibitor* cellular_inhibitor() { return cellular_inhibitor_.get(); }
 
   void Initialize(
-      ash::ManagedNetworkConfigurationHandler* network_configuration_handler);
+      ManagedNetworkConfigurationHandler* network_configuration_handler);
 
  protected:
   // Called in |~CrosNetworkConfigTestHelper()| to set the global network config
   // to nullptr and destroy cros_network_config_impl_.
   void Shutdown();
 
-  ash::NetworkStateTestHelper network_state_helper_{
+  NetworkStateTestHelper network_state_helper_{
       /*use_default_devices_and_services=*/false};
-  std::unique_ptr<ash::CellularInhibitor> cellular_inhibitor_;
+  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<CrosNetworkConfig> cros_network_config_impl_;
 };
 
 }  // namespace network_config
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace network_config {
-using ::chromeos::network_config::CrosNetworkConfigTestHelper;
-}  // namespace network_config
 }  // namespace ash
 
-#endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_HELPER_H_
+#endif  // CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_CROS_NETWORK_CONFIG_TEST_HELPER_H_

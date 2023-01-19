@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -27,6 +27,7 @@ class WebUIDataSource;
 }
 
 namespace ash {
+
 class ErrorScreen;
 class NetworkStateInformer;
 class OobeDisplayChooser;

@@ -24,10 +24,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace {
-using chromeos::network_config::mojom::DeviceStateType;
-using chromeos::network_config::mojom::NetworkType;
-}  // namespace
 
 NetworkListWifiHeaderViewImpl::NetworkListWifiHeaderViewImpl(
     NetworkListNetworkHeaderView::Delegate* delegate)

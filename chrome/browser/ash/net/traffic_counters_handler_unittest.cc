@@ -15,9 +15,10 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
-#include "chromeos/services/network_config/cros_network_config.h"
-#include "chromeos/services/network_config/in_process_instance.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,9 +29,6 @@ namespace ash {
 namespace traffic_counters {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
-namespace network_config = ::chromeos::network_config;
 
 class TrafficCountersHandlerTest : public ::testing::Test {
  public:

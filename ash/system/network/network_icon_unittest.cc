@@ -18,7 +18,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/tether_constants.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -26,14 +26,12 @@
 // This tests both the helper functions in network_icon, and ActiveNetworkIcon
 // which is a primary consumer of the helper functions.
 
+namespace ash::network_icon {
+
 using chromeos::network_config::mojom::ConnectionStateType;
 using chromeos::network_config::mojom::NetworkStateProperties;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
-
-namespace ash {
-
-namespace network_icon {
 
 class NetworkIconTest : public AshTestBase {
  public:
@@ -156,7 +154,7 @@ class NetworkIconTest : public AshTestBase {
   IconType icon_type_ = ICON_TYPE_TRAY_REGULAR;
 
  private:
-  chromeos::network_config::CrosNetworkConfigTestHelper network_config_helper_;
+  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<ActiveNetworkIcon> active_network_icon_;
 
@@ -660,6 +658,4 @@ TEST_F(NetworkIconTest, DefaultNetworkImageVpnAndCellular) {
       gfx::Image(default_image), ImageForNetwork(reference_network.get())));
 }
 
-}  // namespace network_icon
-
-}  // namespace ash
+}  // namespace ash::network_icon

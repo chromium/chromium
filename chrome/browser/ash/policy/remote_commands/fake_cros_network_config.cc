@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
+
 #include "base/strings/stringprintf.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 
 namespace policy::test {
 
 namespace {
 
-using chromeos::network_config::mojom::NetworkStateProperties;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::NetworkTypeStateProperties;
@@ -124,11 +124,11 @@ NetworkTypeStatePropertiesPtr NetworkBuilder::CreateTypeStateForType(
 ////////////////////////////////////////////////////////////////////////////////
 
 ScopedFakeCrosNetworkConfig::ScopedFakeCrosNetworkConfig() {
-  chromeos::network_config::OverrideInProcessInstanceForTesting(this);
+  ash::network_config::OverrideInProcessInstanceForTesting(this);
 }
 
 ScopedFakeCrosNetworkConfig::~ScopedFakeCrosNetworkConfig() {
-  chromeos::network_config::OverrideInProcessInstanceForTesting(nullptr);
+  ash::network_config::OverrideInProcessInstanceForTesting(nullptr);
 }
 
 }  // namespace policy::test

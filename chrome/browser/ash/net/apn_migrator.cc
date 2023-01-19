@@ -19,6 +19,7 @@
 namespace ash {
 
 namespace {
+
 void OnSetShillUserApnListSuccess() {}
 
 void OnSetShillUserApnListFailure(const std::string& guid,
@@ -27,6 +28,7 @@ void OnSetShillUserApnListFailure(const std::string& guid,
                     "list in Shill for network: "
                  << guid << ": [" << error_name << ']';
 }
+
 }  // namespace
 
 ApnMigrator::ApnMigrator(

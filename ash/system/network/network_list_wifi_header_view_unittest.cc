@@ -15,16 +15,12 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-using chromeos::network_config::CrosNetworkConfigTestHelper;
-}  // namespace
 
 class NetworkListWifiHeaderViewTest : public AshTestBase {
  public:
@@ -98,7 +94,7 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  CrosNetworkConfigTestHelper network_config_helper_;
+  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   base::test::ScopedFeatureList feature_list_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;

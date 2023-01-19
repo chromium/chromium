@@ -26,7 +26,6 @@ using chromeos::network_config::mojom::DeviceStateType;
 using chromeos::network_config::mojom::FilterType;
 using chromeos::network_config::mojom::NetworkFilter;
 using chromeos::network_config::mojom::NetworkStateProperties;
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 
 namespace ash {

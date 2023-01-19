@@ -1,5 +1,7 @@
 include_rules = [
   "+chromeos/ash/services/nearby",
+  "+chromeos/ash/services/network_config/public/cpp",
+  "+chromeos/services/network_config/public/mojom",
   "+components/webrtc",
   "+device/bluetooth/public/mojom",
   "+services/network/public/cpp",
@@ -11,7 +13,5 @@ include_rules = [
 specific_include_rules = {
   "sharing_impl_unittest.cc": [
     "+ash/public/cpp/network_config_service.h",
-    "+chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h",
-    "+chromeos/services/network_config/public/mojom",
   ],
 }

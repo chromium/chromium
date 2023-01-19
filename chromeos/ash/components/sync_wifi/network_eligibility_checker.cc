@@ -10,7 +10,6 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace ash::network_config {
 namespace mojom = ::chromeos::network_config::mojom;
 }

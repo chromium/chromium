@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/sync_wifi/network_type_conversions.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "components/account_id/account_id.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"

@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/services/network_config/cros_network_config.h"
+#include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
-namespace network_config {
+namespace ash::network_config {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-using ::ash::NetworkHandler;
+namespace mojom = ::chromeos::network_config::mojom;
 
 mojom::CrosNetworkConfig* g_network_config_override;
 
@@ -52,5 +50,4 @@ void OverrideInProcessInstanceForTesting(
   GetOverrideReceivers().Clear();
 }
 
-}  // namespace network_config
-}  // namespace chromeos
+}  // namespace ash::network_config

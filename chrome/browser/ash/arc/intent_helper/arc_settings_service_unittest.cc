@@ -31,7 +31,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/prefs/pref_service.h"
@@ -62,8 +62,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
-    network_config_helper_ = std::make_unique<
-        chromeos::network_config::CrosNetworkConfigTestHelper>();
+    network_config_helper_ =
+        std::make_unique<ash::network_config::CrosNetworkConfigTestHelper>();
     ash::StatsReportingController::RegisterLocalStatePrefs(
         local_state_.registry());
     ash::StatsReportingController::Initialize(&local_state_);
@@ -155,7 +155,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
 
  private:
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
-  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+  std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   TestingPrefServiceSimple local_state_;
   user_manager::ScopedUserManager user_manager_enabler_;

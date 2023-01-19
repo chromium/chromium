@@ -33,8 +33,7 @@ mojom("mojom") {
       ]
       traits_headers = [ "network_provider_mojom_traits.h" ]
       traits_sources = [ "network_provider_mojom_traits.cc" ]
-      traits_public_deps =
-          [ "//chromeos/services/network_config/public/mojom:mojom" ]
+      traits_public_deps = [ "//chromeos/services/network_config/public/mojom" ]
     },
   ]
 }
@@ -46,7 +45,7 @@ source_set("unit_tests") {
     ":mojom",
     "//base",
     "//base/test:test_support",
-    "//chromeos/services/network_config/public/mojom:mojom",
+    "//chromeos/services/network_config/public/mojom",
     "//mojo/public/cpp/test_support:test_utils",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",

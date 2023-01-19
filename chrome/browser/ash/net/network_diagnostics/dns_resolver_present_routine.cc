@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "chromeos/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "components/onc/onc_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,12 +19,10 @@
 
 namespace ash {
 namespace network_diagnostics {
+
 namespace {
 
 namespace mojom = ::chromeos::network_diagnostics::mojom;
-
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
-namespace network_config = ::chromeos::network_config;
 
 // Filters the list of |name_servers| and returns those that are not
 // empty/default values.
@@ -45,7 +43,7 @@ std::vector<std::string> GetNonEmptyNameServers(
 // config type. If the type is not set, IPv4 is assumed.
 bool NameServersHaveValidAddresses(
     const std::vector<std::string>& name_servers,
-    ::chromeos::network_config::mojom::IPConfigType type) {
+    chromeos::network_config::mojom::IPConfigType type) {
   for (const auto& name_server : name_servers) {
     net::IPAddress ip_address;
     if (!ip_address.AssignFromIPLiteral(name_server)) {
@@ -53,11 +51,11 @@ bool NameServersHaveValidAddresses(
     }
 
     switch (type) {
-      case ::chromeos::network_config::mojom::IPConfigType::kIPv4:
+      case chromeos::network_config::mojom::IPConfigType::kIPv4:
         if (ip_address.IsIPv4())
           return true;
         break;
-      case ::chromeos::network_config::mojom::IPConfigType::kIPv6:
+      case chromeos::network_config::mojom::IPConfigType::kIPv6:
         if (ip_address.IsIPv6() || ip_address.IsIPv4MappedIPv6())
           return true;
         break;
@@ -114,10 +112,10 @@ void DnsResolverPresentRoutine::AnalyzeResultsAndExecuteCallback() {
 void DnsResolverPresentRoutine::FetchActiveNetworks() {
   DCHECK(remote_cros_network_config_);
   remote_cros_network_config_->GetNetworkStateList(
-      network_config::mojom::NetworkFilter::New(
-          network_config::mojom::FilterType::kActive,
-          network_config::mojom::NetworkType::kAll,
-          network_config::mojom::kNoLimit),
+      chromeos::network_config::mojom::NetworkFilter::New(
+          chromeos::network_config::mojom::FilterType::kActive,
+          chromeos::network_config::mojom::NetworkType::kAll,
+          chromeos::network_config::mojom::kNoLimit),
       base::BindOnce(&DnsResolverPresentRoutine::OnNetworkStateListReceived,
                      base::Unretained(this)));
 }
@@ -131,7 +129,7 @@ void DnsResolverPresentRoutine::FetchManagedProperties(
 }
 
 void DnsResolverPresentRoutine::OnManagedPropertiesReceived(
-    network_config::mojom::ManagedPropertiesPtr managed_properties) {
+    chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties) {
   if (!managed_properties || !managed_properties->ip_configs.has_value()) {
     AnalyzeResultsAndExecuteCallback();
     return;
@@ -160,10 +158,11 @@ void DnsResolverPresentRoutine::OnManagedPropertiesReceived(
 
 // Process the network interface information.
 void DnsResolverPresentRoutine::OnNetworkStateListReceived(
-    std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
+    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+        networks) {
   std::string default_guid;
   for (const auto& network : networks) {
-    if (network_config::StateIsConnected(network->connection_state)) {
+    if (chromeos::network_config::StateIsConnected(network->connection_state)) {
       default_guid = network->guid;
       break;
     }

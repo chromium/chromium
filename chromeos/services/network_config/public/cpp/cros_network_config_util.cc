@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+
 #include "components/onc/onc_constants.h"
 
 namespace chromeos::network_config {
 
 namespace {
+
 absl::optional<std::string> GetString(const base::Value::Dict& onc_apn,
                                       const char* key) {
   const std::string* v = onc_apn.FindString(key);
@@ -93,6 +95,7 @@ mojom::ApnIpType OncApnIpTypeToMojo(const std::string& ip_type) {
   NOTREACHED() << "Unexpected ONC APN IP type: " << ip_type;
   return mojom::ApnIpType::kAutomatic;
 }
+
 }  // namespace
 
 // This matches logic in NetworkTypePattern and should be kept in sync.

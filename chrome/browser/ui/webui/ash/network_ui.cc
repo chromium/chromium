@@ -65,11 +65,6 @@
 
 namespace ash {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace network_config {
-namespace mojom = ::chromeos::network_config::mojom;
-}
-
 namespace {
 
 constexpr char kAddNetwork[] = "addNetwork";
@@ -990,7 +985,8 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
 NetworkUI::~NetworkUI() = default;
 
 void NetworkUI::BindInterface(
-    mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver) {
+    mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+        receiver) {
   GetNetworkConfigService(std::move(receiver));
 }
 

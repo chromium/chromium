@@ -16,7 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -25,9 +25,8 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace {
 
-using chromeos::network_config::CrosNetworkConfigTestHelper;
+namespace {
 
 const char kIPv4ConfigPath[] = "/ipconfig/stub_ipv4_config";
 const char kIPv6ConfigPath[] = "/ipconfig/stub_ipv6_config";
@@ -193,7 +192,7 @@ class NetworkInfoBubbleTest : public AshTestBase {
   FakeNetworkInfoBubbleDelegate* fake_delegate() { return &fake_delegate_; }
 
  private:
-  CrosNetworkConfigTestHelper network_config_helper_;
+  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkInfoBubbleDelegate fake_delegate_;
   NetworkInfoBubble* network_info_bubble_ = nullptr;
   base::test::ScopedFeatureList feature_list_;

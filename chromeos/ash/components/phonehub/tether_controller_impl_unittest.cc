@@ -17,8 +17,8 @@
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "chromeos/ash/components/phonehub/phone_status_model.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/network_config/in_process_instance.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -87,7 +87,7 @@ class TetherControllerImplTest : public testing::Test {
       : public TetherControllerImpl::TetherNetworkConnector {
    public:
     FakeTetherNetworkConnector() {
-      chromeos::network_config::BindToInProcessInstance(
+      network_config::BindToInProcessInstance(
           cros_network_config_.BindNewPipeAndPassReceiver());
     }
     ~FakeTetherNetworkConnector() override = default;

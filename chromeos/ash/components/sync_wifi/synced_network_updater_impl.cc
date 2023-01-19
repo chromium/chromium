@@ -19,7 +19,6 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace ash::network_config {
 namespace mojom = ::chromeos::network_config::mojom;
 }
