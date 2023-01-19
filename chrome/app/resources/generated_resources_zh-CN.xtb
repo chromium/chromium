@@ -4641,7 +4641,7 @@
 <translation id="527605982717517565">始终允许使用 <ph name="HOST" /> 上的 JavaScript</translation>
 <translation id="5277127016695466621">显示侧边栏</translation>
 <translation id="5278823018825269962">状态 ID</translation>
-<translation id="5279600392753459966">阻止所有插件</translation>
+<translation id="5279600392753459966">全部屏蔽</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的访问凭据</translation>
 <translation id="5280243692621919988">关闭所有窗口时清除 Cookie 及网站数据</translation>
 <translation id="5280335021886535443">按 |<ph name="ACCELERATOR" />| 可聚焦于此气泡。</translation>
@@ -5345,7 +5345,7 @@
 <translation id="5927232971138258197">此扩展程序可以读取和更改 <ph name="HOST" /></translation>
 <translation id="592740088639760830">停止运行此容器</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
-<translation id="5928969282301718193">目前已全部完成</translation>
+<translation id="5928969282301718193">设置完毕</translation>
 <translation id="592919310198008711">当我点击此扩展程序时</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>

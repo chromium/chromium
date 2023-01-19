@@ -3650,7 +3650,7 @@
 <translation id="4324577459193912240">檔案未完成下載</translation>
 <translation id="4325237902968425115">正在解除安裝「<ph name="LINUX_APP_NAME" />」...</translation>
 <translation id="4330191372652740264">冰水</translation>
-<translation id="4330387663455830245">一律不翻譯<ph name="LANGUAGE" />內容</translation>
+<translation id="4330387663455830245">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">設定家長監護功能</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 (使用 RSA 加密)</translation>
 <translation id="4336434711095810371">清除所有資料</translation>
@@ -5218,7 +5218,7 @@
 <translation id="5804241973901381774">權限</translation>
 <translation id="5805268472388605531">按住鍵盤按鍵即可查看重音符號和特殊字元</translation>
 <translation id="5805697420284793859">視窗管理員</translation>
-<translation id="5806447147478173900">所顯示網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
+<translation id="5806447147478173900">以下網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (預設)</translation>
 <translation id="5809835394668218762">可對 <ph name="WEBSITE" /> 執行的其他動作</translation>
 <translation id="5810603387504252966">必須前往 chrome://flags 啟用 #borealis-enabled</translation>
