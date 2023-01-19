@@ -580,6 +580,7 @@ TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDUnknown) {
   ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
   OnActiveAXTreeIDChanged(tree_id);
   OnAXTreeDestroyed(tree_id);
+  OnAXTreeDistilled({1});
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDNotInTrees) {

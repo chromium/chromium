@@ -83,6 +83,10 @@ class AXTreeDistiller {
   void ProcessScreen2xResult(const ui::AXTree& tree,
                              const std::vector<ui::AXNodeID>& content_node_ids);
 
+  // Called when the main content extractor is disconnected. Runs the callback
+  // with an empty list of content node IDs.
+  void OnMainContentExtractorDisconnected();
+
   // The remote of the Screen2x main content extractor. The receiver lives in
   // the utility process.
   mojo::Remote<screen_ai::mojom::Screen2xMainContentExtractor>

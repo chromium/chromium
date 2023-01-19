@@ -92,6 +92,9 @@ AXTreeDistiller::AXTreeDistiller(
   if (features::IsReadAnythingWithScreen2xEnabled()) {
     render_frame_->GetBrowserInterfaceBroker()->GetInterface(
         main_content_extractor_.BindNewPipeAndPassReceiver());
+    main_content_extractor_.set_disconnect_handler(
+        base::BindOnce(&AXTreeDistiller::OnMainContentExtractorDisconnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 #endif
 }
@@ -148,5 +151,9 @@ void AXTreeDistiller::ProcessScreen2xResult(
   // TODO(crbug.com/1266555): If still no content nodes were identified, and
   // there is a selection, try sending Screen2x a partial tree just containing
   // the selected nodes.
+}
+
+void AXTreeDistiller::OnMainContentExtractorDisconnected() {
+  on_ax_tree_distilled_callback_.Run(std::vector<ui::AXNodeID>());
 }
 #endif

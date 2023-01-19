@@ -434,7 +434,11 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   content_node_ids_ = content_node_ids;
   distillation_in_progress_ = false;
 
-  DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
+  // This callback could be called after the AXTree was destroyed. In that case,
+  // return early.
+  if (active_tree_id_ == ui::AXTreeIDUnknown()) {
+    return;
+  }
   DCHECK(base::Contains(trees_, active_tree_id_));
   ui::AXSelection selection = trees_[active_tree_id_]->GetUnignoredSelection();
   has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
