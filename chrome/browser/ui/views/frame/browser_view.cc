@@ -2210,33 +2210,31 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
   auto* controller = rfh->GetBrowserContext()->GetPermissionController();
 
   // Last committed URL is null when PWA is opened from chrome://apps.
-  url::Origin url = url::Origin::Create(web_contents->GetVisibleURL());
+  url::Origin origin = url::Origin::Create(web_contents->GetVisibleURL());
+  if (origin.opaque()) {
+    // Permission check should not be tied to an empty origin. This can happen
+    // when opening popups from borderless IWAs.
+    return;
+  }
 
   UpdateWindowManagementPermission(
       controller
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::WINDOW_MANAGEMENT, url)
+              blink::PermissionType::WINDOW_MANAGEMENT, origin)
           .status);
 
   // It is safe to bind base::Unretained(this) because WebContents is
   // owned by BrowserView.
   window_management_subscription_id_ =
       controller->SubscribePermissionStatusChange(
-          blink::PermissionType::WINDOW_MANAGEMENT, rfh->GetProcess(), url,
+          blink::PermissionType::WINDOW_MANAGEMENT, rfh->GetProcess(), origin,
           base::BindRepeating(&BrowserView::UpdateWindowManagementPermission,
                               base::Unretained(this)));
 }
 
 void BrowserView::UpdateIsIsolatedWebApp() {
-  auto* web_contents = GetActiveWebContents();
-  DCHECK(web_contents);
-
-  // Last committed URL is null when PWA is opened from chrome://apps.
-  GURL url = web_contents->GetVisibleURL();
-
-  is_isolated_web_app_ =
-      content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
-          web_contents->GetPrimaryMainFrame()->GetBrowserContext(), url);
+  is_isolated_web_app_ = browser()->app_controller() &&
+                         browser()->app_controller()->IsIsolatedWebApp();
 }
 
 void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {

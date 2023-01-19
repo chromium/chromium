@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
-                       PopupToItselfIsNotBorderless) {
+                       PopupToItselfIsBorderless) {
   InstallAndLaunchWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
   ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
@@ -593,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
       BrowserView::GetBrowserViewForBrowser(popup);
   EXPECT_TRUE(content::WaitForRenderFrameReady(
       popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
-  EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
+  popup_browser_view->set_isolated_web_app_true_for_testing();
+  EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
