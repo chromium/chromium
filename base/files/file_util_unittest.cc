@@ -19,6 +19,7 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/features.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -37,6 +38,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
@@ -778,6 +780,9 @@ TEST_F(FileUtilTest, CreateWinHardlinkTest) {
 }
 
 TEST_F(FileUtilTest, PreventExecuteMappingNewFile) {
+  base::test::ScopedFeatureList enforcement_feature;
+  enforcement_feature.InitAndEnableFeature(
+      features::kEnforceNoExecutableFileHandles);
   FilePath file = temp_dir_.GetPath().Append(FPL("afile.txt"));
 
   ASSERT_FALSE(PathExists(file));
@@ -797,6 +802,9 @@ TEST_F(FileUtilTest, PreventExecuteMappingNewFile) {
 }
 
 TEST_F(FileUtilTest, PreventExecuteMappingExisting) {
+  base::test::ScopedFeatureList enforcement_feature;
+  enforcement_feature.InitAndEnableFeature(
+      features::kEnforceNoExecutableFileHandles);
   FilePath file = temp_dir_.GetPath().Append(FPL("afile.txt"));
   CreateTextFile(file, bogus_content);
   ASSERT_TRUE(PathExists(file));
@@ -816,6 +824,9 @@ TEST_F(FileUtilTest, PreventExecuteMappingExisting) {
 }
 
 TEST_F(FileUtilTest, PreventExecuteMappingOpenFile) {
+  base::test::ScopedFeatureList enforcement_feature;
+  enforcement_feature.InitAndEnableFeature(
+      features::kEnforceNoExecutableFileHandles);
   FilePath file = temp_dir_.GetPath().Append(FPL("afile.txt"));
   CreateTextFile(file, bogus_content);
   ASSERT_TRUE(PathExists(file));
@@ -841,6 +852,9 @@ TEST_F(FileUtilTest, PreventExecuteMappingOpenFile) {
 }
 
 TEST(FileUtilDeathTest, DisallowNoExecuteOnUnsafeFile) {
+  base::test::ScopedFeatureList enforcement_feature;
+  enforcement_feature.InitAndEnableFeature(
+      features::kEnforceNoExecutableFileHandles);
   base::FilePath local_app_data;
   // This test places a file in %LOCALAPPDATA% to verify that the checks in
   // IsPathSafeToSetAclOn work correctly.
