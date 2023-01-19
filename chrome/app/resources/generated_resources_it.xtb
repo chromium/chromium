@@ -3196,7 +3196,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3936390757709632190">&amp;Apri audio in nuova scheda</translation>
 <translation id="3936925983113350642">La password scelta sarà necessaria per recuperare il certificato in un secondo momento. Registrala in una posizione sicura.</translation>
 <translation id="3937640725563832867">Nome alternativo dell'autorità emittente del certificato</translation>
-<translation id="3937734102568271121">Traduci sempre questa lingua: <ph name="LANGUAGE" /></translation>
+<translation id="3937734102568271121">Traduci sempre <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Dispositivi del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="3940233957883229251">Attiva ripetizione automatica</translation>
 <translation id="3941565636838060942">Per impedire l'accesso a questo programma, è necessario disinstallarlo utilizzando
@@ -8402,7 +8402,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8888253246822647887">L'app verrà aperta al termine dell'upgrade. Gli upgrade possono richiedere qualche minuto.</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> può modificare i file e le cartelle indicati di seguito</translation>
 <translation id="8890170499370378450">Potrebbero esserti addebitati costi per l'utilizzo dei dati mobili</translation>
-<translation id="8890516388109605451">Fonti</translation>
+<translation id="8890516388109605451">Origini</translation>
 <translation id="8890529496706615641">Impossibile rinominare il profilo. Riprova oppure contatta il tuo operatore per ricevere assistenza tecnica.</translation>
 <translation id="8892168913673237979">Finito.</translation>
 <translation id="8893801527741465188">Disinstallazione completata</translation>

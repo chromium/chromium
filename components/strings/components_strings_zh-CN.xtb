@@ -873,7 +873,7 @@
 <translation id="3261488570342242926">了解虚拟卡</translation>
 <translation id="3264837738038045344">“管理 Chrome 设置”按钮，按 Enter 键即可访问您的 Chrome 设置</translation>
 <translation id="3266793032086590337">值（冲突）</translation>
-<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{没有禁止使用 Cookie 的网站，包括相关网站}=1{有 1 个禁止使用 Cookie 的网站，包括相关网站}other{有 # 个禁止使用 Cookie 的网站，包括相关网站}}</translation>
+<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{没有阻止任何网站，包括相关网站}=1{已阻止 1 个网站，包括相关网站}other{已阻止 # 个网站，包括相关网站}}</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
 <translation id="3270156322180235608">航空旅行</translation>
 <translation id="3270847123878663523">撤消顺序调整(&amp;U)</translation>
@@ -1711,7 +1711,7 @@
 <translation id="541416427766103491">堆叠出纸器 4</translation>
 <translation id="5414511064953050917">仍然移动</translation>
 <translation id="5421136146218899937">清除浏览数据...</translation>
-<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{没有禁止使用 Cookie 的网站}=1{有 1 个禁止使用 Cookie 的网站}other{有 # 个禁止使用 Cookie 的网站}}</translation>
+<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{没有阻止任何网站}=1{已阻止 1 个网站}other{已阻止 # 个网站}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
 <translation id="5428105026674456456">西班牙语</translation>
 <translation id="5430298929874300616">移除书签</translation>
@@ -2412,7 +2412,7 @@
 <translation id="7372973238305370288">搜索结果</translation>
 <translation id="7374461526650987610">协议处理程序</translation>
 <translation id="7374733840632556089">此问题是由您或他人在您设备上安装的某个证书导致的。该证书已知被用于监控和拦截网络，因此不受 Chrome 信任。尽管某些情况下的监控确实是合理的（例如监控学校网络或公司网络），但 Chrome 想确保您知道自己正被监控，即使您无法改变这一事实。监控可能会发生在已联网的任何浏览器或应用中。</translation>
-<translation id="7375532151824574023">{NUM_COOKIES,plural, =0{没有允许使用 Cookie 的网站}=1{有 1 个允许使用 Cookie 的网站}other{有 # 个允许使用 Cookie 的网站}}</translation>
+<translation id="7375532151824574023">{NUM_COOKIES,plural, =0{没有允许任何网站}=1{已允许 1 个网站}other{已允许 # 个网站}}</translation>
 <translation id="7375818412732305729">附加文件</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">媒体控件</translation>

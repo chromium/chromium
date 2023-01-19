@@ -124,7 +124,7 @@
 <translation id="3586500876634962664">Kamera ve mikrofon kullanımı</translation>
 <translation id="358794129225322306">Bir sitenin otomatik olarak birden fazla dosya indirmesine izin verir.</translation>
 <translation id="3594780231884063836">Videonun sesini kapat</translation>
-<translation id="3596414637720633074">Gizli modda üçüncü taraf çerezleri engelle</translation>
+<translation id="3596414637720633074">Gizli modda üçüncü taraf çerezlerini engelle</translation>
 <translation id="3600792891314830896">Ses çalan sitelerin sesini kapat</translation>
 <translation id="3628308229821498208">Önerilen aramalar</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
@@ -322,7 +322,7 @@
 <translation id="7846076177841592234">Seçimi iptal et</translation>
 <translation id="7846621471902887024">Tüm sitelerdeki oturumunuz kapatılacak.</translation>
 <translation id="7882806643839505685">Belirli bir site için sese izin verin.</translation>
-<translation id="789180354981963912">Gizli modda üçüncü taraf çerezleri engelle:</translation>
+<translation id="789180354981963912">Gizli modda üçüncü taraf çerezlerini engelle:</translation>
 <translation id="7940722705963108451">Bana hatırlat</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="FPS_MEMBERS_COUNT" /> site var}other{<ph name="FPS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="FPS_MEMBERS_COUNT" /> site var}}</translation>
 <translation id="7986741934819883144">Kişi seçin</translation>
