@@ -2676,6 +2676,9 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
       // LayoutSVGRoot::LocalVisualRect() depends on some styles.
       SetShouldDoFullPaintInvalidation();
     } else {
+      // https://linear.app/replay/issue/RUN-966
+      recordreplay::Assert("[RUN-966] LayoutObject::SetStyle #10");
+
       // We'll set needing geometry change later if the style change does cause
       // possible layout change or visual overflow change.
       SetShouldDoFullPaintInvalidationWithoutGeometryChange();
@@ -2706,8 +2709,14 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
   }
 
   if (!IsText() && diff.CompositablePaintEffectChanged()) {
+    // https://linear.app/replay/issue/RUN-966
+    recordreplay::Assert("[RUN-966] LayoutObject::SetStyle #15");
+
     SetShouldDoFullPaintInvalidationWithoutGeometryChange();
   }
+
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LayoutObject::SetStyle Done");
 }
 
 void LayoutObject::UpdateFirstLineImageObservers(
@@ -4544,6 +4553,9 @@ void LayoutObject::
     return;
   }
 
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LayoutObject::SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal #1");
+
   SetShouldCheckForPaintInvalidationWithoutGeometryChange();
   if (reason == PaintInvalidationReason::kFull) {
     reason = DocumentLifecycleBasedPaintInvalidationReason(
@@ -4611,6 +4623,10 @@ void LayoutObject::SetMayNeedPaintInvalidationAnimatedBackgroundImage() {
   NOT_DESTROYED();
   if (MayNeedPaintInvalidationAnimatedBackgroundImage())
     return;
+
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LayoutObject::SetMayNeedPaintInvalidationAnimatedBackgroundImage #1");
+
   bitfields_.SetMayNeedPaintInvalidationAnimatedBackgroundImage(true);
   SetShouldCheckForPaintInvalidationWithoutGeometryChange();
 }
@@ -4622,6 +4638,9 @@ void LayoutObject::SetShouldDelayFullPaintInvalidation() {
 
   bitfields_.SetShouldDelayFullPaintInvalidation(true);
   if (!ShouldCheckForPaintInvalidation()) {
+    // https://linear.app/replay/issue/RUN-966
+    recordreplay::Assert("[RUN-966] LayoutObject::SetShouldDelayFullPaintInvalidation #1");
+
     // This will also schedule a visual update.
     SetShouldCheckForPaintInvalidationWithoutGeometryChange();
   } else {

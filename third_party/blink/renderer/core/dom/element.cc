@@ -3973,7 +3973,14 @@ StyleRecalcChange Element::RecalcStyle(
 
   StyleRecalcChange child_change = change.ForChildren(*this);
   if (change.ShouldRecalcStyleFor(*this)) {
+    // https://linear.app/replay/issue/RUN-966
+    recordreplay::Assert("[RUN-966] Element::RecalcStyle #1");
+
     child_change = RecalcOwnStyle(change, style_recalc_context);
+
+    // https://linear.app/replay/issue/RUN-966
+    recordreplay::Assert("[RUN-966] Element::RecalcStyle #2");
+
     if (GetStyleChangeType() == kSubtreeStyleChange) {
       child_change =
           child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
@@ -3985,6 +3992,9 @@ StyleRecalcChange Element::RecalcStyle(
     child_change = child_change.ForceReattachLayoutTree();
     ClearNeedsStyleRecalc();
   }
+
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] Element::RecalcStyle #3");
 
   const StyleRecalcChange sibling_change =
       child_change.RecalcSiblingDescendants()
