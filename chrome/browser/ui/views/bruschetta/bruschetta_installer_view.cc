@@ -253,17 +253,23 @@ std::u16string BruschettaInstallerView::GetPrimaryMessage() const {
 std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
   if (state_ == State::kInstalling) {
     switch (installing_state_) {
-      case InstallerState::kBootDiskDownload:
       case InstallerState::kInstallStarted:
+        // We don't really spend any time in the InstallStarted state, the real
+        // first step is installing DLC so fall through to that.
       case InstallerState::kDlcInstall:
+        return l10n_util::GetStringUTF16(
+            IDS_BRUSCHETTA_INSTALLER_INSTALLING_DLC_MESSAGE);
+      case InstallerState::kBootDiskDownload:
       case InstallerState::kFirmwareDownload:
       case InstallerState::kPflashDownload:
       case InstallerState::kOpenFiles:
+        return l10n_util::GetStringUTF16(
+            IDS_BRUSCHETTA_INSTALLER_DOWNLOADING_MESSAGE);
       case InstallerState::kCreateVmDisk:
       case InstallerState::kStartVm:
       case InstallerState::kLaunchTerminal:
-        return u"state=" +
-               base::NumberToString16(static_cast<int>(installing_state_));
+        return l10n_util::GetStringUTF16(
+            IDS_BRUSCHETTA_INSTALLER_STARTING_VM_MESSAGE);
     }
   } else if (state_ == State::kFailed) {
     return l10n_util::GetStringFUTF16(

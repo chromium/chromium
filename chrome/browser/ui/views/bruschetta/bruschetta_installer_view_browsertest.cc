@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest, InstallThenSuccess) {
   auto first_message = view_->GetSecondaryMessage();
 
   // Check that state changes update the progress message.
-  view_->StateChanged(bruschetta::BruschettaInstaller::State::kDlcInstall);
+  view_->StateChanged(bruschetta::BruschettaInstaller::State::kStartVm);
   EXPECT_EQ(nullptr, view_->GetOkButton());
   EXPECT_NE(nullptr, view_->GetCancelButton());
   EXPECT_EQ(view_->GetPrimaryMessage(),

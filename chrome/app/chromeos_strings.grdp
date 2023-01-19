@@ -4963,7 +4963,7 @@
   <message name="IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_TITLE" desc="Title for the installer for Bruschetta (codename_).">
     Welcome
   </message>
-    <message name="IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE" desc="Title for the installer while Bruschetta (codename) is installing.">
+  <message name="IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE" desc="Title for the installer while Bruschetta (codename) is installing.">
     Installing
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_ERROR_TITLE" desc="Title for the installer when Bruschetta (codename) fails to install.">
@@ -4971,6 +4971,15 @@
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_ERROR_MESSAGE" desc="More detailed message for the installer when Bruschetta (codename, do not translate) fails to install.">
     Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR">$1<ex>kUnknown</ex></ph>
+  </message>
+  <message name="IDS_BRUSCHETTA_INSTALLER_INSTALLING_DLC_MESSAGE" desc="Message while DLC (DownLoadable Content - codename) to support Bruschetta is being installed.">
+    Configuring DLC.
+  </message>
+  <message name="IDS_BRUSCHETTA_INSTALLER_DOWNLOADING_MESSAGE" desc="Message while the installer is downloading files.">
+    This process may take a few minutes. Downloading files.
+  </message>
+  <message name="IDS_BRUSCHETTA_INSTALLER_STARTING_VM_MESSAGE" desc="Message while the installer is launching the Virtual Machine (VM).">
+    This process may take a few minutes. Starting the virtual machine.
   </message>
 
   <!-- Time limit notification -->
