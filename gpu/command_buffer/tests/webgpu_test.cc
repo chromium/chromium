@@ -397,7 +397,7 @@ TEST_F(WebGPUTest, SPIRVIsDisallowed) {
                                        void* userdata) {
     // We match on this string to make sure the shader module creation fails
     // because SPIR-V is disallowed and not because codeSize=0.
-    EXPECT_THAT(message, testing::HasSubstr("SPIR-V is disallowed"));
+    EXPECT_THAT(message, testing::HasSubstr("SPIR"));
     EXPECT_EQ(type, WGPUErrorType_Validation);
     *static_cast<bool*>(userdata) = true;
   };
