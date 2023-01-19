@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -50,6 +51,9 @@ class InstanceRegistryUpdater;
 class BrowserAppInstanceRegistry;
 class BrowserAppInstanceTracker;
 class UninstallDialog;
+
+struct PromiseApp;
+using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 
 struct PauseData {
   int hours = 0;
@@ -133,6 +137,13 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                            const IconKey& icon_key,
                            IconType icon_type,
                            LoadIconCallback callback);
+
+  // Get reference to the PromiseAppRegistryCache which holds all promise
+  // apps.
+  apps::PromiseAppRegistryCache& PromiseAppRegistryCache();
+
+  // Add a promise app to the Promise App Registry Cache.
+  void AddPromiseApp(PromiseAppPtr app);
 
  private:
   // For access to Initialize.
@@ -298,6 +309,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       browser_app_instance_registry_;
   std::unique_ptr<apps::InstanceRegistryUpdater>
       browser_app_instance_app_service_updater_;
+
+  apps::PromiseAppRegistryCache promise_app_registry_cache_;
 
   // When PauseApps is called, the app is added to |pending_pause_requests|.
   // When the user clicks the OK from the pause app dialog, the pause status is

@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
@@ -370,6 +371,12 @@ void AppServiceProxyAsh::ReadIconsForTesting(AppType app_type,
                                              LoadIconCallback callback) {
   ReadIcons(app_type, app_id, size_in_dip, icon_key.Clone(), icon_type,
             std::move(callback));
+}
+apps::PromiseAppRegistryCache& AppServiceProxyAsh::PromiseAppRegistryCache() {
+  return promise_app_registry_cache_;
+}
+void AppServiceProxyAsh::AddPromiseApp(PromiseAppPtr app) {
+  promise_app_registry_cache_.AddPromiseApp(std::move(app));
 }
 
 void AppServiceProxyAsh::Shutdown() {

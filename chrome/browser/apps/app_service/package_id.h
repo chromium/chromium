@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,6 +38,8 @@ class PackageId {
 
   PackageId(const PackageId&);
   PackageId& operator=(const PackageId&);
+  bool operator<(const PackageId&) const;
+  bool operator==(const PackageId&) const;
 
   // Parses a package ID from the canonical string format. Returns
   // absl::nullopt if parsing failed.

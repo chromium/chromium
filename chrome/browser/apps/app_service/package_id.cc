@@ -52,6 +52,25 @@ PackageId::PackageId(AppType app_type, base::StringPiece identifier)
 PackageId::PackageId(const PackageId&) = default;
 PackageId& PackageId::operator=(const PackageId&) = default;
 
+bool PackageId::operator<(const PackageId& rhs) const {
+  if (this->app_type_ < rhs.app_type_) {
+    return true;
+  } else if (this->app_type_ > rhs.app_type_) {
+    return false;
+  }
+  // If we're here, it's because app_type_ == rhs.app_type_.
+  if (this->identifier_ < rhs.identifier_) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool PackageId::operator==(const PackageId& rhs) const {
+  return this->app_type_ == rhs.app_type_ &&
+         this->identifier_ == rhs.identifier_;
+}
+
 // static
 absl::optional<PackageId> PackageId::FromString(
     base::StringPiece package_id_string) {

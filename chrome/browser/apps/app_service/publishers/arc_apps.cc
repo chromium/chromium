@@ -16,6 +16,7 @@
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/apps/app_service/package_id.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
@@ -50,6 +53,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/intent_constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -1662,6 +1666,14 @@ void ArcApps::OnGetAppShortcutItems(
 
   UMA_HISTOGRAM_TIMES("Arc.AppShortcuts.BuildMenuTime",
                       base::TimeTicks::Now() - start_time);
+}
+
+void ArcApps::OnInstallationStarted(const std::string& package_name) {
+  if (ash::features::ArePromiseIconsEnabled()) {
+    PromiseAppPtr app =
+        AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
+    AppPublisher::PublishPromiseApp(std::move(app));
+  }
 }
 
 }  // namespace apps
