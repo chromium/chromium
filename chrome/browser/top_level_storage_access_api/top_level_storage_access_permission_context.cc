@@ -168,39 +168,35 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
   DCHECK(net::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
          net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get());
 
-  switch (metadata.context().context_type()) {
-    case net::SamePartyContext::Type::kCrossParty:
-      if (net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
+  if (metadata.AreSitesInSameFirstPartySet()) {
+    if (net::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
+      // Service domains are not allowed to request storage access on behalf
+      // of other domains, even in the same First-Party Set.
+      if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
         NotifyPermissionSetInternal(
             id, requesting_origin, embedding_origin, std::move(callback),
             /*persist=*/true, CONTENT_SETTING_BLOCK,
-            CookieRequestOutcome::kDeniedByFirstPartySet);
+            CookieRequestOutcome::kDeniedByPrerequisites);
         return;
       }
-      // Not autodenying; fall back to implicit grants or prompt.
-      break;
-    case net::SamePartyContext::Type::kSameParty:
-      if (net::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
-        // Service domains are not allowed to request storage access on behalf
-        // of other domains, even in the same First-Party Set.
-        if (metadata.top_frame_entry()->site_type() ==
-            net::SiteType::kService) {
-          NotifyPermissionSetInternal(
-              id, requesting_origin, embedding_origin, std::move(callback),
-              /*persist=*/true, CONTENT_SETTING_BLOCK,
-              CookieRequestOutcome::kDeniedByPrerequisites);
-          return;
-        }
-        // Since the sites are in the same First-Party Set, risk of abuse due to
-        // allowing access is considered to be low.
-        NotifyPermissionSetInternal(
-            id, requesting_origin, embedding_origin, std::move(callback),
-            /*persist=*/true, CONTENT_SETTING_ALLOW,
-            CookieRequestOutcome::kGrantedByFirstPartySet);
-        return;
-      }
-      // Not autogranting; fall back to implicit grants or prompt.
-      break;
+      // Since the sites are in the same First-Party Set, risk of abuse due to
+      // allowing access is considered to be low.
+      NotifyPermissionSetInternal(
+          id, requesting_origin, embedding_origin, std::move(callback),
+          /*persist=*/true, CONTENT_SETTING_ALLOW,
+          CookieRequestOutcome::kGrantedByFirstPartySet);
+      return;
+    }
+    // Not autogranting; fall back to implicit grants or prompt.
+  } else {
+    if (net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
+      NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
+                                  std::move(callback),
+                                  /*persist=*/true, CONTENT_SETTING_BLOCK,
+                                  CookieRequestOutcome::kDeniedByFirstPartySet);
+      return;
+    }
+    // Not autodenying; fall back to implicit grants or prompt.
   }
 
   return UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
