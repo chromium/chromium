@@ -272,6 +272,7 @@ V4L2MjpegDecodeAccelerator::V4L2MjpegDecodeAccelerator(
       output_streamon_(false),
       weak_factory_(this) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
+  DETACH_FROM_SEQUENCE(decoder_sequence_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
@@ -289,7 +290,7 @@ V4L2MjpegDecodeAccelerator::~V4L2MjpegDecodeAccelerator() {
 }
 
 void V4L2MjpegDecodeAccelerator::DestroyTask() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   while (!input_jobs_.empty())
     input_jobs_.pop();
   while (!running_jobs_.empty())
@@ -319,10 +320,10 @@ void V4L2MjpegDecodeAccelerator::PostNotifyError(int32_t task_id, Error error) {
                                 weak_ptr_, task_id, error));
 }
 
-void V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner(
+void V4L2MjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
     chromeos_camera::MjpegDecodeAccelerator::Client* client,
     chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   if (!device_->Open(V4L2Device::Type::kJpegDecoder, V4L2_PIX_FMT_JPEG)) {
     VLOGF(1) << "Failed to open device";
     std::move(init_cb).Run(false);
@@ -355,14 +356,6 @@ void V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner(
     return;
   }
 
-  if (!decoder_thread_.Start()) {
-    VLOGF(1) << "decoder thread failed to start";
-    std::move(init_cb).Run(false);
-    return;
-  }
-  client_ = client;
-  decoder_task_runner_ = decoder_thread_.task_runner();
-
   decoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2MjpegDecodeAccelerator::StartDevicePoll,
                                 base::Unretained(this)));
@@ -376,12 +369,21 @@ void V4L2MjpegDecodeAccelerator::InitializeAsync(
     chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  // To guarantee that the caller receives an asynchronous call after the
-  // return path, we are making use of InitializeOnTaskRunner.
-  io_task_runner_->PostTask(
+  if (!decoder_thread_.Start()) {
+    VLOGF(1) << "decoder thread failed to start";
+    io_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(std::move(init_cb), false));
+    return;
+  }
+  client_ = client;
+  decoder_task_runner_ = decoder_thread_.task_runner();
+
+  // base::Unretained(this) is safe because |decoder_thread_| stops in
+  // deconstructor.
+  decoder_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner,
-                     weak_factory_.GetWeakPtr(), client,
+      base::BindOnce(&V4L2MjpegDecodeAccelerator::InitializeOnDecoderTaskRunner,
+                     base::Unretained(this), client,
                      BindToCurrentLoop(std::move(init_cb))));
 }
 
@@ -486,7 +488,7 @@ bool V4L2MjpegDecodeAccelerator::IsSupported() {
 
 void V4L2MjpegDecodeAccelerator::DecodeTask(
     std::unique_ptr<JobRecord> job_record) {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   if (!job_record->map()) {
     VPLOGF(1) << "could not map input buffer";
     PostNotifyError(job_record->task_id(), UNREADABLE_INPUT);
@@ -498,15 +500,17 @@ void V4L2MjpegDecodeAccelerator::DecodeTask(
 }
 
 size_t V4L2MjpegDecodeAccelerator::InputBufferQueuedCount() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   return input_buffer_map_.size() - free_input_buffers_.size();
 }
 
 size_t V4L2MjpegDecodeAccelerator::OutputBufferQueuedCount() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   return output_buffer_map_.size() - free_output_buffers_.size();
 }
 
 bool V4L2MjpegDecodeAccelerator::ShouldRecreateInputBuffers() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   if (input_jobs_.empty())
     return false;
 
@@ -520,7 +524,7 @@ bool V4L2MjpegDecodeAccelerator::ShouldRecreateInputBuffers() {
 
 bool V4L2MjpegDecodeAccelerator::RecreateInputBuffers() {
   VLOGF(2);
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
 
   // If running queue is not empty, we should wait until pending frames finish.
   if (!running_jobs_.empty())
@@ -538,7 +542,7 @@ bool V4L2MjpegDecodeAccelerator::RecreateInputBuffers() {
 
 bool V4L2MjpegDecodeAccelerator::RecreateOutputBuffers() {
   VLOGF(2);
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
 
   DestroyOutputBuffers();
 
@@ -552,7 +556,7 @@ bool V4L2MjpegDecodeAccelerator::RecreateOutputBuffers() {
 
 bool V4L2MjpegDecodeAccelerator::CreateInputBuffers() {
   VLOGF(2);
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   DCHECK(!input_streamon_);
   DCHECK(!input_jobs_.empty());
   JobRecord* job_record = input_jobs_.front().get();
@@ -616,7 +620,7 @@ bool V4L2MjpegDecodeAccelerator::CreateInputBuffers() {
 
 bool V4L2MjpegDecodeAccelerator::CreateOutputBuffers() {
   VLOGF(2);
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   DCHECK(!output_streamon_);
   DCHECK(!running_jobs_.empty());
   JobRecord* job_record = running_jobs_.front().get();
@@ -700,7 +704,7 @@ bool V4L2MjpegDecodeAccelerator::CreateOutputBuffers() {
 }
 
 void V4L2MjpegDecodeAccelerator::DestroyInputBuffers() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
 
   free_input_buffers_.clear();
 
@@ -730,7 +734,7 @@ void V4L2MjpegDecodeAccelerator::DestroyInputBuffers() {
 }
 
 void V4L2MjpegDecodeAccelerator::DestroyOutputBuffers() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
 
   free_output_buffers_.clear();
 
@@ -778,7 +782,7 @@ void V4L2MjpegDecodeAccelerator::DevicePollTask() {
 }
 
 bool V4L2MjpegDecodeAccelerator::DequeueSourceChangeEvent() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
 
   if (absl::optional<struct v4l2_event> event = device_->DequeueEvent()) {
     if (event->type == V4L2_EVENT_SOURCE_CHANGE) {
@@ -799,7 +803,7 @@ bool V4L2MjpegDecodeAccelerator::DequeueSourceChangeEvent() {
 }
 
 void V4L2MjpegDecodeAccelerator::ServiceDeviceTask(bool event_pending) {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   // If DestroyTask() shuts |device_poll_thread_| down, we should early-out.
   if (!device_poll_thread_.IsRunning())
     return;
@@ -833,7 +837,7 @@ void V4L2MjpegDecodeAccelerator::ServiceDeviceTask(bool event_pending) {
 }
 
 void V4L2MjpegDecodeAccelerator::EnqueueInput() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   while (!input_jobs_.empty() && !free_input_buffers_.empty()) {
     // If input buffers are required to re-create, do not enqueue input record
     // until all pending frames are handled by device.
@@ -852,7 +856,7 @@ void V4L2MjpegDecodeAccelerator::EnqueueInput() {
 }
 
 void V4L2MjpegDecodeAccelerator::EnqueueOutput() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   // Output record can be enqueued because the output coded sizes of the frames
   // currently in the pipeline are all the same.
   while (running_jobs_.size() > OutputBufferQueuedCount() &&
@@ -872,6 +876,7 @@ void V4L2MjpegDecodeAccelerator::EnqueueOutput() {
 bool V4L2MjpegDecodeAccelerator::ConvertOutputImage(
     const BufferRecord& output_buffer,
     scoped_refptr<VideoFrame> dst_frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   // The coded size of the hardware buffer should be at least as large as the
   // video frame's visible size.
   const int dst_width = dst_frame->visible_rect().width();
@@ -1025,7 +1030,7 @@ bool V4L2MjpegDecodeAccelerator::ConvertOutputImage(
 }
 
 void V4L2MjpegDecodeAccelerator::Dequeue() {
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
 
   // Dequeue completed input (VIDEO_OUTPUT) buffers,
   // and recycle to the free list.
@@ -1202,6 +1207,7 @@ static bool AddHuffmanTable(const void* input_ptr,
 }
 
 bool V4L2MjpegDecodeAccelerator::EnqueueInputRecord() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   DCHECK(!input_jobs_.empty());
   DCHECK(!free_input_buffers_.empty());
 
@@ -1240,6 +1246,7 @@ bool V4L2MjpegDecodeAccelerator::EnqueueInputRecord() {
 }
 
 bool V4L2MjpegDecodeAccelerator::EnqueueOutputRecord() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   DCHECK(!free_output_buffers_.empty());
   DCHECK_GT(output_buffer_num_planes_, 0u);
 
@@ -1264,7 +1271,7 @@ bool V4L2MjpegDecodeAccelerator::EnqueueOutputRecord() {
 
 void V4L2MjpegDecodeAccelerator::StartDevicePoll() {
   DVLOGF(3) << ": starting device poll";
-  DCHECK(decoder_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   DCHECK(!device_poll_thread_.IsRunning());
 
   if (!device_poll_thread_.Start()) {
@@ -1276,6 +1283,7 @@ void V4L2MjpegDecodeAccelerator::StartDevicePoll() {
 }
 
 bool V4L2MjpegDecodeAccelerator::StopDevicePoll() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
   DVLOGF(3) << "stopping device poll";
   // Signal the DevicePollTask() to stop, and stop the device poll thread.
   if (!device_->SetDevicePollInterrupt()) {

@@ -14,6 +14,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
@@ -80,7 +81,7 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   void DestroyInputBuffers();
   void DestroyOutputBuffers();
 
-  void InitializeOnTaskRunner(
+  void InitializeOnDecoderTaskRunner(
       chromeos_camera::MjpegDecodeAccelerator::Client* client,
       InitCB init_cb);
 
@@ -131,16 +132,17 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   const size_t kBufferCount = 2;
 
   // Coded size of output buffer.
-  gfx::Size output_buffer_coded_size_;
+  gfx::Size output_buffer_coded_size_ GUARDED_BY_CONTEXT(decoder_sequence_);
 
   // Pixel format of output buffer.
-  uint32_t output_buffer_pixelformat_;
+  uint32_t output_buffer_pixelformat_ GUARDED_BY_CONTEXT(decoder_sequence_);
 
   // Number of physical planes the output buffers have.
-  size_t output_buffer_num_planes_;
+  size_t output_buffer_num_planes_ GUARDED_BY_CONTEXT(decoder_sequence_);
 
   // Strides of the output buffers.
-  size_t output_strides_[VIDEO_MAX_PLANES];
+  size_t output_strides_[VIDEO_MAX_PLANES] GUARDED_BY_CONTEXT(
+      decoder_sequence_);
 
   // GPU IO task runner.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -148,7 +150,8 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   // The client of this class.
   chromeos_camera::MjpegDecodeAccelerator::Client* client_;
 
-  // The V4L2Device this class is operating upon.
+  // The V4L2Device this class is operating upon. This is accessed on
+  // |decoder_task_runner_| and |device_poll_task_runner_|.
   scoped_refptr<V4L2Device> device_;
 
   // Thread to communicate with the device.
@@ -156,30 +159,36 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   // Decode task runner.
   scoped_refptr<base::SingleThreadTaskRunner> decoder_task_runner_;
   // Thread used to poll the V4L2 for events only.
-  base::Thread device_poll_thread_;
+  base::Thread device_poll_thread_ GUARDED_BY_CONTEXT(decoder_sequence_);
   // Device poll task runner.
   scoped_refptr<base::SingleThreadTaskRunner> device_poll_task_runner_;
 
   // All the below members except |weak_factory_| are accessed from
   // |decoder_thread_| only (if it's running).
-  base::queue<std::unique_ptr<JobRecord>> input_jobs_;
-  base::queue<std::unique_ptr<JobRecord>> running_jobs_;
+  base::queue<std::unique_ptr<JobRecord>> input_jobs_
+      GUARDED_BY_CONTEXT(decoder_sequence_);
+  base::queue<std::unique_ptr<JobRecord>> running_jobs_
+      GUARDED_BY_CONTEXT(decoder_sequence_);
 
   // Input queue state.
-  bool input_streamon_;
+  bool input_streamon_ GUARDED_BY_CONTEXT(decoder_sequence_);
   // Mapping of int index to an input buffer record.
-  std::vector<BufferRecord> input_buffer_map_;
+  std::vector<BufferRecord> input_buffer_map_
+      GUARDED_BY_CONTEXT(decoder_sequence_);
   // Indices of input buffers ready to use; LIFO since we don't care about
   // ordering.
-  std::vector<int> free_input_buffers_;
+  std::vector<int> free_input_buffers_ GUARDED_BY_CONTEXT(decoder_sequence_);
 
   // Output queue state.
-  bool output_streamon_;
+  bool output_streamon_ GUARDED_BY_CONTEXT(decoder_sequence_);
   // Mapping of int index to an output buffer record.
-  std::vector<BufferRecord> output_buffer_map_;
+  std::vector<BufferRecord> output_buffer_map_
+      GUARDED_BY_CONTEXT(decoder_sequence_);
   // Indices of output buffers ready to use; LIFO since we don't care about
   // ordering.
-  std::vector<int> free_output_buffers_;
+  std::vector<int> free_output_buffers_ GUARDED_BY_CONTEXT(decoder_sequence_);
+
+  SEQUENCE_CHECKER(decoder_sequence_);
 
   // Point to |this| for use in posting tasks from the decoder thread back to
   // the ChildThread.
