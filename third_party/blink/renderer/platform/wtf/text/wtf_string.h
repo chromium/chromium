@@ -695,7 +695,7 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
     return g_table_[string_length];
   }
 
-  static bool IsCommon(const StringView& view);
+  static bool IsNewlineThenWhitespaces(const StringView& view);
 
  private:
   static const String (&g_table_)[kTableSize];

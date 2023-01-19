@@ -172,7 +172,8 @@ static String CheckWhitespaceAndConvertToString(const StringView& string,
                                                 RecomputeMode recompute_mode) {
   switch (whitespace_mode) {
     case WhitespaceMode::kNewlineThenWhitespace:
-      DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsCommon(string));
+      DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
+          string));
       if (string.length() <
           WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
         return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(

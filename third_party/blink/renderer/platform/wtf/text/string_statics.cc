@@ -99,18 +99,22 @@ void NewlineThenWhitespaceStringsTable::Init() {
   }
 }
 
-bool NewlineThenWhitespaceStringsTable::IsCommon(const StringView& view) {
+bool NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
+    const StringView& view) {
   if (view.empty()) {
-    return false;
-  }
-  if (!view.Is8Bit()) {
     return false;
   }
   if (view[0] != '\n') {
     return false;
   }
-  return std::all_of(view.Characters8() + 1, view.Characters8() + view.length(),
-                     [](LChar ch) { return ch == ' '; });
+  if (view.Is8Bit()) {
+    return std::all_of(view.Characters8() + 1,
+                       view.Characters8() + view.length(),
+                       [](LChar ch) { return ch == ' '; });
+  }
+  return std::all_of(view.Characters16() + 1,
+                     view.Characters16() + view.length(),
+                     [](UChar ch) { return ch == ' '; });
 }
 
 void StringStatics::Init() {

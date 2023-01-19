@@ -223,9 +223,13 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     unsigned length = 0;
     for (unsigned i = start; i < end_; ++i) {
       const UChar ch = (*characters_)[i];
-      if (ch == '\n' && length == 0) {
-        ++length;
-        continue;
+      if (length == 0) {
+        if (ch == '\n') {
+          ++length;
+          continue;
+        }
+        // Otherwise, it's a random whitespace string. Drop the mode.
+        whitespace_mode = WhitespaceMode::kAllWhitespace;
       }
 
       if (ch == ' ') {
