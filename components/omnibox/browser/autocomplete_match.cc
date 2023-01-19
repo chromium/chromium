@@ -1127,8 +1127,7 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
     case AutocompleteMatchType::STARTER_PACK:
       return OmniboxEventProto::Suggestion::STARTER_PACK;
     case AutocompleteMatchType::VOICE_SUGGEST:
-      // VOICE_SUGGEST matches are only used in Java and are not logged,
-      // so we should never reach this case.
+      return OmniboxEventProto::Suggestion::SEARCH_SUGGEST;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
