@@ -209,6 +209,10 @@ bool LocalFrameUkmAggregator::ShouldMeasureMetric(int64_t metric_id) const {
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer
 LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
+  // https://linear.app/replay/issue/RUN-1145
+  recordreplay::Assert("[RUN-1145] LocalFrameUkmAggregator::GetScopedTimer %d",
+                       ShouldMeasureMetric(metric_index));
+
   return ScopedUkmHierarchicalTimer(this, metric_index, clock_);
 }
 
