@@ -432,7 +432,7 @@ constexpr TestData kTestData[] = {
         L"extended",                   // Expect the channel override.
     },
 };
-#elif BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 constexpr TestData kTestData[] = {
     // User-level test cases.
     {

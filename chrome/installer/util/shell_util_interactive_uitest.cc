@@ -164,7 +164,7 @@ TEST(ShellUtilInteractiveTest, MakeChromeDefaultDirectly) {
   ASSERT_NE(prog_id, GetCurrentDefault(registration.Get(), L".html",
                                        AT_FILEEXTENSION, AL_EFFECTIVE));
 
-#if BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   ASSERT_FALSE(ShellUtil::MakeChromeDefaultDirectly(ShellUtil::CURRENT_USER,
                                                     chrome_exe, false));
 #else

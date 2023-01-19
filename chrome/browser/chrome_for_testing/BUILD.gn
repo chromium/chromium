@@ -14,10 +14,13 @@ buildflag_header("buildflags") {
     flags = [ "CHROME_FOR_TESTING=0" ]
   }
 
-  if (use_internal_chrome_for_testing_icons) {
-    # TODO(crbug.com/1336611): To be renamed to GOOGLE_CHROME_FOR_TESTING_BRANDING.
-    flags += [ "USE_INTERNAL_CHROME_FOR_TESTING_ICONS=1" ]
+  # Note:
+  # - `GOOGLE_CHROME_FOR_TESTING_BRANDING` and `GOOGLE_CHROME_BRANDING` are
+  #   mutually exclusive.
+  # - `GOOGLE_CHROME_FOR_TESTING_BRANDING` and `CHROMIUM_BRANDING` are not.
+  if (is_chrome_for_testing_branded) {
+    flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=1" ]
   } else {
-    flags += [ "USE_INTERNAL_CHROME_FOR_TESTING_ICONS=0" ]
+    flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=0" ]
   }
 }

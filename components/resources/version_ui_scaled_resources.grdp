@@ -6,7 +6,7 @@
       <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_WHITE" file="google_chrome/product_logo_white.png" />
     </then>
     <else>
-      <if expr="_use_internal_chrome_for_testing_icons">
+      <if expr="_is_chrome_for_testing_branded">
         <then>
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO" file="google_chrome/google_chrome_for_testing/product_logo.png" />
           <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_WHITE" file="google_chrome/google_chrome_for_testing/product_logo_white.png" />
