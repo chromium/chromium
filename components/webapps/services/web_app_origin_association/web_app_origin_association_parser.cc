@@ -4,6 +4,8 @@
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser.h"
 
+#include <string>
+
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
@@ -49,7 +51,7 @@ mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
 
   mojom::WebAppOriginAssociationPtr association =
       mojom::WebAppOriginAssociation::New();
-  association->apps = ParseAssociatedWebApps(*parsed_data);
+  association->apps = ParseAssociatedWebApps(parsed_data->GetDict());
   webapps::WebAppOriginAssociationMetrics::RecordParseResult(
       webapps::WebAppOriginAssociationMetrics::ParseResult::kParseSucceeded);
   return association;
@@ -68,29 +70,29 @@ WebAppOriginAssociationParser::GetErrors() {
 
 std::vector<mojom::AssociatedWebAppPtr>
 WebAppOriginAssociationParser::ParseAssociatedWebApps(
-    const base::Value& root_dict) {
+    const base::Value::Dict& root_dict) {
   std::vector<mojom::AssociatedWebAppPtr> result;
-  const base::Value* apps_value = root_dict.FindKey(kWebAppsKey);
+  const base::Value::List* apps_value = root_dict.FindList(kWebAppsKey);
   if (!apps_value) {
+    if (root_dict.contains(kWebAppsKey)) {
+      AddErrorInfo("Property '" + std::string(kWebAppsKey) +
+                   "' ignored, type array expected.");
+      return result;
+    }
+
     AddErrorInfo("Origin association ignored. Required property '" +
                  std::string(kWebAppsKey) + "' expected.");
     return result;
   }
 
-  if (!apps_value->is_list()) {
-    AddErrorInfo("Property '" + std::string(kWebAppsKey) +
-                 "' ignored, type array expected.");
-    return result;
-  }
-
-  for (const auto& app_item : apps_value->GetList()) {
+  for (const auto& app_item : *apps_value) {
     if (!app_item.is_dict()) {
       AddErrorInfo("Associated app ignored, type object expected.");
       continue;
     }
 
     absl::optional<mojom::AssociatedWebAppPtr> app =
-        ParseAssociatedWebApp(app_item);
+        ParseAssociatedWebApp(app_item.GetDict());
     if (!app)
       continue;
 
@@ -102,7 +104,7 @@ WebAppOriginAssociationParser::ParseAssociatedWebApps(
 
 absl::optional<mojom::AssociatedWebAppPtr>
 WebAppOriginAssociationParser::ParseAssociatedWebApp(
-    const base::Value& app_dict) {
+    const base::Value::Dict& app_dict) {
   absl::optional<GURL> manifest_url = ParseManifestURL(app_dict);
   if (!manifest_url)
     return absl::nullopt;
@@ -110,13 +112,15 @@ WebAppOriginAssociationParser::ParseAssociatedWebApp(
   mojom::AssociatedWebAppPtr app = mojom::AssociatedWebApp::New();
   app->manifest_url = manifest_url.value();
 
-  const base::Value* app_details_value = app_dict.FindKey(kAppDetailsKey);
-  if (!app_details_value)
-    return app;
+  const base::Value::Dict* app_details_value =
+      app_dict.FindDict(kAppDetailsKey);
+  if (!app_details_value) {
+    if (app_dict.contains(kAppDetailsKey)) {
+      AddErrorInfo("Property '" + std::string(kAppDetailsKey) +
+                   "' ignored, type dictionary expected.");
+      return app;
+    }
 
-  if (!app_details_value->is_dict()) {
-    AddErrorInfo("Property '" + std::string(kAppDetailsKey) +
-                 "' ignored, type dictionary expected.");
     return app;
   }
 
@@ -132,21 +136,21 @@ WebAppOriginAssociationParser::ParseAssociatedWebApp(
 }
 
 absl::optional<GURL> WebAppOriginAssociationParser::ParseManifestURL(
-    const base::Value& app_dict) {
-  const base::Value* url_value = app_dict.FindKey(kManifestUrlKey);
+    const base::Value::Dict& app_dict) {
+  const std::string* url_value = app_dict.FindString(kManifestUrlKey);
   if (!url_value) {
+    if (app_dict.contains(kManifestUrlKey)) {
+      AddErrorInfo("Associated app ignored. Required property '" +
+                   std::string(kManifestUrlKey) + "' is not a string.");
+      return absl::nullopt;
+    }
+
     AddErrorInfo("Associated app ignored. Required property '" +
                  std::string(kManifestUrlKey) + "' does not exist.");
     return absl::nullopt;
   }
 
-  if (!url_value->is_string()) {
-    AddErrorInfo("Associated app ignored. Required property '" +
-                 std::string(kManifestUrlKey) + "' is not a string.");
-    return absl::nullopt;
-  }
-
-  GURL manifest_url(url_value->GetString());
+  GURL manifest_url(*url_value);
   if (!manifest_url.is_valid()) {
     AddErrorInfo("Associated app ignored. Required property '" +
                  std::string(kManifestUrlKey) + "' is not a valid URL.");
@@ -157,19 +161,21 @@ absl::optional<GURL> WebAppOriginAssociationParser::ParseManifestURL(
 }
 
 absl::optional<std::vector<std::string>>
-WebAppOriginAssociationParser::ParsePaths(const base::Value& app_details_dict,
-                                          const std::string& key) {
-  const base::Value* paths_value = app_details_dict.FindKey(key);
-  if (!paths_value)
-    return absl::nullopt;
+WebAppOriginAssociationParser::ParsePaths(
+    const base::Value::Dict& app_details_dict,
+    const std::string& key) {
+  const base::Value::List* paths_value = app_details_dict.FindList(key);
+  if (!paths_value) {
+    if (app_details_dict.contains(key)) {
+      AddErrorInfo("Property '" + key + "' ignored, type array expected.");
+      return absl::nullopt;
+    }
 
-  if (!paths_value->is_list()) {
-    AddErrorInfo("Property '" + key + "' ignored, type array expected.");
     return absl::nullopt;
   }
 
   std::vector<std::string> paths;
-  for (const auto& path_item : paths_value->GetList()) {
+  for (const auto& path_item : *paths_value) {
     if (!path_item.is_string()) {
       AddErrorInfo(key + " entry ignored, type string expected.");
       continue;
