@@ -663,7 +663,7 @@ const char kPromosManagerUsesFETDescription[] =
 const char kIPHPriceNotificationsWhileBrowsingName[] =
     "Price Tracking IPH Display";
 const char kIPHPriceNotificationsWhileBrowsingDescription[] =
-    "Always displays the Price Tracking IPH when the user navigates to a "
+    "Displays the Price Tracking IPH when the user navigates to a "
     "product "
     "webpage that supports price tracking.";
 

@@ -1084,19 +1084,18 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHPriceNotificationsWhileBrowsingFeature.name == feature->name) {
     // A config that allows a user education bubble to be shown for the bottom
-    // toolbar.
-
-    // TODO(crbug.com/1382913): Set the trigger policy to the desired occurrence
-    // frequency threshold. Currently, the threshold is set to an arbitrary
-    // value.
+    // toolbar. The IPH will be displayed when the user is on a page with a
+    // trackable product once per session for up to three sessions or until the
+    // user has clicked on the Price Tracking entry point. There will be a
+    // window of one week between impressions.
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    config->trigger =
-        EventConfig("price_notifications_trigger", Comparator(EQUAL, 0), 7, 7);
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 7);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("price_notifications_trigger",
+                                  Comparator(LESS_THAN, 3), 365, 365);
     config->used =
-        EventConfig("price_notifications_used", Comparator(EQUAL, 0), 7, 7);
+        EventConfig("price_notifications_used", Comparator(EQUAL, 0), 365, 365);
     return config;
   }
 

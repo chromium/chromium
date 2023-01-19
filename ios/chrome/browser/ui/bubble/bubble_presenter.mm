@@ -606,16 +606,6 @@ bubblePresenterForFeature:(const base::Feature&)feature
     return YES;
   }
 
-  // Always present the price notifications IPH if it's triggered by system
-  // experimental settings.
-  if (feature.name ==
-          feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature.name &&
-      base::FeatureList::IsEnabled(
-          feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature) &&
-      IsPriceNotificationsEnabled()) {
-    return YES;
-  }
-
   return NO;
 }
 

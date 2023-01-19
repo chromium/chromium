@@ -1801,6 +1801,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // Dismisses the menu and opens price notifications list.
 - (void)openPriceNotifications {
   RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
+  _engagementTracker->NotifyEvent(
+      feature_engagement::events::kPriceNotificationsUsed);
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher showPriceNotifications];
 }

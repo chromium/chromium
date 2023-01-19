@@ -123,6 +123,9 @@ extern const char kDefaultSiteViewUsed[];
 // without taking an action.
 extern const char kOverflowMenuNoHorizontalScrollOrAction[];
 
+// The user has opened Price Tracking.
+extern const char kPriceNotificationsUsed[];
+
 // The user has been shown a default browser promo.
 extern const char kDefaultBrowserPromoShown[];
 

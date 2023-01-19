@@ -69,6 +69,7 @@ const char kDesktopVersionRequested[] = "desktop_version_requested";
 const char kDefaultSiteViewUsed[] = "default_site_view_used";
 const char kOverflowMenuNoHorizontalScrollOrAction[] =
     "overflow_menu_no_horizontal_scroll_or_action";
+const char kPriceNotificationsUsed[] = "price_notifications_used";
 const char kDefaultBrowserPromoShown[] = "default_browser_promo_shown";
 const char kBlueDotPromoCriterionMet[] = "blue_dot_promo_criterion_met";
 const char kBlueDotPromoEligibilityMet[] = "blue_dot_promo_eligibility_met";

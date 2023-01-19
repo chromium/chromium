@@ -64,19 +64,14 @@ PriceNotificationsTabHelper::~PriceNotificationsTabHelper() = default;
 void PriceNotificationsTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // Always show an IPH for eligible websites if the price tracking
-  // experimental setting is enabled.
-  if (!base::FeatureList::IsEnabled(
+  feature_engagement::Tracker* feature_engagement_tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  // Do not show price notifications IPH if the feature engagement
+  // conditions are not fulfilled.
+  if (!feature_engagement_tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature)) {
-    feature_engagement::Tracker* feature_engagement_tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-    // Do not show price notifications IPH if the feature engagement
-    // conditions are not fulfilled.
-    if (!feature_engagement_tracker->WouldTriggerHelpUI(
-            feature_engagement::kIPHPriceNotificationsWhileBrowsingFeature)) {
-      return;
-    }
+    return;
   }
 
   WeakPriceNotificationsPresenter* weak_presenter =
