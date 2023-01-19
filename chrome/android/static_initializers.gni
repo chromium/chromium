@@ -24,8 +24,8 @@ if (current_toolchain == default_toolchain &&
 
   if (target_cpu == "arm64") {
     # Caused by "outline atomics". https://crbug.com/1272795
-    # cpu_model.c: init_have_lse_atomics
-    _chrome_count += 1
+    # cpu_model.c: init_have_lse_atomics, init_cpu_features
+    _chrome_count += 2
   }
 
   # iostream.cpp: _GLOBAL__I_000101
@@ -47,8 +47,8 @@ if (current_toolchain == default_toolchain &&
   if (build_with_internal_optimization_guide) {
     if (target_cpu == "arm64") {
       # Caused by "outline atomics". https://crbug.com/1272795
-      # cpu_model.c: init_have_lse_atomics
-      _optimization_guide_count += 1
+      # cpu_model.c: init_have_lse_atomics, init_cpu_features
+      _optimization_guide_count += 2
     }
 
     # iostream_init.h: _GLOBAL__I_000100

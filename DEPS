@@ -289,7 +289,7 @@ vars = {
   # The Rust toolchain sources. It is a version tag from an instance of the
   # CIPD `chromium/third_party/rust_src` package. This field is written by
   # //tools/clang/scripts/upload_revision.py and shouldn't be updated by hand.
-  'rust_toolchain_version': 'version:2@2022-12-09',
+  'rust_toolchain_version': 'version:2@2023-01-17',
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',

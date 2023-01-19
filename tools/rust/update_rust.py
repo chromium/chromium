@@ -30,7 +30,7 @@ sys.path.append(
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
 RUST_REVISION_TAG = '2'
-RUST_REVISION = '20221209'
+RUST_REVISION = '20230117'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-10-15.
@@ -61,7 +61,7 @@ FALLBACK_CLANG_VERSION = 'llvmorg-16-init-13328-g110fe4f4-1'
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
-STAGE0_JSON_SHA256 = '07f4d4ddde6910a70f16f372309525528ff42499fb50317e6ded4bfe1b6ce7cf'
+STAGE0_JSON_SHA256 = '8723319ca163c78db60221fe760a8d8c9321d224036fd95bdd54f6fe3b61d676'
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
