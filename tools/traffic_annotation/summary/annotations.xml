@@ -421,4 +421,5 @@ Refer to README.md for content description and update process.
  <item id="network_portal_detector" added_in_milestone="111" content_hash_code="023cdc21" os_list="chromeos" file_path="chrome/browser/ash/net/network_portal_detector_impl.cc" />
  <item id="safe_browsing_hashprefix_realtime_lookup" added_in_milestone="111" content_hash_code="07b1dc5e" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.cc" />
  <item id="android_feedback_connectivity_checker" added_in_milestone="111" content_hash_code="0011753d" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java" />
+ <item id="printer_config_fetch" added_in_milestone="111" content_hash_code="078c2ad0" os_list="chromeos" file_path="chromeos/printing/printer_config_cache.cc" />
 </annotations>

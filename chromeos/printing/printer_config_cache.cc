@@ -156,9 +156,57 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
     fetch_queue_.pop();
     auto request = FormRequest(context->key);
 
-    // TODO(crbug.com/888189): add traffic annotation.
+    // Create traffic annotation tag.
+    net::NetworkTrafficAnnotationTag traffic_annotation =
+        net::DefineNetworkTrafficAnnotation("printer_config_fetch", R"(
+          semantics {
+            sender: "Printer Configuration"
+            description:
+              "This component sends requests to the Chrome OS Printing "
+              "serving root during printer configuration. This can return "
+              "two pieces of information, depending on the request: "
+              "PostScript Printer Description (PPD) files for a specified "
+              "printer, and PPD file metadata to help locate the desired PPD "
+              "file."
+            trigger: "On printer setup in ChromeOS."
+            data: "Printer names (comprising of make and/or model)."
+            user_data: {
+              type: OTHER
+            }
+            destination: GOOGLE_OWNED_SERVICE
+            internal: {
+              contacts: {
+                email: "bmgordon@google.com"
+              }
+            }
+            last_reviewed: "2023-01-18"
+          }
+          policy {
+            cookies_allowed: NO
+            setting:
+              "Admins must disable access to both enterprise and "
+              "non-enterprise printers. Enterprise printers should be left "
+              "empty under 'Devices > Chrome > Printers'. Non-enterprise "
+              "printers can be disabled under 'Devices > Chrome > Settings > "
+              "Printer management' by setting to: 'Do not allow users to add "
+              "new printers'."
+            chrome_policy {
+              UserPrintersAllowed {
+                UserPrintersAllowed: false
+              }
+              PrintersBulkConfiguration: {
+                PrintersBulkConfiguration: ""
+              }
+            }
+            # TODO(b/210911671): chrome_device_policy not supported by auditor
+            # chrome_device_policy {
+            #   DevicePrinters: {
+            #     external_policy: ""
+            #   }
+            # }
+          })");
     fetcher_ = network::SimpleURLLoader::Create(std::move(request),
-                                                MISSING_TRAFFIC_ANNOTATION);
+                                                traffic_annotation);
 
     fetcher_->DownloadToString(
         loader_factory_dispenser_.Run(),

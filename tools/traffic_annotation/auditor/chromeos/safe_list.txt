@@ -1,7 +1,6 @@
 # Chrome OS safelist for network annotator.
 # Please do not add any new safelist.
 #
-all,chromeos/printing/printer_config_cache.cc
 all,chromeos/ash/components/geolocation/simple_geolocation_request.cc
 all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
 all,chromeos/geolocation/simple_geolocation_request.cc
