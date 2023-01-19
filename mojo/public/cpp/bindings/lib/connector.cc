@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -78,9 +79,15 @@ class Connector::ActiveDispatchTracker {
 
  private:
   const base::WeakPtr<Connector> connector_;
-  RunLoopNestingObserver* const nesting_observer_;
-  ActiveDispatchTracker* outer_tracker_ = nullptr;
-  ActiveDispatchTracker* inner_tracker_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION RunLoopNestingObserver* const nesting_observer_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION ActiveDispatchTracker* outer_tracker_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION ActiveDispatchTracker* inner_tracker_ = nullptr;
 };
 
 // Watches the MessageLoop on the current thread. Notifies the current chain of

@@ -18,6 +18,8 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
+
 #if defined(ANDROID)
 // Work-around for buggy headers in Android's NDK
 #define __user
@@ -921,7 +923,9 @@ class EqualityStressTest {
   struct ArgValue {
     int argno;  // Argument number to inspect.
     int size;   // Number of test cases (must be > 0).
-    struct Tests {
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #overlapping
+    RAW_PTR_EXCLUSION struct Tests {
       uint32_t k_value;            // Value to compare syscall arg against.
       int err;                     // If non-zero, errno value to return.
       raw_ptr<struct ArgValue>

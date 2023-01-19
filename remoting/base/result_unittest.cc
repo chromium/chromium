@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "remoting/base/result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -158,7 +159,9 @@ TEST(Result, Destruction) {
     ~DestructIncrement() { ++(*variable_); }
 
    private:
-    int* variable_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION int* variable_;
   };
 
   int success_count = 0;

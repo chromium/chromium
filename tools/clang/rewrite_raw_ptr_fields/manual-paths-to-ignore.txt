@@ -53,6 +53,9 @@ ui/qt/
 # provide a stable C ABI. Can't depend on //base.
 android_webview/public/
 
+# Exclude dir that should hold C headers.
+mojo/public/c/
+
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,
 # because they are sensitive to performance regressions (to a much higher

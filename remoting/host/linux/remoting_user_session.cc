@@ -41,6 +41,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -282,7 +283,9 @@ class PamHandle {
   }
 
  private:
-  pam_handle_t* pam_handle_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION pam_handle_t* pam_handle_ = nullptr;
   int last_return_code_ = PAM_SUCCESS;
 };
 

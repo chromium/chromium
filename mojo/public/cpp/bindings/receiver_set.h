@@ -142,7 +142,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
   RepeatingConnectionErrorWithReasonCallback disconnect_with_reason_handler_;
   ReceiverId next_receiver_id_ = 0;
   EntryMap entries_;
-  void* current_context_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION void* current_context_ = nullptr;
   ReceiverId current_receiver_;
   base::WeakPtrFactory<ReceiverSetState> weak_ptr_factory_{this};
 };

@@ -14,6 +14,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -40,7 +41,9 @@ namespace {
 
 struct CupsDestsData {
   int num_dests;
-  cups_dest_t* dests;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type, #addr-of
+  RAW_PTR_EXCLUSION cups_dest_t* dests;
 };
 
 int CaptureCupsDestCallback(void* data, unsigned flags, cups_dest_t* dest) {

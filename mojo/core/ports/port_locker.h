@@ -82,7 +82,9 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) SinglePortLocker {
   Port* port() const { return locker_.GetPort(*port_ref_); }
 
  private:
-  const PortRef* port_ref_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION const PortRef* port_ref_;
   PortLocker locker_;
 };
 
