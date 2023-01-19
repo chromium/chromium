@@ -43,8 +43,8 @@ namespace net {
 
 // The following show how the `is_cross_site` boolean is populated for the
 // innermost frame in the chain.
-// a->a => is_cross_site = true
-// a->b => is_cross_site = false
+// a->a => is_cross_site = false
+// a->b => is_cross_site = true
 // a->b->a => is_cross_site = false
 // a->(sandboxed a [has nonce]) => is_cross_site = true
 
