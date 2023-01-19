@@ -29,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/history_clusters/core/features.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/performance_manager/public/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -49,6 +50,14 @@ constexpr char kHatsSurveyTriggerJourneysOmniboxEntrypoint[] =
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
 constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
     "ntp-photos-module-opt-out";
+constexpr char kHatsSurveyTriggerPerformanceControlsPerformance[] =
+    "performance-general";
+constexpr char kHatsSurveyTriggerPerformanceControlsBatteryPerformance[] =
+    "performance-battery";
+constexpr char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[] =
+    "performance-high-efficiency-opt-out";
+constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
+    "performance-battery-saver-opt-out";
 constexpr char kHatsSurveyTriggerPermissionsPostPrompt[] =
     "permissions-post-prompt";
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
@@ -317,6 +326,23 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
           permissions::kPermissionsPostPromptSurveyActionKey,
           permissions::kPermissionsPostPromptSurveyRequestTypeKey,
           permissions::kPermissionsPostPromptSurveyReleaseChannelKey});
+
+  // Performance Controls surveys.
+  survey_configs.emplace_back(
+      &performance_manager::features::kPerformanceControlsPerformanceSurvey,
+      kHatsSurveyTriggerPerformanceControlsPerformance);
+  survey_configs.emplace_back(
+      &performance_manager::features::
+          kPerformanceControlsBatteryPerformanceSurvey,
+      kHatsSurveyTriggerPerformanceControlsBatteryPerformance);
+  survey_configs.emplace_back(
+      &performance_manager::features::
+          kPerformanceControlsHighEfficiencyOptOutSurvey,
+      kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut);
+  survey_configs.emplace_back(
+      &performance_manager::features::
+          kPerformanceControlsBatterySaverOptOutSurvey,
+      kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut);
 
   return survey_configs;
 }

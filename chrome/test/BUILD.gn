@@ -6949,6 +6949,7 @@ test("unit_tests") {
       "../browser/ui/passwords/manage_passwords_ui_controller_unittest.cc",
       "../browser/ui/passwords/password_manager_navigation_throttle_unittest.cc",
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_unittest.cc",
+      "../browser/ui/performance_controls/performance_controls_hats_service_unittest.cc",
       "../browser/ui/qrcode_generator/qrcode_generator_bubble_controller_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
       "../browser/ui/search/ntp_user_data_logger_unittest.cc",

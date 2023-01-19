@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -31,6 +32,11 @@ void HatsHelper::PrimaryPageChanged(content::Page& page) {
   if (auto* sentiment_service =
           TrustSafetySentimentServiceFactory::GetForProfile(profile())) {
     sentiment_service->OpenedNewTabPage();
+  }
+
+  if (auto* performance_service =
+          PerformanceControlsHatsServiceFactory::GetForProfile(profile())) {
+    performance_service->OpenedNewTabPage();
   }
 
   // If the demo HaTS feature is enabled display a test survey on every NTP
