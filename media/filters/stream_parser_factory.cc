@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -84,7 +85,9 @@ typedef StreamParser* (*ParserFactoryFunction)(
 struct SupportedTypeInfo {
   const char* type;
   const ParserFactoryFunction factory_function;
-  const CodecInfo* const* codecs;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const CodecInfo* const* codecs;
 };
 
 static const CodecInfo kVP8CodecInfo = {"vp8", CodecInfo::VIDEO, nullptr,

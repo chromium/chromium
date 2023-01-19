@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -78,7 +79,9 @@ StateEnum ClientStateNotification<StateEnum>::Wait() {
 
 struct IvfFrame {
   IvfFrameHeader header;
-  uint8_t* data = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION uint8_t* data = nullptr;
 };
 
 // Read functions to fill IVF file header and IVF frame header from |data|.

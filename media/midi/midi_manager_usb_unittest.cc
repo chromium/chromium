@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -223,8 +224,12 @@ class MidiManagerFactoryForTesting : public midi::MidiService::ManagerFactory {
   }
 
  private:
-  TestUsbMidiDeviceFactory* device_factory_ = nullptr;
-  MidiManagerUsbForTesting* manager_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION TestUsbMidiDeviceFactory* device_factory_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION MidiManagerUsbForTesting* manager_ = nullptr;
 };
 
 class MidiManagerUsbTest : public ::testing::Test {

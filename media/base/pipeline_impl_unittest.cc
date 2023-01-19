@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -362,13 +363,17 @@ class PipelineImplTest : public ::testing::Test {
   NiceMock<MockCdmContext> cdm_context_;
 
   std::unique_ptr<StrictMock<MockDemuxer>> demuxer_;
-  DemuxerHost* demuxer_host_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION DemuxerHost* demuxer_host_;
   std::unique_ptr<StrictMock<MockRenderer>> scoped_renderer_;
   raw_ptr<StrictMock<MockRenderer>> renderer_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
   std::vector<DemuxerStream*> streams_;
-  RendererClient* renderer_client_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION RendererClient* renderer_client_;
   VideoDecoderConfig video_decoder_config_;
   PipelineMetadata metadata_;
   base::TimeDelta start_time_;

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
@@ -184,7 +185,10 @@ class MojoAudioInputStreamTest : public Test {
   std::unique_ptr<TestCancelableSyncSocket> foreign_socket_;
   base::ReadOnlySharedMemoryRegion mem_;
   raw_ptr<StrictMock<MockDelegate>> delegate_ = nullptr;
-  AudioInputDelegate::EventHandler* delegate_event_handler_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AudioInputDelegate::EventHandler* delegate_event_handler_ =
+      nullptr;
   StrictMock<MockDelegateFactory> mock_delegate_factory_;
   StrictMock<MockDeleter> deleter_;
   StrictMock<MockClient> client_;

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -222,7 +223,9 @@ class MojoRendererTest : public ::testing::Test {
 
   // Service side mocks and helpers.
   raw_ptr<StrictMock<MockRenderer>> mock_renderer_;
-  RendererClient* remote_renderer_client_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION RendererClient* remote_renderer_client_;
 
   mojo::SelfOwnedReceiverRef<mojom::Renderer> renderer_receiver_;
 };

@@ -26,6 +26,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/container_names.h"
 #include "media/base/media_export.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
@@ -84,7 +85,9 @@ class MEDIA_EXPORT FFmpegGlue {
  private:
   bool open_called_ = false;
   bool detected_hls_ = false;
-  AVFormatContext* format_context_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AVFormatContext* format_context_ = nullptr;
   std::unique_ptr<AVIOContext, ScopedPtrAVFree> avio_context_;
   container_names::MediaContainerName container_ =
       container_names::CONTAINER_UNKNOWN;

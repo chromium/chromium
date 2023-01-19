@@ -9,6 +9,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -271,8 +272,12 @@ uint8_t* target4x6_270_y_n = target4x6_90_n_y;
 uint8_t* target4x6_270_y_y = target4x6_90_n_n;
 
 struct VideoRotationTestData {
-  uint8_t* src;
-  uint8_t* target;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION uint8_t* src;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION uint8_t* target;
   int width;
   int height;
   int rotation;

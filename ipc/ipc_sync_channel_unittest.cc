@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
@@ -695,7 +696,9 @@ class MultipleClient1 : public Worker {
   }
 
  private:
-  WaitableEvent *client1_msg_received_, *client1_can_reply_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #overlapping
+  RAW_PTR_EXCLUSION WaitableEvent *client1_msg_received_, *client1_can_reply_;
 };
 
 class MultipleServer2 : public Worker {
@@ -726,7 +729,9 @@ class MultipleClient2 : public Worker {
   }
 
  private:
-  WaitableEvent *client1_msg_received_, *client1_can_reply_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #overlapping
+  RAW_PTR_EXCLUSION WaitableEvent *client1_msg_received_, *client1_can_reply_;
 };
 
 void Multiple() {

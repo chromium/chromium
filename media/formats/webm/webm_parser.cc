@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/formats/webm/webm_constants.h"
@@ -52,7 +53,9 @@ struct ElementIdInfo {
 struct ListElementInfo {
   int id_;
   int level_;
-  const ElementIdInfo* id_info_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type, #global-scope
+  RAW_PTR_EXCLUSION const ElementIdInfo* id_info_;
   int id_info_count_;
 };
 

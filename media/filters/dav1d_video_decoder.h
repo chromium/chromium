@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "media/base/supported_video_decoder_config.h"
@@ -89,7 +90,9 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
 
   // The allocated decoder; null before Initialize() and anytime after
   // CloseDecoder().
-  Dav1dContext* dav1d_decoder_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION Dav1dContext* dav1d_decoder_ = nullptr;
 };
 
 // Helper class for creating a Dav1dVideoDecoder which will offload all AV1
