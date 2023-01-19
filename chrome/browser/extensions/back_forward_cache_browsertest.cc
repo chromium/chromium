@@ -983,8 +983,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 }
 
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-// TODO(crbug.com/1382285): Flaky on Mac.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_StorageCallbackEvicts DISABLED_StorageCallbackEvicts
 #else
 #define MAYBE_StorageCallbackEvicts StorageCallbackEvicts
@@ -1002,7 +1001,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
 
-  // 1) Navigate to A.
+  // 1) Navigate to A and wait until the extension's content script has
+  // executed.
   content::RenderFrameHostWrapper rfh_a(
       ui_test_utils::NavigateToURL(browser(), url_a));
 
@@ -1018,7 +1018,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   // 3) Navigate back to A and make sure that the callback is called after
   // restore.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  base::RunLoop().RunUntilIdle();
+  // Check that the page was cached.
+  ASSERT_EQ(rfh_a.get(), web_contents()->GetPrimaryMainFrame());
+
+  // Wait for the content script to run.
+  content::DOMMessageQueue dom_message_queue(web_contents());
+  std::string dom_message;
+  ASSERT_TRUE(dom_message_queue.WaitForMessage(&dom_message));
+  ASSERT_EQ("\"event handler ran\"", dom_message);
+
+  // Verify that the callback was called.
   EXPECT_EQ("called",
             EvalJs(rfh_a.get(), "document.getElementById('callback').value;"));
 }
