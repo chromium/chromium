@@ -7,10 +7,11 @@ import './app_management_cros_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
-import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/util.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../../os_route.js';
@@ -69,8 +70,8 @@ class AppManagementMainViewElement extends AppManagementMainViewElementBase {
       // Expect this to be false the first time the "Manage your apps" page
       // is requested as no app has been selected yet.
       if (appId) {
-        const button =
-            this.shadowRoot!.querySelector(`#app-subpage-button-${appId}`);
+        const button = this.shadowRoot!.querySelector<CrIconButtonElement>(
+            `#app-subpage-button-${appId}`);
         if (button) {
           focusWithoutInk(button);
         }

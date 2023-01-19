@@ -14,10 +14,10 @@ import './internet_shared.css.js';
 
 import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {HTMLEscape} from 'chrome://resources/ash/common/util.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {htmlEscape} from 'chrome://resources/js/util_ts.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -133,7 +133,7 @@ export class InternetConfigElement extends InternetConfigElementBase {
 
   private getDialogTitle_(): string {
     if (this.name && !this.showConnect) {
-      return this.i18n('internetConfigName', HTMLEscape(this.name));
+      return this.i18n('internetConfigName', htmlEscape(this.name));
     }
     const type = this.i18n('OncType' + this.type);
     return this.i18n('internetJoinType', type);

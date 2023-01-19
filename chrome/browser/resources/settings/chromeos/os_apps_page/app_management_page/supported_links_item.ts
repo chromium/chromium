@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import './supported_links_dialog.js';
 import './supported_links_overlapping_apps_dialog.js';
 
-import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction, AppType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
@@ -16,6 +15,7 @@ import {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_l
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
