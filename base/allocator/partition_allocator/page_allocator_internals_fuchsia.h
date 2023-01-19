@@ -173,8 +173,6 @@ void FreePagesInternal(uint64_t address, size_t length) {
 }
 
 void DiscardSystemPagesInternal(uint64_t address, size_t length) {
-  // TODO(https://crbug.com/1022062): Mark pages as discardable, rather than
-  // forcibly de-committing them immediately, when Fuchsia supports it.
   zx_status_t status = zx::vmar::root_self()->op_range(
       ZX_VMO_OP_DECOMMIT, address, length, nullptr, 0);
   PA_ZX_CHECK(status == ZX_OK, status);
@@ -191,9 +189,6 @@ void DecommitSystemPagesInternal(
                              PageAccessibilityConfiguration::kInaccessible));
   }
 
-  // TODO(https://crbug.com/1022062): Review whether this implementation is
-  // still appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
-  // discardable API.
   DiscardSystemPagesInternal(address, length);
 }
 
@@ -202,9 +197,6 @@ void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
                        PageAccessibilityConfiguration(
                            PageAccessibilityConfiguration::kInaccessible));
 
-  // TODO(https://crbug.com/1022062): this implementation will likely no longer
-  // be appropriate once DiscardSystemPagesInternal() migrates to a "lazy"
-  // discardable API.
   DiscardSystemPagesInternal(address, length);
 }
 
