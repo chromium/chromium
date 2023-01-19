@@ -3027,6 +3027,7 @@
     # need to update this field.
     'remove_from': [
       'Win11 Tests x64',
+      'win-rel-cft',
     ],
   },
   'pixel_skia_gold_passthrough_test': {
