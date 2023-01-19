@@ -427,20 +427,20 @@ bool PrintingContextMac::SetOutputColor(int color_mode) {
   // TODO(crbug.com/1210992): Move `kKnownPpdColorSettings` elsewhere so it can
   // be used for general CUPS printing code (e.g., for parsing PPDs).
   static const PpdColorSetting kKnownPpdColorSettings[] = {
-      {kCUPSSharpARCMode, kSharpCMBW, kSharpCMColor},        // Sharp
-      {kCUPSLexmarkBLW, kLexmarkBLWTrue, kLexmarkBLWFalse},  // Lexmark
       {kCUPSBrotherMonoColor, kMono, kFullColor},            // Brother
       {kCUPSBrotherPrintQuality, kBlack, kColor},            // Brother
       {kCUPSCanonCNIJGrayScale, kOne, kZero},                // Canon
       {kCUPSColorMode, kMonochrome, kColor},                 // Samsung
       {kCUPSColorModel, kGray, kColor},                      // Generic
-      {kCUPSHpColorMode, kHpGrayscalePrint, kHpColorPrint},  // HP
       {kCUPSEpsonInk, kEpsonMono, kEpsonColor},              // Epson
+      {kCUPSHpColorMode, kHpGrayscalePrint, kHpColorPrint},  // HP
+      {kCUPSLexmarkBLW, kLexmarkBLWTrue, kLexmarkBLWFalse},  // Lexmark
       {kCUPSOkiControl, kGray, kAuto},                       // Oki
       {kCUPSPrintoutMode, kNormalGray, kNormal},             // Foomatic
       {kCUPSSelectColor, kGrayscale, kColor},                // Konica Minolta
-      {kCUPSXeroxXRXColor, kXeroxBW, kXeroxAutomatic},       // Xerox
+      {kCUPSSharpARCMode, kSharpCMBW, kSharpCMColor},        // Sharp
       {kCUPSXeroxXROutputColor, kPrintAsGrayscale, kPrintAsColor},  // Xerox
+      {kCUPSXeroxXRXColor, kXeroxBW, kXeroxAutomatic},              // Xerox
   };
 
   // Even when interfacing with printer settings using CUPS IPP, the print job
