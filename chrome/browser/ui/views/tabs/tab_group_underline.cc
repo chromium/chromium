@@ -32,7 +32,7 @@ TabGroupUnderline::TabGroupUnderline(TabGroupViews* tab_group_views,
     : tab_group_views_(tab_group_views), group_(group), style_(style) {}
 
 void TabGroupUnderline::OnPaint(gfx::Canvas* canvas) {
-  SkPath path = GetPath();
+  SkPath path = style_->GetUnderlinePath(GetLocalBounds());
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(tab_group_views_->GetGroupColor());
@@ -120,20 +120,6 @@ void TabGroupUnderline::MaybeSetVisible(const bool visible) {
 // static
 int TabGroupUnderline::GetStrokeInset() {
   return TabStyle::GetTabOverlap() + kStrokeThickness;
-}
-
-SkPath TabGroupUnderline::GetPath() const {
-  SkPath path;
-
-  path.moveTo(0, kStrokeThickness);
-  path.arcTo(kStrokeThickness, kStrokeThickness, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, kStrokeThickness, 0);
-  path.lineTo(width() - kStrokeThickness, 0);
-  path.arcTo(kStrokeThickness, kStrokeThickness, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, width(), kStrokeThickness);
-  path.close();
-
-  return path;
 }
 
 BEGIN_METADATA(TabGroupUnderline, views::View)

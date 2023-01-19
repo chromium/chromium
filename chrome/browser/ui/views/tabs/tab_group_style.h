@@ -22,6 +22,8 @@ class TabGroupStyle {
   virtual bool TabGroupUnderlineShouldBeHidden(
       const views::View* leading_view,
       const views::View* trailing_view) const;
+  // Returns the path of an underline given the local bounds of the underline.
+  virtual SkPath GetUnderlinePath(gfx::Rect local_bounds) const;
 
  protected:
   const raw_ref<const TabGroupViews> tab_group_views_;
@@ -40,6 +42,7 @@ class ChromeRefresh2023TabGroupStyle : public TabGroupStyle {
   bool TabGroupUnderlineShouldBeHidden(
       const views::View* leading_view,
       const views::View* trailing_view) const override;
+  SkPath GetUnderlinePath(gfx::Rect local_bounds) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_H_

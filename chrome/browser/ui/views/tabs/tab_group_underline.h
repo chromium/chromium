@@ -50,10 +50,6 @@ class TabGroupUnderline : public views::View {
   // Returns the insets from `sibling_view`'s bounds this underline would have
   // if it were underlining only `sibling_view`.
   gfx::Insets GetInsetsForUnderline(const views::View* sibling_view) const;
-  // The underline is a straight line with half-rounded endcaps. Since this
-  // geometry is nontrivial to represent using primitives, it's instead
-  // represented using a fill path.
-  SkPath GetPath() const;
   // Returns the tab group underline bounds based on a `leading_view` and a
   // `trailing_view`.
   gfx::Rect CalculateTabGroupUnderlineBounds(

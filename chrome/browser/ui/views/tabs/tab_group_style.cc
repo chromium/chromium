@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -27,6 +28,26 @@ bool TabGroupStyle::TabGroupUnderlineShouldBeHidden(
     const views::View* const leading_view,
     const views::View* const trailing_view) const {
   return false;
+}
+
+// The underline is a straight line with half-rounded endcaps without
+// ChromeRefresh flag. Since this geometry is nontrivial to represent using
+// primitives, it's instead represented using a fill path.
+SkPath TabGroupStyle::GetUnderlinePath(const gfx::Rect local_bounds) const {
+  SkPath path;
+
+  path.moveTo(0, TabGroupUnderline::kStrokeThickness);
+  path.arcTo(TabGroupUnderline::kStrokeThickness,
+             TabGroupUnderline::kStrokeThickness, 0, SkPath::kSmall_ArcSize,
+             SkPathDirection::kCW, TabGroupUnderline::kStrokeThickness, 0);
+  path.lineTo(local_bounds.width() - TabGroupUnderline::kStrokeThickness, 0);
+  path.arcTo(TabGroupUnderline::kStrokeThickness,
+             TabGroupUnderline::kStrokeThickness, 0, SkPath::kSmall_ArcSize,
+             SkPathDirection::kCW, local_bounds.width(),
+             TabGroupUnderline::kStrokeThickness);
+  path.close();
+
+  return path;
 }
 
 ChromeRefresh2023TabGroupStyle::ChromeRefresh2023TabGroupStyle(
@@ -57,4 +78,14 @@ bool ChromeRefresh2023TabGroupStyle::TabGroupUnderlineShouldBeHidden(
   }
 
   return false;
+}
+
+// The path is a rounded rect with the Chrome Refresh flag.
+SkPath ChromeRefresh2023TabGroupStyle::GetUnderlinePath(
+    const gfx::Rect local_bounds) const {
+  SkPath path;
+  path.addRoundRect(gfx::RectToSkRect(local_bounds),
+                    TabGroupUnderline::kStrokeThickness / 2,
+                    TabGroupUnderline::kStrokeThickness / 2);
+  return path;
 }
