@@ -31,6 +31,7 @@ import android.widget.TextView.BufferType;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.task.AsyncTask;
@@ -57,7 +58,6 @@ public class CardUnmaskPrompt
 
     private final View mMainView;
     private final TextView mInstructions;
-    private final TextView mTitleView;
     private final TextView mNoRetryErrorMessage;
     private final EditText mCardUnmaskInput;
     private final EditText mMonthInput;
@@ -155,45 +155,43 @@ public class CardUnmaskPrompt
         mIsVirtualCard = isVirtualCard;
 
         LayoutInflater inflater = LayoutInflater.from(context);
-
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)) {
-            View unused = inflater.inflate(R.layout.autofill_card_unmask_prompt_new, null);
+            mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt_new, null);
+        } else {
+            mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
         }
 
-        View v = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
-        mInstructions = (TextView) v.findViewById(R.id.instructions);
-        mInstructions.setText(instructions);
-        mTitleView = (TextView) v.findViewById(R.id.title);
         updateTitleForCustomView(title, context);
-
-        mMainView = v;
-        mNoRetryErrorMessage = (TextView) v.findViewById(R.id.no_retry_error_message);
-        mCardUnmaskInput = (EditText) v.findViewById(R.id.card_unmask_input);
-        mMonthInput = (EditText) v.findViewById(R.id.expiration_month);
-        mYearInput = (EditText) v.findViewById(R.id.expiration_year);
-        mExpirationContainer = v.findViewById(R.id.expiration_container);
-        mNewCardLink = (TextView) v.findViewById(R.id.new_card_link);
+        mInstructions = (TextView) mMainView.findViewById(R.id.instructions);
+        mInstructions.setText(instructions);
+        mNoRetryErrorMessage = (TextView) mMainView.findViewById(R.id.no_retry_error_message);
+        mCardUnmaskInput = (EditText) mMainView.findViewById(R.id.card_unmask_input);
+        mMonthInput = (EditText) mMainView.findViewById(R.id.expiration_month);
+        mYearInput = (EditText) mMainView.findViewById(R.id.expiration_year);
+        mExpirationContainer = mMainView.findViewById(R.id.expiration_container);
+        mNewCardLink = (TextView) mMainView.findViewById(R.id.new_card_link);
         mNewCardLink.setOnClickListener(this);
-        mErrorMessage = (TextView) v.findViewById(R.id.error_message);
-        mUseScreenlockCheckbox = (CheckBox) v.findViewById(R.id.use_screenlock_checkbox);
+        mErrorMessage = (TextView) mMainView.findViewById(R.id.error_message);
+        mUseScreenlockCheckbox = (CheckBox) mMainView.findViewById(R.id.use_screenlock_checkbox);
         mUseScreenlockCheckbox.setChecked(defaultUseScreenlockChecked);
         if (!shouldOfferWebauthn) {
             mUseScreenlockCheckbox.setVisibility(View.GONE);
             mUseScreenlockCheckbox.setChecked(false);
         }
-        mControlsContainer = (ViewGroup) v.findViewById(R.id.controls_container);
-        mVerificationOverlay = v.findViewById(R.id.verification_overlay);
-        mVerificationProgressBar = (ProgressBar) v.findViewById(R.id.verification_progress_bar);
-        mVerificationView = (TextView) v.findViewById(R.id.verification_message);
+        mControlsContainer = (ViewGroup) mMainView.findViewById(R.id.controls_container);
+        mVerificationOverlay = mMainView.findViewById(R.id.verification_overlay);
+        mVerificationProgressBar =
+                (ProgressBar) mMainView.findViewById(R.id.verification_progress_bar);
+        mVerificationView = (TextView) mMainView.findViewById(R.id.verification_message);
         mSuccessMessageDurationMilliseconds = successMessageDurationMilliseconds;
-        ((ImageView) v.findViewById(R.id.cvc_hint_image)).setImageResource(cvcDrawableId);
+        ((ImageView) mMainView.findViewById(R.id.cvc_hint_image)).setImageResource(cvcDrawableId);
 
         Resources resources = context.getResources();
         PropertyModel.Builder dialogModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, v)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mMainView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.cancel);
@@ -289,21 +287,28 @@ public class CardUnmaskPrompt
     }
 
     private void updateTitleForCustomView(String title, Context context) {
-        Drawable mInlineTitleIcon = context.getDrawable(mGooglePayDrawableId);
-        // The first character will be replaced by the logo, and the consecutive spaces after
-        // are used as padding.
-        SpannableString titleWithLogo = new SpannableString("   " + title);
-        // How much the original logo should scale up in size to match height of text.
-        float scaleFactor = mTitleView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
-        mInlineTitleIcon.setBounds(
-                /* left */ 0, /* top */ 0,
-                /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
-                /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
-        titleWithLogo.setSpan(new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
-                /* start */ 0,
-                /* end */ 1,
-                /* flags */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        mTitleView.setText(titleWithLogo, BufferType.SPANNABLE);
+        TextView titleView = (TextView) mMainView.findViewById(R.id.title);
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)) {
+            titleView.setText(title);
+        } else {
+            Drawable mInlineTitleIcon =
+                    AppCompatResources.getDrawable(context, mGooglePayDrawableId);
+            // The first character will be replaced by the logo, and the consecutive spaces after
+            // are used as padding.
+            SpannableString titleWithLogo = new SpannableString("   " + title);
+            // How much the original logo should scale up in size to match height of text.
+            float scaleFactor = titleView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
+            mInlineTitleIcon.setBounds(
+                    /* left */ 0, /* top */ 0,
+                    /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
+                    /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
+            titleWithLogo.setSpan(new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
+                    /* start */ 0,
+                    /* end */ 1,
+                    /* flags */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            titleView.setText(titleWithLogo, BufferType.SPANNABLE);
+        }
     }
 
     public void dismiss(@DialogDismissalCause int dismissalCause) {

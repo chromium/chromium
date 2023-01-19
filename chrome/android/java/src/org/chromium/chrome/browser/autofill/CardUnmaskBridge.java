@@ -22,7 +22,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     private final long mNativeCardUnmaskPromptViewAndroid;
     private final CardUnmaskPrompt mCardUnmaskPrompt;
 
-    public CardUnmaskBridge(long nativeCardUnmaskPromptViewAndroid, String title,
+    private CardUnmaskBridge(long nativeCardUnmaskPromptViewAndroid, String title,
             String instructions, String confirmButtonLabel, int cvcIconId, int googlePayIconId,
             boolean isVirtualCard, boolean shouldRequestExpirationDate, boolean shouldOfferWebauthn,
             boolean defaultUseScreenlockChecked, long successMessageDurationMilliseconds,
