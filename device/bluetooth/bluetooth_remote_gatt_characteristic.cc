@@ -372,7 +372,8 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
       ccc_descriptor[0],
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::OnStopNotifySessionSuccess,
-          GetWeakPtr(), session, std::move(split_callback.first)),
+          GetWeakPtr(), base::UnsafeDanglingUntriaged(session),
+          std::move(split_callback.first)),
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::OnStopNotifySessionError,
           GetWeakPtr(), session, std::move(split_callback.second)));
