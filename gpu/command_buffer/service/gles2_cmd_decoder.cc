@@ -3224,9 +3224,8 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
 
   image_ = image;
   decoder_->texture_manager()->SetLevelInfo(
-      texture_ref_.get(), Target(), 0, image_->GetInternalFormat(),
-      size.width(), size.height(), 1, 0, format,
-      gl::BufferFormatToGLDataType(buffer_format), gfx::Rect(size));
+      texture_ref_.get(), Target(), 0, format, size.width(), size.height(), 1,
+      0, format, gl::BufferFormatToGLDataType(buffer_format), gfx::Rect(size));
   decoder_->texture_manager()->SetLevelImage(texture_ref_.get(), Target(), 0,
                                              image_.get(), Texture::BOUND);
 
