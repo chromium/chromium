@@ -58,8 +58,8 @@ bool IsConfigurationError(const std::string& shill_error) {
 
 std::string GetStringFromDictionary(const absl::optional<base::Value>& dict,
                                     const std::string& key) {
-  const base::Value* v = dict ? dict->FindKey(key) : nullptr;
-  return v ? v->GetString() : std::string();
+  const std::string* v = dict ? dict->GetDict().FindString(key) : nullptr;
+  return v ? *v : std::string();
 }
 
 // Error messages based on |error_name|, not network_state->GetError().
