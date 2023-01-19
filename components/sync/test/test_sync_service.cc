@@ -77,12 +77,6 @@ void TestSyncService::SetPersistentAuthErrorWithWebSignout() {
   CHECK(auth_error_.IsPersistentError());
 }
 
-void TestSyncService::SetTransientAuthError() {
-  auth_error_ =
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
-  CHECK(auth_error_.IsTransientError());
-}
-
 void TestSyncService::ClearAuthError() {
   auth_error_ = GoogleServiceAuthError::AuthErrorNone();
   if (transport_state_ == TransportState::PAUSED) {

@@ -219,7 +219,7 @@ void RecordApiErrorInCombinationWithSyncStatus(
   if (sync_error.IsPersistentError()) {
     histogram_suffix = "PersistentAuthError";
   } else if (sync_error.IsTransientError()) {
-    histogram_suffix = "TransientAuthError";
+    NOTREACHED();
   } else {
     histogram_suffix = "NoAuthError";
   }

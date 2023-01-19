@@ -2500,7 +2500,13 @@ chromium-metrics-reviews@google.com.
   <token key="SyncErrorStatus">
     <variant name="NoAuthError" summary="no error"/>
     <variant name="PersistentAuthError" summary="a persistent auth error"/>
-    <variant name="TransientAuthError" summary="a transient auth error"/>
+    <variant name="TransientAuthError" summary="a transient auth error">
+      <obsolete>
+        Deprecated in M111 and no longer recorded. In M110 and below, it only
+        recorded a small subset of transient errors, the ones that immediately
+        followed a persistent auth error.
+      </obsolete>
+    </variant>
   </token>
 </histogram>
 

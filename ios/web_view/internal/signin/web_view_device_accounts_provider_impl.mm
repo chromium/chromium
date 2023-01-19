@@ -39,12 +39,6 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
       return kAuthenticationErrorCategoryAuthorizationErrors;
     case CWVSyncErrorUserNotSignedUp:
       return kAuthenticationErrorCategoryUnknownIdentityErrors;
-    case CWVSyncErrorConnectionFailed:
-      return kAuthenticationErrorCategoryNetworkServerErrors;
-    case CWVSyncErrorServiceUnavailable:
-      return kAuthenticationErrorCategoryAuthorizationForbiddenErrors;
-    case CWVSyncErrorRequestCanceled:
-      return kAuthenticationErrorCategoryUserCancellationErrors;
     case CWVSyncErrorUnexpectedServiceResponse:
       return kAuthenticationErrorCategoryUnknownErrors;
   }

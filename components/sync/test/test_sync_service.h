@@ -44,7 +44,6 @@ class TestSyncService : public SyncService {
   // errors are treated equally.
   void SetPersistentAuthErrorOtherThanWebSignout();
   void SetPersistentAuthErrorWithWebSignout();
-  void SetTransientAuthError();
   void ClearAuthError();
 
   void SetFirstSetupComplete(bool first_setup_complete);
