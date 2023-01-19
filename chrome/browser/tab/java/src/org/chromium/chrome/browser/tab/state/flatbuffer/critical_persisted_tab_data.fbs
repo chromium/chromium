@@ -32,6 +32,7 @@ enum LaunchTypeAtCreation:int {
     FROM_TAB_GROUP_UI = 13,
     FROM_LONGPRESS_BACKGROUND_IN_GROUP = 14,
     FROM_APP_WIDGET = 15,
+    // Deprecated. Use `FROM_LONGPRESS_FOREGROUND` in new code.
     FROM_LONGPRESS_INCOGNITO = 16,
     FROM_RECENT_TABS = 17,
     FROM_READING_LIST = 18,

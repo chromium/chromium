@@ -225,7 +225,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public void onOpenInNewIncognitoTab(GURL url) {
         RecordUserAction.record("MobileNewTabOpened");
         mTabModelSelector.openNewTab(new LoadUrlParams(url.getSpec()),
-                TabLaunchType.FROM_LONGPRESS_INCOGNITO, mTab, true);
+                TabLaunchType.FROM_LONGPRESS_FOREGROUND, mTab, true);
     }
 
     @Override
