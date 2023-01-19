@@ -36,8 +36,9 @@ std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
   report->set_id(extension_id);
   if (request_data) {
     if (request_data->is_dict()) {
-      absl::optional<base::Time> timestamp = ::base::ValueToTime(
-          request_data->FindKey(extension_misc::kExtensionRequestTimestamp));
+      absl::optional<base::Time> timestamp =
+          ::base::ValueToTime(request_data->GetDict().Find(
+              extension_misc::kExtensionRequestTimestamp));
       if (timestamp)
         report->set_request_timestamp_millis(timestamp->ToJavaTime());
 
