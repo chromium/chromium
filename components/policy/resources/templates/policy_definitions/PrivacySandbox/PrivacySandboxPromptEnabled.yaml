@@ -12,14 +12,11 @@ desc: |-
   <ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME">PrivacySandboxSiteEnabledAdsEnabled</ph>
   <ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME">PrivacySandboxAdMeasurementEnabled</ph>
 example_value: false
+future_on:
+ - fuchsia
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
- - chrome.*
- - chrome_os
- - android
- - fuchsia
 items:
 - caption: Allow <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to determine whether to show the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> prompt.
   value: true
@@ -30,5 +27,9 @@ owners:
 - file://components/privacy_sandbox/OWNERS
 schema:
   type: boolean
+supported_on:
+ - chrome.*:111-
+ - chrome_os:111-
+ - android:111-
 tags: []
 type: main
