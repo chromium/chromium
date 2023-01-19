@@ -353,23 +353,6 @@ void TargetProcess::Terminate() {
   ::TerminateProcess(sandbox_process_info_.process_handle(), 0);
 }
 
-ResultCode TargetProcess::AssignLowBoxToken(
-    const base::win::ScopedHandle& token) {
-  if (!token.IsValid())
-    return SBOX_ALL_OK;
-  PROCESS_ACCESS_TOKEN process_access_token = {};
-  process_access_token.token = token.Get();
-
-  NTSTATUS status = GetNtExports()->SetInformationProcess(
-      sandbox_process_info_.process_handle(), ProcessInformationAccessToken,
-      &process_access_token, sizeof(process_access_token));
-  if (!NT_SUCCESS(status)) {
-    ::SetLastError(GetLastErrorFromNtStatus(status));
-    return SBOX_ERROR_SET_LOW_BOX_TOKEN;
-  }
-  return SBOX_ALL_OK;
-}
-
 ResultCode TargetProcess::VerifySentinels() {
   if (!sandbox_process_info_.IsValid())
     return SBOX_ERROR_UNEXPECTED_CALL;

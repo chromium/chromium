@@ -526,8 +526,7 @@ ResultCode PolicyBase::DropActiveProcessLimit() {
 }
 
 ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
-                                  base::win::ScopedHandle* lockdown,
-                                  base::win::ScopedHandle* lowbox) {
+                                  base::win::ScopedHandle* lockdown) {
   absl::optional<base::win::Sid> random_sid;
   if (config()->add_restricting_random_sid()) {
     random_sid = base::win::Sid::GenerateRandomSid();
@@ -548,7 +547,9 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
   AppContainerBase* app_container = config()->app_container();
   if (app_container &&
       app_container->GetAppContainerType() == AppContainerType::kLowbox) {
-    ResultCode result_code = app_container->BuildLowBoxToken(lowbox, lockdown);
+    // Build the lowbox lockdown (primary) token. The initial token will be
+    // put in the same lowbox later by GetAppContainerImpersonationToken.
+    ResultCode result_code = app_container->BuildLowBoxToken(lockdown);
     if (result_code != SBOX_ALL_OK)
       return result_code;
   }

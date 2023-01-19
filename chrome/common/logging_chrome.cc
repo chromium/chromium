@@ -63,6 +63,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <initguid.h>
 #include "base/logging_win.h"
+#include "base/process/process_info.h"
 #include "base/syslog_logging.h"
 #include "chrome/common/win/eventlog_messages.h"
 #include "chrome/install_static/install_details.h"
@@ -173,6 +174,14 @@ LoggingDestination DetermineLoggingDestination(
     } else if (logging_destination != "") {
       PLOG(ERROR) << "Invalid logging destination: " << logging_destination;
     }
+#if BUILDFLAG(IS_WIN)
+    else if (base::IsCurrentProcessInAppContainer() &&
+             !command_line.HasSwitch(switches::kLogFile)) {
+      // Sandboxed appcontainer processes are unable to resolve the default log
+      // file path without asserting.
+      return kDefaultLoggingMode & ~LOG_TO_FILE;
+    }
+#endif
   }
   return kDefaultLoggingMode;
 }

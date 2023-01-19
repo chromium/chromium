@@ -111,9 +111,6 @@ class [[clang::lto_visibility_public]] BrokerServices {
   //   process. This can be null if the exe_path parameter is not null.
   //   policy: This is the pointer to the policy object for the sandbox to
   //   be created.
-  //   last_warning: The argument will contain an indication on whether
-  //   the process security was initialized completely, Only set if the
-  //   process can be used without a serious compromise in security.
   //   last_error: If an error or warning is returned from this method this
   //   parameter will hold the last Win32 error value.
   //   target: returns the resulting target process information such as process
@@ -121,10 +118,11 @@ class [[clang::lto_visibility_public]] BrokerServices {
   //   responsible for closing the handles returned in this structure.
   // Returns:
   //   ALL_OK if successful. All other return values imply failure.
-  virtual ResultCode SpawnTarget(
-      const wchar_t* exe_path, const wchar_t* command_line,
-      std::unique_ptr<TargetPolicy> policy, ResultCode* last_warning,
-      DWORD* last_error, PROCESS_INFORMATION* target) = 0;
+  virtual ResultCode SpawnTarget(const wchar_t* exe_path,
+                                 const wchar_t* command_line,
+                                 std::unique_ptr<TargetPolicy> policy,
+                                 DWORD* last_error,
+                                 PROCESS_INFORMATION* target) = 0;
 
   // This call blocks (waits) for all the targets to terminate.
   // Returns:

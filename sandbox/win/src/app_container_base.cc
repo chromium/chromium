@@ -262,11 +262,9 @@ AppContainerBase::GetSecurityCapabilities() {
   return std::make_unique<SecurityCapabilities>(package_sid_, capabilities_);
 }
 
-ResultCode AppContainerBase::BuildLowBoxToken(
-    base::win::ScopedHandle* token,
-    base::win::ScopedHandle* lockdown) {
+ResultCode AppContainerBase::BuildLowBoxToken(base::win::ScopedHandle* token) {
   if (type_ == AppContainerType::kLowbox) {
-    if (CreateLowBoxToken(lockdown->Get(), PRIMARY,
+    if (CreateLowBoxToken(token->Get(), PRIMARY,
                           GetSecurityCapabilities().get(),
                           token) != ERROR_SUCCESS) {
       return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;

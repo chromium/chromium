@@ -446,7 +446,6 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
 ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
                                            const wchar_t* command_line,
                                            std::unique_ptr<TargetPolicy> policy,
-                                           ResultCode* last_warning,
                                            DWORD* last_error,
                                            PROCESS_INFORMATION* target_info) {
   if (!exe_path)
@@ -480,7 +479,6 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // correctly.
   static DWORD thread_id = ::GetCurrentThreadId();
   DCHECK(thread_id == ::GetCurrentThreadId());
-  *last_warning = SBOX_ALL_OK;
 
   // Launcher thread only needs to be opted out of ACG once. Do this on the
   // first child process being spawned.
@@ -497,11 +495,9 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // with the soon to be created target process.
   base::win::ScopedHandle initial_token;
   base::win::ScopedHandle lockdown_token;
-  base::win::ScopedHandle lowbox_token;
   ResultCode result = SBOX_ALL_OK;
 
-  result =
-      policy_base->MakeTokens(&initial_token, &lockdown_token, &lowbox_token);
+  result = policy_base->MakeTokens(&initial_token, &lockdown_token);
   if (SBOX_ALL_OK != result)
     return result;
 
@@ -578,15 +574,6 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
       target->Terminate();
       return result;
     }
-  }
-
-  if (lowbox_token.IsValid()) {
-    *last_warning = target->AssignLowBoxToken(lowbox_token);
-    // If this fails we continue, but report the error as a warning.
-    // This is due to certain configurations causing the setting of the
-    // token to fail post creation, and we'd rather continue if possible.
-    if (*last_warning != SBOX_ALL_OK)
-      *last_error = ::GetLastError();
   }
 
   // Now the policy is the owner of the target. TargetProcess will terminate
