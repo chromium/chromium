@@ -290,4 +290,9 @@ bool BrowserParamsProxy::VcControlsUiEnabled() const {
   return BrowserInitParams::Get()->vc_controls_ui_enabled;
 }
 
+const crosapi::mojom::StandaloneBrowserAppServiceBlockListPtr&
+BrowserParamsProxy::StandaloneBrowserAppServiceBlockList() const {
+  return BrowserInitParams::Get()->standalone_browser_app_service_blocklist;
+}
+
 }  // namespace chromeos

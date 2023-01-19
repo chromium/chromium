@@ -101,13 +101,6 @@ void ChromeAppWindowTrackerAsh::CheckWindowNoLongerPending(
   if (pending_window->second.app_id.empty() || !pending_window->second.window)
     return;
 
-  // If an extension app runs in both lacros and ash, then don't show a dock
-  // icon for lacros since there might also be a dock icon for ash which will
-  // cause crashes.
-  if (extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(
-          pending_window->second.app_id)) {
-    return;
-  }
 
   std::string app_id = std::move(pending_window->second.app_id);
   aura::Window* window = pending_window->second.window;

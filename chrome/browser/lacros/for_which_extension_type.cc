@@ -24,11 +24,48 @@ ForWhichExtensionType::~ForWhichExtensionType() = default;
 bool ForWhichExtensionType::Matches(
     const extensions::Extension* extension) const {
   if (for_chrome_apps_) {
+    // For older ash version without app service block list support, follow
+    // the old code path. The extension app running in both ash and lacros will
+    // not be published in app service from either ash or lacros.
+    if (!extensions::IsAppServiceBlocklistCrosapiSupported()) {
+      return lacros_extensions_util::IsExtensionApp(extension) &&
+             !extensions::ExtensionAppRunsInOS(extension->id());
+    }
+
+    // An extension app should be published to app service by lacros if it
+    // meets all of the following conditions:
+    // 1. It does not run in ash only.
+    // 2. If it runs in both ash and lacros, it is not blocked for app service
+    // in lacros.
     return lacros_extensions_util::IsExtensionApp(extension) &&
-           !extensions::ExtensionAppRunsInOS(extension->id());
+           !extensions::ExtensionAppRunsInOSOnly(extension->id()) &&
+           !(extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(
+                 extension->id()) &&
+             extensions::
+                 ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
+                     extension->id()));
   }
 
   if (extension->is_extension()) {
+    // An extension should be published to app service by lacros if it meets
+    // all of the following conditions:
+    // 1. It does not run in ash only.
+    // 2. If it runs in both ash and lacros, it is not blocked for app service
+    // in lacros.
+    // 3. It is either a QuickOffice extension or an extension registered with
+    // file browser handlers.
+
+    if (extensions::ExtensionRunsInOSOnly(extension->id())) {
+      return false;
+    }
+
+    if (extensions::ExtensionRunsInBothOSAndStandaloneBrowser(
+            extension->id()) &&
+        extensions::ExtensionBlockListedForAppServiceInStandaloneBrowser(
+            extension->id())) {
+      return false;
+    }
+
     // QuickOffice extensions do not use file browser handler manifest key
     // to register their handlers for MS Office files; instead, they use
     // file_handler manifest key(like the way chrome apps do). We should
@@ -36,11 +73,6 @@ bool ForWhichExtensionType::Matches(
     // for MS Office files.
     if (extension_misc::IsQuickOfficeExtension(extension->id()))
       return true;
-
-    // If an extension runs in ash, regardless of whether it may also run in
-    // Lacros, do not publish it.
-    if (extensions::ExtensionRunsInOS(extension->id()))
-      return false;
 
     // For the regular extensions, we should only publish them if they have file
     // handlers registered using file browser handlers.
