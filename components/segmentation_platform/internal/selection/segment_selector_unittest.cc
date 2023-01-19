@@ -72,8 +72,9 @@ class MockTrainingDataCollector : public TrainingDataCollector {
                void(proto::SegmentId id,
                     scoped_refptr<InputContext> input_context,
                     DecisionType type));
-  MOCK_METHOD2(OnObservationTrigger,
-               void(TrainingDataCache::RequestId request_id,
+  MOCK_METHOD3(OnObservationTrigger,
+               void(const absl::optional<ImmediaCollectionParam>& param,
+                    TrainingDataCache::RequestId request_id,
                     const proto::SegmentInfo& segment_info));
 };
 

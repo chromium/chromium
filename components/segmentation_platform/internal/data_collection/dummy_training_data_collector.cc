@@ -22,6 +22,7 @@ void DummyTrainingDataCollector::OnDecisionTime(
     DecisionType type) {}
 
 void DummyTrainingDataCollector::OnObservationTrigger(
+    const absl::optional<ImmediaCollectionParam>& param,
     TrainingDataCache::RequestId request_id,
     const proto::SegmentInfo& segment_info) {}
 

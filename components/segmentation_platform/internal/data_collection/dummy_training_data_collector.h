@@ -23,7 +23,8 @@ class DummyTrainingDataCollector : public TrainingDataCollector {
   void OnDecisionTime(proto::SegmentId id,
                       scoped_refptr<InputContext> input_context,
                       DecisionType type) override;
-  void OnObservationTrigger(TrainingDataCache::RequestId request_id,
+  void OnObservationTrigger(const absl::optional<ImmediaCollectionParam>& param,
+                            TrainingDataCache::RequestId request_id,
                             const proto::SegmentInfo& segment_info) override;
 };
 

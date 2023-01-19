@@ -455,7 +455,7 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithUMATrigger) {
             {kTestOptimizationTarget0, kModelVersion,
              SegmentationUkmHelper::FloatToInt64(1.f),
              SegmentationUkmHelper::FloatToInt64(2.f),
-             SegmentationUkmHelper::FloatToInt64(3.f)});
+             SegmentationUkmHelper::FloatToInt64(3.f), kSample});
 }
 
 // A histogram interested by multiple model will trigger multiple UKM reports.

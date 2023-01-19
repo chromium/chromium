@@ -44,6 +44,17 @@ class TrainingDataCollector {
       PrefService* profile_prefs,
       base::Clock* clock);
 
+  // Parameters used for reporting immediate output collections.
+  struct ImmediaCollectionParam {
+    // Hash of the output metric name given by
+    // |base::HashMetricName(histogram_name)| function.
+    uint64_t output_metric_hash;
+    // Value of the output metric.
+    // TODO(haileywang): Make this a vector and append all the values to the
+    // output.
+    float output_value;
+  };
+
   // Called when model metadata is updated. May result in training data
   // collection behavior change.
   virtual void OnModelMetadataUpdated() = 0;
@@ -66,8 +77,10 @@ class TrainingDataCollector {
   // Called when a relevant uma histogram is recorded or when a time delay
   // trigger is hit, retrieve input training data from storage, collect output
   // training data and upload all training data.
-  virtual void OnObservationTrigger(TrainingDataCache::RequestId request_id,
-                                    const proto::SegmentInfo& segment_info) = 0;
+  virtual void OnObservationTrigger(
+      const absl::optional<ImmediaCollectionParam>& param,
+      TrainingDataCache::RequestId request_id,
+      const proto::SegmentInfo& segment_info) = 0;
 
   virtual ~TrainingDataCollector();
 

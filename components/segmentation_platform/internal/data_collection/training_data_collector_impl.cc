@@ -192,22 +192,26 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
   auto it = immediate_trigger_histograms_.find(hash);
   if (it != immediate_trigger_histograms_.end()) {
     auto segments = it->second;
+    auto param = absl::make_optional<ImmediaCollectionParam>();
+    param->output_metric_hash = hash;
+    param->output_value = static_cast<float>(sample);
     for (auto segment : segments) {
       segment_info_database_->GetSegmentInfo(
           segment, base::BindOnce(&TrainingDataCollectorImpl::
                                       OnHistogramUpdatedReportForSegmentInfo,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr(), param));
     }
   }
 }
 
 void TrainingDataCollectorImpl::OnHistogramUpdatedReportForSegmentInfo(
+    const absl::optional<ImmediaCollectionParam>& param,
     absl::optional<proto::SegmentInfo> segment) {
   if (segment.has_value()) {
     absl::optional<TrainingDataCache::RequestId> request_id =
         training_cache_->GetRequestId(segment.value().segment_id());
     if (request_id.has_value()) {
-      OnObservationTrigger(request_id.value(), segment.value());
+      OnObservationTrigger(param, request_id.value(), segment.value());
     }
   }
 }
@@ -290,19 +294,22 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
       GetSegmentationKey(configs_, segment_info.segment_id());
 
   std::vector<int> output_indexes;
+  auto output_values = output_tensors;
+  for (size_t i = 0; i < output_tensors.size(); ++i) {
+    output_indexes.emplace_back(i);
+  }
+
+  // TODO(haileywang): Find the right output index from the metadata using the
+  // matching hash value, in case the client has 2 different histogram triggers
+  // in the metadata, the server cannot identify which one was triggered.
   if (param.has_value()) {
-    output_indexes = {param->output_index};
-  } else {
-    for (size_t i = 0; i < output_tensors.size(); ++i) {
-      output_indexes.emplace_back(i);
-    }
+    output_indexes.emplace_back(output_tensors.size());
+    output_values.emplace_back(param->output_value);
   }
 
   auto ukm_source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
       segment_info.segment_id(), segment_info.model_version(), input_tensors,
-      param.has_value() ? ModelProvider::Response{param->output_value}
-                        : output_tensors,
-      output_indexes, segment_info.prediction_result(),
+      output_values, output_indexes, segment_info.prediction_result(),
       result_prefs_->ReadSegmentationResultFromPref(segmentation_key));
   if (ukm_source_id == ukm::kInvalidSourceId) {
     VLOG(1) << "Failed to collect training data for segment:"
@@ -428,7 +435,7 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
       continuous_collection_segments_.end()) {
     // Trigger periodic collection immediately.
     // TODO(haileywang): support delay for periodic cases.
-    OnObservationTrigger(request_id, segment_info);
+    OnObservationTrigger(absl::nullopt, request_id, segment_info);
   } else {
     // On demand cases.
     for (int i = 0; i < training_config.observation_trigger_size(); i++) {
@@ -437,8 +444,8 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&TrainingDataCollectorImpl::OnObservationTrigger,
-                           weak_ptr_factory_.GetWeakPtr(), request_id,
-                           segment_info),
+                           weak_ptr_factory_.GetWeakPtr(), absl::nullopt,
+                           request_id, segment_info),
             base::Seconds(trigger.delay_sec()));
       }
     }
@@ -446,6 +453,7 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
 }
 
 void TrainingDataCollectorImpl::OnObservationTrigger(
+    const absl::optional<ImmediaCollectionParam>& param,
     TrainingDataCache::RequestId request_id,
     const proto::SegmentInfo& segment_info) {
   if (!CanReportTrainingData(segment_info, /*include_outputs*/ true))
@@ -467,13 +475,14 @@ void TrainingDataCollectorImpl::OnObservationTrigger(
       /*observation_time*/ base::Time(),
       /*process_option=*/FeatureListQueryProcessor::ProcessOption::kOutputsOnly,
       base::BindOnce(
-          &TrainingDataCollectorImpl::onGetOutputsOnObservationTrigger,
-          weak_ptr_factory_.GetWeakPtr(), request_id, segment_info,
+          &TrainingDataCollectorImpl::OnGetOutputsOnObservationTrigger,
+          weak_ptr_factory_.GetWeakPtr(), param, request_id, segment_info,
           ModelProvider::Response(input.value().inputs().begin(),
                                   input.value().inputs().end())));
 }
 
-void TrainingDataCollectorImpl::onGetOutputsOnObservationTrigger(
+void TrainingDataCollectorImpl::OnGetOutputsOnObservationTrigger(
+    const absl::optional<ImmediaCollectionParam>& param,
     TrainingDataCache::RequestId request_id,
     const proto::SegmentInfo& segment_info,
     const ModelProvider::Request& cached_input_tensors,
@@ -483,11 +492,10 @@ void TrainingDataCollectorImpl::onGetOutputsOnObservationTrigger(
   // Upload input and output tensors.
   // TODO(haileywang): Add state in cache for each request; never seen,
   // fulfilled, unfullfilled. (Or make triggers cancellable callbacks)
-  // TODO(haileywang): Add usage of |ImmediaCollectionParam|.
   // TODO(haileywang): Add output processing failure uma histogram (maybe
   // success histogram too).
-  OnGetTrainingTensors(absl::nullopt, segment_info, has_error,
-                       cached_input_tensors, output_tensors);
+  OnGetTrainingTensors(param, segment_info, has_error, cached_input_tensors,
+                       output_tensors);
 }
 
 }  // namespace segmentation_platform

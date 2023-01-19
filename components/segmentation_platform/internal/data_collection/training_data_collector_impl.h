@@ -47,7 +47,9 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   void OnDecisionTime(proto::SegmentId id,
                       scoped_refptr<InputContext> input_context,
                       DecisionType type) override;
-  void OnObservationTrigger(TrainingDataCache::RequestId request_id,
+
+  void OnObservationTrigger(const absl::optional<ImmediaCollectionParam>& param,
+                            TrainingDataCache::RequestId request_id,
                             const proto::SegmentInfo& segment_info) override;
 
   // HistogramSignalHandler::Observer implementation.
@@ -55,13 +57,6 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                                 base::HistogramBase::Sample sample) override;
 
  private:
-  // Parameters used for reporting immediate output collections.
-  struct ImmediaCollectionParam {
-    uint64_t output_metric_hash;  // Hash of the output metric name.
-    int output_index;             // Index of the output metric in metadata.
-    float output_value;           // Value of the output.
-  };
-
   void OnGetSegmentsInfoList(DefaultModelManager::SegmentInfoList segment_list);
 
   void ReportForSegmentsInfoList(
@@ -69,6 +64,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segments);
 
   void OnHistogramUpdatedReportForSegmentInfo(
+      const absl::optional<ImmediaCollectionParam>& param,
       absl::optional<proto::SegmentInfo> segment);
 
   void OnGetSegmentInfoAtDecisionTime(
@@ -85,7 +81,8 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
       const ModelProvider::Request& input_tensors,
       const ModelProvider::Response& output_tensors);
 
-  void onGetOutputsOnObservationTrigger(
+  void OnGetOutputsOnObservationTrigger(
+      const absl::optional<ImmediaCollectionParam>& param,
       TrainingDataCache::RequestId request_id,
       const proto::SegmentInfo& segment_info,
       const ModelProvider::Request& cached_input_tensors,
