@@ -57,15 +57,28 @@ public interface FeedActionsHandler {
      * Interface for handling snackbar exit conditions.
      */
     public interface SnackbarController {
+        @Deprecated
+        default void onAction() {}
+
         /**
          * Called when the snackbar's action button is tapped.
+         *
+         * @param actionFinished Should be called when work associated with this action has been
+         *     completed.
          */
-        default void onAction() {}
+        default void onAction(Runnable actionFinished) {}
+
+        @Deprecated
+        default void onDismissNoAction() {}
+
         /**
          * Called when the snackbar is dismissed without the button being tapped (usually when it
          * times out).
+         *
+         * @param actionFinished Should be called when work associated with this action has been
+         *     completed.
          */
-        default void onDismissNoAction() {}
+        default void onDismissNoAction(Runnable actionFinished) {}
     }
 
     /**
