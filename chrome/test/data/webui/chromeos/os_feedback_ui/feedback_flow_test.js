@@ -146,6 +146,26 @@ export function FeedbackFlowTestSuite() {
     }
   }
 
+  /**
+   * @param {boolean} fromSettingsSearch
+   * @private
+   */
+  function setFromSettingsSearchFlag(fromSettingsSearch) {
+    if (fromSettingsSearch) {
+      const queryParams = new URLSearchParams(window.location.search);
+      const fromSettingsSearch = 'true';
+      queryParams.set(
+          AdditionalContextQueryParam.FROM_SETTINGS_SEARCH, fromSettingsSearch);
+
+      window.history.replaceState(null, '', '?' + queryParams.toString());
+    } else {
+      window.history.replaceState(
+          null, '',
+          '?' +
+              '');
+    }
+  }
+
   // Test that the search page is shown by default.
   test('SearchPageIsShownByDefault', async () => {
     await initializePage();
@@ -477,6 +497,68 @@ export function FeedbackFlowTestSuite() {
     fakeInternalUserFeedbackContext.fromAssistant = true;
   });
 
+  // Test the sys info and metrics checkbox will not be checked if
+  // fromSettingsSearch flag has been passed.
+  test(
+      'SysinfoAndMetricsCheckboxIsUncheckedWhenFeedbackIsSentFromSettingsSearch',
+      async () => {
+        // Replacing the query string to set the fromSettingsSearch flag as
+        // true.
+        setFromSettingsSearchFlag(true);
+        await initializePage();
+        const feedbackContext = getFeedbackContext_();
+        assertTrue(feedbackContext.fromSettingsSearch);
+
+        let activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage.shadowRoot.querySelector('textarea').value = 'text';
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        // Check the sys info and metrics checkbox component is unchecked when
+        // the feedback app has opened through settings search
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertEquals('shareDataPage', activePage.id);
+
+        const sysInfoAndMetricsCheckboxContainer =
+            activePage.shadowRoot.querySelector('#sysInfoContainer');
+        assertTrue(!!sysInfoAndMetricsCheckboxContainer);
+
+        const sysInfoAndMetricsCheckbox =
+            activePage.shadowRoot.querySelector('#sysInfoCheckbox');
+        assertTrue(!!sysInfoAndMetricsCheckbox);
+        assertFalse(sysInfoAndMetricsCheckbox.checked);
+      });
+
+  // Test the sys info and metrics checkbox will be checked if
+  // fromSettingsSearch flag not passed.
+  test(
+      'SysinfoAndMetricsCheckboxIsCheckedWhenFeedbackIsNotSentFromSettingsSearch',
+      async () => {
+        // Replacing the query string to set the fromSettingsSearch flag as
+        // false.
+        setFromSettingsSearchFlag(false);
+        await initializePage();
+        const feedbackContext = getFeedbackContext_();
+        assertFalse(feedbackContext.fromSettingsSearch);
+
+        let activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage.shadowRoot.querySelector('textarea').value = 'text';
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertEquals('shareDataPage', activePage.id);
+
+        const sysInfoAndMetricsContainer =
+            activePage.shadowRoot.querySelector('#sysInfoContainer');
+        assertTrue(!!sysInfoAndMetricsContainer);
+
+        const sysInfoAndMetricsCheckbox =
+            activePage.shadowRoot.querySelector('#sysInfoCheckbox');
+        assertTrue(!!sysInfoAndMetricsCheckbox);
+        assertTrue(sysInfoAndMetricsCheckbox.checked);
+      });
+
   // Test the navigation from confirmation page to search page after the
   // send new report button is clicked.
   test('NavigateFromConfirmationPageToSearchPage', async () => {
@@ -571,8 +653,8 @@ export function FeedbackFlowTestSuite() {
     assertEquals(1, feedbackServiceProvider.getFeedbackContextCallCount());
   });
 
-  // Test that the extra diagnostics, category tag, page_url and fromAssistant
-  // flag get set when query parameter is non-empty.
+  // Test that the extra diagnostics, category tag, page_url, fromAssistant
+  // and fromSettingsSearch flag get set when query parameter is non-empty.
   test(
       'AdditionalContextParametersProvidedInUrl_FeedbackContext_Matches',
       async () => {
@@ -596,6 +678,10 @@ export function FeedbackFlowTestSuite() {
         const from_assistant = 'true';
         queryParams.set(
             AdditionalContextQueryParam.FROM_ASSISTANT, from_assistant);
+        const fromSettingsSearch = 'true';
+        queryParams.set(
+            AdditionalContextQueryParam.FROM_SETTINGS_SEARCH,
+            fromSettingsSearch);
         // Replace current querystring with the new one.
         window.history.replaceState(null, '', '?' + queryParams.toString());
         await initializePage();
@@ -616,6 +702,7 @@ export function FeedbackFlowTestSuite() {
         assertEquals(
             decodeURIComponent(category_tag), feedbackContext.categoryTag);
         assertTrue(feedbackContext.fromAssistant);
+        assertTrue(feedbackContext.fromSettingsSearch);
 
         // Set the pageUrl in fake feedback context back to its origin value
         // because it's overwritten by the page_url passed from the app.
@@ -644,6 +731,7 @@ export function FeedbackFlowTestSuite() {
         assertEquals('', descriptionElement.value);
         assertEquals('', feedbackContext.categoryTag);
         assertFalse(feedbackContext.fromAssistant);
+        assertFalse(feedbackContext.fromSettingsSearch);
       });
 
   /**

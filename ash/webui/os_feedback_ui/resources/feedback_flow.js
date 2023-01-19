@@ -58,6 +58,7 @@ export const AdditionalContextQueryParam = {
   CATEGORY_TAG: 'category_tag',
   PAGE_URL: 'page_url',
   FROM_ASSISTANT: 'from_assistant',
+  FROM_SETTINGS_SEARCH: 'from_settings_search',
 };
 
 /**
@@ -185,7 +186,7 @@ export class FeedbackFlowElement extends PolymerElement {
     this.shouldShowBluetoothCheckbox_;
 
     /**
-     * Whether to show the bluetooth Logs checkbox in share data page.
+     * Whether to show the assistant checkbox in share data page.
      * @type {boolean}
      */
     this.shouldShowAssistantCheckbox_;
@@ -383,6 +384,9 @@ export class FeedbackFlowElement extends PolymerElement {
     const fromAssistant =
         params.get(AdditionalContextQueryParam.FROM_ASSISTANT);
     this.feedbackContext_.fromAssistant = !!fromAssistant;
+    const fromSettingsSearch =
+        params.get(AdditionalContextQueryParam.FROM_SETTINGS_SEARCH);
+    this.set('feedbackContext_.fromSettingsSearch', !!fromSettingsSearch);
   }
 
   /**

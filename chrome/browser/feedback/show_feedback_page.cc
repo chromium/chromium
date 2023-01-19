@@ -53,11 +53,13 @@ constexpr char kDescriptionTemplateQueryParam[] = "description_template";
 constexpr char kDescriptionPlaceholderQueryParam[] =
     "description_placeholder_text";
 constexpr char kFromAssistantQueryParam[] = "from_assistant";
+constexpr char kSettingsSearchFeedbackQueryParam[] = "from_settings_search";
 constexpr char kCategoryTagParam[] = "category_tag";
 constexpr char kPageURLParam[] = "page_url";
 constexpr char kQueryParamSeparator[] = "&";
 constexpr char kQueryParamKeyValueSeparator[] = "=";
 constexpr char kFromAssistantQueryParamValue[] = "true";
+constexpr char kSettingsSearchFeedbackQueryParamValue[] = "true";
 
 // Concat query parameter with escaped value.
 std::string StrCatQueryParam(const std::string query_param,
@@ -72,7 +74,7 @@ GURL BuildFeedbackUrl(const std::string extra_diagnostics,
                       const std::string description_placeholder_text,
                       const std::string category_tag,
                       const GURL page_url,
-                      bool from_assistant) {
+                      FeedbackSource source) {
   std::vector<std::string> query_params;
 
   if (!extra_diagnostics.empty()) {
@@ -99,9 +101,15 @@ GURL BuildFeedbackUrl(const std::string extra_diagnostics,
     query_params.emplace_back(StrCatQueryParam(kPageURLParam, page_url.spec()));
   }
 
-  if (from_assistant) {
+  if (source == kFeedbackSourceAssistant) {
     query_params.emplace_back(StrCatQueryParam(kFromAssistantQueryParam,
                                                kFromAssistantQueryParamValue));
+  }
+
+  if (source == kFeedbackSourceOsSettingsSearch) {
+    query_params.emplace_back(
+        StrCatQueryParam(kSettingsSearchFeedbackQueryParam,
+                         kSettingsSearchFeedbackQueryParamValue));
   }
 
   // Use default URL if no extra parameters to be added.
@@ -138,6 +146,7 @@ bool IsFromUserInteraction(FeedbackSource source) {
     case kFeedbackSourceNetworkHealthPage:
     case kFeedbackSourceMdSettingsAboutPage:
     case kFeedbackSourceOldSettingsAboutPage:
+    case kFeedbackSourceOsSettingsSearch:
     case kFeedbackSourceQuickAnswers:
     case kFeedbackSourceQuickOffice:
     case kFeedbackSourceSettingsPerformancePage:
@@ -190,7 +199,7 @@ void RequestFeedbackFlow(const GURL& page_url,
     ash::SystemAppLaunchParams params{};
     params.url = BuildFeedbackUrl(extra_diagnostics, description_template,
                                   description_placeholder_text, category_tag,
-                                  page_url, source == kFeedbackSourceAssistant);
+                                  page_url, source);
 
     ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
                                  std::move(params));

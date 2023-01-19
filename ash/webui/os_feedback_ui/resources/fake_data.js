@@ -83,6 +83,7 @@ export const fakeFeedbackContext = {
   isInternalAccount: false,
   fromAssistant: false,
   assistantDebugInfoAllowed: false,
+  fromSettingsSearch: false,
   traceId: 1,
 };
 
@@ -93,6 +94,7 @@ export const fakeEmptyFeedbackContext = {
   isInternalAccount: false,
   fromAssistant: false,
   assistantDebugInfoAllowed: false,
+  fromSettingsSearch: false,
   traceId: 0,
 };
 
@@ -103,6 +105,7 @@ export const fakeInternalUserFeedbackContext = {
   isInternalAccount: true,
   fromAssistant: true,
   assistantDebugInfoAllowed: false,
+  fromSettingsSearch: true,
   traceId: 1,
 };
 

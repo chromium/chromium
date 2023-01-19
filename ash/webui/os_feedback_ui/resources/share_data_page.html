@@ -262,7 +262,8 @@
       </div>
       <!-- System Information -->
       <div id="sysInfoContainer" class="checkbox-field-container">
-        <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
+        <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel"
+            checked="[[checkSysInfoAndMetrics_(feedbackContext.fromSettingsSearch)]]">
           <div id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"
               class="checkbox-label"></div>
         </cr-checkbox>

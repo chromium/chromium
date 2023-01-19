@@ -145,6 +145,20 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   }
 
   /**
+   * If feedback app has been requested from settings search, we do not need to
+   * collect system info and metrics data by default.
+   *
+   * @return {boolean}
+   * @protected
+   */
+  checkSysInfoAndMetrics_() {
+    if (!this.feedbackContext) {
+      return true;
+    }
+    return !this.feedbackContext.fromSettingsSearch;
+  }
+
+  /**
    * @return {boolean}
    * @protected
    */
