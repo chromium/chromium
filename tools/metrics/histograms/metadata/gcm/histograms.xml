@@ -222,12 +222,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.DeliveredToAppHandler" enum="BooleanDelivered"
-    expires_after="M92">
+    expires_after="2023-10-19">
   <owner>peter@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     Whether a received GCM message could be delivered to an app handler.
     Recorded for each received GCM message that didn't have encryption issues.
+    This metric was expired between July 2021 and January 2023, and may be
+    missing data until M111.
   </summary>
 </histogram>
 
