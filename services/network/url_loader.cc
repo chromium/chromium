@@ -2398,8 +2398,12 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
         response_->Clone(), std::move(consumer_handle), absl::nullopt);
   }
 
-  CompleteBlockedResponse(blocked_error_code,
-                          corb_analyzer_->ShouldReportBlockedResponse());
+  // At this point, corb_analyzer_ has done its duty. We'll reset it now
+  // to force UMA reporting to happen earlier, to support easier testing.
+  bool should_report_blocked_response =
+      corb_analyzer_->ShouldReportBlockedResponse();
+  corb_analyzer_.reset();
+  CompleteBlockedResponse(blocked_error_code, should_report_blocked_response);
 
   // If the factory is asking to complete requests of this type, then we need to
   // continue processing the response to make sure the network cache is
