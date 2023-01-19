@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
@@ -25,10 +25,10 @@ namespace blink {
   EXPECT_EQ(start, (item).StartOffset());          \
   EXPECT_EQ(end, (item).EndOffset());
 
-class NGInlineItemsBuilderTest : public NGLayoutTest {
+class NGInlineItemsBuilderTest : public RenderingTest {
  protected:
   void SetUp() override {
-    NGLayoutTest::SetUp();
+    RenderingTest::SetUp();
     style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
     block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_,
                                                    LegacyLayout::kAuto);
@@ -41,7 +41,7 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
   void TearDown() override {
     for (LayoutObject* anonymous_object : *anonymous_objects_)
       anonymous_object->Destroy();
-    NGLayoutTest::TearDown();
+    RenderingTest::TearDown();
   }
 
   LayoutBlockFlow* GetLayoutBlockFlow() const { return block_flow_; }

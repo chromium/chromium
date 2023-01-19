@@ -10,7 +10,7 @@
 
 namespace blink {
 
-class LayoutNGListItemTest : public NGLayoutTest {};
+class LayoutNGListItemTest : public RenderingTest {};
 
 namespace {
 

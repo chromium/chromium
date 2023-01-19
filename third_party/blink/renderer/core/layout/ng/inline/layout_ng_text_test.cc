@@ -10,11 +10,11 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
-class LayoutNGTextTest : public NGLayoutTest {
+class LayoutNGTextTest : public RenderingTest {
  protected:
   static constexpr unsigned kIncludeSnappedWidth = 1;
 

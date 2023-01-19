@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
-class LayoutNGFieldsetTest : public NGLayoutTest {};
+class LayoutNGFieldsetTest : public RenderingTest {};
 
 TEST_F(LayoutNGFieldsetTest, AddChildWhitespaceCrash) {
   SetBodyInnerHTML(R"HTML(

@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 namespace {
 
-using NGConstraintSpaceBuilderTest = NGLayoutTest;
+using NGConstraintSpaceBuilderTest = RenderingTest;
 
 // Asserts that indefinite inline length becomes initial containing
 // block width for horizontal-tb inside vertical document.

@@ -12,14 +12,14 @@
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
 using ::testing::ElementsAre;
 
-class LayoutNGTextCombineTest : public NGLayoutTest {
+class LayoutNGTextCombineTest : public RenderingTest {
  protected:
   std::string AsInkOverflowString(const LayoutBlockFlow& root) {
     std::ostringstream ostream;

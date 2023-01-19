@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class LayoutNGSVGForeignObjectTest : public NGLayoutTest {
+class LayoutNGSVGForeignObjectTest : public RenderingTest {
  public:
   LayoutNGSVGForeignObjectTest() = default;
 };

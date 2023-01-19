@@ -6,15 +6,13 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class NGPhysicalBoxFragmentTest : public NGLayoutTest {
+class NGPhysicalBoxFragmentTest : public RenderingTest {
  public:
-  NGPhysicalBoxFragmentTest() : NGLayoutTest() {}
-
   const NGPhysicalBoxFragment& GetBodyFragment() const {
     return *To<LayoutBlockFlow>(GetDocument().body()->GetLayoutObject())
                 ->GetPhysicalFragment(0);

@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_utils.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 namespace {
@@ -17,7 +17,7 @@ namespace {
 // Both have layout initially performed on them, however the "src" will have a
 // different |NGConstraintSpace| which is then used to test either a cache hit
 // or miss.
-class NGLayoutResultCachingTest : public NGLayoutTest {
+class NGLayoutResultCachingTest : public RenderingTest {
  protected:
   NGLayoutResultCachingTest() {}
 

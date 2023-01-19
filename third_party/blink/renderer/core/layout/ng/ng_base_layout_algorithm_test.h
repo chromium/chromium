@@ -8,7 +8,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -26,7 +25,7 @@ class NGPhysicalBoxFragment;
 typedef bool TestParamLayoutNG;
 class NGBaseLayoutAlgorithmTest
     : public testing::WithParamInterface<TestParamLayoutNG>,
-      public NGLayoutTest {
+      public RenderingTest {
  protected:
   void SetUp() override;
 

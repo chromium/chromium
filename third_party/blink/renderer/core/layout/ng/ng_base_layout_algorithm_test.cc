@@ -18,7 +18,7 @@ namespace blink {
 
 void NGBaseLayoutAlgorithmTest::SetUp() {
   EnableCompositing();
-  NGLayoutTest::SetUp();
+  RenderingTest::SetUp();
 }
 
 void NGBaseLayoutAlgorithmTest::AdvanceToLayoutPhase() {

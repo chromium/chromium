@@ -6,13 +6,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class NGFragmentItemsTest : public NGLayoutTest {};
+class NGFragmentItemsTest : public RenderingTest {};
 
 // crbug.com/1147357
 // DirtyLinesFromNeedsLayout() didn't work well with an orthogonal writing-mode

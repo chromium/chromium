@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -91,7 +91,7 @@ class NGLengthUtilsTest : public testing::Test {
   scoped_refptr<const ComputedStyle> initial_style_;
 };
 
-class NGLengthUtilsTestWithNode : public NGLayoutTest {
+class NGLengthUtilsTestWithNode : public RenderingTest {
  public:
   LayoutUnit ComputeInlineSizeForFragment(
       const NGBlockNode& node,

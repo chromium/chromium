@@ -32,7 +32,7 @@ String ToString(NGInlineItemResults line, NGInlineNode node) {
   return builder.ToString();
 }
 
-class NGLineBreakerTest : public NGLayoutTest {
+class NGLineBreakerTest : public RenderingTest {
  protected:
   NGInlineNode CreateInlineNode(const String& html_content) {
     SetBodyInnerHTML(html_content);

@@ -5,13 +5,11 @@
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
-// We don't test legacy layout because it's deprecated, and we don't want to
-// complicate the test with the legacy LayoutListMarker here.
-class ListMarkerTest : public NGLayoutTest {
+class ListMarkerTest : public RenderingTest {
  protected:
   LayoutObject* GetMarker(const char* list_item_id) {
     LayoutNGListItem* list_item =

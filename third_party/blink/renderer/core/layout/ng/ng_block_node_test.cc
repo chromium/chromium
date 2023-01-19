@@ -6,12 +6,12 @@
 
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 namespace {
 
-using NGBlockNodeForTest = NGLayoutTest;
+using NGBlockNodeForTest = RenderingTest;
 
 TEST_F(NGBlockNodeForTest, IsFloatingForOutOfFlowFloating) {
   SetBodyInnerHTML(R"HTML(

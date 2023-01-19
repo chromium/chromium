@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -89,7 +89,7 @@ void PrintTo(const base::span<const NGOffsetMappingUnit>& range,
   PrintTo(ToVector(range), ostream);
 }
 
-class NGOffsetMappingTest : public NGLayoutTest {
+class NGOffsetMappingTest : public RenderingTest {
  protected:
   static const auto kCollapsed = NGOffsetMappingUnitType::kCollapsed;
   static const auto kIdentity = NGOffsetMappingUnitType::kIdentity;

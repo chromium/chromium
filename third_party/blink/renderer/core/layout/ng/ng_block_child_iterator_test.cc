@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
@@ -33,7 +33,7 @@ const NGBlockBreakToken* CreateBreakToken(
   return NGBlockBreakToken::Create(&builder);
 }
 
-using NGBlockChildIteratorTest = NGLayoutTest;
+using NGBlockChildIteratorTest = RenderingTest;
 
 TEST_F(NGBlockChildIteratorTest, NullFirstChild) {
   NGBlockChildIterator iterator(nullptr, nullptr);

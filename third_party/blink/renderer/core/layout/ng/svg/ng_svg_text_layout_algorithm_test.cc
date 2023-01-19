@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
-class NGSVGTextLayoutAlgorithmTest : public NGLayoutTest {};
+class NGSVGTextLayoutAlgorithmTest : public RenderingTest {};
 
 // We had a crash in a case where connected characters are hidden.
 TEST_F(NGSVGTextLayoutAlgorithmTest, PositionOnPathCrash) {

@@ -12,13 +12,13 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 using testing::ElementsAre;
 
 namespace blink {
 
-class NGFragmentItemsBuilderTest : public NGLayoutTest {};
+class NGFragmentItemsBuilderTest : public RenderingTest {};
 
 TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
   SetBodyInnerHTML(R"HTML(

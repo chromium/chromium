@@ -12,8 +12,8 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
@@ -55,7 +55,7 @@ Vector<String> LayoutObjectToDebugStringList(NGInlineCursor cursor) {
   return list;
 }
 
-class NGInlineCursorTest : public NGLayoutTest,
+class NGInlineCursorTest : public RenderingTest,
                            public testing::WithParamInterface<bool> {
  protected:
   NGInlineCursor SetupCursor(const String& html) {
@@ -1235,7 +1235,7 @@ TEST_P(NGInlineCursorTest, MoveToVisualFirstOrLast) {
   EXPECT_EQ("NGPhysicalTextFragment 'some'", cursor2.Current()->ToString());
 }
 
-class NGInlineCursorBlockFragmentationTest : public NGLayoutTest {};
+class NGInlineCursorBlockFragmentationTest : public RenderingTest {};
 
 TEST_F(NGInlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   // This creates 3 columns, 1 line in each column.

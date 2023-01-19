@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
-class LayoutBlockFlowTest : public NGLayoutTest {};
+class LayoutBlockFlowTest : public RenderingTest {};
 
 // crbug.com/1253159.  We had a bug that a legacy IFC LayoutBlockFlow didn't
 // call RecalcVisualOverflow() for children.

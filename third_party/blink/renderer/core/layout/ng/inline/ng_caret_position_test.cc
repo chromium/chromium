@@ -9,16 +9,14 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
-class NGCaretPositionTest : public NGLayoutTest {
+class NGCaretPositionTest : public RenderingTest {
  public:
-  NGCaretPositionTest() : NGLayoutTest() {}
-
   void SetUp() override {
-    NGLayoutTest::SetUp();
+    RenderingTest::SetUp();
     LoadAhem();
   }
 

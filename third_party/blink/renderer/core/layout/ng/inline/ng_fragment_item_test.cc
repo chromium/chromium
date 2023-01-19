@@ -10,15 +10,15 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 using testing::ElementsAre;
 
 namespace blink {
 
-class NGFragmentItemTest : public NGLayoutTest {
+class NGFragmentItemTest : public RenderingTest {
  public:
   void ForceLayout() { RunDocumentLifecycle(); }
 

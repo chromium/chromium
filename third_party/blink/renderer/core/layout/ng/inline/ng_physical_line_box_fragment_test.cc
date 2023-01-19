@@ -5,15 +5,12 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
-class NGPhysicalLineBoxFragmentTest : public NGLayoutTest {
- public:
-  NGPhysicalLineBoxFragmentTest() : NGLayoutTest() {}
-
+class NGPhysicalLineBoxFragmentTest : public RenderingTest {
  protected:
   HeapVector<Member<const NGPhysicalLineBoxFragment>> GetLineBoxes() const {
     const Element* container = GetElementById("root");
