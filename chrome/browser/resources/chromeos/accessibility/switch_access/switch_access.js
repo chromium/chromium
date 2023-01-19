@@ -12,6 +12,9 @@ import {PreferenceManager} from './preference_manager.js';
 import {SAConstants} from './switch_access_constants.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
+const FindParams = chrome.automation.FindParams;
+const RoleType = chrome.automation.RoleType;
 
 /**
  * The top-level class for the Switch Access accessibility feature. Handles
@@ -23,35 +26,41 @@ export class SwitchAccess {
     SwitchAccess.instance = new SwitchAccess();
 
     const desktop = await AsyncUtil.getDesktop();
-    const focus = await AsyncUtil.getFocus();
+    const currentFocus = await AsyncUtil.getFocus();
 
+    SwitchAccess.waitForFocus_(desktop, currentFocus);
+  }
+
+  /**
+   * @param {!AutomationNode} desktop
+   * @param {AutomationNode} currentFocus
+   * @private
+   */
+  static waitForFocus_(desktop, currentFocus) {
     // Focus is available. Finish init without waiting for further events.
     // Disallow web view nodes, which indicate a root web area is still
     // loading and pending focus.
-    if (focus && focus.role !== chrome.automation.RoleType.WEB_VIEW) {
+    if (currentFocus && currentFocus.role !== RoleType.WEB_VIEW) {
       SwitchAccess.finishInit_(desktop);
       return;
     }
 
-    // Wait for the focus to be sent. If |focus| was undefined, this is
+    // Wait for the focus to be sent. If |currentFocus| was undefined, this is
     // guaranteed. Otherwise, also set a timed callback to ensure we do
     // eventually init.
     let callbackId = 0;
     const listener = maybeEvent => {
-      if (maybeEvent &&
-          maybeEvent.target.role === chrome.automation.RoleType.WEB_VIEW) {
+      if (maybeEvent && maybeEvent.target.role === RoleType.WEB_VIEW) {
         return;
       }
 
-      desktop.removeEventListener(
-          chrome.automation.EventType.FOCUS, listener, false);
+      desktop.removeEventListener(EventType.FOCUS, listener, false);
       clearTimeout(callbackId);
 
       SwitchAccess.finishInit_(desktop);
     };
 
-    desktop.addEventListener(
-        chrome.automation.EventType.FOCUS, listener, false);
+    desktop.addEventListener(EventType.FOCUS, listener, false);
     callbackId = setTimeout(listener, 5000);
   }
 
@@ -95,7 +104,7 @@ export class SwitchAccess {
    * Helper function to robustly find a node fitting a given FindParams, even if
    * that node has not yet been created.
    * Used to find the menu and back button.
-   * @param {!chrome.automation.FindParams} findParams
+   * @param {!FindParams} findParams
    * @param {!function(!AutomationNode): void} foundCallback
    */
   static findNodeMatching(findParams, foundCallback) {
@@ -109,8 +118,7 @@ export class SwitchAccess {
     // If it's not currently in the tree, listen for changes to the desktop
     // tree.
     const eventHandler = new EventHandler(
-        desktop, chrome.automation.EventType.CHILDREN_CHANGED,
-        null /** callback */);
+        desktop, EventType.CHILDREN_CHANGED, null /** callback */);
 
     const onEvent = event => {
       if (event.target.matches(findParams)) {
