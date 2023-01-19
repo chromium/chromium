@@ -36,14 +36,18 @@ base::Value Normalizer::MapObject(
     const chromeos::onc::OncValueSignature& signature,
     const base::Value& onc_object,
     bool* error) {
-  base::Value normalized =
+  base::Value normalized_value =
       chromeos::onc::Mapper::MapObject(signature, onc_object, error);
 
-  if (normalized.is_none())
+  if (normalized_value.is_none()) {
     return {};
+  }
+
+  DCHECK(normalized_value.is_dict());
+  base::Value::Dict& normalized = normalized_value.GetDict();
 
   if (remove_recommended_fields_)
-    normalized.RemoveKey(::onc::kRecommended);
+    normalized.Remove(::onc::kRecommended);
 
   if (&signature == &chromeos::onc::kCertificateSignature)
     NormalizeCertificate(&normalized);
@@ -64,40 +68,35 @@ base::Value Normalizer::MapObject(
   else if (&signature == &chromeos::onc::kWiFiSignature)
     NormalizeWiFi(&normalized);
 
-  return normalized;
+  return base::Value(std::move(normalized));
 }
 
 namespace {
 
-void RemoveEntryUnless(base::Value* dict,
+void RemoveEntryUnless(base::Value::Dict* dict,
                        const std::string& path,
                        bool condition) {
-  DCHECK(dict->is_dict());
-  if (!condition && dict->GetDict().contains(path)) {
+  if (!condition && dict->contains(path)) {
     NET_LOG(ERROR) << "onc::Normalizer:Removing: " << path;
-    dict->GetDict().Remove(path);
+    dict->Remove(path);
   }
 }
 
-bool IsIpConfigTypeStatic(base::Value* network,
+bool IsIpConfigTypeStatic(base::Value::Dict* network,
                           const std::string& ip_config_type_key) {
-  DCHECK(network->is_dict());
-  base::Value* ip_config_type =
-      network->FindKeyOfType(ip_config_type_key, base::Value::Type::STRING);
-
-  return ip_config_type && ip_config_type->GetString() ==
-                               ::onc::network_config::kIPConfigTypeStatic;
+  std::string* ip_config_type = network->FindString(ip_config_type_key);
+  return ip_config_type &&
+         (*ip_config_type) == ::onc::network_config::kIPConfigTypeStatic;
 }
 
-std::string GetString(const base::Value& dict, const char* key) {
-  DCHECK(dict.is_dict());
-  const std::string* value = dict.FindStringKey(key);
+std::string GetString(const base::Value::Dict& dict, const char* key) {
+  const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
 
 }  // namespace
 
-void Normalizer::NormalizeCertificate(base::Value* cert) {
+void Normalizer::NormalizeCertificate(base::Value::Dict* cert) {
   std::string type = GetString(*cert, ::onc::certificate::kType);
   RemoveEntryUnless(cert, ::onc::certificate::kPKCS12,
                     type == ::onc::certificate::kClient);
@@ -109,13 +108,13 @@ void Normalizer::NormalizeCertificate(base::Value* cert) {
                         type == ::onc::certificate::kAuthority);
 }
 
-void Normalizer::NormalizeEthernet(base::Value* ethernet) {
+void Normalizer::NormalizeEthernet(base::Value::Dict* ethernet) {
   std::string auth = GetString(*ethernet, ::onc::ethernet::kAuthentication);
   RemoveEntryUnless(ethernet, ::onc::ethernet::kEAP,
                     auth == ::onc::ethernet::k8021X);
 }
 
-void Normalizer::NormalizeEAP(base::Value* eap) {
+void Normalizer::NormalizeEAP(base::Value::Dict* eap) {
   std::string clientcert_type =
       GetString(*eap, ::onc::client_cert::kClientCertType);
   RemoveEntryUnless(eap, ::onc::client_cert::kClientCertPattern,
@@ -136,7 +135,7 @@ void Normalizer::NormalizeEAP(base::Value* eap) {
                         outer == ::onc::eap::kEAP_FAST);
 }
 
-void Normalizer::NormalizeIPsec(base::Value* ipsec) {
+void Normalizer::NormalizeIPsec(base::Value::Dict* ipsec) {
   std::string auth_type = GetString(*ipsec, ::onc::ipsec::kAuthenticationType);
   RemoveEntryUnless(ipsec, ::onc::client_cert::kClientCertType,
                     auth_type == ::onc::ipsec::kCert);
@@ -156,19 +155,19 @@ void Normalizer::NormalizeIPsec(base::Value* ipsec) {
       ipsec, ::onc::client_cert::kClientCertProvisioningProfileId,
       clientcert_type == ::onc::client_cert::kProvisioningProfileId);
 
-  int ike_version = ipsec->FindIntKey(::onc::ipsec::kIKEVersion).value_or(-1);
+  int ike_version = ipsec->FindInt(::onc::ipsec::kIKEVersion).value_or(-1);
   RemoveEntryUnless(ipsec, ::onc::ipsec::kEAP, ike_version == 2);
   RemoveEntryUnless(ipsec, ::onc::ipsec::kGroup, ike_version == 1);
   RemoveEntryUnless(ipsec, ::onc::ipsec::kXAUTH, ike_version == 1);
 }
 
-void Normalizer::NormalizeNetworkConfiguration(base::Value* network) {
-  bool remove = network->FindBoolKey(::onc::kRemove).value_or(false);
+void Normalizer::NormalizeNetworkConfiguration(base::Value::Dict* network) {
+  bool remove = network->FindBool(::onc::kRemove).value_or(false);
   if (remove) {
-    network->RemoveKey(::onc::network_config::kStaticIPConfig);
-    network->RemoveKey(::onc::network_config::kName);
-    network->RemoveKey(::onc::network_config::kProxySettings);
-    network->RemoveKey(::onc::network_config::kType);
+    network->Remove(::onc::network_config::kStaticIPConfig);
+    network->Remove(::onc::network_config::kName);
+    network->Remove(::onc::network_config::kProxySettings);
+    network->Remove(::onc::network_config::kType);
     // Fields dependent on kType are removed afterwards, too.
   }
 
@@ -183,7 +182,7 @@ void Normalizer::NormalizeNetworkConfiguration(base::Value* network) {
   NormalizeStaticIPConfigForNetwork(network);
 }
 
-void Normalizer::NormalizeOpenVPN(base::Value* openvpn) {
+void Normalizer::NormalizeOpenVPN(base::Value::Dict* openvpn) {
   std::string clientcert_type =
       GetString(*openvpn, ::onc::client_cert::kClientCertType);
   RemoveEntryUnless(openvpn, ::onc::client_cert::kClientCertPattern,
@@ -194,23 +193,22 @@ void Normalizer::NormalizeOpenVPN(base::Value* openvpn) {
       openvpn, ::onc::client_cert::kClientCertProvisioningProfileId,
       clientcert_type == ::onc::client_cert::kProvisioningProfileId);
 
-  base::Value* user_auth_type_value = openvpn->FindKeyOfType(
-      ::onc::openvpn::kUserAuthenticationType, base::Value::Type::STRING);
+  const std::string* user_auth_type =
+      openvpn->FindString(::onc::openvpn::kUserAuthenticationType);
   // If UserAuthenticationType is unspecified, do not strip Password and OTP.
-  if (user_auth_type_value) {
-    std::string user_auth_type = user_auth_type_value->GetString();
+  if (user_auth_type) {
     RemoveEntryUnless(
         openvpn, ::onc::openvpn::kPassword,
-        user_auth_type == ::onc::openvpn_user_auth_type::kPassword ||
-            user_auth_type == ::onc::openvpn_user_auth_type::kPasswordAndOTP);
+        *user_auth_type == ::onc::openvpn_user_auth_type::kPassword ||
+            *user_auth_type == ::onc::openvpn_user_auth_type::kPasswordAndOTP);
     RemoveEntryUnless(
         openvpn, ::onc::openvpn::kOTP,
-        user_auth_type == ::onc::openvpn_user_auth_type::kOTP ||
-            user_auth_type == ::onc::openvpn_user_auth_type::kPasswordAndOTP);
+        *user_auth_type == ::onc::openvpn_user_auth_type::kOTP ||
+            *user_auth_type == ::onc::openvpn_user_auth_type::kPasswordAndOTP);
   }
 
   const std::string* compression_algorithm =
-      openvpn->FindStringKey(::onc::openvpn::kCompressionAlgorithm);
+      openvpn->FindString(::onc::openvpn::kCompressionAlgorithm);
   if (compression_algorithm) {
     RemoveEntryUnless(
         openvpn, ::onc::openvpn::kCompressionAlgorithm,
@@ -218,7 +216,7 @@ void Normalizer::NormalizeOpenVPN(base::Value* openvpn) {
   }
 }
 
-void Normalizer::NormalizeProxySettings(base::Value* proxy) {
+void Normalizer::NormalizeProxySettings(base::Value::Dict* proxy) {
   std::string type = GetString(*proxy, ::onc::proxy::kType);
   RemoveEntryUnless(proxy, ::onc::proxy::kManual,
                     type == ::onc::proxy::kManual);
@@ -227,7 +225,7 @@ void Normalizer::NormalizeProxySettings(base::Value* proxy) {
   RemoveEntryUnless(proxy, ::onc::proxy::kPAC, type == ::onc::proxy::kPAC);
 }
 
-void Normalizer::NormalizeVPN(base::Value* vpn) {
+void Normalizer::NormalizeVPN(base::Value::Dict* vpn) {
   std::string type = GetString(*vpn, ::onc::vpn::kType);
   RemoveEntryUnless(vpn, ::onc::vpn::kOpenVPN, type == ::onc::vpn::kOpenVPN);
   RemoveEntryUnless(vpn, ::onc::vpn::kWireGuard,
@@ -242,7 +240,7 @@ void Normalizer::NormalizeVPN(base::Value* vpn) {
   RemoveEntryUnless(vpn, ::onc::vpn::kArcVpn, type == ::onc::vpn::kArcVpn);
 }
 
-void Normalizer::NormalizeWiFi(base::Value* wifi) {
+void Normalizer::NormalizeWiFi(base::Value::Dict* wifi) {
   std::string security = GetString(*wifi, ::onc::wifi::kSecurity);
   RemoveEntryUnless(
       wifi, ::onc::wifi::kEAP,
@@ -250,29 +248,27 @@ void Normalizer::NormalizeWiFi(base::Value* wifi) {
   RemoveEntryUnless(
       wifi, ::onc::wifi::kPassphrase,
       security == ::onc::wifi::kWEP_PSK || security == ::onc::wifi::kWPA_PSK);
-  chromeos::onc::FillInHexSSIDField(wifi->GetDict());
+  chromeos::onc::FillInHexSSIDField(*wifi);
 }
 
-void Normalizer::NormalizeStaticIPConfigForNetwork(base::Value* network) {
+void Normalizer::NormalizeStaticIPConfigForNetwork(base::Value::Dict* network) {
   const bool ip_config_type_is_static = IsIpConfigTypeStatic(
       network, ::onc::network_config::kIPAddressConfigType);
   const bool name_servers_type_is_static = IsIpConfigTypeStatic(
       network, ::onc::network_config::kNameServersConfigType);
 
-  base::Value* static_ip_config = network->FindKeyOfType(
-      ::onc::network_config::kStaticIPConfig, base::Value::Type::DICTIONARY);
+  base::Value::Dict* static_ip_config =
+      network->FindDict(::onc::network_config::kStaticIPConfig);
   bool all_ip_fields_exist = false;
   bool name_servers_exist = false;
   if (static_ip_config) {
-    const base::Value::Dict& static_ip_config_dict =
-        static_ip_config->GetDict();
     all_ip_fields_exist =
-        static_ip_config_dict.contains(::onc::ipconfig::kIPAddress) &&
-        static_ip_config_dict.contains(::onc::ipconfig::kGateway) &&
-        static_ip_config_dict.contains(::onc::ipconfig::kRoutingPrefix);
+        static_ip_config->contains(::onc::ipconfig::kIPAddress) &&
+        static_ip_config->contains(::onc::ipconfig::kGateway) &&
+        static_ip_config->contains(::onc::ipconfig::kRoutingPrefix);
 
     name_servers_exist =
-        static_ip_config_dict.contains(::onc::ipconfig::kNameServers);
+        static_ip_config->contains(::onc::ipconfig::kNameServers);
 
     RemoveEntryUnless(static_ip_config, ::onc::ipconfig::kIPAddress,
                       all_ip_fields_exist && ip_config_type_is_static);
@@ -285,7 +281,7 @@ void Normalizer::NormalizeStaticIPConfigForNetwork(base::Value* network) {
                       name_servers_type_is_static);
 
     RemoveEntryUnless(network, ::onc::network_config::kStaticIPConfig,
-                      !static_ip_config->DictEmpty());
+                      !static_ip_config->empty());
   }
 
   RemoveEntryUnless(network, ::onc::network_config::kIPAddressConfigType,
