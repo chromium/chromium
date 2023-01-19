@@ -57,13 +57,23 @@ if (toolchain_has_rust) {
   group("cxx_rustdeps") {
     public_deps = [ "//third_party/rust/cxx/v1:lib" ]
   }
+}
 
-  # Enables code behind #[cfg(test)]. This should only be used for targets where
-  # testonly=true.
-  config("test") {
-    rustflags = [
-      "--cfg",
-      "test",
-    ]
-  }
+# Enables code behind #[cfg(test)]. This should only be used for targets where
+# testonly=true.
+config("test") {
+  rustflags = [
+    "--cfg",
+    "test",
+  ]
+}
+
+# TODO(crbug.com/gn/104): GN rust_proc_macro targets are missing this
+# command line flag, for the proc_macro crate which is provided by rustc for
+# compiling proc-macros.
+config("proc_macro_extern") {
+  rustflags = [
+    "--extern",
+    "proc_macro",
+  ]
 }

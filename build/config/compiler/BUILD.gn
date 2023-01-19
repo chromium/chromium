@@ -887,9 +887,6 @@ config("compiler") {
   if (rust_abi_target != "") {
     rustflags += [ "--target=$rust_abi_target" ]
   }
-  if (use_lto_in_rustc_linking) {
-    rustflags += [ "-Clinker-plugin-lto" ]
-  }
   if (!use_thin_lto || !use_chromium_rust_toolchain) {
     # Don't include bitcode if it won't be used, or can't be used. When
     # use_thin_lto is true, we will try to apply LTO to any objects that have
@@ -900,6 +897,21 @@ config("compiler") {
   }
   if (is_official_build) {
     rustflags += [ "-Ccodegen-units=1" ]
+  }
+}
+
+# Defers LTO optimization to the linker, for use when:
+# * Having the C++ toolchain do the linking against Rust staticlibs, and it
+#   will be using LTO.
+# * Having Rust toolchain invoke the linker, and you're linking Rust and C++
+#   together, so this defers LTO to the linker.
+#
+# Otherwise, Rust does LTO during compilation.
+#
+# https://doc.rust-lang.org/rustc/linker-plugin-lto.html
+config("rust_defer_lto_to_linker") {
+  if (!is_debug && use_thin_lto && is_a_target_toolchain) {
+    rustflags = [ "-Clinker-plugin-lto" ]
   }
 }
 
@@ -914,6 +926,8 @@ config("thinlto_optimize_default") {
     } else {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
     }
+
+    rustflags = [ "-Clto=thin" ]
   }
 }
 
@@ -938,6 +952,8 @@ config("thinlto_optimize_max") {
     } else {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
     }
+
+    rustflags = [ "-Clto=thin" ]
   }
 }
 

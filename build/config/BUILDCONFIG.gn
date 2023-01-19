@@ -398,14 +398,16 @@ if (is_debug) {
 # Static libraries and source sets use only the compiler ones.
 set_defaults("static_library") {
   configs = default_compiler_configs
+
+  # For Rust, a static library involves linking in all dependencies, and it
+  # performs LTO. But since we will perform LTO in the C++ linker which
+  # consumes the library, we defer LTO from Rust into the linker.
+  configs += [ "//build/config/compiler:rust_defer_lto_to_linker" ]
 }
 set_defaults("source_set") {
   configs = default_compiler_configs
 }
 set_defaults("rust_library") {
-  configs = default_compiler_configs
-}
-set_defaults("rust_proc_macro") {
   configs = default_compiler_configs
 }
 
@@ -470,6 +472,22 @@ set_defaults("loadable_module") {
   if (is_android) {
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   }
+}
+
+default_rust_proc_macro_configs =
+    default_shared_library_configs + [ "//build/rust:proc_macro_extern" ] +
+    # Rust proc macros don't support (Thin)LTO, so always remove it.
+    [
+      "//build/config/compiler:thinlto_optimize_default",
+      "//build/config/compiler:thinlto_optimize_max",
+    ] -
+    [
+      "//build/config/compiler:thinlto_optimize_default",
+      "//build/config/compiler:thinlto_optimize_max",
+    ]
+
+set_defaults("rust_proc_macro") {
+  configs = default_rust_proc_macro_configs
 }
 
 # A helper for forwarding testonly and visibility.

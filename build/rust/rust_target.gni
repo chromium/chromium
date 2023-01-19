@@ -116,6 +116,10 @@ template("rust_target") {
     if (defined(invoker.executable_configs)) {
       _configs += invoker.executable_configs
     }
+  } else if (invoker.target_type == "rust_proc_macro") {
+    if (defined(invoker.proc_macro_configs)) {
+      _configs += invoker.proc_macro_configs
+    }
   } else {
     if (defined(invoker.library_configs)) {
       _configs += invoker.library_configs
@@ -123,14 +127,6 @@ template("rust_target") {
   }
   _forward_to_host_toolchain = false
   if (invoker.target_type == "rust_proc_macro") {
-    # TODO(crbug.com/gn/104): GN rust_proc_macro targets are missing this
-    # command line flag, for the proc_macro crate which is provided by rustc for
-    # compiling proc-macros.
-    _rustflags += [
-      "--extern",
-      "proc_macro",
-    ]
-
     if (current_toolchain != host_toolchain) {
       _forward_to_host_toolchain = true
     }
@@ -214,6 +210,7 @@ template("rust_target") {
                  "_out_dir",
                  "_public_deps",
                  "_rustenv",
+                 "_rustflags",
                  "_support_use_from_cpp",
                  "_test_deps",
                  "_testonly",
@@ -375,4 +372,5 @@ template("rust_target") {
 set_defaults("rust_target") {
   executable_configs = default_executable_configs
   library_configs = default_compiler_configs
+  proc_macro_configs = default_rust_proc_macro_configs
 }
