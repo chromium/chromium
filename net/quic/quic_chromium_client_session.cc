@@ -3244,18 +3244,21 @@ void QuicChromiumClientSession::FinishStartProbing(
     case CHANGE_PORT_ON_PATH_DEGRADING:
       ValidatePath(
           std::move(context),
-          std::make_unique<PortMigrationValidationResultDelegate>(this));
+          std::make_unique<PortMigrationValidationResultDelegate>(this),
+          quic::PathValidationReason::kPortMigration);
       break;
     case ON_SERVER_PREFERRED_ADDRESS_AVAILABLE:
       ValidatePath(
           std::move(context),
           std::make_unique<ServerPreferredAddressValidationResultDelegate>(
-              this));
+              this),
+          quic::PathValidationReason::kServerPreferredAddressMigration);
       break;
     default:
       ValidatePath(
           std::move(context),
-          std::make_unique<ConnectionMigrationValidationResultDelegate>(this));
+          std::make_unique<ConnectionMigrationValidationResultDelegate>(this),
+          quic::PathValidationReason::kConnectionMigration);
       break;
   }
 
