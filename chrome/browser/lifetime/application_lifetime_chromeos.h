@@ -33,6 +33,9 @@ void SetSendStopRequestToSessionManager(bool should_send_request = true);
 // will reboot.
 void StopSession();
 
+// Records MarkAsCleanShutdown is called to clean the exit type.
+void LogMarkAsCleanShutdown();
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_CHROMEOS_H_

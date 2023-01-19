@@ -153,4 +153,13 @@ void StopSession() {
   }
 }
 
+void LogMarkAsCleanShutdown() {
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+  VLOG(1) << "Set the current session exit type as clean.";
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL -1
+}
+
 }  // namespace chrome

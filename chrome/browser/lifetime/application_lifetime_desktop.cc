@@ -278,6 +278,7 @@ base::CallbackListSubscription AddClosingAllBrowsersCallback(
 
 void MarkAsCleanShutdown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  LogMarkAsCleanShutdown();
   // Tracks profiles that have pending write of the exit type.
   std::set<Profile*> pending_profiles;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
