@@ -154,7 +154,7 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
         passEncoder.setPipeline(blitPipeline);
         passEncoder.setBindGroup(0, bindGroup);
         passEncoder.draw(4, 1, 0, 0);
-        passEncoder.endPass();
+        passEncoder.end();
 
         device.queue.submit([commandEncoder.finish()]);
     },
@@ -260,7 +260,7 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
       passEncoder.setPipeline(blitPipeline);
       passEncoder.setBindGroup(0, bindGroup);
       passEncoder.draw(4, 1, 0, 0);
-      passEncoder.endPass();
+      passEncoder.end();
 
       device.queue.submit([commandEncoder.finish()]);
     },
@@ -327,7 +327,7 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
       passEncoder.setScissorRect(width / 2, 0, width / 2, height / 2);
       passEncoder.draw(4, 1, 0, 0);
 
-      passEncoder.endPass();
+      passEncoder.end();
       device.queue.submit([commandEncoder.finish()]);
     },
   };

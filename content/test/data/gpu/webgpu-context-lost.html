@@ -98,7 +98,7 @@
         };
 
         const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
-        passEncoder.endPass();
+        passEncoder.end();
 
         device.queue.submit([commandEncoder.finish()]);
         if (lostJustHappened) {

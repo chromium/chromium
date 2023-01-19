@@ -164,7 +164,7 @@ fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
           passEncoder.setPipeline(pipeline);
           passEncoder.setBindGroup(0, bindGroup);
           passEncoder.draw(6);
-          passEncoder.endPass();
+          passEncoder.end();
           device.queue.submit([commandEncoder.finish()]);
 
           requestAnimationFrame(frame);

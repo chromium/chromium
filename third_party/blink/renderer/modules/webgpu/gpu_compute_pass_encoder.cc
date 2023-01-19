@@ -67,29 +67,4 @@ void GPUComputePassEncoder::writeTimestamp(
       GetHandle(), querySet->GetHandle(), queryIndex);
 }
 
-void GPUComputePassEncoder::endPass() {
-  device_->AddConsoleWarning(
-      "endPass() has been deprecated and will soon be "
-      "removed. Use end() instead.");
-  end();
-}
-
-void GPUComputePassEncoder::dispatch(uint32_t workgroup_count_x,
-                                     uint32_t workgroup_count_y,
-                                     uint32_t workgroup_count_z) {
-  device_->AddConsoleWarning(
-      "dispatch() has been deprecated and will soon be "
-      "removed. Use dispatchWorkgroups() instead.");
-  dispatchWorkgroups(workgroup_count_x, workgroup_count_y, workgroup_count_z);
-}
-
-void GPUComputePassEncoder::dispatchIndirect(
-    const DawnObject<WGPUBuffer>* indirectBuffer,
-    uint64_t indirectOffset) {
-  device_->AddConsoleWarning(
-      "dispatchIndirect() has been deprecated and will soon be "
-      "removed. Use dispatchWorkgroupsIndirect() instead.");
-  dispatchWorkgroupsIndirect(indirectBuffer, indirectOffset);
-}
-
 }  // namespace blink

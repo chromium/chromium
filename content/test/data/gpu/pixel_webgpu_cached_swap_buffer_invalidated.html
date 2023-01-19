@@ -63,7 +63,7 @@ if the current texture for the frame was acquired but not rendered to.
 
           const commandEncoder = device.createCommandEncoder();
           const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
-          passEncoder.endPass();
+          passEncoder.end();
           device.queue.submit([commandEncoder.finish()]);
 
           window.requestAnimationFrame(renderCallback);

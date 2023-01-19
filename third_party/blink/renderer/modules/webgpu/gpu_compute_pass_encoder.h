@@ -65,16 +65,10 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
     GetProcs().computePassEncoderDispatchWorkgroupsIndirect(
         GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
   }
-  void dispatch(uint32_t workgroup_count_x,
-                uint32_t workgroup_count_y,
-                uint32_t workgroup_count_z);
-  void dispatchIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
-                        uint64_t indirectOffset);
   void writeTimestamp(const DawnObject<WGPUQuerySet>* querySet,
                       uint32_t queryIndex,
                       ExceptionState& exception_state);
   void end() { GetProcs().computePassEncoderEnd(GetHandle()); }
-  void endPass();
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();

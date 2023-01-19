@@ -82,7 +82,7 @@
           for (let i = 0; i < iterations; ++i) {
             passEncoder.draw(3, 1, 0, 0);
           }
-          passEncoder.endPass();
+          passEncoder.end();
 
           device.queue.submit([commandEncoder.finish()]);
         }

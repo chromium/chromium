@@ -141,7 +141,6 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
                       uint32_t queryIndex,
                       ExceptionState& exception_state);
   void end() { GetProcs().renderPassEncoderEnd(GetHandle()); }
-  void endPass();
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
