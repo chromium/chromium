@@ -80,14 +80,15 @@ TEST(OptionalTrustTokenParams, CopyAndMove) {
 
 TEST(OptionalTrustTokenParams, Dereference) {
   OptionalTrustTokenParams in = NonemptyTrustTokenParams();
-  EXPECT_EQ(in->type, mojom::TrustTokenOperationType::kRedemption);
-  EXPECT_EQ(in.as_ptr()->type, mojom::TrustTokenOperationType::kRedemption);
-  EXPECT_EQ(in.value().type, mojom::TrustTokenOperationType::kRedemption);
+  EXPECT_EQ(in->operation, mojom::TrustTokenOperationType::kRedemption);
+  EXPECT_EQ(in.as_ptr()->operation,
+            mojom::TrustTokenOperationType::kRedemption);
+  EXPECT_EQ(in.value().operation, mojom::TrustTokenOperationType::kRedemption);
 }
 
 TEST(OptionalTrustTokenParams, DereferenceEmpty) {
   OptionalTrustTokenParams in = absl::nullopt;
-  EXPECT_CHECK_DEATH(std::ignore = in->type);
+  EXPECT_CHECK_DEATH(std::ignore = in->operation);
   EXPECT_CHECK_DEATH(std::ignore = in.value());
   EXPECT_EQ(in.as_ptr(), mojom::TrustTokenParamsPtr());
 }

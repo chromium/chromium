@@ -15,7 +15,8 @@ namespace blink {
 namespace internal {
 
 namespace {
-bool ParseType(const String& in, network::mojom::TrustTokenOperationType* out) {
+bool ParseOperation(const String& in,
+                    network::mojom::TrustTokenOperationType* out) {
   if (in == "token-request") {
     *out = network::mojom::TrustTokenOperationType::kIssuance;
     return true;
@@ -54,12 +55,14 @@ network::mojom::blink::TrustTokenParamsPtr TrustTokenParamsFromJson(
 
   auto ret = network::mojom::blink::TrustTokenParams::New();
 
-  // |type| is required.
-  String type;
-  if (!object->GetString("type", &type))
+  // |operation| is required.
+  String operation;
+  if (!object->GetString("operation", &operation)) {
     return nullptr;
-  if (!ParseType(type, &ret->type))
+  }
+  if (!ParseOperation(operation, &ret->operation)) {
     return nullptr;
+  }
 
   // |refreshPolicy| is optional.
   if (JSONValue* refresh_policy = object->Get("refreshPolicy")) {

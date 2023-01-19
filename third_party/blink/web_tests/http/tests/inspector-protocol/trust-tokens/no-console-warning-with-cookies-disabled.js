@@ -18,7 +18,7 @@
   await session.evaluate(`testRunner.setBlockThirdPartyCookies(true);`);
 
   const obtainedError = await session.evaluateAsync(`
-      fetch('/issue', {trustToken:{type:'token-request'}}).catch((e)=>e.toString());
+      fetch('/issue', {trustToken:{operation:'token-request'}}).catch((e)=>e.toString());
         `);
   testRunner.log(`Trust Tokens operation concluded with expected failure, throwing exception "${obtainedError}".`);
 

@@ -206,7 +206,7 @@ TrustTokenRequestSigningHelper::CollectOperationResultWithStatus(
   mojom::TrustTokenOperationResultPtr operation_result =
       mojom::TrustTokenOperationResult::New();
   operation_result->status = status;
-  operation_result->type = mojom::TrustTokenOperationType::kRedemption;
+  operation_result->operation = mojom::TrustTokenOperationType::kRedemption;
   operation_result->top_level_origin = params_.toplevel;
   return operation_result;
 }

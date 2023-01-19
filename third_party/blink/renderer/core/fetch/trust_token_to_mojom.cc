@@ -13,14 +13,15 @@ using RefreshPolicy = V8RefreshPolicy::Enum;
 bool ConvertTrustTokenToMojom(const TrustToken& in,
                               ExceptionState* exception_state,
                               network::mojom::blink::TrustTokenParams* out) {
-  DCHECK(in.hasType());  // field is required in IDL
-  if (in.type().AsEnum() == OperationType::kTokenRequest) {
-    out->type = network::mojom::blink::TrustTokenOperationType::kIssuance;
+  DCHECK(in.hasOperation());  // field is required in IDL
+  if (in.operation().AsEnum() == OperationType::kTokenRequest) {
+    out->operation = network::mojom::blink::TrustTokenOperationType::kIssuance;
     return true;
   }
 
-  if (in.type().AsEnum() == OperationType::kTokenRedemption) {
-    out->type = network::mojom::blink::TrustTokenOperationType::kRedemption;
+  if (in.operation().AsEnum() == OperationType::kTokenRedemption) {
+    out->operation =
+        network::mojom::blink::TrustTokenOperationType::kRedemption;
 
     DCHECK(in.hasRefreshPolicy());  // default is defined
 
@@ -35,8 +36,8 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
   }
 
   // The final possible value of the type enum.
-  DCHECK_EQ(in.type().AsEnum(), OperationType::kSendRedemptionRecord);
-  out->type = network::mojom::blink::TrustTokenOperationType::kSigning;
+  DCHECK_EQ(in.operation().AsEnum(), OperationType::kSendRedemptionRecord);
+  out->operation = network::mojom::blink::TrustTokenOperationType::kSigning;
 
   if (in.hasIssuers() && !in.issuers().empty()) {
     for (const String& issuer : in.issuers()) {

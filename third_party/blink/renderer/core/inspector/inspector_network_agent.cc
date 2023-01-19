@@ -617,8 +617,8 @@ std::unique_ptr<protocol::Network::WebSocketFrame> WebSocketMessageToProtocol(
 }
 
 String GetTrustTokenOperationType(
-    network::mojom::TrustTokenOperationType type) {
-  switch (type) {
+    network::mojom::TrustTokenOperationType operation) {
+  switch (operation) {
     case network::mojom::TrustTokenOperationType::kIssuance:
       return protocol::Network::TrustTokenOperationTypeEnum::Issuance;
     case network::mojom::TrustTokenOperationType::kRedemption:
@@ -642,7 +642,7 @@ std::unique_ptr<protocol::Network::TrustTokenParams> BuildTrustTokenParams(
     const network::mojom::blink::TrustTokenParams& params) {
   auto protocol_params =
       protocol::Network::TrustTokenParams::create()
-          .setType(GetTrustTokenOperationType(params.type))
+          .setOperation(GetTrustTokenOperationType(params.operation))
           .setRefreshPolicy(GetTrustTokenRefreshPolicy(params.refresh_policy))
           .build();
 

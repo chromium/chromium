@@ -19,7 +19,7 @@ namespace {
 network::mojom::blink::TrustTokenParamsPtr NetworkParamsToBlinkParams(
     network::mojom::TrustTokenParamsPtr params) {
   auto ret = network::mojom::blink::TrustTokenParams::New();
-  ret->type = params->type;
+  ret->operation = params->operation;
   ret->refresh_policy = params->refresh_policy;
   for (const url::Origin& issuer : params->issuers) {
     ret->issuers.push_back(SecurityOrigin::CreateFromUrlOrigin(issuer));
@@ -72,7 +72,7 @@ TEST_P(TrustTokenAttributeParsingSuccess, Roundtrip) {
   // well with the "issuers" field's members' type of
   // scoped_refptr<blink::SecurityOrigin>: in particular, the method does an
   // address-to-address comparison of the pointers.
-  EXPECT_EQ(result->type, expectation->type);
+  EXPECT_EQ(result->operation, expectation->operation);
   EXPECT_EQ(result->refresh_policy, expectation->refresh_policy);
 
   EXPECT_EQ(result->issuers.size(), expectation->issuers.size());
@@ -93,7 +93,7 @@ TEST(TrustTokenAttributeParsing, NotADictionary) {
   ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
 }
 
-TEST(TrustTokenAttributeParsing, MissingType) {
+TEST(TrustTokenAttributeParsing, MissingOperation) {
   auto json = ParseJSON(R"(
     { }
   )");
@@ -101,17 +101,17 @@ TEST(TrustTokenAttributeParsing, MissingType) {
   ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
 }
 
-TEST(TrustTokenAttributeParsing, TypeUnsafeType) {
+TEST(TrustTokenAttributeParsing, TypeUnsafeOperation) {
   auto json = ParseJSON(R"(
-    { "type": 3 }
+    { "operation": 3 }
   )");
   ASSERT_TRUE(json);
   ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
 }
 
-TEST(TrustTokenAttributeParsing, InvalidType) {
+TEST(TrustTokenAttributeParsing, InvalidOperation) {
   auto json = ParseJSON(R"(
-    { "type": "not a valid type" }
+    { "operation": "not a valid type" }
   )");
   ASSERT_TRUE(json);
   ASSERT_FALSE(TrustTokenParamsFromJson(std::move(json)));
@@ -119,7 +119,7 @@ TEST(TrustTokenAttributeParsing, InvalidType) {
 
 TEST(TrustTokenAttributeParsing, TypeUnsafeRefreshPolicy) {
   auto json = ParseJSON(R"(
-    { "type": "token-request",
+    { "operation": "token-request",
       "refreshPolicy": 3 }
   )");
   ASSERT_TRUE(json);
@@ -128,7 +128,7 @@ TEST(TrustTokenAttributeParsing, TypeUnsafeRefreshPolicy) {
 
 TEST(TrustTokenAttributeParsing, InvalidRefreshPolicy) {
   auto json = ParseJSON(R"(
-    { "type": "token-request",
+    { "operation": "token-request",
       "refreshPolicy": "not a valid refresh policy" }
   )");
   ASSERT_TRUE(json);
@@ -137,7 +137,7 @@ TEST(TrustTokenAttributeParsing, InvalidRefreshPolicy) {
 
 TEST(TrustTokenAttributeParsing, NonListIssuers) {
   auto json = ParseJSON(R"(
-    { "type": "token-request",
+    { "operation": "token-request",
       "issuers": 3 }
   )");
   ASSERT_TRUE(json);
@@ -146,7 +146,7 @@ TEST(TrustTokenAttributeParsing, NonListIssuers) {
 
 TEST(TrustTokenAttributeParsing, EmptyIssuers) {
   auto json = ParseJSON(R"(
-    { "type": "token-request",
+    { "operation": "token-request",
       "issuers": [] }
   )");
   ASSERT_TRUE(json);
@@ -156,7 +156,7 @@ TEST(TrustTokenAttributeParsing, EmptyIssuers) {
 TEST(TrustTokenAttributeParsing, WrongListTypeIssuers) {
   JSONParseError err;
   auto json = ParseJSON(R"(
-    { "type": "token-request",
+    { "operation": "token-request",
       "issuers": [1995] }
   )",
                         &err);
@@ -168,7 +168,7 @@ TEST(TrustTokenAttributeParsing, WrongListTypeIssuers) {
 TEST(TrustTokenAttributeParsing, NonUrlIssuer) {
   JSONParseError err;
   auto json = ParseJSON(R"(
-    { "type": "token-request",
+    { "operation": "token-request",
       "issuers": ["https://ok.test", "not a URL"] }
   )",
                         &err);
@@ -180,7 +180,7 @@ TEST(TrustTokenAttributeParsing, NonUrlIssuer) {
 // trustworthy origin.
 TEST(TrustTokenAttributeParsing, InsecureIssuer) {
   auto json = ParseJSON(R"(
-    { "type": "token-request",
+    { "operation": "token-request",
       "issuers": ["https://trustworthy.example",
                   "http://not-potentially-trustworthy.example"] }
   )");
@@ -192,7 +192,7 @@ TEST(TrustTokenAttributeParsing, InsecureIssuer) {
 // HTTPS origin.
 TEST(TrustTokenAttributeParsing, NonHttpNonHttpsIssuer) {
   auto json = ParseJSON(R"(
-    { "type": "token-request",
+    { "operation": "token-request",
       "issuers": ["https://ok.test", "file:///"] }
   )");
   ASSERT_TRUE(json);

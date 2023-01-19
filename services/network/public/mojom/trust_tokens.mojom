@@ -119,9 +119,9 @@ enum TrustTokenSignRequestData {
 // operation.
 struct TrustTokenParams {
   // Required.
-  TrustTokenOperationType type;
+  TrustTokenOperationType operation;
 
-  // Required exactly when "type" is "kRedemption"; specifies whether the
+  // Required exactly when "operation" is "kRedemption"; specifies whether the
   // caller wishes to use a cached Redemption Record (RR) if available or
   // redeem a new token, evicting the RR currently stored.
   TrustTokenRefreshPolicy refresh_policy = kUseCached;
@@ -133,7 +133,7 @@ struct TrustTokenParams {
   // "custom_issuer" specifies what issuer to use for this operation if set.
   url.mojom.Origin? custom_issuer;
 
-  // The remaining members are used only when "type" is "kSigning": these
+  // The remaining members are used only when "operation" is "kSigning": these
   // parameters specify the manner in which the outgoing request should be
   // signed, including optionally specifying additional data to add in
   // browser-provided request headers (for instance, a timestamp or custom
@@ -296,10 +296,10 @@ struct FulfillTrustTokenIssuanceAnswer {
 };
 
 // TrustTokenOperationResult contains all the information required by
-// DevTools. Which fields are set depend on |type| and |status|.
+// DevTools. Which fields are set depend on |operation| and |status|.
 struct TrustTokenOperationResult {
   // Required.
-  TrustTokenOperationType type;
+  TrustTokenOperationType operation;
   TrustTokenOperationStatus status;
 
   // Shared among the different operation types.

@@ -12,7 +12,7 @@
     let request = new XMLHttpRequest();
     request.open('GET', 'https://trusttoken.test');
     request.setTrustToken({
-      type: 'token-request'
+      operation: 'token-request'
     });
     request.onerror = t.step_func(() => {
       assert_equals(request.trustTokenOperationError.name, "InvalidStateError");
@@ -27,7 +27,7 @@
     let request = new XMLHttpRequest();
     request.open('GET', 'https://trusttoken.test');
     request.setTrustToken({
-      type: 'token-redemption'
+      operation: 'token-redemption'
     });
     request.onerror = t.step_func(() => {
       assert_equals(request.trustTokenOperationError.name, "InvalidStateError");
@@ -42,7 +42,7 @@
       let request = new XMLHttpRequest();
       request.open('GET', 'https://destination.test');
       request.setTrustToken({
-        type: 'send-redemption-record',
+        operation: 'send-redemption-record',
         issuers: ['https://issuer.test']
       });
       request.onerror = t.step_func(() => {

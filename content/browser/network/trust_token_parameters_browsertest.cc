@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
 
   // In the iframe interface to private state tokens, we only accept the
   // kSigning variant, i.e. the send-redemption-record operation.
-  if (expected_params_and_serialization.params->type !=
+  if (expected_params_and_serialization.params->operation !=
       network::mojom::TrustTokenOperationType::kSigning) {
     return;
   }

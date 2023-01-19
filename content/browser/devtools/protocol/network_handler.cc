@@ -2040,8 +2040,8 @@ Maybe<String> GetBlockedReasonFor(
 }
 
 String GetTrustTokenOperationType(
-    network::mojom::TrustTokenOperationType type) {
-  switch (type) {
+    network::mojom::TrustTokenOperationType operation) {
+  switch (operation) {
     case network::mojom::TrustTokenOperationType::kIssuance:
       return protocol::Network::TrustTokenOperationTypeEnum::Issuance;
     case network::mojom::TrustTokenOperationType::kRedemption:
@@ -2065,7 +2065,7 @@ std::unique_ptr<protocol::Network::TrustTokenParams> BuildTrustTokenParams(
     const network::mojom::TrustTokenParams& params) {
   auto protocol_params =
       protocol::Network::TrustTokenParams::Create()
-          .SetType(GetTrustTokenOperationType(params.type))
+          .SetOperation(GetTrustTokenOperationType(params.operation))
           .SetRefreshPolicy(GetTrustTokenRefreshPolicy(params.refresh_policy))
           .Build();
 
@@ -3199,7 +3199,7 @@ void NetworkHandler::OnTrustTokenOperationDone(
 
   frontend()->TrustTokenOperationDone(
       GetTrustTokenOperationStatus(result.status),
-      GetTrustTokenOperationType(result.type), devtools_request_id,
+      GetTrustTokenOperationType(result.operation), devtools_request_id,
       std::move(top_level_origin), std::move(issuer),
       result.issued_token_count);
 }

@@ -58,7 +58,7 @@ class TrustTokenRequestHelperFactoryTest : public ::testing::Test {
   TrustTokenRequestHelperFactoryTest() {
     suitable_request_ = CreateSuitableRequest();
     suitable_params_ = mojom::TrustTokenParams::New();
-    suitable_params_->type = mojom::TrustTokenOperationType::kSigning;
+    suitable_params_->operation = mojom::TrustTokenOperationType::kSigning;
     suitable_params_->issuers.push_back(
         url::Origin::Create(GURL("https://issuer.example")));
   }
@@ -180,7 +180,7 @@ TEST_F(TrustTokenRequestHelperFactoryTest,
   auto request = CreateSuitableRequest();
 
   auto params = suitable_signing_params().Clone();
-  params->type = mojom::TrustTokenOperationType::kSigning;
+  params->operation = mojom::TrustTokenOperationType::kSigning;
   params->issuers.clear();
 
   EXPECT_EQ(CreateHelperAndWaitForResult(*request, *params).status(),
@@ -213,7 +213,7 @@ TEST_F(TrustTokenRequestHelperFactoryTest,
   auto request = CreateSuitableRequest();
 
   auto params = suitable_signing_params().Clone();
-  params->type = mojom::TrustTokenOperationType::kSigning;
+  params->operation = mojom::TrustTokenOperationType::kSigning;
   params->possibly_unsafe_additional_signing_data =
       std::string(kTrustTokenAdditionalSigningDataMaxSizeBytes, 'a');
 
@@ -225,7 +225,7 @@ TEST_F(TrustTokenRequestHelperFactoryTest,
 TEST_F(TrustTokenRequestHelperFactoryTest, CreatesSigningHelper) {
   base::HistogramTester histogram_tester;
   auto params = suitable_signing_params().Clone();
-  params->type = mojom::TrustTokenOperationType::kSigning;
+  params->operation = mojom::TrustTokenOperationType::kSigning;
 
   auto result = CreateHelperAndWaitForResult(suitable_request(), *params);
   ASSERT_TRUE(result.ok());
@@ -239,7 +239,7 @@ TEST_F(TrustTokenRequestHelperFactoryTest, CreatesSigningHelper) {
 TEST_F(TrustTokenRequestHelperFactoryTest, CreatesIssuanceHelper) {
   base::HistogramTester histogram_tester;
   auto params = suitable_signing_params().Clone();
-  params->type = mojom::TrustTokenOperationType::kIssuance;
+  params->operation = mojom::TrustTokenOperationType::kIssuance;
 
   auto result = CreateHelperAndWaitForResult(suitable_request(), *params);
   ASSERT_TRUE(result.ok());
@@ -253,7 +253,7 @@ TEST_F(TrustTokenRequestHelperFactoryTest, CreatesIssuanceHelper) {
 TEST_F(TrustTokenRequestHelperFactoryTest, CreatesRedemptionHelper) {
   base::HistogramTester histogram_tester;
   auto params = suitable_signing_params().Clone();
-  params->type = mojom::TrustTokenOperationType::kRedemption;
+  params->operation = mojom::TrustTokenOperationType::kRedemption;
 
   auto result = CreateHelperAndWaitForResult(suitable_request(), *params);
   ASSERT_TRUE(result.ok());

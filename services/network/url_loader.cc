@@ -922,7 +922,7 @@ void URLLoader::BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(
   // get the corresponding response header. It is okay to cache the results in
   // case subsequent requests are made to the same URL in non-trust-token
   // settings.
-  if (request.trust_token_params->type !=
+  if (request.trust_token_params->operation !=
       mojom::TrustTokenOperationType::kSigning) {
     url_request_->SetLoadFlags(url_request_->load_flags() |
                                net::LOAD_BYPASS_CACHE);
@@ -938,11 +938,11 @@ void URLLoader::BeginTrustTokenOperationIfNecessaryAndThenScheduleStart(
       url_request_->net_log(),
       base::BindOnce(&URLLoader::OnDoneConstructingTrustTokenHelper,
                      weak_ptr_factory_.GetWeakPtr(),
-                     request.trust_token_params->type));
+                     request.trust_token_params->operation));
 }
 
 void URLLoader::OnDoneConstructingTrustTokenHelper(
-    mojom::TrustTokenOperationType type,
+    mojom::TrustTokenOperationType operation,
     TrustTokenStatusOrRequestHelper status_or_helper) {
   if (trust_token_observer_) {
     const net::IsolationInfo& isolation_info = url_request_->isolation_info();
@@ -973,7 +973,7 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
       mojom::TrustTokenOperationResultPtr operation_result =
           mojom::TrustTokenOperationResult::New();
       operation_result->status = *trust_token_status_;
-      operation_result->type = type;
+      operation_result->operation = operation;
       devtools_observer_->OnTrustTokenOperationDone(
           devtools_request_id().value(), std::move(operation_result));
     }

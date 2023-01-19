@@ -934,7 +934,7 @@ void CorsURLLoader::StartNetworkRequest() {
 
 void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
   if (request_.trust_token_params) {
-    HistogramTrustTokenOperationNetError(request_.trust_token_params->type,
+    HistogramTrustTokenOperationNetError(request_.trust_token_params->operation,
                                          status.trust_token_operation_status,
                                          status.error_code);
   }

@@ -36,7 +36,7 @@
 //
 // As an example, consider
 //
-//    fetch("https://chromium.org", {trustToken: {type: 'token-request'}}),
+//    fetch("https://chromium.org", {trustToken: {operation: 'token-request'}}),
 //
 // a representative fetch with an associated Trust Tokens issuance operation.
 // When Trust Tokens is completely disabled (e.g. "third-party origin trial"

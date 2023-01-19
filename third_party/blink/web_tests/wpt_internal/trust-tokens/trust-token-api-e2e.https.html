@@ -9,7 +9,7 @@
 
     promise_test(function () {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
-            trustToken: { type: 'token-request' }
+            trustToken: { operation: 'token-request' }
         }).then(function (response) {
             assert_equals(response.status, 200);
             assert_equals(response.headers.get('Sec-Trust-Token'), null);
@@ -18,7 +18,7 @@
 
     promise_test(function () {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
-            trustToken: { type: 'token-redemption' }
+            trustToken: { operation: 'token-redemption' }
         }).then(function (response) {
             assert_equals(response.status, 200);
             assert_equals(response.headers.get('Sec-Trust-Token'), null);
@@ -29,7 +29,7 @@
         const host_info = get_host_info();
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_send_redemption_record.py', {
             trustToken: {
-                type: 'send-redemption-record',
+                operation: 'send-redemption-record',
                 issuers: [host_info.ORIGIN]
             }
         }).then(function (response) {

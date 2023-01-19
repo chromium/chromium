@@ -675,7 +675,7 @@ bool ParentNeedsTrustTokenPermissionsPolicy(
     return false;
 
   return network::DoesTrustTokenOperationRequirePermissionsPolicy(
-      begin_params.trust_token_params->type);
+      begin_params.trust_token_params->operation);
 }
 
 // Analyzes trusted sources of a frame's trust-token-redemption Permissions

@@ -512,7 +512,7 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
 
   // Only the send-redemption-record (the kSigning variant) operation is
   // valid in the iframe context.
-  if (parsed_params->type !=
+  if (parsed_params->operation !=
       network::mojom::blink::TrustTokenOperationType::kSigning) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,

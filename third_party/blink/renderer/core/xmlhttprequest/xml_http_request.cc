@@ -1435,9 +1435,10 @@ void XMLHttpRequest::setTrustToken(const TrustToken* trust_token,
   }
 
   bool operation_requires_permissions_policy =
-      params->type ==
+      params->operation ==
           network::mojom::blink::TrustTokenOperationType::kRedemption ||
-      params->type == network::mojom::blink::TrustTokenOperationType::kSigning;
+      params->operation ==
+          network::mojom::blink::TrustTokenOperationType::kSigning;
   if (operation_requires_permissions_policy &&
       !GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
@@ -1448,7 +1449,7 @@ void XMLHttpRequest::setTrustToken(const TrustToken* trust_token,
     return;
   }
 
-  if (params->type ==
+  if (params->operation ==
           network::mojom::blink::TrustTokenOperationType::kIssuance &&
       !IsTrustTokenIssuanceAvailableInExecutionContext(
           *GetExecutionContext())) {

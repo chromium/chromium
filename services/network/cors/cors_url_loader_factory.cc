@@ -69,7 +69,7 @@ bool VerifyTrustTokenParamsIntegrityIfPresent(
   if (trust_token_redemption_policy ==
           mojom::TrustTokenRedemptionPolicy::kForbid &&
       DoesTrustTokenOperationRequirePermissionsPolicy(
-          resource_request.trust_token_params->type)) {
+          resource_request.trust_token_params->operation)) {
     // Got a request configured for Trust Tokens redemption or signing from
     // a context in which this operation is prohibited.
     mojo::ReportBadMessage(

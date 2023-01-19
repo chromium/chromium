@@ -590,8 +590,8 @@ Request* Request::CreateRequestWithRequestOrString(
       return nullptr;
     }
 
-    if ((params.type == TrustTokenOperationType::kRedemption ||
-         params.type == TrustTokenOperationType::kSigning) &&
+    if ((params.operation == TrustTokenOperationType::kRedemption ||
+         params.operation == TrustTokenOperationType::kSigning) &&
         !execution_context->IsFeatureEnabled(
             mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
       exception_state.ThrowTypeError(
@@ -602,7 +602,7 @@ Request* Request::CreateRequestWithRequestOrString(
       return nullptr;
     }
 
-    if (params.type == TrustTokenOperationType::kIssuance &&
+    if (params.operation == TrustTokenOperationType::kIssuance &&
         !IsTrustTokenIssuanceAvailableInExecutionContext(*execution_context)) {
       exception_state.ThrowTypeError(
           "trustToken: Issuance ('token-request') is disabled except in "

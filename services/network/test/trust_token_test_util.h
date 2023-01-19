@@ -106,7 +106,7 @@ struct TrustTokenTestParameters final {
   // TrustTokenTestParameters (when serialized, nullopt in an optional field
   // will be omitted from the parameter's value):
   TrustTokenTestParameters(
-      mojom::TrustTokenOperationType type,
+      mojom::TrustTokenOperationType operation,
       absl::optional<mojom::TrustTokenRefreshPolicy> refresh_policy,
       absl::optional<std::vector<std::string>> issuer_specs);
 
@@ -115,7 +115,7 @@ struct TrustTokenTestParameters final {
   TrustTokenTestParameters(const TrustTokenTestParameters&);
   TrustTokenTestParameters& operator=(const TrustTokenTestParameters&);
 
-  mojom::TrustTokenOperationType type;
+  mojom::TrustTokenOperationType operation;
   absl::optional<mojom::TrustTokenRefreshPolicy> refresh_policy;
   // Because static initialization of GURLs/Origins isn't allowed in tests, use
   // the string representation of the issuer origins and convert them to Origins
@@ -126,7 +126,7 @@ struct TrustTokenTestParameters final {
 // Serializes the value of a Trust Tokens enum parameter to its JS string
 // representation. Must be kept in sync with the corresponding IDL enum
 // definition.
-std::string TrustTokenEnumToString(mojom::TrustTokenOperationType type);
+std::string TrustTokenEnumToString(mojom::TrustTokenOperationType operation);
 std::string TrustTokenEnumToString(mojom::TrustTokenRefreshPolicy policy);
 std::string TrustTokenEnumToString(
     mojom::TrustTokenSignRequestData sign_request_data);

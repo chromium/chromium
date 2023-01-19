@@ -7245,7 +7245,7 @@ TEST_F(NetworkContextExpectBadMessageTest,
   ResourceRequest my_request;
   my_request.trust_token_params =
       OptionalTrustTokenParams(mojom::TrustTokenParams::New());
-  my_request.trust_token_params->type =
+  my_request.trust_token_params->operation =
       mojom::TrustTokenOperationType::kRedemption;
 
   auto factory_params = mojom::URLLoaderFactoryParams::New();
@@ -7275,7 +7275,7 @@ TEST_F(NetworkContextExpectBadMessageTest,
   ResourceRequest my_request;
   my_request.trust_token_params =
       OptionalTrustTokenParams(mojom::TrustTokenParams::New());
-  my_request.trust_token_params->type =
+  my_request.trust_token_params->operation =
       mojom::TrustTokenOperationType::kSigning;
 
   auto factory_params = mojom::URLLoaderFactoryParams::New();

@@ -15,7 +15,7 @@
       });
       return fetch('https://trusttoken.test', {
         trustToken: {
-          type: 'token-request'
+          operation: 'token-request'
         }
       });
     })(), 'Trust Token issuance should error.'),
@@ -28,7 +28,7 @@
       });
       return fetch('https://trusttoken.test', {
         trustToken: {
-          type: 'token-redemption'
+          operation: 'token-redemption'
         }
       });
     })(), 'Trust Token redemption should error.'),
@@ -41,7 +41,7 @@
       });
       return fetch('https://destination.test', {
         trustToken: {
-          type: 'send-redemption-record',
+          operation: 'send-redemption-record',
           issuers: ['https://issuer.test']
         }
       });

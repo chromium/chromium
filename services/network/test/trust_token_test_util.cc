@@ -75,8 +75,8 @@ TrustTokenRequestHelperTest::ExecuteFinalizeAndWaitForResult(
   return status;
 }
 
-std::string TrustTokenEnumToString(mojom::TrustTokenOperationType type) {
-  switch (type) {
+std::string TrustTokenEnumToString(mojom::TrustTokenOperationType operation) {
+  switch (operation) {
     case mojom::TrustTokenOperationType::kIssuance:
       return "token-request";
     case mojom::TrustTokenOperationType::kRedemption:
@@ -128,10 +128,12 @@ TrustTokenTestParameters& TrustTokenTestParameters::operator=(
     const TrustTokenTestParameters&) = default;
 
 TrustTokenTestParameters::TrustTokenTestParameters(
-    network::mojom::TrustTokenOperationType type,
+    network::mojom::TrustTokenOperationType operation,
     absl::optional<network::mojom::TrustTokenRefreshPolicy> refresh_policy,
     absl::optional<std::vector<std::string>> issuer_specs)
-    : type(type), refresh_policy(refresh_policy), issuer_specs(issuer_specs) {}
+    : operation(operation),
+      refresh_policy(refresh_policy),
+      issuer_specs(issuer_specs) {}
 
 TrustTokenParametersAndSerialization
 SerializeTrustTokenParametersAndConstructExpectation(
@@ -139,8 +141,8 @@ SerializeTrustTokenParametersAndConstructExpectation(
   auto trust_token_params = mojom::TrustTokenParams::New();
 
   base::Value parameters(base::Value::Type::DICTIONARY);
-  parameters.SetStringKey("type", TrustTokenEnumToString(input.type));
-  trust_token_params->type = input.type;
+  parameters.SetStringKey("operation", TrustTokenEnumToString(input.operation));
+  trust_token_params->operation = input.operation;
 
   if (input.refresh_policy.has_value()) {
     parameters.SetStringKey("refreshPolicy",

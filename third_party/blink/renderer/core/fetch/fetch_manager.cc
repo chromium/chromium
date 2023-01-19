@@ -533,7 +533,7 @@ void FetchManager::Loader::DidFail(uint64_t identifier,
                                    const ResourceError& error) {
   if (fetch_request_data_ && fetch_request_data_->TrustTokenParams()) {
     HistogramNetErrorForTrustTokensOperation(
-        fetch_request_data_->TrustTokenParams()->type, error.ErrorCode());
+        fetch_request_data_->TrustTokenParams()->operation, error.ErrorCode());
   }
 
   if (error.TrustTokenOperationError() !=

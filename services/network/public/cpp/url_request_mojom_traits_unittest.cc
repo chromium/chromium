@@ -119,7 +119,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.trust_token_params = network::mojom::TrustTokenParams();
   original.trust_token_params->issuers.push_back(
       url::Origin::Create(GURL("https://issuer.com")));
-  original.trust_token_params->type =
+  original.trust_token_params->operation =
       mojom::TrustTokenOperationType::kRedemption;
   original.trust_token_params->include_timestamp_header = true;
   original.trust_token_params->sign_request_data =
