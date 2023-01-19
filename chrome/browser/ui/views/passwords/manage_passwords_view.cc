@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -25,11 +26,13 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -48,11 +51,14 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
+  // Title insets assume there is content (and thus have no bottom padding). Use
+  // dialog insets to get the bottom margin back.
+  set_title_margins(
+      ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   // Set the right and left margins to 0 such that the `page_container_` fills
-  // the whole page bubble width.
-  set_margins(ChromeLayoutProvider::Get()
-                  ->GetInsetsMetric(views::INSETS_DIALOG)
-                  .set_left_right(0, 0));
+  // the whole page bubble width. Top margin is handled by the title above, and
+  // remove bottom margin such that `page_container_` can assign it if needed.
+  set_margins(gfx::Insets());
 
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(CreatePasswordListView()));
@@ -168,6 +174,32 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
                                        ui::kColorIcon),
         /*state_icon=*/absl::nullopt));
   }
+
+  container_view->AddChildView(std::make_unique<views::Separator>());
+
+  container_view->AddChildView(std::make_unique<RichHoverButton>(
+      base::BindRepeating(
+          [](ManagePasswordsView* view) {
+            view->controller_.OnManageClicked(
+                password_manager::ManagePasswordsReferrer::
+                    kManagePasswordsBubble);
+            view->CloseBubble();
+          },
+          base::Unretained(this)),
+      /*main_image_icon=*/
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                     ui::kColorIcon),
+      /*title_text=*/
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
+      /*secondary_text=*/std::u16string(),
+      /*tooltip_text=*/
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
+      /*subtitle_text=*/std::u16string(),
+      /*action_image_icon=*/
+      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                     ui::kColorIconSecondary,
+                                     GetLayoutConstant(PAGE_INFO_ICON_SIZE)),
+      /*state_icon=*/absl::nullopt));
   return container_view;
 }
 
