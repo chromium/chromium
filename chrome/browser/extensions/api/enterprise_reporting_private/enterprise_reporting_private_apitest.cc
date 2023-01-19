@@ -703,9 +703,14 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
+// // TODO(http://crbug.com/1408618): Failing consistently on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GetFileSystemInfo_Success DISABLED_GetFileSystemInfo_Success
+#else
+#define MAYBE_GetFileSystemInfo_Success GetFileSystemInfo_Success
+#endif
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
-                       GetFileSystemInfo_Success) {
+                       MAYBE_GetFileSystemInfo_Success) {
   // Use the test runner process and binary as test parameters, as it will always
   // be running.
   auto test_runner_file_path =
@@ -888,8 +893,14 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
+// TODO(http://crbug.com/1408618): Failing consistently on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GetPlistSettings_Success DISABLED_GetPlistSettings_Success
+#else
+#define MAYBE_GetPlistSettings_Success GetPlistSettings_Success
+#endif
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
-                       GetPlistSettings_Success) {
+                       MAYBE_GetPlistSettings_Success) {
   constexpr char kTest[] = R"(
       chrome.test.assertEq(
         'function',
