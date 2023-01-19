@@ -112,8 +112,6 @@ class OzoneImageBacking::OverlayOzoneImageRepresentation
   }
 };
 
-OzoneImageBacking::~OzoneImageBacking() = default;
-
 SharedImageBackingType OzoneImageBacking::GetType() const {
   return SharedImageBackingType::kOzone;
 }
@@ -287,6 +285,14 @@ OzoneImageBacking::OzoneImageBacking(
     last_write_stream_ = used_by_gl ? AccessStream::kGL
                                     : (used_by_vulkan ? AccessStream::kVulkan
                                                       : AccessStream::kWebGPU);
+  }
+}
+
+OzoneImageBacking::~OzoneImageBacking() {
+  if (context_state_->context_lost()) {
+    for (auto& texture_holder : cached_texture_holders_) {
+      texture_holder->MarkContextLost();
+    }
   }
 }
 
