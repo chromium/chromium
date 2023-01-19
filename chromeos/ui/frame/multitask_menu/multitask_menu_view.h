@@ -47,9 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   SplitButtonView* half_button_for_testing() {
     return half_button_for_testing_.get();
   }
-  SplitButtonView* partial_button_for_testing() {
-    return partial_button_for_testing_.get();
-  }
+  SplitButtonView* partial_button() { return partial_button_.get(); }
   MultitaskButton* full_button_for_testing() {
     return full_button_for_testing_.get();
   }
@@ -66,7 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
 
   // Saved for testing purpose.
   raw_ptr<SplitButtonView> half_button_for_testing_ = nullptr;
-  raw_ptr<SplitButtonView> partial_button_for_testing_ = nullptr;
+  raw_ptr<SplitButtonView> partial_button_ = nullptr;
   raw_ptr<MultitaskButton> full_button_for_testing_ = nullptr;
   raw_ptr<MultitaskButton> float_button_for_testing_ = nullptr;
 

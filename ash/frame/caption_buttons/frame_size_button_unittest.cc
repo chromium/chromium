@@ -804,7 +804,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   ShowMultitaskMenu();
   generator->MoveMouseTo(multitask_menu()
                              ->multitask_menu_view_for_testing()
-                             ->partial_button_for_testing()
+                             ->partial_button()
                              ->GetBoundsInScreen()
                              .left_center());
   generator->ClickLeftButton();
@@ -822,7 +822,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   ShowMultitaskMenu();
   gfx::Rect partial_bounds(multitask_menu()
                                ->multitask_menu_view_for_testing()
-                               ->partial_button_for_testing()
+                               ->partial_button()
                                ->GetBoundsInScreen());
   gfx::Point secondary_center(
       gfx::Point(partial_bounds.x() + partial_bounds.width() * 0.67f,

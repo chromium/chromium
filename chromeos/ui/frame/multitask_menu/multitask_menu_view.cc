@@ -90,7 +90,7 @@ MultitaskMenuView::MultitaskMenuView(
         base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
                             base::Unretained(this)),
         window, is_portrait_mode);
-    partial_button_for_testing_ = partial_button.get();
+    partial_button_ = partial_button.get();
     AddChildView(CreateButtonContainer(std::move(partial_button),
                                        IDS_MULTITASK_MENU_PARTIAL_BUTTON_NAME));
   }

@@ -81,7 +81,8 @@ class SplitButtonView::SplitButton : public views::Button {
   void OnPaintBackground(gfx::Canvas* canvas) override {
     cc::PaintFlags pattern_flags;
     pattern_flags.setAntiAlias(true);
-    pattern_flags.setColor(button_color_);
+    pattern_flags.setColor(GetEnabled() ? button_color_
+                                        : kMultitaskButtonDisabledColor);
     pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
     gfx::Rect pattern_bounds = GetLocalBounds();
     pattern_bounds.Inset(insets_);
@@ -158,6 +159,10 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
       is_portrait_mode
           ? gfx::Size(kMultitaskHalfButtonHeight, right_bottom_width)
           : gfx::Size(right_bottom_width, kMultitaskHalfButtonHeight));
+}
+
+views::Button* SplitButtonView::GetRightBottomButton() {
+  return static_cast<views::Button*>(right_bottom_button_);
 }
 
 void SplitButtonView::OnButtonHoveredOrPressed() {

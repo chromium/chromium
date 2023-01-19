@@ -12,8 +12,11 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/window_state.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
+#include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/window_util.h"
+#include "ui/aura/window_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -71,17 +74,44 @@ class TabletModeMultitaskMenuView : public views::View {
     uint8_t buttons = chromeos::MultitaskMenuView::kFullscreen;
     if (SplitViewController::Get(window)->CanSnapWindow(window)) {
       buttons |= chromeos::MultitaskMenuView::kHalfSplit;
+    }
+
+    // TODO(sophiewen): Refactor from SplitViewController.
+    DCHECK(window->delegate());
+    const bool horizontal = chromeos::IsDisplayLayoutHorizontal(
+        display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+    const gfx::Size min_size = window->delegate()->GetMinimumSize();
+    const int min_length = horizontal ? min_size.width() : min_size.height();
+    const gfx::Rect work_area = display::Screen::GetScreen()
+                                    ->GetDisplayNearestWindow(window)
+                                    .work_area();
+    const int work_area_length =
+        horizontal ? work_area.width() : work_area.height();
+    if (min_length <= work_area_length * chromeos::kTwoThirdSnapRatio) {
+      // If `min_length` <= 2/3, it can fit into 2/3 split, so ensure that
+      // we show the full partial button.
       buttons |= chromeos::MultitaskMenuView::kPartialSplit;
     }
+
     if (chromeos::wm::CanFloatWindow(window))
       buttons |= chromeos::MultitaskMenuView::kFloat;
 
-    menu_view_for_testing_ =
+    menu_view_base_ =
         AddChildView(std::make_unique<chromeos::MultitaskMenuView>(
             window, std::move(callback), buttons));
 
-    auto* layout = menu_view_for_testing_->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
+    if (menu_view_base_->partial_button() &&
+        min_length > work_area_length * chromeos::kOneThirdSnapRatio) {
+      // If `min_length` > 1/3, it can't fit into 1/3 split, so disable
+      // the 1/3 option in the partial button. Note that `GetRightBottomButton`
+      // must be disabled after `partial_button` is initialized to update the
+      // color in `SplitButton::OnPaintBackground()`.
+      menu_view_base_->partial_button()->GetRightBottomButton()->SetEnabled(
+          false);
+    }
+
+    auto* layout =
+        menu_view_base_->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal, kInsideBorderInsets,
             kBetweenButtonSpacing));
     layout->set_main_axis_alignment(
@@ -103,14 +133,12 @@ class TabletModeMultitaskMenuView : public views::View {
       delete;
   ~TabletModeMultitaskMenuView() override = default;
 
+  chromeos::MultitaskMenuView* menu_view_base() { return menu_view_base_; }
+
   SystemShadow* shadow() { return shadow_.get(); }
 
-  chromeos::MultitaskMenuView* menu_view_for_testing() {
-    return menu_view_for_testing_;
-  }
-
  private:
-  raw_ptr<chromeos::MultitaskMenuView> menu_view_for_testing_ = nullptr;
+  raw_ptr<chromeos::MultitaskMenuView> menu_view_base_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 };
@@ -303,7 +331,7 @@ void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
 chromeos::MultitaskMenuView*
 TabletModeMultitaskMenu::GetMultitaskMenuViewForTesting() {
   return static_cast<TabletModeMultitaskMenuView*>(menu_view_)
-      ->menu_view_for_testing();  // IN-TEST
+      ->menu_view_base();  // IN-TEST
 }
 
 }  // namespace ash

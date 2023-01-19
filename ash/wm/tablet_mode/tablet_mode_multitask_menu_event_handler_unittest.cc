@@ -134,7 +134,7 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
   void PressPartialPrimary(const aura::Window& window) {
     ShowMultitaskMenu(window);
     GetEventGenerator()->GestureTapAt(GetMultitaskMenuView(GetMultitaskMenu())
-                                          ->partial_button_for_testing()
+                                          ->partial_button()
                                           ->GetBoundsInScreen()
                                           .left_center());
   }
@@ -142,7 +142,7 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
   void PressPartialSecondary(const aura::Window& window) {
     ShowMultitaskMenu(window);
     gfx::Rect partial_bounds(GetMultitaskMenuView(GetMultitaskMenu())
-                                 ->partial_button_for_testing()
+                                 ->partial_button()
                                  ->GetBoundsInScreen());
     gfx::Point secondary_center(
         gfx::Point(partial_bounds.x() + partial_bounds.width() * 0.67f,
@@ -248,7 +248,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, BasicShowMenu) {
       GetMultitaskMenuView(multitask_menu);
   ASSERT_TRUE(multitask_menu_view);
   EXPECT_TRUE(multitask_menu_view->half_button_for_testing());
-  EXPECT_TRUE(multitask_menu_view->partial_button_for_testing());
+  EXPECT_TRUE(multitask_menu_view->partial_button());
   EXPECT_TRUE(multitask_menu_view->full_button_for_testing());
   EXPECT_TRUE(multitask_menu_view->float_button_for_testing());
 
@@ -561,6 +561,53 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, AdjustedMenuBounds) {
             GetMultitaskMenu()->widget()->GetWindowBoundsInScreen().x());
 }
 
+// Tests that the split buttons are enabled/disabled based on min sizes.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, WindowMinimumSizes) {
+  UpdateDisplay("800x600");
+  aura::test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
+      &delegate, /*id=*/-1, gfx::Rect(800, 600)));
+
+  const gfx::Rect work_area_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+
+  // Set the min width to 0.4 of the work area. Since 1/3 < minWidth <= 1/2,
+  // only the 1/3 option is disabled.
+  delegate.set_minimum_size(
+      gfx::Size(work_area_bounds.width() * 0.4f, work_area_bounds.height()));
+  ShowMultitaskMenu(*window);
+  chromeos::MultitaskMenuView* multitask_menu_view =
+      GetMultitaskMenuView(GetMultitaskMenu());
+  EXPECT_TRUE(multitask_menu_view->half_button_for_testing());
+  EXPECT_TRUE(multitask_menu_view->partial_button()->GetEnabled());
+  ASSERT_FALSE(multitask_menu_view->partial_button()
+                   ->GetRightBottomButton()
+                   ->GetEnabled());
+  GetMultitaskMenu()->Reset();
+
+  // Set the min width to 0.6 of the work area. Since 1/2 < minWidth <= 2/3, the
+  // half button is hidden and only the 2/3 option is enabled.
+  delegate.set_minimum_size(
+      gfx::Size(work_area_bounds.width() * 0.6f, work_area_bounds.height()));
+  ShowMultitaskMenu(*window);
+  multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
+  EXPECT_FALSE(multitask_menu_view->half_button_for_testing());
+  EXPECT_TRUE(multitask_menu_view->partial_button()->GetEnabled());
+  ASSERT_FALSE(multitask_menu_view->partial_button()
+                   ->GetRightBottomButton()
+                   ->GetEnabled());
+  GetMultitaskMenu()->Reset();
+
+  // Set the min width to 0.7 of the work area. Since minWidth > 2/3, both the
+  // split buttons are hidden.
+  delegate.set_minimum_size(
+      gfx::Size(work_area_bounds.width() * 0.7f, work_area_bounds.height()));
+  ShowMultitaskMenu(*window);
+  multitask_menu_view = GetMultitaskMenuView(GetMultitaskMenu());
+  EXPECT_FALSE(multitask_menu_view->half_button_for_testing());
+  EXPECT_FALSE(multitask_menu_view->partial_button());
+}
+
 // Tests that tap outside the menu will close the menu.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseMultitaskMenuOnTap) {
   // Create a display and window that is bigger than the menu.
@@ -596,7 +643,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HiddenButtons) {
       GetMultitaskMenuView(multitask_menu);
   ASSERT_TRUE(multitask_menu_view);
   EXPECT_FALSE(multitask_menu_view->half_button_for_testing());
-  EXPECT_FALSE(multitask_menu_view->partial_button_for_testing());
+  EXPECT_FALSE(multitask_menu_view->partial_button());
   EXPECT_TRUE(multitask_menu_view->full_button_for_testing());
   EXPECT_FALSE(multitask_menu_view->float_button_for_testing());
 }
