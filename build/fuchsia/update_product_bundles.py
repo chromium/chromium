@@ -224,7 +224,8 @@ def download_product_bundle(product_bundle, ffx_runner):
   update_repositories_list(ffx_runner)
 
   try:
-    ffx_runner.run_ffx(('product-bundle', 'get', product_bundle))
+    ffx_runner.run_ffx(
+        ('product-bundle', 'get', product_bundle, '--force-repo'))
   except subprocess.CalledProcessError as cpe:
     logging.error('Product bundle download has failed. ' +
                   _PRODUCT_BUNDLE_FIX_INSTRUCTIONS)

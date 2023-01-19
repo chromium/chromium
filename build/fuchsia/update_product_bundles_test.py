@@ -216,7 +216,8 @@ class TestUpdateProductBundles(unittest.TestCase):
 
     mock_sequence.assert_has_calls([
         mock.call.update_repo_list(ffx_runner),
-        mock.call.run_ffx(('product-bundle', 'get', 'some-bundle'))
+        mock.call.run_ffx(
+            ('product-bundle', 'get', 'some-bundle', '--force-repo'))
     ])
 
   @mock.patch('update_product_bundles.get_product_bundle_urls')
