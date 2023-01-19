@@ -61,6 +61,8 @@ component("x") {
     "x11_xrandr_interval_only_vsync_provider.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "IS_UI_BASE_X_IMPL" ]
 
   public_deps = [
@@ -122,7 +124,10 @@ source_set("gl") {
     "x11_gl_egl_utility.h",
   ]
 
-  configs += [ "//third_party/khronos:khronos_headers" ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//third_party/khronos:khronos_headers",
+  ]
   deps = [
     ":x",
     "//base",
