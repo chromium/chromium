@@ -14,6 +14,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -36,7 +37,7 @@ class MacKeyRotationCommand : public KeyRotationCommand {
 
   // Processes the `result` of the key rotation and returns it to the currently
   // pending callback.
-  void OnKeyRotated(KeyRotationManager::Result result);
+  void OnKeyRotated(KeyRotationResult result);
 
   // Notifies the pending callback of a timeout.
   void OnKeyRotationTimeout();

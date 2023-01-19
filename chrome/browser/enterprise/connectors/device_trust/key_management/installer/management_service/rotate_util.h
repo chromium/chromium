@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 #include "components/version_info/channel.h"
 
 namespace base {
@@ -19,11 +20,12 @@ class KeyRotationManager;
 
 // Rotates the device trust signing key and saves it to a global location
 // on the machine accessible to all install modes of the browser (i.e.,
-// stable and all three side-by-side modes). Returns the result of the
-// rotation. `key_rotation_manager` is the rotation manager for the
-// current platform. The `command_line` is the command_line of the current
-// process and the `channel` is the build channel (i.e stable, dev, etc).
-bool RotateDeviceTrustKey(
+// stable and all three side-by-side modes). `key_rotation_manager` is the
+// rotation manager for the current platform. The `command_line` is the
+// command_line of the current process and the `channel` is the build channel
+// (i.e stable, dev, etc).
+// Returns the key rotation result.
+KeyRotationResult RotateDeviceTrustKey(
     std::unique_ptr<KeyRotationManager> key_rotation_manager,
     const base::CommandLine& command_line,
     version_info::Channel channel);

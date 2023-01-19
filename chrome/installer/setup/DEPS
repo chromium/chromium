@@ -1,8 +1,9 @@
 include_rules = [
   "+chrome/browser/chrome_for_testing/buildflags.h",
-  "+chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h",
-  "+chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h",
   "+chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h",
+  "+chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h",
+  "+chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h",
+  "+chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h",
   "+chrome/chrome_elf/blocklist_constants.h",
   "+chrome/chrome_elf/chrome_elf_constants.h",
   "+chrome/install_static",
@@ -18,8 +19,8 @@ specific_include_rules = {
   ".*_unittest\.cc": [
     "+chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h",
     "+chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h",
-    "+chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h",
     "+chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h",
+    "+chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h",
     "+chrome/chrome_elf/nt_registry/nt_registry.h",
   ],
 }

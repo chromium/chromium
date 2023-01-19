@@ -77,6 +77,19 @@ bool CheckBinaryPermissions() {
   return true;
 }
 
+int KeyRotationResultToExitCode(KeyRotationResult result) {
+  switch (result) {
+    case KeyRotationResult::kSucceeded:
+      return kSuccess;
+    case KeyRotationResult::kFailed:
+      return kFailure;
+    case KeyRotationResult::kInsufficientPermissions:
+      return kFailedInsufficientPermissions;
+    case KeyRotationResult::kFailedKeyConflict:
+      return kFailedKeyConflict;
+  }
+}
+
 }  // namespace
 
 ChromeManagementService::ChromeManagementService()
@@ -168,10 +181,8 @@ int ChromeManagementService::StartRotation(
       KeyRotationManager::Create(std::make_unique<MojoKeyNetworkDelegate>(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               remote_url_loader_factory_.get())));
-  return RotateDeviceTrustKey(std::move(key_rotation_manager), *command_line,
-                              chrome::GetChannel())
-             ? kSuccess
-             : kFailure;
+  return KeyRotationResultToExitCode(RotateDeviceTrustKey(
+      std::move(key_rotation_manager), *command_line, chrome::GetChannel()));
 }
 
 }  // namespace enterprise_connectors

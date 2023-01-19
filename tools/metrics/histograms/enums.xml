@@ -92444,6 +92444,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="73" label="Creation of shortcuts succeeded."/>
   <int value="74" label="DMToken deletion failed."/>
   <int value="75" label="DMToken deletion succeeded."/>
+  <int value="76" label="Failed Device Trust Rotation: Invalid Permissions"/>
+  <int value="77" label="Failed Device Trust Rotation: Conflict"/>
 </enum>
 
 <enum name="SetupSingletonAcquisitionResult">

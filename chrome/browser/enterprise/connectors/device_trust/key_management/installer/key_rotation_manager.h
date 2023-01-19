@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 
 class GURL;
 
@@ -21,13 +22,6 @@ class KeyNetworkDelegate;
 // installer.
 class KeyRotationManager {
  public:
-  //  Status of the key rotation.
-  enum class Result {
-    SUCCEEDED,
-    FAILED,
-    FAILED_KEY_CONFLICT,
-  };
-
   virtual ~KeyRotationManager() = default;
 
   static std::unique_ptr<KeyRotationManager> Create(
@@ -47,10 +41,11 @@ class KeyRotationManager {
   // used when building the upload request result of the rotation is
   // returned via the `result_callback`. This function will fail on linux
   // and windows if not called with admin rights.
-  virtual void Rotate(const GURL& dm_server_url,
-                      const std::string& dm_token,
-                      const std::string& nonce,
-                      base::OnceCallback<void(Result)> result_callback) = 0;
+  virtual void Rotate(
+      const GURL& dm_server_url,
+      const std::string& dm_token,
+      const std::string& nonce,
+      base::OnceCallback<void(KeyRotationResult)> result_callback) = 0;
 };
 
 }  // namespace enterprise_connectors

@@ -21,6 +21,8 @@ class DeviceTrustKeyManager {
  public:
   virtual ~DeviceTrustKeyManager() = default;
 
+  // TODO(b:265141726): Rename this enum to reduce confusion with the other
+  // KeyRotationResult enum used as installer type.
   enum class KeyRotationResult {
     SUCCESS = 0,
     FAILURE = 1,

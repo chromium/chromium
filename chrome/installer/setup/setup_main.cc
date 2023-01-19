@@ -52,6 +52,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -1201,13 +1202,25 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     // threaded task runner so creating one here.
     base::SingleThreadTaskExecutor executor;
 
-    *exit_code = enterprise_connectors::RotateDeviceTrustKey(
-                     enterprise_connectors::KeyRotationManager::Create(
-                         std::make_unique<
-                             enterprise_connectors::WinKeyNetworkDelegate>()),
-                     cmd_line, install_static::GetChromeChannel())
-                     ? installer::ROTATE_DTKEY_SUCCESS
-                     : installer::ROTATE_DTKEY_FAILED;
+    const auto result = enterprise_connectors::RotateDeviceTrustKey(
+        enterprise_connectors::KeyRotationManager::Create(
+            std::make_unique<enterprise_connectors::WinKeyNetworkDelegate>()),
+        cmd_line, install_static::GetChromeChannel());
+
+    switch (result) {
+      case enterprise_connectors::KeyRotationResult::kSucceeded:
+        *exit_code = installer::ROTATE_DTKEY_SUCCESS;
+        break;
+      case enterprise_connectors::KeyRotationResult::kInsufficientPermissions:
+        *exit_code = installer::ROTATE_DTKEY_FAILED_PERMISSIONS;
+        break;
+      case enterprise_connectors::KeyRotationResult::kFailedKeyConflict:
+        *exit_code = installer::ROTATE_DTKEY_FAILED_CONFLICT;
+        break;
+      case enterprise_connectors::KeyRotationResult::kFailed:
+        *exit_code = installer::ROTATE_DTKEY_FAILED;
+        break;
+    }
 #endif
   } else if (cmd_line.HasSwitch(installer::switches::kCreateShortcuts)) {
     std::string install_op_arg =

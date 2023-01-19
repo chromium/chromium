@@ -58,12 +58,26 @@ HRESULT MockRunGoogleUpdateElevatedCommandFn(
                                  base::OnceCallback<void(int)> callback) {
             std::move(callback).Run(upload_response_code);
           }));
-  *return_code = enterprise_connectors::RotateDeviceTrustKey(
-                     enterprise_connectors::KeyRotationManager::Create(
-                         std::move(mock_network_delegate)),
-                     cmd_line, install_static::GetChromeChannel())
-                     ? installer::InstallStatus::ROTATE_DTKEY_SUCCESS
-                     : installer::InstallStatus::ROTATE_DTKEY_FAILED;
+  const auto result = enterprise_connectors::RotateDeviceTrustKey(
+      enterprise_connectors::KeyRotationManager::Create(
+          std::move(mock_network_delegate)),
+      cmd_line, install_static::GetChromeChannel());
+  switch (result) {
+    case enterprise_connectors::KeyRotationResult::kSucceeded:
+      *return_code = installer::ROTATE_DTKEY_SUCCESS;
+      break;
+    case enterprise_connectors::KeyRotationResult::kInsufficientPermissions:
+      *return_code = installer::ROTATE_DTKEY_FAILED_PERMISSIONS;
+      break;
+    case enterprise_connectors::KeyRotationResult::kFailedKeyConflict:
+      *return_code = installer::ROTATE_DTKEY_FAILED_CONFLICT;
+      break;
+    case enterprise_connectors::KeyRotationResult::kFailed:
+    default:
+      *return_code = installer::ROTATE_DTKEY_FAILED;
+      break;
+  }
+
   return S_OK;
 }
 

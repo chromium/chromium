@@ -52,14 +52,14 @@ absl::optional<std::string> Decode(const std::string& encoded_value) {
 
 }  // namespace
 
-bool RotateDeviceTrustKey(
+KeyRotationResult RotateDeviceTrustKey(
     std::unique_ptr<KeyRotationManager> key_rotation_manager,
     const base::CommandLine& command_line,
     version_info::Channel channel) {
   auto dm_token =
       Decode(command_line.GetSwitchValueASCII(switches::kRotateDTKey));
   if (!dm_token)
-    return false;
+    return KeyRotationResult::kFailed;
 
   auto nonce = command_line.GetSwitchValueASCII(switches::kNonce);
   // The nonce command line argument is optional. If none is specified use
@@ -70,14 +70,14 @@ bool RotateDeviceTrustKey(
   } else {
     decoded_nonce = Decode(nonce);
     if (!decoded_nonce)
-      return false;
+      return KeyRotationResult::kFailed;
   }
 
   if (!command_line.HasSwitch(switches::kDmServerUrl)) {
     RecordFailure(
         ManagementServiceError::kCommandMissingDMServerUrl,
         "Device trust key rotation failed. Command missing dm server url.");
-    return false;
+    return KeyRotationResult::kFailed;
   }
   GURL dm_server_url(command_line.GetSwitchValueASCII(switches::kDmServerUrl));
 
@@ -89,19 +89,19 @@ bool RotateDeviceTrustKey(
     RecordFailure(
         ManagementServiceError::kInvalidRotateCommand,
         "Device trust key rotation failed. The server URL is invalid.");
-    return false;
+    return KeyRotationResult::kFailed;
   }
 
   base::RunLoop run_loop;
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  bool rotation_result = false;
+  KeyRotationResult rotation_result = KeyRotationResult::kFailed;
   key_rotation_manager->Rotate(
       dm_server_url, *dm_token, *decoded_nonce,
       base::BindOnce(
-          [](bool& rotation_result, base::OnceClosure quit_closure,
-             KeyRotationManager::Result result) {
-            rotation_result = (result == KeyRotationManager::Result::SUCCEEDED);
+          [](KeyRotationResult& rotation_result, base::OnceClosure quit_closure,
+             KeyRotationResult result) {
+            rotation_result = result;
             std::move(quit_closure).Run();
           },
           std::ref(rotation_result), run_loop.QuitClosure()));

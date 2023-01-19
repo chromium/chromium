@@ -18,6 +18,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
@@ -68,29 +69,27 @@ constexpr char kHistogramPrefix[] = "Enterprise.DeviceTrust.RotateSigningKey";
 
 // All use-cases of upload failures resulting in the key rotation manager
 // attempting to rollback any local state.
-constexpr std::array<std::tuple<HttpResponseCode,
-                                RotationStatus,
-                                KeyRotationManager::Result,
-                                bool>,
-                     6>
+constexpr std::array<
+    std::tuple<HttpResponseCode, RotationStatus, KeyRotationResult, bool>,
+    6>
     kUploadFailureTestCases = {{
         {kHardFailureCode, RotationStatus::FAILURE_CANNOT_UPLOAD_KEY,
-         KeyRotationManager::Result::FAILED, true},
+         KeyRotationResult::kFailed, true},
         {kTransientFailureCode,
          RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED,
-         KeyRotationManager::Result::FAILED, true},
+         KeyRotationResult::kFailed, true},
         {kKeyConflictFailureCode, RotationStatus::FAILURE_CANNOT_UPLOAD_KEY,
-         KeyRotationManager::Result::FAILED_KEY_CONFLICT, true},
+         KeyRotationResult::kFailedKeyConflict, true},
         {kHardFailureCode,
          RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED,
-         KeyRotationManager::Result::FAILED, false},
+         KeyRotationResult::kFailed, false},
         {kTransientFailureCode,
          RotationStatus::
              FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED,
-         KeyRotationManager::Result::FAILED, false},
+         KeyRotationResult::kFailed, false},
         {kKeyConflictFailureCode,
          RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED,
-         KeyRotationManager::Result::FAILED_KEY_CONFLICT, false},
+         KeyRotationResult::kFailedKeyConflict, false},
     }};
 
 }  // namespace
@@ -190,9 +189,8 @@ class KeyRotationManagerTest : public testing::Test {
         .WillOnce(Return(success));
   }
 
-  void RunRotate(KeyRotationManager::Result expected_result,
-                 bool with_nonce = false) {
-    base::test::TestFuture<KeyRotationManager::Result> future;
+  void RunRotate(KeyRotationResult expected_result, bool with_nonce = false) {
+    base::test::TestFuture<KeyRotationResult> future;
     key_rotation_manager_->Rotate(GURL(kDmServerUrl), kDmToken,
                                   with_nonce ? kFakeNonce : std::string(),
                                   future.GetCallback());
@@ -222,10 +220,10 @@ class KeyRotationManagerTest : public testing::Test {
 TEST_F(KeyRotationManagerTest, Rotate_InvalidDMServerURL) {
   SetUpOldKey(/*exists=*/true);
 
-  base::test::TestFuture<KeyRotationManager::Result> future;
+  base::test::TestFuture<KeyRotationResult> future;
   key_rotation_manager_->Rotate(GURL(), kDmToken, kFakeNonce,
                                 future.GetCallback());
-  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
+  EXPECT_EQ(KeyRotationResult::kFailed, future.Get());
 
   histogram_tester_->ExpectUniqueSample(
       kRotateStatusWithNonceHistogram,
@@ -241,10 +239,10 @@ TEST_F(KeyRotationManagerTest, Rotate_InvalidDmToken) {
   // Create a DM token that has 5000 characters.
   std::string long_dm_token(5000, 'a');
 
-  base::test::TestFuture<KeyRotationManager::Result> future;
+  base::test::TestFuture<KeyRotationResult> future;
   key_rotation_manager_->Rotate(GURL(kDmServerUrl), long_dm_token, kFakeNonce,
                                 future.GetCallback());
-  EXPECT_EQ(KeyRotationManager::Result::FAILED, future.Get());
+  EXPECT_EQ(KeyRotationResult::kFailed, future.Get());
 
   histogram_tester_->ExpectUniqueSample(kRotateStatusWithNonceHistogram,
                                         RotationStatus::FAILURE_INVALID_DMTOKEN,
@@ -257,7 +255,7 @@ TEST_F(KeyRotationManagerTest, Rotate_InvalidDmToken) {
 TEST_F(KeyRotationManagerTest, Rotate_MissingNonce) {
   SetUpOldKey(/*exists=*/true);
 
-  RunRotate(KeyRotationManager::Result::FAILED, /*with_nonce=*/false);
+  RunRotate(KeyRotationResult::kFailed, /*with_nonce=*/false);
 
   histogram_tester_->ExpectUniqueSample(
       kRotateStatusWithNonceHistogram,
@@ -271,7 +269,7 @@ TEST_F(KeyRotationManagerTest, CreateKey_InvalidPermissions) {
   SetUpOldKey(/*exists=*/false);
   SetRotationPermissions(false);
 
-  RunRotate(KeyRotationManager::Result::FAILED);
+  RunRotate(KeyRotationResult::kInsufficientPermissions);
 
   histogram_tester_->ExpectUniqueSample(
       kRotateStatusNoNonceHistogram,
@@ -286,7 +284,7 @@ TEST_F(KeyRotationManagerTest, CreateKey_CreationFailure) {
   SetRotationPermissions();
   SetUpNewKeyCreation(/*success=*/false);
 
-  RunRotate(KeyRotationManager::Result::FAILED);
+  RunRotate(KeyRotationResult::kFailed);
 
   histogram_tester_->ExpectUniqueSample(
       kRotateStatusNoNonceHistogram,
@@ -302,7 +300,7 @@ TEST_F(KeyRotationManagerTest, CreateKey_StoreFailed) {
   SetUpNewKeyCreation();
   SetUpStoreKey(/*expect_new_key=*/true, /*success=*/false);
 
-  RunRotate(KeyRotationManager::Result::FAILED);
+  RunRotate(KeyRotationResult::kFailed);
 
   histogram_tester_->ExpectUniqueSample(
       kRotateStatusNoNonceHistogram, RotationStatus::FAILURE_CANNOT_STORE_KEY,
@@ -320,7 +318,7 @@ TEST_F(KeyRotationManagerTest, CreateKey_Success) {
   SetUploadCode(kSuccessCode);
   ExpectFinalCleanup();
 
-  RunRotate(KeyRotationManager::Result::SUCCEEDED);
+  RunRotate(KeyRotationResult::kSucceeded);
 
   // Validate body.
   // TODO(b:254072094): Improve body content validation logic.
@@ -353,7 +351,7 @@ TEST_F(KeyRotationManagerTest, RotateKey_Success) {
   SetUploadCode(kSuccessCode);
   ExpectFinalCleanup();
 
-  RunRotate(KeyRotationManager::Result::SUCCEEDED, /*with_nonce=*/true);
+  RunRotate(KeyRotationResult::kSucceeded, /*with_nonce=*/true);
 
   // Validate body.
   // TODO(b:254072094): Improve body content validation logic.

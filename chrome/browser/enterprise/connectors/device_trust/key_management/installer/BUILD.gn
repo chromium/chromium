@@ -5,6 +5,7 @@
 source_set("elevated_rotation") {
   public = [
     "key_rotation_manager.h",
+    "key_rotation_types.h",
     "metrics_util.h",
   ]
 

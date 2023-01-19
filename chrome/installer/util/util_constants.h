@@ -125,7 +125,11 @@ enum InstallStatus {
   DELETE_DMTOKEN_FAILED = 74,     // Failed to delete DMToken from the registry.
   DELETE_DMTOKEN_SUCCESS = 75,    // Successfully deleted DMToken from the
                                   // registry.
-  MAX_INSTALL_STATUS = 76,  // When adding a new result, bump this and update
+  ROTATE_DTKEY_FAILED_PERMISSIONS = 76,  // Failed to rotate the device trust
+                                         // key due to missing permissions.
+  ROTATE_DTKEY_FAILED_CONFLICT = 77,  // Failed to rotate the device trust key
+                                      // due to a conflict during upload.
+  MAX_INSTALL_STATUS = 78,  // When adding a new result, bump this and update
                             // the SetupInstallResult enum in enums.xml.
 };
 

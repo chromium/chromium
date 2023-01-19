@@ -19,6 +19,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/channel.h"
@@ -39,8 +40,8 @@ bool ValidRotationCommand(const std::string& host_name) {
 // Allows the key rotation maanger to be released in the correct worker thread.
 void OnBackgroundTearDown(
     std::unique_ptr<KeyRotationManager> key_rotation_manager,
-    base::OnceCallback<void(KeyRotationManager::Result)> result_callback,
-    KeyRotationManager::Result result) {
+    base::OnceCallback<void(KeyRotationResult)> result_callback,
+    KeyRotationResult result) {
   std::move(result_callback).Run(result);
 }
 
@@ -51,7 +52,7 @@ void StartRotation(
     const std::string& nonce,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    base::OnceCallback<void(KeyRotationManager::Result)> result_callback) {
+    base::OnceCallback<void(KeyRotationResult)> result_callback) {
   DCHECK(pending_url_loader_factory);
   auto key_rotation_manager =
       KeyRotationManager::Create(std::make_unique<MojoKeyNetworkDelegate>(
@@ -123,7 +124,7 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                                 std::move(rotation_result_callback)));
 }
 
-void MacKeyRotationCommand::OnKeyRotated(KeyRotationManager::Result result) {
+void MacKeyRotationCommand::OnKeyRotated(KeyRotationResult result) {
   // Used to ensure that this function is being called on the main thread.
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -134,13 +135,13 @@ void MacKeyRotationCommand::OnKeyRotated(KeyRotationManager::Result result) {
 
   timeout_timer_.Stop();
 
-  if (result == KeyRotationManager::Result::FAILED) {
+  if (result == KeyRotationResult::kFailed) {
     SYSLOG(ERROR) << "Device trust key rotation failed.";
     std::move(pending_callback_).Run(KeyRotationCommand::Status::FAILED);
     return;
   }
 
-  if (result == KeyRotationManager::Result::FAILED_KEY_CONFLICT) {
+  if (result == KeyRotationResult::kFailedKeyConflict) {
     SYSLOG(ERROR) << "Device trust key rotation failed. Conflict "
                      "with the key that exists on the server.";
     std::move(pending_callback_)

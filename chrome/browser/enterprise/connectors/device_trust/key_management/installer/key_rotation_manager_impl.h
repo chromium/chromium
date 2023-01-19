@@ -26,19 +26,21 @@ class KeyRotationManagerImpl : public KeyRotationManager {
   ~KeyRotationManagerImpl() override;
 
   // KeyRotationManager:
-  void Rotate(const GURL& dm_server_url,
-              const std::string& dm_token,
-              const std::string& nonce,
-              base::OnceCallback<void(Result)> result_callback) override;
+  void Rotate(
+      const GURL& dm_server_url,
+      const std::string& dm_token,
+      const std::string& nonce,
+      base::OnceCallback<void(KeyRotationResult)> result_callback) override;
 
  private:
   // Gets the `response_code` from the upload key request and continues
   // the key rotation process. `result_callback` returns the rotation result.
   // The `old_key_pair` is only required in key rotation flows and will be used
   // to restore local storage if upload failed.
-  void OnDmServerResponse(std::unique_ptr<SigningKeyPair> old_key_pair,
-                          base::OnceCallback<void(Result)> result_callback,
-                          KeyNetworkDelegate::HttpResponseCode response_code);
+  void OnDmServerResponse(
+      std::unique_ptr<SigningKeyPair> old_key_pair,
+      base::OnceCallback<void(KeyRotationResult)> result_callback,
+      KeyNetworkDelegate::HttpResponseCode response_code);
 
   std::unique_ptr<KeyNetworkDelegate> network_delegate_;
   std::unique_ptr<KeyPersistenceDelegate> persistence_delegate_;
