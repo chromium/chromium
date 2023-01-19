@@ -32,6 +32,8 @@ constexpr int kMaximumOutputBufferSize = 8192;
 constexpr int kDefaultInputBufferSize = 1024;
 constexpr int kDefaultSampleRate = 48000;
 constexpr int kDefaultChannelCount = 2;
+constexpr int kMinChannelCount = 1;
+constexpr int kMaxChannelCount = PA_CHANNELS_MAX;
 
 AudioManagerPulse::AudioManagerPulse(std::unique_ptr<AudioThread> audio_thread,
                                      AudioLogFactory* audio_log_factory,
@@ -43,7 +45,7 @@ AudioManagerPulse::AudioManagerPulse(std::unique_ptr<AudioThread> audio_thread,
       devices_(nullptr),
       native_input_sample_rate_(kDefaultSampleRate),
       native_channel_count_(kDefaultChannelCount),
-      default_source_is_monitor_(false) {
+      output_channel_count_(kDefaultChannelCount) {
   DCHECK(input_mainloop_);
   DCHECK(input_context_);
   SetMaxOutputStreamsAllowed(kMaxOutputStreams);
@@ -212,6 +214,7 @@ AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
   // TODO(tommi): Support |output_device_id|.
+  // TODO(crbug.com/1408574): Set |sample_rate| from |output_device_id|
   VLOG_IF(0, !output_device_id.empty()) << "Not implemented!";
 
   int buffer_size = kMinimumOutputBufferSize;
@@ -219,11 +222,33 @@ AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
   // Query native parameters where applicable; Pulse does not require these to
   // be respected though, so prefer the input parameters for channel count.
   UpdateNativeAudioHardwareInfo();
+  output_channel_count_ =
+      native_channel_count_ ? native_channel_count_ : kDefaultChannelCount;
+  pa_operation* operation = pa_context_get_sink_info_by_name(
+      input_context_,
+      (output_device_id.empty() ? default_sink_name_ : output_device_id)
+          .c_str(),
+      GetOutputChannelCountCallback, this);
+  WaitForOperationCompletion(input_mainloop_, operation, input_context_);
+
   int sample_rate = native_input_sample_rate_ ? native_input_sample_rate_
                                               : kDefaultSampleRate;
-  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Guess(
-      native_channel_count_ ? native_channel_count_ : 2);
 
+  if ((output_channel_count_ < kMinChannelCount) ||
+      (output_channel_count_ > kMaxChannelCount)) {
+    DLOG(WARNING) << "output_channel_count_ (" << output_channel_count_
+                  << ") is outside the valid range of [" << kMinChannelCount
+                  << "," << kMaxChannelCount << "], setting to default ("
+                  << kDefaultChannelCount << ").";
+    output_channel_count_ = kDefaultChannelCount;
+  }
+
+  auto channel_layout_config =
+      ChannelLayoutConfig::Guess(output_channel_count_);
+  if (channel_layout_config.channel_layout() == CHANNEL_LAYOUT_UNSUPPORTED) {
+    channel_layout_config =
+        ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, output_channel_count_);
+  }
   if (input_params.IsValid()) {
     // Use the system's output channel count for the DISCRETE layout. This is to
     // avoid a crash due to the lack of support on the multi-channel beyond 8 in
@@ -319,6 +344,21 @@ void AudioManagerPulse::OutputDevicesInfoCallback(pa_context* context,
   manager->devices_->push_back(AudioDeviceName(info->description, info->name));
 }
 
+void AudioManagerPulse::GetOutputChannelCountCallback(pa_context* context,
+                                                      const pa_sink_info* info,
+                                                      int eol,
+                                                      void* user_data) {
+  AudioManagerPulse* manager = reinterpret_cast<AudioManagerPulse*>(user_data);
+
+  if (eol) {
+    // Signal the pulse object that it is done.
+    pa_threaded_mainloop_signal(manager->input_mainloop_, 0);
+    return;
+  }
+
+  manager->output_channel_count_ = info->sample_spec.channels;
+}
+
 void AudioManagerPulse::AudioHardwareInfoCallback(pa_context* context,
                                                   const pa_server_info* info,
                                                   void* user_data) {
@@ -328,6 +368,9 @@ void AudioManagerPulse::AudioHardwareInfoCallback(pa_context* context,
   manager->native_channel_count_ = info->sample_spec.channels;
   if (info->default_source_name)
     manager->default_source_name_ = info->default_source_name;
+  if (info->default_sink_name) {
+    manager->default_sink_name_ = info->default_sink_name;
+  }
   pa_threaded_mainloop_signal(manager->input_mainloop_, 0);
 }
 

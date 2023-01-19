@@ -78,6 +78,10 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
                                         const pa_sink_info* info,
                                         int eol,
                                         void* user_data);
+  static void GetOutputChannelCountCallback(pa_context* context,
+                                            const pa_sink_info* info,
+                                            int eol,
+                                            void* user_data);
 
   // Callback to get the native sample rate of PulseAudio, used by
   // UpdateNativeAudioHardwareInfo().
@@ -108,8 +112,10 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
   raw_ptr<AudioDeviceNames> devices_;
   int native_input_sample_rate_;
   int native_channel_count_;
+  int output_channel_count_;
   std::string default_source_name_;
-  bool default_source_is_monitor_;
+  std::string default_sink_name_;
+  bool default_source_is_monitor_ = false;
 };
 
 }  // namespace media
