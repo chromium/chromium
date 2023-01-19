@@ -19,8 +19,12 @@ source_set("evaluate_seed_lib") {
   ]
   deps = [
     "//base",
+    "//build:branding_buildflags",
+    "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/cpp:crosapi_constants",
     "//components/variations",
     "//components/variations/proto",
+    "//components/variations/service",
   ]
 
   # restrict to only other targets in this BUILD.gn file.
@@ -34,6 +38,7 @@ source_set("unit_tests") {
     ":evaluate_seed_lib",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/test:test_support",
     "//components/variations",
     "//testing/gmock",

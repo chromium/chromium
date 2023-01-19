@@ -12,6 +12,8 @@ config("crosapi_implementation") {
 component("cpp") {
   output_name = "crosapi_public_cpp"
   sources = [
+    "channel_to_enum.cc",
+    "channel_to_enum.h",
     "gurl_os_handler_utils.cc",
     "gurl_os_handler_utils.h",
     "keystore_service_util.cc",
@@ -24,6 +26,7 @@ component("cpp") {
     ":crosapi_constants",
     "//base",
     "//chromeos/crosapi/mojom",
+    "//components/version_info",
     "//mojo/public/cpp/bindings",
   ]
 

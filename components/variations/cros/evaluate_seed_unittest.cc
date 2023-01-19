@@ -4,6 +4,9 @@
 
 #include "components/variations/cros/evaluate_seed.h"
 
+#include "base/strings/strcat.h"
+#include "base/test/scoped_chromeos_version_info.h"
+#include "build/branding_buildflags.h"
 #include "components/variations/client_filterable_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -11,15 +14,77 @@ namespace variations::evaluate_seed {
 
 TEST(VariationsCrosEvaluateSeed, GetClientFilterable_Enrolled) {
   base::CommandLine command_line({"evaluate_seed", "--enterprise-enrolled"});
-  ClientFilterableState state = GetClientFilterableState(&command_line);
-  EXPECT_TRUE(state.IsEnterprise());
+  std::unique_ptr<ClientFilterableState> state =
+      GetClientFilterableState(&command_line);
+  EXPECT_TRUE(state->IsEnterprise());
 }
 
 TEST(VariationsCrosEvaluateSeed, GetClientFilterable_NotEnrolled) {
   base::CommandLine command_line({"evaluate_seed"});
-  ClientFilterableState state = GetClientFilterableState(&command_line);
-  EXPECT_FALSE(state.IsEnterprise());
+  std::unique_ptr<ClientFilterableState> state =
+      GetClientFilterableState(&command_line);
+  EXPECT_FALSE(state->IsEnterprise());
 }
+
+struct Param {
+  std::string test_name;
+  std::string channel_name;
+  Study::Channel channel;
+};
+
+class VariationsCrosEvaluateSeedGetChannel
+    : public ::testing::TestWithParam<Param> {
+ protected:
+  VariationsCrosEvaluateSeedGetChannel() = default;
+};
+
+TEST_P(VariationsCrosEvaluateSeedGetChannel,
+       GetClientFilterableState_Channel_Override) {
+  base::CommandLine command_line(
+      {"evaluate_seed", base::StrCat({"--fake-variations-channel=",
+                                      GetParam().channel_name, "-channel"})});
+  std::unique_ptr<ClientFilterableState> state =
+      GetClientFilterableState(&command_line);
+  EXPECT_EQ(GetParam().channel, state->channel);
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Verify GetClientFilterableState gets the channel from lsb-release on branded
+// builds.
+TEST_P(VariationsCrosEvaluateSeedGetChannel,
+       GetClientFilterableState_Channel_Branded) {
+  std::string lsb_release = base::StrCat(
+      {"CHROMEOS_RELEASE_TRACK=", GetParam().channel_name, "-channel"});
+  const base::Time lsb_release_time(base::Time::FromDoubleT(12345.6));
+  base::test::ScopedChromeOSVersionInfo lsb_info(lsb_release, lsb_release_time);
+
+  base::CommandLine command_line({"evaluate_seed"});
+  std::unique_ptr<ClientFilterableState> state =
+      GetClientFilterableState(&command_line);
+  EXPECT_EQ(GetParam().channel, state->channel);
+}
+
+#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Verify that we use unknown channel on non-branded builds.
+TEST(VariationsCrosEvaluateSeed, GetClientFilterableState_Channel_NotBranded) {
+  base::CommandLine command_line({"evaluate_seed"});
+  std::unique_ptr<ClientFilterableState> state =
+      GetClientFilterableState(&command_line);
+  EXPECT_EQ(Study::UNKNOWN, state->channel);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+INSTANTIATE_TEST_SUITE_P(
+    VariationsCrosEvaluateSeedGetChannel,
+    VariationsCrosEvaluateSeedGetChannel,
+    ::testing::ValuesIn<Param>({{"Stable", "stable", Study::STABLE},
+                                {"Beta", "beta", Study::BETA},
+                                {"Dev", "dev", Study::DEV},
+                                {"Canary", "canary", Study::CANARY},
+                                {"Unknown", "testimage", Study::UNKNOWN}}),
+    [](const testing::TestParamInfo<
+        VariationsCrosEvaluateSeedGetChannel::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 // Should ignore data if flag is off.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {

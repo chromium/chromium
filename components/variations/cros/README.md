@@ -3,7 +3,7 @@
 The executable `evaluate_seed` is a minimal program (budget: 1MiB of disk space
 for the executable itself) used early in ChromeOS boot to determine which group
 each early-boot experiment should be in, as well as any parameters for the
-binary. It lives here so that it is trivial to keep the code in sync between
+experiment. It lives here so that it is trivial to keep the code in sync between
 ChromeOS's platform layer and chrome.
 
 It will be executed primarily by `featured`, which lives in

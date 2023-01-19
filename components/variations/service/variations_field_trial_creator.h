@@ -23,12 +23,17 @@
 #include "components/variations/service/buildflags.h"
 #include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/variations_seed_store.h"
+#include "components/version_info/channel.h"
 
 namespace metrics {
 class MetricsStateManager;
 }
 
 namespace variations {
+
+// Just maps one set of enum values to another. Nothing to see here.
+Study::Channel ConvertProductChannelToStudyChannel(
+    version_info::Channel product_channel);
 
 // Denotes whether Chrome used a variations seed. Also captures (a) the kind of
 // seed and (b) the conditions under which the seed was used or failed to be

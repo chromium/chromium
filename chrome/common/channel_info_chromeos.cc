@@ -9,26 +9,14 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "components/version_info/version_info.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/crosapi/cpp/channel_to_enum.h"
+#endif
+
 namespace chrome {
 namespace {
 
 version_info::Channel g_chromeos_channel = version_info::Channel::UNKNOWN;
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Sets the |g_chromeos_channel|.
-void SetChannel(const std::string& channel) {
-  if (channel == crosapi::kReleaseChannelStable)
-    g_chromeos_channel = version_info::Channel::STABLE;
-  else if (channel == crosapi::kReleaseChannelBeta)
-    g_chromeos_channel = version_info::Channel::BETA;
-  else if (channel == crosapi::kReleaseChannelDev)
-    g_chromeos_channel = version_info::Channel::DEV;
-  else if (channel == crosapi::kReleaseChannelCanary)
-    g_chromeos_channel = version_info::Channel::CANARY;
-  else
-    g_chromeos_channel = version_info::Channel::UNKNOWN;
-}
-#endif
 
 }  // namespace
 
@@ -60,7 +48,7 @@ version_info::Channel GetChannel() {
   std::string channel;
   if (base::SysInfo::GetLsbReleaseValue(crosapi::kChromeOSReleaseTrack,
                                         &channel)) {
-    SetChannel(channel);
+    g_chromeos_channel = crosapi::ChannelToEnum(channel);
     is_channel_set = true;
   }
 #endif

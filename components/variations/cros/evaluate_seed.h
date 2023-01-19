@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_H_
 #define COMPONENTS_VARIATIONS_CROS_EVALUATE_SEED_H_
 
+#include <memory>
 #include <string>
 
 #include <stdio.h>
@@ -16,7 +17,7 @@
 namespace variations::evaluate_seed {
 
 // Retrieve a ClientFilterableState struct based on the given |command_line|.
-ClientFilterableState GetClientFilterableState(
+std::unique_ptr<ClientFilterableState> GetClientFilterableState(
     const base::CommandLine* command_line);
 
 struct SafeSeed {

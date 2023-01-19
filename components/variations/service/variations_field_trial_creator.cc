@@ -44,7 +44,6 @@
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_switches.h"
-#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -64,25 +63,6 @@ base::Time GetReferenceDateForExpiryChecks(PrefService* local_state) {
   if (seed_date.is_null() || seed_date < build_time)
     reference_date = build_time;
   return reference_date;
-}
-
-// Just maps one set of enum values to another. Nothing to see here.
-Study::Channel ConvertProductChannelToStudyChannel(
-    version_info::Channel product_channel) {
-  switch (product_channel) {
-    case version_info::Channel::CANARY:
-      return Study::CANARY;
-    case version_info::Channel::DEV:
-      return Study::DEV;
-    case version_info::Channel::BETA:
-      return Study::BETA;
-    case version_info::Channel::STABLE:
-      return Study::STABLE;
-    case version_info::Channel::UNKNOWN:
-      return Study::UNKNOWN;
-  }
-  NOTREACHED();
-  return Study::UNKNOWN;
 }
 
 // Records the loaded seed's expiry status.
@@ -197,6 +177,24 @@ void MaybeExtendVariationsSafeMode(
 BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
              "ForceFieldTrialSetupCrashForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+Study::Channel ConvertProductChannelToStudyChannel(
+    version_info::Channel product_channel) {
+  switch (product_channel) {
+    case version_info::Channel::CANARY:
+      return Study::CANARY;
+    case version_info::Channel::DEV:
+      return Study::DEV;
+    case version_info::Channel::BETA:
+      return Study::BETA;
+    case version_info::Channel::STABLE:
+      return Study::STABLE;
+    case version_info::Channel::UNKNOWN:
+      return Study::UNKNOWN;
+  }
+  NOTREACHED();
+  return Study::UNKNOWN;
+}
 
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(
     VariationsServiceClient* client,
