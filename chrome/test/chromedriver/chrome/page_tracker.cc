@@ -20,8 +20,8 @@ PageTracker::PageTracker(DevToolsClient* client,
 
 PageTracker::~PageTracker() = default;
 
-Status PageTracker::OnConnected(DevToolsClient* client) {
-  return Status(kOk);
+bool PageTracker::ListensToConnections() const {
+  return false;
 }
 
 Status PageTracker::OnEvent(DevToolsClient* client,
