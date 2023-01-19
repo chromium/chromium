@@ -13,8 +13,9 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -172,8 +173,9 @@ MagnificationManager::~MagnificationManager() {
 void MagnificationManager::OnLoginOrLockScreenVisible() {
   // Update `profile_` when entering the login screen.
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (ProfileHelper::IsSigninProfile(profile))
+  if (IsSigninBrowserContext(profile)) {
     SetProfile(profile);
+  }
 }
 
 void MagnificationManager::ActiveUserChanged(user_manager::User* active_user) {
@@ -186,7 +188,8 @@ void MagnificationManager::ActiveUserChanged(user_manager::User* active_user) {
 }
 
 void MagnificationManager::SetProfileByUser(const user_manager::User* user) {
-  SetProfile(ProfileHelper::Get()->GetProfileByUser(user));
+  SetProfile(Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(user)));
 }
 
 void MagnificationManager::SetProfile(Profile* profile) {

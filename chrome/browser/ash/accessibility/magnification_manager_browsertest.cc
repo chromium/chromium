@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +21,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_prefs/user_prefs.h"
@@ -94,9 +94,10 @@ void PrepareNonNewProfile(const AccountId& account_id) {
   // create the profile directory, so create the profile actually here.
   profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
-      ProfileHelper::GetProfilePathByUserIdHash(user_manager::UserManager::Get()
-                                                    ->FindUser(account_id)
-                                                    ->username_hash()));
+      BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+          user_manager::UserManager::Get()
+              ->FindUser(account_id)
+              ->username_hash()));
 }
 
 // Simulates how UserSessionManager starts a user session by loading user
@@ -104,9 +105,10 @@ void PrepareNonNewProfile(const AccountId& account_id) {
 void StartUserSession(const AccountId& account_id) {
   profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
-      ProfileHelper::GetProfilePathByUserIdHash(user_manager::UserManager::Get()
-                                                    ->FindUser(account_id)
-                                                    ->username_hash()));
+      BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+          user_manager::UserManager::Get()
+              ->FindUser(account_id)
+              ->username_hash()));
 
   auto* session_manager = session_manager::SessionManager::Get();
   session_manager->NotifyUserProfileLoaded(account_id);

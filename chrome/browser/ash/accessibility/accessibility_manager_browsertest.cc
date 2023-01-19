@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/preferences.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -33,6 +32,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/live_caption/pref_names.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -1510,7 +1510,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   void StartUserSession(const AccountId& account_id) {
     profiles::testing::CreateProfileSync(
         g_browser_process->profile_manager(),
-        ProfileHelper::GetProfilePathByUserIdHash(
+        BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
             user_manager::UserManager::Get()
                 ->FindUser(account_id)
                 ->username_hash()));

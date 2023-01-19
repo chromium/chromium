@@ -41,7 +41,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -53,6 +52,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -2063,8 +2063,7 @@ IN_PROC_BROWSER_TEST_P(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
   sm_.ExpectSpeechPattern("*");
 
   sm_.Call([this]() {
-    ASSERT_EQ(AccessibilityManager::Get()->profile(),
-              ProfileHelper::GetSigninProfile());
+    ASSERT_TRUE(IsSigninBrowserContext(AccessibilityManager::Get()->profile()));
     login_manager_.LoginAsNewRegularUser();
   });
 
