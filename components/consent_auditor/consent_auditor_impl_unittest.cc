@@ -24,8 +24,6 @@ using ArcPlayTermsOfServiceConsent =
     sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
 using AssistantActivityControlConsent =
     sync_pb::UserConsentTypes::AssistantActivityControlConsent;
-using AutofillAssistantConsent =
-    sync_pb::UserConsentTypes::AutofillAssistantConsent;
 using SyncConsent = sync_pb::UserConsentTypes::SyncConsent;
 using sync_pb::UserConsentSpecifics;
 using sync_pb::UserConsentTypes;

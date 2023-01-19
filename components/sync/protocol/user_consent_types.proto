@@ -168,18 +168,4 @@ message UserConsentTypes {
     // or not given/revoked.
     optional ConsentStatus status = 3;
   }
-
-  // The User Consent for Autofill Assistant (i.e. Duplex technology) used for
-  // performing automated flows on the web.
-  message AutofillAssistantConsent {
-    // Ids of the strings of the consent text presented to the user.
-    repeated int32 description_grd_ids = 1 [packed = true];
-
-    // Id of the string of the UI element the user clicked in order to confirm
-    // the consent dialog.
-    optional int32 confirmation_grd_id = 2;
-
-    // The status of the consent.
-    optional ConsentStatus status = 3;
-  }
 }
