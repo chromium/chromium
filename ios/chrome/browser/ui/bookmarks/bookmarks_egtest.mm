@@ -27,7 +27,7 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::BookmarkHomeDoneButton;
+using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::BookmarksSaveEditDoneButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -174,7 +174,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGrey verifyChildCount:1 inFolderWithName:@"New Folder"];
 
   // Close bookmarks
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Check that the new folder still contains the bookmark.
@@ -617,7 +617,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Close bookmarks
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Reopen bookmarks.
@@ -645,7 +645,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Close bookmarks, it will store Folder 2 as the cache position.
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Delete Folder 2.
@@ -667,7 +667,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Close bookmarks, it will store Mobile Bookmarks as the cache position.
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Delete all bookmarks and folders under Mobile Bookmarks.
@@ -705,7 +705,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Close bookmarks
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Move Folder 3 under Folder 1.

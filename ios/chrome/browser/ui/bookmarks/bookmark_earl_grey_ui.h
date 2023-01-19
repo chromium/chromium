@@ -38,7 +38,7 @@ id<GREYMatcher> BookmarksContextMenuEditButton();
 id<GREYMatcher> BookmarksDeleteSwipeButton();
 
 // Matcher for the DONE button on the bookmarks UI.
-id<GREYMatcher> BookmarkHomeDoneButton();
+id<GREYMatcher> BookmarksHomeDoneButton();
 
 // Matcher for the DONE button on the bookmarks edit UI.
 id<GREYMatcher> BookmarksSaveEditDoneButton();

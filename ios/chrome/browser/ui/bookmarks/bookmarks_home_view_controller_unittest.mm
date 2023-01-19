@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_view_controller.h"
 
 #import "base/test/metrics/user_action_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -21,9 +21,9 @@
 
 namespace {
 
-using BookmarkHomeViewControllerTest = BookmarkIOSUnitTestSupport;
+using BookmarksHomeViewControllerTest = BookmarkIOSUnitTestSupport;
 
-TEST_F(BookmarkHomeViewControllerTest,
+TEST_F(BookmarksHomeViewControllerTest,
        TableViewPopulatedAfterBookmarkModelLoaded) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
@@ -46,8 +46,8 @@ TEST_F(BookmarkHomeViewControllerTest,
         startDispatchingToTarget:mockApplicationSettingsCommandHandler
                      forProtocol:@protocol(ApplicationSettingsCommands)];
 
-    BookmarkHomeViewController* controller =
-        [[BookmarkHomeViewController alloc] initWithBrowser:browser_.get()];
+    BookmarksHomeViewController* controller =
+        [[BookmarksHomeViewController alloc] initWithBrowser:browser_.get()];
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
@@ -58,7 +58,7 @@ TEST_F(BookmarkHomeViewControllerTest,
 }
 
 // Checks that metrics are correctly reported.
-TEST_F(BookmarkHomeViewControllerTest, Metrics) {
+TEST_F(BookmarksHomeViewControllerTest, Metrics) {
   @autoreleasepool {
     id mockSnackbarCommandHandler =
         OCMProtocolMock(@protocol(SnackbarCommands));
@@ -80,8 +80,8 @@ TEST_F(BookmarkHomeViewControllerTest, Metrics) {
         startDispatchingToTarget:mockApplicationSettingsCommandHandler
                      forProtocol:@protocol(ApplicationSettingsCommands)];
 
-    BookmarkHomeViewController* controller =
-        [[BookmarkHomeViewController alloc] initWithBrowser:browser_.get()];
+    BookmarksHomeViewController* controller =
+        [[BookmarksHomeViewController alloc] initWithBrowser:browser_.get()];
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 

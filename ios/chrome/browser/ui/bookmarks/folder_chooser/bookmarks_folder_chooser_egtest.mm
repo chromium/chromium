@@ -26,8 +26,8 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::BookmarkHomeDoneButton;
 using chrome_test_util::BookmarksDeleteSwipeButton;
+using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::BookmarksSaveEditDoneButton;
 using chrome_test_util::BookmarksSaveEditFolderButton;
@@ -815,7 +815,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notVisible()];
 
   // Close bookmarks
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Second, bookmark a page.
@@ -881,7 +881,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                                  pressReturn:NO];
 
   // Interrupt the folder name editing by tapping on done.
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
   // Reopen bookmarks.
   [BookmarkEarlGreyUI openBookmarks];

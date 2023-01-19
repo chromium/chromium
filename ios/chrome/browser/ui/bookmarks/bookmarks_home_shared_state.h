@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_SHARED_STATE_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_SHARED_STATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_SHARED_STATE_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_SHARED_STATE_H_
 
 #import <UIKit/UIKit.h>
 
@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 
 @protocol BookmarkTableCellTitleEditing;
-@class BookmarkHomeSharedState;
+@class BookmarksHomeSharedState;
 @class BookmarkTableCell;
 @class TableViewModel;
 
@@ -21,27 +21,27 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-typedef NS_ENUM(NSInteger, BookmarkHomeSectionIdentifier) {
-  BookmarkHomeSectionIdentifierPromo = kSectionIdentifierEnumZero,
-  BookmarkHomeSectionIdentifierBookmarks,
-  BookmarkHomeSectionIdentifierMessages,
+typedef NS_ENUM(NSInteger, BookmarksHomeSectionIdentifier) {
+  BookmarksHomeSectionIdentifierPromo = kSectionIdentifierEnumZero,
+  BookmarksHomeSectionIdentifierBookmarks,
+  BookmarksHomeSectionIdentifierMessages,
 };
 
-typedef NS_ENUM(NSInteger, BookmarkHomeItemType) {
-  BookmarkHomeItemTypePromo = kItemTypeEnumZero,
-  BookmarkHomeItemTypeBookmark,
-  BookmarkHomeItemTypeMessage,
+typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
+  BookmarksHomeItemTypePromo = kItemTypeEnumZero,
+  BookmarksHomeItemTypeBookmark,
+  BookmarksHomeItemTypeMessage,
 };
 
-@protocol BookmarkHomeSharedStateObserver
+@protocol BookmarksHomeSharedStateObserver
 // Called when the set of edit nodes is cleared.
-- (void)sharedStateDidClearEditNodes:(BookmarkHomeSharedState*)sharedState;
+- (void)sharedStateDidClearEditNodes:(BookmarksHomeSharedState*)sharedState;
 @end
 
-// BookmarkHomeSharedState is a data structure that contains a number of fields
+// BookmarksHomeSharedState is a data structure that contains a number of fields
 // that were previously ivars of BookmarkTableView. They are moved to a separate
 // data structure in order to ease moving code between files.
-@interface BookmarkHomeSharedState : NSObject
+@interface BookmarksHomeSharedState : NSObject
 
 // Models.
 
@@ -92,7 +92,7 @@ typedef NS_ENUM(NSInteger, BookmarkHomeItemType) {
 @property(nonatomic, assign) BOOL promoVisible;
 
 // This object can have at most one observer.
-@property(nonatomic, weak) id<BookmarkHomeSharedStateObserver> observer;
+@property(nonatomic, weak) id<BookmarksHomeSharedStateObserver> observer;
 
 // Constants
 
@@ -117,4 +117,4 @@ typedef NS_ENUM(NSInteger, BookmarkHomeItemType) {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_SHARED_STATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_SHARED_STATE_H_

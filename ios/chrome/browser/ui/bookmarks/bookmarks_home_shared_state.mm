@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmark_home_shared_state.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_shared_state.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
@@ -23,7 +23,7 @@ const NSUInteger kMaxDownloadFaviconCount = 50;
 
 }  // namespace
 
-@implementation BookmarkHomeSharedState {
+@implementation BookmarksHomeSharedState {
   std::set<const bookmarks::BookmarkNode*> _editNodes;
 }
 

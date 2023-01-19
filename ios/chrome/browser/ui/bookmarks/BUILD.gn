@@ -5,13 +5,6 @@
 source_set("bookmarks") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "bookmark_home_consumer.h",
-    "bookmark_home_mediator.h",
-    "bookmark_home_mediator.mm",
-    "bookmark_home_shared_state.h",
-    "bookmark_home_shared_state.mm",
-    "bookmark_home_view_controller.h",
-    "bookmark_home_view_controller.mm",
     "bookmark_interaction_controller.h",
     "bookmark_interaction_controller.mm",
     "bookmark_interaction_controller_delegate.h",
@@ -21,6 +14,13 @@ source_set("bookmarks") {
     "bookmark_navigation_controller_delegate.mm",
     "bookmark_promo_controller.h",
     "bookmark_promo_controller.mm",
+    "bookmarks_home_consumer.h",
+    "bookmarks_home_mediator.h",
+    "bookmarks_home_mediator.mm",
+    "bookmarks_home_shared_state.h",
+    "bookmarks_home_shared_state.mm",
+    "bookmarks_home_view_controller.h",
+    "bookmarks_home_view_controller.mm",
     "synced_bookmarks_bridge.h",
     "synced_bookmarks_bridge.mm",
   ]
@@ -144,9 +144,9 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "bookmark_home_view_controller_unittest.mm",
     "bookmark_path_cache_unittest.mm",
     "bookmark_utils_ios_unittest.mm",
+    "bookmarks_home_view_controller_unittest.mm",
   ]
   deps = [
     ":bookmarks",

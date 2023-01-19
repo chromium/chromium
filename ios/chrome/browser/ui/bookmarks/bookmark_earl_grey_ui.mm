@@ -70,7 +70,7 @@ id<GREYMatcher> BookmarksDeleteSwipeButton() {
   return ButtonWithAccessibilityLabelId(IDS_IOS_BOOKMARK_ACTION_DELETE);
 }
 
-id<GREYMatcher> BookmarkHomeDoneButton() {
+id<GREYMatcher> BookmarksHomeDoneButton() {
   return grey_accessibilityID(kBookmarkHomeNavigationBarDoneButtonIdentifier);
 }
 

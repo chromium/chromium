@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
 class ChromeBrowserState;
-@protocol BookmarkHomeConsumer;
-@class BookmarkHomeSharedState;
+@protocol BookmarksHomeConsumer;
+@class BookmarksHomeSharedState;
 
-// BookmarkHomeMediator manages model interactions for the
-// BookmarkHomeViewController.
-@interface BookmarkHomeMediator : NSObject
+// BookmarksHomeMediator manages model interactions for the
+// BookmarksHomeViewController.
+@interface BookmarksHomeMediator : NSObject
 
-@property(nonatomic, weak) id<BookmarkHomeConsumer> consumer;
+@property(nonatomic, weak) id<BookmarksHomeConsumer> consumer;
 
-- (instancetype)initWithSharedState:(BookmarkHomeSharedState*)sharedState
+- (instancetype)initWithSharedState:(BookmarksHomeSharedState*)sharedState
                        browserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -44,4 +44,4 @@ class ChromeBrowserState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_MEDIATOR_H_

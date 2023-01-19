@@ -31,7 +31,7 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::BookmarkHomeDoneButton;
+using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
@@ -246,7 +246,7 @@ using chrome_test_util::SecondarySignInButton;
                   @"Should have incremented the display count");
 
   // Close the bookmark view and open it again.
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
   [BookmarkEarlGreyUI openBookmarks];
   [ChromeEarlGreyUI waitForAppToIdle];

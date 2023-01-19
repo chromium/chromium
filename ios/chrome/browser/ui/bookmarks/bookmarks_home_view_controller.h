@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol ApplicationCommands;
-@class BookmarkHomeViewController;
+@class BookmarksHomeViewController;
 class Browser;
 namespace bookmarks {
 class BookmarkNode;
@@ -22,17 +22,17 @@ class BookmarkNode;
 class GURL;
 @protocol SnackbarCommands;
 
-@protocol BookmarkHomeViewControllerDelegate
+@protocol BookmarksHomeViewControllerDelegate
 // The view controller wants to be dismissed. If `urls` is not empty, then
 // the user has selected to navigate to those URLs in the current tab mode.
 - (void)bookmarkHomeViewControllerWantsDismissal:
-            (BookmarkHomeViewController*)controller
+            (BookmarksHomeViewController*)controller
                                 navigationToUrls:(const std::vector<GURL>&)urls;
 
 // The view controller wants to be dismissed. If `urls` is not empty, then
 // the user has selected to navigate to those URLs with specified tab mode.
 - (void)bookmarkHomeViewControllerWantsDismissal:
-            (BookmarkHomeViewController*)controller
+            (BookmarksHomeViewController*)controller
                                 navigationToUrls:(const std::vector<GURL>&)urls
                                      inIncognito:(BOOL)inIncognito
                                           newTab:(BOOL)newTab;
@@ -40,14 +40,14 @@ class GURL;
 @end
 
 // Class to navigate the bookmark hierarchy.
-@interface BookmarkHomeViewController
+@interface BookmarksHomeViewController
     : ChromeTableViewController <KeyCommandActions,
                                  UIAdaptivePresentationControllerDelegate>
 
 // Delegate for presenters. Note that this delegate is currently being set only
 // in case of handset, and not tablet. In the future it will be used by both
 // cases.
-@property(nonatomic, weak) id<BookmarkHomeViewControllerDelegate> homeDelegate;
+@property(nonatomic, weak) id<BookmarksHomeViewControllerDelegate> homeDelegate;
 
 // Handler for Application Commands.
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
@@ -65,13 +65,13 @@ class GURL;
 // Setter to set _rootNode value.
 - (void)setRootNode:(const bookmarks::BookmarkNode*)rootNode;
 
-// Returns an array of BookmarkHomeViewControllers, one per BookmarkNode in the
+// Returns an array of BookmarksHomeViewControllers, one per BookmarkNode in the
 // path from this view controller's node to the latest cached node (as
 // determined by BookmarkPathCache).  Includes `self` as the first element of
 // the returned array.  Sets the cached scroll position for the last element of
 // the returned array, if appropriate.
-- (NSArray<BookmarkHomeViewController*>*)cachedViewControllerStack;
+- (NSArray<BookmarksHomeViewController*>*)cachedViewControllerStack;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_VIEW_CONTROLLER_H_

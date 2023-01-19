@@ -27,7 +27,7 @@ extern NSString* const kBookmarkHomeContextMenuIdentifier;
 // UINavigationBar accessibility constants:
 // Accessibility identifier of the Bookmark navigation bar.
 extern NSString* const kBookmarkNavigationBarIdentifier;
-// Accessibility identifier of the BookmarkHome VC navigation bar done button.
+// Accessibility identifier of the BookmarksHome VC navigation bar done button.
 extern NSString* const kBookmarkHomeNavigationBarDoneButtonIdentifier;
 // Accessibility identifier of the BookmarkEdit VC navigation bar done button.
 extern NSString* const kBookmarkEditNavigationBarDoneButtonIdentifier;
@@ -40,15 +40,15 @@ extern NSString* const kBookmarkFolderEditNavigationBarDoneButtonIdentifier;
 extern NSString* const kBookmarkEditDeleteButtonIdentifier;
 // Accessibility identifier of the BookmarkFolderEditorVC toolbar delete button.
 extern NSString* const kBookmarkFolderEditorDeleteButtonIdentifier;
-// Accessibility identifier of the BookmarkHomeVC leading button.
+// Accessibility identifier of the BookmarksHomeVC leading button.
 extern NSString* const kBookmarkHomeLeadingButtonIdentifier;
-// Accessibility identifier of the BookmarkHomeVC center button.
+// Accessibility identifier of the BookmarksHomeVC center button.
 extern NSString* const kBookmarkHomeCenterButtonIdentifier;
-// Accessibility identifier of the BookmarkHomeVC trailing button.
+// Accessibility identifier of the BookmarksHomeVC trailing button.
 extern NSString* const kBookmarkHomeTrailingButtonIdentifier;
-// Accessibility identifier of the BookmarkHomeVC UIToolbar.
+// Accessibility identifier of the BookmarksHomeVC UIToolbar.
 extern NSString* const kBookmarkHomeUIToolbarIdentifier;
-// Accessibility identifier of the BookmarkHomeVC search bar.
+// Accessibility identifier of the BookmarksHomeVC search bar.
 extern NSString* const kBookmarkHomeSearchBarIdentifier;
 // Accessibility identifier of the search scrim.
 extern NSString* const kBookmarkHomeSearchScrimIdentifier;

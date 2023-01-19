@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_CONSUMER_H_
+#define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_CONSUMER_H_
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_consumer.h"
 
@@ -11,19 +11,19 @@
 @class ShowSigninCommand;
 @class SigninPromoViewConfigurator;
 
-typedef NS_ENUM(NSInteger, BookmarkHomeBackgroundStyle) {
+typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
   // The default background style.
-  BookmarkHomeBackgroundStyleDefault,
+  BookmarksHomeBackgroundStyleDefault,
 
   // A background style that indicates that bookmarks are loading.
-  BookmarkHomeBackgroundStyleLoading,
+  BookmarksHomeBackgroundStyleLoading,
 
   // A background style that indicates that no bookmarks are present.
-  BookmarkHomeBackgroundStyleEmpty,
+  BookmarksHomeBackgroundStyleEmpty,
 };
 
-// BookmarkHomeConsumer provides methods that allow mediators to update the UI.
-@protocol BookmarkHomeConsumer <ChromeTableViewConsumer>
+// BookmarksHomeConsumer provides methods that allow mediators to update the UI.
+@protocol BookmarksHomeConsumer <ChromeTableViewConsumer>
 
 // Refreshes the UI.
 - (void)refreshContents;
@@ -35,7 +35,7 @@ typedef NS_ENUM(NSInteger, BookmarkHomeBackgroundStyle) {
         fallbackToGoogleServer:(BOOL)fallbackToGoogleServer;
 
 // Displays the table view background for the given `style`.
-- (void)updateTableViewBackgroundStyle:(BookmarkHomeBackgroundStyle)style;
+- (void)updateTableViewBackgroundStyle:(BookmarksHomeBackgroundStyle)style;
 
 // Sets the editing mode for tableView, update context bar and search state
 // accordingly.
@@ -51,4 +51,4 @@ typedef NS_ENUM(NSInteger, BookmarkHomeBackgroundStyle) {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_HOME_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_HOME_CONSUMER_H_

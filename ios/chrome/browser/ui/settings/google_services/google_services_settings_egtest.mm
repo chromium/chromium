@@ -40,7 +40,7 @@
 #endif
 
 using base::test::ios::kWaitForActionTimeout;
-using chrome_test_util::BookmarkHomeDoneButton;
+using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::PrimarySignInButton;
@@ -235,7 +235,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Verify bookmarks are cleared.
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Turn on "Allow Chrome Sign-in" feature.
@@ -304,7 +304,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Verify bookmarks are available.
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
-  [[EarlGrey selectElementWithMatcher:BookmarkHomeDoneButton()]
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
   // Turn on "Allow Chrome Sign-in" feature.

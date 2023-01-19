@@ -16,7 +16,7 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation BookmarkHomeNodeItem
+@implementation BookmarksHomeNodeItem
 @synthesize bookmarkNode = _bookmarkNode;
 
 - (instancetype)initWithType:(NSInteger)type

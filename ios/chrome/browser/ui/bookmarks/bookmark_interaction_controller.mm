@@ -22,13 +22,13 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_home_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
@@ -72,7 +72,7 @@ enum class PresentedState {
     BookmarksEditorViewControllerDelegate,
     BookmarksFolderEditorViewControllerDelegate,
     BookmarksFolderChooserViewControllerDelegate,
-    BookmarkHomeViewControllerDelegate> {
+    BookmarksHomeViewControllerDelegate> {
   // The browser bookmarks are presented in.
   Browser* _browser;  // weak
 
@@ -105,7 +105,7 @@ enum class PresentedState {
 
 // A reference to the potentially presented bookmark browser. This will be
 // non-nil when `currentPresentedState` is BOOKMARK_BROWSER.
-@property(nonatomic, strong) BookmarkHomeViewController* bookmarkBrowser;
+@property(nonatomic, strong) BookmarksHomeViewController* bookmarkBrowser;
 
 // A reference to the potentially presented single bookmark editor. This will be
 // non-nil when `currentPresentedState` is BOOKMARK_EDITOR.
@@ -254,17 +254,17 @@ enum class PresentedState {
   DCHECK(!self.bookmarkNavigationController);
 
   self.bookmarkBrowser =
-      [[BookmarkHomeViewController alloc] initWithBrowser:_browser];
+      [[BookmarksHomeViewController alloc] initWithBrowser:_browser];
   self.bookmarkBrowser.homeDelegate = self;
   self.bookmarkBrowser.applicationCommandsHandler =
       self.applicationCommandsHandler;
   self.bookmarkBrowser.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
-  NSArray<BookmarkHomeViewController*>* replacementViewControllers = nil;
+  NSArray<BookmarksHomeViewController*>* replacementViewControllers = nil;
   if (self.bookmarkModel->loaded()) {
     // Set the root node if the model has been loaded. If the model has not been
-    // loaded yet, the root node will be set in BookmarkHomeViewController after
-    // the model is finished loading.
+    // loaded yet, the root node will be set in BookmarksHomeViewController
+    // after the model is finished loading.
     [self.bookmarkBrowser setRootNode:self.bookmarkModel->root_node()];
     replacementViewControllers =
         [self.bookmarkBrowser cachedViewControllerStack];
@@ -528,10 +528,10 @@ enum class PresentedState {
   [self dismissFolderSelectionAnimated:YES];
 }
 
-#pragma mark - BookmarkHomeViewControllerDelegate
+#pragma mark - BookmarksHomeViewControllerDelegate
 
 - (void)bookmarkHomeViewControllerWantsDismissal:
-            (BookmarkHomeViewController*)controller
+            (BookmarksHomeViewController*)controller
                                 navigationToUrls:
                                     (const std::vector<GURL>&)urls {
   [self bookmarkHomeViewControllerWantsDismissal:controller
@@ -542,7 +542,7 @@ enum class PresentedState {
 }
 
 - (void)bookmarkHomeViewControllerWantsDismissal:
-            (BookmarkHomeViewController*)controller
+            (BookmarksHomeViewController*)controller
                                 navigationToUrls:(const std::vector<GURL>&)urls
                                      inIncognito:(BOOL)inIncognito
                                           newTab:(BOOL)newTab {
