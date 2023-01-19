@@ -121,12 +121,18 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
     }
   } else if (identity_manager_->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // On Lacros, the `SigninManager` only clears the primary account if it is
+    // no longer on the device.
+    signin_metrics::ProfileSignout source =
+        signin_metrics::ProfileSignout::kAccountRemovedFromDevice;
+#else
     DCHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
+    signin_metrics::ProfileSignout source =
+        signin_metrics::ProfileSignout::kUserDeletedAccountCookies;
 #endif
     identity_manager_->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
-        signin_metrics::SignoutDelete::kIgnoreMetric);
+        source, signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 }
 

@@ -86,8 +86,8 @@ namespace {
 signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // Allowed, because data has not been synced yet.
     signin_metrics::ProfileSignout::kAbortSignin,
-    // Allowed, because only used on Android and the primary account must be
-    // cleared when the account is removed from device
+    // Allowed, because the primary account must be cleared when the account is
+    // removed from device. Only used on Android and Lacros.
     signin_metrics::ProfileSignout::kAccountRemovedFromDevice,
     // Allowed, for tests.
     signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest,

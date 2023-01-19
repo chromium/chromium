@@ -1564,6 +1564,8 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   DCHECK_NE(new_identity_manager, identity_manager());
   EXPECT_EQ(account_id(), new_identity_manager->GetPrimaryAccountId(
                               signin::ConsentLevel::kSignin));
+  EXPECT_EQ(signin::ConsentLevel::kSignin,
+            signin::GetPrimaryAccountConsentLevel(new_identity_manager));
   CheckDelegateCalls();
   CheckSigninMetrics({
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

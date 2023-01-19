@@ -114,7 +114,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   using DialogEventSet =
       base::EnumSet<DialogEvent, DialogEvent::kStart, DialogEvent::kMaxValue>;
 
-  SigninInterceptFirstRunExperienceDialogBrowserTest() {
+  SigninInterceptFirstRunExperienceDialogBrowserTest()
+      : SigninBrowserTestBase(/*use_main_profile=*/true) {
     feature_list_.InitAndEnableFeatures(
         {feature_engagement::kIPHProfileSwitchFeature,
          kSyncPromoAfterSigninIntercept});
@@ -158,8 +159,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   // Returns true if the profile switch IPH has been shown.
   bool ProfileSwitchPromoHasBeenShown() {
     return user_education::test::WaitForStartupPromo(
-        feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser()->profile()),
+        feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile()),
         feature_engagement::kIPHProfileSwitchFeature);
   }
 
@@ -176,7 +176,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 
   void SimulateSyncConfirmationUIClosing(
       LoginUIService::SyncConfirmationUIClosedResult result) {
-    LoginUIServiceFactory::GetForProfile(browser()->profile())
+    LoginUIServiceFactory::GetForProfile(GetProfile())
         ->SyncConfirmationUIClosed(result);
   }
 
@@ -222,11 +222,11 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(browser()->profile()));
+        SyncServiceFactory::GetForProfile(GetProfile()));
   }
 
   ThemeService* theme_service() {
-    return ThemeServiceFactory::GetForProfile(browser()->profile());
+    return ThemeServiceFactory::GetForProfile(GetProfile());
   }
 
   SigninViewController* controller() {
@@ -586,8 +586,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   sync_service()->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
-  EXPECT_FALSE(TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(
-      browser()->profile()));
+  EXPECT_FALSE(
+      TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(GetProfile()));
   // Sync is aborted.
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   ExpectRecordedEvents({DialogEvent::kStart});

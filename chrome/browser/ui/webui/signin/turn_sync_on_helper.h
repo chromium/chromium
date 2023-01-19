@@ -19,6 +19,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/core_account_id.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(ENABLE_MIRROR)
 #error "This file should only be included if DICE support / mirror is enabled"
@@ -271,6 +272,11 @@ class TurnSyncOnHelper {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
+
+  // The initial primary account is restored if the flow aborts. This is only
+  // needed on Lacros, because the `SigninManager` does it automatically on
+  // DICE platforms.
+  CoreAccountId initial_primary_account_;
 #endif
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;

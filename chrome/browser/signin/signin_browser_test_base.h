@@ -18,7 +18,11 @@
 // management of accounts and cookies state.
 class SigninBrowserTestBase : public InProcessBrowserTest {
  public:
-  SigninBrowserTestBase();
+  // `use_main_profile` controls whether the main profile is used (the default
+  // `Profile` created by InProcessBrowserTest). On Lacros the main profile
+  // behaves differently, and signout is not allowed.
+  explicit SigninBrowserTestBase(bool use_main_profile);
+
   ~SigninBrowserTestBase() override;
 
   // Sets accounts in the environment to new ones based on the given `emails`,
@@ -26,6 +30,10 @@ class SigninBrowserTestBase : public InProcessBrowserTest {
   // Returns `AccountInfo`s for each added account, in the same order as
   // `emails`.
   std::vector<AccountInfo> SetAccounts(const std::vector<std::string>& emails);
+
+  // Returns the profile attached to the `signin::IdentityTestEnvironment`. This
+  // may not be the same as `browser()->profile()`.
+  Profile* GetProfile() const { return profile_; }
 
   signin::IdentityTestEnvironment* identity_test_env() const {
     return identity_test_env_profile_adaptor_->identity_test_env();
@@ -52,6 +60,8 @@ class SigninBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
+  Profile* profile_ = nullptr;
+  const bool use_main_profile_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 };

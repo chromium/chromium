@@ -191,6 +191,10 @@ TurnSyncOnHelper::TurnSyncOnHelper(
       account_info_(
           identity_manager_->FindExtendedAccountInfoByAccountId(account_id)),
       scoped_callback_runner_(std::move(callback)),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      initial_primary_account_(identity_manager_->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin)),
+#endif
       shutdown_subscription_(
           TurnSyncOnHelperShutdownNotifierFactory::GetInstance()
               ->Get(profile)
@@ -714,6 +718,9 @@ void TurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
       ->ShutdownUserCloudPolicyManager();
   SetCurrentTurnSyncOnHelper(profile_, nullptr);  // Detach from old profile
   profile_ = new_profile;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  initial_primary_account_ = CoreAccountId();
+#endif
   AttachToProfile();
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
@@ -747,10 +754,26 @@ void TurnSyncOnHelper::AttachToProfile() {
 }
 
 void TurnSyncOnHelper::AbortAndDelete() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If the initial primary account is still valid, reset it. This is only
+  // on Lacros because the `SigninManager` does it automatically with DICE.
+  if (!initial_primary_account_.empty() &&
+      identity_manager_->HasAccountWithRefreshToken(initial_primary_account_)) {
+    identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+        initial_primary_account_, signin::ConsentLevel::kSignin);
+  }
+#endif
+
   if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
         ->ShutdownUserCloudPolicyManager();
-    // Revoke the token, and the AccountReconcilor and/or the Gaia server will
+
+    // The account being removed may be the current primary account. Unblock the
+    // `SigninManager` so that it can handle the state where there is a primary
+    // account with no token. See https://crbug.com/1404961
+    account_change_blocker_.reset();
+
+    // Revoke the token, and the `AccountReconcilor` and/or the Gaia server will
     // take care of invalidating the cookies.
     auto* accounts_mutator = identity_manager_->GetAccountsMutator();
     accounts_mutator->RemoveAccount(
