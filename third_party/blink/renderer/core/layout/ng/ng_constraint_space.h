@@ -1280,23 +1280,23 @@ class CORE_EXPORT NGConstraintSpace final {
 
     const NGGridLayoutTrackCollection* SubgriddedColumns() const {
       return GetDataUnionType() == DataUnionType::kSubgridData
-                 ? subgrid_data_.layout_data.columns.get()
+                 ? subgrid_data_.layout_data.columns()
                  : nullptr;
     }
 
     void SetSubgriddedColumns(
         std::unique_ptr<NGGridLayoutTrackCollection> columns) {
-      EnsureSubgridData()->layout_data.columns = std::move(columns);
+      EnsureSubgridData()->layout_data.SetTrackCollection(std::move(columns));
     }
 
     const NGGridLayoutTrackCollection* SubgriddedRows() const {
       return GetDataUnionType() == DataUnionType::kSubgridData
-                 ? subgrid_data_.layout_data.rows.get()
+                 ? subgrid_data_.layout_data.rows()
                  : nullptr;
     }
 
     void SetSubgriddedRows(std::unique_ptr<NGGridLayoutTrackCollection> rows) {
-      EnsureSubgridData()->layout_data.rows = std::move(rows);
+      EnsureSubgridData()->layout_data.SetTrackCollection(std::move(rows));
     }
 
     DataUnionType GetDataUnionType() const {
@@ -1437,21 +1437,11 @@ class CORE_EXPORT NGConstraintSpace final {
 
     struct SubgridData {
       bool MaySkipLayout(const SubgridData& other) const {
-        const bool other_has_same_column_geometry =
-            (layout_data.columns && other.layout_data.columns)
-                ? *layout_data.Columns() == *other.layout_data.Columns()
-                : !layout_data.columns && !other.layout_data.columns;
-
-        const bool other_has_same_row_geometry =
-            (layout_data.rows && other.layout_data.rows)
-                ? *layout_data.Rows() == *other.layout_data.Rows()
-                : !layout_data.rows && !other.layout_data.rows;
-
-        return other_has_same_column_geometry && other_has_same_row_geometry;
+        return layout_data == other.layout_data;
       }
 
       bool IsInitialForMaySkipLayout() const {
-        return !layout_data.columns && !layout_data.rows;
+        return layout_data == NGGridLayoutData();
       }
 
       NGGridLayoutData layout_data;

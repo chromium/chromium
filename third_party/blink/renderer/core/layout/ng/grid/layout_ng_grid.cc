@@ -175,8 +175,8 @@ LayoutUnit LayoutNGGrid::GridGap(
     return LayoutUnit();
 
   return (track_direction == kForColumns)
-             ? grid_layout_data->Columns()->GutterSize()
-             : grid_layout_data->Rows()->GutterSize();
+             ? grid_layout_data->Columns().GutterSize()
+             : grid_layout_data->Rows().GutterSize();
 }
 
 LayoutUnit LayoutNGGrid::GridItemOffset(
@@ -195,8 +195,8 @@ Vector<LayoutUnit, 1> LayoutNGGrid::TrackSizesForComputedStyle(
     return track_sizes;
 
   const auto& track_collection = (track_direction == kForColumns)
-                                     ? *grid_layout_data->Columns()
-                                     : *grid_layout_data->Rows();
+                                     ? grid_layout_data->Columns()
+                                     : grid_layout_data->Rows();
 
   // |EndLineOfImplicitGrid| is equivalent to the total track count.
   track_sizes.ReserveInitialCapacity(std::min<wtf_size_t>(
@@ -275,8 +275,8 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeExpandedPositions(
     return expanded_positions;
 
   const auto& track_collection = (track_direction == kForColumns)
-                                     ? *grid_layout_data->Columns()
-                                     : *grid_layout_data->Rows();
+                                     ? grid_layout_data->Columns()
+                                     : grid_layout_data->Rows();
 
   // |EndLineOfImplicitGrid| is equivalent to the total track count.
   expanded_positions.ReserveInitialCapacity(std::min<wtf_size_t>(

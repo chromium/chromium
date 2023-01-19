@@ -38,7 +38,7 @@ class NGGridItemSizingData {
 using NGSubgridSizingData = absl::optional<NGGridItemSizingData>;
 
 class CORE_EXPORT NGGridSizingTree {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
   using GridSizingDataVector = Vector<std::unique_ptr<NGGridSizingData>, 16>;

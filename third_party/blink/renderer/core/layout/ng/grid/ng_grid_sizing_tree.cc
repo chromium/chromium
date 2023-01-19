@@ -12,9 +12,9 @@ NGGridItemSizingData::NGGridItemSizingData(
     : item_data_in_parent(&item_data_in_parent),
       parent_layout_data(&parent_layout_data) {
   DCHECK_LE(item_data_in_parent.column_set_indices.end,
-            parent_layout_data.Columns()->GetSetCount());
+            parent_layout_data.Columns().GetSetCount());
   DCHECK_LE(item_data_in_parent.row_set_indices.end,
-            parent_layout_data.Rows()->GetSetCount());
+            parent_layout_data.Rows().GetSetCount());
 }
 
 std::unique_ptr<NGGridLayoutTrackCollection>
@@ -28,8 +28,8 @@ NGGridItemSizingData::CreateSubgridCollection(
           : track_direction == kForRows;
 
   const auto& parent_track_collection = is_for_columns_in_parent
-                                            ? *parent_layout_data->Columns()
-                                            : *parent_layout_data->Rows();
+                                            ? parent_layout_data->Columns()
+                                            : parent_layout_data->Rows();
   const auto& range_indices = is_for_columns_in_parent
                                   ? item_data_in_parent->column_range_indices
                                   : item_data_in_parent->row_range_indices;

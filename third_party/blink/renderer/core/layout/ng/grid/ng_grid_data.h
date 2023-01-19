@@ -13,6 +13,9 @@
 namespace blink {
 
 struct CORE_EXPORT NGGridPlacementData {
+  USING_FAST_MALLOC(NGGridPlacementData);
+
+ public:
   NGGridPlacementData(NGGridPlacementData&&) = default;
   NGGridPlacementData& operator=(NGGridPlacementData&&) = default;
 
@@ -85,45 +88,86 @@ struct CORE_EXPORT NGGridPlacementData {
   wtf_size_t row_start_offset{0};
 };
 
+namespace {
+
+bool AreEqual(const std::unique_ptr<NGGridLayoutTrackCollection>& lhs,
+              const std::unique_ptr<NGGridLayoutTrackCollection>& rhs) {
+  return (lhs && rhs) ? *lhs == *rhs : !lhs && !rhs;
+}
+
+}  // namespace
+
 // This struct contains the column and row data necessary to layout grid items.
 // For grid sizing, it will store |NGGridSizingTrackCollection| pointers, which
 // are able to modify the geometry of its sets. However, after sizing is done,
 // it should only copy |NGGridLayoutTrackCollection| immutable data.
-struct CORE_EXPORT NGGridLayoutData {
+class CORE_EXPORT NGGridLayoutData {
+  USING_FAST_MALLOC(NGGridLayoutData);
+
+ public:
   NGGridLayoutData() = default;
   NGGridLayoutData(NGGridLayoutData&&) = default;
   NGGridLayoutData& operator=(NGGridLayoutData&&) = default;
 
-  NGGridLayoutData(std::unique_ptr<NGGridLayoutTrackCollection> columns,
-                   std::unique_ptr<NGGridLayoutTrackCollection> rows)
-      : columns(std::move(columns)), rows(std::move(rows)) {}
-
-  NGGridLayoutData(const NGGridLayoutData& other) { CopyFrom(other); }
+  NGGridLayoutData(const NGGridLayoutData& other) {
+    if (other.columns_) {
+      columns_ = std::make_unique<NGGridLayoutTrackCollection>(other.Columns());
+    }
+    if (other.rows_) {
+      rows_ = std::make_unique<NGGridLayoutTrackCollection>(other.Rows());
+    }
+  }
 
   NGGridLayoutData& operator=(const NGGridLayoutData& other) {
-    CopyFrom(other);
-    return *this;
+    return *this = NGGridLayoutData(other);
   }
 
-  void CopyFrom(const NGGridLayoutData& other) {
-    if (other.columns)
-      columns = std::make_unique<NGGridLayoutTrackCollection>(*other.Columns());
-    if (other.rows)
-      rows = std::make_unique<NGGridLayoutTrackCollection>(*other.Rows());
+  bool operator==(const NGGridLayoutData& other) const {
+    return AreEqual(columns_, other.columns_) && AreEqual(rows_, other.rows_);
   }
 
-  NGGridLayoutTrackCollection* Columns() const {
-    DCHECK(columns && columns->Direction() == kForColumns);
-    return columns.get();
+  bool HasSubgriddedAxis(GridTrackSizingDirection track_direction) const {
+    return !((track_direction == kForColumns)
+                 ? columns_ && columns_->IsForSizing()
+                 : rows_ && rows_->IsForSizing());
   }
 
-  NGGridLayoutTrackCollection* Rows() const {
-    DCHECK(rows && rows->Direction() == kForRows);
-    return rows.get();
+  NGGridLayoutTrackCollection& Columns() const {
+    DCHECK(columns_ && columns_->Direction() == kForColumns);
+    return *columns_;
   }
 
-  std::unique_ptr<NGGridLayoutTrackCollection> columns;
-  std::unique_ptr<NGGridLayoutTrackCollection> rows;
+  NGGridLayoutTrackCollection& Rows() const {
+    DCHECK(rows_ && rows_->Direction() == kForRows);
+    return *rows_;
+  }
+
+  NGGridSizingTrackCollection& SizingCollection(
+      GridTrackSizingDirection track_direction) const {
+    DCHECK(!HasSubgriddedAxis(track_direction));
+
+    return To<NGGridSizingTrackCollection>(
+        (track_direction == kForColumns) ? Columns() : Rows());
+  }
+
+  // TODO(ethavar): This two should disappear in the upcoming patch.
+  const NGGridLayoutTrackCollection* columns() const { return columns_.get(); }
+  const NGGridLayoutTrackCollection* rows() const { return rows_.get(); }
+
+  void SetTrackCollection(
+      std::unique_ptr<NGGridLayoutTrackCollection> track_collection) {
+    DCHECK(track_collection);
+
+    if (track_collection->Direction() == kForColumns) {
+      columns_ = std::move(track_collection);
+    } else {
+      rows_ = std::move(track_collection);
+    }
+  }
+
+ private:
+  std::unique_ptr<NGGridLayoutTrackCollection> columns_;
+  std::unique_ptr<NGGridLayoutTrackCollection> rows_;
 };
 
 }  // namespace blink
