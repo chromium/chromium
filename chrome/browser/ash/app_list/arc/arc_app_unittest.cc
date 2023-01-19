@@ -2723,8 +2723,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForSuspendedApps) {
   apps[0]->suspended = true;
   SendPackageAppListRefreshed(apps[0]->package_name, apps);
   // One more update as suspended app icon turned grey.
-  content::RunAllTasksUntilIdle();
-  EXPECT_EQ(update_count + 1, delegate.update_image_count());
+  delegate.WaitForIconUpdates(update_count + 1);
 
   // We should have different icons.
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(
@@ -2734,7 +2733,10 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForSuspendedApps) {
   // Now switch back to normal mode.
   apps[0]->suspended = false;
   SendPackageAppListRefreshed(apps[0]->package_name, apps);
-  EXPECT_EQ(update_count + 2, delegate.update_image_count());
+  // One more update as the app icon turned back to normal.
+  delegate.WaitForIconUpdates(update_count + 2);
+
+  // Wait to verify no more icon updates.
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(update_count + 2, delegate.update_image_count());
 
