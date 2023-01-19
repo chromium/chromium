@@ -192,6 +192,11 @@ struct IconKey {
   // chrome/browser/apps/app_service/app_icon/app_icon_factory.h and will remain
   // stable.
   uint32 icon_effects;
+
+  // True when the raw icon is updated. After an icon update, a new IconKey can
+  // be broadcast by a Publisher. Then the AppService icon directory should be
+  // removed to fetch the new raw icon from the app.
+  [MinVersion=22] bool raw_icon_updated;
 };
 
 // The intent filter matching condition types.

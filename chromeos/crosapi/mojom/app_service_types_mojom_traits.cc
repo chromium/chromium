@@ -39,11 +39,15 @@ namespace mojo {
 
 apps::IconKeyPtr StructTraits<crosapi::mojom::AppDataView,
                               apps::AppPtr>::icon_key(const apps::AppPtr& r) {
-  return r->icon_key.has_value()
-             ? std::make_unique<apps::IconKey>(r->icon_key.value().timeline,
-                                               r->icon_key.value().resource_id,
-                                               r->icon_key.value().icon_effects)
-             : nullptr;
+  if (!r->icon_key.has_value()) {
+    return nullptr;
+  }
+
+  auto icon_key = std::make_unique<apps::IconKey>(
+      r->icon_key.value().timeline, r->icon_key.value().resource_id,
+      r->icon_key.value().icon_effects);
+  icon_key->raw_icon_updated = r->icon_key.value().raw_icon_updated;
+  return icon_key;
 }
 
 // static
@@ -428,6 +432,7 @@ bool StructTraits<crosapi::mojom::IconKeyDataView, apps::IconKeyPtr>::Read(
     apps::IconKeyPtr* out) {
   *out = std::make_unique<apps::IconKey>(
       data.timeline(), apps::IconKey::kInvalidResourceId, data.icon_effects());
+  (*out)->raw_icon_updated = data.raw_icon_updated();
   return true;
 }
 

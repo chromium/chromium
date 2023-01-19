@@ -145,6 +145,10 @@ struct StructTraits<crosapi::mojom::IconKeyDataView, apps::IconKeyPtr> {
     return r->icon_effects;
   }
 
+  static bool raw_icon_updated(const apps::IconKeyPtr& r) {
+    return r->raw_icon_updated;
+  }
+
   static bool Read(crosapi::mojom::IconKeyDataView, apps::IconKeyPtr* out);
 };
 

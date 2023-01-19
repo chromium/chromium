@@ -34,6 +34,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   input->additional_search_terms = {"1", "2"};
   input->icon_key = apps::IconKey(
       /*timeline=*/1, apps::IconKey::kInvalidResourceId, /*icon_effects=*/2);
+  input->icon_key->raw_icon_updated = true;
   input->last_launch_time = base::Time() + base::Days(1);
   input->install_time = base::Time() + base::Days(2);
   input->install_reason = apps::InstallReason::kUser;
@@ -85,6 +86,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
 
   EXPECT_EQ(output->icon_key->timeline, 1U);
   EXPECT_EQ(output->icon_key->icon_effects, 2U);
+  EXPECT_TRUE(output->icon_key->raw_icon_updated);
 
   EXPECT_EQ(output->last_launch_time, base::Time() + base::Days(1));
   EXPECT_EQ(output->install_time, base::Time() + base::Days(2));
