@@ -118,9 +118,9 @@ class CaptureModeDemoToolsController : public ui::InputMethodObserver {
   // The most recently pressed non-modifier key.
   ui::KeyboardCode last_non_modifier_key_ = ui::VKEY_UNKNOWN;
 
-  // True if the cursor and focus is currently in a password text input
+  // True if the cursor and focus is currently in a text input
   // field, false otherwise.
-  bool in_password_text_input_ = false;
+  bool in_text_input_ = false;
 
   // Used to hold on `RefreshKeyComboViewer`. The key combo widget will be
   // scheduled to hide after `capture_mode::kRefreshKeyComboWidgetLongDelay`

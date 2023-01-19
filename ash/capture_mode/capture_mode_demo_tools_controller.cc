@@ -127,14 +127,6 @@ void CaptureModeDemoToolsController::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  // We will not show key combo widget if the cursor is in the input text field
-  // to respect the user privacy. This check needs to be placed after checking
-  // the key up event as the key combo widget on display will still need to be
-  // refreshed.
-  if (in_password_text_input_) {
-    return;
-  }
-
   DCHECK_EQ(event->type(), ui::ET_KEY_PRESSED);
   OnKeyDownEvent(event);
 }
@@ -237,6 +229,14 @@ void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
 }
 
 void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
+  // We will not show key combo widget if the cursor is in the input text field
+  // to respect the user privacy. This check needs to be placed after checking
+  // the key up event as the key combo widget on display will still need to be
+  // refreshed.
+  if (in_text_input_) {
+    return;
+  }
+
   const ui::KeyboardCode key_code = event->key_code();
 
   // Return directly if it is a repeated key event for non-modifier key.
@@ -301,8 +301,8 @@ void CaptureModeDemoToolsController::AnimateToResetTheWidget() {
 
 void CaptureModeDemoToolsController::UpdateTextInputType(
     const ui::TextInputClient* client) {
-  in_password_text_input_ =
-      client && client->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD;
+  in_text_input_ =
+      client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE;
 }
 
 void CaptureModeDemoToolsController::OnMouseHighlightAnimationEnded(

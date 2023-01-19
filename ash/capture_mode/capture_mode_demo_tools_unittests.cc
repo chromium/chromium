@@ -34,6 +34,7 @@
 #include "base/timer/timer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/fake_text_input_client.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -487,50 +488,64 @@ TEST_F(CaptureModeDemoToolsTest, AllIconKeysTest) {
   }
 }
 
-// Tests that the key combo viewer widget will not show if the password input
+// Tests that the key combo viewer widget will not show if the input
 // field is currently focused and will display in a normal way when the focus is
 // detached.
 TEST_F(CaptureModeDemoToolsTest, DoNotShowKeyComboViewerInInputField) {
-  EnableTextInputFocus(ui::TEXT_INPUT_TYPE_PASSWORD);
-  CaptureModeController* controller = StartCaptureSession(
-      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
-  controller->EnableDemoTools(true);
-  StartVideoRecordingImmediately();
-  EXPECT_TRUE(controller->is_recording_in_progress());
-  CaptureModeDemoToolsController* demo_tools_controller =
-      GetCaptureModeDemoToolsController();
-  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
-  auto* event_generator = GetEventGenerator();
+  for (const auto input_type :
+       {ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_TYPE_PASSWORD,
+        ui::TEXT_INPUT_TYPE_SEARCH, ui::TEXT_INPUT_TYPE_EMAIL,
+        ui::TEXT_INPUT_TYPE_NUMBER, ui::TEXT_INPUT_TYPE_TELEPHONE,
+        ui::TEXT_INPUT_TYPE_URL, ui::TEXT_INPUT_TYPE_DATE,
+        ui::TEXT_INPUT_TYPE_DATE_TIME, ui::TEXT_INPUT_TYPE_DATE_TIME_LOCAL,
+        ui::TEXT_INPUT_TYPE_MONTH, ui::TEXT_INPUT_TYPE_TIME,
+        ui::TEXT_INPUT_TYPE_WEEK, ui::TEXT_INPUT_TYPE_TEXT_AREA,
+        ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE,
+        ui::TEXT_INPUT_TYPE_DATE_TIME_FIELD, ui::TEXT_INPUT_TYPE_NULL}) {
+    EnableTextInputFocus(input_type);
+    CaptureModeController* controller = StartCaptureSession(
+        CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+    controller->EnableDemoTools(true);
+    StartVideoRecordingImmediately();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+    CaptureModeDemoToolsController* demo_tools_controller =
+        GetCaptureModeDemoToolsController();
+    CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+    auto* event_generator = GetEventGenerator();
 
-  // With the password input text focus enabled before the video recording, the
-  // key combo viewer will not display when pressing 'Ctrl' and 'T'.
-  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
-  event_generator->PressKey(ui::VKEY_T, ui::EF_NONE);
-  EXPECT_FALSE(demo_tools_test_api.GetDemoToolsWidget());
-  EXPECT_FALSE(demo_tools_test_api.GetKeyComboView());
-  event_generator->ReleaseKey(ui::VKEY_T, ui::EF_NONE);
-  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    // With the input text focus enabled before the video recording, the
+    // key combo viewer will not display when pressing 'Ctrl' and 'T'.
+    event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    event_generator->PressKey(ui::VKEY_T, ui::EF_NONE);
+    EXPECT_FALSE(demo_tools_test_api.GetDemoToolsWidget());
+    EXPECT_FALSE(demo_tools_test_api.GetKeyComboView());
+    event_generator->ReleaseKey(ui::VKEY_T, ui::EF_NONE);
+    event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
 
-  // Disable the input text focus, the key combo viewer will show when
-  // pressing 'Ctrl' and 'T' in a non-input-text field.
-  DisableTextInputFocus();
-  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
-  event_generator->PressKey(ui::VKEY_T, ui::EF_NONE);
-  EXPECT_TRUE(demo_tools_test_api.GetDemoToolsWidget());
-  EXPECT_TRUE(demo_tools_test_api.GetKeyComboView());
-  event_generator->ReleaseKey(ui::VKEY_T, ui::EF_NONE);
-  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
-  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
+    // Disable the input text focus, the key combo viewer will show when
+    // pressing 'Ctrl' and 'T' in a non-input-text field.
+    DisableTextInputFocus();
+    event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    event_generator->PressKey(ui::VKEY_T, ui::EF_NONE);
+    EXPECT_TRUE(demo_tools_test_api.GetDemoToolsWidget());
+    EXPECT_TRUE(demo_tools_test_api.GetKeyComboView());
+    event_generator->ReleaseKey(ui::VKEY_T, ui::EF_NONE);
+    event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    FireTimerAndVerifyWidget(/*should_hide_view=*/true);
 
-  // Enable the password text input focus during the recording, the key combo
-  // viewer will not display when pressing 'Ctrl' and 'T'.
-  EnableTextInputFocus(ui::TEXT_INPUT_TYPE_PASSWORD);
-  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
-  event_generator->PressKey(ui::VKEY_T, ui::EF_NONE);
-  EXPECT_FALSE(demo_tools_test_api.GetDemoToolsWidget());
-  EXPECT_FALSE(demo_tools_test_api.GetKeyComboView());
-  event_generator->ReleaseKey(ui::VKEY_T, ui::EF_NONE);
-  event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    // Enable the text input focus during the recording, the key combo
+    // viewer will not display when pressing 'Ctrl' and 'T'.
+    EnableTextInputFocus(input_type);
+    event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+    event_generator->PressKey(ui::VKEY_T, ui::EF_NONE);
+    EXPECT_FALSE(demo_tools_test_api.GetDemoToolsWidget());
+    EXPECT_FALSE(demo_tools_test_api.GetKeyComboView());
+    event_generator->ReleaseKey(ui::VKEY_T, ui::EF_NONE);
+    event_generator->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+    WaitForCaptureFileToBeSaved();
+  }
 }
 
 // verifies that after any key release, if the remaining pressed keys are no
