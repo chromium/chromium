@@ -107,10 +107,11 @@ class FakeFastInitiationAdvertiser : public FastInitiationAdvertiser {
                         base::OnceCallback<void()> callback,
                         base::OnceCallback<void()> error_callback) override {
     ++start_advertising_call_count_;
-    if (should_succeed_on_start_)
+    if (should_succeed_on_start_) {
       std::move(callback).Run();
-    else
+    } else {
       std::move(error_callback).Run();
+    }
   }
 
   void StopAdvertising(base::OnceCallback<void()> callback) override {
@@ -569,8 +570,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   }
 
   void TearDown() override {
-    if (service_)
+    if (service_) {
       service_->Shutdown();
+    }
 
     if (profile_) {
       DownloadCoreServiceFactory::GetForBrowserContext(profile_)
@@ -793,7 +795,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                       sharing::mojom::PairedKeyEncryptionFrame::New(
                           is_incoming ? kIncomingConnectionSignedData
                                       : kOutgoingConnectionSignedData,
-                          kPrivateCertificateHashAuthToken));
+                          kPrivateCertificateHashAuthToken, absl::nullopt));
               sharing::mojom::FramePtr mojo_frame =
                   sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
               std::move(callback).Run(std::move(mojo_frame));
@@ -837,8 +839,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
               }
 
               absl::optional<std::string> device_name;
-              if (!return_empty_device_name)
+              if (!return_empty_device_name) {
                 device_name = kDeviceName;
+              }
 
               sharing::mojom::AdvertisementPtr advertisement =
                   sharing::mojom::Advertisement::New(
@@ -1040,8 +1043,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                                                TransferMetadata metadata) {
         EXPECT_EQ(target.id, share_target.id);
         EXPECT_EQ(status, metadata.status());
-        if (new_share_target)
+        if (new_share_target) {
           *new_share_target = share_target;
+        }
 
         // Though this is indirect, verify that the highest level
         // success/failure metric was logged. We expect transfer updates to
@@ -1149,8 +1153,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   std::unique_ptr<sharing::Advertisement> GetCurrentAdvertisement() {
     auto endpoint_info =
         fake_nearby_connections_manager_->advertising_endpoint_info();
-    if (!endpoint_info)
+    if (!endpoint_info) {
       return nullptr;
+    }
 
     return sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
         *fake_nearby_connections_manager_->advertising_endpoint_info()));
@@ -1202,8 +1207,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
 
     for (int64_t id : kValidIntroductionFramePayloadIds) {
       // Update file payload at the end.
-      if (id == kFilePayloadId)
+      if (id == kFilePayloadId) {
         continue;
+      }
 
       if (id != kWifiCredentialsPayloadId) {
         fake_nearby_connections_manager_->SetIncomingPayload(
@@ -1345,8 +1351,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
         kFilePayloadId, GetFilePayloadPtr(kFilePayloadId));
 
     for (int64_t id : kValidIntroductionFramePayloadIds) {
-      if (id == kFilePayloadId)
+      if (id == kFilePayloadId) {
         continue;
+      }
 
       if (id != kWifiCredentialsPayloadId) {
         fake_nearby_connections_manager_->SetIncomingPayload(
@@ -1484,8 +1491,9 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   }
 
   void FireProcessShutdownIfRunning() {
-    if (IsProcessShutdownTimerRunning())
+    if (IsProcessShutdownTimerRunning()) {
       service_->process_shutdown_pending_timer_.FireNow();
+    }
   }
 
   bool IsBoundToProcess() { return service_->process_reference_ != nullptr; }
@@ -3392,8 +3400,9 @@ TEST_P(NearbySharingServiceImplTest,
 
   for (int64_t id : kValidIntroductionFramePayloadIds) {
     // Update file payload at the end.
-    if (id == kFilePayloadId)
+    if (id == kFilePayloadId) {
       continue;
+    }
 
     // Deliberately not calling SetIncomingPayload() for text payloads to check
     // for failure condition.

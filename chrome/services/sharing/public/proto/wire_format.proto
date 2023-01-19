@@ -170,6 +170,9 @@ message PairedKeyEncryptionFrame {
 
   // The hash of a certificate id.
   optional bytes secret_id_hash = 2;
+
+  // An optional encrypted data in byte array format.
+  optional bytes optional_signed_data = 3;
 }
 
 // A paired key verification result packet sent between devices.

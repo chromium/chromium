@@ -145,11 +145,19 @@ mojom::ConnectionResponseFramePtr GetConnectionResponseFrame(
 
 mojom::PairedKeyEncryptionFramePtr GetPairedKeyEncryptionFrame(
     const sharing::nearby::PairedKeyEncryptionFrame& proto_frame) {
+  absl::optional<std::vector<uint8_t>> optional_signed_data =
+      proto_frame.has_optional_signed_data()
+          ? absl::make_optional<std::vector<uint8_t>>(
+                proto_frame.optional_signed_data().begin(),
+                proto_frame.optional_signed_data().end())
+          : absl::nullopt;
+
   return mojom::PairedKeyEncryptionFrame::New(
       std::vector<uint8_t>(proto_frame.signed_data().begin(),
                            proto_frame.signed_data().end()),
       std::vector<uint8_t>(proto_frame.secret_id_hash().begin(),
-                           proto_frame.secret_id_hash().end()));
+                           proto_frame.secret_id_hash().end()),
+      optional_signed_data);
 }
 
 mojom::PairedKeyResultFrame::Status ConvertPairedKeyStatus(

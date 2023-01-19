@@ -208,8 +208,9 @@ void PairedKeyVerificationRunner::SendCertificateInfo() {
   // TODO(https://crbug.com/1114765): Update once the bug is resolved.
   std::vector<nearbyshare::proto::PublicCertificate> certificates;
 
-  if (certificates.empty())
+  if (certificates.empty()) {
     return;
+  }
 
   sharing::nearby::Frame frame;
   frame.set_version(sharing::nearby::Frame::V1);
@@ -301,7 +302,24 @@ PairedKeyVerificationRunner::VerifyPairedKeyEncryptionFrame(
     NS_LOG(VERBOSE) << __func__
                     << ": Unable to verify remote paired key encryption frame. "
                        "Signature verification failed.";
-    return PairedKeyVerificationResult::kFail;
+
+    if (!frame->get_paired_key_encryption()->optional_signed_data) {
+      NS_LOG(VERBOSE) << __func__ << ": No fallback signature to verify.";
+      return PairedKeyVerificationResult::kFail;
+    }
+
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Attempting to verify fallback signature for relaxed visibility.";
+    if (!certificate_->VerifySignature(
+            PadPrefix(remote_prefix_, raw_token_),
+            *frame->get_paired_key_encryption()->optional_signed_data)) {
+      NS_LOG(VERBOSE)
+          << __func__
+          << ": Unable to verify remote paired key encryption frame. "
+             "Fallback signature verification failed.";
+      return PairedKeyVerificationResult::kFail;
+    }
   }
 
   if (!share_target_.is_known) {
@@ -322,11 +340,13 @@ PairedKeyVerificationRunner::MergeResults(
     const std::vector<PairedKeyVerificationResult>& results) {
   bool all_success = true;
   for (const auto& result : results) {
-    if (result == PairedKeyVerificationResult::kFail)
+    if (result == PairedKeyVerificationResult::kFail) {
       return result;
+    }
 
-    if (result != PairedKeyVerificationResult::kSuccess)
+    if (result != PairedKeyVerificationResult::kSuccess) {
       all_success = false;
+    }
   }
 
   return all_success ? PairedKeyVerificationResult::kSuccess
