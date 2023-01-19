@@ -14,6 +14,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
+#include "chrome/common/search/ntp_logging_events.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -77,6 +78,8 @@ class CustomizeChromePageHandler
   void UpdateModulesSettings() override;
 
  private:
+  void LogEvent(NTPLoggingEventType event);
+
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
 

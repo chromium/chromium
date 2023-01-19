@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
@@ -288,6 +289,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   }
   MockThemeService& mock_theme_service() { return *mock_theme_service_; }
   Browser& browser() { return *browser_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  protected:
   // NOTE: The initialization order of these members matters.
@@ -305,12 +307,15 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   raw_ptr<MockThemeService> mock_theme_service_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<CustomizeChromePageHandler> handler_;
 };
 
 TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
   profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
   profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
+
+  histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 0);
 
   handler().SetMostVisitedSettings(/*custom_links_enabled=*/false,
                                    /*visible=*/true);
@@ -319,6 +324,7 @@ TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
   EXPECT_TRUE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
+  histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 2);
 }
 
 TEST_F(CustomizeChromePageHandlerTest, GetMostVisitedSettings) {
