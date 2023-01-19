@@ -9,11 +9,10 @@ import json
 import pathlib
 import urllib.request
 
-# JDK11 releases can be found from the following urls:
-# https://wiki.openjdk.java.net/display/JDKUpdates/JDK11u#JDK11u-Releases
-# https://github.com/adoptium/temurin11-binaries/releases/
+# JDK17 releases can be found from the following url:
+# https://github.com/adoptium/temurin17-binaries/releases/
 
-_LATEST_URL = 'https://api.github.com/repos/adoptium/temurin11-binaries/releases/latest'
+_LATEST_URL = 'https://api.github.com/repos/adoptium/temurin17-binaries/releases/latest'
 
 
 def get_latest_release():
