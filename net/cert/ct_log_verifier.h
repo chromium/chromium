@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
@@ -95,7 +94,7 @@ class NET_EXPORT CTLogVerifier
   ct::DigitallySigned::SignatureAlgorithm signature_algorithm_ =
       ct::DigitallySigned::SIG_ALGO_ANONYMOUS;
 
-  raw_ptr<EVP_PKEY, DanglingUntriaged> public_key_ = nullptr;
+  bssl::UniquePtr<EVP_PKEY> public_key_;
 };
 
 }  // namespace net

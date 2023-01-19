@@ -262,12 +262,7 @@ bool CTLogVerifier::VerifyAuditProof(const ct::MerkleAuditProof& proof,
   return sn == 0 && r == root_hash;
 }
 
-CTLogVerifier::~CTLogVerifier() {
-  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
-  if (public_key_)
-    EVP_PKEY_free(public_key_);
-}
+CTLogVerifier::~CTLogVerifier() = default;
 
 bool CTLogVerifier::Init(base::StringPiece public_key) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
@@ -275,7 +270,7 @@ bool CTLogVerifier::Init(base::StringPiece public_key) {
   CBS cbs;
   CBS_init(&cbs, reinterpret_cast<const uint8_t*>(public_key.data()),
            public_key.size());
-  public_key_ = EVP_parse_public_key(&cbs);
+  public_key_.reset(EVP_parse_public_key(&cbs));
   if (!public_key_ || CBS_len(&cbs) != 0)
     return false;
 
@@ -283,7 +278,7 @@ bool CTLogVerifier::Init(base::StringPiece public_key) {
 
   // Right now, only RSASSA-PKCS1v15 with SHA-256 and ECDSA with SHA-256 are
   // supported.
-  switch (EVP_PKEY_id(public_key_)) {
+  switch (EVP_PKEY_id(public_key_.get())) {
     case EVP_PKEY_RSA:
       hash_algorithm_ = ct::DigitallySigned::HASH_ALGO_SHA256;
       signature_algorithm_ = ct::DigitallySigned::SIG_ALGO_RSA;
@@ -299,7 +294,7 @@ bool CTLogVerifier::Init(base::StringPiece public_key) {
   // Extra safety check: Require RSA keys of at least 2048 bits.
   // EVP_PKEY_size returns the size in bytes. 256 = 2048-bit RSA key.
   if (signature_algorithm_ == ct::DigitallySigned::SIG_ALGO_RSA &&
-      EVP_PKEY_size(public_key_) < 256) {
+      EVP_PKEY_size(public_key_.get()) < 256) {
     return false;
   }
 
@@ -314,7 +309,7 @@ bool CTLogVerifier::VerifySignature(base::StringPiece data_to_sign,
   bssl::ScopedEVP_MD_CTX ctx;
   return hash_alg &&
          EVP_DigestVerifyInit(ctx.get(), nullptr, hash_alg, nullptr,
-                              public_key_) &&
+                              public_key_.get()) &&
          EVP_DigestVerifyUpdate(ctx.get(), data_to_sign.data(),
                                 data_to_sign.size()) &&
          EVP_DigestVerifyFinal(

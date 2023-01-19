@@ -39,9 +39,7 @@ int ToOpenSSLDigestType(SignatureCreator::HashAlgorithm hash_alg) {
 
 }  // namespace
 
-SignatureCreator::~SignatureCreator() {
-  EVP_MD_CTX_destroy(sign_context_);
-}
+SignatureCreator::~SignatureCreator() = default;
 
 // static
 std::unique_ptr<SignatureCreator> SignatureCreator::Create(
@@ -54,7 +52,7 @@ std::unique_ptr<SignatureCreator> SignatureCreator::Create(
   if (!digest) {
     return nullptr;
   }
-  if (!EVP_DigestSignInit(result->sign_context_, nullptr, digest, nullptr,
+  if (!EVP_DigestSignInit(result->sign_context_.get(), nullptr, digest, nullptr,
                           key->key())) {
     return nullptr;
   }
@@ -84,7 +82,7 @@ bool SignatureCreator::Sign(RSAPrivateKey* key,
 
 bool SignatureCreator::Update(const uint8_t* data_part, int data_part_len) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  return !!EVP_DigestSignUpdate(sign_context_, data_part, data_part_len);
+  return !!EVP_DigestSignUpdate(sign_context_.get(), data_part, data_part_len);
 }
 
 bool SignatureCreator::Final(std::vector<uint8_t>* signature) {
@@ -92,14 +90,14 @@ bool SignatureCreator::Final(std::vector<uint8_t>* signature) {
 
   // Determine the maximum length of the signature.
   size_t len = 0;
-  if (!EVP_DigestSignFinal(sign_context_, nullptr, &len)) {
+  if (!EVP_DigestSignFinal(sign_context_.get(), nullptr, &len)) {
     signature->clear();
     return false;
   }
   signature->resize(len);
 
   // Sign it.
-  if (!EVP_DigestSignFinal(sign_context_, signature->data(), &len)) {
+  if (!EVP_DigestSignFinal(sign_context_.get(), signature->data(), &len)) {
     signature->clear();
     return false;
   }
@@ -107,6 +105,6 @@ bool SignatureCreator::Final(std::vector<uint8_t>* signature) {
   return true;
 }
 
-SignatureCreator::SignatureCreator() : sign_context_(EVP_MD_CTX_create()) {}
+SignatureCreator::SignatureCreator() : sign_context_(EVP_MD_CTX_new()) {}
 
 }  // namespace crypto
