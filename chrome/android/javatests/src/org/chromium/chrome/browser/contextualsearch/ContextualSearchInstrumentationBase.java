@@ -407,11 +407,6 @@ public class ContextualSearchInstrumentationBase {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ContextualSearchTabHelper.overrideOnlineDetectionForTesting(
-                    sActivityTestRule.getActivity().getActivityTab());
-        });
-
         final ChromeActivity activity = sActivityTestRule.getActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             FirstRunStatus.setFirstRunFlowComplete(true);
@@ -437,9 +432,9 @@ public class ContextualSearchInstrumentationBase {
         sActivityTestRule.assertWaitForPageScaleFactorMatch(1.0f);
 
         mManager = sActivityTestRule.getActivity().getContextualSearchManagerSupplier().get();
-        Assert.assertNotNull(mManager);
         mTestHost = new ContextualSearchInstrumentationTestHost();
 
+        Assert.assertNotNull(mManager);
         mPanel = (ContextualSearchPanel) mManager.getContextualSearchPanel();
         Assert.assertNotNull(mPanel);
 
