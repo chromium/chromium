@@ -2031,8 +2031,6 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
           /*make_visible_in_visual_viewport=*/false,
           mojom::blink::ScrollBehavior::kInstant);
   params->for_focused_editable = mojom::blink::FocusedEditableParams::New();
-  params->for_focused_editable->relative_location = gfx::Vector2dF();
-  params->for_focused_editable->size = gfx::SizeF();
 
   // When deciding whether to zoom in on a focused text box, we should
   // decide not to zoom in if the user won't be able to zoom out. e.g if the
@@ -2064,6 +2062,10 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   gfx::Vector2dF editable_offset_from_caret(absolute_element_bounds.offset -
                                             absolute_caret_bounds.offset);
   gfx::SizeF editable_size(absolute_element_bounds.size);
+
+  if (editable_size.IsEmpty()) {
+    return false;
+  }
 
   params->for_focused_editable->relative_location = editable_offset_from_caret;
   params->for_focused_editable->size = editable_size;

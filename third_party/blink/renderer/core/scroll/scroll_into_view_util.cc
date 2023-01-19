@@ -349,6 +349,8 @@ void ConvertParamsToParentFrame(mojom::blink::ScrollIntoViewParamsPtr& params,
   params->for_focused_editable->relative_location = gfx::Vector2dF(
       editable_bounds_in_dest.offset - caret_rect_in_dest.offset);
   params->for_focused_editable->size = gfx::SizeF(editable_bounds_in_dest.size);
+
+  DCHECK(!params->for_focused_editable->size.IsEmpty());
 }
 
 }  // namespace scroll_into_view_util

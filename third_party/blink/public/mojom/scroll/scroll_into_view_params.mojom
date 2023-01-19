@@ -36,7 +36,7 @@ struct FocusedEditableParams {
   // rect which is being used to ScrollIntoView. The location must be stored
   // relative to the caret (rather than typical absolute, relative to frame,
   // coordinates) since each scroll will change the caret absolute position
-  // which is transformed by ScrollIntoView but this out-of-bound rect isn't.
+  // which is transformed by ScrollIntoView but this out-of-band rect isn't.
   // The absolute rect for the editable can then be reconstructed at the end of
   // the ScrollIntoView from the caret rect.
   gfx.mojom.Vector2dF relative_location;

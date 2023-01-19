@@ -973,6 +973,43 @@ TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {
   EXPECT_EQ(Window().scrollX(), 0);
 }
 
+TEST_F(ScrollIntoViewTest, EmptyEditableElementRect) {
+  v8::HandleScope HandleScope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  SimRequest child_request("https://example.com/child.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <iframe id="childFrame" src="child.html"></iframe>
+  )HTML");
+  child_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      input {
+        position: absolute;
+        left: 0;
+        top: 1000px;
+        width: 0;
+        height: 0;
+        border: 0;
+        padding: 0;
+      }
+    </style>
+    <input autofocus id="target"></input>
+  )HTML");
+  Compositor().BeginFrame();
+
+  WebFrameWidget* widget = WebView().MainFrameImpl()->FrameWidgetImpl();
+  widget->ScrollFocusedEditableElementIntoView();
+
+  // We shouldn't scroll (or crash) since the rect is empty.
+  EXPECT_EQ(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
+            ScrollOffset(0, 0));
+}
+
 }  // namespace
 
 }  // namespace blink
