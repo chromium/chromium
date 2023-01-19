@@ -281,11 +281,6 @@ export class DestinationStore extends EventTarget {
     return this.selectedDestination_;
   }
 
-  private isDestinationValid_(destination: (Destination|RecentDestination|
-                                            null)): boolean {
-    return !!destination && !!destination.id && !!destination.origin;
-  }
-
   private getPrinterTypeForRecentDestination_(destination: RecentDestination):
       PrinterType {
     if (isPdfPrinter(destination.id)) {
