@@ -184,20 +184,20 @@ PoissonAllocationSampler::PoissonAllocationSampler() {
   Init();
   auto* sampled_addresses = new LockFreeAddressHashSet(64);
   g_sampled_addresses_set.store(sampled_addresses, std::memory_order_release);
+
+  // Install the allocator hooks immediately, to better match the behaviour
+  // of base::allocator::Initializer.
+  //
+  // TODO(crbug/1137393): Use base::allocator::Initializer to install the
+  // PoissonAllocationSampler hooks. All observers need to be passed to the
+  // initializer at the same time so this will install the hooks even
+  // earlier in process startup.
+  allocator::dispatcher::InstallStandardAllocatorHooks();
 }
 
 // static
 void PoissonAllocationSampler::Init() {
   [[maybe_unused]] static bool init_once = []() {
-    // Install the allocator hooks immediately, to better match the behaviour
-    // of base::allocator::Initializer.
-    //
-    // TODO(crbug/1137393): Use base::allocator::Initializer to install the
-    // PoissonAllocationSampler hooks. All observers need to be passed to the
-    // initializer at the same time so this will install the hooks even earlier
-    // in process startup.
-    allocator::dispatcher::InstallStandardAllocatorHooks();
-
     // Touch thread local data on initialization to enforce proper setup of
     // underlying storage system.
     GetThreadLocalData();
@@ -246,31 +246,12 @@ size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
   return static_cast<size_t>(value);
 }
 
-// static
-void PoissonAllocationSampler::RecordAlloc(
+void PoissonAllocationSampler::DoRecordAllocation(
+    const ProfilingStateFlagMask state,
     void* address,
     size_t size,
     base::allocator::dispatcher::AllocationSubsystem type,
     const char* context) {
-  // The allocation hooks may be installed before the sampler is started. Check
-  // if its ever been started first to avoid extra work on the fast path,
-  // because it's the most common case.
-  const ProfilingStateFlagMask state =
-      profiling_state_.load(std::memory_order_relaxed);
-  if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
-    return;
-  }
-
-  // When sampling is muted for testing, only handle manual calls to
-  // RecordAlloc. (This doesn't need to be checked in RecordFree because muted
-  // allocations won't be added to sampled_addresses_set(), so RecordFree
-  // already skips them.)
-  if (UNLIKELY((state & ProfilingStateFlag::kHookedSamplesMutedForTesting) &&
-               type != base::allocator::dispatcher::AllocationSubsystem::
-                           kManualForTesting)) {
-    return;
-  }
-
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
 
   thread_local_data->accumulated_bytes += size;
@@ -290,21 +271,11 @@ void PoissonAllocationSampler::RecordAlloc(
     return;
   }
 
-  instance_->DoRecordAlloc(accumulated_bytes, size, address, type, context);
-}
-
-void PoissonAllocationSampler::DoRecordAlloc(
-    intptr_t accumulated_bytes,
-    size_t size,
-    void* address,
-    base::allocator::dispatcher::AllocationSubsystem type,
-    const char* context) {
   // Failed allocation? Skip the sample.
   if (UNLIKELY(!address)) {
     return;
   }
 
-  ThreadLocalData* const thread_local_data = GetThreadLocalData();
   size_t mean_interval = g_sampling_interval.load(std::memory_order_relaxed);
   if (UNLIKELY(!thread_local_data->sampling_interval_initialized)) {
     thread_local_data->sampling_interval_initialized = true;
@@ -358,9 +329,6 @@ void PoissonAllocationSampler::DoRecordAlloc(
 }
 
 void PoissonAllocationSampler::DoRecordFree(void* address) {
-  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted())) {
-    return;
-  }
   // There is a rare case on macOS and Android when the very first thread_local
   // access in ScopedMuteThreadSamples constructor may allocate and
   // thus reenter DoRecordAlloc. However the call chain won't build up further

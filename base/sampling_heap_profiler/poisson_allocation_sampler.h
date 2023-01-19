@@ -102,11 +102,18 @@ class BASE_EXPORT PoissonAllocationSampler {
   // Returns the current mean sampling interval, in bytes.
   size_t SamplingInterval() const;
 
-  static void RecordAlloc(void* address,
-                          size_t,
-                          base::allocator::dispatcher::AllocationSubsystem,
-                          const char* context);
+  ALWAYS_INLINE static void RecordAlloc(
+      void* address,
+      size_t,
+      base::allocator::dispatcher::AllocationSubsystem,
+      const char* context);
   ALWAYS_INLINE static void RecordFree(void* address);
+
+  void OnAllocation(void* address,
+                    size_t,
+                    base::allocator::dispatcher::AllocationSubsystem,
+                    const char* context);
+  void OnFree(void* address);
 
   static PoissonAllocationSampler* Get();
 
@@ -185,11 +192,11 @@ class BASE_EXPORT PoissonAllocationSampler {
   // comment in RecordFree() for why this is safe.)
   static void ResetProfilingStateFlag(ProfilingStateFlag flag);
 
-  void DoRecordAlloc(intptr_t accumulated_bytes,
-                     size_t size,
-                     void* address,
-                     base::allocator::dispatcher::AllocationSubsystem type,
-                     const char* context);
+  void DoRecordAllocation(const ProfilingStateFlagMask state,
+                          void* address,
+                          size_t size,
+                          base::allocator::dispatcher::AllocationSubsystem type,
+                          const char* context);
   void DoRecordFree(void* address);
 
   void BalanceAddressesHashSet();
@@ -217,7 +224,47 @@ class BASE_EXPORT PoissonAllocationSampler {
 };
 
 // static
+ALWAYS_INLINE void PoissonAllocationSampler::RecordAlloc(
+    void* address,
+    size_t size,
+    base::allocator::dispatcher::AllocationSubsystem type,
+    const char* context) {
+  instance_->OnAllocation(address, size, type, context);
+}
+
+// static
 ALWAYS_INLINE void PoissonAllocationSampler::RecordFree(void* address) {
+  instance_->OnFree(address);
+}
+
+inline void PoissonAllocationSampler::OnAllocation(
+    void* address,
+    size_t size,
+    base::allocator::dispatcher::AllocationSubsystem type,
+    const char* context) {
+  // The allocation hooks may be installed before the sampler is started. Check
+  // if its ever been started first to avoid extra work on the fast path,
+  // because it's the most common case.
+  const ProfilingStateFlagMask state =
+      profiling_state_.load(std::memory_order_relaxed);
+  if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
+    return;
+  }
+
+  // When sampling is muted for testing, only handle manual calls to
+  // RecordAlloc. (This doesn't need to be checked in RecordFree because muted
+  // allocations won't be added to sampled_addresses_set(), so RecordFree
+  // already skips them.)
+  if (UNLIKELY((state & ProfilingStateFlag::kHookedSamplesMutedForTesting) &&
+               type != base::allocator::dispatcher::AllocationSubsystem::
+                           kManualForTesting)) {
+    return;
+  }
+
+  DoRecordAllocation(state, address, size, type, context);
+}
+
+inline void PoissonAllocationSampler::OnFree(void* address) {
   // The allocation hooks may be installed before the sampler is started. Check
   // if its ever been started first to avoid extra work on the fast path,
   // because it's the most common case. Note that DoRecordFree still needs to be
@@ -273,9 +320,14 @@ ALWAYS_INLINE void PoissonAllocationSampler::RecordFree(void* address) {
   if (UNLIKELY(address == nullptr)) {
     return;
   }
-  if (UNLIKELY(sampled_addresses_set().Contains(address))) {
-    instance_->DoRecordFree(address);
+  if (LIKELY(!sampled_addresses_set().Contains(address))) {
+    return;
   }
+  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted())) {
+    return;
+  }
+
+  DoRecordFree(address);
 }
 
 }  // namespace base
