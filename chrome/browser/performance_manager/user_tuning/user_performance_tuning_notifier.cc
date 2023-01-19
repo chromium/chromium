@@ -74,6 +74,8 @@ void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
   }
 
   previous_total_rss_ = total_rss;
+
+  receiver_->NotifyMemoryMetricsRefreshed();
 }
 
 void UserPerformanceTuningNotifier::MaybeAddTabAndNotify(

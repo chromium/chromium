@@ -21,8 +21,11 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
       ++memory_percent_threshold_reached_count_;
     }
 
+    void NotifyMemoryMetricsRefreshed() override { ++memory_refreshed_count_; }
+
     int tab_count_threshold_reached_count_ = 0;
     int memory_percent_threshold_reached_count_ = 0;
+    int memory_refreshed_count_ = 0;
   };
 
   void SetUp() override {
@@ -97,6 +100,19 @@ TEST_F(UserPerformanceTuningNotifierTest, TestMemoryThresholdTriggered) {
   SystemNodeImpl::FromNode(graph()->GetSystemNode())
       ->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(1, receiver_->memory_percent_threshold_reached_count_);
+}
+
+TEST_F(UserPerformanceTuningNotifierTest, TestMemoryAvailableTriggered) {
+  // Memory Metrics are available
+  SystemNodeImpl::FromNode(graph()->GetSystemNode())
+      ->OnProcessMemoryMetricsAvailable();
+  EXPECT_EQ(1, receiver_->memory_refreshed_count_);
+
+  // When memory metrics are available again, the notifier should be
+  // triggered again
+  SystemNodeImpl::FromNode(graph()->GetSystemNode())
+      ->OnProcessMemoryMetricsAvailable();
+  EXPECT_EQ(2, receiver_->memory_refreshed_count_);
 }
 
 }  // namespace performance_manager::user_tuning

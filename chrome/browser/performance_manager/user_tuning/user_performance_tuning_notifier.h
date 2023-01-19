@@ -33,6 +33,9 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
     // Called when the current total resident set size of all processes exceeds
     // `resident_set_threshold_kb`.
     virtual void NotifyMemoryThresholdReached() = 0;
+
+    // Called when the memory metrics for a discarded tab is available to read
+    virtual void NotifyMemoryMetricsRefreshed() = 0;
   };
 
   UserPerformanceTuningNotifier(std::unique_ptr<Receiver> delegate,

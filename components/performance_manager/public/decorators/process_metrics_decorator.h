@@ -63,6 +63,8 @@ class ProcessMetricsDecorator
     return refresh_timer_.GetCurrentDelay();
   }
 
+  void RefreshMetricsForTesting() { RefreshMetrics(); }
+
  protected:
   class ScopedMetricsInterestTokenImpl;
 

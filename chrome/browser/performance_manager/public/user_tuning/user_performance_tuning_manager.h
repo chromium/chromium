@@ -92,6 +92,9 @@ class UserPerformanceTuningManager
     // Raised when the count of janky intervals reaches X.
     // Can be used by the UI to show a promo
     virtual void OnJankThresholdReached() {}
+
+    // Raised when memory metrics for a discarded page becomes available to read
+    virtual void OnMemoryMetricsRefreshed() {}
   };
 
   class PreDiscardResourceUsage
@@ -149,6 +152,10 @@ class UserPerformanceTuningManager
   // indicates that the battery state has not been sampled yet.
   int SampledBatteryPercentage() const;
 
+  // Discards the given WebContents with the same mechanism as one that is
+  // discarded through a natural timeout
+  void DiscardPageForTesting(content::WebContents* web_contents);
+
  private:
   friend class ::ChromeBrowserMainExtraPartsPerformanceManager;
   friend class ::PerformanceManagerMetricsProviderTest;
@@ -165,6 +172,7 @@ class UserPerformanceTuningManager
 
     void NotifyTabCountThresholdReached() override;
     void NotifyMemoryThresholdReached() override;
+    void NotifyMemoryMetricsRefreshed() override;
   };
 
   explicit UserPerformanceTuningManager(
@@ -184,6 +192,7 @@ class UserPerformanceTuningManager
 
   void NotifyTabCountThresholdReached();
   void NotifyMemoryThresholdReached();
+  void NotifyMemoryMetricsRefreshed();
 
   // base::PowerStateObserver:
   void OnPowerStateChange(bool on_battery_power) override;
