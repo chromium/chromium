@@ -82,7 +82,8 @@ class StubDeviceCommandStartCrdSessionJobDelegate
   void StartCrdHostAndGetCode(
       const SessionParameters&,
       DeviceCommandStartCrdSessionJob::AccessCodeCallback,
-      DeviceCommandStartCrdSessionJob::ErrorCallback) override {}
+      DeviceCommandStartCrdSessionJob::ErrorCallback,
+      DeviceCommandStartCrdSessionJob::SessionEndCallback) override {}
 };
 
 }  // namespace

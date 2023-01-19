@@ -9,16 +9,20 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
 using AccessCodeCallback = DeviceCommandStartCrdSessionJob::AccessCodeCallback;
 using ErrorCallback = DeviceCommandStartCrdSessionJob::ErrorCallback;
+using SessionEndCallback = DeviceCommandStartCrdSessionJob::SessionEndCallback;
 
 namespace {
 
@@ -48,10 +52,12 @@ class CrdHostDelegate::CrdHostSession
  public:
   CrdHostSession(const SessionParameters& parameters,
                  AccessCodeCallback success_callback,
-                 ErrorCallback error_callback)
+                 ErrorCallback error_callback,
+                 SessionEndCallback session_finished_callback)
       : parameters_(parameters),
         success_callback_(std::move(success_callback)),
-        error_callback_(std::move(error_callback)) {}
+        error_callback_(std::move(error_callback)),
+        session_finished_callback_(std::move(session_finished_callback)) {}
   CrdHostSession(const CrdHostSession&) = delete;
   CrdHostSession& operator=(const CrdHostSession&) = delete;
   ~CrdHostSession() override = default;
@@ -86,6 +92,7 @@ class CrdHostDelegate::CrdHostSession
   void OnHostStateConnecting() override { CRD_DVLOG(3) << __FUNCTION__; }
   void OnHostStateConnected(const std::string& remote_username) override {
     CRD_DVLOG(3) << __FUNCTION__;
+    session_connected_time_ = base::Time::Now();
   }
   void OnHostStateDisconnected(
       const absl::optional<std::string>& disconnect_reason) override {
@@ -93,7 +100,10 @@ class CrdHostDelegate::CrdHostSession
     // their CRD connection is failing/disconnecting.
     LOG(WARNING) << "CRD session disconnected with reason: "
                  << disconnect_reason.value_or("<none>");
-
+    if (session_connected_time_.has_value()) {
+      ReportSessionTermination(base::Time::Now() -
+                               session_connected_time_.value());
+    }
     ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "host disconnected");
   }
   void OnNatPolicyChanged(
@@ -166,9 +176,19 @@ class CrdHostDelegate::CrdHostSession
     }
   }
 
+  void ReportSessionTermination(base::TimeDelta session_duration) {
+    if (session_finished_callback_) {
+      std::move(session_finished_callback_).Run(session_duration);
+
+      session_finished_callback_.Reset();
+    }
+  }
+
   SessionParameters parameters_;
   AccessCodeCallback success_callback_;
   ErrorCallback error_callback_;
+  SessionEndCallback session_finished_callback_;
+  absl::optional<base::Time> session_connected_time_;
 
   mojo::Receiver<remoting::mojom::SupportHostObserver> observer_{this};
   base::WeakPtrFactory<CrdHostSession> weak_factory_{this};
@@ -196,10 +216,12 @@ void CrdHostDelegate::TerminateSession(base::OnceClosure callback) {
 void CrdHostDelegate::StartCrdHostAndGetCode(
     const SessionParameters& parameters,
     AccessCodeCallback success_callback,
-    ErrorCallback error_callback) {
+    ErrorCallback error_callback,
+    SessionEndCallback session_finished_callback) {
   DCHECK(!active_session_);
   active_session_ = std::make_unique<CrdHostSession>(
-      parameters, std::move(success_callback), std::move(error_callback));
+      parameters, std::move(success_callback), std::move(error_callback),
+      std::move(session_finished_callback));
 
   active_session_->Start(*remoting_service_);
 }

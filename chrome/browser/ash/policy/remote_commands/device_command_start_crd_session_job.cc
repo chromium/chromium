@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
@@ -129,6 +130,13 @@ CrdSessionType ToCrdSessionTypeOrDefault(absl::optional<int> int_value,
     return default_value;
   }
   return static_cast<CrdSessionType>(int_value.value());
+}
+
+void OnCrdSessionFinished(CrdSessionType crd_session_type,
+                          UserSessionType user_session_type,
+                          base::TimeDelta session_duration) {
+  CrdUmaLogger(crd_session_type, user_session_type)
+      .LogSessionDuration(session_duration);
 }
 
 }  // namespace
@@ -349,7 +357,9 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
       base::BindOnce(&DeviceCommandStartCrdSessionJob::FinishWithSuccess,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&DeviceCommandStartCrdSessionJob::FinishWithError,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&OnCrdSessionFinished, GetCrdSessionType(),
+                     GetCurrentUserSessionType()));
 }
 
 void DeviceCommandStartCrdSessionJob::FinishWithSuccess(

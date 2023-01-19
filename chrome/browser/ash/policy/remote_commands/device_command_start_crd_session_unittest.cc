@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 
 #include <map>
@@ -61,9 +62,12 @@ constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 constexpr char kTestOAuthToken[] = "test-oauth-token";
 constexpr char kTestAccessCode[] = "111122223333";
 constexpr char kTestNoOAuthTokenReason[] = "Not authorized.";
-// Common template used in all our UMA histograms.
-constexpr char kHistogramSessionTemplate[] =
+// Common template used in all UMA histograms for session result logs.
+constexpr char kHistogramResultTemplate[] =
     "Enterprise.DeviceRemoteCommand.Crd.%s.%s.Result";
+// Common template used in all UMA histograms for session duration logs.
+constexpr char kHistogramDurationTemplate[] =
+    "Enterprise.DeviceRemoteCommand.Crd.%s.%s.SessionDuration";
 
 // Created for session type logged to UMA.
 const char* SessionTypeToUmaString(TestSessionType session_type) {
@@ -129,6 +133,11 @@ class StubCrdHostDelegate : public DeviceCommandStartCrdSessionJob::Delegate {
 
   void SetHasActiveSession(bool value) { has_active_session_ = value; }
   void MakeAccessCodeFetchFail() { access_code_success_ = false; }
+  void TerminateCrdSession(const base::TimeDelta& session_duration) {
+    if (session_finished_callback_.has_value()) {
+      std::move(session_finished_callback_.value()).Run(session_duration);
+    }
+  }
 
   // Returns if TerminateSession() was called to terminate the active session.
   bool IsActiveSessionTerminated() const { return terminate_session_called_; }
@@ -146,13 +155,17 @@ class StubCrdHostDelegate : public DeviceCommandStartCrdSessionJob::Delegate {
   void StartCrdHostAndGetCode(
       const SessionParameters& parameters,
       DeviceCommandStartCrdSessionJob::AccessCodeCallback success_callback,
-      DeviceCommandStartCrdSessionJob::ErrorCallback error_callback) override;
+      DeviceCommandStartCrdSessionJob::ErrorCallback error_callback,
+      DeviceCommandStartCrdSessionJob::SessionEndCallback
+          session_finished_callback) override;
 
  private:
   bool has_active_session_ = false;
   bool access_code_success_ = true;
   bool terminate_session_called_ = false;
   absl::optional<SessionParameters> received_session_parameters_;
+  absl::optional<DeviceCommandStartCrdSessionJob::SessionEndCallback>
+      session_finished_callback_;
 };
 
 bool StubCrdHostDelegate::HasActiveSession() const {
@@ -168,8 +181,11 @@ void StubCrdHostDelegate::TerminateSession(base::OnceClosure callback) {
 void StubCrdHostDelegate::StartCrdHostAndGetCode(
     const SessionParameters& parameters,
     DeviceCommandStartCrdSessionJob::AccessCodeCallback success_callback,
-    DeviceCommandStartCrdSessionJob::ErrorCallback error_callback) {
+    DeviceCommandStartCrdSessionJob::ErrorCallback error_callback,
+    DeviceCommandStartCrdSessionJob::SessionEndCallback
+        session_finished_callback) {
   received_session_parameters_ = parameters;
+  session_finished_callback_ = std::move(session_finished_callback);
 
   if (access_code_success_) {
     std::move(success_callback).Run(kTestAccessCode);
@@ -705,9 +721,30 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
       "Enterprise.DeviceRemoteCommand.Crd.SessionType", expected_session_type,
       1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+      base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          SessionTypeToUmaString(user_session_type)),
       ResultCode::SUCCESS, /*expected_bucket_count=*/1);
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
+       ShouldSendSessionDurationLogForRemoteSupport) {
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+  base::TimeDelta duration = base::Seconds(1);
+
+  if (!SupportsRemoteSupport(user_session_type)) {
+    return;
+  }
+  base::HistogramTester histogram_tester;
+  StartSessionOfType(user_session_type, user_manager());
+  RunJobAndWaitForResult();
+  crd_host_delegate().TerminateCrdSession(duration);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StringPrintf(kHistogramDurationTemplate, "RemoteSupport",
+                         SessionTypeToUmaString(user_session_type)),
+      duration, /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -721,7 +758,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
       "Enterprise.DeviceRemoteCommand.Crd.Result",
       ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+      base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          "UnaffiliatedUserSession"),
       ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, /*expected_bucket_count=*/1);
 }
@@ -742,7 +779,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
       "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::FAILURE_NOT_IDLE,
       1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+      base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          "AutoLaunchedKioskSession"),
       ResultCode::FAILURE_NOT_IDLE, /*expected_bucket_count=*/1);
 }
@@ -759,7 +796,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
       "Enterprise.DeviceRemoteCommand.Crd.Result",
       ResultCode::FAILURE_NO_OAUTH_TOKEN, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+      base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          "AutoLaunchedKioskSession"),
       ResultCode::FAILURE_NO_OAUTH_TOKEN, /*expected_bucket_count=*/1);
 }
@@ -776,7 +813,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
       "Enterprise.DeviceRemoteCommand.Crd.Result",
       ResultCode::FAILURE_CRD_HOST_ERROR, 1);
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramSessionTemplate, "RemoteSupport",
+      base::StringPrintf(kHistogramResultTemplate, "RemoteSupport",
                          "AutoLaunchedKioskSession"),
       ResultCode::FAILURE_CRD_HOST_ERROR, /*expected_bucket_count=*/1);
 }
@@ -1117,7 +1154,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramSessionTemplate, "RemoteAccess",
+      base::StringPrintf(kHistogramResultTemplate, "RemoteAccess",
                          SessionTypeToUmaString(user_session_type)),
       ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, /*expected_bucket_count=*/1);
 }
@@ -1138,7 +1175,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramSessionTemplate, "RemoteAccess",
+      base::StringPrintf(kHistogramResultTemplate, "RemoteAccess",
                          SessionTypeToUmaString(user_session_type)),
       ResultCode::SUCCESS, /*expected_bucket_count=*/1);
 }
@@ -1151,9 +1188,32 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
   RunJobAndWaitForResult(RemoteAccessPayload());
 
   histogram_tester.ExpectUniqueSample(
-      base::StringPrintf(kHistogramSessionTemplate, "RemoteAccess",
+      base::StringPrintf(kHistogramResultTemplate, "RemoteAccess",
                          SessionTypeToUmaString(TestSessionType::kNoSession)),
       ResultCode::FAILURE_UNMANAGED_ENVIRONMENT, /*expected_bucket_count=*/1);
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
+       ShouldSendSessionDurationUmaLogWhenCrdSessionFinish) {
+  base::HistogramTester histogram_tester;
+  TestSessionType user_session_type = GetParam();
+  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                  SessionTypeToString(user_session_type)));
+  base::TimeDelta duration = base::Seconds(1);
+
+  if (!SupportsRemoteAccess(user_session_type)) {
+    // This test is only about the cases where remote access is supported.
+    return;
+  }
+  AddActiveManagedNetwork();
+  StartSessionOfType(user_session_type, user_manager());
+  Result result = RunJobAndWaitForResult(RemoteAccessPayload());
+  crd_host_delegate().TerminateCrdSession(duration);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StringPrintf(kHistogramDurationTemplate, "RemoteAccess",
+                         SessionTypeToUmaString(user_session_type)),
+      duration, /*expected_bucket_count=*/1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -623,6 +623,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Enterprise.DeviceRemoteCommand.Crd.{Enterprise_CrdSessionType}.{Enterprise_UserSessionType}.SessionDuration"
+    units="minutes" expires_after="2023-06-01">
+  <owner>macinashutosh@google.com</owner>
+  <owner>chromeos-commercial-crd@google.com</owner>
+  <summary>
+    Reports duration of a successful session completed for the
+    {Enterprise_CrdSessionType} and {Enterprise_UserSessionType}
+  </summary>
+  <token key="Enterprise_CrdSessionType" variants="Enterprise_CrdSessionType">
+    <variant name=""/>
+  </token>
+  <token key="Enterprise_UserSessionType" variants="Enterprise_UserSessionType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
     name="Enterprise.DeviceRemoteCommand.Executed{Enterprise_RemoteCommandType}"
     enum="RemoteCommandExecutionStatus" expires_after="2023-03-01">
   <owner>asumaneev@google.com</owner>

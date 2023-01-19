@@ -26,6 +26,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   using AccessCodeCallback = base::OnceCallback<void(const std::string&)>;
   using ErrorCallback =
       base::OnceCallback<void(ResultCode, const std::string&)>;
+  using SessionEndCallback = base::OnceCallback<void(base::TimeDelta)>;
 
   // Delegate that will start a session with the CRD native host.
   class Delegate {
@@ -48,9 +49,13 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
     virtual void TerminateSession(base::OnceClosure callback) = 0;
 
     // Attempts to start CRD host and get Auth Code.
-    virtual void StartCrdHostAndGetCode(const SessionParameters& parameters,
-                                        AccessCodeCallback success_callback,
-                                        ErrorCallback error_callback) = 0;
+    // `session_finished_callback` is invoked when an active crd session is
+    // terminated.
+    virtual void StartCrdHostAndGetCode(
+        const SessionParameters& parameters,
+        AccessCodeCallback success_callback,
+        ErrorCallback error_callback,
+        SessionEndCallback session_finished_callback) = 0;
   };
 
   explicit DeviceCommandStartCrdSessionJob(Delegate* crd_host_delegate);

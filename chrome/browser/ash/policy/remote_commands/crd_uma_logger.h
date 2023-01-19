@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 
 namespace policy {
@@ -15,9 +16,14 @@ namespace policy {
 class CrdUmaLogger {
  public:
   CrdUmaLogger(CrdSessionType session_type, UserSessionType user_session_type);
+  CrdUmaLogger(const CrdUmaLogger&) = default;
+  CrdUmaLogger& operator=(const CrdUmaLogger&) = default;
 
   // Logs the CRD session launch result to UMA.
   void LogSessionLaunchResult(ResultCode code);
+
+  // Logs the CRD session duration to UMA.
+  void LogSessionDuration(base::TimeDelta duration);
 
  private:
   std::string GetUmaHistogramName(const char* name_template) const;

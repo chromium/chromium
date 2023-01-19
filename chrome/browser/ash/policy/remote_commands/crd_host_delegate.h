@@ -49,7 +49,9 @@ class CrdHostDelegate : public DeviceCommandStartCrdSessionJob::Delegate {
   void StartCrdHostAndGetCode(
       const SessionParameters& parameters,
       DeviceCommandStartCrdSessionJob::AccessCodeCallback success_callback,
-      DeviceCommandStartCrdSessionJob::ErrorCallback error_callback) override;
+      DeviceCommandStartCrdSessionJob::ErrorCallback error_callback,
+      DeviceCommandStartCrdSessionJob::SessionEndCallback
+          session_finished_callback) override;
 
  private:
   class CrdHostSession;
