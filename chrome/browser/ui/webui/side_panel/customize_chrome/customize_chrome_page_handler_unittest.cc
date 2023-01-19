@@ -152,6 +152,8 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
       void(std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings,
            bool managed,
            bool visible));
+  MOCK_METHOD2(SetMostVisitedSettings,
+               void(bool custom_links_enabled, bool visible));
   MOCK_METHOD1(SetTheme, void(side_panel::mojom::ThemePtr));
 
   mojo::Receiver<side_panel::mojom::CustomizeChromePage> receiver_{this};
@@ -312,41 +314,35 @@ class CustomizeChromePageHandlerTest : public testing::Test {
 };
 
 TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
+  bool custom_links_enabled;
+  bool visible;
+  EXPECT_CALL(mock_page_, SetMostVisitedSettings)
+      .Times(4)
+      .WillRepeatedly(
+          testing::Invoke([&custom_links_enabled, &visible](
+                              bool custom_links_enabled_arg, bool visible_arg) {
+            custom_links_enabled = custom_links_enabled_arg;
+            visible = visible_arg;
+          }));
+
   profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
   profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
 
   histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 0);
+  EXPECT_FALSE(
+      profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
+  EXPECT_FALSE(
+      profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 
   handler().SetMostVisitedSettings(/*custom_links_enabled=*/false,
                                    /*visible=*/true);
+  mock_page_.FlushForTesting();
 
   EXPECT_TRUE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
   EXPECT_TRUE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
   histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 2);
-}
-
-TEST_F(CustomizeChromePageHandlerTest, GetMostVisitedSettings) {
-  profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
-  profile().GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
-
-  base::MockCallback<CustomizeChromePageHandler::GetMostVisitedSettingsCallback>
-      callback;
-  bool custom_links_enabled = false;
-  bool shortcuts_visible = false;
-  EXPECT_CALL(callback, Run(testing::_, testing::_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&custom_links_enabled, &shortcuts_visible](
-              bool custom_links_enabled_arg, bool shortcuts_visible_arg) {
-            custom_links_enabled = custom_links_enabled_arg;
-            shortcuts_visible = shortcuts_visible_arg;
-          }));
-  handler().GetMostVisitedSettings(callback.Get());
-
-  EXPECT_TRUE(custom_links_enabled);
-  EXPECT_TRUE(shortcuts_visible);
 }
 
 TEST_F(CustomizeChromePageHandlerTest, GetChromeColors) {

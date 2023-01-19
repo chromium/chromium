@@ -107,9 +107,8 @@ interface CustomizeChromePageHandler {
   // Sets the visibility of NTP tiles and whether custom links are enabled.
   SetMostVisitedSettings(bool custom_links_enabled, bool shortcuts_visible);
 
-  // Returns the visibility of NTP tiles and whether custom links are enabled.
-  GetMostVisitedSettings() => (bool custom_links_enabled,
-                               bool shortcuts_visible);
+  // Triggers a call to |CustomizeChromePage.SetPageMostVisitedSettings|.
+  UpdateMostVisitedSettings();
 
   // Returns the chrome colors used in the customize chrome side panel.
   GetChromeColors() => (array<ChromeColor> colors);
@@ -166,6 +165,8 @@ interface CustomizeChromePage {
    // enabled status, visibility and managed state.
    SetModulesSettings(array<ModuleSettings> modules_settings, bool managed,
        bool visible);
+  // Sets the visibility of NTP tiles and whether custom links are enabled.
+  SetMostVisitedSettings(bool custom_links_enabled, bool visible);
    // Sets the current theme.
    SetTheme(Theme theme);
 };

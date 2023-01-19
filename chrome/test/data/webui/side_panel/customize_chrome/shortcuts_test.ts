@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -16,6 +16,7 @@ import {installMock} from './test_support.js';
 suite('ShortcutsTest', () => {
   let customizeShortcutsElement: ShortcutsElement;
   let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
+  let callbackRouterRemote: CustomizeChromePageRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -24,18 +25,19 @@ suite('ShortcutsTest', () => {
         (mock: CustomizeChromePageHandlerRemote) =>
             CustomizeChromeApiProxy.setInstance(
                 mock, new CustomizeChromePageCallbackRouter()));
+    callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
+                               .callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
   async function setInitialSettings(
       customLinksEnabled: boolean, shortcutsVisible: boolean): Promise<void> {
-    handler.setResultFor('getMostVisitedSettings', Promise.resolve({
-      customLinksEnabled,
-      shortcutsVisible,
-    }));
     customizeShortcutsElement =
         document.createElement('customize-chrome-shortcuts');
     document.body.appendChild(customizeShortcutsElement);
-    await handler.whenCalled('getMostVisitedSettings');
+    await handler.whenCalled('updateMostVisitedSettings');
+    callbackRouterRemote.setMostVisitedSettings(
+        customLinksEnabled, shortcutsVisible);
+    await callbackRouterRemote.$.flushForTesting();
   }
 
   function assertShown(shown: boolean) {

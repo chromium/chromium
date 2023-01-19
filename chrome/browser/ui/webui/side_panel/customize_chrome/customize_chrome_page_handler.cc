@@ -73,6 +73,16 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
         base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                             base::Unretained(this)));
   }
+  pref_change_registrar_.Add(
+      ntp_prefs::kNtpUseMostVisitedTiles,
+      base::BindRepeating(
+          &CustomizeChromePageHandler::UpdateMostVisitedSettings,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      ntp_prefs::kNtpShortcutsVisible,
+      base::BindRepeating(
+          &CustomizeChromePageHandler::UpdateMostVisitedSettings,
+          base::Unretained(this)));
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
@@ -278,21 +288,20 @@ void CustomizeChromePageHandler::OpenThirdPartyThemePage(
 void CustomizeChromePageHandler::SetMostVisitedSettings(
     bool custom_links_enabled,
     bool visible) {
-  if (IsShortcutsVisible() != visible) {
-    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, visible);
-    LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY);
-  }
-
   if (IsCustomLinksEnabled() != custom_links_enabled) {
     profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles,
                                      !custom_links_enabled);
     LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
+
+  if (IsShortcutsVisible() != visible) {
+    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, visible);
+    LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY);
+  }
 }
 
-void CustomizeChromePageHandler::GetMostVisitedSettings(
-    GetMostVisitedSettingsCallback callback) {
-  std::move(callback).Run(IsCustomLinksEnabled(), IsShortcutsVisible());
+void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
+  page_->SetMostVisitedSettings(IsCustomLinksEnabled(), IsShortcutsVisible());
 }
 
 void CustomizeChromePageHandler::SetModulesVisible(bool visible) {

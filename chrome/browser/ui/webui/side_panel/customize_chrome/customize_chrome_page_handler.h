@@ -72,7 +72,7 @@ class CustomizeChromePageHandler
   void OpenChromeWebStore() override;
   void OpenThirdPartyThemePage(const std::string& theme_id) override;
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
-  void GetMostVisitedSettings(GetMostVisitedSettingsCallback callback) override;
+  void UpdateMostVisitedSettings() override;
   void SetModulesVisible(bool visible) override;
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateModulesSettings() override;

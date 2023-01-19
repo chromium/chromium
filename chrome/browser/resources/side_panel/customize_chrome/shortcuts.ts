@@ -11,9 +11,10 @@ import './button_label.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './shortcuts.html.js';
 
@@ -25,8 +26,6 @@ export interface ShortcutsElement {
     mostVisitedButton: CrRadioButtonElement,
   };
 }
-
-export interface ShortcutsElement {}
 
 export class ShortcutsElement extends PolymerElement {
   static get is() {
@@ -40,29 +39,44 @@ export class ShortcutsElement extends PolymerElement {
   static get properties() {
     return {
       customLinksEnabled_: Boolean,
+      shortcutsRadioSelection_: {
+        type: String,
+        computed: 'computeShortcutsRadioSelection_(customLinksEnabled_)',
+      },
       show_: Boolean,
     };
   }
 
   private customLinksEnabled_: boolean;
+  private shortcutsRadioSelection_: string|undefined = undefined;
   private show_: boolean;
+
+  private setMostVisitedSettingsListenerId_: number|null = null;
+
+  private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
 
   constructor() {
     super();
-    const {handler} = CustomizeChromeApiProxy.getInstance();
-    this.pageHandler_ = handler;
-    // TODO(crbug.com/1384278) Auto update most visited settings if they change
-    // while the side panel is open.
-    this.pageHandler_.getMostVisitedSettings().then(
-        ({customLinksEnabled, shortcutsVisible}) => {
-          this.customLinksEnabled_ = customLinksEnabled;
-          this.show_ = shortcutsVisible;
-        });
+    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+    this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
   }
 
   override connectedCallback() {
     super.connectedCallback();
+    this.setMostVisitedSettingsListenerId_ =
+        this.callbackRouter_.setMostVisitedSettings.addListener(
+            (customLinksEnabled: boolean, shortcutsVisible: boolean) => {
+              this.customLinksEnabled_ = customLinksEnabled;
+              this.show_ = shortcutsVisible;
+            });
+    this.pageHandler_.updateMostVisitedSettings();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.setMostVisitedSettingsListenerId_);
+    this.callbackRouter_.removeListener(this.setMostVisitedSettingsListenerId_);
   }
 
   private setMostVisitedSettings_() {
@@ -75,7 +89,7 @@ export class ShortcutsElement extends PolymerElement {
     this.setMostVisitedSettings_();
   }
 
-  private shortcutsRadioSelection_(): string {
+  private computeShortcutsRadioSelection_(): string {
     return this.customLinksEnabled_ ? 'customLinksOption' : 'mostVisitedOption';
   }
 
