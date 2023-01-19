@@ -4033,6 +4033,26 @@ _FUNCTION_INFO = {
     'decoder_func': 'DoEndSharedImageAccessDirectCHROMIUM',
     'extension': 'CHROMIUM_shared_image',
     'unit_test': False,
+  },
+  'ConvertRGBAToYUVAMailboxesINTERNAL': {
+    'decoder_func': 'DoConvertRGBAToYUVAMailboxesINTERNAL',
+    'extension': 'CHROMIUM_shared_image',
+    'internal': False,
+    'type': 'PUT',
+    'count': 80, #GL_MAILBOX_SIZE_CHROMIUM x5
+    'impl_func': True,
+    'unit_test': False,
+    'trace_level': 2,
+  },
+  'ConvertYUVAMailboxesToRGBINTERNAL': {
+    'decoder_func': 'DoConvertYUVAMailboxesToRGBINTERNAL',
+    'extension': 'CHROMIUM_shared_image',
+    'internal': False,
+    'type': 'PUT',
+    'count': 144, #GL_MAILBOX_SIZE_CHROMIUM x5 + 16 floats
+    'impl_func': True,
+    'unit_test': False,
+    'trace_level': 2,
   }
 
 }

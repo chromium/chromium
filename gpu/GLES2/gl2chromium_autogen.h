@@ -370,6 +370,10 @@
   GLES2_GET_FUN(BeginSharedImageAccessDirectCHROMIUM)
 #define glEndSharedImageAccessDirectCHROMIUM \
   GLES2_GET_FUN(EndSharedImageAccessDirectCHROMIUM)
+#define glConvertRGBAToYUVAMailboxesINTERNAL \
+  GLES2_GET_FUN(ConvertRGBAToYUVAMailboxesINTERNAL)
+#define glConvertYUVAMailboxesToRGBINTERNAL \
+  GLES2_GET_FUN(ConvertYUVAMailboxesToRGBINTERNAL)
 #define glEnableiOES GLES2_GET_FUN(EnableiOES)
 #define glDisableiOES GLES2_GET_FUN(DisableiOES)
 #define glBlendEquationiOES GLES2_GET_FUN(BlendEquationiOES)

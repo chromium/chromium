@@ -832,6 +832,14 @@ void MaxShaderCompilerThreadsKHR(GLuint count) override;
 GLuint CreateAndTexStorage2DSharedImageCHROMIUM(const GLbyte* mailbox) override;
 void BeginSharedImageAccessDirectCHROMIUM(GLuint texture, GLenum mode) override;
 void EndSharedImageAccessDirectCHROMIUM(GLuint texture) override;
+void ConvertRGBAToYUVAMailboxesINTERNAL(GLenum planes_yuv_color_space,
+                                        GLenum plane_config,
+                                        GLenum subsampling,
+                                        const GLbyte* mailboxes) override;
+void ConvertYUVAMailboxesToRGBINTERNAL(GLenum planes_yuv_color_space,
+                                       GLenum plane_config,
+                                       GLenum subsampling,
+                                       const GLbyte* mailboxes) override;
 void EnableiOES(GLenum target, GLuint index) override;
 void DisableiOES(GLenum target, GLuint index) override;
 void BlendEquationiOES(GLuint buf, GLenum mode) override;

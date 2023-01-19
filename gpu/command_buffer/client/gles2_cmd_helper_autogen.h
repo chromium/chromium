@@ -3164,6 +3164,34 @@ void EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   }
 }
 
+void ConvertRGBAToYUVAMailboxesINTERNALImmediate(GLenum planes_yuv_color_space,
+                                                 GLenum plane_config,
+                                                 GLenum subsampling,
+                                                 const GLbyte* mailboxes) {
+  const uint32_t size =
+      gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate::ComputeSize();
+  gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate>(size);
+  if (c) {
+    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
+  }
+}
+
+void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
+                                                GLenum plane_config,
+                                                GLenum subsampling,
+                                                const GLbyte* mailboxes) {
+  const uint32_t size =
+      gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate::ComputeSize();
+  gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>(size);
+  if (c) {
+    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
+  }
+}
+
 void EnableiOES(GLenum target, GLuint index) {
   gles2::cmds::EnableiOES* c = GetCmdSpace<gles2::cmds::EnableiOES>();
   if (c) {

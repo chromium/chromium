@@ -4950,6 +4950,24 @@ error::Error GLES2DecoderPassthroughImpl::DoEndSharedImageAccessDirectCHROMIUM(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::DoEnableiOES(GLenum target,
                                                        GLuint index) {
   api()->glEnableiOESFn(target, index);

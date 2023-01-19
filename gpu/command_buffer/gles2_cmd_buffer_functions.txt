@@ -378,6 +378,8 @@ GL_APICALL GLuint       GL_APIENTRY glCreateAndTexStorage2DSharedImageCHROMIUM (
 GL_APICALL void         GL_APIENTRY glCreateAndTexStorage2DSharedImageINTERNAL (GLuint texture, const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glBeginSharedImageAccessDirectCHROMIUM (GLuint texture, GLenumSharedImageAccessMode mode);
 GL_APICALL void         GL_APIENTRY glEndSharedImageAccessDirectCHROMIUM (GLuint texture);
+GL_APICALL void         GL_APIENTRY glConvertRGBAToYUVAMailboxesINTERNAL (GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
+GL_APICALL void         GL_APIENTRY glConvertYUVAMailboxesToRGBINTERNAL (GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
 
 // Extension OES_draw_buffers_indexed
 GL_APICALL void         GL_APIENTRY glEnableiOES (GLenum target, GLuint index);

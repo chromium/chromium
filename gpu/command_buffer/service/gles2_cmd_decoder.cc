@@ -1242,6 +1242,16 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoBeginSharedImageAccessDirectCHROMIUM(GLuint client_id, GLenum mode);
   void DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id);
 
+  void DoConvertRGBAToYUVAMailboxesINTERNAL(
+      GLenum yuv_color_space,
+      GLenum plane_config,
+      GLenum subsampling,
+      const volatile GLbyte* mailboxes_in);
+  void DoConvertYUVAMailboxesToRGBINTERNAL(GLenum yuv_color_space,
+                                           GLenum plane_config,
+                                           GLenum subsampling,
+                                           const volatile GLbyte* mailboxes_in);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
                                               uint32_t texture_target,
@@ -18487,6 +18497,22 @@ void GLES2DecoderImpl::DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id) {
   }
 
   texture_ref->EndAccessSharedImage();
+}
+
+void GLES2DecoderImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void GLES2DecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void GLES2DecoderImpl::DoInsertEventMarkerEXT(
