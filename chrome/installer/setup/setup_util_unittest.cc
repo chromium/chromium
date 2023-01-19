@@ -980,7 +980,8 @@ const wchar_t LegacyCleanupsTest::kCommandExecuteImplClsid[] =
 const wchar_t LegacyCleanupsTest::kAppLauncherClientsKeyPath[] =
     L"SOFTWARE\\Google\\Update\\Clients\\"
     L"{FDA71E6F-AC4C-4a00-8B70-9958A68906BF}";
-#elif BUILDFLAG(CHROMIUM_BRANDING)
+#elif BUILDFLAG(CHROMIUM_BRANDING) && \
+    !BUILDFLAG(USE_INTERNAL_CHROME_FOR_TESTING_ICONS)
 const wchar_t LegacyCleanupsTest::kBinariesClientsKeyPath[] =
     L"SOFTWARE\\Chromium Binaries";
 const wchar_t LegacyCleanupsTest::kCommandExecuteImplClsid[] =
