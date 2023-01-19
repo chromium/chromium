@@ -205,10 +205,15 @@ class ArcApps : public KeyedService,
                          IconEffects icon_effects,
                          apps::LoadIconCallback callback);
 
+  // Creates the App struct for `app_id` based on `app_info`. If `update_icon`
+  // is true, creates a new icon key. If `raw_icon_updated` is true, sets
+  // `raw_icon_updated` in the icon key as true, to remove the icon files in the
+  // icon directory to get the new icon files when loading icons.
   AppPtr CreateApp(ArcAppListPrefs* prefs,
                    const std::string& app_id,
                    const ArcAppListPrefs::AppInfo& app_info,
-                   bool update_icon = true);
+                   bool update_icon = true,
+                   bool raw_icon_updated = false);
   void ConvertAndPublishPackageApps(
       const arc::mojom::ArcPackageInfo& package_info,
       bool update_icon = true);
