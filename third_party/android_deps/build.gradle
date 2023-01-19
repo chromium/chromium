@@ -119,8 +119,8 @@ dependencies {
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0"
 
 
     // Upstream guava introduced versions with -android suffix starting with version
@@ -172,7 +172,7 @@ dependencies {
     buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
-    buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.7.10'
+    buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
 
     androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.0.0'
     // accessibility-test-framework:3.1.2 depends on jsoup 1.12, which has a security

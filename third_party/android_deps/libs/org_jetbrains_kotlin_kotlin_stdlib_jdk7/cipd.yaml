@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.6.20.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.8.0.cr1
 package: chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7
 description: "Kotlin Stdlib Jdk7"
 data:
-- file: kotlin-stdlib-jdk7-1.6.20.jar
+- file: kotlin-stdlib-jdk7-1.8.0.jar

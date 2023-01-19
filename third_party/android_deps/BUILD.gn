@@ -337,7 +337,7 @@ java_prebuilt("org_checkerframework_checker_qual_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.7.10.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib/kotlin-stdlib-1.8.0.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib"
   supports_android = true
   deps = [
@@ -625,7 +625,7 @@ java_prebuilt("org_jetbrains_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_common_java") {
-  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.7.10.jar"
+  jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_common/kotlin-stdlib-common-1.8.0.jar"
   output_name = "org_jetbrains_kotlin_kotlin_stdlib_common"
   supports_android = true
 
@@ -824,9 +824,6 @@ if (!limit_android_deps) {
     jar_path = "libs/com_android_support_support_annotations/support-annotations-28.0.0.jar"
     output_name = "com_android_support_support_annotations"
     supports_android = true
-
-    # https://crbug.com/989505
-    jar_excluded_patterns = [ "META-INF/proguard/*" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1425,7 +1422,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_jdk7_java") {
-    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.6.20.jar"
+    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.8.0.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk7"
     supports_android = true
     deps = [ ":org_jetbrains_kotlin_kotlin_stdlib_java" ]
@@ -1433,7 +1430,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_jdk8_java") {
-    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8/kotlin-stdlib-jdk8-1.6.20.jar"
+    jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8/kotlin-stdlib-jdk8-1.8.0.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk8"
     supports_android = true
     deps = [

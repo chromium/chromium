@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.7.10.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.8.0.cr1
 package: chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib_common
 description: "Kotlin Stdlib Common"
 data:
-- file: kotlin-stdlib-common-1.7.10.jar
+- file: kotlin-stdlib-common-1.8.0.jar
