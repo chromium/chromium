@@ -2250,7 +2250,29 @@
           '--disable-field-trial-config',
         ],
         'test': 'android_browsertests',
-      }
+      },
+      'webview_cts_tests_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'swarming': {
+          'shards': 2,
+          'cipd_packages': [
+            {
+              "cipd_package": 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
+            }
+          ]
+        },
+        'test': 'webview_cts_tests',
+      },
+      'webview_ui_test_app_test_apk_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'test': 'webview_ui_test_app_test_apk',
+      },
     },
     'fieldtrial_browser_tests': {
       'browser_tests_no_field_trial': {
