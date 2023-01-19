@@ -175,7 +175,7 @@ const base::Value* GetContainerPrefValue(Profile* profile,
       profile->GetPrefs()->GetList(prefs::kGuestOsContainers);
   for (const auto& dict : containers) {
     if (MatchContainerDict(dict, container_id))
-      return dict.FindKey(key);
+      return dict.GetDict().Find(key);
   }
   return nullptr;
 }
