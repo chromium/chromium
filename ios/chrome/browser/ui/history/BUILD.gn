@@ -65,8 +65,6 @@ source_set("history_ui") {
     "history_menu_provider.h",
     "history_table_view_controller.h",
     "history_table_view_controller.mm",
-    "history_transitioning_delegate.h",
-    "history_transitioning_delegate.mm",
     "history_ui_delegate.h",
     "history_util.h",
     "history_util.mm",

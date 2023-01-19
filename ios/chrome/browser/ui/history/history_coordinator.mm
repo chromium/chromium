@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/ui/history/history_mediator.h"
 #import "ios/chrome/browser/ui/history/history_menu_provider.h"
 #import "ios/chrome/browser/ui/history/history_table_view_controller.h"
-#import "ios/chrome/browser/ui/history/history_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/history/history_ui_delegate.h"
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
 #import "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate_bridge.h"
@@ -71,10 +70,6 @@ history::WebHistoryService* WebHistoryServiceGetter(
 
 // Mediator being managed by this Coordinator.
 @property(nonatomic, strong) HistoryMediator* mediator;
-
-// The transitioning delegate used by the history view controller.
-@property(nonatomic, strong)
-    HistoryTransitioningDelegate* historyTransitioningDelegate;
 
 // The coordinator that will present Clear Browsing Data.
 @property(nonatomic, strong)
