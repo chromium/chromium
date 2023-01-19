@@ -24,7 +24,6 @@ TEST(ServiceProviderConfigTest, Google) {
 
   ASSERT_TRUE(service_provider.analysis);
   ASSERT_TRUE(service_provider.reporting);
-  ASSERT_FALSE(service_provider.file_system);
 
   ASSERT_EQ("https://safebrowsing.google.com/safebrowsing/uploads/scan",
             std::string(service_provider.analysis->url));
@@ -52,7 +51,6 @@ TEST(ServiceProviderConfigTest, LocalTest1) {
 
   ASSERT_TRUE(service_provider.analysis);
   ASSERT_FALSE(service_provider.reporting);
-  ASSERT_FALSE(service_provider.file_system);
 
   ASSERT_FALSE(service_provider.analysis->url);
   ASSERT_TRUE(service_provider.analysis->local_path);
@@ -74,7 +72,6 @@ TEST(ServiceProviderConfigTest, LocalTest2) {
 
   ASSERT_TRUE(service_provider.analysis);
   ASSERT_FALSE(service_provider.reporting);
-  ASSERT_FALSE(service_provider.file_system);
 
   ASSERT_FALSE(service_provider.analysis->url);
   ASSERT_TRUE(service_provider.analysis->local_path);
@@ -96,7 +93,6 @@ TEST(ServiceProviderConfigTest, BrcmChrmCas) {
 
   ASSERT_TRUE(service_provider.analysis);
   ASSERT_FALSE(service_provider.reporting);
-  ASSERT_FALSE(service_provider.file_system);
 
   ASSERT_FALSE(service_provider.analysis->url);
   ASSERT_TRUE(service_provider.analysis->local_path);
@@ -110,29 +106,6 @@ TEST(ServiceProviderConfigTest, BrcmChrmCas) {
             "dlp");
   ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
             kMaxFileSize);
-}
-
-TEST(ServiceProviderConfigTest, Box) {
-  const ServiceProviderConfig* config = GetServiceProviderConfig();
-  ASSERT_TRUE(config->count("box"));
-  ServiceProvider service_provider = config->at("box");
-
-  ASSERT_FALSE(service_provider.analysis);
-  ASSERT_FALSE(service_provider.reporting);
-  ASSERT_TRUE(service_provider.file_system);
-
-  ASSERT_EQ("https://box.com", std::string(service_provider.file_system->home));
-  ASSERT_EQ("https://account.box.com/api/oauth2/authorize",
-            std::string(service_provider.file_system->authorization_endpoint));
-  ASSERT_EQ("https://api.box.com/oauth2/token",
-            std::string(service_provider.file_system->token_endpoint));
-  ASSERT_EQ(20u * 1024 * 1024, service_provider.file_system->max_direct_size);
-  ASSERT_TRUE(service_provider.file_system->scopes.empty());
-  ASSERT_EQ(2u, service_provider.file_system->disable.size());
-  ASSERT_EQ("box.com",
-            std::string(service_provider.file_system->disable.at(0)));
-  ASSERT_EQ("boxcloud.com",
-            std::string(service_provider.file_system->disable.at(1)));
 }
 
 }  // namespace enterprise_connectors
