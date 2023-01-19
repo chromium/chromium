@@ -1713,10 +1713,17 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
     return;
   }
 
-  menu_model_.AddItem(
-      GetSearchForImageIdc(),
+  std::u16string menu_string =
       l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
-                                 GetImageSearchProviderName(provider)));
+                                 GetImageSearchProviderName(provider));
+
+  if (lens::features::UseLensContextMenuItemAlternateText()) {
+    menu_string = l10n_util::GetStringFUTF16(
+        IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE_ALT_TEXT,
+        provider->short_name());
+  }
+
+  menu_model_.AddItem(GetSearchForImageIdc(), menu_string);
 }
 
 void RenderViewContextMenu::AppendAudioItems() {

@@ -154,6 +154,11 @@ extern bool IsLensInScreenshotSharingEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensRegionSearchStaticPageEnabled();
 
+// Returns whether we should use the search inside image with Google context
+// menu string.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseLensContextMenuItemAlternateText();
+
 // Returns whether to use WebP encoding for image search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsWebpForImageSearchEnabled();
