@@ -447,3 +447,26 @@ export function testShowSubMenuHidesExisting() {
   // Check the second sub menu is visible.
   assertFalse(secondSubMenu.hasAttribute('hidden'));
 }
+
+/**
+ * Tests that a keydown event that is not intended for the menu will not be
+ * consumed by the menu.
+ */
+export async function testMenuDoesNotConsumeNonMenuEvent() {
+  let eventConsumedByMenu = true;
+  const nonMenuEventKey = 'AudioVolumeUp';
+  // The event should be received by the `document.body` after it is ignored by
+  // the menu.
+  document.body.addEventListener('keydown', e => {
+    eventConsumedByMenu = false;
+    // Check this is the right keydown event.
+    assertEquals(nonMenuEventKey, e.key);
+    // Confirm this is not a menu event.
+    assertFalse(menubutton.isMenuEvent(e));
+  });
+  // Send the event to the menu.
+  sendKeyDown('#test-menu-button', nonMenuEventKey);
+  // Wait for the event to be received by the `document.body`.
+  await new Promise(resolve => window.requestAnimationFrame(() => resolve()));
+  assertFalse(eventConsumedByMenu);
+}
