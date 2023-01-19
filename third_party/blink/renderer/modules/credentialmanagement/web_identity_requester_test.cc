@@ -29,6 +29,8 @@ TEST(WebIdentityRequesterTest, StartWindowOnloadDelayTimerBeforeOnload) {
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   WebIdentityRequester* web_identity_requester =
       MakeGarbageCollected<WebIdentityRequester>(WrapPersistent(context));
+
+  // Start window onload delay timer before the window onload event.
   web_identity_requester->StartWindowOnloadDelayTimer(WrapPersistent(resolver));
 
   // Before the window onload event is fired, the histogram should not have been
@@ -43,6 +45,8 @@ TEST(WebIdentityRequesterTest, StartWindowOnloadDelayTimerBeforeOnload) {
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Blink.FedCm.Timing.WindowOnloadDelayDuration", 1);
+  histogram_tester.ExpectUniqueSample("Blink.FedCm.IsAfterWindowOnload", false,
+                                      1);
 }
 
 // Test that the window onload delay duration is NOT recorded when timer is
@@ -68,6 +72,8 @@ TEST(WebIdentityRequesterTest, StartWindowOnloadDelayTimerAfterOnload) {
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "Blink.FedCm.Timing.WindowOnloadDelayDuration", 0);
+  histogram_tester.ExpectUniqueSample("Blink.FedCm.IsAfterWindowOnload", true,
+                                      1);
 }
 
 }  // namespace blink

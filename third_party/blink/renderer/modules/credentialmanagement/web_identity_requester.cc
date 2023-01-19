@@ -152,11 +152,14 @@ void WebIdentityRequester::StartWindowOnloadDelayTimer(
   DCHECK(!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
       execution_context_));
 
-  // Checking if document load is completed is equivalent to checking if
-  // this method was called during or after the window.onload event. If document
-  // load is completed, there is no delay caused by window onload and hence, the
-  // early return.
-  if (resolver->DomWindow()->document()->IsLoadCompleted()) {
+  bool is_after_window_onload =
+      resolver->DomWindow()->document()->IsLoadCompleted();
+  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IsAfterWindowOnload",
+                        is_after_window_onload);
+
+  // If this method is called after window onload, there will not be any delay
+  // caused by window onload so we do not record any metrics for it.
+  if (is_after_window_onload) {
     return;
   }
 
