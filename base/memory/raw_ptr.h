@@ -80,30 +80,132 @@ namespace base {
 // NOTE: All methods should be `PA_ALWAYS_INLINE`. raw_ptr is meant to be a
 // lightweight replacement of a raw pointer, hence performance is critical.
 
-// The following types are the different RawPtrType template option possible for
-// a `raw_ptr`:
-// - RawPtrMayDangle disables dangling pointers check when the object is
-//   released.
-// - RawPtrBanDanglingIfSupported may enable dangling pointers check on object
-//   destruction.
-//
-// We describe those types here so that they can be used outside of `raw_ptr` as
-// object markers, and their meaning might vary depending on where those markers
-// are being used. For instance, we are using those in `UnretainedWrapper` to
-// change behavior depending on RawPtrType.
-struct RawPtrMayDangle {};
-struct RawPtrBanDanglingIfSupported {};
-
-struct RawPtrNoOp {};
-
 namespace raw_ptr_traits {
-template <typename T>
-struct RawPtrTypeToImpl;
 
-template <typename RawPtrType>
-inline constexpr bool IsValidRawPtrTypeV =
-    std::is_same_v<RawPtrType, RawPtrMayDangle> ||
-    std::is_same_v<RawPtrType, RawPtrBanDanglingIfSupported>;
+// Disables dangling pointer detection, but keeps other raw_ptr protections.
+// Don't use directly, use DisableDanglingPtrDetection or DanglingUntriaged
+// instead.
+struct MayDangle {};
+// Disables any protections when MTECheckedPtrImpl is requested, by switching to
+// NoOpImpl in that case.
+// Don't use directly, use DegradeToNoOpWhenMTE instead.
+struct DisableMTECheckedPtr {};
+// Disables any hooks, by switching to NoOpImpl in that case.
+// Internal use only.
+struct DisableHooks {};
+// Adds accounting, on top of the chosen implementation, for test purposes.
+// raw_ptr/raw_ref with this trait perform extra bookkeeping, e.g. to track the
+// number of times the raw_ptr is wrapped, unrwapped, etc.
+// Test only.
+struct UseCountingWrapperForTest {};
+// Very internal use only.
+using EmptyTrait = void;
+
+template <typename Trait>
+inline constexpr bool IsValidTraitV =
+    std::is_same_v<Trait, MayDangle> ||
+    std::is_same_v<Trait, DisableMTECheckedPtr> ||
+    std::is_same_v<Trait, DisableHooks> ||
+    std::is_same_v<Trait, UseCountingWrapperForTest> ||
+    std::is_same_v<Trait, EmptyTrait>;
+
+template <typename... Traits>
+struct TraitPack {
+  static_assert((IsValidTraitV<Traits> && ...), "Unknown raw_ptr trait");
+
+  template <typename TraitToSearch>
+  static inline constexpr bool HasV =
+      (std::is_same_v<TraitToSearch, Traits> || ...);
+};
+
+// Replaces an unwanted trait with EmptyTrait.
+template <typename TraitToExclude>
+struct ExcludeTrait {
+  template <typename Trait>
+  using Filter = std::
+      conditional_t<std::is_same_v<TraitToExclude, Trait>, EmptyTrait, Trait>;
+};
+
+// Use TraitBundle alias, instead of TraitBundleInt, so that traits in different
+// order and duplicates resolve to the same underlying type. For example,
+// TraitBundle<A,B> is the same C++ type as TraitBundle<B,A,B,A>. This also
+// allows to entirely ignore a trait under some build configurations, to prevent
+// it from turning TraitBundle into a different C++ type.
+//
+// It'd be easier to just pass bools into TraitBundleInt, instead of echo'ing
+// the trait, but that would lead to less readable compiler messages that spit
+// out the type. TraitBundleInt<MayDangle,EmptyTrait,DisableHooks,EmptyTrait> is
+// more readable than TraitBundleInt<true,false,true,false>.
+template <typename... Traits>
+struct TraitBundleInt;
+template <typename... Traits>
+using TraitBundle = TraitBundleInt<
+    std::conditional_t<TraitPack<Traits...>::template HasV<MayDangle>,
+                       MayDangle,
+                       EmptyTrait>,
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+    std::conditional_t<
+        TraitPack<Traits...>::template HasV<DisableMTECheckedPtr>,
+        DisableMTECheckedPtr,
+        EmptyTrait>,
+#else
+    // Entirely ignore DisableMTECheckedPtr on non-MTECheckedPtr builds, so that
+    // TraitBundle (and thus raw_ptr/raw_ref) with that trait is considered
+    // exactly the same type as without it. This matches the long standing
+    // behavior prior to crrev.com/c/4113514.
+    EmptyTrait,
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+    std::conditional_t<TraitPack<Traits...>::template HasV<DisableHooks>,
+                       DisableHooks,
+                       EmptyTrait>,
+#else
+    // Entirely ignore DisableHooks on non-ASanBRP builds, so that
+    // TraitBundle (and thus raw_ptr/raw_ref) with that trait is considered
+    // exactly the same type as without it. This matches the long standing
+    // behavior prior to crrev.com/c/4113514.
+    EmptyTrait,
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+    std::conditional_t<
+        TraitPack<Traits...>::template HasV<UseCountingWrapperForTest>,
+        UseCountingWrapperForTest,
+        EmptyTrait>>;
+
+template <typename... Traits>
+struct TraitBundleInt {
+  static constexpr bool kMayDangle =
+      TraitPack<Traits...>::template HasV<MayDangle>;
+  static constexpr bool kDisableMTECheckedPtr =
+      TraitPack<Traits...>::template HasV<DisableMTECheckedPtr>;
+  static constexpr bool kDisableHooks =
+      TraitPack<Traits...>::template HasV<DisableHooks>;
+  static constexpr bool kUseCountingWrapperForTest =
+      TraitPack<Traits...>::template HasV<UseCountingWrapperForTest>;
+
+  // Assert that on certain build configurations, the related traits are not
+  // even used. If they were, they'd result in a different C++ type, and would
+  // trigger more costly cross-type raw_ptr/raw_ref conversions.
+#if !PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+  static_assert(!kDisableMTECheckedPtr);
+#endif
+#if !BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  static_assert(!kDisableHooks);
+#endif
+
+  // Use TraitBundle, instead of TraitBundleInt, to re-normalize trait list
+  // (i.e. order canonically and remove duplicates).
+  template <typename TraitToAdd>
+  using AddTraitT = TraitBundle<Traits..., TraitToAdd>;
+  // Unlike AddTraitT, no need to re-normalize because ExcludeTrait preserves
+  // the trait list structure.
+  template <typename TraitToRemove>
+  using RemoveTraitT = TraitBundleInt<
+      typename ExcludeTrait<TraitToRemove>::template Filter<Traits>...>;
+};
+
+template <typename TraitBundle>
+struct TraitsToImpl;
+
 }  // namespace raw_ptr_traits
 
 namespace internal {
@@ -1005,10 +1107,19 @@ struct RawPtrHookableImpl {
 
 #endif  // BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 
-template <class Super>
+// Wraps a raw_ptr/raw_ref implementation, with a class of the same interface
+// that provides accounting, for test purposes. raw_ptr/raw_ref that use it
+// perform extra bookkeeping, e.g. to track the number of times the raw_ptr is
+// wrapped, unrwapped, etc.
+//
+// Test only.
+template <typename Traits>
 struct RawPtrCountingImplWrapperForTest
-    : public raw_ptr_traits::RawPtrTypeToImpl<Super>::Impl {
-  using SuperImpl = typename raw_ptr_traits::RawPtrTypeToImpl<Super>::Impl;
+    : public raw_ptr_traits::TraitsToImpl<Traits>::Impl {
+  static_assert(!Traits::kUseCountingWrapperForTest);
+
+  using SuperImpl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
+
   template <typename T>
   static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
     ++wrap_raw_ptr_cnt;
@@ -1127,16 +1238,6 @@ struct IsSupportedType<content::responsiveness::Calculator> {
   static constexpr bool value = false;
 };
 
-// IsRawPtrCountingImpl<T>::value answers whether T is a specialization of
-// RawPtrCountingImplWrapperForTest, to know whether Impl is for testing
-// purposes.
-template <typename T>
-struct IsRawPtrCountingImpl : std::false_type {};
-
-template <typename T>
-struct IsRawPtrCountingImpl<internal::RawPtrCountingImplWrapperForTest<T>>
-    : std::true_type {};
-
 #if __OBJC__
 // raw_ptr<T> is not compatible with pointers to Objective-C classes for a
 // multitude of reasons. They may fail to compile in many cases, and wouldn't
@@ -1175,51 +1276,45 @@ struct IsSupportedType<T,
 #undef PA_WINDOWS_HANDLE_TYPE
 #endif
 
-template <typename T>
-struct RawPtrTypeToImpl {};
-
-template <typename T>
-struct RawPtrTypeToImpl<internal::RawPtrCountingImplWrapperForTest<T>> {
-  using Impl = internal::RawPtrCountingImplWrapperForTest<T>;
-};
-
-template <>
-struct RawPtrTypeToImpl<RawPtrMayDangle> {
+template <typename Traits>
+struct TraitsToImpl {
+ private:
+  // UnderlyingImpl is the struct that provides the implementation of the
+  // protections related to raw_ptr.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/true>;
+  using UnderlyingImpl = internal::BackupRefPtrImpl<
+      /*AllowDangling=*/Traits::kMayDangle>;
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
-  // No special bookkeeping required for this case, just treat these
-  // as ordinary pointers.
-  using Impl = internal::RawPtrNoOpImpl;
+  using UnderlyingImpl =
+      std::conditional_t<Traits::kMayDangle,
+                         // No special bookkeeping required for this case,
+                         // just treat these as ordinary pointers.
+                         internal::RawPtrNoOpImpl,
+                         internal::AsanUnownedPtrImpl>;
 #elif PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  using Impl = internal::MTECheckedPtrImpl<
-      internal::MTECheckedPtrImplPartitionAllocSupport>;
+  using UnderlyingImpl =
+      std::conditional_t<Traits::kDisableMTECheckedPtr,
+                         internal::RawPtrNoOpImpl,
+                         internal::MTECheckedPtrImpl<
+                             internal::MTECheckedPtrImplPartitionAllocSupport>>;
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-  using Impl = internal::RawPtrHookableImpl;
+  using UnderlyingImpl = std::conditional_t<Traits::kDisableHooks,
+                                            internal::RawPtrNoOpImpl,
+                                            internal::RawPtrHookableImpl>;
 #else
-  using Impl = internal::RawPtrNoOpImpl;
+  using UnderlyingImpl = internal::RawPtrNoOpImpl;
 #endif
-};
 
-template <>
-struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/false>;
-#elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
-  using Impl = internal::AsanUnownedPtrImpl;
-#elif PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-  using Impl = internal::MTECheckedPtrImpl<
-      internal::MTECheckedPtrImplPartitionAllocSupport>;
-#elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
-  using Impl = internal::RawPtrHookableImpl;
-#else
-  using Impl = internal::RawPtrNoOpImpl;
-#endif
-};
-
-template <>
-struct RawPtrTypeToImpl<RawPtrNoOp> {
-  using Impl = internal::RawPtrNoOpImpl;
+ public:
+  // Impl is the struct that implements raw_ptr functions. Think of raw_ptr as a
+  // thin wrapper, that directs calls to Impl.
+  // Impl may be different from UnderlyingImpl, because it may include a
+  // wrapper.
+  using Impl = std::conditional_t<
+      Traits::kUseCountingWrapperForTest,
+      internal::RawPtrCountingImplWrapperForTest<
+          typename Traits::template RemoveTraitT<UseCountingWrapperForTest>>,
+      UnderlyingImpl>;
 };
 
 }  // namespace raw_ptr_traits
@@ -1250,23 +1345,22 @@ struct RawPtrTypeToImpl<RawPtrNoOp> {
 // non-default move constructor/assignment. Thus, it's possible to get an error
 // where the pointer is not actually dangling, and have to work around the
 // compiler. We have not managed to construct such an example in Chromium yet.
-
-using DefaultRawPtrType = RawPtrBanDanglingIfSupported;
-
-template <typename T, typename RawPtrType = DefaultRawPtrType>
+template <typename T, typename Traits = raw_ptr_traits::TraitBundle<>>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
-  using Impl = typename raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
-  using DanglingRawPtr = std::conditional_t<
-      raw_ptr_traits::IsRawPtrCountingImpl<Impl>::value,
-      raw_ptr<T, internal::RawPtrCountingImplWrapperForTest<RawPtrMayDangle>>,
-      raw_ptr<T, RawPtrMayDangle>>;
+  // Type to return from ExtractAsDangling(), which is identical except
+  // MayDangle trait is added (if one isn't there already).
+  using DanglingRawPtrType =
+      raw_ptr<T,
+              typename Traits::template AddTraitT<raw_ptr_traits::MayDangle>>;
+
+ public:
+  using Impl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
 
 #if !BUILDFLAG(USE_PARTITION_ALLOC)
   // See comment at top about `PA_RAW_PTR_CHECK()`.
   static_assert(std::is_same_v<Impl, internal::RawPtrNoOpImpl>);
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC)
 
- public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
 
@@ -1339,23 +1433,22 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
-  template <typename PassedRawPtrType,
-            typename Unused =
-                std::enable_if_t<!std::is_same_v<RawPtrType, PassedRawPtrType>>>
-  PA_ALWAYS_INLINE explicit raw_ptr(
-      const raw_ptr<T, PassedRawPtrType>& p) noexcept
+  template <
+      typename PassedTraits,
+      typename Unused = std::enable_if_t<!std::is_same_v<Traits, PassedTraits>>>
+  PA_ALWAYS_INLINE explicit raw_ptr(const raw_ptr<T, PassedTraits>& p) noexcept
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
-            raw_ptr_traits::RawPtrTypeToImpl<PassedRawPtrType>::Impl::
+            raw_ptr_traits::TraitsToImpl<PassedTraits>::Impl::
                 UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {}
 
-  template <typename PassedRawPtrType,
-            typename Unused =
-                std::enable_if_t<!std::is_same_v<RawPtrType, PassedRawPtrType>>>
+  template <
+      typename PassedTraits,
+      typename Unused = std::enable_if_t<!std::is_same_v<Traits, PassedTraits>>>
   PA_ALWAYS_INLINE raw_ptr& operator=(
-      const raw_ptr<T, PassedRawPtrType>& p) noexcept {
+      const raw_ptr<T, PassedTraits>& p) noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::WrapRawPtrForDuplication(
-        raw_ptr_traits::RawPtrTypeToImpl<PassedRawPtrType>::Impl::
+        raw_ptr_traits::TraitsToImpl<PassedTraits>::Impl::
             UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_));
     return *this;
   }
@@ -1375,7 +1468,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ptr(const raw_ptr<U, RawPtrType>& ptr) noexcept
+  PA_ALWAYS_INLINE raw_ptr(const raw_ptr<U, Traits>& ptr) noexcept
       : wrapped_ptr_(
             Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_))) {}
   // Deliberately implicit in order to support implicit upcast.
@@ -1384,7 +1477,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ptr(raw_ptr<U, RawPtrType>&& ptr) noexcept
+  PA_ALWAYS_INLINE raw_ptr(raw_ptr<U, Traits>&& ptr) noexcept
       : wrapped_ptr_(Impl::template Upcast<T, U>(ptr.wrapped_ptr_)) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     ptr.wrapped_ptr_ = nullptr;
@@ -1407,8 +1500,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  PA_ALWAYS_INLINE raw_ptr& operator=(
-      const raw_ptr<U, RawPtrType>& ptr) noexcept {
+  PA_ALWAYS_INLINE raw_ptr& operator=(const raw_ptr<U, Traits>& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -1424,7 +1516,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  PA_ALWAYS_INLINE raw_ptr& operator=(raw_ptr<U, RawPtrType>&& ptr) noexcept {
+  PA_ALWAYS_INLINE raw_ptr& operator=(raw_ptr<U, Traits>&& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -1555,18 +1647,18 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // variable (or worse, a field)! It's meant to be used as a temporary, to be
   // passed into a cleanup & freeing function, and destructed at the end of the
   // statement.
-  PA_ALWAYS_INLINE DanglingRawPtr ExtractAsDangling() noexcept {
+  PA_ALWAYS_INLINE DanglingRawPtrType ExtractAsDangling() noexcept {
     if constexpr (std::is_same_v<
                       typename std::remove_reference<decltype(*this)>::type,
-                      DanglingRawPtr>) {
-      DanglingRawPtr res(std::move(*this));
+                      DanglingRawPtrType>) {
+      DanglingRawPtrType res(std::move(*this));
       // Not all implementation clear the source pointer on move, so do it
       // here just in case. Should be cheap.
       operator=(nullptr);
       return res;
     } else {
       T* ptr = GetForExtraction();
-      DanglingRawPtr res(ptr);
+      DanglingRawPtrType res(ptr);
       operator=(nullptr);
       return res;
     }
@@ -1585,26 +1677,26 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // `raw_ptr` and `raw_ptr<U>` in the friend declaration itself does not work,
   // because a comparison operator defined inline would not be allowed to call
   // `raw_ptr<U>`'s private `GetForComparison()` method.
-  template <typename U, typename V, typename I, typename J>
-  friend PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
-                                          const raw_ptr<V, J>& rhs);
+  template <typename U, typename V, typename R1, typename R2>
+  friend PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, R1>& lhs,
+                                          const raw_ptr<V, R2>& rhs);
   template <typename U>
   friend PA_ALWAYS_INLINE bool operator!=(const raw_ptr& lhs,
-                                          const raw_ptr<U, Impl>& rhs) {
+                                          const raw_ptr<U, Traits>& rhs) {
     return !(lhs == rhs);
   }
-  template <typename U, typename V, typename I>
-  friend PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, I>& lhs,
-                                         const raw_ptr<V, I>& rhs);
-  template <typename U, typename V, typename I>
-  friend PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, I>& lhs,
-                                         const raw_ptr<V, I>& rhs);
-  template <typename U, typename V, typename I>
-  friend PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, I>& lhs,
-                                          const raw_ptr<V, I>& rhs);
-  template <typename U, typename V, typename I>
-  friend PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, I>& lhs,
-                                          const raw_ptr<V, I>& rhs);
+  template <typename U, typename V, typename R>
+  friend PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, R>& lhs,
+                                         const raw_ptr<V, R>& rhs);
+  template <typename U, typename V, typename R>
+  friend PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, R>& lhs,
+                                         const raw_ptr<V, R>& rhs);
+  template <typename U, typename V, typename R>
+  friend PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, R>& lhs,
+                                          const raw_ptr<V, R>& rhs);
+  template <typename U, typename V, typename R>
+  friend PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, R>& lhs,
+                                          const raw_ptr<V, R>& rhs);
 
   // Comparisons with U*. These operators also handle the case where the RHS is
   // T*.
@@ -1712,45 +1804,45 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // #union, #global-scope, #constexpr-ctor-field-initializer
   RAW_PTR_EXCLUSION T* wrapped_ptr_;
 
-  template <typename U, typename V>
+  template <typename U, typename R>
   friend class raw_ptr;
 };
 
-template <typename U, typename V, typename I, typename J>
-PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
-                                 const raw_ptr<V, J>& rhs) {
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, Traits1>& lhs,
+                                 const raw_ptr<V, Traits2>& rhs) {
   return lhs.GetForComparison() == rhs.GetForComparison();
 }
 
-template <typename U, typename V, typename I>
-PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, I>& lhs,
-                                const raw_ptr<V, I>& rhs) {
+template <typename U, typename V, typename Traits>
+PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, Traits>& lhs,
+                                const raw_ptr<V, Traits>& rhs) {
   return lhs.GetForComparison() < rhs.GetForComparison();
 }
 
-template <typename U, typename V, typename I>
-PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, I>& lhs,
-                                const raw_ptr<V, I>& rhs) {
+template <typename U, typename V, typename Traits>
+PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, Traits>& lhs,
+                                const raw_ptr<V, Traits>& rhs) {
   return lhs.GetForComparison() > rhs.GetForComparison();
 }
 
-template <typename U, typename V, typename I>
-PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, I>& lhs,
-                                 const raw_ptr<V, I>& rhs) {
+template <typename U, typename V, typename Traits>
+PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, Traits>& lhs,
+                                 const raw_ptr<V, Traits>& rhs) {
   return lhs.GetForComparison() <= rhs.GetForComparison();
 }
 
-template <typename U, typename V, typename I>
-PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, I>& lhs,
-                                 const raw_ptr<V, I>& rhs) {
+template <typename U, typename V, typename Traits>
+PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, Traits>& lhs,
+                                 const raw_ptr<V, Traits>& rhs) {
   return lhs.GetForComparison() >= rhs.GetForComparison();
 }
 
 template <typename T>
 struct IsRawPtr : std::false_type {};
 
-template <typename T, typename I>
-struct IsRawPtr<raw_ptr<T, I>> : std::true_type {};
+template <typename T, typename Traits>
+struct IsRawPtr<raw_ptr<T, Traits>> : std::true_type {};
 
 template <typename T>
 inline constexpr bool IsRawPtrV = IsRawPtr<T>::value;
@@ -1758,8 +1850,9 @@ inline constexpr bool IsRawPtrV = IsRawPtr<T>::value;
 template <typename T>
 inline constexpr bool IsRawPtrMayDangleV = false;
 
-template <typename T>
-inline constexpr bool IsRawPtrMayDangleV<raw_ptr<T, RawPtrMayDangle>> = true;
+template <typename T, typename Traits>
+inline constexpr bool IsRawPtrMayDangleV<raw_ptr<T, Traits>> =
+    Traits::kMayDangle;
 
 // Template helpers for working with T* or raw_ptr<T>.
 template <typename T>
@@ -1768,8 +1861,8 @@ struct IsPointer : std::false_type {};
 template <typename T>
 struct IsPointer<T*> : std::true_type {};
 
-template <typename T, typename I>
-struct IsPointer<raw_ptr<T, I>> : std::true_type {};
+template <typename T, typename Traits>
+struct IsPointer<raw_ptr<T, Traits>> : std::true_type {};
 
 template <typename T>
 inline constexpr bool IsPointerV = IsPointer<T>::value;
@@ -1784,8 +1877,8 @@ struct RemovePointer<T*> {
   using type = T;
 };
 
-template <typename T, typename I>
-struct RemovePointer<raw_ptr<T, I>> {
+template <typename T, typename Traits>
+struct RemovePointer<raw_ptr<T, Traits>> {
   using type = T;
 };
 
@@ -1803,21 +1896,25 @@ using base::raw_ptr;
 // Usage:
 // raw_ptr<T, DisableDanglingPtrDetection> dangling_ptr;
 //
-// When using it, please provide a justification about what guarantees it will
-// never be dereferenced after becoming dangling.
-using DisableDanglingPtrDetection = base::RawPtrMayDangle;
+// When using it, please provide a justification about what guarantees that it
+// will never be dereferenced after becoming dangling.
+using DisableDanglingPtrDetection =
+    base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle>;
 
 // See `docs/dangling_ptr.md`
 // Annotates known dangling raw_ptr. Those haven't been triaged yet. All the
 // occurrences are meant to be removed. See https://crbug.com/1291138.
-using DanglingUntriaged = base::RawPtrMayDangle;
+using DanglingUntriaged =
+    base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle>;
 
 // This type is to be used in callbacks arguments when it is known that they
 // might receive dangling pointers. In any other cases, please use one of:
 // - raw_ptr<T, DanglingUntriaged>
 // - raw_ptr<T, DisableDanglingPtrDetection>
 template <typename T>
-using MayBeDangling = base::raw_ptr<T, base::RawPtrMayDangle>;
+using MayBeDangling = base::raw_ptr<
+    T,
+    base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle>>;
 
 // The following template parameters are only meaningful when `raw_ptr`
 // is `MTECheckedPtr` (never the case unless a particular GN arg is set
@@ -1828,54 +1925,45 @@ using MayBeDangling = base::raw_ptr<T, base::RawPtrMayDangle>;
 // When `MTECheckedPtr` is in play, we need to augment this
 // implementation setting with another layer that allows the `raw_ptr`
 // to degrade into the no-op version.
-#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+//
+// See `base/memory/raw_ptr_mtecheckedptr.md`
 
 // Direct pass-through to no-op implementation.
-using DegradeToNoOpWhenMTE = base::RawPtrNoOp;
+using DegradeToNoOpWhenMTE = base::raw_ptr_traits::TraitBundle<
+    base::raw_ptr_traits::DisableMTECheckedPtr>;
 
 // As above, but with the "untriaged dangling" annotation.
-using DanglingUntriagedDegradeToNoOpWhenMTE = base::RawPtrNoOp;
+using DanglingUntriagedDegradeToNoOpWhenMTE = base::raw_ptr_traits::TraitBundle<
+    base::raw_ptr_traits::MayDangle,
+    base::raw_ptr_traits::DisableMTECheckedPtr>;
 
 // As above, but with the "explicitly disable protection" annotation.
-using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE = base::RawPtrNoOp;
-
-#else
-
-// Direct pass-through to default implementation specified by `raw_ptr`
-// template.
-using DegradeToNoOpWhenMTE = base::RawPtrBanDanglingIfSupported;
-
-// Direct pass-through to `DanglingUntriaged`.
-using DanglingUntriagedDegradeToNoOpWhenMTE = DanglingUntriaged;
-
-// Direct pass-through to `DisableDanglingPtrDetection`.
 using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
-    DisableDanglingPtrDetection;
-
-#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+    base::raw_ptr_traits::TraitBundle<
+        base::raw_ptr_traits::MayDangle,
+        base::raw_ptr_traits::DisableMTECheckedPtr>;
 
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
 // dangling pointers to be used for lookup.
-template <typename T, typename RawPtrType>
-struct less<raw_ptr<T, RawPtrType>> {
-  using Impl =
-      typename base::raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
+template <typename T, typename Traits>
+struct less<raw_ptr<T, Traits>> {
+  using Impl = typename raw_ptr<T, Traits>::Impl;
   using is_transparent = void;
 
-  bool operator()(const raw_ptr<T, RawPtrType>& lhs,
-                  const raw_ptr<T, RawPtrType>& rhs) const {
+  bool operator()(const raw_ptr<T, Traits>& lhs,
+                  const raw_ptr<T, Traits>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(T* lhs, const raw_ptr<T, RawPtrType>& rhs) const {
+  bool operator()(T* lhs, const raw_ptr<T, Traits>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ptr<T, RawPtrType>& lhs, T* rhs) const {
+  bool operator()(const raw_ptr<T, Traits>& lhs, T* rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
@@ -1884,8 +1972,8 @@ struct less<raw_ptr<T, RawPtrType>> {
 // Define for cases where raw_ptr<T> holds a pointer to an array of type T.
 // This is consistent with definition of std::iterator_traits<T*>.
 // Algorithms like std::binary_search need that.
-template <typename T, typename Impl>
-struct iterator_traits<raw_ptr<T, Impl>> {
+template <typename T, typename Traits>
+struct iterator_traits<raw_ptr<T, Traits>> {
   using difference_type = ptrdiff_t;
   using value_type = std::remove_cv_t<T>;
   using pointer = T*;

@@ -17,7 +17,7 @@
 
 namespace base {
 
-template <class T, class RawPtrType>
+template <class T, typename Traits>
 class raw_ref;
 
 namespace internal {
@@ -25,8 +25,8 @@ namespace internal {
 template <class T>
 struct is_raw_ref : std::false_type {};
 
-template <class T, class I>
-struct is_raw_ref<::base::raw_ref<T, I>> : std::true_type {};
+template <class T, typename Traits>
+struct is_raw_ref<::base::raw_ref<T, Traits>> : std::true_type {};
 
 template <class T>
 constexpr inline bool is_raw_ref_v = is_raw_ref<T>::value;
@@ -53,7 +53,7 @@ constexpr inline bool is_raw_ref_v = is_raw_ref<T>::value;
 // Unlike a native `T&` reference, a mutable `raw_ref<T>` can be changed
 // independent of the underlying `T`, similar to `std::reference_wrapper`. That
 // means the reference inside it can be moved and reassigned.
-template <class T, class RawPtrType = DefaultRawPtrType>
+template <class T, typename Traits = raw_ptr_traits::TraitBundle<>>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   // operator* is used with the expectation of GetForExtraction semantics:
   //
@@ -62,14 +62,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   //
   // The implementation of operator* provides GetForDereference semantics, and
   // this results in spurious crashes in BRP-ASan builds, so we need to disable
-  // BRP-ASan instrumentation for raw_ref.
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  using Inner = raw_ptr<T, RawPtrNoOp>;
-#else
-  using Inner = raw_ptr<T, RawPtrType>;
-#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  // hooks that provide BRP-ASan instrumentation for raw_ref.
+  using Inner = raw_ptr<
+      T,
+      typename Traits::template AddTraitT<raw_ptr_traits::DisableHooks>>;
 
-  using Impl = typename raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
+ public:
+  using Impl = typename Inner::Impl;
+
   // These impls do not clear on move, which produces an inconsistent behaviour.
   // We want consistent behaviour such that using a raw_ref after move is caught
   // and aborts. Failure to clear would be indicated by the related death tests
@@ -85,7 +85,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
 #endif  // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
       std::is_same_v<Impl, internal::RawPtrNoOpImpl>;
 
- public:
   PA_ALWAYS_INLINE explicit raw_ref(T& p) noexcept
       : inner_(std::addressof(p)) {}
 
@@ -127,14 +126,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   // Deliberately implicit in order to support implicit upcast.
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ref(const raw_ref<U, RawPtrType>& p) noexcept
+  PA_ALWAYS_INLINE raw_ref(const raw_ref<U, Traits>& p) noexcept
       : inner_(p.inner_) {
     PA_RAW_PTR_CHECK(inner_.get());  // Catch use-after-move.
   }
   // Deliberately implicit in order to support implicit upcast.
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ref(raw_ref<U, RawPtrType>&& p) noexcept
+  PA_ALWAYS_INLINE raw_ref(raw_ref<U, Traits>&& p) noexcept
       : inner_(std::move(p.inner_)) {
     PA_RAW_PTR_CHECK(inner_.get());  // Catch use-after-move.
     if constexpr (need_clear_after_move) {
@@ -149,14 +148,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
 
   // Upcast assignment
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
-  PA_ALWAYS_INLINE raw_ref& operator=(
-      const raw_ref<U, RawPtrType>& p) noexcept {
+  PA_ALWAYS_INLINE raw_ref& operator=(const raw_ref<U, Traits>& p) noexcept {
     PA_RAW_PTR_CHECK(p.inner_.get());  // Catch use-after-move.
     inner_.operator=(p.inner_);
     return *this;
   }
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
-  PA_ALWAYS_INLINE raw_ref& operator=(raw_ref<U, RawPtrType>&& p) noexcept {
+  PA_ALWAYS_INLINE raw_ref& operator=(raw_ref<U, Traits>&& p) noexcept {
     PA_RAW_PTR_CHECK(p.inner_.get());  // Catch use-after-move.
     inner_.operator=(std::move(p.inner_));
     if constexpr (need_clear_after_move) {
@@ -200,42 +198,42 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
 
   template <class U>
   friend PA_ALWAYS_INLINE bool operator==(const raw_ref& lhs,
-                                          const raw_ref<U, RawPtrType>& rhs) {
+                                          const raw_ref<U, Traits>& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
     PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ == rhs.inner_;
   }
   template <class U>
   friend PA_ALWAYS_INLINE bool operator!=(const raw_ref& lhs,
-                                          const raw_ref<U, RawPtrType>& rhs) {
+                                          const raw_ref<U, Traits>& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
     PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ != rhs.inner_;
   }
   template <class U>
   friend PA_ALWAYS_INLINE bool operator<(const raw_ref& lhs,
-                                         const raw_ref<U, RawPtrType>& rhs) {
+                                         const raw_ref<U, Traits>& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
     PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ < rhs.inner_;
   }
   template <class U>
   friend PA_ALWAYS_INLINE bool operator>(const raw_ref& lhs,
-                                         const raw_ref<U, RawPtrType>& rhs) {
+                                         const raw_ref<U, Traits>& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
     PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ > rhs.inner_;
   }
   template <class U>
   friend PA_ALWAYS_INLINE bool operator<=(const raw_ref& lhs,
-                                          const raw_ref<U, RawPtrType>& rhs) {
+                                          const raw_ref<U, Traits>& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
     PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ <= rhs.inner_;
   }
   template <class U>
   friend PA_ALWAYS_INLINE bool operator>=(const raw_ref& lhs,
-                                          const raw_ref<U, RawPtrType>& rhs) {
+                                          const raw_ref<U, Traits>& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
     PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ >= rhs.inner_;
@@ -304,7 +302,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   }
 
  private:
-  template <class U, class J>
+  template <class U, typename R>
   friend class raw_ref;
 
   Inner inner_;
@@ -320,8 +318,8 @@ raw_ref(const T&) -> raw_ref<const T>;
 template <typename T>
 struct IsRawRef : std::false_type {};
 
-template <typename T, typename I>
-struct IsRawRef<raw_ref<T, I>> : std::true_type {};
+template <typename T, typename Traits>
+struct IsRawRef<raw_ref<T, Traits>> : std::true_type {};
 
 template <typename T>
 inline constexpr bool IsRawRefV = IsRawRef<T>::value;
@@ -331,8 +329,8 @@ struct RemoveRawRef {
   using type = T;
 };
 
-template <typename T, typename I>
-struct RemoveRawRef<raw_ref<T, I>> {
+template <typename T, typename Traits>
+struct RemoveRawRef<raw_ref<T, Traits>> {
   using type = T;
 };
 
@@ -347,24 +345,23 @@ namespace std {
 
 // Override so set/map lookups do not create extra raw_ref. This also
 // allows C++ references to be used for lookup.
-template <typename T, typename RawPtrType>
-struct less<raw_ref<T, RawPtrType>> {
-  using Impl =
-      typename base::raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
+template <typename T, typename Traits>
+struct less<raw_ref<T, Traits>> {
+  using Impl = typename raw_ref<T, Traits>::Impl;
   using is_transparent = void;
 
-  bool operator()(const raw_ref<T, RawPtrType>& lhs,
-                  const raw_ref<T, RawPtrType>& rhs) const {
+  bool operator()(const raw_ref<T, Traits>& lhs,
+                  const raw_ref<T, Traits>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(T& lhs, const raw_ref<T, RawPtrType>& rhs) const {
+  bool operator()(T& lhs, const raw_ref<T, Traits>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<T, RawPtrType>& lhs, T& rhs) const {
+  bool operator()(const raw_ref<T, Traits>& lhs, T& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }

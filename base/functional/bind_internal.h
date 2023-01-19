@@ -133,13 +133,13 @@ class UnretainedWrapper {
   // Trick to only instantiate these constructors if they are used. Otherwise,
   // instantiating UnretainedWrapper with a T that is not supported by
   // raw_ptr would trigger raw_ptr<T>'s static_assert.
-  template <typename U = T, typename I>
-  explicit UnretainedWrapper(const raw_ptr<U, I>& o) : ptr_(o) {}
-  template <typename U = T, typename I>
-  explicit UnretainedWrapper(raw_ptr<U, I>&& o) : ptr_(std::move(o)) {}
+  template <typename U = T, typename Traits>
+  explicit UnretainedWrapper(const raw_ptr<U, Traits>& o) : ptr_(o) {}
+  template <typename U = T, typename Traits>
+  explicit UnretainedWrapper(raw_ptr<U, Traits>&& o) : ptr_(std::move(o)) {}
 
-  template <typename U, typename I>
-  static void ReportIfDangling(const raw_ptr<U, I>& ptr) {
+  template <typename U, typename Traits>
+  static void ReportIfDangling(const raw_ptr<U, Traits>& ptr) {
     if constexpr (std::is_same_v<Trait, unretained_traits::MayNotDangle>) {
       ptr.ReportIfDangling();
     }
@@ -229,10 +229,10 @@ class UnretainedRefWrapper<T, Trait, true> {
                 "base/functional/disallow_unretained.h for alternatives.");
 
   explicit UnretainedRefWrapper(T& o) : ref_(o) {}
-  template <typename U = T, typename I>
-  explicit UnretainedRefWrapper(const raw_ref<U, I>& o) : ref_(o.get()) {}
-  template <typename U = T, typename I>
-  explicit UnretainedRefWrapper(raw_ref<U, I>&& o) : ref_(o.get()) {}
+  template <typename U = T, typename Traits>
+  explicit UnretainedRefWrapper(const raw_ref<U, Traits>& o) : ref_(o.get()) {}
+  template <typename U = T, typename Traits>
+  explicit UnretainedRefWrapper(raw_ref<U, Traits>&& o) : ref_(o.get()) {}
   T& get() const {
     // The ultimate goal is to crash when a callback is invoked with a
     // dangling pointer. This is checked here. For now, it is configured to
@@ -1396,8 +1396,8 @@ struct BindArgument {
       template <bool is_method>
       // true if we are handling `this` parameter.
       static constexpr bool kParamIsThisPointer = is_method && i == 0;
-      // true if the current parameter is of type `raw_ptr<T, RawPtrMayDangle>`
-      // (or `MayBeDangling<T>`).
+      // true if the current parameter is of type `raw_ptr<T>` with
+      // raw_ptr_traits::MayDangle trait (e.g. `MayBeDangling<T>`).
       static constexpr bool kParamIsDanglingRawPtr =
           IsRawPtrMayDangleV<FunctionParamType>;
       // true if the bound parameter is of type

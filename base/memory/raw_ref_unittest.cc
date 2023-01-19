@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
@@ -758,11 +759,17 @@ TEST(RawRefPtr, CTADWithConst) {
   EXPECT_EQ(&*s2.r, &str);
 }
 
-using RawPtrCountingImpl =
-    base::internal::RawPtrCountingImplWrapperForTest<base::DefaultRawPtrType>;
+// TraitBundle<DisableHooks> matches what CountingRawRef does internally.
+// UseCountingWrapperForTest is removed, and DisableHooks is added.
+using RawPtrCountingImpl = base::internal::RawPtrCountingImplWrapperForTest<
+    base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::DisableHooks>>;
 
 template <typename T>
-using CountingRawRef = raw_ref<T, RawPtrCountingImpl>;
+using CountingRawRef =
+    raw_ref<T,
+            base::raw_ptr_traits::TraitBundle<
+                base::raw_ptr_traits::UseCountingWrapperForTest>>;
+static_assert(std::is_same_v<CountingRawRef<int>::Impl, RawPtrCountingImpl>);
 
 TEST(RawRef, StdLess) {
   int i[] = {1, 1};

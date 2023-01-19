@@ -50,7 +50,7 @@ improving our knowledge of Chrome.
 This represents ~25% of the dangling pointers.
 
 In the majority of cases, this happens when dependent objects are declared in
-the wrong order in a class, causing the dependency to be released first, thus 
+the wrong order in a class, causing the dependency to be released first, thus
 creating a dangling pointer in the other.
 
 It is important to reorder them correctly to prevent pre-existing and future UAF
@@ -96,9 +96,10 @@ added.
 // Usage:
 // raw_ptr<T, DisableDanglingPtrDetection> dangling_ptr;
 //
-// When using it, please provide a justification about what guarantees it will
-// never be dereferenced after becoming dangling.
-using DisableDanglingPtrDetection = base::RawPtrMayDangle;
+// When using it, please provide a justification about what guarantees that it
+// will never be dereferenced after becoming dangling.
+using DisableDanglingPtrDetection =
+    base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle>;
 ```
 
 **In emergency situations**: `DanglingUntriaged` can be used similarly, in case
