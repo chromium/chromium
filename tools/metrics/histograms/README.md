@@ -89,7 +89,7 @@ names, use the functions in histogram_functions.h instead of the macros.
 If you must use the histogram name in multiple places, use a compile-time
 constant of appropriate scope that can be referenced everywhere. Using inline
 strings in multiple places can lead to errors if you ever need to revise the
-name and you update one one location and forget another.
+name and you update one location and forget another.
 
 ### Efficiency
 
