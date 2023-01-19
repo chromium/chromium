@@ -73,10 +73,14 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // username_value, password_element) are updated, then the second version of
   // the method must be used that takes `old_primary_key`, i.e., the old values
   // for the primary key fields (the rest of the fields are ignored).
-  virtual void UpdateLogin(const PasswordForm& form) = 0;
+  // completion will be run after the form is updated.
+  virtual void UpdateLogin(
+      const PasswordForm& form,
+      base::OnceClosure completion = base::DoNothing()) = 0;
   virtual void UpdateLoginWithPrimaryKey(
       const PasswordForm& new_form,
-      const PasswordForm& old_primary_key) = 0;
+      const PasswordForm& old_primary_key,
+      base::OnceClosure completion = base::DoNothing()) = 0;
 
   // Removes the matching PasswordForm from the secure password store (async).
   virtual void RemoveLogin(const PasswordForm& form) = 0;

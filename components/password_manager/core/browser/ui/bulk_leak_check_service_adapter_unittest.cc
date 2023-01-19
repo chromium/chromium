@@ -270,6 +270,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedNoPrefs) {
       updated_credential = original_credential;
   updated_credential.password = kPassword2;
   presenter().EditSavedCredentials(original_credential, updated_credential);
+  RunUntilIdle();
 }
 
 // Tests that editing a password through the presenter will result in another
@@ -294,6 +295,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
       updated_credential = original_credential;
   updated_credential.password = kPassword2;
   presenter().EditSavedCredentials(original_credential, updated_credential);
+  RunUntilIdle();
 }
 
 }  // namespace password_manager

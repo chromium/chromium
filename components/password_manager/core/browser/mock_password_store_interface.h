@@ -20,10 +20,13 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               AddLogin,
               (const PasswordForm&, base::OnceClosure),
               (override));
-  MOCK_METHOD(void, UpdateLogin, (const PasswordForm&), (override));
+  MOCK_METHOD(void,
+              UpdateLogin,
+              (const PasswordForm&, base::OnceClosure),
+              (override));
   MOCK_METHOD(void,
               UpdateLoginWithPrimaryKey,
-              (const PasswordForm&, const PasswordForm&),
+              (const PasswordForm&, const PasswordForm&, base::OnceClosure),
               (override));
   MOCK_METHOD(void, RemoveLogin, (const PasswordForm&), (override));
   MOCK_METHOD(void,

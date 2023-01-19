@@ -88,7 +88,7 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormAdd) {
   ExpectGetLogins("http://example.com");
   AddPhishedCredentials(store(),
                         MakeCredential("http://example.com", u"username1"));
-  EXPECT_CALL(*store(), UpdateLogin(expected_form));
+  EXPECT_CALL(*store(), UpdateLogin(expected_form, _));
   SimulateStoreRepliedWithResults(forms);
 }
 
@@ -104,7 +104,7 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormRemove) {
   RemovePhishedCredentials(store(),
                            MakeCredential("http://example.com", u"username1"));
   EXPECT_CALL(*store(),
-              UpdateLogin(CreateForm("http://example.com", u"username1")));
+              UpdateLogin(CreateForm("http://example.com", u"username1"), _));
   SimulateStoreRepliedWithResults(forms);
 }
 
@@ -120,8 +120,8 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForAllMatchingFormsAdd) {
       InsecurityMetadata(base::Time::Now(), IsMuted(false));
   forms.at(1).password_issues[InsecureType::kPhished] =
       InsecurityMetadata(base::Time::Now(), IsMuted(false));
-  EXPECT_CALL(*store(), UpdateLogin(forms[1]));
-  EXPECT_CALL(*store(), UpdateLogin(forms[0]));
+  EXPECT_CALL(*store(), UpdateLogin(forms[1], _));
+  EXPECT_CALL(*store(), UpdateLogin(forms[0], _));
   SimulateStoreRepliedWithResults(
       {CreateForm("http://example.com", u"username", u"password1"),
        CreateForm("http://example.com", u"username", u"password2")});
@@ -140,9 +140,11 @@ TEST_F(InsecureCredentialsHelperTest,
   forms.at(0).password_issues[InsecureType::kPhished] = InsecurityMetadata();
   forms.at(1).password_issues[InsecureType::kPhished] = InsecurityMetadata();
   EXPECT_CALL(*store(), UpdateLogin(CreateForm("http://example.com",
-                                               u"username", u"password2")));
+                                               u"username", u"password2"),
+                                    _));
   EXPECT_CALL(*store(), UpdateLogin(CreateForm("http://example.com",
-                                               u"username", u"password1")));
+                                               u"username", u"password1"),
+                                    _));
   SimulateStoreRepliedWithResults(forms);
 }
 

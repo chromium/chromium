@@ -15,6 +15,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -289,14 +290,14 @@ void SavedPasswordsPresenter::AddCredentials(
   RemoveObservers();
 
   // Reinitialize presenter after all add operations are complete.
-  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+  base::RepeatingClosure completion_barrier_closure = base::BarrierClosure(
       valid_credentials.size(),
       base::BindOnce(&SavedPasswordsPresenter::Init,
                      weak_ptr_factory_.GetWeakPtr())
           .Then(base::BindOnce(std::move(completion), std::move(results))));
 
   for (CredentialUIEntry& credential : valid_credentials)
-    AddCredentialAsync(std::move(credential), type, barrier_closure);
+    AddCredentialAsync(std::move(credential), type, completion_barrier_closure);
 }
 
 SavedPasswordsPresenter::EditResult
@@ -337,6 +338,15 @@ SavedPasswordsPresenter::EditSavedCredentials(
     return EditResult::kNothingChanged;
   }
 
+  base::RepeatingClosure completion_barrier_closure = base::DoNothing();
+  // Only change in username or password is interesting for OnEdited listeners.
+  if (username_changed || password_changed) {
+    completion_barrier_closure = base::BarrierClosure(
+        forms_to_change.size(),
+        base::BindOnce(&SavedPasswordsPresenter::NotifyEdited,
+                       weak_ptr_factory_.GetWeakPtr(), updated_credential));
+  }
+
   for (const auto& old_form : forms_to_change) {
     PasswordStoreInterface& store = GetStoreFor(old_form);
     PasswordForm new_form = old_form;
@@ -366,15 +376,11 @@ SavedPasswordsPresenter::EditSavedCredentials(
       new_form.password_issues.erase(InsecureType::kLeaked);
       // Changing username requires deleting old form and adding new one. So
       // the different API should be called.
-      store.UpdateLoginWithPrimaryKey(new_form, old_form);
+      store.UpdateLoginWithPrimaryKey(new_form, old_form,
+                                      completion_barrier_closure);
     } else {
-      store.UpdateLogin(new_form);
+      store.UpdateLogin(new_form, completion_barrier_closure);
     }
-  }
-
-  // Only change in username or password is interesting for OnEdited listeners.
-  if (username_changed || password_changed) {
-    NotifyEdited(updated_credential);
   }
 
   password_manager::metrics_util::LogPasswordEditResult(username_changed,

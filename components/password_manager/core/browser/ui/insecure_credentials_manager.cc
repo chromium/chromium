@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/password_manager/core/browser/ui/reuse_check_utility.h"
@@ -41,15 +42,19 @@ bool SupportsMuteOperation(InsecureType insecure_type) {
           insecure_type == InsecureType::kPhished);
 }
 
-// The function is only used by the weak check.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// The function is only used by the weak check.
 base::flat_set<std::u16string> ExtractPasswords(
     const std::vector<CredentialUIEntry>& credentials) {
   return base::MakeFlatSet<std::u16string>(credentials, {},
                                            &CredentialUIEntry::password);
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+bool IsCheckForReusedPasswordsEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordManagerRedesign);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }  // namespace
 
 InsecureCredentialsManager::InsecureCredentialsManager(
@@ -193,6 +198,11 @@ void InsecureCredentialsManager::OnEdited(const CredentialUIEntry& credential) {
   // The WeakCheck is a Desktop only feature for now. Disable on Mobile to
   // avoid pulling in a big dependency on zxcvbn.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (IsCheckForReusedPasswordsEnabled()) {
+    // Re-run reused check since user might have changed reused password.
+    StartReuseCheck();
+  }
+
   const std::u16string& password = credential.password;
   if (weak_passwords_.contains(password) || !IsWeak(password)) {
     // Either the password is already known to be weak, or it is not weak at

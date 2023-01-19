@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -124,7 +124,7 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  MockAffiliationService affiliation_service_;
+  FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   InsecureCredentialsManager provider_{&presenter_, store_,
@@ -1144,6 +1144,31 @@ TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialsReused) {
               ElementsAre(CredentialUIEntry(form1), CredentialUIEntry(form2)));
 }
 
+TEST_F(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kPasswordManagerRedesign);
+
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  PasswordForm form2 = MakeSavedPassword(kExampleCom, kUsername2, kPassword1);
+
+  store().AddLogin(form1);
+  store().AddLogin(form2);
+  RunUntilIdle();
+  provider().StartReuseCheck();
+  RunUntilIdle();
+
+  ASSERT_THAT(provider().GetInsecureCredentialEntries(),
+              ElementsAre(CredentialUIEntry(form1), CredentialUIEntry(form2)));
+
+  CredentialUIEntry updated_credential(form1);
+  updated_credential.password = kPassword216;
+  presenter().EditSavedCredentials(CredentialUIEntry(form1),
+                                   updated_credential);
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
+}
+
 #else
 
 TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialsFiltersWeak) {
@@ -1218,7 +1243,7 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-  MockAffiliationService affiliation_service_;
+  FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
                                      account_store_};
   InsecureCredentialsManager provider_{&presenter_, profile_store_,

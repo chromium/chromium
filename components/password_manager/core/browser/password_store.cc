@@ -115,7 +115,8 @@ void PasswordStore::AddLogin(const PasswordForm& form,
                 .Then(std::move(completion))));
 }
 
-void PasswordStore::UpdateLogin(const PasswordForm& form) {
+void PasswordStore::UpdateLogin(const PasswordForm& form,
+                                base::OnceClosure completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!form.blocked_by_user ||
          (form.username_value.empty() && form.password_value.empty()));
@@ -125,12 +126,14 @@ void PasswordStore::UpdateLogin(const PasswordForm& form) {
       form, base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
                 .Then(base::BindOnce(
                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
-                    LoginsChangedTrigger::Update)));
+                    LoginsChangedTrigger::Update))
+                .Then(std::move(completion)));
 }
 
 void PasswordStore::UpdateLoginWithPrimaryKey(
     const PasswordForm& new_form,
-    const PasswordForm& old_primary_key) {
+    const PasswordForm& old_primary_key,
+    base::OnceClosure completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
@@ -155,7 +158,8 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
       2, base::BindOnce(&JoinPasswordStoreChanges)
              .Then(base::BindOnce(
                  &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
-                 LoginsChangedTrigger::Update)));
+                 LoginsChangedTrigger::Update))
+             .Then(std::move(completion)));
 
   backend_->RemoveLoginAsync(old_primary_key, barrier_callback);
   backend_->AddLoginAsync(new_form_with_correct_password_issues,

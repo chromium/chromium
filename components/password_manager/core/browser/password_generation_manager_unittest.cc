@@ -289,8 +289,9 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_Replace) {
   generated_with_date = generated_updated;
   generated_with_date.date_created = base::Time::Now();
   generated_with_date.date_password_modified = base::Time::Now();
-  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(generated_with_date,
-                                                 FormHasUniqueKey(generated)));
+  EXPECT_CALL(store(),
+              UpdateLoginWithPrimaryKey(generated_with_date,
+                                        FormHasUniqueKey(generated), _));
   manager().PresaveGeneratedPassword(generated_updated, {}, &form_saver());
   EXPECT_TRUE(manager().HasGeneratedPassword());
 }
@@ -311,8 +312,9 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ReplaceTwice) {
   generated_with_date = generated_updated;
   generated_with_date.date_created = base::Time::Now();
   generated_with_date.date_password_modified = base::Time::Now();
-  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(generated_with_date,
-                                                 FormHasUniqueKey(generated)));
+  EXPECT_CALL(store(),
+              UpdateLoginWithPrimaryKey(generated_with_date,
+                                        FormHasUniqueKey(generated), _));
   manager().PresaveGeneratedPassword(generated_updated, {}, &form_saver());
 
   ForwardByMinute();
@@ -322,8 +324,9 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ReplaceTwice) {
   generated_with_date = generated_updated;
   generated_with_date.date_created = base::Time::Now();
   generated_with_date.date_password_modified = base::Time::Now();
-  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(generated_with_date,
-                                                 FormHasUniqueKey(generated)));
+  EXPECT_CALL(store(),
+              UpdateLoginWithPrimaryKey(generated_with_date,
+                                        FormHasUniqueKey(generated), _));
   manager().PresaveGeneratedPassword(generated_updated, {}, &form_saver());
   EXPECT_TRUE(manager().HasGeneratedPassword());
 }
@@ -377,8 +380,9 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenSaveAsNew) {
   generated_with_date.date_created = base::Time::Now();
   generated_with_date.date_password_modified = base::Time::Now();
   generated_with_date.date_last_used = base::Time::Now();
-  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(generated_with_date,
-                                                 FormHasUniqueKey(generated)));
+  EXPECT_CALL(store(),
+              UpdateLoginWithPrimaryKey(generated_with_date,
+                                        FormHasUniqueKey(generated), _));
   manager().CommitGeneratedPassword(pending, {} /* matches */,
                                     std::u16string() /* old_password */,
                                     &form_saver());
@@ -421,18 +425,18 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenUpdate) {
   generated_with_date.date_last_used = base::Time::Now();
 
   EXPECT_CALL(store(),
-              UpdateLoginWithPrimaryKey(generated_with_date,
-                                        FormHasUniqueKey(CreateGenerated())));
+              UpdateLoginWithPrimaryKey(
+                  generated_with_date, FormHasUniqueKey(CreateGenerated()), _));
 
   PasswordForm related_password_expected = related_password;
   related_password_expected.password_value = generated.password_value;
   related_password_expected.date_password_modified = base::Time::Now();
-  EXPECT_CALL(store(), UpdateLogin(related_password_expected));
+  EXPECT_CALL(store(), UpdateLogin(related_password_expected, _));
 
   PasswordForm related_psl_password_expected = related_psl_password;
   related_psl_password_expected.password_value = generated.password_value;
   related_psl_password_expected.date_password_modified = base::Time::Now();
-  EXPECT_CALL(store(), UpdateLogin(related_psl_password_expected));
+  EXPECT_CALL(store(), UpdateLogin(related_psl_password_expected, _));
 
   manager().CommitGeneratedPassword(generated, matches, u"old password",
                                     &form_saver());
@@ -497,8 +501,9 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_CloneUpdates) {
   generated_with_date = generated_updated;
   generated_with_date.date_created = base::Time::Now();
   generated_with_date.date_password_modified = base::Time::Now();
-  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(generated_with_date,
-                                                 FormHasUniqueKey(generated)));
+  EXPECT_CALL(store(),
+              UpdateLoginWithPrimaryKey(generated_with_date,
+                                        FormHasUniqueKey(generated), _));
   cloned_state->PresaveGeneratedPassword(generated_updated, {}, &form_saver());
   EXPECT_TRUE(cloned_state->HasGeneratedPassword());
 }
@@ -513,7 +518,7 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_CloneSurvives) {
 
   std::unique_ptr<PasswordGenerationManager> cloned_manager = original->Clone();
   original.reset();
-  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(_, _));
+  EXPECT_CALL(store(), UpdateLoginWithPrimaryKey);
   cloned_manager->PresaveGeneratedPassword(generated, {}, &form_saver());
 }
 
@@ -535,7 +540,7 @@ TEST_F(PasswordGenerationManagerTest, EditsInGeneratedPasswordMetrics) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(
                            generated_after_edits,
-                           FormHasUniqueKey(generated_after_edits)));
+                           FormHasUniqueKey(generated_after_edits), _));
   manager().CommitGeneratedPassword(generated_after_edits, {} /* matches */,
                                     std::u16string() /* old_password */,
                                     &form_saver());
@@ -587,7 +592,7 @@ TEST_F(PasswordGenerationManagerTest,
   base::HistogramTester histogram_tester;
   EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(
                            generated_after_edits,
-                           FormHasUniqueKey(generated_after_edits)));
+                           FormHasUniqueKey(generated_after_edits), _));
   manager().CommitGeneratedPassword(generated_after_edits, {} /* matches */,
                                     std::u16string() /* old_password */,
                                     &form_saver());

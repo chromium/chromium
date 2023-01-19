@@ -456,7 +456,7 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
   form.in_store = PasswordForm::Store::kProfileStore;
-  EXPECT_CALL(*profile_store(), UpdateLogin(form));
+  EXPECT_CALL(*profile_store(), UpdateLogin(form, _));
   WaitForPasswordStore();
 }
 

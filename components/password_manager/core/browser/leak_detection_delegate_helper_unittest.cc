@@ -236,8 +236,8 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
   other_origin_same_credential.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
-  EXPECT_CALL(*store_, UpdateLogin(leaked_origin));
-  EXPECT_CALL(*store_, UpdateLogin(other_origin_same_credential));
+  EXPECT_CALL(*store_, UpdateLogin(leaked_origin, _));
+  EXPECT_CALL(*store_, UpdateLogin(other_origin_same_credential, _));
   InitiateGetCredentialLeakType();
 }
 
@@ -253,7 +253,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
   non_canonicalized_username.password_issues.insert_or_assign(
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false)));
-  EXPECT_CALL(*store_, UpdateLogin(non_canonicalized_username));
+  EXPECT_CALL(*store_, UpdateLogin(non_canonicalized_username, _));
   InitiateGetCredentialLeakType();
 }
 
