@@ -34,15 +34,14 @@ copy("copy_ts") {
 
 copy("copy_mojo") {
   deps = [
-    "//components/optimization_guide/core:interfaces_js__generator",
-    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings_js__generator",
+    "//components/optimization_guide/core:interfaces_ts__generator",
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings_ts__generator",
   ]
-  mojom_folder = "$root_gen_dir/mojom-webui/components/optimization_guide/optimization_guide_internals/webui/"
-  core_mojom_folder =
-      "$root_gen_dir/mojom-webui/components/optimization_guide/core/"
+  mojom_folder = "$root_gen_dir/components/optimization_guide/optimization_guide_internals/webui/"
+  core_mojom_folder = "$root_gen_dir/components/optimization_guide/core/"
   sources = [
-    "$core_mojom_folder/optimization_guide_common.mojom-webui.js",
-    "$mojom_folder/optimization_guide_internals.mojom-webui.js",
+    "$core_mojom_folder/optimization_guide_common.mojom-webui.ts",
+    "$mojom_folder/optimization_guide_internals.mojom-webui.ts",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
@@ -50,12 +49,11 @@ copy("copy_mojo") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir"
   out_dir = "$target_gen_dir/$tsc_folder"
-  tsconfig_base = "tsconfig_base.json"
   in_files = [
     "optimization_guide_internals.ts",
     "optimization_guide_internals_browser_proxy.ts",
-    "optimization_guide_internals.mojom-webui.js",
-    "optimization_guide_common.mojom-webui.js",
+    "optimization_guide_internals.mojom-webui.ts",
+    "optimization_guide_common.mojom-webui.ts",
   ]
   deps = [
     "//ui/webui/resources:library",

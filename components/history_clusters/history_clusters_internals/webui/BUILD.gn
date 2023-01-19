@@ -28,5 +28,6 @@ static_library("webui") {
 mojom("mojo_bindings") {
   sources = [ "history_clusters_internals.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
   public_deps = [ "//mojo/public/mojom/base" ]
 }

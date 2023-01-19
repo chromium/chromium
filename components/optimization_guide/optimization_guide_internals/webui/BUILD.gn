@@ -37,6 +37,7 @@ static_library("url_constants") {
 mojom("mojo_bindings") {
   sources = [ "optimization_guide_internals.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
   public_deps = [
     "//components/optimization_guide/core:interfaces",
     "//mojo/public/mojom/base",
