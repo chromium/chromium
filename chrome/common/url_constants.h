@@ -35,6 +35,9 @@ extern const char kAccessCodeCastLearnMoreURL[];
 // dialog shown when a user enables the feature.
 extern const char kAccessibilityLabelsLearnMoreURL[];
 
+// "Learn more" URL for Ad Privacy.
+extern const char kAdPrivacyLearnMoreURL[];
+
 // "Learn more" URL for when profile settings are automatically reset.
 extern const char kAutomaticSettingsResetLearnMoreURL[];
 

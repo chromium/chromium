@@ -17,6 +17,9 @@ const char kAccessCodeCastLearnMoreURL[] =
 const char kAccessibilityLabelsLearnMoreURL[] =
     "https://support.google.com/chrome/?p=image_descriptions";
 
+const char kAdPrivacyLearnMoreURL[] =
+    "https://support.google.com/chrome/?p=ad_privacy";
+
 const char kAutomaticSettingsResetLearnMoreURL[] =
     "https://support.google.com/chrome/?p=ui_automatic_settings_reset";
 

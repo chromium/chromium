@@ -2117,6 +2117,11 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  html_source->AddString("adPrivacyLearnMoreURL",
+                         google_util::AppendGoogleLocaleParam(
+                             GURL(chrome::kAdPrivacyLearnMoreURL),
+                             g_browser_process->GetApplicationLocale())
+                             .spec());
   html_source->AddString(
       "privacySandboxAdMeasurementDialogControlMeasurement",
       l10n_util::GetStringFUTF16(
