@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <script>
+    function onLoad() {
+      console.log('onload');
+      document.getElementById('button1').focus();
+      document.getElementById('button2').focus();
+      document.getElementById('button2').blur();
+    }
+
+    function onFocus(id) {
+      console.log('onfocus ' + id);
+    }
+    function onBlur(id) {
+      console.log('onblur ' + id);
+    }
+  </script>
+
+  <style>
+    .button {
+      background-image: linear-gradient(#00007f, #00007f);
+      color: white;
+    }
+
+    .button:focus {
+      background-image: linear-gradient(#00ffff, #00ffff);
+      color: blue;
+    }
+  </style>
+
+  <body onload="onLoad()">
+    <div>
+      <button id="button1" class="button"
+        onfocus="onFocus('button1')" onblur="onBlur('button1')">
+      Button1
+      </button>
+    </div>
+    <div>
+      <button id="button2" class="button"
+        onfocus="onFocus('button1')" onblur="onBlur('button1')">
+      Button2
+      </button>
+    </div>
+  </body>
+
+</html>
+
