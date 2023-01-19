@@ -409,31 +409,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.LowEntropySource3Value" units="units"
-    expires_after="2023-06-18">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Distribution of the new low entropy source value. Corresponds to
-    metrics::prefs::kMetricsLowEntropySource. Used for field trial
-    randomization. Recorded on startup.
-  </summary>
-</histogram>
-
-<histogram name="UMA.LowEntropySourceValue" units="units"
-    expires_after="2023-04-04">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Distribution of the old low entropy source value. Corresponds to
-    metrics::prefs::kMetricsOldLowEntropySource. Used for field trial
-    randomization on clients that already have it, but not created on new
-    installs. Recorded on startup.
-  </summary>
-</histogram>
-
 <histogram name="UMA.MachineIdState" enum="UmaMachineIdState"
     expires_after="2023-02-12">
   <owner>jwd@chromium.org</owner>

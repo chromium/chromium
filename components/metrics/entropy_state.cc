@@ -174,16 +174,6 @@ void EntropyState::UpdateLowEntropySources() {
   }
 
   DCHECK_NE(low_entropy_source_, kLowEntropySourceNotSet);
-  // TODO(crbug/1041710): Currently, these metrics might be recorded multiple
-  // times but that shouldn't matter because we can workaround it by using count
-  // unique user mode. Also, once we verify that we can persist
-  // low_entropy_source to our system profile proto, These two metrics are
-  // longer needed and should be removed.
-  base::UmaHistogramSparse("UMA.LowEntropySource3Value", low_entropy_source_);
-  if (old_low_entropy_source_ != kLowEntropySourceNotSet) {
-    base::UmaHistogramSparse("UMA.LowEntropySourceValue",
-                             old_low_entropy_source_);
-  }
 }
 
 // static
