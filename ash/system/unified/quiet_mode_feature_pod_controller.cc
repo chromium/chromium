@@ -94,6 +94,8 @@ std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile() {
   tile_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
       GetQuietModeStateTooltip()));
+  NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
+  OnQuietModeChanged(MessageCenter::Get()->IsQuietMode());
   return tile;
 }
 
