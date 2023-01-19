@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/launcher/test_launcher.h"
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"
@@ -21,19 +22,6 @@
 
 namespace headless {
 namespace {
-
-class HeadlessBrowserImplForTest : public HeadlessBrowserImpl {
- public:
-  explicit HeadlessBrowserImplForTest()
-      : HeadlessBrowserImpl(base::BindOnce(&HeadlessBrowserImplForTest::OnStart,
-                                           base::Unretained(this))) {}
-
-  HeadlessBrowserImplForTest(const HeadlessBrowserImplForTest&) = delete;
-  HeadlessBrowserImplForTest& operator=(const HeadlessBrowserImplForTest&) =
-      delete;
-
-  void OnStart(HeadlessBrowser* browser) { EXPECT_EQ(this, browser); }
-};
 
 class HeadlessTestLauncherDelegate : public content::TestLauncherDelegate {
  public:
@@ -56,7 +44,7 @@ class HeadlessTestLauncherDelegate : public content::TestLauncherDelegate {
  protected:
   content::ContentMainDelegate* CreateContentMainDelegate() override {
     return new HeadlessContentMainDelegate(
-        std::make_unique<HeadlessBrowserImplForTest>());
+        std::make_unique<HeadlessBrowserImpl>(base::DoNothing()));
   }
 };
 
