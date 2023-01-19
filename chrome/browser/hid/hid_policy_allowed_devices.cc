@@ -14,6 +14,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -125,11 +126,11 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_value) {
-    const base::Value* urls_value = item.FindKey(kPrefUrlsKey);
+    const base::Value::List* urls_value = item.GetDict().FindList(kPrefUrlsKey);
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
-    for (const auto& url_value : urls_value->GetList()) {
+    for (const auto& url_value : *urls_value) {
       GURL url(url_value.GetString());
       if (url.is_valid())
         urls.push_back(url::Origin::Create(url));
@@ -138,21 +139,23 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
     if (urls.empty())
       continue;
 
-    const auto* devices_value = item.FindKey(kPrefDevicesKey);
+    const base::Value::List* devices_value =
+        item.GetDict().FindList(kPrefDevicesKey);
     DCHECK(devices_value);
-    for (const auto& device_value : devices_value->GetList()) {
-      const auto* vendor_id_value = device_value.FindKey(kPrefVendorIdKey);
+    for (const auto& device_value : *devices_value) {
+      const absl::optional<int> vendor_id_value =
+          device_value.GetDict().FindInt(kPrefVendorIdKey);
       DCHECK(vendor_id_value);
 
-      const auto* product_id_value = device_value.FindKey(kPrefProductIdKey);
+      const absl::optional<int> product_id_value =
+          device_value.GetDict().FindInt(kPrefProductIdKey);
       // "product_id" is optional. If it is not specified, the policy matches
       // any device with the given vendor ID.
       if (product_id_value) {
-        device_policy_[{vendor_id_value->GetInt(), product_id_value->GetInt()}]
-            .insert(urls.begin(), urls.end());
+        device_policy_[{*vendor_id_value, *product_id_value}].insert(
+            urls.begin(), urls.end());
       } else {
-        vendor_policy_[vendor_id_value->GetInt()].insert(urls.begin(),
-                                                         urls.end());
+        vendor_policy_[*vendor_id_value].insert(urls.begin(), urls.end());
       }
     }
   }
@@ -187,20 +190,19 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
         item.GetDict().FindList(kPrefUsagesKey);
     DCHECK(usages_value);
     for (const auto& usage_and_page_value : *usages_value) {
-      const auto* usage_page_value =
-          usage_and_page_value.FindKey(kPrefUsagePageKey);
+      const absl::optional<int> usage_page_value =
+          usage_and_page_value.GetDict().FindInt(kPrefUsagePageKey);
       DCHECK(usage_page_value);
 
-      const base::Value* usage_value =
-          usage_and_page_value.GetDict().Find(kPrefUsageKey);
+      const absl::optional<int> usage_value =
+          usage_and_page_value.GetDict().FindInt(kPrefUsageKey);
       // "usage" is optional. If "usage" is not specified, the policy matches
       // any device containing a top-level collection with the given usage page.
       if (usage_value) {
-        usage_policy_[{usage_page_value->GetInt(), usage_value->GetInt()}]
-            .insert(urls.begin(), urls.end());
+        usage_policy_[{*usage_page_value, *usage_value}].insert(urls.begin(),
+                                                                urls.end());
       } else {
-        usage_page_policy_[usage_page_value->GetInt()].insert(urls.begin(),
-                                                              urls.end());
+        usage_page_policy_[*usage_page_value].insert(urls.begin(), urls.end());
       }
     }
   }
