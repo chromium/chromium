@@ -255,6 +255,11 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
                                             bool use_weighted_ratio,
                                             bool strip_diacritics,
                                             bool use_acronym_matcher) {
+  // If the query is much longer than the text then it's often not a match.
+  if (query_input.text().size() >= text_input.text().size() * 2) {
+    return 0.0;
+  }
+
   absl::optional<TokenizedString> stripped_query;
   absl::optional<TokenizedString> stripped_text;
   if (strip_diacritics) {
@@ -277,11 +282,6 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
       base::EqualsCaseInsensitiveASCII(query_text, text_text)) {
     hits_.emplace_back(0, query_size);
     return 1.0;
-  }
-
-  // If the query is much longer than the text then it's often not a match.
-  if (query_size >= text_size * 2) {
-    return 0.0;
   }
 
   // The |relevances| stores the |relevance_scores| calculated from different
