@@ -261,13 +261,9 @@ bool IsNewFrame(H264SliceHeader* prev_slice,
 
 }  // namespace
 
-void H264DPB::ClearDPB() {
-  dpb_.clear();
-}
-
 int H264DPB::CountRefPics() {
   int ret = 0;
-  for (const auto& pic : dpb_) {
+  for (const auto& pic : *this) {
     if (pic->ref) {
       ++ret;
     }
@@ -277,25 +273,25 @@ int H264DPB::CountRefPics() {
 }
 
 void H264DPB::Delete(H264SliceMetadata* pic) {
-  for (auto it = dpb_.begin(); it != dpb_.end(); ++it) {
+  for (auto it = this->begin(); it != this->end(); ++it) {
     if ((*it).get() == pic) {
-      dpb_.erase(it);
+      this->erase(it);
       break;
     }
   }
 }
 
 void H264DPB::DeleteUnused() {
-  dpb_.erase(std::remove_if(dpb_.begin(), dpb_.end(),
+  this->erase(std::remove_if(this->begin(), this->end(),
                             [](const std::unique_ptr<H264SliceMetadata>& pic) {
                               return (pic->outputted && !pic->ref);
                             }),
-             dpb_.end());
+             this->end());
 }
 
 void H264DPB::UnmarkLowestFrameNumWrapShortRefPic() {
   H264SliceMetadata* ret = nullptr;
-  for (const auto& pic : dpb_) {
+  for (const auto& pic : *this) {
     if (pic->ref && (!ret || pic->frame_num_wrap < ret->frame_num_wrap)) {
       ret = pic.get();
     }
@@ -305,7 +301,7 @@ void H264DPB::UnmarkLowestFrameNumWrapShortRefPic() {
 
 std::vector<H264SliceMetadata*> H264DPB::GetNotOutputtedPicsAppending() {
   std::vector<H264SliceMetadata*> data;
-  for (const auto& pic : dpb_) {
+  for (const auto& pic : *this) {
     if (!pic->outputted) {
       data.push_back(pic.get());
     }
@@ -314,18 +310,18 @@ std::vector<H264SliceMetadata*> H264DPB::GetNotOutputtedPicsAppending() {
 }
 
 void H264DPB::MarkAllUnusedRef() {
-  for (const auto& pic : dpb_) {
+  for (const auto& pic : *this) {
     pic->ref = false;
   }
 }
 
 void H264DPB::StorePic(H264SliceMetadata* pic) {
-  dpb_.push_back(std::make_unique<H264SliceMetadata>(*pic));
+  this->push_back(std::make_unique<H264SliceMetadata>(*pic));
 }
 
 void H264DPB::UpdateFrameNumWrap(const int curr_frame_num,
                                  const int max_frame_num) {
-  for (auto& pic : dpb_) {
+  for (auto& pic : *this) {
     if (pic->ref) {
       continue;
     }
@@ -429,7 +425,7 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
   global_pic_count_++;
 
   if (slice_hdr->idr_pic_flag) {
-    dpb_.ClearDPB();
+    dpb_.clear();
   }
 
   const int max_frame_num = 1 << (sps->log2_max_frame_num_minus4 + 4);

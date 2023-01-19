@@ -36,8 +36,6 @@ class H264DPB : public std::vector<std::unique_ptr<H264SliceMetadata>> {
   H264DPB(const H264DPB&) = delete;
   H264DPB& operator=(const H264DPB&) = delete;
 
-  // Deletes all H264SliceMetadata elements from DPB.
-  void ClearDPB();
   // Returns number of Reference H264SliceMetadata elements
   // in the DPB.
   int CountRefPics();
@@ -62,11 +60,6 @@ class H264DPB : public std::vector<std::unique_ptr<H264SliceMetadata>> {
   // Updates each H264SliceMetadata object in DPB's frame num wrap
   // based on the max frame num.
   void UpdateFrameNumWrap(const int curr_frame_num, const int max_frame_num);
-
- private:
-  // A vector of H264SliceMetadata objects which will be created by the H264
-  // Decoder and sent to this class for slice processing.
-  std::vector<std::unique_ptr<H264SliceMetadata>> dpb_;
 };
 
 class H264Decoder : public VideoDecoder {
