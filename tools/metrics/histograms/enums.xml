@@ -6157,26 +6157,20 @@ others/histograms.xml -->
       label="Sync service missing AUTOFILL_WALLET_DATA active data type"/>
   <int value="3"
       label="Sync service missing AUTOFILL_PROFILE active data type"/>
-  <int value="4" label="Account wallet storage upload disabled (deprecated)">
-    <obsolete>
-      Deprecated in M78.
-    </obsolete>
-  </int>
+  <int value="4"
+      label="(Obsolete) Account wallet storage upload disabled (Deprecated in
+             M78)."/>
   <int value="5" label="User has an explicit sync passphrase"/>
   <int value="6" label="Local sync is enabled"/>
   <int value="7" label="Payments integration user setting is disabled"/>
   <int value="8" label="User email is empty"/>
   <int value="9" label="User is logged into an unsupported domain"/>
-  <int value="10" label="Card upload feature flag disabled (deprecated)">
-    <obsolete>
-      Deprecated in M96, replaced by values 12, 13, and 14.
-    </obsolete>
-  </int>
-  <int value="11" label="Success, card upload enabled (deprecated)">
-    <obsolete>
-      Deprecated in M96, replaced by values 12, 13, and 14.
-    </obsolete>
-  </int>
+  <int value="10"
+      label="(Obsolete) Card upload feature flag disabled (Deprecated in M96,
+             replaced by values 12, 13, and 14)."/>
+  <int value="11"
+      label="(Obsolete) Success, card upload enabled (Deprecated in M96,
+             replaced by values 12, 13, and 14)."/>
   <int value="12" label="User is in an unlaunched/unsupported country"/>
   <int value="13" label="Success, card upload enabled for the user's country"/>
   <int value="14" label="Success, card upload enabled by the Finch config"/>
@@ -9518,11 +9512,7 @@ others/histograms.xml -->
   <int value="5" label="Closed, success w/ 1+ failures">
     Closed with successful unmask after failed attempts.
   </int>
-  <int value="6" label="(deprecated) Card saved locally">
-    <obsolete>
-      Removed 06/2021.
-    </obsolete>
-  </int>
+  <int value="6" label="(Obsolete) Card saved locally. Removed 06/2021."/>
   <int value="7" label="Did opt in of local save"/>
   <int value="8" label="Local save stayed disabled"/>
   <int value="9" label="Did opt out of local save"/>
@@ -11555,11 +11545,9 @@ Called by update_bad_message_reasons.py.-->
 
 <enum name="BookmarkLaunchLocation">
   <int value="0" label="Attached bookmark bar"/>
-  <int value="1" label="Detached (floating) bookmark bar">
-    <obsolete>
-      Deprecated: The detached bookmark bar state no longer exists.
-    </obsolete>
-  </int>
+  <int value="1"
+      label="(Obsolete) Detached (floating) bookmark bar. Deprecated: The
+             detached bookmark bar state no longer exists."/>
   <int value="2" label="Bookmark bar subfolder"/>
   <int value="3" label="Context menu"/>
   <int value="4" label="Wrench menu"/>
@@ -13992,39 +13980,19 @@ Called by update_bad_message_reasons.py.-->
   <int value="0" label="None (should have 0 counts)"/>
   <int value="1" label="Total ops"/>
   <int value="2" label="ClearRect op"/>
-  <int value="3" label="FillRect op (Obsolete)">
-    <obsolete>
-      Deprecated as of 2021-10.
-    </obsolete>
-  </int>
-  <int value="4" label="PutImageData op (Obsolete)">
-    <obsolete>
-      Deprecated as of 2021-10.
-    </obsolete>
-  </int>
+  <int value="3" label="(Obsolete) FillRect op. Deprecated as of 2021-10."/>
+  <int value="4" label="(Obsolete) PutImageData op. Deprecated as of 2021-10."/>
   <int value="5" label="DrawImage op"/>
   <int value="6" label="ContextReset op"/>
-  <int value="7" label="ClearForSrcBlendMode op (Obsolete)">
-    <obsolete>
-      Deprecated as of 2021-10.
-    </obsolete>
-  </int>
-  <int value="8" label="Has opaque shader (Obsolete)">
-    <obsolete>
-      Deprecated as of 2021-10.
-    </obsolete>
-  </int>
+  <int value="7"
+      label="(Obsolete) ClearForSrcBlendMode op. Deprecated as of 2021-10."/>
+  <int value="8"
+      label="(Obsolete) Has opaque shader. Deprecated as of 2021-10."/>
   <int value="9" label="Has transform"/>
-  <int value="10" label="Has source-over blend mode (Obsolete)">
-    <obsolete>
-      Deprecated as of 2021-10.
-    </obsolete>
-  </int>
-  <int value="11" label="Has clear blend mode (Obsolete)">
-    <obsolete>
-      Deprecated as of 2021-10.
-    </obsolete>
-  </int>
+  <int value="10"
+      label="(Obsolete) Has source-over blend mode. Deprecated as of 2021-10."/>
+  <int value="11"
+      label="(Obsolete) Has clear blend mode. Deprecated as of 2021-10."/>
   <int value="13" label="Has clip"/>
   <int value="14" label="Has transform and clip"/>
 </enum>
@@ -15257,11 +15225,9 @@ Called by update_protocol_commands_enum.py.-->
   <int value="29" label="kHostCache"/>
   <int value="30" label="kTpmAttestationKeys"/>
   <int value="31" label="kStrikes"/>
-  <int value="32" label="kLeakedCredentials (Obsolete)">
-    <obsolete>
-      Use kCompromisedCredentials instead. This expired 2019-11.
-    </obsolete>
-  </int>
+  <int value="32"
+      label="(Obsolete) kLeakedCredentials. Use kCompromisedCredentials
+             instead. This expired 2019-11."/>
   <int value="33" label="kFieldInfo"/>
   <int value="34" label="kCompromisedCredentials"/>
   <int value="35" label="kUserDataSnapshot"/>
@@ -19476,12 +19442,10 @@ Called by update_net_error_codes.py.-->
 
 <enum name="CookieLoadProblem">
   <int value="0" label="Entry decryption failed"/>
-  <int value="1" label="Entry decryption taking over a minute">
-    <obsolete>
-      Removed 03/2021. The problem rarely happens and can be reported through
-      other mechanisms.
-    </obsolete>
-  </int>
+  <int value="1"
+      label="(Obsolete) Entry decryption taking over a minute. Removed
+             03/2021. The problem rarely happens and can be reported through
+             other mechanisms."/>
   <int value="2" label="Cookie canonical form check failed"/>
   <int value="3" label="Could not open or initialize database"/>
   <int value="4" label="Attempt to delete broken (and related) rows failed"/>
@@ -68956,11 +68920,9 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Enabled by user"/>
   <int value="3" label="Not support by Chromebook"/>
   <int value="4" label="Not supported by phone"/>
-  <int value="5" label="(Obsolete) Unable, no verified host">
-    <obsolete>
-      Deprecated 2022-04. Use the more granular values.
-    </obsolete>
-  </int>
+  <int value="5"
+      label="(Obsolete) Unable, no verified host. Deprecated 2022-04. Use the
+             more granular values."/>
   <int value="6" label="Unavailable, insufficient security"/>
   <int value="7" label="Unavailable, suite disabled"/>
   <int value="8" label="Further setup required"/>
@@ -69137,11 +69099,8 @@ Called by update_use_counter_css.py.-->
 
 <enum name="MultitouchEvent">
   <int value="0" label="Released"/>
-  <int value="1" label="Canceled (deprecated)">
-    <obsolete>
-      Replaced by more specific cancel events.
-    </obsolete>
-  </int>
+  <int value="1"
+      label="(Obsolete) Canceled. Replaced by more specific cancel events."/>
   <int value="2" label="Held"/>
   <int value="3" label="Canceled by other key"/>
   <int value="4" label="Canceled by reset"/>
@@ -72623,11 +72582,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="Opened a Reading List entry"/>
   <int value="9" label="Opened a suggestion"/>
   <int value="10" label="Opened the Learn More link"/>
-  <int value="11" label="Opened the Promo">
-    <obsolete>
-      Deprecated as of 09/2022.
-    </obsolete>
-  </int>
+  <int value="11"
+      label="(Obsolete) Opened the Promo. Deprecated as of 09/2022."/>
   <int value="12" label="Opened a history entry"/>
   <int value="13" label="Searched using voice"/>
 </enum>
@@ -72716,11 +72672,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Submitted voice query"/>
   <int value="4" label="Clicked on support link in error message"/>
   <int value="5" label="Retried by clicking Try Again link"/>
-  <int value="6" label="Retried by clicking microphone button">
-    <obsolete>
-      Deprecated as of 09/2022.
-    </obsolete>
-  </int>
+  <int value="6"
+      label="(Obsolete) Retried by clicking microphone button. Deprecated as
+             of 09/2022."/>
 </enum>
 
 <enum name="NewTabPageVoiceError">
@@ -73262,11 +73216,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="2G"/>
   <int value="4" label="3G"/>
   <int value="5" label="4G"/>
-  <int value="6" label="Broadband">
-    <obsolete>
-      Deprecated as of 01/2017.
-    </obsolete>
-  </int>
+  <int value="6" label="(Obsolete) Broadband. Deprecated as of 01/2017."/>
 </enum>
 
 <enum name="NQEExternalEstimateProviderStatus">
@@ -74290,13 +74240,11 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="OfflinePagesPrefetchUsage">
-  <int value="0" label="Deprecated: Has prefetched offline pages">
-    <obsolete>
-      Deprecated: This state was never reported. No prefetched offline pages
-      were downloaded nor opened by the user in a day but there are some
-      available locally.
-    </obsolete>
-  </int>
+  <int value="0"
+      label="(Obsolete) Has prefetched offline pages. Deprecated: This state
+             was never reported. No prefetched offline pages were downloaded
+             nor opened by the user in a day but there are some available
+             locally."/>
   <int value="1" label="Only prefetched new offline pages">
     Prefetched offline pages were downloaded in a day but none were opened by
     the user.
@@ -90459,11 +90407,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="22" label="Billing"/>
   <int value="23" label="Apk download"/>
   <int value="24" label="High confidence allowlist"/>
-  <int value="25" label="(Obsolete) Accuracy Tips">
-    <obsolete>
-      Deprecated as of 12/2022.
-    </obsolete>
-  </int>
+  <int value="25" label="(Obsolete) Accuracy Tips. Deprecated as of 12/2022."/>
 </enum>
 
 <enum name="ScanAppEntryPoint">
@@ -91430,11 +91374,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SendTabToSelfClickResult">
-  <int value="0" label="(obsolete) SendTabToSelf entry point is shown.">
-    <obsolete>
-      Removed on 06/2020.
-    </obsolete>
-  </int>
+  <int value="0"
+      label="(Obsolete) SendTabToSelf entry point is shown. Removed on
+             06/2020"/>
   <int value="1" label="SendTabToSelf target device is clicked."/>
   <int value="2" label="SendTabToSelf device list is shown.">
     Removed on 06/2020 and brought back 09/2022.
@@ -91450,12 +91392,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="Opened"/>
   <int value="1" label="Dismissed"/>
   <int value="2" label="Shown"/>
-  <int value="3" label="DismissedRemotely">
-    <obsolete>
-      Obsolete because it is useless after selfshare feature changed from
-      broadcasting to sending to one target device.
-    </obsolete>
-  </int>
+  <int value="3"
+      label="(Obsolete) DismissedRemotely. Obsolete because it is useless
+             after selfshare feature changed from broadcasting to sending to
+             one target device."/>
 </enum>
 
 <enum name="SendTabToSelfNotificationStatus">
@@ -91463,11 +91403,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Dismissed"/>
   <int value="2" label="Opened"/>
   <int value="3" label="TimedOut"/>
-  <int value="4" label="(obsolete) Sent">
-    <obsolete>
-      Removed 09/2022.
-    </obsolete>
-  </int>
+  <int value="4" label="(Obsolete) Sent. Removed on 09/2022."/>
   <int value="5" label="DismissReasonUnknown"/>
 </enum>
 
@@ -91760,11 +91696,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3"
       label="The worker was stopping. Once stopped, the browser started it up"/>
   <int value="4" label="The worker started up in a new process."/>
-  <int value="5" label="The worker started up in an existing process.">
-    <obsolete>
-      Deprecated as of 07/2017. Replaced by 7 and 8.
-    </obsolete>
-  </int>
+  <int value="5"
+      label="(Obsolete) The worker started up in an existing process.
+             Deprecated as of 07/2017. Replaced by 7 and 8."/>
   <int value="6" label="The worker started up during browser startup."/>
   <int value="7" label="The worker started up in an existing unready process."/>
   <int value="8" label="The worker started up in an existing ready process."/>
@@ -92016,11 +91950,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Recovered">
     Failed to open the existing db, deleted it, and created a new empty db.
   </int>
-  <int value="2" label="Reopen: Total Fail">
+  <int value="2"
+      label="(Obsolete) Reopen: Total Fail. Deprecated 2016/11. Replaced by
+             other 'Reopen' errors.">
     Failed to open the database and also failed to delete and start over.
-    <obsolete>
-      Deprecated 2016/11. Replaced by other &quot;Reopen:&quot; errors.
-    </obsolete>
   </int>
   <int value="3" label="Reopen: not found">
     Reopen attempt failed with (not found) after successful database delete.
@@ -93774,12 +93707,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Google service pattern changed">
     The valid username pattern for signing in to the Google service changed.
   </int>
-  <int value="2" label="(Obsolete) Signin preference changed during signin">
+  <int value="2"
+      label="(Obsolete) Signin preference changed during signin. Deprecated as
+             of 12/2022.">
     The preference or policy controlling if signin is valid changed during the
     signin process.
-    <obsolete>
-      Deprecated as of 12/2022.
-    </obsolete>
   </int>
   <int value="3" label="User clicked signout from settings">
     User clicked to signout from the settings screen.
@@ -93791,21 +93723,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Server forced">
     The sync server caused the profile to be signed out.
   </int>
-  <int value="6" label="(Obsolete) Credentials transfered">
+  <int value="6"
+      label="(Obsolete) Credentials transferred. Deprecated as of 12/2022.">
     The credentials are being transfered to a new profile, so the old one is
     signed out.
-    <obsolete>
-      Deprecated as of 12/2022.
-    </obsolete>
   </int>
   <int value="7" label="Authentication failed with force signin">
     Signed out because credentials are invalid and force-sign-in is enabled.
   </int>
-  <int value="8" label="(Obsolete) User turned off sync from DICE UI.">
-    <obsolete>
-      Deprecated as of 08/2022.
-    </obsolete>
-  </int>
+  <int value="8"
+      label="(Obsolete) User turned off sync from DICE UI. Deprecated as of
+             08/2022."/>
   <int value="9" label="Account removed from device">
     Signout forced because account was removed from device. With M98, on iOS,
     this value is split with &quot;Signed out forced by iOS device
@@ -93822,19 +93750,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     User cleared account cookies when there's no sync consent, which has caused
     sign out.
   </int>
-  <int value="13" label="(Obsolete) MobileIdentityConsistency rollback">
+  <int value="13"
+      label="(Obsolete) MobileIdentityConsistency rollback. Deprecated as of
+             12/2022.">
     Signout was forced because MobileIdentityConsistency feature is disabled
     when there's a primary account without sync consent.
-    <obsolete>
-      Deprecated as of 12/2022.
-    </obsolete>
   </int>
-  <int value="14" label="(Obsolete) Force Account ID migration">
+  <int value="14"
+      label="(Obsolete) Force Account ID migration. Deprecated as of 12/2022.">
     Signout was forced because account ID migration from email to Gaia ID was
     forced.
-    <obsolete>
-      Deprecated as of 12/2022.
-    </obsolete>
   </int>
   <int value="15" label="Signed out forced by iOS device restore">
     Sign-out forced because the account was removed from the device after a
@@ -98130,41 +98055,21 @@ would be helpful to identify which type is being sent.
 
 <enum name="SyncErrorType">
   <summary>Possible errors that can be returned by the sync server.</summary>
-  <int value="1" label="DEPRECATED_ACCESS_DENIED">
-    <obsolete>
-      Obsolete value.
-    </obsolete>
-  </int>
+  <int value="1" label="(Obsolete) DEPRECATED_ACCESS_DENIED"/>
   <int value="2" label="NOT_MY_BIRTHDAY"/>
   <int value="3" label="THROTTLED">
     You might want to look at Sync.ThrottledSomeModelTypes to correlate this
     with throttling of a specific data type, or Sync.ThrottledAllModelTypes for
     throttling of the whole client.
   </int>
-  <int value="4" label="DEPRECATED_AUTH_EXPIRED">
-    <obsolete>
-      Obsolete value.
-    </obsolete>
-  </int>
-  <int value="5" label="DEPRECATED_USER_NOT_ACTIVATED">
-    <obsolete>
-      Obsolete value.
-    </obsolete>
-  </int>
-  <int value="6" label="DEPRECATED_AUTH_INVALID">
-    <obsolete>
-      Obsolete value.
-    </obsolete>
-  </int>
+  <int value="4" label="(Obsolete) DEPRECATED_AUTH_EXPIRED"/>
+  <int value="5" label="(Obsolete) DEPRECATED_USER_NOT_ACTIVATED"/>
+  <int value="6" label="(Obsolete) DEPRECATED_AUTH_INVALID"/>
   <int value="7" label="CLEAR_PENDING"/>
   <int value="8" label="TRANSIENT_ERROR"/>
   <int value="9" label="MIGRATION_DONE"/>
   <int value="10" label="DISABLED_BY_ADMIN"/>
-  <int value="11" label="DEPRECATED_USER_ROLLBACK">
-    <obsolete>
-      Obsolete value.
-    </obsolete>
-  </int>
+  <int value="11" label="(Obsolete) DEPRECATED_USER_ROLLBACK"/>
   <int value="12" label="PARTIAL_FAILURE">
     You might want to look at Sync.BackedOffModelType to see the per-type effect
     of this.
@@ -98267,21 +98172,15 @@ would be helpful to identify which type is being sent.
       label="Error in MergeSyncData() or ApplySyncChanges(): writing metadata"/>
   <int value="2" label="OnDatabaseError() called"/>
   <int value="3" label="Error in LoadMetadata()"/>
-  <int value="4" label="(obsolete) Error in OnURLVisited(): reading visit data">
-    <obsolete>
-      Was never recorded.
-    </obsolete>
-  </int>
-  <int value="5" label="(obsolete) Error in OnURLsDeleted(): reading metadata">
-    <obsolete>
-      Was never recorded.
-    </obsolete>
-  </int>
-  <int value="6" label="(obsolete) Error in OnVisitUpdated(): reading URL data">
-    <obsolete>
-      Was never recorded.
-    </obsolete>
-  </int>
+  <int value="4"
+      label="(Obsolete) Error in OnURLVisited(): reading visit data. Was
+             never recorded."/>
+  <int value="5"
+      label="(Obsolete) Error in OnURLsDeleted(): reading metadata. Was never
+             recorded."/>
+  <int value="6"
+      label="(Obsolete) Error in OnVisitUpdated(): reading URL data. Was
+             never recorded."/>
   <int value="7" label="Error in GetAllData(): reading metadata"/>
 </enum>
 
@@ -98343,11 +98242,8 @@ would be helpful to identify which type is being sent.
 
 <enum name="SyncModelTypes">
   <int value="0" label="Unspecified"/>
-  <int value="1" label="Top Level Folder">
-    <obsolete>
-      Removed on 03/2021 (M91).
-    </obsolete>
-  </int>
+  <int value="1"
+      label="(Obsolete) Top Level Folder. Removed on 03/2021 (M91)."/>
   <int value="2" label="Bookmarks"/>
   <int value="3" label="Preferences"/>
   <int value="4" label="Passwords"/>
@@ -98361,80 +98257,33 @@ would be helpful to identify which type is being sent.
   <int value="12" label="Apps"/>
   <int value="13" label="App Settings"/>
   <int value="14" label="Extension Settings"/>
-  <int value="15" label="App Notifications">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
+  <int value="15" label="(Obsolete) App Notifications"/>
   <int value="16" label="History Delete Directives"/>
   <int value="17" label="Nigori"/>
   <int value="18" label="Device Information"/>
-  <int value="19" label="Experiments">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
-  <int value="20" label="Synced Notifications">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
+  <int value="19" label="(Obsolete) Experiments"/>
+  <int value="20" label="(Obsolete) Synced Notifications"/>
   <int value="21" label="Priority Preferences"/>
   <int value="22" label="Dictionary"/>
-  <int value="23" label="Favicon Images">
-    <obsolete>
-      Removed on 01/2021 (M90).
-    </obsolete>
-  </int>
-  <int value="24" label="Favicon Tracking">
-    <obsolete>
-      Removed on 01/2021 (M90).
-    </obsolete>
-  </int>
+  <int value="23" label="(Obsolete) Favicon Images. Removed on 01/2021 (M90)."/>
+  <int value="24"
+      label="(Obsolete) Favicon Tracking. Removed on 01/2021 (M90)."/>
   <int value="25" label="Proxy Tabs"/>
   <int value="26" label="Managed User Settings"/>
-  <int value="27" label="Managed Users">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
-  <int value="28" label="Articles">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
+  <int value="27" label="(Obsolete) Managed Users"/>
+  <int value="28" label="(Obsolete) Articles"/>
   <int value="29" label="App List"/>
-  <int value="30" label="Managed User Shared Settings">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
-  <int value="31" label="Synced Notification App Info">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
-  <int value="32" label="Wifi Credentials">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
-  <int value="33" label="Managed User Allowlists">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
+  <int value="30" label="(Obsolete) Managed User Shared Settings"/>
+  <int value="31" label="(Obsolete) Synced Notification App Info"/>
+  <int value="32" label="(Obsolete) Wifi Credentials"/>
+  <int value="33" label="(Obsolete) Managed User Allowlists"/>
   <int value="34" label="Autofill Wallet"/>
   <int value="35" label="Autofill Wallet Metadata"/>
   <int value="36" label="Arc Package"/>
   <int value="37" label="Printers"/>
   <int value="38" label="Reading List"/>
   <int value="39" label="User Events"/>
-  <int value="40" label="Mountain Shares">
-    <obsolete>
-      Obsolete data type.
-    </obsolete>
-  </int>
+  <int value="40" label="(Obsolete) Mountain Shares"/>
   <int value="41" label="User Consents"/>
   <int value="42" label="Send Tab"/>
   <int value="43" label="Security Events"/>
@@ -98571,11 +98420,8 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Disabled account"/>
   <int value="3" label="Requested pref change"/>
   <int value="4" label="Stop and clear"/>
-  <int value="5" label="(deprecated) Set sync allowed by platform">
-    <obsolete>
-      Removed 01/2022.
-    </obsolete>
-  </int>
+  <int value="5"
+      label="(Obsolete) Set sync allowed by platform. Removed 01/2022."/>
   <int value="6" label="Credentials updated"/>
   <int value="7" label="Reset local Sync data"/>
 </enum>
@@ -98638,27 +98484,19 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SyncStopSource">
-  <int value="0" label="(deprecated) Profile destruction">
-    <obsolete>
-      Supposedly meant that Sync was stopped due to the profile being destroyed.
-      However, it was recorded during most profile destructions, even if Sync
-      was never enabled in the first place. We stopped recording this in
-      2018-06.
-    </obsolete>
-  </int>
+  <int value="0"
+      label="(Obsolete) Profile destruction. Supposedly meant that Sync was
+             stopped due to the profile being destroyed. However, it was
+             recorded during most profile destructions, even if Sync was
+             never enabled in the first place. We stopped recording this in
+             2018-06."/>
   <int value="1" label="Sign out"/>
   <int value="2" label="Birthday error"/>
   <int value="3" label="Chrome sync settings"/>
-  <int value="4" label="(deprecated) Android Chrome sync setting">
-    <obsolete>
-      Removed on 01/2022.
-    </obsolete>
-  </int>
-  <int value="5" label="(deprecated) Android master sync setting">
-    <obsolete>
-      Removed on 01/2022.
-    </obsolete>
-  </int>
+  <int value="4"
+      label="(Obsolete) Android Chrome sync setting. Removed on 01/2022."/>
+  <int value="5"
+      label="(Obsolete) Android master sync setting. Removed on 01/2022."/>
 </enum>
 
 <enum name="SyncTypedUrlDatabaseError">
@@ -102434,11 +102272,7 @@ Full version information for the fingerprint enum values:
   <int value="8" label="Passwords"/>
   <int value="9" label="Autofill"/>
   <int value="10" label="Payments"/>
-  <int value="11" label="(deprecated) Sync (Mobile only)">
-    <obsolete>
-      Removed 01/2022.
-    </obsolete>
-  </int>
+  <int value="11" label="(Obsolete) Sync (Mobile only). Removed 01/2022."/>
 </enum>
 
 <enum name="UnifiedPasswordManagerActiveStatus">

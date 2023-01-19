@@ -49,10 +49,7 @@ _INT_TYPE = models.ObjectNodeType(
     required_attributes=['value'],
     text_attribute=True,
     single_line=True,
-    children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
-        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
-    ])
+)
 
 _ENUM_TYPE = models.ObjectNodeType(
     'enum',
