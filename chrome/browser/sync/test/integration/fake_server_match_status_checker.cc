@@ -25,6 +25,10 @@ void FakeServerMatchStatusChecker::OnCommit(
   CheckExitCondition();
 }
 
+void FakeServerMatchStatusChecker::OnSuccessfulGetUpdates() {
+  CheckExitCondition();
+}
+
 fake_server::FakeServer* FakeServerMatchStatusChecker::fake_server() const {
   return fake_server_;
 }

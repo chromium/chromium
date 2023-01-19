@@ -243,6 +243,10 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
                     "invalidations overflow.";
         model_type_state_.clear_invalidations();
       }
+      // TODO(crbug/1365292): Persisted invaldiations are loaded in
+      // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync
+      // cycle has to be triggered right after we loaded persisted
+      // invalidations.
       for (int i = 0; i < model_type_state_.invalidations_size(); ++i) {
         pending_invalidations_.emplace_back(
             std::make_unique<SyncInvalidationAdapter>(
