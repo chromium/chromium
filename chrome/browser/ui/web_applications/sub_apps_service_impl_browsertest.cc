@@ -46,9 +46,9 @@ namespace web_app {
 
 namespace {
 
+// `kDomain` must be just a hostname, not a full URL.
 constexpr const char kDomain[] = "www.foo.bar";
-constexpr const char kSubDomain[] = "baz.foo.bar";
-constexpr const char kDifferentDomain[] = "www.different-domain.com";
+constexpr const char kDifferentDomain[] = "https://www.different-domain.com/";
 constexpr const char kParentAppPath[] = "/web_apps/basic.html";
 constexpr const char kSubAppPath[] = "/web_apps/standalone/basic.html";
 constexpr const char kSubAppName[] = "Site A";
@@ -59,6 +59,7 @@ constexpr const char kSubAppName2[] = "Site B";
 constexpr const char kSubAppPath3[] = "/web_apps/site_d/basic.html";
 constexpr const char kSubAppName3[] = "Site D";
 constexpr const char kSubAppPathInvalid[] = "/invalid/sub/app/path.html";
+constexpr const char kSubAppIdInvalid[] = "/invalid-sub-app-id";
 
 }  // namespace
 
@@ -79,18 +80,27 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
     return web_contents->GetPrimaryMainFrame();
   }
 
-  GURL GetURL(const std::string& url) {
-    return https_server()->GetURL(kDomain, url);
+  GURL GetURLFromPath(const std::string& path) {
+    return https_server()->GetURL(kDomain, path);
+  }
+
+  AppId GenerateAppIdFromPath(const std::string& path) {
+    return GenerateAppId(/*manifest_id=*/absl::nullopt, GetURLFromPath(path));
+  }
+
+  AppId InstallPWAFromPath(const std::string& path) {
+    return InstallPWA(GetURLFromPath(path));
   }
 
   void InstallParentApp() {
-    parent_app_id_ = InstallPWA(GetURL(kParentAppPath));
+    parent_app_id_ = InstallPWAFromPath(kParentAppPath);
   }
 
-  void NavigateToParentApp() {
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GetURL(kParentAppPath)));
+  void NavigateToPath(const std::string& path) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURLFromPath(path)));
   }
+
+  void NavigateToParentApp() { NavigateToPath(kParentAppPath); }
 
   void UninstallParentApp() { UninstallWebApp(parent_app_id_); }
 
@@ -118,18 +128,39 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   }
 
   // Calls the Add() method on the mojo interface which is async, and waits for
-  // it to finish.
-  SubAppsServiceImpl::AddResultsMojo CallAdd(
-      std::vector<std::pair<std::string, GURL>> subapps) {
+  // it to finish. Argument should contain paths, not full URLs.
+  SubAppsServiceImpl::AddResults CallAdd(
+      std::vector<std::pair<std::string, std::string>> subapps) {
+    // Convert params to mojo before making the call.
     std::vector<SubAppsServiceAddInfoPtr> sub_apps_mojo;
-    for (const auto& [unhashed_app_id, install_url] : subapps) {
+    for (const auto& [unhashed_app_id_path, install_url_path] : subapps) {
       sub_apps_mojo.emplace_back(
-          SubAppsServiceAddInfo::New(unhashed_app_id, install_url));
+          SubAppsServiceAddInfo::New(unhashed_app_id_path, install_url_path));
     }
 
     base::test::TestFuture<SubAppsServiceImpl::AddResultsMojo> future;
     remote_->Add(std::move(sub_apps_mojo), future.GetCallback());
-    return future.Take();
+
+    // Unpack the mojo results before returning them.
+    SubAppsServiceImpl::AddResults add_results;
+    for (const auto& result : future.Take()) {
+      add_results.emplace_back(result->unhashed_app_id_path,
+                               result->result_code);
+    }
+    return add_results;
+  }
+
+  void ExpectCallAdd(
+      base::flat_set<std::pair<std::string, SubAppsServiceAddResultCode>>
+          expected,
+      std::vector<std::pair<std::string, std::string>> subapps) {
+    SubAppsServiceImpl::AddResults actual = CallAdd(subapps);
+    // We need to use a set for comparison because the ordering changes between
+    // invocations (due to embedded test server using a random port each time).
+    base::flat_set<
+        std::pair<UnhashedAppId, blink::mojom::SubAppsServiceAddResultCode>>
+        actual_set{actual};
+    EXPECT_EQ(expected, actual_set);
   }
 
   // Calls the List() method on the mojo interface which is async, and waits for
@@ -141,27 +172,11 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   }
 
   // Calls the Remove() method on the mojo interface which is async, and waits
-  // for it to finish.
-  SubAppsServiceResult CallRemove(const std::string& unhashed_app_id) {
+  // for it to finish. Argument should be a path, not a full URL.
+  SubAppsServiceResult CallRemove(const std::string& unhashed_app_id_path) {
     base::test::TestFuture<SubAppsServiceResult> future;
-    remote_->Remove(unhashed_app_id, future.GetCallback());
+    remote_->Remove(unhashed_app_id_path, future.GetCallback());
     return future.Get();
-  }
-
-  SubAppsServiceImpl::AddResults AddResultsFromMojo(
-      SubAppsServiceImpl::AddResultsMojo add_results_mojo) {
-    SubAppsServiceImpl::AddResults add_results;
-    for (const auto& result : add_results_mojo) {
-      add_results.emplace_back(result->unhashed_app_id, result->result_code);
-    }
-    return add_results;
-  }
-
-  SubAppsServiceImpl::AddResultsMojo AddResultMojo(
-      UnhashedAppId unhashed_app_id,
-      SubAppsServiceAddResultCode result_code) {
-    return SubAppsServiceImpl::AddResultsToMojo(
-        {{unhashed_app_id, result_code}});
   }
 
  protected:
@@ -170,102 +185,29 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   mojo::Remote<SubAppsService> remote_;
 };
 
+/********** End-to-end test (one is enough!). **********/
+
 // Simple end-to-end test for add().
+// NOTE: Only one E2E test is enough, test everything else through the Mojo
+// interface (as all the other tests do).
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, EndToEndAdd) {
   NavigateToParentApp();
   InstallParentApp();
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
-  GURL kSubAppUrl1 = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id_1 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl1);
-  GURL kSubAppUrl2 = GetURL(kSubAppPath2);
-  UnhashedAppId unhashed_sub_app_id_2 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl2);
-
   std::string command = base::StringPrintf(
       R"(
         navigator.subApps.add({
             "%s": {"install_url": "%s"},
             "%s": {"install_url": "%s"},
         }))",
-      unhashed_sub_app_id_1.c_str(), kSubAppUrl1.spec().c_str(),
-      unhashed_sub_app_id_2.c_str(), kSubAppUrl2.spec().c_str());
+      kSubAppPath, kSubAppPath, kSubAppPath2, kSubAppPath2);
 
   EXPECT_TRUE(ExecJs(render_frame_host(), command));
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
-// End-to-end test for add() with one succeeding and one failing install.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, EndToEndAddInvalidPath) {
-  NavigateToParentApp();
-  InstallParentApp();
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-
-  const GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
-  // Invalid app that should fail because the URL cannot be loaded.
-  const GURL kInvalidSubAppUrl = GetURL(kSubAppPathInvalid);
-  UnhashedAppId unhashed_invalid_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kInvalidSubAppUrl);
-
-  std::string command = base::StringPrintf(
-      R"(
-        navigator.subApps.add({
-            "%s": {"install_url": "%s"},
-            "%s": {"install_url": "%s"},
-        }))",
-      unhashed_sub_app_id.c_str(), kSubAppUrl.spec().c_str(),
-      unhashed_invalid_sub_app_id.c_str(), kInvalidSubAppUrl.spec().c_str());
-
-  // Add call promise should be rejected because an install failed.
-  EXPECT_FALSE(ExecJs(render_frame_host(), command));
-  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
-}
-
-// End-to-end. Test that adding a sub-app from a different origin or from a
-// different domain fails.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       EndToEndAddFailDifferentOrigin) {
-  NavigateToParentApp();
-  InstallParentApp();
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-
-  {
-    GURL different_origin = https_server()->GetURL(kSubDomain, kSubAppPath);
-    UnhashedAppId unhashed_sub_app_id =
-        GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, different_origin);
-
-    std::string command = base::StringPrintf(
-        R"(
-        navigator.subApps.add({
-            "%s": {"install_url": "%s"},
-        }))",
-        unhashed_sub_app_id.c_str(), different_origin.spec().c_str());
-
-    // EXPECT_FALSE because this returns an error.
-    EXPECT_FALSE(ExecJs(render_frame_host(), command));
-    EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-  }
-
-  {
-    GURL different_domain =
-        https_server()->GetURL(kDifferentDomain, kSubAppPath2);
-    UnhashedAppId unhashed_sub_app_id =
-        GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, different_domain);
-
-    std::string command = base::StringPrintf(
-        R"(
-        navigator.subApps.add({
-            "%s": {"install_url": "%s"},
-        }))",
-        unhashed_sub_app_id.c_str(), different_domain.spec().c_str());
-
-    EXPECT_FALSE(ExecJs(render_frame_host(), command));
-    EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-  }
-}
+/********** Tests for the Add API call. **********/
 
 // Add a single sub-app and verify all sorts of things.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
@@ -278,16 +220,12 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
   InstallParentApp();
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
-  AppId sub_app_id = GenerateAppIdFromUnhashed(unhashed_sub_app_id);
-
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath}});
 
   // Verify a bunch of things for the newly installed sub-app.
+  AppId sub_app_id = GenerateAppIdFromPath(kSubAppPath);
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id));
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(sub_app_id));
   EXPECT_EQ(
@@ -300,11 +238,118 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
             GetAllSubAppIds(parent_app_id_));
   EXPECT_TRUE(sub_app->IsSubAppInstalledApp());
   EXPECT_TRUE(sub_app->CanUserUninstallWebApp());
-  EXPECT_EQ(sub_app->start_url(), kSubAppUrl);
+  EXPECT_EQ(GetURLFromPath(kSubAppPath), sub_app->start_url());
   if (provider().ui_manager().CanAddAppToQuickLaunchBar()) {
     EXPECT_FALSE(provider().ui_manager().IsAppInQuickLaunchBar(sub_app_id));
   }
 }
+
+// Verify that Add works if PWA is launched as standalone window.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddStandaloneWindow) {
+  NavigateToParentApp();
+  InstallParentApp();
+  content::WebContents* web_contents = OpenApplication(parent_app_id_);
+  BindRemote(web_contents);
+
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath}});
+}
+
+// Add call should fail if the parent app isn't installed.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       AddFailParentAppNotInstalled) {
+  NavigateToParentApp();
+  BindRemote();
+
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kParentAppUninstalled}},
+      {{kSubAppPath, kSubAppPath}});
+}
+
+// Add call should fail if the call wasn't made from the context of parent app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       AddFailNotInParentAppContext) {
+  InstallParentApp();
+  BindRemote();
+
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kParentAppUninstalled}},
+      {{kSubAppPath, kSubAppPath}});
+}
+
+// Verify that Add call rejects a sub-app with the wrong specified app_id.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailIncorrectId) {
+  NavigateToParentApp();
+  InstallParentApp();
+  BindRemote();
+
+  ExpectCallAdd({{kSubAppIdInvalid,
+                  SubAppsServiceAddResultCode::kExpectedAppIdCheckFailed}},
+                {{kSubAppIdInvalid, kSubAppPath}});
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
+// Verify that Add fails for an invalid (non-existing) sub-app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailNonExistent) {
+  NavigateToParentApp();
+  InstallParentApp();
+  BindRemote();
+
+  ExpectCallAdd(
+      {{kSubAppPathInvalid, SubAppsServiceAddResultCode::kInstallUrlInvalid}},
+      {{kSubAppPathInvalid, kSubAppPathInvalid}});
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
+// Add call closes the mojo connection if the argument is wrong origin to the
+// calling app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailWrongOrigin) {
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  base::RunLoop run_loop;
+  remote_.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  // This call should never succeed and the disconnect handler should be called
+  // instead.
+  std::vector<SubAppsServiceAddInfoPtr> sub_apps_mojo;
+  sub_apps_mojo.emplace_back(
+      SubAppsServiceAddInfo::New(kDifferentDomain, kDifferentDomain));
+  remote_->Add(std::move(sub_apps_mojo),
+               base::BindLambdaForTesting(
+                   [](SubAppsServiceImpl::AddResultsMojo results) {
+                     ADD_FAILURE() << "Callback unexpectedly invoked.";
+                   }));
+  run_loop.Run();
+}
+
+// Make sure the Add API can't force manifest update. Add sub-app, verify
+// display mode, then add the same one again with different display mode in the
+// manifest, and verify that it didn't change.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
+  NavigateToParentApp();
+  InstallParentApp();
+  BindRemote();
+
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath}});
+  AppId sub_app_id = GenerateAppIdFromPath(kSubAppPath);
+  EXPECT_EQ(
+      DisplayMode::kStandalone,
+      provider().registrar_unsafe().GetAppEffectiveDisplayMode(sub_app_id));
+
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessAlreadyInstalled}},
+      {{kSubAppPath, kSubAppPathMinimalUi}});
+  EXPECT_EQ(
+      DisplayMode::kStandalone,
+      provider().registrar_unsafe().GetAppEffectiveDisplayMode(sub_app_id));
+}
+
+/******** Tests for the Add API call - adding multiple/zero sub-apps. ********/
 
 // Add one sub-app, verify count is one. Add it again, still same count. Add a
 // second sub-app, verify count is two.
@@ -316,262 +361,69 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddTwo) {
 
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 
-  GURL kSubAppUrl1 = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id_1 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl1);
-
-  // Add first sub app.
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_1,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_1, kSubAppUrl1}}));
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath}});
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 
   // Try to add first sub app again.
-  EXPECT_EQ(
-      AddResultMojo(unhashed_sub_app_id_1,
-                    SubAppsServiceAddResultCode::kSuccessAlreadyInstalled),
-      CallAdd({{unhashed_sub_app_id_1, kSubAppUrl1}}));
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessAlreadyInstalled}},
+      {{kSubAppPath, kSubAppPath}});
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 
-  GURL kSubAppUrl2 = GetURL(kSubAppPath2);
-  UnhashedAppId unhashed_sub_app_id_2 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl2);
-
   // Add second sub app.
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_2,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_2, kSubAppUrl2}}));
+  ExpectCallAdd(
+      {{kSubAppPath2, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath2, kSubAppPath2}});
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
-// Verify that a list of sub-apps in Add are all installed correctly.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddList) {
+// Verify that Adding multiple sub-apps works correctly.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddMultiple) {
   NavigateToParentApp();
   InstallParentApp();
   BindRemote();
 
-  GURL kSubAppUrl1 = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id_1 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl1);
-  GURL kSubAppUrl2 = GetURL(kSubAppPath2);
-  UnhashedAppId unhashed_sub_app_id_2 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl2);
-  GURL kSubAppUrl3 = GetURL(kSubAppPath3);
-  UnhashedAppId unhashed_sub_app_id_3 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl3);
-
-  std::vector<std::pair<std::string, GURL>> subapps = {
-      {unhashed_sub_app_id_1, kSubAppUrl1},
-      {unhashed_sub_app_id_2, kSubAppUrl2},
-      {unhashed_sub_app_id_3, kSubAppUrl3}};
-
-  SubAppsServiceImpl::AddResults actual_results =
-      AddResultsFromMojo(CallAdd(std::move(subapps)));
-
-  EXPECT_THAT(actual_results,
-              testing::UnorderedElementsAre(
-                  std::pair{unhashed_sub_app_id_1,
-                            SubAppsServiceAddResultCode::kSuccessNewInstall},
-                  std::pair{unhashed_sub_app_id_2,
-                            SubAppsServiceAddResultCode::kSuccessNewInstall},
-                  std::pair{unhashed_sub_app_id_3,
-                            SubAppsServiceAddResultCode::kSuccessNewInstall}));
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall},
+       {kSubAppPath2, SubAppsServiceAddResultCode::kSuccessNewInstall},
+       {kSubAppPath3, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath},
+       {kSubAppPath2, kSubAppPath2},
+       {kSubAppPath3, kSubAppPath3}});
 
   EXPECT_EQ(3ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
-// Verify that Add works if PWA is launched as standalone window.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddStandaloneWindow) {
-  NavigateToParentApp();
-  InstallParentApp();
-  content::WebContents* web_contents = OpenApplication(parent_app_id_);
-  BindRemote(web_contents);
-
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
-
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
-}
-
-// Verify that a list of both correct and incorrect subapps returns the correct
-// result.
+// Verify that Adding a mix of valid and invalid sub-apps works.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       AddListWithInvalidSubApps) {
+                       AddMultipleWithInvalidSubApps) {
   NavigateToParentApp();
   InstallParentApp();
   BindRemote();
 
-  GURL kSubAppUrl1 = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id_1 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl1);
-  GURL kSubAppUrl2 = GetURL(kSubAppPathInvalid);
-  UnhashedAppId unhashed_sub_app_id_2 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl2);
-  GURL kSubAppUrl3 = GetURL(kSubAppPath3);
-  UnhashedAppId unhashed_sub_app_id_3 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl3);
-
-  std::vector<std::pair<std::string, GURL>> subapps = {
-      {unhashed_sub_app_id_1, kSubAppUrl1},
-      {unhashed_sub_app_id_2, kSubAppUrl2},
-      {unhashed_sub_app_id_3, kSubAppUrl3}};
-
-  SubAppsServiceImpl::AddResults actual_results =
-      AddResultsFromMojo(CallAdd(std::move(subapps)));
-
-  EXPECT_THAT(actual_results,
-              testing::UnorderedElementsAre(
-                  std::pair{unhashed_sub_app_id_1,
-                            SubAppsServiceAddResultCode::kSuccessNewInstall},
-                  std::pair{unhashed_sub_app_id_2,
-                            SubAppsServiceAddResultCode::kInstallUrlInvalid},
-                  std::pair{unhashed_sub_app_id_3,
-                            SubAppsServiceAddResultCode::kSuccessNewInstall}));
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall},
+       {kSubAppPathInvalid, SubAppsServiceAddResultCode::kInstallUrlInvalid},
+       {kSubAppPath3, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath},
+       {kSubAppPathInvalid, kSubAppPathInvalid},
+       {kSubAppPath3, kSubAppPath3}});
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
-// Add call should fail if the parent app isn't installed.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       AddFailParentAppNotInstalled) {
-  NavigateToParentApp();
-  BindRemote();
-
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
-
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id,
-                          SubAppsServiceAddResultCode::kParentAppUninstalled),
-            CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
-}
-
-// TODO(isandrk): This test should probably live in SubAppInstallCommandTest
-// (and this should even be impossible to happen with the locking mechanism we
-// have on the command manager).
-// Add call should fail if the parent app is uninstalled between the add call
-// and the start of the command.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       AddFailParentAppWasUninstalled) {
-  // Parent app installed.
+// Verify that Add works correctly for 0 sub-apps to be installed.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddZero) {
   NavigateToParentApp();
   InstallParentApp();
   BindRemote();
 
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
-  std::vector<std::pair<UnhashedAppId, GURL>> subapps = {
-      {unhashed_sub_app_id, kSubAppUrl}};
-
-  std::vector<SubAppsServiceAddInfoPtr> sub_apps_mojo;
-  for (const auto& [unhashed_app_id, install_url] : subapps) {
-    sub_apps_mojo.emplace_back(
-        SubAppsServiceAddInfo::New(unhashed_app_id, install_url));
-  }
-  base::test::TestFuture<SubAppsServiceImpl::AddResultsMojo> future;
-
-  // Add call made (sub app install command not started yet).
-  remote_->Add(std::move(sub_apps_mojo), future.GetCallback());
-
-  // Parent app uninstalled.
-  UninstallParentApp();
-
-  // Run sub app install command (does a RunLoop::Run() under the hood).
-  SubAppsServiceImpl::AddResultsMojo actual = future.Take();
-
-  SubAppsServiceImpl::AddResultsMojo expected = AddResultMojo(
-      unhashed_sub_app_id, SubAppsServiceAddResultCode::kParentAppUninstalled);
-  EXPECT_EQ(expected, actual);
+  ExpectCallAdd({}, {});
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
-// Add call should fail if the call wasn't made from the context of parent app.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       AddFailNotInParentAppContext) {
-  InstallParentApp();
-  BindRemote();
-
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
-
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id,
-                          SubAppsServiceAddResultCode::kParentAppUninstalled),
-            CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
-}
-
-// Verify that Add fails for an empty list.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddEmptyList) {
-  NavigateToParentApp();
-  InstallParentApp();
-  BindRemote();
-
-  EXPECT_EQ(SubAppsServiceImpl::AddResultsMojo(), CallAdd({}));
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-}
-
-// Verify that a sub-app with mismatched install-path and id is not installed
-// and correct error is returned in Add.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddIncorrectId) {
-  NavigateToParentApp();
-  InstallParentApp();
-  BindRemote();
-
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id = "https://www.invalid.com/";
-
-  EXPECT_EQ(
-      AddResultMojo(unhashed_sub_app_id,
-                    SubAppsServiceAddResultCode::kExpectedAppIdCheckFailed),
-      CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-}
-
-// Verify that a sub-app with an unhashed app id that is not a valid URL fails.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDifferentOrigin) {
-  NavigateToParentApp();
-  InstallParentApp();
-  BindRemote();
-
-  GURL different_origin = https_server()->GetURL(kSubDomain, kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, different_origin);
-
-  CallAdd({{unhashed_sub_app_id, different_origin}});
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-}
-
-// Verify that a sub-app with an unhashed app id that is not a valid URL fails.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddInvalidId) {
-  NavigateToParentApp();
-  InstallParentApp();
-  BindRemote();
-
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id = "invalid";
-
-  CallAdd({{unhashed_sub_app_id, kSubAppUrl}});
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-}
-
-// Verify that Add fails for an invalid (non-existing) sub-app.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddNonExistent) {
-  NavigateToParentApp();
-  InstallParentApp();
-  BindRemote();
-
-  GURL kSubAppUrl = GetURL(kSubAppPathInvalid);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
-
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id,
-                          SubAppsServiceAddResultCode::kInstallUrlInvalid),
-            CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
-  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-}
+/********** Tests for uninstallation behaviour. **********/
 
 // Verify that uninstalling an app with sub-apps causes sub-apps to be
 // uninstalled as well.
@@ -581,177 +433,124 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   InstallParentApp();
   BindRemote();
 
-  // Verify that subapps are installed.
-  UnhashedAppId unhashed_sub_app_id_1 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
-  UnhashedAppId unhashed_sub_app_id_2 = GenerateAppIdUnhashed(
-      /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath2));
-  UnhashedAppId unhashed_sub_app_id_3 = GenerateAppIdUnhashed(
-      /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath3));
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall},
+       {kSubAppPath2, SubAppsServiceAddResultCode::kSuccessNewInstall},
+       {kSubAppPath3, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath},
+       {kSubAppPath2, kSubAppPath2},
+       {kSubAppPath3, kSubAppPath3}});
 
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_1,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_1, GetURL(kSubAppPath)}}));
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_2,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_2, GetURL(kSubAppPath2)}}));
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_3,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_3, GetURL(kSubAppPath3)}}));
+  // Verify that sub-apps are installed.
+  AppId sub_app_id_1 = GenerateAppIdFromPath(kSubAppPath);
+  AppId sub_app_id_2 = GenerateAppIdFromPath(kSubAppPath2);
+  AppId sub_app_id_3 = GenerateAppIdFromPath(kSubAppPath3);
 
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_3)));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id_1));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id_2));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id_3));
 
   UninstallParentApp();
-  // Verify that both parent app and sub apps are no longer installed.
+
+  // Verify that both parent app and sub-apps are no longer installed.
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(parent_app_id_));
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_3)));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(sub_app_id_1));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(sub_app_id_2));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(sub_app_id_3));
 }
 
-// Verify that uninstalling an app that has multiple sources just
-// removes a source and does not end up removing the sub_apps.
+// Verify that uninstalling one source of the parent app which has multiple
+// sources of installation doesn't actually uninstall it (or the sub-apps it has
+// added).
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       RemovingSourceFromParentAppDoesNotRemoveSubApps) {
+                       UninstallingParentAppSourceDoesntUninstallSubApps) {
   NavigateToParentApp();
   InstallParentApp();
   BindRemote();
 
-  // Add another source to mock installation from 2 sources.
+  // Add another source to the parent app.
   {
     ScopedRegistryUpdate update(&provider().sync_bridge_unsafe());
     WebApp* web_app = update->UpdateApp(parent_app_id_);
-    if (web_app)
-      web_app->AddSource(WebAppManagement::kDefault);
+    ASSERT_TRUE(web_app);
+    web_app->AddSource(WebAppManagement::kDefault);
   }
 
-  // Verify that 2 subapps are installed.
-  UnhashedAppId unhashed_sub_app_id_1 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
-  UnhashedAppId unhashed_sub_app_id_2 = GenerateAppIdUnhashed(
-      /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath2));
+  AppId sub_app_id_1 = GenerateAppIdFromPath(kSubAppPath);
+  AppId sub_app_id_2 = GenerateAppIdFromPath(kSubAppPath2);
 
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_1,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_1, GetURL(kSubAppPath)}}));
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_2,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_2, GetURL(kSubAppPath2)}}));
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall},
+       {kSubAppPath2, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
 
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
+  // Verify that 2 sub-apps are installed.
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id_1));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id_2));
 
   UninstallParentAppBySource(WebAppManagement::kDefault);
-  // Verify that parent app and sub_apps are still installed, only
-  // the default install source is removed from the parent app.
+
+  // Verify that the parent app and the sub-apps are still installed, only the
+  // default install source is removed from the parent app.
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(parent_app_id_));
   EXPECT_FALSE(provider()
                    .registrar_unsafe()
                    .GetAppById(parent_app_id_)
                    ->IsPreinstalledApp());
-
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id_1));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id_2));
 }
 
-// Make sure the Add API can't force manifest update. Add sub-app, verify
-// display mode, then add the same one again with different display mode in the
-// manifest, and verify that it didn't change.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
-  NavigateToParentApp();
-  InstallParentApp();
-  BindRemote();
-
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
-
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
-  EXPECT_EQ(DisplayMode::kStandalone,
-            provider().registrar_unsafe().GetAppEffectiveDisplayMode(
-                GenerateAppIdFromUnhashed(unhashed_sub_app_id)));
-
-  GURL kSubAppWithMinialUiUrl = GetURL(kSubAppPathMinimalUi);
-
-  EXPECT_EQ(
-      AddResultMojo(unhashed_sub_app_id,
-                    SubAppsServiceAddResultCode::kSuccessAlreadyInstalled),
-      CallAdd({{unhashed_sub_app_id, kSubAppWithMinialUiUrl}}));
-  EXPECT_EQ(DisplayMode::kStandalone,
-            provider().registrar_unsafe().GetAppEffectiveDisplayMode(
-                GenerateAppIdFromUnhashed(unhashed_sub_app_id)));
-}
-
-// Verify that uninstalling an app that has a sub-app with more than one
-// install source only removes the "sub-app" install source for that sub-app
-// but does not uninstall it.
+// Verify that uninstalling an app that has a sub-app with more than one install
+// source only removes the "sub-app" install source for that sub-app but does
+// not uninstall it.
 IN_PROC_BROWSER_TEST_F(
     SubAppsServiceImplBrowserTest,
-    StandaloneAppStaysInstalledAfterUpgradedParentUninstall) {
+    UninstallingParentAppDoesntUninstallSubAppWithMultipleSources) {
   // Install app as standalone app.
-  AppId standalone_app_id = InstallPWA(GetURL(kSubAppPath2));
-  UnhashedAppId unhashed_standalone_app_id = GenerateAppIdUnhashed(
-      /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath2));
+  AppId standalone_app_id = InstallPWAFromPath(kSubAppPath2);
 
   NavigateToParentApp();
   InstallParentApp();
   BindRemote();
 
-  // Add normal subapp to verify standalone app install/uninstall does
-  // not affect normal sub app uninstalls.
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id, GetURL(kSubAppPath)}}));
-
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id)));
+  // Add another sub-app to verify standalone app install/uninstall does not
+  // affect normal sub-app uninstalls.
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath}});
+  AppId sub_app_id = GenerateAppIdFromPath(kSubAppPath);
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id));
 
   // Add standalone app as sub-app.
   const WebApp* standalone_app =
       provider().registrar_unsafe().GetAppById(standalone_app_id);
-  EXPECT_EQ(AddResultMojo(unhashed_standalone_app_id,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_standalone_app_id, GetURL(kSubAppPath2)}}));
+  ExpectCallAdd(
+      {{kSubAppPath2, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath2, kSubAppPath2}});
 
-  // Verify that it is now installed and registered as a subapp.
-
+  // Verify that it is now installed and registered as a sub-app.
   EXPECT_EQ(parent_app_id_, standalone_app->parent_app_id());
   EXPECT_FALSE(standalone_app->HasOnlySource(WebAppManagement::kSync));
   EXPECT_TRUE(standalone_app->IsSubAppInstalledApp());
 
   UninstallParentApp();
 
-  // Verify that normal sub-app is uninstalled.
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id)));
+  // Verify that the second sub-app is uninstalled.
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(sub_app_id));
 
   // Verify that previous standalone is still installed.
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(standalone_app_id));
 
   // Verify that there are no apps registered as parent app's sub apps.
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-
   EXPECT_EQ(absl::nullopt, standalone_app->parent_app_id());
 
   // Verify that the standalone app no longer has the sub-app install source.
   EXPECT_TRUE(standalone_app->HasOnlySource(WebAppManagement::kSync));
 }
+
+/********** Tests for the List API call. **********/
 
 // List call returns the correct value for three sub-apps.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, ListSuccess) {
@@ -762,45 +561,31 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, ListSuccess) {
   // Empty list before adding any sub-apps.
   SubAppsServiceListResultPtr result = CallList();
   EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
-  EXPECT_EQ(std::vector<SubAppsServiceListInfoPtr>{}, result->sub_apps);
+  EXPECT_EQ(std::vector<SubAppsServiceListInfoPtr>{}, result->sub_apps_list);
 
-  UnhashedAppId unhashed_sub_app_id_1 =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
-  UnhashedAppId unhashed_sub_app_id_2 = GenerateAppIdUnhashed(
-      /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath2));
-  UnhashedAppId unhashed_sub_app_id_3 = GenerateAppIdUnhashed(
-      /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath3));
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall},
+       {kSubAppPath2, SubAppsServiceAddResultCode::kSuccessNewInstall},
+       {kSubAppPath3, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath},
+       {kSubAppPath2, kSubAppPath2},
+       {kSubAppPath3, kSubAppPath3}});
 
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_1,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_1, GetURL(kSubAppPath)}}));
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_2,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_2, GetURL(kSubAppPath2)}}));
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id_3,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_3, GetURL(kSubAppPath3)}}));
+  result = CallList();
 
   // We need to use a set for comparison because the ordering changes between
   // invocations (due to embedded test server using a random port each time).
   base::flat_set<SubAppsServiceListInfoPtr> expected_set;
-  expected_set.emplace(
-      SubAppsServiceListInfo::New(unhashed_sub_app_id_1, kSubAppName));
-  expected_set.emplace(
-      SubAppsServiceListInfo::New(unhashed_sub_app_id_2, kSubAppName2));
-  expected_set.emplace(
-      SubAppsServiceListInfo::New(unhashed_sub_app_id_3, kSubAppName3));
+  expected_set.emplace(SubAppsServiceListInfo::New(kSubAppPath, kSubAppName));
+  expected_set.emplace(SubAppsServiceListInfo::New(kSubAppPath2, kSubAppName2));
+  expected_set.emplace(SubAppsServiceListInfo::New(kSubAppPath3, kSubAppName3));
 
-  result = CallList();
-
-  // We see all three sub-apps now. We need to use UnorderedElementsAre because
-  // the ordering changes between invocations (due to embedded test server using
-  // a random port each time).
-  EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
   base::flat_set<SubAppsServiceListInfoPtr> actual_set(
-      std::make_move_iterator(result->sub_apps.begin()),
-      std::make_move_iterator(result->sub_apps.end()));
+      std::make_move_iterator(result->sub_apps_list.begin()),
+      std::make_move_iterator(result->sub_apps_list.end()));
+
   // We see all three sub-apps now.
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
   EXPECT_EQ(expected_set, actual_set);
 }
 
@@ -808,28 +593,25 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, ListSuccess) {
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        ListDoesntReturnNonSubApp) {
   // Regular install.
-  InstallPWA(GetURL(kSubAppPath));
+  InstallPWAFromPath(kSubAppPath);
 
   NavigateToParentApp();
   InstallParentApp();
   BindRemote();
 
-  UnhashedAppId unhashed_sub_app_id_2 = GenerateAppIdUnhashed(
-      /*manifest_id=*/absl::nullopt, GetURL(kSubAppPath2));
   // Sub-app install.
-  EXPECT_EQ(AddResultMojo(
-                unhashed_sub_app_id_2,
-                blink::mojom::SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id_2, GetURL(kSubAppPath2)}}));
+  ExpectCallAdd(
+      {{kSubAppPath2, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath2, kSubAppPath2}});
 
   std::vector<SubAppsServiceListInfoPtr> expected_result;
   expected_result.emplace_back(
-      SubAppsServiceListInfo::New(unhashed_sub_app_id_2, kSubAppName2));
+      SubAppsServiceListInfo::New(kSubAppPath2, kSubAppName2));
 
   // Should only see the sub-app one here, not the standalone.
   SubAppsServiceListResultPtr result = CallList();
   EXPECT_EQ(SubAppsServiceResult::kSuccess, result->code);
-  EXPECT_EQ(expected_result, result->sub_apps);
+  EXPECT_EQ(expected_result, result->sub_apps_list);
 }
 
 // List call returns failure if the parent app isn't installed.
@@ -840,8 +622,10 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   SubAppsServiceListResultPtr result = CallList();
   EXPECT_EQ(SubAppsServiceResult::kFailure, result->code);
-  EXPECT_EQ(std::vector<SubAppsServiceListInfoPtr>{}, result->sub_apps);
+  EXPECT_EQ(std::vector<SubAppsServiceListInfoPtr>{}, result->sub_apps_list);
 }
+
+/********** Tests for the Remove API call. **********/
 
 // Remove works with one app.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
@@ -849,16 +633,15 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
   NavigateToParentApp();
   BindRemote();
 
-  UnhashedAppId unhashed_app_id = GetURL(kSubAppPath).spec();
-  AppId app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
+  ExpectCallAdd(
+      {{kSubAppPath, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath, kSubAppPath}});
 
-  EXPECT_EQ(AddResultMojo(unhashed_app_id,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_app_id, GetURL(kSubAppPath)}}));
+  AppId app_id = GenerateAppIdFromPath(kSubAppPath);
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
 
-  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallRemove(unhashed_app_id));
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallRemove(kSubAppPath));
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 }
@@ -866,38 +649,33 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
 // Remove fails for a regular installed app.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailRegularApp) {
   // Regular install.
-  InstallPWA(GetURL(kSubAppPath));
+  InstallPWAFromPath(kSubAppPath);
 
   InstallParentApp();
   NavigateToParentApp();
   BindRemote();
 
-  UnhashedAppId unhashed_app_id = GetURL(kSubAppPath).spec();
-  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_app_id));
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(kSubAppPath));
 }
 
 // Remove fails for a sub-app with a different parent_app_id.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongParent) {
   // SubApp plays the parent app here, SubApp2 is its sub-app, SubApp3 is the
   // other "parent app".
-  AppId parent_app = InstallPWA(GetURL(kSubAppPath));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL(kSubAppPath)));
+  AppId parent_app = InstallPWAFromPath(kSubAppPath);
+  NavigateToPath(kSubAppPath);
   BindRemote();
 
-  GURL kSubAppUrl = GetURL(kSubAppPath);
-  UnhashedAppId unhashed_sub_app_id =
-      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
+  ExpectCallAdd(
+      {{kSubAppPath2, SubAppsServiceAddResultCode::kSuccessNewInstall}},
+      {{kSubAppPath2, kSubAppPath2}});
 
-  EXPECT_EQ(AddResultMojo(unhashed_sub_app_id,
-                          SubAppsServiceAddResultCode::kSuccessNewInstall),
-            CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
-
-  AppId second_parent_app = InstallPWA(GetURL(kSubAppPath3));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL(kSubAppPath3)));
+  AppId second_parent_app = InstallPWAFromPath(kSubAppPath3);
+  NavigateToPath(kSubAppPath3);
   remote_.reset();
   BindRemote();
 
-  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_sub_app_id));
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(kSubAppPath2));
 }
 
 // Remove call returns failure if the calling app isn't installed.
@@ -906,22 +684,26 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   NavigateToParentApp();
   BindRemote();
 
-  UnhashedAppId unhashed_app_id = GetURL(kSubAppPath).spec();
-  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_app_id));
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(kSubAppPath));
 }
 
-// Remove doesn't crash with an invalid unhashed_app_id.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       RemoveInvalidArgDoesntCrash) {
+// Remove call closes the mojo connection if the argument is wrong origin to the
+// calling app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongOrigin) {
   InstallParentApp();
   NavigateToParentApp();
   BindRemote();
 
-  // Invalid because it isn't a proper URL.
-  UnhashedAppId unhashed_app_id = "invalid";
-  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_app_id));
-
-  // Shouldn't crash.
+  base::RunLoop run_loop;
+  remote_.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  // This call should never succeed and the disconnect handler should be called
+  // instead.
+  remote_->Remove(kDifferentDomain,
+                  base::BindLambdaForTesting([](SubAppsServiceResult result) {
+                    ADD_FAILURE() << "Callback unexpectedly invoked.";
+                  }));
+  run_loop.Run();
 }
 
 }  // namespace web_app
