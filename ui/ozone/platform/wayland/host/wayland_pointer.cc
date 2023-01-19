@@ -14,6 +14,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
@@ -33,7 +34,7 @@ wl::EventDispatchPolicy EventDispatchPolicyForPlatform() {
 
 bool ShouldSuppressPointerEnterOrLeaveEvents(WaylandConnection* connection) {
   // Some Compositors (eg Exo) send spurious wl_pointer.enter|leave events
-  // during ongoing drag 'n drop operations.
+  // during ongoing tab drag 'n drop operations.
   //
   // While this needs to be fixed on the Compositor side, the particular
   // scenario of bogus events interfere w/ Lacros' tab dragging detaching
@@ -43,8 +44,13 @@ bool ShouldSuppressPointerEnterOrLeaveEvents(WaylandConnection* connection) {
   // `wl_drag_source.enter` event is received. For this reason, ignore those
   // events.
   //
-  // TODO(https://crbug.com/1405471): Remove this when Exo is properly fixed.
-  return connection->IsDragInProgress();
+  // TODO(https://crbug.com/XXX): Remove this when Exo is properly fixed.
+  auto is_window_dragging =
+      connection->window_drag_controller()
+          ? connection->window_drag_controller()->state() !=
+                WaylandWindowDragController::State::kIdle
+          : false;
+  return is_window_dragging;
 }
 
 }  // namespace
