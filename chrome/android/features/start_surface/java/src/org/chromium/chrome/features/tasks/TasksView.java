@@ -381,7 +381,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
      */
     void resetScrollPosition() {
         if (mHeaderView != null && mHeaderView.getHeight() != mHeaderView.getBottom()) {
-            mHeaderView.setExpanded(true);
+            mHeaderView.setExpanded(true, false /* animate */);
         }
     }
     /**
