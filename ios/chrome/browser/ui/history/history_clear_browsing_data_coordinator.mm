@@ -23,8 +23,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface HistoryClearBrowsingDataCoordinator ()<
-    UIViewControllerTransitioningDelegate,
+@interface HistoryClearBrowsingDataCoordinator () <
     TableViewPresentationControllerDelegate>
 
 // ViewControllers being managed by this Coordinator.
@@ -120,20 +119,6 @@
     (ClearBrowsingDataTableViewController*)controller {
   DCHECK_EQ(self.clearBrowsingDataTableViewController, controller);
   [self stopWithCompletion:nil];
-}
-
-#pragma mark - UIViewControllerTransitioningDelegate
-
-- (UIPresentationController*)
-presentationControllerForPresentedViewController:(UIViewController*)presented
-                        presentingViewController:(UIViewController*)presenting
-                            sourceViewController:(UIViewController*)source {
-  TableViewPresentationController* controller =
-      [[TableViewPresentationController alloc]
-          initWithPresentedViewController:presented
-                 presentingViewController:presenting];
-  controller.modalDelegate = self;
-  return controller;
 }
 
 #pragma mark - TableViewPresentationControllerDelegate
