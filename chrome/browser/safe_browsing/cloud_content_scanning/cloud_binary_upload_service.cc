@@ -380,7 +380,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request* request,
         std::move(traffic_annotation), std::move(callback));
   } else if (!data.path.empty()) {
     upload_request = MultipartUploadRequest::CreateFileRequest(
-        url_loader_factory_, std::move(url), metadata, data.path,
+        url_loader_factory_, std::move(url), metadata, data.path, data.size,
         std::move(traffic_annotation), std::move(callback));
   } else if (data.page.IsValid()) {
     upload_request = MultipartUploadRequest::CreatePageRequest(

@@ -77,6 +77,7 @@ class MockMultipartUploadDataPipeRequest : public MultipartUploadRequest {
                                GURL(),
                                "metadata",
                                path,
+                               123,
                                TRAFFIC_ANNOTATION_FOR_TESTS,
                                std::move(callback)) {}
 
@@ -317,6 +318,67 @@ TEST_P(MultipartUploadDataPipeRequestTest, EquivalentToStringRequest) {
   EXPECT_EQ(expected_body,
             string_request.GenerateRequestBody("metadata", "data"));
   EXPECT_EQ(expected_body, data_pipe_request->GetBodyFromFileOrPageRequest());
+}
+
+TEST_F(MultipartUploadRequestTest, GeneratesCorrectHeaders_StringRequest) {
+  network::ResourceRequest resource_request;
+  std::string header_value;
+
+  std::unique_ptr<MultipartUploadRequest> request =
+      MultipartUploadRequest::CreateStringRequest(
+          nullptr, GURL(), "metadata", "data", TRAFFIC_ANNOTATION_FOR_TESTS,
+          base::DoNothing());
+  request->SetRequestHeaders(&resource_request);
+  ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
+  ASSERT_TRUE(resource_request.headers.GetHeader("X-Goog-Upload-Protocol",
+                                                 &header_value));
+  ASSERT_EQ(header_value, "multipart");
+  ASSERT_TRUE(resource_request.headers.HasHeader(
+      "X-Goog-Upload-Header-Content-Length"));
+  ASSERT_TRUE(resource_request.headers.GetHeader(
+      "X-Goog-Upload-Header-Content-Length", &header_value));
+  ASSERT_EQ(header_value, "4");
+}
+
+TEST_F(MultipartUploadRequestTest, GeneratesCorrectHeaders_FileRequest) {
+  network::ResourceRequest resource_request;
+  std::string header_value;
+
+  std::unique_ptr<MultipartUploadRequest> request =
+      MultipartUploadRequest::CreateFileRequest(
+          nullptr, GURL(), "metadata",
+          CreateFile("my_file_name.foo", "file_data"), 9,
+          TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  request->SetRequestHeaders(&resource_request);
+  ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
+  ASSERT_TRUE(resource_request.headers.GetHeader("X-Goog-Upload-Protocol",
+                                                 &header_value));
+  ASSERT_EQ(header_value, "multipart");
+  ASSERT_TRUE(resource_request.headers.HasHeader(
+      "X-Goog-Upload-Header-Content-Length"));
+  ASSERT_TRUE(resource_request.headers.GetHeader(
+      "X-Goog-Upload-Header-Content-Length", &header_value));
+  ASSERT_EQ(header_value, "9");
+}
+
+TEST_F(MultipartUploadRequestTest, GeneratesCorrectHeaders_PageRequest) {
+  network::ResourceRequest resource_request;
+  std::string header_value;
+
+  std::unique_ptr<MultipartUploadRequest> request =
+      MultipartUploadRequest::CreatePageRequest(
+          nullptr, GURL(), "metadata", CreatePage("print_data"),
+          TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  request->SetRequestHeaders(&resource_request);
+  ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
+  ASSERT_TRUE(resource_request.headers.GetHeader("X-Goog-Upload-Protocol",
+                                                 &header_value));
+  ASSERT_EQ(header_value, "multipart");
+  ASSERT_TRUE(resource_request.headers.HasHeader(
+      "X-Goog-Upload-Header-Content-Length"));
+  ASSERT_TRUE(resource_request.headers.GetHeader(
+      "X-Goog-Upload-Header-Content-Length", &header_value));
+  ASSERT_EQ(header_value, "10");
 }
 
 }  // namespace safe_browsing

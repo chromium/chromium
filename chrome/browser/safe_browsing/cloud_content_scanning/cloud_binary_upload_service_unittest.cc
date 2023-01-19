@@ -116,6 +116,7 @@ class FakeMultipartUploadRequestFactory : public MultipartUploadRequestFactory {
       const GURL& base_url,
       const std::string& metadata,
       const base::FilePath& path,
+      uint64_t file_size,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback) override {
     return std::make_unique<FakeMultipartUploadRequest>(

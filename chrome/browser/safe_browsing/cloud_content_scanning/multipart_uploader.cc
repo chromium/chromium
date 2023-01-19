@@ -88,12 +88,14 @@ MultipartUploadRequest::MultipartUploadRequest(
     const GURL& base_url,
     const std::string& metadata,
     const base::FilePath& path,
+    uint64_t file_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : base_url_(base_url),
       metadata_(metadata),
       data_source_(FILE),
       path_(path),
+      data_size_(file_size),
       boundary_(net::GenerateMimeMultipartBoundary()),
       callback_(std::move(callback)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
@@ -114,6 +116,7 @@ MultipartUploadRequest::MultipartUploadRequest(
       metadata_(metadata),
       data_source_(PAGE),
       page_region_(std::move(page_region)),
+      data_size_(page_region_.GetSize()),
       boundary_(net::GenerateMimeMultipartBoundary()),
       callback_(std::move(callback)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
@@ -155,18 +158,36 @@ std::string MultipartUploadRequest::GenerateRequestBody(
                        "\r\n\r\n", data, "\r\n--", boundary_, "--\r\n"});
 }
 
+void MultipartUploadRequest::SetRequestHeaders(
+    network::ResourceRequest* request) {
+  request->headers.SetHeader("X-Goog-Upload-Protocol", "multipart");
+  uint64_t data_size = 0;
+  switch (data_source_) {
+    case STRING:
+      data_size = data_.size();
+      break;
+    case FILE:
+    case PAGE:
+      data_size = data_size_;
+      break;
+    default:
+      NOTREACHED();
+  }
+  request->headers.SetHeader("X-Goog-Upload-Header-Content-Length",
+                             base::NumberToString(data_size));
+
+  if (access_token_.empty()) {
+    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  } else {
+    SetAccessTokenAndClearCookieInResourceRequest(request, access_token_);
+  }
+}
+
 void MultipartUploadRequest::SendRequest() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = base_url_;
   resource_request->method = "POST";
-  resource_request->headers.SetHeader("X-Goog-Upload-Protocol", "multipart");
-
-  if (access_token_.empty()) {
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  } else {
-    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
-                                                  access_token_);
-  }
+  SetRequestHeaders(resource_request.get());
 
   switch (data_source_) {
     case STRING:
@@ -330,16 +351,17 @@ MultipartUploadRequest::CreateFileRequest(
     const GURL& base_url,
     const std::string& metadata,
     const base::FilePath& path,
+    uint64_t file_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     MultipartUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
-        url_loader_factory, base_url, metadata, path, traffic_annotation,
-        std::move(callback));
+        url_loader_factory, base_url, metadata, path, file_size,
+        traffic_annotation, std::move(callback));
   }
 
   return factory_->CreateFileRequest(url_loader_factory, base_url, metadata,
-                                     path, traffic_annotation,
+                                     path, file_size, traffic_annotation,
                                      std::move(callback));
 }
 
