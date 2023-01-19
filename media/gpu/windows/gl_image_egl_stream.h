@@ -21,7 +21,6 @@ class GLImageEGLStream : public gl::GLImage {
 
   // GLImage implementation.
   bool BindTexImage(unsigned target) override;
-  unsigned GetInternalFormat() override;
   gfx::Size GetSize() override;
   Type GetType() const override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

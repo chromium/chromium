@@ -19,8 +19,6 @@ gfx::Size GLImageStub::GetSize() {
   return gfx::Size(1, 1);
 }
 
-unsigned GLImageStub::GetInternalFormat() { return GL_RGBA; }
-
 bool GLImageStub::BindTexImage(unsigned target) { return true; }
 
 }  // namespace gl

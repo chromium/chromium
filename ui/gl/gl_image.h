@@ -97,10 +97,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // Get the size of the image.
   virtual gfx::Size GetSize();
 
-  // Get the GL internal format of the image.
-  // It is aligned with glTexImage{2|3}D's parameter |internalformat|.
-  virtual unsigned GetInternalFormat();
-
   // Bind image to texture currently bound to |target|. Returns true on success.
   // It is valid for an implementation to always return false.
   virtual bool BindTexImage(unsigned target);

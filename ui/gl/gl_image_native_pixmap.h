@@ -47,11 +47,14 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
   // Export the wrapped EGLImage to dmabuf fds.
   gfx::NativePixmapHandle ExportHandle();
 
+  // Get the GL internal format of the image.
+  // It is aligned with glTexImage{2|3}D's parameter |internalformat|.
+  unsigned GetInternalFormat();
+
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   void* GetEGLImage() const override;
   bool BindTexImage(unsigned target) override;
-  unsigned GetInternalFormat() override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;

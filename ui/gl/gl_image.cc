@@ -43,11 +43,6 @@ gfx::Size GLImage::GetSize() {
   return gfx::Size();
 }
 
-unsigned GLImage::GetInternalFormat() {
-  NOTREACHED();
-  return GL_NONE;
-}
-
 bool GLImage::BindTexImage(unsigned target) {
   NOTREACHED();
   return false;

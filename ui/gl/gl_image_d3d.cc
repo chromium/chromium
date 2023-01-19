@@ -75,10 +75,6 @@ gfx::Size GLImageD3D::GetSize() {
   return size_;
 }
 
-unsigned GLImageD3D::GetInternalFormat() {
-  return internal_format_;
-}
-
 bool GLImageD3D::BindTexImage(unsigned target) {
   DCHECK_NE(egl_image_, EGL_NO_IMAGE_KHR);
   glEGLImageTargetTexture2DOES(target, egl_image_);

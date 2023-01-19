@@ -118,10 +118,6 @@ gfx::Size GLImageIOSurface::GetSize() {
   return size_;
 }
 
-unsigned GLImageIOSurface::GetInternalFormat() {
-  return BufferFormatToGLInternalFormat(format_);
-}
-
 bool GLImageIOSurface::BindTexImage(unsigned target) {
   LOG(ERROR) << "GLImageIOSurface::BindTexImage should not be reached.";
   NOTREACHED();

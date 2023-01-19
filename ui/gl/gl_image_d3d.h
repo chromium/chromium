@@ -43,7 +43,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   Type GetType() const override;
   void* GetEGLImage() const override;
   gfx::Size GetSize() override;
-  unsigned GetInternalFormat() override;
   bool BindTexImage(unsigned target) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,

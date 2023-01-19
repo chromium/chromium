@@ -70,10 +70,6 @@ gfx::Size GLImageEGLPixmap::GetSize() {
   return size_;
 }
 
-unsigned GLImageEGLPixmap::GetInternalFormat() {
-  return gl::BufferFormatToGLInternalFormat(format_);
-}
-
 bool GLImageEGLPixmap::BindTexImage(unsigned target) {
   if (!surface_)
     return false;

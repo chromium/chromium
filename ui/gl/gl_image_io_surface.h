@@ -56,7 +56,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
 
   // Overridden from GLImage:
   gfx::Size GetSize() override;
-  unsigned GetInternalFormat() override;
   bool BindTexImage(unsigned target) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,

@@ -16,9 +16,6 @@ GLImagePbuffer::GLImagePbuffer(const gfx::Size& size, EGLSurface surface)
 gfx::Size GLImagePbuffer::GetSize() {
   return size_;
 }
-unsigned GLImagePbuffer::GetInternalFormat() {
-  return GL_BGRA_EXT;
-}
 gl::GLImage::Type GLImagePbuffer::GetType() const {
   return gl::GLImage::Type::PBUFFER;
 }
