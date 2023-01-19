@@ -83219,6 +83219,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="55" label="kTabClosedWithoutUserGesture"/>
   <int value="56" label="kPrimaryMainFrameRendererProcessCrashed"/>
   <int value="57" label="kPrimaryMainFrameRendererProcessKilled"/>
+  <int value="58" label="kActivationFramePolicyNotCompatible"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

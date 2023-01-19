@@ -940,6 +940,8 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   }
 
   if (!host->IsFramePolicyCompatibleWithPrimaryFrameTree()) {
+    CancelHost(host->frame_tree_node_id(),
+               PrerenderFinalStatus::kActivationFramePolicyNotCompatible);
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 

@@ -1593,6 +1593,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled:
       return Page::PrerenderFinalStatusEnum::
           PrimaryMainFrameRendererProcessKilled;
+    case PrerenderFinalStatus::kActivationFramePolicyNotCompatible:
+      return Page::PrerenderFinalStatusEnum::ActivationFramePolicyNotCompatible;
   }
 }
 
