@@ -81,19 +81,12 @@ void ScreenSecurityController::CreateNotification(const std::u16string& message,
               },
               weak_ptr_factory_.GetWeakPtr(), is_capture));
 
-  // If the feature is enabled, the screen share notification should have the
-  // style of privacy indicators notification.
-  bool have_privacy_indicators_style =
-      features::IsPrivacyIndicatorsEnabled() && !is_capture;
-
-  auto* screen_share_notifier_id = features::IsPrivacyIndicatorsEnabled()
-                                       ? kPrivacyIndicatorsNotifierId
-                                       : kNotifierScreenShare;
-
-  auto screen_share_catalog_name =
+  // If the feature is enabled, the notification should have the style of
+  // privacy indicators notification.
+  auto* notifier_id =
       features::IsPrivacyIndicatorsEnabled()
-          ? NotificationCatalogName::kPrivacyIndicators
-          : NotificationCatalogName::kScreenSecurity;
+          ? kPrivacyIndicatorsNotifierId
+          : (is_capture ? kNotifierScreenCapture : kNotifierScreenShare);
 
   std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
@@ -101,18 +94,18 @@ void ScreenSecurityController::CreateNotification(const std::u16string& message,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE),
       message, std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(
-          message_center::NotifierType::SYSTEM_COMPONENT,
-          is_capture ? kNotifierScreenCapture : screen_share_notifier_id,
-          is_capture ? NotificationCatalogName::kScreenSecurity
-                     : screen_share_catalog_name),
+          message_center::NotifierType::SYSTEM_COMPONENT, notifier_id,
+          features::IsPrivacyIndicatorsEnabled()
+              ? NotificationCatalogName::kPrivacyIndicators
+              : NotificationCatalogName::kScreenSecurity),
       data, std::move(delegate),
-      have_privacy_indicators_style ? kPrivacyIndicatorsScreenShareIcon
-                                    : kNotificationScreenshareIcon,
+      features::IsPrivacyIndicatorsEnabled() ? kPrivacyIndicatorsScreenShareIcon
+                                             : kNotificationScreenshareIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   notification->set_pinned(true);
 
-  if (have_privacy_indicators_style) {
+  if (features::IsPrivacyIndicatorsEnabled()) {
     notification->set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
     notification->set_parent_vector_small_image(kPrivacyIndicatorsIcon);
   }
