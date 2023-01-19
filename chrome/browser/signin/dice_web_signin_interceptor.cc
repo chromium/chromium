@@ -593,7 +593,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
   bool show_managed_disclaimer =
       *interception_type != SigninInterceptionType::kProfileSwitch &&
-      base::FeatureList::IsEnabled(kSigninInterceptBubbleV2) &&
+      (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2) ||
+       base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept)) &&
       (info.IsManaged() ||
        policy::ManagementServiceFactory::GetForPlatform()->IsManaged());
 

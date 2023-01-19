@@ -9,7 +9,7 @@ import {DiceWebSigninInterceptAppElement} from 'chrome://signin-dice-web-interce
 import {DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_intercept_browser_proxy.js';
 
@@ -155,6 +155,36 @@ suite('DiceWebSigninInterceptTest', function() {
     fireParametersChanged(parameters);
     assertFalse(isChildVisible(app, badgeSelector));
   });
+
+  test('ManagedDisclaimer', async function() {
+    assertFalse(isChildVisible(app, '#managedDisclaimer'));
+
+    // Update interceptedAccount but not showManagedDisclaimer and check that
+    // the disclaimer is not shown. Equivalent to Sign-in Intercept Bubble V1
+    // without Sync Promo.
+    let parameters = {
+      ...PARAMETERS,
+      interceptedAccount: {isManaged: true, pictureUrl: AVATAR_URL_1},
+    };
+    fireParametersChanged(parameters);
+    await waitAfterNextRender(app);
+    assertFalse(isChildVisible(app, '#managedDisclaimer'));
+
+    // Update showManagedDisclaimer and check that the disclaimer is shown.
+    // Equivalent to Sign-in Intercept Bubble V1 with Sync Promo.
+    parameters = {
+      ...PARAMETERS,
+      interceptedAccount: {isManaged: true, pictureUrl: AVATAR_URL_1},
+      showManagedDisclaimer: true,
+    };
+    fireParametersChanged(parameters);
+    await waitAfterNextRender(app);
+
+    const managedDisclaimerElement =
+        app.shadowRoot!.querySelector('#managedDisclaimer')!;
+    assertTrue(isVisible(managedDisclaimerElement));
+    assertEquals('managed_disclaimer', managedDisclaimerElement.textContent);
+  });
 });
 
 suite('DiceWebSigninInterceptTestV2', function() {
@@ -222,5 +252,23 @@ suite('DiceWebSigninInterceptTestV2', function() {
     fireParametersChanged(parameters);
     assertFalse(isChildVisible(app, interceptedBadgeSelector));
     assertTrue(isChildVisible(app, primaryBadgeSelector));
+  });
+
+  test('ManagedDisclaimer', async function() {
+    assertFalse(isChildVisible(app, '#managedDisclaimer'));
+
+    // Update showManagedDisclaimer and check that the disclaimer is shown.
+    const parameters = {
+      ...PARAMETERS,
+      interceptedAccount: {isManaged: true, pictureUrl: AVATAR_URL_1},
+      showManagedDisclaimer: true,
+    };
+    fireParametersChanged(parameters);
+    await waitAfterNextRender(app);
+
+    const managedDisclaimerElement =
+        app.shadowRoot!.querySelector('#managedDisclaimer')!;
+    assertTrue(isVisible(managedDisclaimerElement));
+    assertEquals('managed_disclaimer', managedDisclaimerElement.textContent);
   });
 });

@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -250,9 +251,20 @@ class DiceWebSigninInterceptionBubblePixelTest
     primary_account.email = "tessa.tester@primary.com";
     primary_account.hosted_domain =
         is_primary_account_managed ? "primary.com" : kNoHostedDomainFound;
+    bool show_managed_disclaimer =
+        (GetParam().is_intercepted_account_managed ||
+         GetParam().management_authority !=
+             policy::EnterpriseManagementAuthority::NONE) &&
+        (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2) ||
+         base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
 
-    return {GetParam().interception_type, intercepted_account, primary_account,
-            GetParam().intercepted_profile_color.toSkColor()};
+    return {GetParam().interception_type,
+            intercepted_account,
+            primary_account,
+            GetParam().intercepted_profile_color.toSkColor(),
+            /*show_guest_option=*/false,
+            /*show_link_data_option=*/false,
+            show_managed_disclaimer};
   }
 
   std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> bubble_handle_;
@@ -284,6 +296,25 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleV2PixelTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DiceWebSigninInterceptionBubbleV2PixelTest,
+                         testing::ValuesIn(kTestParams),
+                         &ParamToTestSuffix);
+
+class DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest
+    : public DiceWebSigninInterceptionBubblePixelTest {
+ public:
+  DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest() = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kSyncPromoAfterSigninIntercept};
+};
+
+IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest,
+                       InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest,
                          testing::ValuesIn(kTestParams),
                          &ParamToTestSuffix);
 

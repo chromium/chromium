@@ -37,7 +37,7 @@
 namespace {
 constexpr int kInterceptionBubbleWithoutGuestHeight = 326;
 constexpr int kInterceptionBubbleGuestFooterHeight = 36;
-constexpr int kInterceptionBubbleManagedDisclaimerHeight = 52;
+constexpr int kInterceptionBubbleManagedDisclaimerHeight = 84;
 constexpr int kInterceptionBubbleExtraTextHeight = 30;
 constexpr int kInterceptionBubbleWidth = 290;
 
