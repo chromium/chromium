@@ -91,7 +91,7 @@ class TouchToFillCreditCardViewBinder {
             TextView cardNumber = view.findViewById(R.id.card_number);
             cardNumber.setText(model.get(CARD_NUMBER));
         } else if (propertyKey == CARD_EXPIRATION) {
-            TextView expirationDate = view.findViewById(R.id.expiration_date);
+            TextView expirationDate = view.findViewById(R.id.description_line_2);
             expirationDate.setText(model.get(CARD_EXPIRATION));
         } else if (propertyKey == ON_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());

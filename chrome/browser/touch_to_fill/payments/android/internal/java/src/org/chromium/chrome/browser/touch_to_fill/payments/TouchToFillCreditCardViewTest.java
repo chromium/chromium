@@ -213,7 +213,7 @@ public class TouchToFillCreditCardViewTest {
     }
 
     private TextView getCreditCardExpirationAt(int index) {
-        return getCreditCards().getChildAt(index).findViewById(R.id.expiration_date);
+        return getCreditCards().getChildAt(index).findViewById(R.id.description_line_2);
     }
 
     private @SheetState int getBottomSheetState() {

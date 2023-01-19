@@ -47,8 +47,18 @@ found in the LICENSE file.
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
         </LinearLayout>
+        <!-- This line will appear when it's necessary to display a card linked offer -->
         <TextView
-            android:id="@+id/expiration_date"
+            android:id="@+id/description_line_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:visibility="gone" />
+        <!-- This line will hold either the information that the card is virtual or the expiration date -->
+        <TextView
+            android:id="@+id/description_line_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
