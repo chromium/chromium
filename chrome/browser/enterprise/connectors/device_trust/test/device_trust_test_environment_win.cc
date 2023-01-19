@@ -25,6 +25,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -43,7 +44,7 @@ HRESULT MockRunGoogleUpdateElevatedCommandFn(
     HttpResponseCode upload_response_code,
     const wchar_t* command,
     const std::vector<std::string>& args,
-    DWORD* return_code) {
+    absl::optional<DWORD>* return_code) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   CHECK(args.size() == 3);
   cmd_line.AppendSwitchASCII(switches::kRotateDTKey, args[0]);
@@ -83,7 +84,8 @@ HRESULT MockRunGoogleUpdateElevatedCommandFn(
 
 DeviceTrustTestEnvironmentWin::DeviceTrustTestEnvironmentWin()
     : DeviceTrustTestEnvironment("device_trust_test_environment_win",
-                                 kSuccessCode) {
+                                 kSuccessCode),
+      install_details_(true) {
   registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE);
   KeyRotationCommandFactory::SetFactoryInstanceForTesting(this);
 }

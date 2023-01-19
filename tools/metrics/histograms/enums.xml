@@ -29747,6 +29747,15 @@ Called by update_document_policy_enum.py.-->
   <int value="16" label="Failed to create a hardware signing key."/>
 </enum>
 
+<enum name="DTKeyRotationCommandError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="COM Class not registered"/>
+  <int value="3" label="COM Class not implementing the interface"/>
+  <int value="4" label="Updater concurrency"/>
+  <int value="5" label="User installation"/>
+</enum>
+
 <enum name="DTKeyRotationResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>
@@ -29754,6 +29763,7 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Failed Key Conflict"/>
   <int value="4" label="Failed OS Restriction"/>
   <int value="5" label="Failed Invalid Permissions"/>
+  <int value="6" label="Failed Invalid Installation"/>
 </enum>
 
 <enum name="DTKeyTrustLevel">
@@ -49654,6 +49664,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147012851" label="WININET_E_INVALID_CA"/>
   <int value="-2147009295" label="ERROR_INSTALL_PACKAGE_NOT_FOUND"/>
   <int value="-2146959355" label="CO_E_SERVER_EXEC_FAILURE"/>
+  <int value="-2146762496" label="TRUST_E_NOSIGNATURE"/>
   <int value="-2146435043" label="SCARD_E_NO_SERVICE"/>
   <int value="-2140143615" label="MF_INDEX_SIZE_ERR"/>
   <int value="-2140143608" label="MF_NOT_FOUND_ERR"/>

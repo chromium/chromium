@@ -23,6 +23,7 @@ source_set("test_support") {
       "//base/test:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
+      "//chrome/install_static/test:test_support",
       "//crypto:test_support",
     ]
 

@@ -24,9 +24,11 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/windows_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/metrics_utils.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "google_update/google_update_idl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -53,13 +55,13 @@ constexpr int kMaxCommandArgs = 9;
 // this code is duped in two places including this one.
 HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
                                        const std::vector<std::string>& args,
-                                       DWORD* return_code) {
+                                       absl::optional<DWORD>* return_code) {
   DCHECK(return_code);
   if (args.size() > kMaxCommandArgs)
     return E_INVALIDARG;
 
   Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
-  HRESULT hr = ::CoCreateInstance(CLSID_GoogleUpdate3WebServiceClass, nullptr,
+  HRESULT hr = ::CoCreateInstance(CLSID_GoogleUpdate3WebMachineClass, nullptr,
                                   CLSCTX_ALL, IID_PPV_ARGS(&google_update));
   if (FAILED(hr))
     return hr;
@@ -136,7 +138,11 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
   // command did not terminate in error, tell caller it timed out.
   if (SUCCEEDED(hr)) {
     if (status == COMMAND_STATUS_COMPLETE) {
-      hr = app_command->get_exitCode(return_code);
+      DWORD exit_code = 0;
+      hr = app_command->get_exitCode(&exit_code);
+      if (SUCCEEDED(hr)) {
+        *return_code = exit_code;
+      }
     } else if (status != COMMAND_STATUS_ERROR) {
       hr = E_ABORT;
     }
@@ -179,12 +185,20 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
           [](const KeyRotationCommand::Params& params,
              RunGoogleUpdateElevatedCommandFn run_elevated_command,
              bool waiting_enabled) {
+            if (!install_static::IsSystemInstall()) {
+              SYSLOG(ERROR) << "Device trust key rotation failed, browser must "
+                               "be a system install.";
+              LogKeyRotationCommandError(
+                  KeyRotationCommandError::kUserInstallation);
+              return KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION;
+            }
+
             std::string token_base64;
             base::Base64Encode(params.dm_token, &token_base64);
             std::string nonce_base64;
             base::Base64Encode(params.nonce, &nonce_base64);
 
-            DWORD return_code = installer::ROTATE_DTKEY_FAILED;
+            absl::optional<DWORD> return_code;
 
             // Omaha does not support concurrent elevated commands.  If this
             // fails for that reason, wait a little and try again.  Retry count
@@ -202,20 +216,49 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                 base::PlatformThread::Sleep(base::Seconds(1));
             }
 
-            KeyRotationCommand::Status status =
-                KeyRotationCommand::Status::FAILED;
-            if (SUCCEEDED(hr) &&
-                return_code == installer::ROTATE_DTKEY_SUCCESS) {
-              status = KeyRotationCommand::Status::SUCCEEDED;
-              SYSLOG(INFO) << "Device trust key rotation successful.";
+            auto status = KeyRotationCommand::Status::FAILED;
+            if (SUCCEEDED(hr) && return_code) {
+              LogKeyRotationExitCode(return_code.value());
+              switch (return_code.value()) {
+                case installer::ROTATE_DTKEY_SUCCESS:
+                  status = KeyRotationCommand::Status::SUCCEEDED;
+                  break;
+                case installer::ROTATE_DTKEY_FAILED_PERMISSIONS:
+                  status =
+                      KeyRotationCommand::Status::FAILED_INVALID_PERMISSIONS;
+                  break;
+                case installer::ROTATE_DTKEY_FAILED_CONFLICT:
+                  status = KeyRotationCommand::Status::FAILED_KEY_CONFLICT;
+                  break;
+                default:
+                  // No-op, status is already marked as failed.
+                  break;
+              }
             } else if (hr == E_ABORT) {
               status = KeyRotationCommand::Status::TIMED_OUT;
               SYSLOG(ERROR) << "Device trust key rotation timed out.";
+              LogKeyRotationCommandError(KeyRotationCommandError::kTimeout);
             } else if (hr == GOOPDATE_E_APP_USING_EXTERNAL_UPDATER) {
               SYSLOG(ERROR) << "Device trust key rotation failed due to Google "
                                "Update concurrency.";
+              LogKeyRotationCommandError(
+                  KeyRotationCommandError::kUpdaterConcurrency);
+            } else if (hr == REGDB_E_CLASSNOTREG) {
+              status = KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION;
+              SYSLOG(ERROR) << "Device trust key rotation failed, updater "
+                               "class not registered.";
+              LogKeyRotationCommandError(
+                  KeyRotationCommandError::kClassNotRegistered);
+            } else if (hr == E_NOINTERFACE) {
+              status = KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION;
+              SYSLOG(ERROR) << "Device trust key rotation failed, updater "
+                               "class does not implement interface";
+              LogKeyRotationCommandError(KeyRotationCommandError::kNoInterface);
             } else {
-              SYSLOG(ERROR) << "Device trust key rotation failed.";
+              SYSLOG(ERROR)
+                  << "Device trust key rotation failed. HRESULT: " << hr;
+              LogKeyRotationCommandError(KeyRotationCommandError::kUnknown);
+              LogUnexpectedHresult(hr);
             }
             return status;
           },

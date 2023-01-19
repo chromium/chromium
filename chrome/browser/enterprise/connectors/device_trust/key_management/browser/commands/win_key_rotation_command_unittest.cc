@@ -8,11 +8,17 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/metrics_utils.h"
+#include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -43,140 +49,128 @@ class WinKeyRotationCommandTest : public testing::Test {
  protected:
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
- private:
+  void RunTest(
+      HRESULT command_hresult,
+      absl::optional<int> exit_code,
+      KeyRotationCommand::Status expected_status,
+      absl::optional<KeyRotationCommandError> logged_error = absl::nullopt,
+      bool skip_wait = false) {
+    install_static::ScopedInstallDetails install_details(true);
+
+    KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl,
+                                         kNonce};
+
+    WinKeyRotationCommand command(base::BindLambdaForTesting(
+        [&command_hresult, &exit_code](const wchar_t* command,
+                                       const std::vector<std::string>& args,
+                                       absl::optional<DWORD>* return_code) {
+          CheckCommandArgs(args);
+          if (exit_code) {
+            *return_code = exit_code.value();
+          }
+          return command_hresult;
+        }));
+
+    if (skip_wait) {
+      command.enable_waiting_for_testing(false);
+    }
+
+    base::test::TestFuture<KeyRotationCommand::Status> future_status;
+    command.Trigger(params, future_status.GetCallback());
+
+    EXPECT_EQ(future_status.Get(), expected_status);
+
+    VerifyHistograms(logged_error, exit_code);
+  }
+
+  void VerifyHistograms(absl::optional<KeyRotationCommandError> error,
+                        absl::optional<int> exit_code) {
+    if (error) {
+      histogram_tester_.ExpectUniqueSample(
+          "Enterprise.DeviceTrust.KeyRotationCommand.Error", error.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "Enterprise.DeviceTrust.KeyRotationCommand.Error", 0);
+    }
+
+    if (exit_code) {
+      histogram_tester_.ExpectUniqueSample(
+          "Enterprise.DeviceTrust.KeyRotationCommand.ExitCode",
+          exit_code.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "Enterprise.DeviceTrust.KeyRotationCommand.ExitCode", 0);
+    }
+  }
+
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WinKeyRotationCommandTest, RotateSuccess) {
-  KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl, kNonce};
-  bool was_called = false;
-  KeyRotationCommand::Status status = KeyRotationCommand::Status::TIMED_OUT;
-
-  WinKeyRotationCommand command(base::BindRepeating(
-      [](const wchar_t* command, const std::vector<std::string>& args,
-         DWORD* return_code) {
-        CheckCommandArgs(args);
-        *return_code = installer::ROTATE_DTKEY_SUCCESS;
-        return S_OK;
-      }));
-
-  command.Trigger(params, base::BindLambdaForTesting(
-                              [&was_called,
-                               &status](KeyRotationCommand::Status arg_status) {
-                                was_called = true;
-                                status = arg_status;
-                              }));
-
-  RunUntilIdle();
-
-  ASSERT_TRUE(was_called);
-  ASSERT_EQ(KeyRotationCommand::Status::SUCCEEDED, status);
+  RunTest(S_OK, installer::ROTATE_DTKEY_SUCCESS,
+          KeyRotationCommand::Status::SUCCEEDED);
 }
 
 TEST_F(WinKeyRotationCommandTest, RotateFailure) {
-  KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl, kNonce};
-  bool was_called = false;
-  KeyRotationCommand::Status status = KeyRotationCommand::Status::TIMED_OUT;
-
-  WinKeyRotationCommand command(base::BindRepeating(
-      [](const wchar_t* command, const std::vector<std::string>& args,
-         DWORD* return_code) {
-        CheckCommandArgs(args);
-        *return_code = installer::ROTATE_DTKEY_FAILED;
-        return S_OK;
-      }));
-
-  command.Trigger(params, base::BindLambdaForTesting(
-                              [&was_called,
-                               &status](KeyRotationCommand::Status arg_status) {
-                                was_called = true;
-                                status = arg_status;
-                              }));
-
-  RunUntilIdle();
-
-  ASSERT_TRUE(was_called);
-  ASSERT_EQ(KeyRotationCommand::Status::FAILED, status);
+  RunTest(S_OK, installer::ROTATE_DTKEY_FAILED,
+          KeyRotationCommand::Status::FAILED);
 }
 
 TEST_F(WinKeyRotationCommandTest, RotateTimeout) {
-  KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl, kNonce};
-  bool was_called = false;
-  KeyRotationCommand::Status status = KeyRotationCommand::Status::FAILED;
-
-  WinKeyRotationCommand command(base::BindRepeating(
-      [](const wchar_t* command, const std::vector<std::string>& args,
-         DWORD* return_code) {
-        CheckCommandArgs(args);
-        // Not setting return_code.
-        return E_ABORT;
-      }));
-
-  command.Trigger(params, base::BindLambdaForTesting(
-                              [&was_called,
-                               &status](KeyRotationCommand::Status arg_status) {
-                                was_called = true;
-                                status = arg_status;
-                              }));
-
-  RunUntilIdle();
-
-  ASSERT_TRUE(was_called);
-  ASSERT_EQ(KeyRotationCommand::Status::TIMED_OUT, status);
+  RunTest(E_ABORT, absl::nullopt, KeyRotationCommand::Status::TIMED_OUT,
+          KeyRotationCommandError::kTimeout);
 }
 
-TEST_F(WinKeyRotationCommandTest, GoogleUpdateIssue) {
-  KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl, kNonce};
-  bool was_called = false;
-  KeyRotationCommand::Status status = KeyRotationCommand::Status::SUCCEEDED;
-
-  WinKeyRotationCommand command(base::BindRepeating(
-      [](const wchar_t* command, const std::vector<std::string>& args,
-         DWORD* return_code) {
-        CheckCommandArgs(args);
-        // Not setting return_code.
-        return WinKeyRotationCommand::GOOPDATE_E_APP_USING_EXTERNAL_UPDATER;
-      }));
-
-  command.enable_waiting_for_testing(false);
-  command.Trigger(params, base::BindLambdaForTesting(
-                              [&was_called,
-                               &status](KeyRotationCommand::Status arg_status) {
-                                was_called = true;
-                                status = arg_status;
-                              }));
-
-  RunUntilIdle();
-
-  ASSERT_TRUE(was_called);
-  ASSERT_EQ(KeyRotationCommand::Status::FAILED, status);
+TEST_F(WinKeyRotationCommandTest, GoogleUpdateConcurrencyIssue) {
+  RunTest(WinKeyRotationCommand::GOOPDATE_E_APP_USING_EXTERNAL_UPDATER,
+          absl::nullopt, KeyRotationCommand::Status::FAILED,
+          KeyRotationCommandError::kUpdaterConcurrency, /*skip_wait=*/true);
 }
 
 TEST_F(WinKeyRotationCommandTest, GeneralFailure) {
-  KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl, kNonce};
-  bool was_called = false;
-  KeyRotationCommand::Status status = KeyRotationCommand::Status::SUCCEEDED;
+  RunTest(S_OK, absl::nullopt, KeyRotationCommand::Status::FAILED,
+          KeyRotationCommandError::kUnknown);
+}
 
-  WinKeyRotationCommand command(base::BindRepeating(
+TEST_F(WinKeyRotationCommandTest, COMClassNotRegistered) {
+  RunTest(REGDB_E_CLASSNOTREG, absl::nullopt,
+          KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION,
+          KeyRotationCommandError::kClassNotRegistered);
+}
+
+TEST_F(WinKeyRotationCommandTest, COMClassNoInterface) {
+  RunTest(E_NOINTERFACE, absl::nullopt,
+          KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION,
+          KeyRotationCommandError::kNoInterface);
+}
+
+TEST_F(WinKeyRotationCommandTest, UnknownHresult) {
+  RunTest(CLASS_E_NOAGGREGATION, absl::nullopt,
+          KeyRotationCommand::Status::FAILED,
+          KeyRotationCommandError::kUnknown);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceTrust.KeyRotationCommand.Error.Hresult",
+      static_cast<int>(CLASS_E_NOAGGREGATION), 1);
+}
+
+TEST_F(WinKeyRotationCommandTest, UserLevelInstall) {
+  install_static::ScopedInstallDetails install_details(false);
+  KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl, kNonce};
+
+  WinKeyRotationCommand command(base::BindLambdaForTesting(
       [](const wchar_t* command, const std::vector<std::string>& args,
-         DWORD* return_code) {
-        CheckCommandArgs(args);
-        // Not setting return_code.
-        return E_FAIL;
+         absl::optional<DWORD>* return_code) {
+        NOTREACHED() << "Should not get to launching the command.";
+        return S_OK;
       }));
 
-  command.enable_waiting_for_testing(false);
-  command.Trigger(params, base::BindLambdaForTesting(
-                              [&was_called,
-                               &status](KeyRotationCommand::Status arg_status) {
-                                was_called = true;
-                                status = arg_status;
-                              }));
+  base::test::TestFuture<KeyRotationCommand::Status> future_status;
+  command.Trigger(params, future_status.GetCallback());
 
-  RunUntilIdle();
-
-  ASSERT_TRUE(was_called);
-  ASSERT_EQ(KeyRotationCommand::Status::FAILED, status);
+  EXPECT_EQ(future_status.Get(),
+            KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION);
+  VerifyHistograms(KeyRotationCommandError::kUserInstallation, absl::nullopt);
 }
 
 }  // namespace enterprise_connectors

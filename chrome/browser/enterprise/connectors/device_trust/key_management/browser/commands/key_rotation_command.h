@@ -25,6 +25,7 @@ class KeyRotationCommand {
     FAILED_KEY_CONFLICT,
     FAILED_OS_RESTRICTION,
     FAILED_INVALID_PERMISSIONS,
+    FAILED_INVALID_INSTALLATION,
   };
 
   // Trigger completion callback.  The single argument is the status of the

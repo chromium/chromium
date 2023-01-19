@@ -105,7 +105,10 @@ source_set("unit_tests") {
   if (is_win) {
     sources = [ "win_key_rotation_command_unittest.cc" ]
 
-    deps += [ "//chrome/installer/util:constants" ]
+    deps += [
+      "//chrome/install_static/test:test_support",
+      "//chrome/installer/util:constants",
+    ]
   }
 
   if (is_linux) {

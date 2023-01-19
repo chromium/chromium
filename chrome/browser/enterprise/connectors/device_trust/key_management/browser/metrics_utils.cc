@@ -59,6 +59,8 @@ DTKeyRotationResult ResultFromStatus(KeyRotationCommand::Status status) {
       return DTKeyRotationResult::kFailedOSRestriction;
     case KeyRotationCommand::Status::FAILED_INVALID_PERMISSIONS:
       return DTKeyRotationResult::kFailedInvalidPermissions;
+    case KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION:
+      return DTKeyRotationResult::kFailedInvalidInstallation;
   }
 }
 

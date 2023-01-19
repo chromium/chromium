@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment.h"
+#include "chrome/install_static/test/scoped_install_details.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 
 namespace enterprise_connectors {
@@ -28,9 +29,14 @@ class DeviceTrustTestEnvironmentWin : public DeviceTrustTestEnvironment,
   // DeviceTrustTestEnvironment:
   void SetUpExistingKey() override;
 
+ private:
   // RegistryOverrideManager for testing with registry
   registry_util::RegistryOverrideManager registry_override_manager_;
+
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+
+  // Used to fake that the browser was a system-level installation.
+  install_static::ScopedInstallDetails install_details_;
 };
 
 }  // namespace enterprise_connectors

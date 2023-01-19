@@ -924,6 +924,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.KeyRotationCommand.Error"
+    enum="DTKeyRotationCommandError" expires_after="2023-12-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded when the browser received a failed response when triggering a
+    Device Trust key rotation command. The browser will then attempt to
+    categorize the failure using the given enum.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.KeyRotationCommand.Error.Hresult"
+    enum="Hresult" expires_after="2023-12-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded when the browser failed to trigger a Device Trust key rotation
+    command through the updater for an unknown reason. This will capture the
+    unknown HRESULT returned via the COM APIs.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.KeyRotationCommand.ExitCode"
+    units="exit_code" expires_after="2023-12-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded when the browser received a failed response when triggering a
+    Device Trust key rotation command. The browser will then attempt to
+    categorize the failure using the given enum.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Mac.SecureEnclaveOperation.{KeyType}"
     enum="DTSecureEnclaveOperationStatus" expires_after="2023-12-01">
   <owner>hmare@google.com</owner>
