@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "content/browser/renderer_host/browsing_context_state.h"
+#include "content/browser/renderer_host/render_view_host_enums.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -33,7 +34,8 @@ class RenderViewHostFactory {
       RenderWidgetHostDelegate* widget_delegate,
       int32_t main_frame_routing_id,
       bool renderer_initiated_creation,
-      scoped_refptr<BrowsingContextState> main_browsing_context_state);
+      scoped_refptr<BrowsingContextState> main_browsing_context_state,
+      CreateRenderViewHostCase create_case);
 
   RenderViewHostFactory(const RenderViewHostFactory&) = delete;
   RenderViewHostFactory& operator=(const RenderViewHostFactory&) = delete;
@@ -70,7 +72,8 @@ class RenderViewHostFactory {
       int32_t routing_id,
       int32_t main_frame_routing_id,
       int32_t widget_routing_id,
-      scoped_refptr<BrowsingContextState> main_browsing_context_state) = 0;
+      scoped_refptr<BrowsingContextState> main_browsing_context_state,
+      CreateRenderViewHostCase create_case) = 0;
 
   // Registers your factory to be called when new RenderViewHosts are created.
   // We have only one global factory, so there must be no factory registered

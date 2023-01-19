@@ -213,7 +213,8 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
       frame_tree_.get(), site_instance_group_.get(),
       site_instance_->GetStoragePartitionConfig(), std::move(mock_host),
       web_contents_.get(), process_->GetNextRoutingID(),
-      process_->GetNextRoutingID(), nullptr);
+      process_->GetNextRoutingID(), nullptr,
+      CreateRenderViewHostCase::kDefault);
   parent_layer_ = cc::Layer::Create();
   parent_view_.SetLayer(parent_layer_);
   layer_ = cc::Layer::Create();

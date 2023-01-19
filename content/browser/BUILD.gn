@@ -1829,6 +1829,7 @@ source_set("browser") {
     "renderer_host/render_view_host_delegate.h",
     "renderer_host/render_view_host_delegate_view.cc",
     "renderer_host/render_view_host_delegate_view.h",
+    "renderer_host/render_view_host_enums.h",
     "renderer_host/render_view_host_factory.cc",
     "renderer_host/render_view_host_factory.h",
     "renderer_host/render_view_host_impl.cc",

@@ -25,6 +25,12 @@ void InitAndEnableRenderDocumentFeature(
 // The list of values to test for the "level" parameter.
 std::vector<std::string> RenderDocumentFeatureLevelValues();
 
+// Returns a list containing only the highest level of RenderDocument enabled
+// in the "level" parameter. This is useful for RenderDocument tests that expect
+// to enable the mode via this parameter, even if this is the only mode being
+// tested.
+std::vector<std::string> RenderDocumentFeatureFullyEnabled();
+
 // Returns the name for |render_document_level| that's valid for test params
 // (only contains alphanumeric characters or underscores).
 std::string GetRenderDocumentLevelNameForTestParams(

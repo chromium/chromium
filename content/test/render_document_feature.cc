@@ -20,9 +20,17 @@ void InitAndEnableRenderDocumentFeature(
 }
 
 std::vector<std::string> RenderDocumentFeatureLevelValues() {
+  // TODO(https://crbug.com/936696, rakina): Handle the
+  // RenderDocumentLevel::kAllFrames case.
   return {
       GetRenderDocumentLevelName(RenderDocumentLevel::kCrashedFrame),
       GetRenderDocumentLevelName(RenderDocumentLevel::kSubframe),
+  };
+}
+
+std::vector<std::string> RenderDocumentFeatureFullyEnabled() {
+  return {
+      GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames),
   };
 }
 

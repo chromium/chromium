@@ -42,7 +42,8 @@ class TestRenderViewHostFactory : public RenderViewHostFactory {
       int32_t routing_id,
       int32_t main_frame_routing_id,
       int32_t widget_routing_id,
-      scoped_refptr<BrowsingContextState> main_browsing_context_state) override;
+      scoped_refptr<BrowsingContextState> main_browsing_context_state,
+      CreateRenderViewHostCase create_case) override;
 };
 
 }  // namespace content

@@ -281,7 +281,8 @@ RenderViewHostImpl::RenderViewHostImpl(
     int32_t routing_id,
     int32_t main_frame_routing_id,
     bool has_initialized_audio_host,
-    scoped_refptr<BrowsingContextState> main_browsing_context_state)
+    scoped_refptr<BrowsingContextState> main_browsing_context_state,
+    CreateRenderViewHostCase create_case)
     : render_widget_host_(std::move(widget)),
       delegate_(delegate),
       render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(group)),
@@ -293,7 +294,8 @@ RenderViewHostImpl::RenderViewHostImpl(
       main_browsing_context_state_(
           main_browsing_context_state
               ? absl::make_optional(main_browsing_context_state->GetSafeRef())
-              : absl::nullopt) {
+              : absl::nullopt),
+      is_speculative_(create_case == CreateRenderViewHostCase::kSpeculative) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::RenderViewHostImpl",
               ChromeTrackEvent::kRenderViewHost, *this);
   TRACE_EVENT_BEGIN("navigation", "RenderViewHost",
@@ -335,8 +337,6 @@ RenderViewHostImpl::RenderViewHostImpl(
                              : blink::mojom::PageVisibilityState::kVisible);
 
   GetWidget()->set_owner_delegate(this);
-  frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
-  registered_with_frame_tree_ = true;
 }
 
 RenderViewHostImpl::~RenderViewHostImpl() {
@@ -358,8 +358,8 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   delegate_->RenderViewDeleted(this);
   GetProcess()->RemoveObserver(this);
 
-  // We may have already unregistered the RenderViewHost when marking this
-  // not available for reuse.
+  // We may have already unregistered the RenderViewHost when marking this not
+  // available for reuse.
   if (registered_with_frame_tree_)
     frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
 
@@ -369,6 +369,10 @@ RenderViewHostImpl::~RenderViewHostImpl() {
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {
   return delegate_;
+}
+
+base::WeakPtr<RenderViewHostImpl> RenderViewHostImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void RenderViewHostImpl::DisallowReuse() {

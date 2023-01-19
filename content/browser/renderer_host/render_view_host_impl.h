@@ -123,7 +123,8 @@ class CONTENT_EXPORT RenderViewHostImpl
       int32_t routing_id,
       int32_t main_frame_routing_id,
       bool has_initialized_audio_host,
-      scoped_refptr<BrowsingContextState> main_browsing_context_state);
+      scoped_refptr<BrowsingContextState> main_browsing_context_state,
+      CreateRenderViewHostCase create_case);
 
   RenderViewHostImpl(const RenderViewHostImpl&) = delete;
   RenderViewHostImpl& operator=(const RenderViewHostImpl&) = delete;
@@ -162,6 +163,20 @@ class CONTENT_EXPORT RenderViewHostImpl
       bool window_was_opened_by_another_window);
 
   RenderViewHostDelegate* GetDelegate();
+
+  bool is_speculative() { return is_speculative_; }
+  void set_is_speculative(bool is_speculative) {
+    is_speculative_ = is_speculative;
+  }
+  void set_is_registered_with_frame_tree(bool is_registered) {
+    registered_with_frame_tree_ = is_registered;
+  }
+
+  FrameTree::RenderViewHostMapId rvh_map_id() const {
+    return render_view_host_map_id_;
+  }
+
+  base::WeakPtr<RenderViewHostImpl> GetWeakPtr();
 
   // Tracks whether this RenderViewHost is in an active state (rather than
   // pending unload or unloaded), according to its main frame

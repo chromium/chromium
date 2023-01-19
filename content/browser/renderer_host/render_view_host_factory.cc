@@ -30,7 +30,8 @@ RenderViewHost* RenderViewHostFactory::Create(
     RenderWidgetHostDelegate* widget_delegate,
     int32_t main_frame_routing_id,
     bool renderer_initiated_creation,
-    scoped_refptr<BrowsingContextState> main_browsing_context_state) {
+    scoped_refptr<BrowsingContextState> main_browsing_context_state,
+    CreateRenderViewHostCase create_case) {
   int32_t routing_id = group->process()->GetNextRoutingID();
   int32_t widget_routing_id = group->process()->GetNextRoutingID();
 
@@ -38,7 +39,7 @@ RenderViewHost* RenderViewHostFactory::Create(
     return factory_->CreateRenderViewHost(
         frame_tree, group, storage_partition_config, delegate, widget_delegate,
         routing_id, main_frame_routing_id, widget_routing_id,
-        std::move(main_browsing_context_state));
+        std::move(main_browsing_context_state), create_case);
   }
 
   RenderViewHostImpl* view_host = new RenderViewHostImpl(
@@ -48,7 +49,7 @@ RenderViewHost* RenderViewHostFactory::Create(
           /*hidden=*/true, renderer_initiated_creation),
       delegate, routing_id, main_frame_routing_id,
       true /* has_initialized_audio_host */,
-      std::move(main_browsing_context_state));
+      std::move(main_browsing_context_state), create_case);
   return view_host;
 }
 

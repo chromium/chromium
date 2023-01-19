@@ -266,7 +266,8 @@ class TestRenderViewHost : public RenderViewHostImpl,
       RenderViewHostDelegate* delegate,
       int32_t routing_id,
       int32_t main_frame_routing_id,
-      scoped_refptr<BrowsingContextState> main_browsing_context_state);
+      scoped_refptr<BrowsingContextState> main_browsing_context_state,
+      CreateRenderViewHostCase create_case);
 
   TestRenderViewHost(const TestRenderViewHost&) = delete;
   TestRenderViewHost& operator=(const TestRenderViewHost&) = delete;
