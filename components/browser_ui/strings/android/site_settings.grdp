@@ -279,7 +279,7 @@
     This will clear all data and cookies stored by <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen.
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_OFFLINE_MESSAGE" desc="Text of the confirmation dialog, explaining that all offline data will be cleared (when clearing a site/sites).">
-    Any offline data will be cleared.
+    Any offline data will be cleared
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE" desc="Text of the confirmation dialog when the user ask to clear all data for multiple origins">
     This will clear <ph name="DATASIZE">%1$s<ex>1 GB</ex></ph> of data and cookies stored by sites.
@@ -288,10 +288,10 @@
     This will clear <ph name="DATASIZE">%1$s<ex>1 GB</ex></ph> of data and cookies stored by sites or by apps on your Home screen.
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of the site being cleared.">
-    You'll be signed out of this site.
+    You'll be signed out of this site
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_ALL_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of all sites being cleared.">
-    You'll be signed out of all sites.
+    You'll be signed out of all sites
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SITE_SETTINGS_REMOVE_SITE_AD_PERSONALIZATION" desc="A bullet in a list of data that gets deleted from the user's device when they choose 'Clear data' for a specific site. 1) Go to chrome://settings/content. 2) From the 'Recent activity' list, choose a site. 3) Click the 'Clear data' button. The 'Clear site data?' dialog appears. This string will appear as a new bullet at the bottom of the dialog.">
     Data that affects ad personalization is deleted
