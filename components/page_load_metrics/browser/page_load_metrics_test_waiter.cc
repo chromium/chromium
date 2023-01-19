@@ -243,6 +243,16 @@ void PageLoadMetricsTestWaiter::AddLoadingBehaviorExpectation(
   expected_.loading_behavior_flags_ |= behavior_flags;
 }
 
+void PageLoadMetricsTestWaiter::
+    AddMinimumLargestContentfulPaintImageExpectation(int expected_minimum) {
+  expected_num_largest_contentful_paint_image_ = expected_minimum;
+}
+
+void PageLoadMetricsTestWaiter::AddMinimumLargestContentfulPaintTextExpectation(
+    int expected_minimum) {
+  expected_num_largest_contentful_paint_text_ = expected_minimum;
+}
+
 void PageLoadMetricsTestWaiter::AddPageLayoutShiftExpectation(
     ShiftFrame shift_frame,
     uint64_t num_layout_shifts) {
@@ -485,12 +495,18 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
   // The largest contentful paint's size can be nonzero while the time can be 0
   // since a time of 0 is sent when the image is still painting. We set
   // LargestContentfulPaint to be observed when its time is non-zero.
-  if ((timing.paint_timing->largest_contentful_paint->largest_image_paint &&
-       !timing.paint_timing->largest_contentful_paint->largest_image_paint
-            ->is_zero()) ||
-      (timing.paint_timing->largest_contentful_paint->largest_text_paint &&
-       !timing.paint_timing->largest_contentful_paint->largest_text_paint
-            ->is_zero())) {
+  if (timing.paint_timing->largest_contentful_paint->largest_image_paint
+          .has_value() &&
+      timing.paint_timing->largest_contentful_paint->largest_image_paint
+          ->is_positive()) {
+    current_num_largest_contentful_paint_image_++;
+    matched_bits.Set(TimingField::kLargestContentfulPaint);
+  }
+  if (timing.paint_timing->largest_contentful_paint->largest_text_paint
+          .has_value() &&
+      timing.paint_timing->largest_contentful_paint->largest_text_paint
+          ->is_positive()) {
+    current_num_largest_contentful_paint_text_++;
     matched_bits.Set(TimingField::kLargestContentfulPaint);
   }
   if (timing.paint_timing->first_input_or_scroll_notified_timestamp)
@@ -653,6 +669,17 @@ bool PageLoadMetricsTestWaiter::NumInteractionsExpectationsSatisfied() const {
   return current_num_interactions_ == expected_num_interactions_;
 }
 
+bool PageLoadMetricsTestWaiter::NumLargestContentfulPaintImageSatisfied()
+    const {
+  return expected_num_largest_contentful_paint_image_ <=
+         current_num_largest_contentful_paint_image_;
+}
+
+bool PageLoadMetricsTestWaiter::NumLargestContentfulPaintTextSatisfied() const {
+  return expected_num_largest_contentful_paint_text_ <=
+         current_num_largest_contentful_paint_text_;
+}
+
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
@@ -669,7 +696,9 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          MemoryUpdateExpectationsSatisfied() &&
          TotalInputDelayExpectationsSatisfied() &&
          LayoutShiftExpectationsSatisfied() &&
-         NumInteractionsExpectationsSatisfied();
+         NumInteractionsExpectationsSatisfied() &&
+         NumLargestContentfulPaintImageSatisfied() &&
+         NumLargestContentfulPaintTextSatisfied();
 }
 
 void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {

@@ -120,6 +120,10 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // set of expected behaviors.
   void AddLoadingBehaviorExpectation(int behavior_flags);
 
+  void AddMinimumLargestContentfulPaintImageExpectation(int expected_minumum);
+
+  void AddMinimumLargestContentfulPaintTextExpectation(int expected_minumum);
+
   // Add a main/sub frame layout shift expectation.
   void AddPageLayoutShiftExpectation(
       ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
@@ -314,6 +318,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   bool TotalInputDelayExpectationsSatisfied() const;
   bool LayoutShiftExpectationsSatisfied() const;
   bool NumInteractionsExpectationsSatisfied() const;
+  bool NumLargestContentfulPaintImageSatisfied() const;
+  bool NumLargestContentfulPaintTextSatisfied() const;
 
   void AddObserver(page_load_metrics::PageLoadTracker* tracker);
 
@@ -369,6 +375,12 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   uint64_t current_num_interactions_ = 0;
   uint64_t expected_num_interactions_ = 0;
+
+  uint64_t expected_num_largest_contentful_paint_image_ = 0;
+  uint64_t current_num_largest_contentful_paint_image_ = 0;
+
+  uint64_t expected_num_largest_contentful_paint_text_ = 0;
+  uint64_t current_num_largest_contentful_paint_text_ = 0;
 
   ShiftFrame shift_frame_ = ShiftFrame::NoLayoutShift;
 
