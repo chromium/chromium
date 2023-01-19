@@ -2992,6 +2992,7 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 # Disable temporarily while updating WebRTC
 crbug.com/webrtc/10567 external/wpt/webrtc-extensions/RTCRtpParameters-maxFramerate.html [ Failure Pass ]
 crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Failure Pass ]
+crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Pass Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/css-values/ch-unit-018.html [ Failure ]
