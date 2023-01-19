@@ -815,6 +815,8 @@ void GetAssertionRequestHandler::DispatchRequestWithToken(
   state_ = State::kWaitingForResponseWithToken;
   CtapGetAssertionRequest request = SpecializeRequestForAuthenticator(
       request_, *selected_authenticator_for_pin_uv_auth_token_);
+  CtapGetAssertionOptions options = SpecializeOptionsForAuthenticator(
+      options_, *selected_authenticator_for_pin_uv_auth_token_);
   std::tie(request.pin_protocol, request.pin_auth) =
       pin_token_->PinAuth(request.client_data_hash);
 
@@ -823,7 +825,7 @@ void GetAssertionRequestHandler::DispatchRequestWithToken(
 
   auto request_copy(request);
   selected_authenticator_for_pin_uv_auth_token_->GetAssertion(
-      std::move(request_copy), options_,
+      std::move(request_copy), std::move(options),
       base::BindOnce(&GetAssertionRequestHandler::HandleResponse,
                      weak_factory_.GetWeakPtr(),
                      selected_authenticator_for_pin_uv_auth_token_,

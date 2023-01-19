@@ -6166,7 +6166,6 @@ TEST_F(PINAuthenticatorImplTest, PRFCreatedOnCTAP2) {
     virtual_device_factory_->mutable_state()->pin = kTestPIN;
     virtual_device_factory_->mutable_state()->pin_retries =
         device::kMaxPinRetries;
-    virtual_device_factory_->SetCtap2Config(config);
 
     PublicKeyCredentialCreationOptionsPtr options =
         GetTestPublicKeyCredentialCreationOptions();
@@ -8023,6 +8022,43 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WinCredProtectApiVersion) {
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+// Tests that chrome does not attempt setting the PRF extension during a
+// PinUvAuthToken GetAssertion request if it is not supported by the
+// authenticator.
+// Regression test for crbug.com/1408786.
+TEST_F(ResidentKeyAuthenticatorImplTest, PRFNotSupportedWithPinUvAuthToken) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  config.resident_key_support = true;
+  config.u2f_support = true;
+  config.pin_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.hmac_secret_support = false;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  virtual_device_factory_->mutable_state()->pin_retries =
+      device::kMaxPinRetries;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->user_verification = device::UserVerificationRequirement::kRequired;
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
+      options->allow_credentials[0].id, options->relying_party_id,
+      std::vector<uint8_t>{1, 2, 3, 4}, absl::nullopt, absl::nullopt));
+
+  auto prf_value = blink::mojom::PRFValues::New();
+  prf_value->first = std::vector<uint8_t>(32, 1);
+  std::vector<blink::mojom::PRFValuesPtr> inputs;
+  inputs.emplace_back(std::move(prf_value));
+  options->prf = true;
+  options->prf_inputs = std::move(inputs);
+  options->allow_credentials.clear();
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+}
 
 TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
   NavigateAndCommit(GURL(kTestOrigin1));
