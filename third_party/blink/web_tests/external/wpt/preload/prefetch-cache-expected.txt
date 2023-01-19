@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Prefetch should populate the HTTP cache
+FAIL Prefetch should respect cache-control: no-cache assert_equals: expected 2 but got 1
+PASS Prefetch should respect cache-control: no-store
+FAIL Prefetch should respect cache-control: max-age=0 assert_equals: expected 2 but got 1
+Harness: the test ran to completion.
+

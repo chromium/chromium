@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 370 tests; 347 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 398 tests; 375 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","false"],["fontsize","4"]] "foo<font size=2>ba[r</font>b]az" queryCommandIndeterm("stylewithcss") after
 FAIL [["stylewithcss","false"],["fontsize","4"]] "foo<font size=2>ba[r</font>b]az" queryCommandState("stylewithcss") after assert_equals: Wrong result returned expected false but got true
 PASS [["stylewithcss","false"],["fontsize","4"]] "foo<font size=2>ba[r</font>b]az" queryCommandValue("stylewithcss") after
@@ -370,5 +370,33 @@ PASS [["stylewithcss","false"],["fontsize","4"]] "<font size=6>fo[o</font><span 
 PASS [["stylewithcss","false"],["fontsize","4"]] "<font size=6>fo[o</font><span style=font-size:xx-large>b]ar</span>" queryCommandIndeterm("fontsize") after
 PASS [["stylewithcss","false"],["fontsize","4"]] "<font size=6>fo[o</font><span style=font-size:xx-large>b]ar</span>" queryCommandState("fontsize") after
 PASS [["stylewithcss","false"],["fontsize","4"]] "<font size=6>fo[o</font><span style=font-size:xx-large>b]ar</span>" queryCommandValue("fontsize") after
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>[abc]</font>": execCommand("fontSize", false, "7") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>[abc]</font>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>[abc]</font>" compare innerHTML
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>[abc]</font>": execCommand("fontSize", false, "7") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>[abc]</font>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>[abc]</font>" compare innerHTML
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000 face=monospace>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000 face=monospace>[abc]</font>": execCommand("fontSize", false, "7") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000 face=monospace>[abc]</font>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000 face=monospace>[abc]</font>" compare innerHTML
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>[a]bc</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>[a]bc</font>": execCommand("fontSize", false, "7") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>[a]bc</font>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>[a]bc</font>" compare innerHTML
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>ab[c]</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>ab[c]</font>": execCommand("fontSize", false, "7") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>ab[c]</font>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font color=#ff0000>ab[c]</font>" compare innerHTML
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>[a]bc</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>[a]bc</font>": execCommand("fontSize", false, "7") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>[a]bc</font>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>[a]bc</font>" compare innerHTML
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>ab[c]</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>ab[c]</font>": execCommand("fontSize", false, "7") return value
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>ab[c]</font>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["fontSize","7"]] "<font face=monospace>ab[c]</font>" compare innerHTML
 Harness: the test ran to completion.
 

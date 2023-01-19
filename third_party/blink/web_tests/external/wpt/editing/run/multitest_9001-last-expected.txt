@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 709 tests; 668 PASS, 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 769 tests; 728 PASS, 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandIndeterm("inserttext") before
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandState("inserttext") before
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandValue("inserttext") before
@@ -153,7 +153,7 @@ PASS [["delete",""],["inserttext","a"]] "foo<sub><font size=2>[bar</font></sub>b
 PASS [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]": execCommand("delete", false, "") return value
 PASS [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]": execCommand("inserttext", false, "a") return value
 PASS [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]" checks for modifications to non-editable content
-FAIL [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub><font size=\"1\">a</font></sub>" but got "foo<span style=\"font-size:10.8333px\">a</span>"
+FAIL [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\"1\"><sub>a</sub></font>" but got "foo<span style=\"font-size:10.8333px\">a</span>"
 PASS [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]" queryCommandIndeterm("delete") before
 PASS [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]" queryCommandState("delete") before
 PASS [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>baz]" queryCommandValue("delete") before
@@ -169,7 +169,7 @@ PASS [["delete",""],["inserttext","a"]] "foo<font size=2><sub>[bar</sub></font>b
 PASS [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]": execCommand("delete", false, "") return value
 PASS [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]": execCommand("inserttext", false, "a") return value
 PASS [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]" checks for modifications to non-editable content
-FAIL [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub><font size=\"3\">a</font></sub>" but got "fooa"
+FAIL [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<font size=\"3\"><sub>a</sub></font>" but got "fooa"
 PASS [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]" queryCommandIndeterm("delete") before
 PASS [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]" queryCommandState("delete") before
 PASS [["delete",""],["inserttext","a"]] "foo<sub><font size=3>[bar</font></sub>baz]" queryCommandValue("delete") before
@@ -709,5 +709,65 @@ PASS [["insertlinebreak",""],["inserttext","d"],["inserttext","e"]] "<div>abc{<s
 PASS [["insertlinebreak",""],["inserttext","d"],["inserttext","e"]] "<div>abc{<s></s><b><i>de]f</i></b>ghi</div>": execCommand("inserttext", false, "e") return value
 PASS [["insertlinebreak",""],["inserttext","d"],["inserttext","e"]] "<div>abc{<s></s><b><i>de]f</i></b>ghi</div>" checks for modifications to non-editable content
 PASS [["insertlinebreak",""],["inserttext","d"],["inserttext","e"]] "<div>abc{<s></s><b><i>de]f</i></b>ghi</div>" compare innerHTML
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>": execCommand("fontsize", false, "4") return value
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>": execCommand("insertText", false, "a") return value
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>" compare innerHTML
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>" queryCommandIndeterm("fontsize") before
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>" queryCommandState("fontsize") before
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>" queryCommandValue("fontsize") before
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>" queryCommandIndeterm("fontsize") after
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>" queryCommandState("fontsize") after
+PASS [["stylewithcss","false"],["fontsize","4"],["insertText","a"]] "<font size=7>{}<br></font>" queryCommandValue("fontsize") after
+PASS [["stylewithcss","true"],["italic",""],["insertText","a"]] "<span style=font-weight:bold>{}<br></span></b>": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["italic",""],["insertText","a"]] "<span style=font-weight:bold>{}<br></span></b>": execCommand("italic", false, "") return value
+PASS [["stylewithcss","true"],["italic",""],["insertText","a"]] "<span style=font-weight:bold>{}<br></span></b>": execCommand("insertText", false, "a") return value
+PASS [["stylewithcss","true"],["italic",""],["insertText","a"]] "<span style=font-weight:bold>{}<br></span></b>" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["italic",""],["insertText","a"]] "<span style=font-weight:bold>{}<br></span></b>" compare innerHTML
+PASS [["stylewithcss","false"],["fontSize","4"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["fontSize","4"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("fontSize", false, "4") return value
+PASS [["stylewithcss","false"],["fontSize","4"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("backColor", false, "#00dddd") return value
+PASS [["stylewithcss","false"],["fontSize","4"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("insertText", false, "d") return value
+PASS [["stylewithcss","false"],["fontSize","4"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["fontSize","4"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef" compare innerHTML
+PASS [["stylewithcss","false"],["foreColor","#ff0000"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["foreColor","#ff0000"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("foreColor", false, "#ff0000") return value
+PASS [["stylewithcss","false"],["foreColor","#ff0000"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("backColor", false, "#00dddd") return value
+PASS [["stylewithcss","false"],["foreColor","#ff0000"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("insertText", false, "d") return value
+PASS [["stylewithcss","false"],["foreColor","#ff0000"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["foreColor","#ff0000"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef" compare innerHTML
+PASS [["stylewithcss","false"],["fontName","monospace"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("fontName", false, "monospace") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("backColor", false, "#00dddd") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("insertText", false, "d") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["fontName","monospace"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef" compare innerHTML
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontSize","4"],["insertText","d"]] "abc[]ef": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontSize","4"],["insertText","d"]] "abc[]ef": execCommand("backColor", false, "#00dddd") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontSize","4"],["insertText","d"]] "abc[]ef": execCommand("fontSize", false, "4") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontSize","4"],["insertText","d"]] "abc[]ef": execCommand("insertText", false, "d") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontSize","4"],["insertText","d"]] "abc[]ef" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontSize","4"],["insertText","d"]] "abc[]ef" compare innerHTML
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["foreColor","#ff0000"],["insertText","d"]] "abc[]ef": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["foreColor","#ff0000"],["insertText","d"]] "abc[]ef": execCommand("backColor", false, "#00dddd") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["foreColor","#ff0000"],["insertText","d"]] "abc[]ef": execCommand("foreColor", false, "#ff0000") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["foreColor","#ff0000"],["insertText","d"]] "abc[]ef": execCommand("insertText", false, "d") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["foreColor","#ff0000"],["insertText","d"]] "abc[]ef" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["foreColor","#ff0000"],["insertText","d"]] "abc[]ef" compare innerHTML
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontName","monospace"],["insertText","d"]] "abc[]ef": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontName","monospace"],["insertText","d"]] "abc[]ef": execCommand("backColor", false, "#00dddd") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontName","monospace"],["insertText","d"]] "abc[]ef": execCommand("fontName", false, "monospace") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontName","monospace"],["insertText","d"]] "abc[]ef": execCommand("insertText", false, "d") return value
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontName","monospace"],["insertText","d"]] "abc[]ef" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["backColor","#00dddd"],["fontName","monospace"],["insertText","d"]] "abc[]ef" compare innerHTML
+PASS [["stylewithcss","false"],["fontName","monospace"],["foreColor","#ff0000"],["fontSize","7"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["foreColor","#ff0000"],["fontSize","7"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("fontName", false, "monospace") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["foreColor","#ff0000"],["fontSize","7"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("foreColor", false, "#ff0000") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["foreColor","#ff0000"],["fontSize","7"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("fontSize", false, "7") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["foreColor","#ff0000"],["fontSize","7"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("backColor", false, "#00dddd") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["foreColor","#ff0000"],["fontSize","7"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef": execCommand("insertText", false, "d") return value
+PASS [["stylewithcss","false"],["fontName","monospace"],["foreColor","#ff0000"],["fontSize","7"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["fontName","monospace"],["foreColor","#ff0000"],["fontSize","7"],["backColor","#00dddd"],["insertText","d"]] "abc[]ef" compare innerHTML
 Harness: the test ran to completion.
 

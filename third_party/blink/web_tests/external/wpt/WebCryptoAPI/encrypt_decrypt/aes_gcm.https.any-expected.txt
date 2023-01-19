@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 331 tests; 217 PASS, 114 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 325 tests; 217 PASS, 108 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS setup
 PASS AES-GCM 128-bit key, 32-bit tag
 PASS AES-GCM 128-bit key, no additional data, 32-bit tag
@@ -300,36 +300,30 @@ PASS AES-GCM 128-bit key, illegal tag length 48-bits
 PASS AES-GCM 128-bit key, illegal tag length 72-bits
 PASS AES-GCM 128-bit key, illegal tag length 95-bits
 PASS AES-GCM 128-bit key, illegal tag length 129-bits
-FAIL AES-GCM 128-bit key, illegal tag length 256-bits assert_equals: Should throw an OperationError instead of Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range expected "OperationError" but got "TypeError"
 FAIL importKey step: AES-GCM 192-bit key, illegal tag length 24-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 24-bits Reached unreachable code
 FAIL importKey step: AES-GCM 192-bit key, illegal tag length 48-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 48-bits Reached unreachable code
 FAIL importKey step: AES-GCM 192-bit key, illegal tag length 72-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 72-bits Reached unreachable code
 FAIL importKey step: AES-GCM 192-bit key, illegal tag length 95-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 95-bits Reached unreachable code
 FAIL importKey step: AES-GCM 192-bit key, illegal tag length 129-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 129-bits Reached unreachable code
-FAIL importKey step: AES-GCM 192-bit key, illegal tag length 256-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 256-bits Reached unreachable code
 PASS AES-GCM 256-bit key, illegal tag length 24-bits
 PASS AES-GCM 256-bit key, illegal tag length 48-bits
 PASS AES-GCM 256-bit key, illegal tag length 72-bits
 PASS AES-GCM 256-bit key, illegal tag length 95-bits
 PASS AES-GCM 256-bit key, illegal tag length 129-bits
-FAIL AES-GCM 256-bit key, illegal tag length 256-bits assert_equals: Should throw an OperationError instead of Failed to execute 'encrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range expected "OperationError" but got "TypeError"
 PASS AES-GCM 128-bit key, illegal tag length 24-bits decryption
 PASS AES-GCM 128-bit key, illegal tag length 48-bits decryption
 PASS AES-GCM 128-bit key, illegal tag length 72-bits decryption
 PASS AES-GCM 128-bit key, illegal tag length 95-bits decryption
 PASS AES-GCM 128-bit key, illegal tag length 129-bits decryption
-FAIL AES-GCM 128-bit key, illegal tag length 256-bits decryption assert_equals: Should throw an OperationError instead of Failed to execute 'decrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range expected "OperationError" but got "TypeError"
 FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 24-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 24-bits Reached unreachable code
 FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 48-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 48-bits Reached unreachable code
 FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 72-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 72-bits Reached unreachable code
 FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 95-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 95-bits Reached unreachable code
 FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 129-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 129-bits Reached unreachable code
-FAIL importKey step: decryption AES-GCM 192-bit key, illegal tag length 256-bits assert_unreached: importKey failed for AES-GCM 192-bit key, illegal tag length 256-bits Reached unreachable code
 PASS AES-GCM 256-bit key, illegal tag length 24-bits decryption
 PASS AES-GCM 256-bit key, illegal tag length 48-bits decryption
 PASS AES-GCM 256-bit key, illegal tag length 72-bits decryption
 PASS AES-GCM 256-bit key, illegal tag length 95-bits decryption
 PASS AES-GCM 256-bit key, illegal tag length 129-bits decryption
-FAIL AES-GCM 256-bit key, illegal tag length 256-bits decryption assert_equals: Should throw an OperationError instead of Failed to execute 'decrypt' on 'SubtleCrypto': AesGcmParams: tagLength: Outside of numeric range expected "OperationError" but got "TypeError"
 Harness: the test ran to completion.
 

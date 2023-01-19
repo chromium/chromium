@@ -2,6 +2,9 @@ This is a testharness.js-based test.
 PASS Check that src: url("foo.ttf") is valid
 PASS Check that src: url("foo.ttf"), url("bar.ttf") is valid
 PASS Check that src: url("foo.ttf") format() is invalid
+PASS Check that src: url("foo.ttf") dummy() is invalid
+PASS Check that src: url("foo.ttf") format("woff") dummy() is invalid
+PASS Check that src: url("foo.ttf") dummy() format("woff") is invalid
 PASS Check that src: url("foo.ttf") format("collection") is valid
 PASS Check that src: url("foo.ttf") format("opentype") is valid
 PASS Check that src: url("foo.ttf") format("truetype") is valid

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Unknown element names get blocked without allowUnknownMarkup.
+PASS Unknown element names pass with allowUnknownMarkup.
+FAIL Unknown attributes names get blocked without allowUnknownMarkup. Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+FAIL Unknown attribute names pass with allowUnknownMarkup. Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+Harness: the test ran to completion.
+

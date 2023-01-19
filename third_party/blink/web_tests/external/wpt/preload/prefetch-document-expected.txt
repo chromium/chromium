@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS same origin document prefetch without 'as' should be consumed
+PASS same-site different-origin document prefetch without 'as' should be consumed
+PASS different-site document prefetch without 'as' should not be consumed
+FAIL different-site document prefetch with 'as=document' should not be consumed assert_equals: expected 2 but got 1
+PASS Document prefetch should send the exact Accept header as navigation
+Harness: the test ran to completion.
+
