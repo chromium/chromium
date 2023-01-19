@@ -49,9 +49,11 @@ namespace {
 // should be higher than the preconnect one, otherwise preconnect will never
 // run.
 const base::FeatureParam<double> kPrerenderDUIConfidenceCutoff{
-    &blink::features::kPrerender2, "prerender_dui_confidence_cutoff", 0.8};
+    &features::kAutocompleteActionPredictorConfidenceCutoff,
+    "prerender_dui_confidence_cutoff", 0.8};
 const base::FeatureParam<double> kPreconnectConfidenceCutoff{
-    &blink::features::kPrerender2, "preconnect_dui_confidence_cutoff", 0.5};
+    &features::kAutocompleteActionPredictorConfidenceCutoff,
+    "preconnect_dui_confidence_cutoff", 0.5};
 
 const int kMinimumNumberOfHits = 3;
 const size_t kMaximumTransitionalMatchesSize = 1024 * 1024;  // 1 MB.
