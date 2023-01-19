@@ -32,7 +32,6 @@ import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
-import com.ark.browser.ui.widget.homepage.ArkTabAdapter;
 import com.ark.browser.ui.widget.homepage.SwitcherRecyclerLayout;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 import com.ark.browser.utils.ArkLogger;
@@ -41,7 +40,6 @@ import com.zpj.bus.ZBus;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.utils.FileUtils;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
@@ -83,6 +81,7 @@ public class ArkMainFragment extends BaseFragment implements
 //    private ProgressBar mProgressBar;
 //    private EditText mUrlBar;
     private SwitcherRecyclerLayout mSwitcher;
+    private View mBrowserLayout;
 
     private BottomController mBottomController;
     private TabSwitcherManager mSwitcherManager;
@@ -204,40 +203,39 @@ public class ArkMainFragment extends BaseFragment implements
                 .doOnChange(this::onSearchEvent)
                 .subscribe();
 
-        TabListManager.getInstance().restore(new Callback<Void>() {
-            @Override
-            public void onResult(Void result) {
-                Runnable runnable = () -> {
-                    ITabGroup tabGroup = TabListManager.getInstance().getTabGroup(false);
-                    int count = tabGroup.getCount();
-                    ArkLogger.e(TAG, "restore count=" + count);
+        TabListManager.getInstance().restore(result -> {
+            Runnable runnable = () -> {
+                ITabGroup tabGroup = TabListManager.getInstance().getTabGroup(false);
+                int count = tabGroup.getCount();
+                ArkLogger.e(TAG, "restore count=" + count);
 
-                    if (count > 0) {
-                        ArkLogger.e(TAG, "restore selectTabAt " + tabGroup.getIndex());
-                        tabGroup.selectTabAt(tabGroup.getIndex());
-                    } else {
-                        ArkLogger.e(TAG, "restore openNewTab");
-                        LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
-                        TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-                    }
-                };
-                ThreadPool.postOnUIThread(() -> {
-                    if (isViewCreated) {
-                        runnable.run();
-                    } else {
-                        mOpenPage = runnable;
-                    }
+                if (count > 0) {
+                    ArkLogger.e(TAG, "restore selectTabAt " + tabGroup.getIndex());
+                    tabGroup.selectTabAt(tabGroup.getIndex());
+                } else {
+                    ArkLogger.e(TAG, "restore openNewTab");
+                    LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
+                    TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
+                }
+            };
+            ThreadPool.postOnUIThread(() -> {
+                if (isViewCreated) {
+                    runnable.run();
+                } else {
+                    mOpenPage = runnable;
+                }
 
-                    if (mSwitcher != null) {
-                        mSwitcher.notifyDataSetChanged();
-                    }
-                });
-            }
+                if (mSwitcher != null) {
+                    mSwitcher.notifyDataSetChanged();
+                }
+            });
         });
     }
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
+
+        mBrowserLayout = findViewById(R.id.browser_layout);
 
         mViewHolder = findViewById(R.id.compositor_view_holder);
 //        ViewGroup rootView = (ViewGroup) _mActivity.getWindow().getDecorView().getRootView();
@@ -250,55 +248,11 @@ public class ArkMainFragment extends BaseFragment implements
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
 
         mSwitcher = findViewById(R.id.tab_switcher);
-        mSwitcherManager = new TabSwitcherManager(mSwitcher);
+        mSwitcherManager = new TabSwitcherManager(mBrowserLayout, mSwitcher);
 
         BottomControlBar bottomControlBar = findViewById(R.id.bottom_control_bar);
-        bottomControlBar.setSwitcher(mSwitcher);
+        bottomControlBar.setSwitcherManager(mSwitcherManager);
         mBottomController = new BottomController(view);
-
-//        ImageView btnBack = findViewById(R.id.btn_back);
-//        ImageView btnForward = findViewById(R.id.btn_forward);
-//
-//        btnBack.setOnClickListener(v -> {
-//            if (TabListManager.getInstance().getCurrentTabList().goBack()) {
-//                return;
-//            }
-//            ZToast.warning("cant go back!");
-//        });
-//
-//        btnForward.setOnClickListener(v -> {
-//            if (TabListManager.getInstance().getCurrentTabList().goForward()) {
-//                return;
-//            }
-//            ZToast.warning("cant go forward!");
-//        });
-//
-//        mProgressBar = findViewById(R.id.progress_bar);
-//        mProgressBar.setMax(100);
-//
-//        mUrlBar = findViewById(R.id.et_url);
-//        mUrlBar.setOnEditorActionListener((v, actionId, event) -> {
-//            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//                LoadUrlParams params = new LoadUrlParams(mUrlBar.getText().toString()
-//                        , PageTransition.LINK);
-//                TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-//            }
-//            return false;
-//        });
-//
-//        ImageView btnRefresh = findViewById(R.id.btn_refresh);
-//        btnRefresh.setOnClickListener(v -> {
-//            Tab tab = getActivityTab();
-//            if (tab != null) {
-//                tab.reload();
-//            }
-//        });
-//
-//        ImageView btnMenu = findViewById(R.id.btn_menu);
-//        btnMenu.setOnClickListener(v -> {
-////            MainMenuDialog.show((ArkBrowserActivity)_mActivity)
-//            start(new MainMenuDialog());
-//        });
     }
 
     @Override

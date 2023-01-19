@@ -100,7 +100,9 @@ public class ArkTabAdapter implements Adapter {
         FitWidthImageView ivThumbnail = view.findViewById(R.id.iv_thumbnail);
         PageInfo pageInfo = iTab.getCurrentPageInfo();
         if (pageInfo != null) {
-            cardView.setCardBackgroundColor(pageInfo.getThemeColor());
+            // TODO
+//            cardView.setCardBackgroundColor(pageInfo.getThemeColor());
+            cardView.setCardBackgroundColor(Color.WHITE);
             tvTitle.setText(pageInfo.getTitle());
 //            Tab tab = PageCacheManager.getInstance().findPage(pageInfo);
 //            if (tab == null || tab.getFavicon() == null) {

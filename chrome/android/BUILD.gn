@@ -269,6 +269,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/item_tab_card.xml",
     "//chrome/android/java/res_app/layout/item_text.xml",
     "//chrome/android/java/res_app/layout/item_website.xml",
+    "//chrome/android/java/res_app/layout/layout_browser.xml",
     "//chrome/android/java/res_app/layout/layout_collections_search_bar.xml",
     "//chrome/android/java/res_app/layout/layout_controller.xml",
     "//chrome/android/java/res_app/layout/layout_dialog_header.xml",

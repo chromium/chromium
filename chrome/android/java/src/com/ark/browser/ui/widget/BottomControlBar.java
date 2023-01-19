@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.tab.PageSnapshotManager;
-import com.ark.browser.ui.widget.homepage.SwitcherRecyclerLayout;
+import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 
 import org.chromium.chrome.R;
 
@@ -34,7 +34,7 @@ public class BottomControlBar extends FrameLayout {
     private boolean isMoved;
     private boolean isDragToSwitch;
 
-    private SwitcherRecyclerLayout mSwitcher;
+    private TabSwitcherManager mSwitcherManager;
 
     public BottomControlBar(@NonNull Context context) {
         this(context, null);
@@ -55,14 +55,14 @@ public class BottomControlBar extends FrameLayout {
 
     }
 
-    public void setSwitcher(SwitcherRecyclerLayout switcher) {
-        mSwitcher = switcher;
+    public void setSwitcherManager(TabSwitcherManager switcherManager) {
+        mSwitcherManager = switcherManager;
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
 
-        if (mSwitcher == null) {
+        if (mSwitcherManager == null) {
             return super.onInterceptTouchEvent(event);
         }
 
@@ -117,7 +117,7 @@ public class BottomControlBar extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mSwitcher == null) {
+        if (mSwitcherManager == null) {
             return super.onTouchEvent(event);
         }
         Log.d(TAG, "onTouchEvent event=" + MotionEvent.actionToString(event.getAction()));
@@ -134,8 +134,8 @@ public class BottomControlBar extends FrameLayout {
                     isMoved = true;
                     isDragToSwitch = true;
 
-                    mSwitcher.setVisibility(VISIBLE);
-                    mSwitcher.dragToSwitchTab(deltaX, deltaY);
+                    mSwitcherManager.showSwitcher();
+                    mSwitcherManager.getSwitcher().dragToSwitchTab(deltaX, deltaY);
                     break;
                 }
                 // 取消TabSwitcherButton的长按
@@ -143,8 +143,8 @@ public class BottomControlBar extends FrameLayout {
 //                menuButton.cancelLongPress();
                 isMoved = true;
                 isUp = true;
-                mSwitcher.setVisibility(VISIBLE);
-                mSwitcher.moveDrag(deltaX, deltaY);
+                mSwitcherManager.showSwitcher();
+                mSwitcherManager.getSwitcher().moveDrag(deltaX, deltaY);
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
@@ -152,11 +152,10 @@ public class BottomControlBar extends FrameLayout {
                 isDragToSwitch = false;
                 if (isMoved) {
                     mTracker.computeCurrentVelocity(1000, maxV);
-                    mSwitcher.setVisibility(VISIBLE);
                     if (isUp) {
-                        mSwitcher.endDrag(mTracker.getXVelocity(), mTracker.getYVelocity());
+                        mSwitcherManager.getSwitcher().endDrag(mTracker.getXVelocity(), mTracker.getYVelocity());
                     } else {
-                        mSwitcher.endDragToSwitchTab(mTracker.getXVelocity());
+                        mSwitcherManager.getSwitcher().endDragToSwitchTab(mTracker.getXVelocity());
                     }
                     mTracker.clear();
                     mTracker.recycle();

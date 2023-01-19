@@ -8,17 +8,27 @@ import com.ark.browser.tab.TabListManager;
 public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
 
+    private final View mBrowserLayout;
     private final SwitcherRecyclerLayout mSwitcher;
 
     private final Adapter mAdapter;
 
-    public TabSwitcherManager(SwitcherRecyclerLayout switcher) {
+    public TabSwitcherManager(View browserLayout, SwitcherRecyclerLayout switcher) {
+        mBrowserLayout = browserLayout;
         mSwitcher = switcher;
         mSwitcher.addCallback(this);
         mAdapter = new ArkTabAdapter();
         mSwitcher.setAdapter(mAdapter);
     }
 
+    public SwitcherRecyclerLayout getSwitcher() {
+        return mSwitcher;
+    }
+
+    public void showSwitcher() {
+        mSwitcher.setVisibility(View.VISIBLE);
+        mBrowserLayout.setVisibility(View.INVISIBLE);
+    }
 
     @Override
     public boolean onSwipe(int position) {
@@ -81,6 +91,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     public void goToBrowser(boolean animated) {
         // TODO
         mSwitcher.setVisibility(View.INVISIBLE);
+        mBrowserLayout.setVisibility(View.VISIBLE);
     }
 
     public void goToBrowser() {
@@ -89,14 +100,16 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     public void goToTabSwitcher() {
         // TODO
+        mBrowserLayout.setVisibility(View.INVISIBLE);
         mSwitcher.setVisibility(View.VISIBLE);
         PageSnapshotManager.getInstance().cacheCurrentPage();
         mSwitcher.post(mSwitcher::goToIdle);
     }
 
     public void goToLauncher(boolean animated) {
-        // TODO
-        mSwitcher.setVisibility(View.INVISIBLE);
+        // TODO make it
+//        mSwitcher.setVisibility(View.INVISIBLE);
+        goToBrowser();
     }
 
     public void goToLauncher() {

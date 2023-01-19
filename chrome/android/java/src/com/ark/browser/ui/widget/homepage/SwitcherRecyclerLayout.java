@@ -829,7 +829,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         }
 
 
-        mBackgroundAlpha = 1f - (float) width / (getWidth() - mChildWidth);
+        mBackgroundAlpha = 1f - (float) width / getWidth();
         setBackgroundColor(ColorUtils.alphaColor(mShadowColor, mBackgroundAlpha));
     }
 
@@ -1001,7 +1001,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     public void moveDrag(float dx, float dy) {
-        mPosition = TabListManager.getInstance().getCurrentTabList().getIndex();
+        mPosition = adapter.getPosition();
 
         if (getChildCount() == 0) {
 
@@ -1035,7 +1035,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         mCurrentTouchView.measure(widthSpec, heightSpec);
         mCurrentTouchView.layout(left, top, right, bottom);
 
-        mBackgroundAlpha = 1f - (float) width / (getWidth() - mChildWidth);
+        mBackgroundAlpha = 1f - (float) width / getWidth();
         setBackgroundColor(ColorUtils.alphaColor(mShadowColor, mBackgroundAlpha));
     }
 
