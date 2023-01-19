@@ -10,6 +10,7 @@ import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interf
 import {domainQuestions, questionnaireBegin} from 'chrome://os-feedback/questionnaire.js';
 import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -329,11 +330,21 @@ export function searchPageTestSuite() {
     // Wait for the iframe completes loading.
     await eventToPromise('load', iframe);
 
+    // There is another message posted from iframe which sends the height of
+    // the help content.
+    const expectedMessageEventCount = 2;
+    let messageEventCount = 0;
+    const resolver = new PromiseResolver();
+
     window.addEventListener('message', (event) => {
       if (OS_FEEDBACK_UNTRUSTED_ORIGIN === event.origin &&
           'help-content-received-for-testing' === event.data.id) {
         helpContentReceived = true;
         helpContentCountReceived = event.data.count;
+      }
+      messageEventCount++;
+      if (messageEventCount === expectedMessageEventCount) {
+        resolver.resolve();
       }
     });
 
@@ -345,7 +356,7 @@ export function searchPageTestSuite() {
     iframe.contentWindow.postMessage(data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
 
     // Wait for the "help-content-received" message has been received.
-    await eventToPromise('message', window);
+    await resolver.promise;
     // Verify that help contents have been received.
     assertTrue(helpContentReceived);
     // Verify that 5 help contents have been received.

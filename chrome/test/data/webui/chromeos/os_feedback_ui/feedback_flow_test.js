@@ -11,9 +11,10 @@ import {OS_FEEDBACK_TRUSTED_ORIGIN} from 'chrome://os-feedback/help_content.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise, isVisible} from '../test_util.js';
 
 export function FeedbackFlowTestSuite() {
@@ -671,6 +672,12 @@ export function FeedbackFlowTestSuite() {
     // Wait for the iframe completes loading.
     await eventToPromise('load', iframe);
 
+    // There is another message posted from iframe which sends the height of
+    // the help content.
+    const expectedMessageEventCount = 2;
+    let messageEventCount = 0;
+    const resolver = new PromiseResolver();
+
     window.addEventListener('message', event => {
       if ('help-content-clicked-for-testing' === event.data.id &&
           OS_FEEDBACK_TRUSTED_ORIGIN === event.origin) {
@@ -678,6 +685,10 @@ export function FeedbackFlowTestSuite() {
         feedbackServiceProvider.recordPreSubmitAction(
             FeedbackAppPreSubmitAction.kViewedHelpContent);
         feedbackServiceProvider.recordHelpContentSearchResultCount();
+      }
+      messageEventCount++;
+      if (messageEventCount === expectedMessageEventCount) {
+        resolver.resolve();
       }
     });
 
@@ -687,8 +698,9 @@ export function FeedbackFlowTestSuite() {
     };
     iframe.contentWindow.parent.postMessage(data, OS_FEEDBACK_TRUSTED_ORIGIN);
 
-    // Wait for the "help-content-clicked" message has been received
-    await eventToPromise('message', window);
+    // Wait for the "help-content-clicked" message has been received.
+    await resolver.promise;
+
     // Verify that help content have been clicked.
     assertTrue(helpContentClicked);
     // Verify that viewedHelpContent metrics is emitted.

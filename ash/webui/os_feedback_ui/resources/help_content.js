@@ -140,6 +140,16 @@ export class HelpContentElement extends HelpContentElementBase {
   }
 
   /**
+   * When there isn't available help content to display, display such a message
+   * with an image.
+   * @return {boolean}
+   * @protected
+   */
+  showHelpContentNotAvailableMsg_() {
+    return this.searchResult.contentList.length === 0;
+  }
+
+  /**
    * Find the icon name to be used for a help content type.
    * @param {!HelpContentType} contentType
    * @return {string}
@@ -179,7 +189,8 @@ export class HelpContentElement extends HelpContentElementBase {
   }
 
   /**
-   * Gets the relative source path to the "help content is offline" illustration
+   * Gets the relative source path to the "help content is offline"
+   * illustration.
    * @return {string}
    * @protected
    */
@@ -188,6 +199,20 @@ export class HelpContentElement extends HelpContentElementBase {
       return 'illustrations/network_unavailable_darkmode.svg';
     } else {
       return 'illustrations/network_unavailable_lightmode.svg';
+    }
+  }
+
+  /**
+   * Gets the relative source path to the "help content isn't available"
+   * illustration.
+   * @return {string}
+   * @protected
+   */
+  getContentNotAvailableIllustrationSrc_() {
+    if (this.isDarkModeEnabled_) {
+      return 'illustrations/load_content_error_darkmode.svg';
+    } else {
+      return 'illustrations/load_content_error_lightmode.svg';
     }
   }
 

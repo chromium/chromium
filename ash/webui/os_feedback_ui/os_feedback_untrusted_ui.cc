@@ -33,6 +33,10 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"helpContentOfflineAltText",
        IDS_FEEDBACK_TOOL_HELP_CONTENT_OFFLINE_ALT_TEXT},
       {"helpContentLabelTooltip", IDS_FEEDBACK_TOOL_HELP_CONTENT_LABEL_TOOLTIP},
+      {"helpContentNotAvailableMessage",
+       IDS_FEEDBACK_TOOL_HELP_CONTENT_NOT_AVAILABLE_MESSAGE},
+      {"helpContentNotAvailableAltText",
+       IDS_FEEDBACK_TOOL_HELP_CONTENT_NOT_AVAILABLE_ALT_TEXT},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

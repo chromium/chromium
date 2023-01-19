@@ -3,6 +3,11 @@
     padding-bottom: 3px;
   }
 
+  /* Special attribute to hide elements. */
+  [hidden] {
+    display: none !important;
+  }
+
   .help-content-label {
     color: var(--cros-text-color-secondary);
     font-size: 15px;
@@ -38,7 +43,7 @@
     padding-inline-end: 12px;
   }
 
-  .help-content-offline-details {
+  .no-help-content-details {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -46,7 +51,7 @@
     padding-top: 16px;
   }
 
-  .help-content-offline-text {
+  .no-help-content-text {
     color: var(--cros-text-color-secondary);
     line-height: 18px;
     max-width: 200px;
@@ -112,10 +117,10 @@
     </paper-tooltip>
   </div>
   <template is="dom-if" if="[[!isOnline_]]">
-    <div class="help-content-offline-details">
+    <div class="no-help-content-details">
       <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]"
            alt="[[i18n('helpContentOfflineAltText')]]">
-      <div class="help-content-offline-text">
+      <div class="no-help-content-text">
         [[i18n('helpContentOfflineMessage')]]
       </div>
     </div>
@@ -134,5 +139,13 @@
         </div>
       </template>
     </dom-repeat>
+    <div class="no-help-content-details"
+        hidden$="[[!showHelpContentNotAvailableMsg_(searchResult)]]">
+      <img src="[[getContentNotAvailableIllustrationSrc_(isDarkModeEnabled_)]]"
+          alt="[[i18n('helpContentNotAvailableAltText')]]">
+      <div class="no-help-content-text">
+        [[i18n('helpContentNotAvailableMessage')]]
+      </div>
+    </div>
   </template>
 </div>

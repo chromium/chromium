@@ -14,6 +14,9 @@ export function helpContentTestSuite() {
   /** @type {?HelpContentElement} */
   let helpContentElement = null;
 
+  const noContentImgSelector = 'img[alt="Help content isn\'t available"]';
+  const offlineImgSelector = 'img[alt="Device is offline"]';
+
   setup(() => {
     document.body.innerHTML = '';
   });
@@ -186,6 +189,9 @@ export function helpContentTestSuite() {
     assertEquals(
         'https://support.google.com/chromebook/?q=22864239', helpLinks[4].href);
     verifyIconName(helpLinks[4], fakeHelpContentList[4].contentType);
+
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
   });
 
 
@@ -208,6 +214,8 @@ export function helpContentTestSuite() {
     assertFalse(isVisible(getElement('#helpContentIcon')));
 
     verifyPopularHelpContent();
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
   });
 
   /**
@@ -222,7 +230,9 @@ export function helpContentTestSuite() {
     await goOffline();
 
     // Offline-only content should exist in the DOM when offline.
-    assertTrue(isVisible(getElement('.help-content-offline-details')));
+    assertTrue(isVisible(getElement(offlineImgSelector)));
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
 
     // Online-only content should *not* exist in the DOM when offline.
     assertFalse(isVisible(getElement('.help-item-icon')));
@@ -230,10 +240,12 @@ export function helpContentTestSuite() {
     await goOnline();
 
     // Offline-only content should *not* exist in the DOM when online.
-    assertFalse(isVisible(getElement('.help-content-offline-details')));
+    assertFalse(isVisible(getElement('offlineImgSelector')));
 
     // Online-only content should exist in the DOM when online.
     assertTrue(isVisible(getElement('.help-item-icon')));
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
   });
 
   /**
@@ -252,12 +264,16 @@ export function helpContentTestSuite() {
     assertEquals(
         'No suggested content. See top help content.', title.textContent);
 
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
     await goOffline();
 
     title = getElement('.help-content-label');
     // When offline, we expect the title to always be "Top help content".
     assertTrue(!!title);
     assertEquals('Top help content', title.textContent);
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
   });
 
   /**
@@ -275,11 +291,75 @@ export function helpContentTestSuite() {
     assertTrue(!!title);
     assertEquals('Suggested help content', title.textContent);
 
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
+
     await goOffline();
 
     title = getElement('.help-content-label');
     // When offline, we expect the title to always be "Top help content".
     assertTrue(!!title);
     assertEquals('Top help content', title.textContent);
+
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
+  });
+
+  /**
+   * Test that when help content isn't available, the correct image is
+   * displayed.
+   *
+   * Case 1: the query is empty.
+   */
+  test('TopHelpContentNotAvailable', async () => {
+    // Initialize element with no content and empty query.
+    await initializeHelpContentElement(
+        /* contentList= */[], /* isQueryEmpty= */ true,
+        /* isPopularContent= */ true);
+
+    // Verify the title is what we expect when showing top content.
+    const title = getElement('.help-content-label');
+    assertTrue(!!title);
+    assertEquals('Top help content', title.textContent);
+
+    // Content not available image should be visible.
+    assertTrue(isVisible(getElement(noContentImgSelector)));
+    assertFalse(isVisible(getElement(offlineImgSelector)));
+
+    await goOffline();
+
+    // When offline, should show offline message.
+    assertTrue(isVisible(getElement(offlineImgSelector)));
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
+  });
+
+  /**
+   * Test that when help content isn't available, the correct image is
+   * displayed.
+   *
+   * Case 2: the query is NOT empty.
+   */
+  test('SuggestedHelpContentNotAvailable', async () => {
+    // Initialize element with no content and empty query.
+    await initializeHelpContentElement(
+        /* contentList= */[], /* isQueryEmpty= */ false,
+        /* isPopularContent= */ false);
+
+    // Verify the title is what we expect when there may be suggested matches.
+    const title = getElement('.help-content-label');
+    assertTrue(!!title);
+    assertEquals('Suggested help content', title.textContent);
+
+    // Content not available image should be visible.
+    assertTrue(isVisible(getElement(noContentImgSelector)));
+    assertFalse(isVisible(getElement(offlineImgSelector)));
+
+    await goOffline();
+
+    // When offline, should show offline message.
+    assertTrue(isVisible(getElement(offlineImgSelector)));
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentImgSelector)));
   });
 }
