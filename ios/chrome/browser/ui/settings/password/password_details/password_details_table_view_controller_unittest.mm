@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
@@ -49,10 +50,6 @@ constexpr char kAndroid[] = "android://hash@com.example.my.app";
 constexpr char kUsername[] = "test@egmail.com";
 constexpr char kPassword[] = "test";
 }
-
-@interface PasswordDetailsTableViewController (Test)
-- (void)copyPasswordDetails:(id)sender;
-@end
 
 // Test class that conforms to PasswordDetailsHanler in order to test the
 // presenter methods are called correctly.

@@ -60,6 +60,7 @@ source_set("password_details_ui") {
     "password_details_menu_item.mm",
     "password_details_table_view_constants.h",
     "password_details_table_view_constants.mm",
+    "password_details_table_view_controller+private.h",
     "password_details_table_view_controller.h",
     "password_details_table_view_controller.mm",
     "password_details_table_view_controller_delegate.h",
