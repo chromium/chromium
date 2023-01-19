@@ -561,9 +561,9 @@ ScopedPrerenderWebContentsDelegate::~ScopedPrerenderWebContentsDelegate() {
     web_contents_.get()->SetDelegate(nullptr);
 }
 
-bool ScopedPrerenderWebContentsDelegate::IsPrerender2Supported(
+PreloadingEligibility ScopedPrerenderWebContentsDelegate::IsPrerender2Supported(
     WebContents& web_contents) {
-  return true;
+  return PreloadingEligibility::kEligible;
 }
 
 }  // namespace test

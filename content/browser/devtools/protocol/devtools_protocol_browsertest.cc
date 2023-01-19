@@ -239,8 +239,9 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
   }
 
   // WebContentsDelegate overrides.
-  bool IsPrerender2Supported(WebContents& web_contents) override {
-    return true;
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override {
+    return PreloadingEligibility::kEligible;
   }
 
   WebContents* web_contents() const { return shell()->web_contents(); }
@@ -2615,8 +2616,9 @@ class DevToolsProtocolDeviceEmulationPrerenderTest
   }
 
   // WebContentsDelegate overrides.
-  bool IsPrerender2Supported(WebContents& web_contents) override {
-    return true;
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override {
+    return PreloadingEligibility::kEligible;
   }
 
   WebContents* GetWebContents() const { return shell()->web_contents(); }

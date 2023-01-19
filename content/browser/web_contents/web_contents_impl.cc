@@ -9596,8 +9596,12 @@ void WebContentsImpl::ResetPrerender2Disabled() {
   prerender2_disabled_ = false;
 }
 
-bool WebContentsImpl::IsPrerender2Disabled() {
-  return prerender2_disabled_ || !GetDelegate()->IsPrerender2Supported(*this);
+PreloadingEligibility WebContentsImpl::IsPrerender2Disabled() {
+  if (prerender2_disabled_) {
+    return PreloadingEligibility::kPreloadingDisabled;
+  }
+
+  return GetDelegate()->IsPrerender2Supported(*this);
 }
 
 void WebContentsImpl::AboutToBeDiscarded(WebContents* new_contents) {

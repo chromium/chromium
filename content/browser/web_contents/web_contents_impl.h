@@ -585,7 +585,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ResetPrerender2Disabled() override;
   // Resets the bit to explicitly disable Prerender2 for this WebContents. Note
   // that this may not equate to the feature being enabled.
-  bool IsPrerender2Disabled();
+  PreloadingEligibility IsPrerender2Disabled();
 
   void AboutToBeDiscarded(WebContents* new_contents) override;
 

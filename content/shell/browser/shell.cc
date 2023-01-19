@@ -640,8 +640,8 @@ bool Shell::IsBackForwardCacheSupported() {
   return true;
 }
 
-bool Shell::IsPrerender2Supported(WebContents& web_contents) {
-  return true;
+PreloadingEligibility Shell::IsPrerender2Supported(WebContents& web_contents) {
+  return PreloadingEligibility::kEligible;
 }
 
 std::unique_ptr<WebContents> Shell::ActivatePortalWebContents(

@@ -210,7 +210,8 @@ class ScopedPrerenderWebContentsDelegate : public WebContentsDelegate {
   ~ScopedPrerenderWebContentsDelegate() override;
 
   // WebContentsDelegate override.
-  bool IsPrerender2Supported(content::WebContents& web_contents) override;
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override;
 
  private:
   base::WeakPtr<WebContents> web_contents_;

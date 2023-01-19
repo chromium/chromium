@@ -18,10 +18,11 @@ class PrerenderNewTabHandle::WebContentsDelegateImpl
   WebContentsDelegateImpl() = default;
   ~WebContentsDelegateImpl() override = default;
 
-  bool IsPrerender2Supported(WebContents& web_contents) override {
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override {
     // This should be checked in the initiator's WebContents.
     NOTREACHED();
-    return false;
+    return PreloadingEligibility::kPreloadingDisabled;
   }
 
   // TODO(crbug.com/1350676): Investigate if we have to override other

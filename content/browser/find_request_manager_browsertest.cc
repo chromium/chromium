@@ -1212,8 +1212,9 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerPortalTest, Portal) {
 class FindTestWebContentsPrerenderingDelegate
     : public FindTestWebContentsDelegate {
  public:
-  bool IsPrerender2Supported(WebContents& web_contents) override {
-    return true;
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override {
+    return PreloadingEligibility::kEligible;
   }
 };
 

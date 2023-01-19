@@ -705,9 +705,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // indication that the cache will be used.
   virtual bool IsBackForwardCacheSupported();
 
-  // Returns true if Prerender2 (see
+  // Returns content::PreloadingEligibility::kEligible if Prerender2 (see
   // content/browser/preloading/prerender/README.md for details) is supported.
-  virtual bool IsPrerender2Supported(WebContents& web_contents);
+  // If it is not supported, returns the reason.
+  virtual content::PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents);
 
   // Requests the delegate to replace |predecessor_contents| with
   // |portal_contents| in the container that holds |predecessor_contents|. If

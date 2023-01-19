@@ -67,8 +67,9 @@ class MockWebContentsDelegate : public WebContentsDelegate {
                               const std::u16string& message,
                               int32_t line_no,
                               const std::u16string& source_id) override;
-  bool IsPrerender2Supported(WebContents& web_contents) override {
-    return true;
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override {
+    return PreloadingEligibility::kEligible;
   }
 
  private:

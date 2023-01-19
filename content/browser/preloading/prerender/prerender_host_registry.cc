@@ -127,11 +127,24 @@ int PrerenderHostRegistry::CreateAndStartHost(
         base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
                        base::Unretained(this), attributes.prerendering_url));
 
-    // Check whether preloading is enabled. If users disable this setting, it
-    // means users do not want to preload pages.
-    if (initiator_web_contents.IsPrerender2Disabled()) {
+    // Check whether preloading is enabled. If it is not enabled, report the
+    // reason.
+    if (auto reason = initiator_web_contents.IsPrerender2Disabled();
+        reason != PreloadingEligibility::kEligible) {
+      switch (reason) {
+        case PreloadingEligibility::kPreloadingDisabled:
+          // TODO(crbug.com/1382315): add
+          // PrerenderFinalStatus::kPreloadingDisabled
+          break;
+        case PreloadingEligibility::kBatterySaverEnabled:
+          // TODO(crbug.com/1382315): add
+          // PrerenderFinalStatus::kBatterySaverEnabled
+          break;
+        default:
+          NOTREACHED();
+      }
       if (attempt)
-        attempt->SetEligibility(PreloadingEligibility::kPreloadingDisabled);
+        attempt->SetEligibility(reason);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
