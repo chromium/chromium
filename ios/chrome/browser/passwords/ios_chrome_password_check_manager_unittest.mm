@@ -336,3 +336,61 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckCompromisedCredentialsCount) {
   EXPECT_THAT(manager().GetInsecureCredentials(),
               ElementsAre(CredentialUIEntry(form2)));
 }
+
+// Tests that the correct warning type is returned.
+TEST_F(IOSChromePasswordCheckManagerTest,
+       CheckReturnedHighestPriorityWarningType) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
+  // The "no insecure passwords" warning is the highest priority warning.
+  EXPECT_THAT(manager().GetWarningOfHighestPriority(),
+              WarningType::kNoInsecurePasswordsWarning);
+
+  // Add a muted password.
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername216);
+  AddIssueToForm(&form1, InsecureType::kLeaked, base::Minutes(1),
+                 /*is_muted=*/true);
+  store().AddLogin(form1);
+  RunUntilIdle();
+  // The "dismissed warnings" warning becomes the highest priority warning.
+  EXPECT_THAT(manager().GetWarningOfHighestPriority(),
+              WarningType::kDismissedWarningsWarning);
+
+  // Add a weak password.
+  PasswordForm form2 = MakeSavedPassword(kExampleCom, kUsername216);
+  AddIssueToForm(&form2, InsecureType::kWeak, base::Minutes(1));
+  store().AddLogin(form2);
+  RunUntilIdle();
+  // TODO(crbug.com/1406540): Verify that the "weak passwords" warning becomes
+  // the highest priority warning once the weak passwords are going to be
+  // returned in InsecureCredentialsManager::GetInsecureCredentialEntries() (as
+  // of now, we don't take them into account and filter them out). Until then,
+  // the "dismissed warnings" warning stays the highest priority warning.
+  EXPECT_THAT(manager().GetWarningOfHighestPriority(),
+              WarningType::kNoInsecurePasswordsWarning);
+
+  // Add a reused password.
+  PasswordForm form3 = MakeSavedPassword(kExampleCom, kUsername216);
+  AddIssueToForm(&form3, InsecureType::kReused, base::Minutes(1));
+  store().AddLogin(form3);
+  RunUntilIdle();
+  // TODO(crbug.com/1406540): Verify that the "reused passwords" warning becomes
+  // the highest priority warning once the reused passwords are going to be
+  // returned in InsecureCredentialsManager::GetInsecureCredentialEntries() (as
+  // of now, we don't take them into account and filter them out). Until then,
+  // the "dismissed warnings" warning stays the highest priority warning.
+  EXPECT_THAT(manager().GetWarningOfHighestPriority(),
+              WarningType::kNoInsecurePasswordsWarning);
+
+  // Add an unmuted compromised password.
+  PasswordForm form4 = MakeSavedPassword(kExampleCom, kUsername216);
+  AddIssueToForm(&form4, InsecureType::kLeaked, base::Minutes(1));
+  store().AddLogin(form4);
+  RunUntilIdle();
+  // The "compromised passwords" warning becomes the highest priority warning.
+  EXPECT_THAT(manager().GetWarningOfHighestPriority(),
+              WarningType::kCompromisedPasswordsWarning);
+}

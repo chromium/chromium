@@ -74,8 +74,6 @@ PasswordCheckState ConvertBulkCheckState(State state) {
 }
 
 // Returns true if the Password Checkup feature flag is enabled.
-// TODO(crbug.com/1406871): Remove this when kIOSPasswordCheckup flag is
-// removed.
 bool IsPasswordCheckupEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kIOSPasswordCheckup);
@@ -161,14 +159,41 @@ IOSChromePasswordCheckManager::GetInsecureCredentials() const {
   if (!IsPasswordCheckupEnabled() &&
       base::FeatureList::IsEnabled(
           password_manager::features::kMuteCompromisedPasswords)) {
-    base::EraseIf(insecure_crendentials, [](const auto& credential) {
-      return (credential.IsLeaked() &&
-              credential.password_issues.at(InsecureType::kLeaked).is_muted) ||
-             (credential.IsPhished() &&
-              credential.password_issues.at(InsecureType::kPhished).is_muted);
-    });
+    base::EraseIf(insecure_crendentials,
+                  [](const auto& credential) { return credential.IsMuted(); });
   }
   return insecure_crendentials;
+}
+
+WarningType IOSChromePasswordCheckManager::GetWarningOfHighestPriority() const {
+  std::vector<CredentialUIEntry> insecure_credentials =
+      insecure_credentials_manager_.GetInsecureCredentialEntries();
+
+  bool has_reused_passwords = false;
+  bool has_weak_passwords = false;
+  bool has_muted_warnings = false;
+
+  for (const auto& credential : insecure_credentials) {
+    if (credential.IsMuted()) {
+      has_muted_warnings = true;
+    } else if (credential.IsPhished() || credential.IsLeaked()) {
+      return WarningType::kCompromisedPasswordsWarning;
+    } else if (credential.IsReused()) {
+      has_reused_passwords = true;
+    } else if (credential.IsWeak()) {
+      has_weak_passwords = true;
+    }
+  }
+
+  if (has_reused_passwords) {
+    return WarningType::kReusedPasswordsWarning;
+  } else if (has_weak_passwords) {
+    return WarningType::kWeakPasswordsWarning;
+  } else if (has_muted_warnings) {
+    return WarningType::kDismissedWarningsWarning;
+  }
+
+  return WarningType::kNoInsecurePasswordsWarning;
 }
 
 void IOSChromePasswordCheckManager::OnSavedPasswordsChanged() {

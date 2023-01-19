@@ -205,22 +205,6 @@ std::vector<api::passwords_private::CompromiseType> GetCompromiseType(
   return types;
 }
 
-bool IsCredentialMuted(const CredentialUIEntry& entry) {
-  if (!entry.IsLeaked() && !entry.IsPhished())
-    return false;
-
-  bool is_muted = true;
-  if (entry.IsLeaked()) {
-    is_muted &=
-        entry.password_issues.at(InsecureType::kLeaked).is_muted.value();
-  }
-  if (entry.IsPhished()) {
-    is_muted &=
-        entry.password_issues.at(InsecureType::kPhished).is_muted.value();
-  }
-  return is_muted;
-}
-
 api::passwords_private::CompromisedInfo CreateCompromiseInfo(
     const CredentialUIEntry& credential) {
   api::passwords_private::CompromisedInfo compromise_info;
@@ -230,7 +214,7 @@ api::passwords_private::CompromisedInfo CreateCompromiseInfo(
         credential.GetLastLeakedOrPhishedTime().ToJsTimeIgnoringNull();
     compromise_info.elapsed_time_since_compromise =
         FormatElapsedTime(credential.GetLastLeakedOrPhishedTime());
-    compromise_info.is_muted = IsCredentialMuted(credential);
+    compromise_info.is_muted = credential.IsMuted();
   }
   compromise_info.compromise_types = GetCompromiseType(credential);
   return compromise_info;

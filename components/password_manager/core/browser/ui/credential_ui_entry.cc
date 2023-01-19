@@ -165,6 +165,11 @@ bool CredentialUIEntry::IsWeak() const {
   return password_issues.contains(InsecureType::kWeak);
 }
 
+bool CredentialUIEntry::IsMuted() const {
+  return (IsLeaked() && password_issues.at(InsecureType::kLeaked).is_muted) ||
+         (IsPhished() && password_issues.at(InsecureType::kPhished).is_muted);
+}
+
 const base::Time CredentialUIEntry::GetLastLeakedOrPhishedTime() const {
   DCHECK(IsLeaked() || IsPhished());
   base::Time compromise_time;
