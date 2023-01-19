@@ -101,12 +101,6 @@ int NextServiceId() {
   return ++status_icon_count;
 }
 
-std::string ServiceNameFromId(int service_id) {
-  return std::string(kInterfaceStatusNotifierItem) + '-' +
-         base::NumberToString(base::Process::Current().Pid()) + '-' +
-         base::NumberToString(service_id);
-}
-
 std::string PropertyIdFromId(int service_id) {
   return "chrome_status_icon_" + base::NumberToString(service_id);
 }
@@ -295,19 +289,6 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(dbus::Response* response) {
   }
 
   service_id_ = NextServiceId();
-  bus_->RequestOwnership(ServiceNameFromId(service_id_),
-                         dbus::Bus::ServiceOwnershipOptions::REQUIRE_PRIMARY,
-                         base::BindOnce(&StatusIconLinuxDbus::OnOwnership,
-                                        weak_factory_.GetWeakPtr()));
-}
-
-void StatusIconLinuxDbus::OnOwnership(const std::string& service_name,
-                                      bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!success) {
-    delegate_->OnImplInitializationFailed();
-    return;
-  }
 
   static constexpr struct {
     const char* name;
@@ -383,7 +364,7 @@ void StatusIconLinuxDbus::OnInitialized(bool success) {
   dbus::MethodCall method_call(kInterfaceStatusNotifierWatcher,
                                kMethodRegisterStatusNotifierItem);
   dbus::MessageWriter writer(&method_call);
-  writer.AppendString(ServiceNameFromId(service_id_));
+  writer.AppendString(bus_->GetConnectionName());
   watcher_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                        base::BindOnce(&StatusIconLinuxDbus::OnRegistered,
                                       weak_factory_.GetWeakPtr()));
