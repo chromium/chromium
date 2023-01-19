@@ -2288,7 +2288,7 @@
   {
     "name": "enable-experimental-accessibility-switch-access-text",
     "owners": [ "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 130
   },
   {
     "name": "enable-experimental-cookie-features",
