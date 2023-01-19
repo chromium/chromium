@@ -2996,6 +2996,8 @@ crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Fai
 crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-values/ch-unit-018.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-values/ic-unit-015.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-palette-empty-font-family.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
 crbug.com/626703 external/wpt/css/mediaqueries/negation-001.html [ Failure ]
