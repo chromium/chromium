@@ -399,6 +399,7 @@
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
+#include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
@@ -1271,6 +1272,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       registry);
   extensions::login_api::RegisterLocalStatePrefs(registry);
   ::onc::RegisterPrefs(registry);
+  metrics::structured::ChromeStructuredMetricsRecorder::RegisterLocalStatePrefs(
+      registry);
   policy::ActiveDirectoryDeviceStateUploader::RegisterLocalStatePrefs(registry);
   policy::ActiveDirectoryMigrationManager::RegisterLocalStatePrefs(registry);
   policy::AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(registry);
