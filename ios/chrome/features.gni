@@ -13,9 +13,6 @@ declare_args() {
   # not build as a framework.
   ios_chrome_links_with_lottie_framework = true
 
-  # Enable MetricKit in Chrome to collect runtime data.
-  ios_enable_metrickit = false
-
   # Enable an experimental option to dump sandbox.
   ios_enable_sandbox_dump = false
 }

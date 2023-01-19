@@ -7,9 +7,6 @@ import("//ios/chrome/features.gni")
 
 tweak_info_plist("experimental_info_plist") {
   info_plists = [ "Settings.bundle/Experimental.plist" ]
-  if (ios_enable_metrickit) {
-    info_plists += [ "Settings.bundle/ExperimentalMetricKit.plist" ]
-  }
   if (ios_enable_sandbox_dump) {
     info_plists += [ "Settings.bundle/ExperimentalSandboxDump.plist" ]
   }
