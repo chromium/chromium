@@ -1972,6 +1972,8 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
 
     triggerScreenState(screenId, stateId) {
       const screen = this.screenMap[screenId];
+      // Disable userActed from triggering chrome.send() and crashing.
+      document.getElementById(screenId).userActed = function(){};
       const state = screen.stateMap_[stateId];
       var data = {};
       if (state.data) {
