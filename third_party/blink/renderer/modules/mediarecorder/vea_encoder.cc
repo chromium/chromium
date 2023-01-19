@@ -67,8 +67,6 @@ VEAEncoder::VEAEncoder(
       force_next_frame_to_be_keyframe_(false),
       on_error_cb_(on_error_cb) {
   DCHECK(gpu_factories_);
-  DCHECK_GE(size.width(), kVEAEncoderMinResolutionWidth);
-  DCHECK_GE(size.height(), kVEAEncoderMinResolutionHeight);
 }
 
 VEAEncoder::~VEAEncoder() {
@@ -114,8 +112,12 @@ void VEAEncoder::BitstreamBufferReady(
       output_buffer->mapping.GetMemoryAsSpan<char>(metadata.payload_size_bytes);
   std::string data(data_span.begin(), data_span.end());
 
-  const auto front_frame = frames_in_encode_.front();
+  auto front_frame = frames_in_encode_.front();
   frames_in_encode_.pop();
+
+  if (metadata.encoded_size) {
+    front_frame.first.visible_rect_size = *metadata.encoded_size;
+  }
 
   on_encoded_video_cb_.Run(front_frame.first, std::move(data), std::string(),
                            front_frame.second, metadata.key_frame);
@@ -151,8 +153,11 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   TRACE_EVENT0("media", "VEAEncoder::EncodeFrame");
   DVLOG(3) << __func__;
 
-  if (input_visible_size_ != frame->visible_rect().size() && video_encoder_)
+  if (input_visible_size_ != frame->visible_rect().size() && video_encoder_) {
+    // TODO(crbug.com/719023): This is incorrect. Flush() should instead be
+    // called to ensure submitted outputs are retrieved first.
     video_encoder_.reset();
+  }
 
   if (!video_encoder_) {
     bool use_native_input =
@@ -161,7 +166,7 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   }
 
   if (error_notified_) {
-    DVLOG(3) << "An error occurred in VEA encoder";
+    DLOG(ERROR) << "An error occurred in VEA encoder";
     return;
   }
 

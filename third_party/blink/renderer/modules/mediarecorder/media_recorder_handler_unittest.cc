@@ -75,7 +75,7 @@ struct MediaRecorderTestParams {
 static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
     {true, false, "video/webm", "vp8", true},
     {true, false, "video/webm", "vp9", true},
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {true, false, "video/x-matroska", "avc1", false},
 #endif
     {false, true, "audio/webm", "opus", true},
@@ -215,6 +215,16 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
   MediaRecorderHandlerTest()
       : MediaRecorderHandlerFixture(GetParam().has_video,
                                     GetParam().has_audio) {}
+
+  bool IsCodecSupported() {
+#if !BUILDFLAG(RTC_USE_H264)
+    // Test requires OpenH264 encoder. It can't use the VEA encoder.
+    if (std::string(GetParam().codecs) == "avc1") {
+      return false;
+    }
+#endif
+    return true;
+  }
 };
 
 // Checks that canSupportMimeType() works as expected, by sending supported
@@ -240,7 +250,7 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
       mime_type_video, example_good_codecs_3));
   const String example_good_codecs_4("H264");
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
   EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
       mime_type_video, example_good_codecs_4));
 #else
@@ -322,8 +332,9 @@ TEST_P(MediaRecorderHandlerTest, InitializeStartStop) {
 // contained encoded data in writeData().
 TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
   // Video-only test.
-  if (GetParam().has_audio)
+  if (GetParam().has_audio || !IsCodecSupported()) {
     return;
+  }
 
   AddTracks();
 
@@ -467,8 +478,9 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
 // Starts up recording and forces a WebmMuxer's libwebm error.
 TEST_P(MediaRecorderHandlerTest, WebmMuxerErrorWhileEncoding) {
   // Video-only test: Audio would be very similar.
-  if (GetParam().has_audio)
+  if (GetParam().has_audio || !IsCodecSupported()) {
     return;
+  }
 
   AddTracks();
 
@@ -698,7 +710,7 @@ TEST_F(MediaRecorderHandlerAudioVideoTest,
   media_recorder_handler_ = nullptr;
 }
 
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 struct H264ProfileTestParams {
   const bool has_audio;
@@ -763,7 +775,7 @@ static const MediaRecorderPassthroughTestParams
     kMediaRecorderPassthroughTestParams[] = {
         {"video/webm;codecs=vp8", media::VideoCodec::kVP8},
         {"video/webm;codecs=vp9", media::VideoCodec::kVP9},
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
         {"video/x-matroska;codecs=avc1", media::VideoCodec::kH264},
 #endif
 };

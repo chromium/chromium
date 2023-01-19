@@ -127,6 +127,8 @@ class MODULES_EXPORT MediaRecorderHandler final
   void UpdateTrackLiveAndEnabled(const MediaStreamComponent& track,
                                  bool is_video);
 
+  void OnVideoEncodingError();
+
   // Set to true if there is no MIME type configured upon Initialize()
   // and the video track's source supports encoded output, giving
   // this class the freedom to provide whatever it chooses to produce.

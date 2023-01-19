@@ -81,6 +81,8 @@ constexpr media::VideoCodec MediaVideoCodecFromCodecId(
       return media::VideoCodec::kVP8;
     case VideoTrackRecorder::CodecId::kVp9:
       return media::VideoCodec::kVP9;
+// Note: The H264 tests in this file are written explicitly for OpenH264 and
+// will fail for hardware encoders that aren't 1 in 1 out.
 #if BUILDFLAG(RTC_USE_H264)
     case VideoTrackRecorder::CodecId::kH264:
       return media::VideoCodec::kH264;
@@ -124,6 +126,12 @@ class VideoTrackRecorderTest
         .Times(testing::AnyNumber());
     EXPECT_CALL(*mock_source_, OnCapturingLinkSecured(_))
         .Times(testing::AnyNumber());
+    EXPECT_CALL(*mock_source_, GetCropVersion())
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(0));
+    EXPECT_CALL(*mock_source_, SetCanDiscardAlpha(_))
+        .Times(testing::AnyNumber());
+
     auto platform_track = std::make_unique<MediaStreamVideoTrack>(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true /* enabled */);
@@ -137,7 +145,9 @@ class VideoTrackRecorderTest
     EXPECT_TRUE(scheduler::GetSingleThreadTaskRunnerForTesting()
                     ->BelongsToCurrentThread());
 
-    ON_CALL(*platform_, GetGpuFactories()).WillByDefault(Return(nullptr));
+    EXPECT_CALL(*platform_, GetGpuFactories())
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(Return(nullptr));
   }
 
   VideoTrackRecorderTest(const VideoTrackRecorderTest&) = delete;
@@ -163,6 +173,8 @@ class VideoTrackRecorderTest
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             &VideoTrackRecorderTest::OnSourceReadyStateEnded,
             CrossThreadUnretained(this))),
+        ConvertToBaseOnceCallback(CrossThreadBindOnce(
+            &VideoTrackRecorderTest::OnFailed, CrossThreadUnretained(this))),
         0u /* bits_per_second */);
   }
 
@@ -183,6 +195,7 @@ class VideoTrackRecorderTest
                                                   capture_time);
   }
 
+  void OnFailed() { FAIL(); }
   void OnError() { video_track_recorder_->OnError(); }
 
   bool CanEncodeAlphaChannel() {

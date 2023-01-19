@@ -111,7 +111,7 @@ static const struct {
 } kPreferredCodecIdAndVEAProfiles[] = {
     {CodecId::kVp8, media::VP8PROFILE_MIN, media::VP8PROFILE_MAX},
     {CodecId::kVp9, media::VP9PROFILE_MIN, media::VP9PROFILE_MAX},
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {CodecId::kH264, media::H264PROFILE_MIN, media::H264PROFILE_MAX}
 #endif
 };
@@ -130,7 +130,7 @@ const int kMaxNumberOfFramesInEncode = 10;
 
 void NotifyEncoderSupportKnown(base::OnceClosure callback) {
   if (!Platform::Current()) {
-    DVLOG(2) << "Couldn't access the render thread";
+    DLOG(ERROR) << "Couldn't access the render thread";
     std::move(callback).Run();
     return;
   }
@@ -138,7 +138,7 @@ void NotifyEncoderSupportKnown(base::OnceClosure callback) {
   media::GpuVideoAcceleratorFactories* const gpu_factories =
       Platform::Current()->GetGpuFactories();
   if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled()) {
-    DVLOG(2) << "Couldn't initialize GpuVideoAcceleratorFactories";
+    DLOG(ERROR) << "Couldn't initialize GpuVideoAcceleratorFactories";
     std::move(callback).Run();
     return;
   }
@@ -149,14 +149,14 @@ void NotifyEncoderSupportKnown(base::OnceClosure callback) {
 // Obtains video encode accelerator's supported profiles.
 media::VideoEncodeAccelerator::SupportedProfiles GetVEASupportedProfiles() {
   if (!Platform::Current()) {
-    DVLOG(2) << "Couldn't access the render thread";
+    DLOG(ERROR) << "Couldn't access the render thread";
     return media::VideoEncodeAccelerator::SupportedProfiles();
   }
 
   media::GpuVideoAcceleratorFactories* const gpu_factories =
       Platform::Current()->GetGpuFactories();
   if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled()) {
-    DVLOG(2) << "Couldn't initialize GpuVideoAcceleratorFactories";
+    DLOG(ERROR) << "Couldn't initialize GpuVideoAcceleratorFactories";
     return media::VideoEncodeAccelerator::SupportedProfiles();
   }
   return gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
@@ -169,7 +169,7 @@ VideoTrackRecorderImpl::CodecEnumerator* GetCodecEnumerator() {
   return enumerator;
 }
 
-static void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
+void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
   int histogram_index = kUnknownHistogram;
   if (uses_acceleration) {
     switch (codec_id) {
@@ -179,7 +179,7 @@ static void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
       case CodecId::kVp9:
         histogram_index = kVp9HwHistogram;
         break;
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
       case CodecId::kH264:
         histogram_index = kH264HwHistogram;
         break;
@@ -195,7 +195,7 @@ static void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
       case CodecId::kVp9:
         histogram_index = kVp9SwHistogram;
         break;
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
       case CodecId::kH264:
         histogram_index = kH264SwHistogram;
         break;
@@ -206,6 +206,14 @@ static void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
   }
   UMA_HISTOGRAM_ENUMERATION("Media.MediaRecorder.Codec", histogram_index,
                             static_cast<int>(kLastHistogram));
+}
+
+bool MustUseVEA(CodecId codec_id) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(RTC_USE_H264)
+  return codec_id == CodecId::kH264;
+#else
+  return false;
+#endif
 }
 
 }  // anonymous namespace
@@ -234,13 +242,6 @@ VideoTrackRecorderImpl::CodecEnumerator::CodecEnumerator(
         vea_supported_profiles) {
   for (const auto& supported_profile : vea_supported_profiles) {
     const media::VideoCodecProfile codec = supported_profile.profile;
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(mcasas): enable other codecs, https://crbug.com/638664.
-    static_assert(media::VP8PROFILE_MAX + 1 == media::VP9PROFILE_MIN,
-                  "VP8 and VP9 VideoCodecProfiles should be contiguous");
-    if (codec < media::VP8PROFILE_MIN || codec > media::VP9PROFILE_MAX)
-      continue;
-#endif
     for (auto& codec_id_and_profile : kPreferredCodecIdAndVEAProfiles) {
       if (codec >= codec_id_and_profile.min_profile &&
           codec <= codec_id_and_profile.max_profile) {
@@ -576,34 +577,49 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(CodecId codec,
                                                       size_t width,
                                                       size_t height,
                                                       double framerate) {
+  if (!MustUseVEA(codec)) {
+    if (width < kVEAEncoderMinResolutionWidth) {
+      return false;
+    }
+    if (height < kVEAEncoderMinResolutionHeight) {
+      return false;
+    }
+  }
+
   const auto profiles = GetCodecEnumerator()->GetSupportedProfiles(codec);
   if (profiles.empty())
     return false;
 
-  // Now we only consider the first profile.
-  // TODO(crbug.com/931035): Handle multiple profile cases.
-  const media::VideoEncodeAccelerator::SupportedProfile& profile = profiles[0];
+  for (const auto& profile : profiles) {
+    if (profile.profile == media::VIDEO_CODEC_PROFILE_UNKNOWN) {
+      return false;
+    }
 
-  if (profile.profile == media::VIDEO_CODEC_PROFILE_UNKNOWN)
-    return false;
+    const gfx::Size& min_resolution = profile.min_resolution;
+    DCHECK_GE(min_resolution.width(), 0);
+    const size_t min_width = static_cast<size_t>(min_resolution.width());
+    DCHECK_GE(min_resolution.height(), 0);
+    const size_t min_height = static_cast<size_t>(min_resolution.height());
 
-  const gfx::Size& min_resolution = profile.min_resolution;
-  const size_t min_width = static_cast<size_t>(
-      std::max(kVEAEncoderMinResolutionWidth, min_resolution.width()));
-  const size_t min_height = static_cast<size_t>(
-      std::max(kVEAEncoderMinResolutionHeight, min_resolution.height()));
+    const gfx::Size& max_resolution = profile.max_resolution;
+    DCHECK_GE(max_resolution.width(), 0);
+    const size_t max_width = static_cast<size_t>(max_resolution.width());
+    DCHECK_GE(max_resolution.height(), 0);
+    const size_t max_height = static_cast<size_t>(max_resolution.height());
 
-  const gfx::Size& max_resolution = profile.max_resolution;
-  DCHECK_GE(max_resolution.width(), 0);
-  const size_t max_width = static_cast<size_t>(max_resolution.width());
-  DCHECK_GE(max_resolution.height(), 0);
-  const size_t max_height = static_cast<size_t>(max_resolution.height());
+    const bool width_within_range = max_width >= width && width >= min_width;
+    const bool height_within_range =
+        max_height >= height && height >= min_height;
 
-  const bool width_within_range = max_width >= width && width >= min_width;
-  const bool height_within_range = max_height >= height && height >= min_height;
-  const bool valid_framerate = framerate * profile.max_framerate_denominator <=
-                               profile.max_framerate_numerator;
-  return width_within_range && height_within_range && valid_framerate;
+    const bool valid_framerate =
+        framerate * profile.max_framerate_denominator <=
+        profile.max_framerate_numerator;
+
+    if (width_within_range && height_within_range && valid_framerate) {
+      return true;
+    }
+  }
+  return false;
 }
 
 VideoTrackRecorderImpl::VideoTrackRecorderImpl(
@@ -611,10 +627,11 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
     MediaStreamComponent* track,
     OnEncodedVideoCB on_encoded_video_cb,
     base::OnceClosure on_track_source_ended_cb,
+    base::OnceClosure on_error_cb,
     uint32_t bits_per_second)
     : VideoTrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
-      should_pause_encoder_on_initialization_(false) {
+      on_error_cb_(std::move(on_error_cb)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(track_);
   DCHECK(track_->GetSourceType() == MediaStreamSource::kTypeVideo);
@@ -699,8 +716,25 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     bool allow_vea_encoder,
     scoped_refptr<media::VideoFrame> frame,
     base::TimeTicks capture_time) {
-  DVLOG(3) << __func__ << frame->visible_rect().size().ToString();
+  DVLOG(3) << __func__ << frame->AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  const gfx::Size& input_size = frame->visible_rect().size();
+  const bool can_use_vea = CanUseAcceleratedEncoder(
+      codec_profile.codec_id, input_size.width(), input_size.height());
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(RTC_USE_H264)
+  if (MustUseVEA(codec_profile.codec_id) &&
+      (!allow_vea_encoder || !can_use_vea)) {
+    // This should only happen if the H264 isn't supported by the VEA or an
+    // an error was thrown while using the VEA for encoding.
+    DLOG(ERROR) << "Can't use VEA, but must be able to use VEA...";
+    if (on_error_cb_) {
+      std::move(on_error_cb_).Run();
+    }
+    return;
+  }
+#endif
 
   // Avoid reinitializing |encoder_| when there are multiple frames sent to the
   // sink to initialize, https://crbug.com/698441.
@@ -709,13 +743,10 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
 
   DisconnectFromTrack();
 
-  const gfx::Size& input_size = frame->visible_rect().size();
   std::unique_ptr<Encoder> encoder;
   base::WeakPtr<Encoder> weak_encoder;
   scoped_refptr<base::SequencedTaskRunner> encoding_task_runner;
-  if (allow_vea_encoder &&
-      CanUseAcceleratedEncoder(codec_profile.codec_id, input_size.width(),
-                               input_size.height())) {
+  if (allow_vea_encoder && can_use_vea) {
     // TODO(b/227350897): remove once codec histogram is verified working
     UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", true);
     UmaHistogramForCodec(true, codec_profile.codec_id);

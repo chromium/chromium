@@ -59,7 +59,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   enum class CodecId {
     kVp8,
     kVp9,
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
     kH264,
 #endif
     kLast
@@ -261,6 +261,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
                          MediaStreamComponent* track,
                          OnEncodedVideoCB on_encoded_video_cb,
                          base::OnceClosure on_track_source_ended_cb,
+                         base::OnceClosure on_error_cb,
                          uint32_t bits_per_second);
 
   VideoTrackRecorderImpl(const VideoTrackRecorderImpl&) = delete;
@@ -312,7 +313,10 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       base::TimeTicks capture_time)>
       initialize_encoder_cb_;
 
-  bool should_pause_encoder_on_initialization_;
+  bool should_pause_encoder_on_initialization_ = false;
+
+  base::OnceClosure on_error_cb_;
+
   base::WeakPtrFactory<VideoTrackRecorderImpl> weak_factory_{this};
 };
 
