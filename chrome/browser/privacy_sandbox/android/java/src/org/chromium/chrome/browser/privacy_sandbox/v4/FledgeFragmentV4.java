@@ -168,8 +168,8 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
             mCurrentSitesCategory.removePreference(preference);
             updatePreferenceVisibility();
 
-            showSnackbar(R.string.privacy_sandbox_remove_site_snackbar, null, Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
+            showSnackbar(R.string.settings_fledge_page_block_site_snackbar, null,
+                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
             RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteRemoved");
             return true;
         }

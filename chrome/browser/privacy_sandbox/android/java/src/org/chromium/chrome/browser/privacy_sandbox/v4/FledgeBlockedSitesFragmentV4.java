@@ -75,8 +75,8 @@ public class FledgeBlockedSitesFragmentV4
             mBlockedSitesCategory.removePreference(preference);
             updateBlockedSitesDescription();
 
-            showSnackbar(R.string.privacy_sandbox_add_site_snackbar, null, Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_PRIVACY_SANDBOX_ADD_SITE);
+            showSnackbar(R.string.settings_fledge_page_add_site_snackbar, null,
+                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_ADD_SITE);
             RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteAdded");
             return true;
         }

@@ -63,8 +63,8 @@ public class TopicsBlockedFragmentV4
             mBlockedTopicsCategory.removePreference(preference);
             updateBlockedTopicsDescription();
 
-            showSnackbar(R.string.privacy_sandbox_add_interest_snackbar, null, Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST);
+            showSnackbar(R.string.settings_topics_page_add_topic_snackbar, null,
+                    Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_ADD_INTEREST);
             RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicAdded");
             return true;
         }

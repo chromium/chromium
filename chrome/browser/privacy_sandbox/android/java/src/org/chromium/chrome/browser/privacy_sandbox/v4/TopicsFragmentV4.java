@@ -147,7 +147,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
             mCurrentTopicsCategory.removePreference(preference);
             updatePreferenceVisibility();
 
-            showSnackbar(R.string.privacy_sandbox_remove_interest_snackbar, null,
+            showSnackbar(R.string.settings_topics_page_block_topic_snackbar, null,
                     Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST);
             RecordUserAction.record("Settings.PrivacySandbox.Topics.TopicRemoved");
             return true;

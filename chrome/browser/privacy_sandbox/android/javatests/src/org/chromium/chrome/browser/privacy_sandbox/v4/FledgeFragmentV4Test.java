@@ -365,13 +365,13 @@ public final class FledgeFragmentV4Test {
         // Remove the first site from the list.
         clickImageButtonNextToText(SITE_NAME_1);
         onView(withText(SITE_NAME_1)).check(doesNotExist());
-        onView(withText(R.string.privacy_sandbox_remove_site_snackbar))
+        onView(withText(R.string.settings_fledge_page_block_site_snackbar))
                 .check(matches(isDisplayed()));
 
         // Remove the second site from the list.
         clickImageButtonNextToText(SITE_NAME_2);
         onView(withText(SITE_NAME_2)).check(doesNotExist());
-        onView(withText(R.string.privacy_sandbox_remove_site_snackbar))
+        onView(withText(R.string.settings_fledge_page_block_site_snackbar))
                 .check(matches(isDisplayed()));
 
         // Check that the empty state UI is displayed when the sites list is empty.
@@ -406,12 +406,14 @@ public final class FledgeFragmentV4Test {
         // Unblock the first site.
         clickImageButtonNextToText(SITE_NAME_1);
         onView(withText(SITE_NAME_1)).check(doesNotExist());
-        onView(withText(R.string.privacy_sandbox_add_site_snackbar)).check(matches(isDisplayed()));
+        onView(withText(R.string.settings_fledge_page_add_site_snackbar))
+                .check(matches(isDisplayed()));
 
         // Unblock the second site.
         clickImageButtonNextToText(SITE_NAME_2);
         onView(withText(SITE_NAME_2)).check(doesNotExist());
-        onView(withText(R.string.privacy_sandbox_add_site_snackbar)).check(matches(isDisplayed()));
+        onView(withText(R.string.settings_fledge_page_add_site_snackbar))
+                .check(matches(isDisplayed()));
 
         // Check that the empty state UI is displayed when the site list is empty.
         onView(withText(R.string.settings_fledge_page_blocked_sites_description_empty))
