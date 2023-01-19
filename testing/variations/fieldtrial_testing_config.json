@@ -11860,6 +11860,21 @@
             ]
         }
     ],
+    "UseSimplifiedMessagePumpKqueueLoop": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseSimplifiedMessagePumpKqueueLoop"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSnappyForParkableStrings": [
         {
             "platforms": [
