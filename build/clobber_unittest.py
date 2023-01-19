@@ -124,9 +124,22 @@ class TestDelete(unittest.TestCase):
   def test_delete_build_dir_fail(self):
     # Make delete_dir() throw to ensure it's handled gracefully.
 
-    with mock.patch('clobber.delete_dir', side_effect=OSError):
+    with mock.patch('clobber._clean_dir', side_effect=OSError):
       with self.assertRaises(OSError):
         clobber.delete_build_dir(self.build_dir)
+
+  def test_delete_build_dir_link(self):
+    with tempfile.TemporaryDirectory() as tmpdir:
+      # create a symlink.
+      build_dir = os.path.join(tmpdir, 'link')
+      os.symlink(self.build_dir, build_dir)
+
+      # create a dummy file.
+      dummy_file = os.path.join(build_dir, 'dummy')
+      pathlib.Path(dummy_file).touch()
+      clobber.delete_build_dir(build_dir)
+
+      self.assertFalse(os.path.exists(dummy_file))
 
 
 if __name__ == '__main__':

@@ -35,22 +35,30 @@ def extract_gn_build_commands(build_ninja_file):
   return ''  # We got to EOF and didn't find what we were looking for.
 
 
-def delete_dir(build_dir):
-  if os.path.islink(build_dir):
-    return
+def _rmtree(d):
   # For unknown reasons (anti-virus?) rmtree of Chromium build directories
   # often fails on Windows.
   if sys.platform.startswith('win'):
-    subprocess.check_call(['rmdir', '/s', '/q', build_dir], shell=True)
+    subprocess.check_call(['rmdir', '/s', '/q', d], shell=True)
   else:
-    shutil.rmtree(build_dir)
+    shutil.rmtree(d)
+
+
+def _clean_dir(build_dir):
+  # Remove files/sub directories individually instead of recreating the build
+  # dir because it fails when the build dir is symlinked or mounted.
+  for e in os.scandir(build_dir):
+    if e.is_dir():
+      _rmtree(e.path)
+    else:
+      os.remove(e.path)
 
 
 def delete_build_dir(build_dir):
   # GN writes a build.ninja.d file. Note that not all GN builds have args.gn.
   build_ninja_d_file = os.path.join(build_dir, 'build.ninja.d')
   if not os.path.exists(build_ninja_d_file):
-    delete_dir(build_dir)
+    _clean_dir(build_dir)
     return
 
   # GN builds aren't automatically regenerated when you sync. To avoid
@@ -69,11 +77,12 @@ def delete_build_dir(build_dir):
 
   exception_during_rm = None
   try:
-    # delete_dir and os.mkdir() may fail, such as when chrome.exe is running,
+    # _clean_dir() may fail, such as when chrome.exe is running,
     # and we still want to restore args.gn/build.ninja/build.ninja.d, so catch
     # the exception and rethrow it later.
-    delete_dir(build_dir)
-    os.mkdir(build_dir)
+    # We manually rm files inside the build dir rather than using "gn clean/gen"
+    # since we may not have run all necessary DEPS hooks yet at this point.
+    _clean_dir(build_dir)
   except Exception as e:
     exception_during_rm = e
 
