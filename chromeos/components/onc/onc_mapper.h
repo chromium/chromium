@@ -88,9 +88,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
   // the nested mappings failed, the flag |nested_error| is set to true and the
   // entry is dropped from the result. Otherwise |nested_error| isn't
   // modified. The resulting array is returned.
-  virtual base::Value MapArray(const OncValueSignature& array_signature,
-                               const base::Value& onc_array,
-                               bool* nested_error);
+  virtual base::Value::List MapArray(const OncValueSignature& array_signature,
+                                     const base::Value::List& onc_array,
+                                     bool* nested_error);
 
   // Calls |MapValue| and returns its result. Called by |MapArray| for each
   // entry and its index in the enclosing array.

@@ -34,7 +34,7 @@ base::Value Mapper::MapValue(const OncValueSignature& signature,
         *error = true;
         return {};
       }
-      return MapArray(signature, onc_value, error);
+      return base::Value(MapArray(signature, onc_value.GetList(), error));
     }
     default: {
       if ((signature.onc_type == base::Value::Type::DICTIONARY) ||
@@ -104,15 +104,15 @@ base::Value Mapper::MapField(const std::string& field_name,
   return {};
 }
 
-base::Value Mapper::MapArray(const OncValueSignature& array_signature,
-                             const base::Value& onc_array,
-                             bool* nested_error) {
-  DCHECK(array_signature.onc_array_entry_signature != NULL)
+base::Value::List Mapper::MapArray(const OncValueSignature& array_signature,
+                                   const base::Value::List& onc_array,
+                                   bool* nested_error) {
+  DCHECK(array_signature.onc_array_entry_signature != nullptr)
       << "Found missing onc_array_entry_signature.";
 
-  base::Value result_array(base::Value::Type::LIST);
+  base::Value::List result_array;
   int original_index = 0;
-  for (const auto& entry : onc_array.GetList()) {
+  for (const auto& entry : onc_array) {
     base::Value result_entry =
         MapEntry(original_index, *array_signature.onc_array_entry_signature,
                  entry, nested_error);

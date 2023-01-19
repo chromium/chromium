@@ -201,12 +201,12 @@ base::Value Validator::MapField(const std::string& field_name,
   return result;
 }
 
-base::Value Validator::MapArray(const OncValueSignature& array_signature,
-                                const base::Value& onc_array,
-                                bool* nested_error) {
+base::Value::List Validator::MapArray(const OncValueSignature& array_signature,
+                                      const base::Value::List& onc_array,
+                                      bool* nested_error) {
   bool nested_error_in_current_array = false;
-  base::Value result = Mapper::MapArray(array_signature, onc_array,
-                                        &nested_error_in_current_array);
+  base::Value::List result = Mapper::MapArray(array_signature, onc_array,
+                                              &nested_error_in_current_array);
 
   if (&array_signature == &kNetworkConfigurationListSignature) {
     ValidateEthernetConfigs(&result);
@@ -1273,7 +1273,7 @@ bool Validator::ValidateTether(base::Value* result) {
 }
 
 void Validator::ValidateEthernetConfigs(
-    base::Value* network_configurations_list) {
+    base::Value::List* network_configurations_list) {
   // Ensures that at most one NetworkConfiguration is effective within these
   // categories:
   // - "Type": "Ethernet" and "Authentication": "None"
@@ -1282,12 +1282,11 @@ void Validator::ValidateEthernetConfigs(
   // per such category and the UI only supports one Ethernet configuration.
   // TODO(b/159725895): Design better Ethernet configuration + policy
   // management.
-  DCHECK(network_configurations_list->is_list());
   std::vector<std::string> ethernet_auth_none_guids;
   std::vector<std::string> ethernet_auth_8021x_guids;
 
   for (const base::Value& network_configuration :
-       network_configurations_list->GetList()) {
+       *network_configurations_list) {
     const std::string* guid = network_configuration.GetDict().FindString(
         ::onc::network_config::kGUID);
     const base::Value::Dict* ethernet =
@@ -1315,7 +1314,7 @@ void Validator::ValidateEthernetConfigs(
                /*type_for_messages=*/"Ethernet 802.1x");
 }
 
-void Validator::OnlyKeepLast(base::Value* network_configurations_list,
+void Validator::OnlyKeepLast(base::Value::List* network_configurations_list,
                              const std::vector<std::string>& guids,
                              const char* type_for_messages) {
   if (guids.size() < 2)
@@ -1331,9 +1330,9 @@ void Validator::OnlyKeepLast(base::Value* network_configurations_list,
 }
 
 void Validator::RemoveNetworkConfigurationWithGuid(
-    base::Value* network_configurations_list,
+    base::Value::List* network_configurations_list,
     const std::string& guid_to_remove) {
-  base::Value::List& list = network_configurations_list->GetList();
+  base::Value::List& list = *network_configurations_list;
   for (auto it = list.begin(); it != list.end(); ++it) {
     const std::string* guid =
         it->GetDict().FindString(::onc::network_config::kGUID);

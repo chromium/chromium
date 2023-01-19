@@ -156,9 +156,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
 
   // Ignores nested errors in NetworkConfigurations and Certificates, otherwise
   // like |Mapper::MapArray|.
-  base::Value MapArray(const OncValueSignature& array_signature,
-                       const base::Value& onc_array,
-                       bool* nested_error) override;
+  base::Value::List MapArray(const OncValueSignature& array_signature,
+                             const base::Value::List& onc_array,
+                             bool* nested_error) override;
 
   // Pushes/pops the index to |path_|, otherwise like |Mapper::MapEntry|.
   base::Value MapEntry(int index,
@@ -205,12 +205,12 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   bool ValidateCertificate(base::Value* result);
   bool ValidateScope(base::Value* result);
   bool ValidateTether(base::Value* result);
-  void ValidateEthernetConfigs(base::Value* result);
-  void OnlyKeepLast(base::Value* network_configurations_list,
+  void ValidateEthernetConfigs(base::Value::List* result);
+  void OnlyKeepLast(base::Value::List* network_configurations_list,
                     const std::vector<std::string>& guids,
                     const char* type);
   void RemoveNetworkConfigurationWithGuid(
-      base::Value* network_configurations_list,
+      base::Value::List* network_configurations_list,
       const std::string& guid_to_remove);
 
   bool IsValidValue(const std::string& field_value,
