@@ -329,26 +329,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kBlockSetCookieHeader);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kOptimisticBlockfileWrite);
 
-NET_EXPORT BASE_DECLARE_FEATURE(kOptimizeNetworkBuffers);
-
-NET_EXPORT
-extern const base::FeatureParam<int> kOptimizeNetworkBuffersBytesReadLimit;
-
-NET_EXPORT extern const base::FeatureParam<int>
-    kOptimizeNetworkBuffersMinInputStreamAvailableValueToIgnore;
-
-NET_EXPORT extern const base::FeatureParam<int>
-    kOptimizeNetworkBuffersMinInputStreamReadSize;
-
-NET_EXPORT extern const base::FeatureParam<int>
-    kOptimizeNetworkBuffersMaxInputStreamBytesToReadWhenAvailableUnknown;
-
-NET_EXPORT extern const base::FeatureParam<int>
-    kOptimizeNetworkBuffersFilterSourceStreamBufferSize;
-
-NET_EXPORT extern const base::FeatureParam<bool>
-    kOptimizeNetworkBuffersInputStreamCheckAvailable;
-
 // Enable the Storage Access API. https://crbug.com/989663.
 NET_EXPORT BASE_DECLARE_FEATURE(kStorageAccessAPI);
 

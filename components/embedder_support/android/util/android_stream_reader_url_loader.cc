@@ -21,7 +21,6 @@
 #include "base/threading/thread.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/input_stream_reader.h"
-#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_status_code.h"
@@ -36,6 +35,8 @@ namespace {
 
 const char kHTTPOkText[] = "OK";
 const char kHTTPNotFoundText[] = "Not Found";
+
+const int kMaxBytesToReadWhenAvailableUnknown = 2 * 1024;
 
 }  // namespace
 
@@ -88,36 +89,18 @@ class InputStreamReaderWrapper
   }
 
   int ReadRawData(net::IOBuffer* buffer, int buffer_size) {
-    if (base::FeatureList::IsEnabled(net::features::kOptimizeNetworkBuffers) &&
-        net::features::kOptimizeNetworkBuffersInputStreamCheckAvailable.Get()) {
-      int available = 0;
-      // Only use `available` if the app has an estimate, otherwise it'll return
-      // 0. In that case we still want to do a blocking read until there's data
-      // or EOF.
-      if (input_stream_->BytesAvailable(&available) && available > 0) {
-        // Some implementations might return 1 even when there's more data. To
-        // avoid slowdowns in that case use a minimum of 1KB to read.
-        if (available <
-            net::features::
-                kOptimizeNetworkBuffersMinInputStreamAvailableValueToIgnore
-                    .Get()) {
-          available =
-              net::features::kOptimizeNetworkBuffersMinInputStreamReadSize
-                  .Get();
-        }
-
-        // Make sure a we don't read past the buffer size.
-        buffer_size = std::min(available, buffer_size);
-      } else {
-        // `buffer_size' could be large since it comes from the size of the data
-        // pipe, but we don't want to synchronously wait for too many bytes in
-        // case they're coming from the network.
-        buffer_size = std::min(
-            net::features::
-                kOptimizeNetworkBuffersMaxInputStreamBytesToReadWhenAvailableUnknown
-                    .Get(),
-            buffer_size);
-      }
+    int available = 0;
+    // Only use `available` if the app has an estimate, otherwise it'll return
+    // 0. In that case we still want to do a blocking read until there's data
+    // or EOF. Note some implementations return 1 to indicate there's more data.
+    if (input_stream_->BytesAvailable(&available) && available > 1) {
+      // Make sure a we don't read past the buffer size.
+      buffer_size = std::min(available, buffer_size);
+    } else {
+      // `buffer_size' could be large since it comes from the size of the data
+      // pipe, but we don't want to synchronously wait for too many bytes in
+      // case they're coming from the network.
+      buffer_size = std::min(kMaxBytesToReadWhenAvailableUnknown, buffer_size);
     }
 
     return input_stream_reader_->ReadRawData(buffer, buffer_size);
@@ -323,18 +306,14 @@ void AndroidStreamReaderURLLoader::HeadersComplete(
 void AndroidStreamReaderURLLoader::SendBody() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  MojoCreateDataPipeOptions* options_ptr = nullptr;
   MojoCreateDataPipeOptions options;
-  if (base::FeatureList::IsEnabled(net::features::kOptimizeNetworkBuffers)) {
-    options_ptr = &options;
-    options.struct_size = sizeof(MojoCreateDataPipeOptions);
-    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-    options.element_num_bytes = 1;
-    options.capacity_num_bytes =
-        network::features::GetDataPipeDefaultAllocationSize(
-            network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
-  }
-  if (CreateDataPipe(options_ptr, producer_handle_, consumer_handle_) !=
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes =
+      network::features::GetDataPipeDefaultAllocationSize(
+          network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
+  if (CreateDataPipe(&options, producer_handle_, consumer_handle_) !=
       MOJO_RESULT_OK) {
     RequestComplete(net::ERR_FAILED);
     return;

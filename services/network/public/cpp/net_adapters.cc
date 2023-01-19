@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/net_adapters.h"
 
-#include "net/base/features.h"
 #include "net/base/net_errors.h"
 
 namespace network {
@@ -27,18 +26,14 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
     mojo::ScopedDataPipeProducerHandle* handle,
     scoped_refptr<NetToMojoPendingBuffer>* pending,
     uint32_t* num_bytes) {
-  uint32_t max_bytes = kMaxBufSize;
-  if (base::FeatureList::IsEnabled(net::features::kOptimizeNetworkBuffers)) {
-    max_bytes = net::features::kOptimizeNetworkBuffersBytesReadLimit.Get();
-  }
-
   void* buf = nullptr;
-  *num_bytes = max_bytes;
+  *num_bytes = kMaxBufSize;
   MojoResult result =
       (*handle)->BeginWriteData(&buf, num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
-    if (*num_bytes > max_bytes)
-      *num_bytes = max_bytes;
+    if (*num_bytes > kMaxBufSize) {
+      *num_bytes = kMaxBufSize;
+    }
 
     *pending = new NetToMojoPendingBuffer(std::move(*handle), buf);
   }

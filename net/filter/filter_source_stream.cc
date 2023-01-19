@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
-#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -24,6 +23,8 @@ const char kDeflate[] = "deflate";
 const char kGZip[] = "gzip";
 const char kXGZip[] = "x-gzip";
 const char kBrotli[] = "br";
+
+const size_t kBufferSize = 32 * 1024;
 
 }  // namespace
 
@@ -44,9 +45,7 @@ int FilterSourceStream::Read(IOBuffer* read_buffer,
 
   // Allocate a BlockBuffer during first Read().
   if (!input_buffer_) {
-    input_buffer_ = base::MakeRefCounted<IOBufferWithSize>(
-        net::features::kOptimizeNetworkBuffersFilterSourceStreamBufferSize
-            .Get());
+    input_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
     // This is first Read(), start with reading data from |upstream_|.
     next_state_ = STATE_READ_DATA;
   } else {
@@ -126,11 +125,9 @@ int FilterSourceStream::DoReadData() {
 
   next_state_ = STATE_READ_DATA_COMPLETE;
   // Use base::Unretained here is safe because |this| owns |upstream_|.
-  int rv = upstream_->Read(
-      input_buffer_.get(),
-      net::features::kOptimizeNetworkBuffersFilterSourceStreamBufferSize.Get(),
-      base::BindOnce(&FilterSourceStream::OnIOComplete,
-                     base::Unretained(this)));
+  int rv = upstream_->Read(input_buffer_.get(), kBufferSize,
+                           base::BindOnce(&FilterSourceStream::OnIOComplete,
+                                          base::Unretained(this)));
 
   return rv;
 }
