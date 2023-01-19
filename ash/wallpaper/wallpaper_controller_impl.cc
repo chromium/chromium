@@ -1081,26 +1081,7 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
     SetWallpaperCallback callback) {
   DCHECK(callback);
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
-  if (!CanSetUserWallpaper(params.account_id)) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-  // Invalidate weak ptrs to cancel prior requests to set wallpaper.
-  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
-  SetOnlineWallpaperIfExists(
-      params,
-      base::BindOnce(&WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
-                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
-                     std::move(callback)));
-}
-
-void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
-    const OnlineWallpaperParams& params,
-    SetWallpaperCallback callback) {
-  DCHECK(callback);
-  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DVLOG(1) << __func__ << " params=" << params;
-
   if (!CanSetUserWallpaper(params.account_id)) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -1113,8 +1094,15 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
     return;
   }
 
+  // Invalidate weak ptrs to cancel prior requests to set wallpaper.
+  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
+
   for (auto& observer : observers_)
     observer.OnOnlineWallpaperSet(params);
+
+  auto on_load_from_disc_complete = base::BindOnce(
+      &WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
+      set_wallpaper_weak_factory_.GetWeakPtr(), params, std::move(callback));
 
   if (params.variants.empty()) {
     // |params.variants| can be empty for users who use the old wallpaper
@@ -1124,15 +1112,15 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
         base::BindOnce(&GetExistingOnlineWallpaperPath, params.url.spec()),
         base::BindOnce(&WallpaperControllerImpl::SetOnlineWallpaperFromPath,
                        set_wallpaper_weak_factory_.GetWeakPtr(),
-                       std::move(callback), params));
+                       std::move(on_load_from_disc_complete), params));
   } else {
     sequenced_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&GetOnlineWallpaperVariantPaths, params.variants),
         base::BindOnce(
             &WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths,
-            set_wallpaper_weak_factory_.GetWeakPtr(), std::move(callback),
-            params));
+            set_wallpaper_weak_factory_.GetWeakPtr(),
+            std::move(on_load_from_disc_complete), params));
   }
 }
 

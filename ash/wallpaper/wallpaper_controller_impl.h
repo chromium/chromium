@@ -245,8 +245,6 @@ class ASH_EXPORT WallpaperControllerImpl
                                  const gfx::ImageSkia& image) override;
   void SetOnlineWallpaper(const OnlineWallpaperParams& params,
                           SetWallpaperCallback callback) override;
-  void SetOnlineWallpaperIfExists(const OnlineWallpaperParams& params,
-                                  SetWallpaperCallback callback) override;
   void SetGooglePhotosWallpaper(const GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
   void SetGooglePhotosDailyRefreshAlbumId(const AccountId& account_id,
@@ -453,7 +451,7 @@ class ASH_EXPORT WallpaperControllerImpl
                                const base::Time& date);
 
   // Used as the callback of checking `WallpaperType::kOnline` wallpaper
-  // existence in `SetOnlineWallpaperIfExists`. Initiates reading and decoding
+  // existence in `SetOnlineWallpaper`. Initiates reading and decoding
   // the wallpaper if `file_path` is not empty.
   void SetOnlineWallpaperFromPath(SetWallpaperCallback callback,
                                   const OnlineWallpaperParams& params,

@@ -289,15 +289,6 @@ void WallpaperControllerClientImpl::SetGooglePhotosWallpaper(
   wallpaper_controller_->SetGooglePhotosWallpaper(params, std::move(callback));
 }
 
-void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(
-    const ash::OnlineWallpaperParams& params,
-    ash::WallpaperController::SetWallpaperCallback callback) {
-  if (!IsKnownUser(params.account_id))
-    return;
-  wallpaper_controller_->SetOnlineWallpaperIfExists(params,
-                                                    std::move(callback));
-}
-
 void WallpaperControllerClientImpl::SetCustomizedDefaultWallpaperPaths(
     const base::FilePath& customized_default_small_path,
     const base::FilePath& customized_default_large_path) {

@@ -4128,74 +4128,51 @@ TEST_F(WallpaperControllerTest,
   EXPECT_TRUE(actual.MatchesSelection(expected));
 }
 
-TEST_F(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
+TEST_F(WallpaperControllerTest, SetOnlineWallpaperWithoutInternet) {
   SetBypassDecode();
-  gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
-  WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER_CROPPED;
   std::vector<OnlineWallpaperVariant> variants;
   variants.emplace_back(kAssetId, GURL(kDummyUrl),
                         backdrop::Image::IMAGE_TYPE_UNKNOWN);
   SimulateUserLogin(kAccountId1);
 
-  // Verify that calling |SetOnlineWallpaperIfExists| without providing image
-  // data fails.
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  ClearWallpaperCount();
-  const OnlineWallpaperParams& params = OnlineWallpaperParams(
-      kAccountId1, kAssetId, GURL(kDummyUrl),
-      TestWallpaperControllerClient::kDummyCollectionId, layout,
-      /*preview_mode=*/false, /*from_user=*/true,
-      /*daily_refresh_enabled=*/false, kUnitId, variants);
-  controller_->SetOnlineWallpaperIfExists(
-      params, base::BindLambdaForTesting([&run_loop](bool file_exists) {
-        EXPECT_FALSE(file_exists);
-        run_loop->Quit();
-      }));
-  run_loop->Run();
-  EXPECT_EQ(0, GetWallpaperCount());
-
   // Set an online wallpaper with image data. Verify that the wallpaper is set
   // successfully.
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/false, kUnitId, variants);
   ClearWallpaperCount();
   controller_->SetOnlineWallpaper(params, base::DoNothing());
   RunAllTasksUntilIdle();
-  EXPECT_EQ(1, GetWallpaperCount());
-  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
-  // Verify that the user wallpaper info is updated.
-  WallpaperInfo wallpaper_info;
-  EXPECT_TRUE(
-      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
-  WallpaperInfo expected_wallpaper_info = WallpaperInfo(params);
-  EXPECT_TRUE(wallpaper_info.MatchesSelection(expected_wallpaper_info));
+  ASSERT_EQ(1, GetWallpaperCount());
+  ASSERT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
 
   // Change the on-screen wallpaper to a different one. (Otherwise the
   // subsequent calls will be no-op since we intentionally prevent reloading the
   // same wallpaper.)
   ClearWallpaperCount();
   controller_->SetDecodedCustomWallpaper(
-      kAccountId1, kFileName1, layout,
+      kAccountId1, kFileName1, WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false, base::DoNothing(),
       /*file_path=*/"", CreateImage(640, 480, kWallpaperColor));
   RunAllTasksUntilIdle();
-  EXPECT_EQ(1, GetWallpaperCount());
-  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kCustomized);
+  ASSERT_EQ(1, GetWallpaperCount());
+  ASSERT_EQ(controller_->GetWallpaperType(), WallpaperType::kCustomized);
 
-  // Attempt to set an online wallpaper via |SetOnlineWallpaperIfExists| without
-  // providing the image data. Verify it succeeds this time because
-  // |SetOnlineWallpaper| has saved the file.
+  // Attempt to set the same online wallpaper without internet. Verify it
+  // still succeeds because the previous call to |SetOnlineWallpaper()| has
+  // saved the file.
+  test_image_downloader_->set_should_fail(true);
   ClearWallpaperCount();
-  run_loop = std::make_unique<base::RunLoop>();
-  controller_->SetOnlineWallpaperIfExists(
-      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
-                            TestWallpaperControllerClient::kDummyCollectionId,
-                            layout,
-                            /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false, kUnitId, variants),
-      base::BindLambdaForTesting([&run_loop](bool file_exists) {
+  base::RunLoop run_loop;
+  controller_->SetOnlineWallpaper(
+      params, base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_TRUE(file_exists);
-        run_loop->Quit();
+        run_loop.Quit();
       }));
-  run_loop->Run();
+  run_loop.Run();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
 }

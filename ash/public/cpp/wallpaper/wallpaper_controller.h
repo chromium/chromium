@@ -134,17 +134,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
       const AccountId& account_id,
       DailyGooglePhotosIdCache& ids_out) const = 0;
 
-  // Deprecated. Use |SetOnlineWallpaper| instead because it will handle
-  // downloading the image if it is not on disk yet.
-  // Sets wallpaper from the Chrome OS wallpaper picker. If the
-  // wallpaper file corresponding to |url| already exists in local file system
-  // (i.e. |SetOnlineWallpaper| was called earlier with the same |url|),
-  // returns true and sets wallpaper for the user, otherwise returns false.
-  // |params|: The parameters of the online wallpaper.
-  // Responds with true if the wallpaper file exists in local file system.
-  virtual void SetOnlineWallpaperIfExists(const OnlineWallpaperParams& params,
-                                          SetWallpaperCallback callback) = 0;
-
   // Sets the user's wallpaper to be the default wallpaper. Note: different user
   // types may have different default wallpapers.
   // |account_id|: The user's account id.

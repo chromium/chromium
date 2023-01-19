@@ -103,9 +103,6 @@ class WallpaperControllerClientImpl
   void SetGooglePhotosWallpaper(
       const ash::GooglePhotosWallpaperParams& params,
       ash::WallpaperController::SetWallpaperCallback callback);
-  void SetOnlineWallpaperIfExists(
-      const ash::OnlineWallpaperParams& params,
-      ash::WallpaperController::SetWallpaperCallback callback);
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path);
