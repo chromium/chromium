@@ -1105,7 +1105,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tabmodel/TabPersistentStore.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabbedModeTabPersistencePolicy.java",
   "java/src/org/chromium/chrome/browser/tabmodel/document/TabDelegate.java",
-  "java/src/org/chromium/chrome/browser/tasks/ConditionalTabStripUtils.java",
   "java/src/org/chromium/chrome/browser/tasks/EngagementTimeUtil.java",
   "java/src/org/chromium/chrome/browser/tasks/JourneyManager.java",
   "java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java",

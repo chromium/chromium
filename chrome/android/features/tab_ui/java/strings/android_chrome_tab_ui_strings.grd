@@ -210,9 +210,6 @@
       <message name="IDS_ACCESSIBILITY_BOTTOM_TAB_STRIP_EXPAND_TAB_SHEET" desc="Accessibility string for BottomTabStripToolbar button indicated visually by the '^' sign.">
         Show group's tabs in fullscreen grid
       </message>
-        <message name="IDS_ACCESSIBILITY_BOTTOM_TAB_STRIP_CLOSE_STRIP" desc="Accessibility string for BottomTabStripToolbar button indicated visually by the 'X' sign. When user clicks on it, the tab strip will be closed.">
-        Close tab strip
-      </message>
 
       <!-- Tab Group Tab Switcher strings -->
       <message name="IDS_TABSWITCHER_CREATE_GROUP" desc="This flat button is shown in the Tab Switcher, under an open tab. When the user taps the button, Chrome creates a new group of tabs that includes the existing tab. It's okay to use any of the following verbs in order to keep the text under 45 characters: Create, Make, Add.">
@@ -447,20 +444,6 @@
       </message>
        <message name="IDS_ACCESSIBILITY_TAB_MOVEMENT_DOWN" desc="This text button shows in the accessibility mode action menu. When user selects a tab, triggers action menu and clicks on this button, the current tab will switch position with the tab below it in the grid to achieve reordering.">
           Move tab down
-      </message>
-
-      <!-- Strings for Conditional Tab Strip -->
-      <message name="IDS_UNDO_TAB_STRIP_CLOSURE_MESSAGE" desc="Message shown on the snack bar when the conditional tab strip is closed.">
-          Closed tab strip
-      </message>
-      <message name="IDS_TAB_STRIP_INFO_BAR_QUESTION" desc="This text is shown on the info bar when the user has dismissed the tab strip for multiple times. It is to ask whether users want the tab strip to hide permanently or they still want it to show sometime later.">
-          Don't show tab strip again?
-      </message>
-      <message name="IDS_TAB_STRIP_INFO_BAR_NO_RESHOW" desc="This text is shown on the info bar action button and serves as one answer to &quot;Don't show tab strip again?&quot;. When a user clicks this button, tab strip will never show again for this user.">
-          Don't show again
-      </message>
-      <message name="IDS_TAB_STRIP_INFO_BAR_RESHOW" desc="This text is shown on the info bar action button and serves as one answer to &quot;Don't show tab strip again?&quot;. When a user clicks this button, tab strip will keep showing for this user.">
-          Show later
       </message>
 
       <!-- Price Drops Card strings -->

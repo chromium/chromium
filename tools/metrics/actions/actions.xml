@@ -34239,12 +34239,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabStrip">
+  <obsolete>The feature was deprecated and code deleted.</obsolete>
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <description>User actions about conditional tab strip.</description>
 </action>
 
 <action name="TabStrip.SessionVisibility">
+  <obsolete>The feature was deprecated and code deleted.</obsolete>
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <description>

@@ -208,7 +208,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kChromeSharingHubLaunchAdjacent,
     &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
-    &kConditionalTabStripAndroid,
     &kContextMenuEnableLensShoppingAllowlist,
     &kContextMenuGoogleLensChip,
     &kContextMenuSearchWithGoogleLens,
@@ -478,10 +477,6 @@ BASE_FEATURE(kBackgroundThreadPool,
 
 BASE_FEATURE(kBaselineGM3SurfaceColors,
              "BaselineGM3SurfaceColors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kConditionalTabStripAndroid,
-             "ConditionalTabStripAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used in downstream code.

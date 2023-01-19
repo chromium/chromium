@@ -2258,16 +2258,6 @@ const FeatureEntry::FeatureVariation kFeedCloseRefreshVariations[] = {
      std::size(kFeedCloseRefresh_Interact), nullptr},
 };
 
-const FeatureEntry::FeatureParam kConditionalTabStripAndroid_Immediate[] = {
-    {"conditional_tab_strip_session_time_ms", "0"}};
-const FeatureEntry::FeatureParam kConditionalTabStripAndroid_60Minutes[] = {
-    {"conditional_tab_strip_session_time_ms", "3600000"}};
-const FeatureEntry::FeatureVariation kConditionalTabStripAndroidVariations[] = {
-    {"Immediate", kConditionalTabStripAndroid_Immediate,
-     std::size(kConditionalTabStripAndroid_Immediate), nullptr},
-    {"60 minutes", kConditionalTabStripAndroid_60Minutes,
-     std::size(kConditionalTabStripAndroid_60Minutes), nullptr},
-};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -6129,14 +6119,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStripRedesign,
                                     kTabStripRedesignVariations,
                                     "TabStripRedesignAndroid")},
-
-    {"enable-conditional-tabstrip",
-     flag_descriptions::kConditionalTabStripAndroidName,
-     flag_descriptions::kConditionalTabStripAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kConditionalTabStripAndroid,
-         kConditionalTabStripAndroidVariations,
-         "ConditioanlTabStrip")},
 
     {"enable-foldable-jank-fix", flag_descriptions::kFoldableJankFixAndroidName,
      flag_descriptions::kFoldableJankFixAndroidDescription, kOsAndroid,

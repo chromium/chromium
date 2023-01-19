@@ -61872,7 +61872,6 @@ from previous Chrome versions.
   <int value="487605950" label="PerformantSplitViewResizing:disabled"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>
   <int value="491258649" label="UseFirstPartySet"/>
-  <int value="491334698" label="ConditionalTabStripAndroid:enabled"/>
   <int value="492113129" label="ExperimentalAppBanners:enabled"/>
   <int value="492355659" label="SurfaceSyncThrottling:disabled"/>
   <int value="492849345" label="ImprovedDesksKeyboardShortcuts:disabled"/>
@@ -62752,7 +62751,6 @@ from previous Chrome versions.
   <int value="1005684777" label="PictureInPicture:disabled"/>
   <int value="1006080779" label="ForcePreferredIntervalForVideo:disabled"/>
   <int value="1006608931" label="ArcEnableUnifiedAudioFocus:disabled"/>
-  <int value="1006691801" label="ConditionalTabStripAndroid:disabled"/>
   <int value="1007444341" label="enable-prefixed-encrypted-media"/>
   <int value="1008677979"
       label="AutofillUseImprovedLabelDisambiguation:disabled"/>
@@ -98896,6 +98894,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="TabStripReasonToShow">
+  <obsolete>
+    Deprecated as of 01/2023.
+  </obsolete>
   <summary>The reason why conditional tab strip is showing.</summary>
   <int value="0" label="TabSwitched"/>
   <int value="1" label="NewTab"/>
@@ -98911,6 +98912,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="TabStripUserStatus">
+  <obsolete>
+    Deprecated as of 01/2023.
+  </obsolete>
   <summary>
     The user status of conditional tab strip in a feature-specific session.
   </summary>

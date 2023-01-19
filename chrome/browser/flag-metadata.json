@@ -1914,11 +1914,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "enable-conditional-tabstrip",
-    "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-cooperative-scheduling",
     "owners": [ "keishi" ],
     "expiry_milestone": 85

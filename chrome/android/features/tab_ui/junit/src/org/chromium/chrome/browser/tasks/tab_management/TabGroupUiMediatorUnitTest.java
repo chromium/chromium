@@ -28,7 +28,6 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -51,8 +50,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -69,8 +66,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
-import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.FeatureStatus;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -132,8 +127,6 @@ public class TabGroupUiMediatorUnitTest {
     @Mock
     TabGridDialogMediator.DialogController mTabGridDialogController;
     @Mock
-    ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock
     Context mContext;
     @Mock
     SnackbarManager mSnackbarManager;
@@ -151,8 +144,6 @@ public class TabGroupUiMediatorUnitTest {
     ArgumentCaptor<IncognitoStateObserver> mIncognitoStateObserverArgumentCaptor;
     @Captor
     ArgumentCaptor<TabGroupModelFilter.Observer> mTabGroupModelFilterObserverArgumentCaptor;
-    @Captor
-    ArgumentCaptor<PauseResumeWithNativeObserver> mPauseResumeWithNativeObserverArgumentCaptor;
     @Captor
     ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor
@@ -216,8 +207,7 @@ public class TabGroupUiMediatorUnitTest {
                                                                           : null;
         mTabGroupUiMediator = new TabGroupUiMediator(mContext, mVisibilityController, mResetHandler,
                 mModel, mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
-                mIncognitoStateProvider, controller, mActivityLifecycleDispatcher, mSnackbarManager,
-                mOmniboxFocusStateSupplier);
+                mIncognitoStateProvider, controller, mOmniboxFocusStateSupplier);
 
         if (currentTab == null) {
             verifyNeverReset();
@@ -225,26 +215,15 @@ public class TabGroupUiMediatorUnitTest {
         }
 
         // Verify strip button content description setup.
-        if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
-            verify(mContext).getString(R.string.accessibility_bottom_tab_strip_close_strip);
-            verify(mContext).getString(R.string.accessibility_toolbar_btn_new_tab);
-        } else {
-            verify(mContext).getString(R.string.accessibility_bottom_tab_strip_expand_tab_sheet);
-            verify(mContext).getString(R.string.bottom_tab_grid_new_tab);
-        }
+        verify(mContext).getString(R.string.accessibility_bottom_tab_strip_expand_tab_sheet);
+        verify(mContext).getString(R.string.bottom_tab_grid_new_tab);
 
         // Verify strip initial reset.
-        if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
+        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(currentTab.getId());
+        if (tabs.size() < 2) {
             verifyResetStrip(false, null);
-            assertThat(mTabGroupUiMediator.getConditionalTabStripFeatureStatusForTesting(),
-                    equalTo(FeatureStatus.DEFAULT));
         } else {
-            List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(currentTab.getId());
-            if (tabs.size() < 2) {
-                verifyResetStrip(false, null);
-            } else {
-                verifyResetStrip(true, tabs);
-            }
+            verifyResetStrip(true, tabs);
         }
     }
 
@@ -285,40 +264,19 @@ public class TabGroupUiMediatorUnitTest {
         doNothing().when(mTab2).addObserver(mTabObserverCaptor.capture());
         doNothing().when(mTab3).addObserver(mTabObserverCaptor.capture());
 
-        if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
-            doReturn(false).when(mTabModelFilter).isIncognito();
-            doReturn(3).when(mTabModelFilter).getCount();
-            doReturn(new ArrayList<>(Arrays.asList(mTab1)))
-                    .when(mTabModelFilter)
-                    .getRelatedTabList(TAB1_ID);
-            doReturn(new ArrayList<>(Arrays.asList(mTab1)))
-                    .when(mTabModelFilter)
-                    .getRelatedTabList(TAB2_ID);
-            doReturn(new ArrayList<>(Arrays.asList(mTab1)))
-                    .when(mTabModelFilter)
-                    .getRelatedTabList(TAB3_ID);
+        // Setup TabGroupModelFilter.
+        doReturn(false).when(mTabGroupModelFilter).isIncognito();
+        doReturn(2).when(mTabGroupModelFilter).getCount();
+        doReturn(mTabGroup1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
+        doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
 
-            doReturn(mTabModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-            doReturn(mTabModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
-            doReturn(mTabModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
-            doNothing()
-                    .when(mActivityLifecycleDispatcher)
-                    .register(mPauseResumeWithNativeObserverArgumentCaptor.capture());
-        } else {
-            // Setup TabGroupModelFilter.
-            doReturn(false).when(mTabGroupModelFilter).isIncognito();
-            doReturn(2).when(mTabGroupModelFilter).getCount();
-            doReturn(mTabGroup1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
-            doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
-            doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
-
-            doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-            doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
-            doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
-            doNothing()
-                    .when(mTabGroupModelFilter)
-                    .addTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
-        }
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
+        doNothing()
+                .when(mTabGroupModelFilter)
+                .addTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
 
         // Set up TabModelSelector and TabModelFilterProvider.
         List<TabModel> tabModelList = new ArrayList<>();
@@ -363,11 +321,6 @@ public class TabGroupUiMediatorUnitTest {
         mResetHandlerInOrder = inOrder(mResetHandler);
         mVisibilityControllerInOrder = inOrder(mVisibilityController);
         mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
-    }
-
-    @After
-    public void tearDown() {
-        ConditionalTabStripUtils.setFeatureStatus(FeatureStatus.DEFAULT);
     }
 
     /*********************** Tab group related tests *************************/

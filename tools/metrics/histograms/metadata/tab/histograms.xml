@@ -2796,6 +2796,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabStrip.ReasonToShow" enum="TabStripReasonToShow"
     expires_after="2021-02-01">
+  <obsolete>
+    Removed 01/2023. Feature deprecated and code deleted.
+  </obsolete>
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -2857,6 +2860,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabStrip.UserStatus" enum="TabStripUserStatus"
     expires_after="2022-04-17">
+  <obsolete>
+    Removed 01/2023. Feature deprecated and code deleted.
+  </obsolete>
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>

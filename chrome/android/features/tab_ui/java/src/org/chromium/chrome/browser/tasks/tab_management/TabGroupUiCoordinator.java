@@ -141,9 +141,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         "Downloaded_Enabled");
             }
 
-            boolean actionOnAllRelatedTabs = TabUiFeatureUtilities.isConditionalTabStripEnabled();
             mTabStripCoordinator = new TabListCoordinator(TabListCoordinator.TabListMode.STRIP,
-                    mContext, mTabModelSelector, null, null, actionOnAllRelatedTabs, null, null,
+                    mContext, mTabModelSelector, null, null, false, null, null,
                     TabProperties.UiType.STRIP, null, null, mTabListContainerView, true,
                     COMPONENT_NAME, mRootView, onModelTokenChange);
             mTabStripCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
@@ -169,12 +168,9 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
             mMediator = new TabGroupUiMediator(mActivity, visibilityController, this, mModel,
                     mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
-                    mIncognitoStateProvider, dialogController, mActivityLifecycleDispatcher,
-                    mSnackbarManager, mOmniboxFocusStateSupplier);
+                    mIncognitoStateProvider, dialogController, mOmniboxFocusStateSupplier);
 
             TabGroupUtils.startObservingForCreationIPH();
-
-            if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) return;
 
             // TODO(meiliang): Potential leak if the observer is added after restoreCompleted. Fix
             // it. Record the group count after all tabs are being restored. This only happen once

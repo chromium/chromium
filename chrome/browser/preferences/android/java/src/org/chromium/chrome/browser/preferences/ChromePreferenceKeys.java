@@ -150,30 +150,6 @@ public final class ChromePreferenceKeys {
             "Chrome.CommerceSubscriptions.ChromeManagedTimestamp";
 
     /**
-     * Saves a counter of how many continuous feature sessions in which a user has dismissed
-     * conditional tab strip.
-     */
-    public static final String CONDITIONAL_TAB_STRIP_CONTINUOUS_DISMISS_COUNTER =
-            "Chrome.ConditionalTabStrip.ContinuousDismissCounter";
-
-    /**
-     * Saves the feature status of conditional tab strip.
-     */
-    public static final String CONDITIONAL_TAB_STRIP_FEATURE_STATUS =
-            "Chrome.ConditionalTabStrip.FeatureStatus";
-
-    /**
-     * Saves the timestamp of the last time that conditional tab strip shows.
-     */
-    public static final String CONDITIONAL_TAB_STRIP_LAST_SHOWN_TIMESTAMP =
-            "Chrome.ConditionalTabStrip.LastShownTimeStamp";
-
-    /**
-     * Saves whether a user has chosen to opt-out the conditional tab strip feature.
-     */
-    public static final String CONDITIONAL_TAB_STRIP_OPT_OUT = "Chrome.ConditionalTabStrip.OptOut";
-
-    /**
      * Marks that the content suggestions surface has been shown.
      * Default value is false.
      */
@@ -1037,10 +1013,6 @@ public final class ChromePreferenceKeys {
                 CLOUD_MANAGEMENT_CLIENT_ID,
                 CLOUD_MANAGEMENT_DM_TOKEN,
                 COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP,
-                CONDITIONAL_TAB_STRIP_CONTINUOUS_DISMISS_COUNTER,
-                CONDITIONAL_TAB_STRIP_FEATURE_STATUS,
-                CONDITIONAL_TAB_STRIP_LAST_SHOWN_TIMESTAMP,
-                CONDITIONAL_TAB_STRIP_OPT_OUT,
                 CONTEXT_MENU_OPEN_IMAGE_IN_EPHEMERAL_TAB_CLICKED,
                 CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED,
                 CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,

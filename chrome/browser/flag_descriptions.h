@@ -396,9 +396,6 @@ extern const char kClientStorageAccessContextAuditingDescription[];
 extern const char kClosedTabCacheName[];
 extern const char kClosedTabCacheDescription[];
 
-extern const char kConditionalTabStripAndroidName[];
-extern const char kConditionalTabStripAndroidDescription[];
-
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];

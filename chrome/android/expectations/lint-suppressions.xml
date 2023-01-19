@@ -151,11 +151,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.tab_suggestion_close_stale_message` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_suggestion_close_tab_action_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_suggestion_review_button` appears to be unused"/>
-    <!-- crbug.com/1076295 remove this line and the following four lines after the bug is resolved -->
-    <ignore regexp="The resource `R.string.undo_tab_strip_closure_message` appears to be unused"/>
-    <ignore regexp="The resource `R.string.tab_strip_info_bar_question` appears to be unused"/>
-    <ignore regexp="The resource `R.string.tab_strip_info_bar_no_reshow` appears to be unused"/>
-    <ignore regexp="The resource `R.string.tab_strip_info_bar_reshow` appears to be unused"/>
     <!-- crbug.com/1117145 remove this line and the following 23 lines after the bug is resolved -->
     <ignore regexp="The resource `R.layout.language_picker` appears to be unused"/>
     <ignore regexp="The resource `R.string.video_tutorials_accessibility_close` appears to be unused"/>

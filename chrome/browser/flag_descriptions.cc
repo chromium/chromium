@@ -127,10 +127,6 @@ const char kChromeRootStoreEnabledDescription[] =
     "Enable use of Chrome Root Store over platform roots. "
     "On some platforms this may also enable Chrome Cert Verifier.";
 
-const char kConditionalTabStripAndroidName[] = "Conditional Tab Strip";
-const char kConditionalTabStripAndroidDescription[] =
-    "Allows users to access conditional tab strip.";
-
 const char kContentLanguagesInLanguagePickerName[] =
     "Content languages in language picker";
 const char kContentLanguagesInLanguagePickerDescription[] =

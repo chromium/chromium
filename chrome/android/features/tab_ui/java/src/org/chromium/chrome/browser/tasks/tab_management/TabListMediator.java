@@ -369,7 +369,7 @@ class TabListMediator {
 
             mNextTabId = tabId;
 
-            if (!mActionsOnAllRelatedTabs || TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
+            if (!mActionsOnAllRelatedTabs) {
                 Tab currentTab = mTabModelSelector.getCurrentTab();
                 Tab newlySelectedTab =
                         TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId);
@@ -413,12 +413,6 @@ class TabListMediator {
                                         .indexOf(toTab);
 
             RecordUserAction.record("MobileTabSwitched." + mComponentName);
-            if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
-                assert fromFilterIndex != toFilterIndex;
-                RecordHistogram.recordSparseHistogram("Tabs.TabOffsetOfSwitch." + mComponentName,
-                        fromFilterIndex - toFilterIndex);
-                return;
-            }
 
             if (fromFilterIndex != toFilterIndex) return;
 
@@ -613,12 +607,7 @@ class TabListMediator {
             @Override
             public void tabClosureUndone(Tab tab) {
                 onTabAdded(tab, !mActionsOnAllRelatedTabs);
-                if (TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
-                    mTabModelSelector.getCurrentModel().setIndex(
-                            TabModelUtils.getTabIndexById(
-                                    mTabModelSelector.getCurrentModel(), tab.getId()),
-                            TabSelectionType.FROM_USER, false);
-                }
+
                 if (sTabClosedFromMapTabClosedFromMap.containsKey(tab.getId())) {
                     @TabClosedFrom
                     int from = sTabClosedFromMapTabClosedFromMap.get(tab.getId());
