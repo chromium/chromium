@@ -264,7 +264,8 @@ chromium-metrics-reviews@google.com.
     Tracks the enabled state for the Page Zoom option on the main app menu. The
     state will be one of the following enumerated states: 0) not enabled, 1)
     enabled explicitly by the user on the Accessibility Page Zoom setting, 2)
-    enabled automatically if the user has an Android OS-wide default font size.
+    enabled automatically if the user has an Android OS-wide default font size,
+    3) disabled explicitly by the user on the Accessibility Page Zoom setting.
     Recorded each time the app menu is opened.
   </summary>
 </histogram>

@@ -52,12 +52,12 @@ public class PageZoomCoordinator {
     }
 
     /**
-     * Whether or not the AppMenu should show the 'Zoom' menu item.
+     * Returns true if the AppMenu item for Zoom should be displayed, false otherwise.
      * @return boolean
      */
     public static boolean shouldShowMenuItem() {
         if (sShouldShowMenuItemForTesting != null) return sShouldShowMenuItemForTesting;
-        return PageZoomMediator.shouldShowMenuItem();
+        return PageZoomUtils.shouldShowZoomMenuItem();
     }
 
     /**

@@ -13,8 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.MathUtils;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,46 +38,6 @@ public class PageZoomMediator {
         // re-constructed after configuration changes, so this will be up-to-date for this session.
         SYSTEM_FONT_SCALE =
                 ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale;
-    }
-
-    /**
-     * Returns whether the AppMenu item for Zoom should be displayed. It will be displayed if
-     * any of the following conditions are met:
-     *
-     *    - User has enabled the "Show Page Zoom" setting in Chrome Accessibility Settings
-     *    - User has set a default zoom other than 100% in Chrome Accessibility Settings
-     *    - User has changed the Android OS Font Size setting
-     *
-     * @return boolean
-     */
-    protected static boolean shouldShowMenuItem() {
-        // Never show the menu item if the content feature is disabled.
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
-            return false;
-        }
-
-        // Always show the menu item if the user has set this in Accessibility Settings.
-        if (PageZoomUtils.shouldAlwaysShowZoomMenuItem()) {
-            PageZoomUma.logAppMenuEnabledStateHistogram(
-                    PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.USER_ENABLED);
-            return true;
-        }
-
-        // The default (float) |fontScale| is 1, the default page zoom is 1.
-        // If the user has a system font scale other than the default, always show the menu item.
-        boolean isUsingDefaultSystemFontScale = MathUtils.areFloatsEqual(SYSTEM_FONT_SCALE, 1f);
-        if (!isUsingDefaultSystemFontScale) {
-            PageZoomUma.logAppMenuEnabledStateHistogram(
-                    PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED);
-            return true;
-        }
-
-        // TODO(mschillaci): Decide whether to additionally enable app menu item depending on
-        // default page zoom. If yes, then replace with a delegate call, cannot depend directly on
-        // Profile.
-        PageZoomUma.logAppMenuEnabledStateHistogram(
-                PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.NOT_ENABLED);
-        return false;
     }
 
     /**

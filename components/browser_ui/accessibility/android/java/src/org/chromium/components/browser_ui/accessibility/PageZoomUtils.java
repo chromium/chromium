@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
+import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
 import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLIER_RATIO;
 
 import org.chromium.base.ContextUtils;
@@ -140,13 +141,67 @@ public class PageZoomUtils {
     // that they can be used in //components.
 
     /**
-     * Returns the current user choice for always showing the Zoom AppMenu item (set in
-     * Accessibility Settings). This setting is Chrome Android specific.
+     * Returns true if the user has set a choice for always showing the Zoom AppMenu
+     * item (set in Accessibility Settings). This setting is Chrome Android specific.
+     * @return boolean
+     */
+    public static boolean hasUserSetShouldAlwaysShowZoomMenuItemOption() {
+        return ContextUtils.getAppSharedPreferences().contains(
+                AccessibilityConstants.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM);
+    }
+
+    /**
+     * Returns the current user setting for always showing the Zoom AppMenu
+     * item (set in Accessibility Settings). Default is false. This setting is Chrome Android
+     * specific.
      * @return boolean
      */
     public static boolean shouldAlwaysShowZoomMenuItem() {
         return ContextUtils.getAppSharedPreferences().getBoolean(
                 AccessibilityConstants.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM, false);
+    }
+
+    /**
+     * Returns true if the Zoom AppMenu item should be shown, false otherwise.
+     *
+     * - If there is a current user choice set in Accessibility Settings, respect and return the
+     * user setting.
+     * - Otherwise, if there is an OS level font size set, return true.
+     * - Otherwise, return false.
+     *
+     * This setting is Chrome Android specific.
+     * @return boolean
+     */
+    public static boolean shouldShowZoomMenuItem() {
+        if (!shouldShowSettingsUI()) {
+            return false;
+        }
+
+        // Always respect the user's choice if the user has set this in Accessibility Settings.
+        if (hasUserSetShouldAlwaysShowZoomMenuItemOption()) {
+            if (shouldAlwaysShowZoomMenuItem()) {
+                PageZoomUma.logAppMenuEnabledStateHistogram(
+                        PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.USER_ENABLED);
+                return true;
+            } else {
+                PageZoomUma.logAppMenuEnabledStateHistogram(
+                        PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.USER_DISABLED);
+                return false;
+            }
+        }
+
+        // The default (float) |fontScale| is 1, the default page zoom is 1.
+        // If the user has a system font scale other than the default, always show the menu item.
+        boolean isUsingDefaultSystemFontScale = MathUtils.areFloatsEqual(SYSTEM_FONT_SCALE, 1f);
+        if (!isUsingDefaultSystemFontScale) {
+            PageZoomUma.logAppMenuEnabledStateHistogram(
+                    PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED);
+            return true;
+        }
+
+        PageZoomUma.logAppMenuEnabledStateHistogram(
+                PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.NOT_ENABLED);
+        return false;
     }
 
     /**

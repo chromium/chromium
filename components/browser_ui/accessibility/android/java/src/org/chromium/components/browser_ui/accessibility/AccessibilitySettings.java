@@ -85,7 +85,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             mPageZoomDefaultZoomPref.setInitialValue(
                     PageZoomUtils.getDefaultZoomAsSeekValue(mDelegate.getBrowserContextHandle()));
             mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
-            mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldAlwaysShowZoomMenuItem());
+            mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
             mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
         } else {
             mPageZoomDefaultZoomPref.setVisible(false);

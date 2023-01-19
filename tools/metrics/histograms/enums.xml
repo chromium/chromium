@@ -349,6 +349,7 @@ components/browser_ui/accessibility/PageZoomUma.java -->
   <int value="0" label="Not Enabled"/>
   <int value="1" label="User Enabled"/>
   <int value="2" label="OS Enabled"/>
+  <int value="3" label="User Disabled"/>
 </enum>
 
 <enum name="AccessibilityTreeUnserializeError">

@@ -24,14 +24,16 @@ public class PageZoomUma {
     @IntDef({AccessibilityPageZoomAppMenuEnabledState.NOT_ENABLED,
             AccessibilityPageZoomAppMenuEnabledState.USER_ENABLED,
             AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED,
+            AccessibilityPageZoomAppMenuEnabledState.USER_DISABLED,
             AccessibilityPageZoomAppMenuEnabledState.MAX_VALUE})
     public @interface AccessibilityPageZoomAppMenuEnabledState {
         int NOT_ENABLED = 0;
         int USER_ENABLED = 1;
         int OS_ENABLED = 2;
+        int USER_DISABLED = 3;
 
         // Be sure to also update enums.xml when updating these values.
-        int MAX_VALUE = 3;
+        int MAX_VALUE = 4;
     }
 
     // Page Zoom histogram values
