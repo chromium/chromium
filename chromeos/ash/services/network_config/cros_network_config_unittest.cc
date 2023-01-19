@@ -2131,6 +2131,156 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
       /*ip_type_count=*/1, ApnTypes::kDefault, /*apn_types_count=*/1);
 }
 
+TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  // Register an observer to capture values sent to Shill
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  const base::Value::List* custom_apns =
+      network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_FALSE(custom_apns);
+
+  // Create a custom default APN.
+  TestApnData test_apn1;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.attach = kCellularTestApnAttach1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
+  CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn1});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+
+  // Try to modify the APN type to be attach which will not work because there
+  // would be no default APN left.
+  custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(1u, custom_apns->size());
+  const std::string first_apn_id =
+      *custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+
+  TestApnData test_apn2;
+  test_apn2.access_point_name = kCellularTestApn2;
+  test_apn2.name = kCellularTestApnName2;
+  test_apn2.username = kCellularTestApnUsername2;
+  test_apn2.password = kCellularTestApnPassword2;
+  test_apn2.attach = "attach";
+  test_apn2.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  test_apn2.id = first_apn_id;
+
+  ModifyCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+  EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn1});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+
+  // Create a custom attach APN.
+  TestApnData test_apn3;
+  test_apn3.access_point_name = kCellularTestApn3;
+  test_apn3.name = kCellularTestApnName3;
+  test_apn3.username = kCellularTestApnUsername3;
+  test_apn3.password = kCellularTestApnPassword3;
+  test_apn3.attach = kCellularTestApnAttach1;
+  test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  CreateCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn1});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+  AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/0);
+  AssertCreateCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kAutomatic,
+      /*auth_type_count=*/2, mojom::ApnIpType::kAutomatic,
+      /*ip_type_count=*/2, ApnTypes::kAttach, /*apn_types_count=*/1);
+
+  // Try to modify default APN to be attach which will not work because there
+  // would be no default APN left.
+  ModifyCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+  EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn1});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+
+  // Modify attach APN type to default which is OK.
+  custom_apns = network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_TRUE(custom_apns);
+  ASSERT_EQ(2u, custom_apns->size());
+  const std::string second_apn_id =
+      *custom_apns->front().GetDict().FindString(::onc::cellular_apn::kId);
+
+  TestApnData test_apn4;
+  test_apn4.access_point_name = "TEST.APN4";
+  test_apn4.name = "Test Apn 4";
+  test_apn4.username = kCellularTestApnUsername1;
+  test_apn4.password = kCellularTestApnPassword1;
+  test_apn4.attach = "";
+  test_apn4.mojo_apn_types = {mojom::ApnType::kDefault};
+  test_apn4.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
+  test_apn4.id = second_apn_id;
+
+  ModifyCustomApn(kCellularGuid, test_apn4.AsMojoApn());
+  EXPECT_EQ(3u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn4, &test_apn1});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+
+  // Modify first default APN to be attach which is OK.
+  TestApnData test_apn5;
+  test_apn5.access_point_name = "TEST.APN5";
+  test_apn5.name = "Test Apn 5";
+  test_apn5.username = kCellularTestApnUsername1;
+  test_apn5.password = kCellularTestApnPassword1;
+  test_apn5.attach = "attach";
+  test_apn5.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn5.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  test_apn5.id = first_apn_id;
+
+  ModifyCustomApn(kCellularGuid, test_apn5.AsMojoApn());
+  EXPECT_EQ(4u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn4, &test_apn5});
+    EXPECT_TRUE(
+        UserApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(UserApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                              network_config_observer));
+    EXPECT_TRUE(UserApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+}
+
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);

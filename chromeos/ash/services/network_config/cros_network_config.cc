@@ -3715,9 +3715,16 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
         /*old_apn_state=*/absl::nullopt);
     return;
   }
+
+  if (!DoesDefaultApnExist(new_custom_apns)) {
+    NET_LOG(ERROR)
+        << "ModifyCustomApn: Cannot change the type to attach because there "
+        << "will be no APN with a default type remaining.";
+    return;
+  }
+
   NET_LOG(USER) << "ModifyCustomApn: Setting user APNs for: " << network_guid
                 << ": " << new_custom_apns.size();
-
   network_metadata_store->SetCustomApnList(network_guid,
                                            new_custom_apns.Clone());
   SetPropertiesInternal(
