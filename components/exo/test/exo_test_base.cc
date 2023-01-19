@@ -5,6 +5,7 @@
 #include "components/exo/test/exo_test_base.h"
 
 #include "ash/shell.h"
+#include "ash/test_shell_delegate.h"
 #include "components/exo/buffer.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
@@ -49,15 +50,20 @@ ExoTestBase::ExoTestBase() = default;
 ExoTestBase::~ExoTestBase() = default;
 
 void ExoTestBase::SetUp() {
-  AshTestBase::SetUp();
-  wm_helper_ = std::make_unique<WMHelperChromeOS>();
-  wm_helper_->RegisterAppPropertyResolver(
-      base::WrapUnique(new TestPropertyResolver()));
+  SetUp(nullptr);
 }
 
 void ExoTestBase::TearDown() {
   wm_helper_.reset();
   AshTestBase::TearDown();
+}
+
+void ExoTestBase::SetUp(
+    std::unique_ptr<ash::TestShellDelegate> shell_delegate) {
+  AshTestBase::SetUp(std::move(shell_delegate));
+  wm_helper_ = std::make_unique<WMHelperChromeOS>();
+  wm_helper_->RegisterAppPropertyResolver(
+      base::WrapUnique(new TestPropertyResolver()));
 }
 
 viz::SurfaceManager* ExoTestBase::GetSurfaceManager() {

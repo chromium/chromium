@@ -101,6 +101,7 @@ TabDragDropDelegate::TabDragDropDelegate(
       start_location_in_screen_(start_location_in_screen) {
   DCHECK(root_window_);
   DCHECK(source_window_);
+  source_window_->AddObserver(this);
   source_window_->SetProperty(kIsSourceWindowForDrag, true);
   split_view_drag_indicators_ =
       std::make_unique<SplitViewDragIndicators>(root_window_);
@@ -113,6 +114,12 @@ TabDragDropDelegate::TabDragDropDelegate(
 
 TabDragDropDelegate::~TabDragDropDelegate() {
   tab_dragging_recorder_.reset();
+
+  if (!source_window_) {
+    return;
+  }
+
+  source_window_->RemoveObserver(this);
 
   if (source_window_->is_destroying())
     return;
@@ -164,6 +171,14 @@ void TabDragDropDelegate::DropAndDeleteSelf(
                                 base::Owned(this), location_in_screen);
   NewWindowDelegate::GetPrimary()->NewWindowForDetachingTab(
       source_window_, drop_data, std::move(closure));
+}
+
+void TabDragDropDelegate::OnWindowDestroying(aura::Window* window) {
+  if (source_window_ == window) {
+    windows_hider_.reset();
+    source_window_->RemoveObserver(this);
+    source_window_ = nullptr;
+  }
 }
 
 void TabDragDropDelegate::OnNewBrowserWindowCreated(

@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/drag_drop/drag_drop_capture_delegate.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace aura {
@@ -29,7 +30,8 @@ class TabletModeBrowserWindowDragSessionWindowsHider;
 // Provides special handling for Chrome tab drags on behalf of
 // DragDropController. This must be created at the beginning of a tab drag and
 // destroyed at the end.
-class ASH_EXPORT TabDragDropDelegate : public DragDropCaptureDelegate {
+class ASH_EXPORT TabDragDropDelegate : public DragDropCaptureDelegate,
+                                       public aura::WindowObserver {
  public:
   // Determines whether |drag_data| indicates a tab drag from a WebUI tab strip
   // (or simply returns false if the integration is disabled).
@@ -59,6 +61,9 @@ class ASH_EXPORT TabDragDropDelegate : public DragDropCaptureDelegate {
   // calling this, this delegate must not be used.
   void DropAndDeleteSelf(const gfx::Point& location_in_screen,
                          const ui::OSExchangeData& drop_data);
+
+  // Overridden from aura::WindowObserver.
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabDragDropDelegateTest, DropWithoutNewWindow);
@@ -96,7 +101,7 @@ class ASH_EXPORT TabDragDropDelegate : public DragDropCaptureDelegate {
   bool ShouldPreventSnapToTheEdge(const gfx::Point& location_in_screen);
 
   aura::Window* const root_window_;
-  aura::Window* const source_window_;
+  aura::Window* source_window_;
   const gfx::Point start_location_in_screen_;
 
   std::unique_ptr<SplitViewDragIndicators> split_view_drag_indicators_;

@@ -8,12 +8,14 @@
 
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/shell.h"
+#include "ash/test_shell_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_source.h"
@@ -36,9 +38,13 @@ namespace exo {
 namespace {
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Property;
+using ::testing::Return;
 
 constexpr char kTextMimeType[] = "text/plain";
+
+constexpr char kWindowDragMimeType[] = "chromium/x-window-drag";
 
 }  // namespace
 
@@ -101,7 +107,7 @@ class DragDropOperationTest : public test::ExoTestBase,
   int drag_end_count_ = 0;
 };
 
-TEST_F(DragDropOperationTest, DeleteDuringDragging) {
+TEST_F(DragDropOperationTest, DeleteDataSourceDuringDragging) {
   TestDataExchangeDelegate data_exchange_delegate;
 
   auto delegate = std::make_unique<TestDataSourceDelegate>();
@@ -136,6 +142,90 @@ TEST_F(DragDropOperationTest, DeleteDuringDragging) {
         std::move(quit_closure).Run();
       },
       std::move(data_source), operation, run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_FALSE(operation);
+}
+
+namespace {
+
+class MockShellDelegate : public ash::TestShellDelegate {
+ public:
+  MockShellDelegate() = default;
+  ~MockShellDelegate() override = default;
+
+  MOCK_METHOD(bool, IsTabDrag, (const ui::OSExchangeData&), (override));
+};
+
+}  // namespace
+
+class DragDropOperationTestWithWebUITabStripTest
+    : public DragDropOperationTest {
+ public:
+  DragDropOperationTestWithWebUITabStripTest() {
+    ash::features::SetWebUITabStripEnabled(true);
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kWebUITabStripTabDragIntegration);
+  }
+
+  // DragDropOperationTest:
+  void SetUp() override {
+    auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
+    mock_shell_delegate_ = mock_shell_delegate.get();
+
+    ExoTestBase::SetUp(std::move(mock_shell_delegate));
+    aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow())
+        ->AddObserver(this);
+  }
+
+  MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
+
+ private:
+  NiceMock<MockShellDelegate>* mock_shell_delegate_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(DragDropOperationTestWithWebUITabStripTest,
+       DeleteSurfaceDuringDragging) {
+  TestDataExchangeDelegate data_exchange_delegate;
+
+  auto delegate = std::make_unique<TestDataSourceDelegate>();
+  auto data_source = std::make_unique<DataSource>(delegate.get());
+  data_source->Offer(kWindowDragMimeType);
+  delegate->SetData(kWindowDragMimeType, std::vector<uint8_t>());
+
+  ON_CALL(*mock_shell_delegate(), IsTabDrag(_)).WillByDefault(Return(true));
+
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100}).BuildShellSurface();
+  auto* origin_surface = shell_surface->surface_for_testing();
+
+  gfx::Size buffer_size(100, 100);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto icon_surface = std::make_unique<Surface>();
+  icon_surface->Attach(buffer.get());
+
+  auto operation = DragDropOperation::Create(
+      &data_exchange_delegate, data_source.get(), origin_surface,
+      icon_surface.get(), gfx::PointF(), ui::mojom::DragEventSource::kMouse);
+  icon_surface->Commit();
+
+  base::RunLoop run_loop;
+  set_drag_blocked_callback(base::BindOnce(
+      [](std::unique_ptr<DataSource> data_source,
+         std::unique_ptr<ShellSurface> shell_surface,
+         base::WeakPtr<DragDropOperation> operation,
+         base::OnceClosure quit_closure) {
+        // This function runs inside the nested RunLoop in
+        // ash::DragDropController::StartDragAndDrop().
+        EXPECT_TRUE(operation);
+        // Deleting ShellSurface causes DragDropOperation to be deleted as well.
+        shell_surface.reset();
+        EXPECT_FALSE(operation);
+        std::move(quit_closure).Run();
+      },
+      std::move(data_source), std::move(shell_surface), operation,
+      run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_FALSE(operation);
 }
