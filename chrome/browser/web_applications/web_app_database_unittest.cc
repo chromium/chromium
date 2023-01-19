@@ -458,6 +458,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_FALSE(app_copy->manifest_id().has_value());
   EXPECT_FALSE(app_copy->IsStorageIsolated());
   EXPECT_TRUE(app_copy->permissions_policy().empty());
+  EXPECT_FALSE(app_copy->tab_strip());
 }
 
 TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {

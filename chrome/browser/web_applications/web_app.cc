@@ -155,6 +155,30 @@ base::Value OsStatesDebugValue(
   return base::Value(std::move(debug_dict));
 }
 
+base::Value ImageResourceDebugValue(
+    const blink::Manifest::ImageResource& icon) {
+  const char* const kPurposeStrings[] = {"Any", "Monochrome", "Maskable"};
+
+  base::Value root(base::Value::Type::DICT);
+  root.SetStringKey("src", icon.src.spec());
+  root.SetStringKey("type", icon.type);
+
+  base::Value sizes_json(base::Value::Type::LIST);
+  for (const auto& size : icon.sizes) {
+    std::string size_formatted = base::NumberToString(size.width()) + "x" +
+                                 base::NumberToString(size.height());
+    sizes_json.Append(base::Value(size_formatted));
+  }
+  root.SetKey("sizes", std::move(sizes_json));
+
+  base::Value purpose_json(base::Value::Type::LIST);
+  for (const auto& purpose : icon.purpose) {
+    purpose_json.Append(kPurposeStrings[static_cast<int>(purpose)]);
+  }
+  root.SetKey("purpose", std::move(purpose_json));
+  return root;
+}
+
 }  // namespace
 
 WebApp::WebApp(const AppId& app_id)
@@ -956,8 +980,18 @@ base::Value WebApp::AsDebugValue() const {
           "home_tab", base::StreamableToString(absl::get<TabStrip::Visibility>(
                           tab_strip_.value().home_tab)));
     } else {
-      tab_strip_json.Set("home_tab", base::Value::Dict());
-      // TODO(crbug.com/897314): Add debug info for home tab icons.
+      base::Value::Dict home_tab_json;
+      base::Value icons_json(base::Value::Type::LIST);
+      absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
+          absl::get<blink::Manifest::HomeTabParams>(tab_strip_.value().home_tab)
+              .icons;
+
+      for (auto& icon : *icons) {
+        icons_json.Append(ImageResourceDebugValue(icon));
+      }
+
+      home_tab_json.Set("icons", std::move(icons_json));
+      tab_strip_json.Set("home_tab", std::move(home_tab_json));
     }
     root.Set("tab_strip", std::move(tab_strip_json));
   } else {

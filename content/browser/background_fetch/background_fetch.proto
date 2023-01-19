@@ -45,6 +45,34 @@ message BackgroundFetchRegistration {
   optional BackgroundFetchFailureReason failure_reason = 8;
 }
 
+// TODO(crbug.com/1381377): Move ImageResource to generic place.
+// Currently also being used within chrome/browser/web_applications
+// https://w3c.github.io/manifest/#dom-imageresource
+//
+// Next Tag: 5
+message ImageResource {
+  optional string src = 1;
+
+  // Next Tag: 3
+  message Size {
+    optional int32 width = 1;
+    optional int32 height = 2;
+  }
+
+  repeated Size sizes = 2;
+  optional bytes type = 3;
+
+  // https://w3c.github.io/manifest/#purpose-member
+  enum Purpose {
+    ANY = 1;
+    MONOCHROME = 2;
+    MASKABLE = 3;
+  }
+
+  // blink::mojom::ManifestImageResource_Purpose enum.
+  repeated Purpose purpose = 4;
+}
+
 // Developer provided options.
 // https://wicg.github.io/background-fetch/#background-fetch-manager
 //
@@ -53,32 +81,6 @@ message BackgroundFetchOptions {
   // The initial title provided by the developer. This can be updated,
   // and the most recent value is stored in BackgroundFetchUIOptions.
   optional string title = 1;
-
-  // https://w3c.github.io/manifest/#dom-imageresource
-  //
-  // Next Tag: 5
-  message ImageResource {
-    optional string src = 1;
-
-    // Next Tag: 3
-    message Size {
-      optional int32 width = 1;
-      optional int32 height = 2;
-    }
-
-    repeated Size sizes = 2;
-    optional bytes type = 3;
-
-    // https://w3c.github.io/manifest/#purpose-member
-    enum Purpose {
-      ANY = 1;
-      MONOCHROME = 2;
-      MASKABLE = 3;
-    }
-
-    // blink::mojom::ManifestImageResource_Purpose enum.
-    repeated Purpose purpose = 4;
-  }
 
   repeated ImageResource icons = 2;
 

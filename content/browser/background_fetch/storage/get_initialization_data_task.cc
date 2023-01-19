@@ -371,11 +371,11 @@ class FillFromMetadataTask : public InitializationSubTask {
       ir.purpose.reserve(icon.purpose_size());
       for (auto purpose : icon.purpose()) {
         switch (purpose) {
-          case proto::BackgroundFetchOptions_ImageResource_Purpose_ANY:
+          case proto::ImageResource_Purpose_ANY:
             ir.purpose.push_back(
                 blink::mojom::ManifestImageResource_Purpose::ANY);
             break;
-          case proto::BackgroundFetchOptions_ImageResource_Purpose_MONOCHROME:
+          case proto::ImageResource_Purpose_MONOCHROME:
             ir.purpose.push_back(
                 blink::mojom::ManifestImageResource_Purpose::MONOCHROME);
             break;

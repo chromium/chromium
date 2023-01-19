@@ -738,6 +738,15 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     if (absl::holds_alternative<TabStrip::Visibility>(tab_strip.home_tab)) {
       mutable_tab_strip->set_home_tab_visibility(TabStripVisibilityToProto(
           absl::get<TabStrip::Visibility>(tab_strip.home_tab)));
+    } else {
+      auto* mutable_home_tab_params =
+          mutable_tab_strip->mutable_home_tab_params();
+      absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
+          absl::get<blink::Manifest::HomeTabParams>(tab_strip.home_tab).icons;
+      for (const auto& image_resource : *icons) {
+        *(mutable_home_tab_params->add_icons()) =
+            AppImageResourceToProto(image_resource);
+      }
     }
 
     if (absl::holds_alternative<TabStrip::Visibility>(
@@ -1375,7 +1384,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       tab_strip.home_tab = ProtoToTabStripVisibility(
           local_data.tab_strip().home_tab_visibility());
     } else {
-      tab_strip.home_tab = blink::Manifest::HomeTabParams();
+      absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
+          ParseAppImageResource(
+              "WebApp", local_data.tab_strip().home_tab_params().icons());
+      blink::Manifest::HomeTabParams home_tab_params;
+      if (!icons->empty()) {
+        home_tab_params.icons = std::move(*icons);
+      }
+      tab_strip.home_tab = std::move(home_tab_params);
     }
 
     if (local_data.tab_strip().has_new_tab_button_visibility()) {

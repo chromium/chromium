@@ -16,6 +16,7 @@ proto_library("proto") {
   ]
   link_deps = [
     "//chrome/browser/ash/system_web_apps/types:proto",
+    "//content/browser/background_fetch:background_fetch_proto",
     "//components/sync/protocol",
   ]
 }

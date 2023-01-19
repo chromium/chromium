@@ -310,6 +310,56 @@ std::vector<IconSizes> CreateRandomDownloadedShortcutsMenuIconsSizes(
   return results;
 }
 
+std::vector<blink::Manifest::ImageResource> CreateRandomHomeTabIcons(
+    RandomHelper& random) {
+  std::vector<blink::Manifest::ImageResource> icons;
+
+  for (int i = random.next_uint(4) + 1; i >= 0; --i) {
+    blink::Manifest::ImageResource icon;
+
+    int mime_type = random.next_uint(3);
+    switch (mime_type) {
+      case 0:
+        icon.src = GURL("https://example.com/image" + base::NumberToString(i) +
+                        ".png");
+        icon.type = base::UTF8ToUTF16(std::string("image/png"));
+        break;
+      case 1:
+        icon.src = GURL("https://example.com/image" + base::NumberToString(i) +
+                        ".svg");
+        icon.type = base::UTF8ToUTF16(std::string("image/svg+xml"));
+        break;
+      case 2:
+        icon.src = GURL("https://example.com/image" + base::NumberToString(i) +
+                        ".webp");
+        icon.type = base::UTF8ToUTF16(std::string("image/webp"));
+        break;
+    }
+
+    // Icon sizes can be non square
+    std::vector<gfx::Size> sizes;
+    for (int j = random.next_uint(3) + 1; j > 0; --j) {
+      sizes.emplace_back(j * random.next_uint(200), j * random.next_uint(200));
+    }
+    icon.sizes = std::move(sizes);
+
+    std::vector<blink::mojom::ManifestImageResource_Purpose> purposes = {
+        blink::mojom::ManifestImageResource_Purpose::ANY,
+        blink::mojom::ManifestImageResource_Purpose::MASKABLE,
+        blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+
+    std::vector<blink::mojom::ManifestImageResource_Purpose> purpose;
+
+    for (int j = random.next_uint(purposes.size()); j >= 0; --j) {
+      unsigned index = random.next_uint(purposes.size());
+      purpose.push_back(purposes[index]);
+      purposes.erase(purposes.begin() + index);
+    }
+    icon.purpose = std::move(purpose);
+    icons.push_back(std::move(icon));
+  }
+  return icons;
+}
 }  // namespace
 
 std::string GetExternalPrefMigrationTestName(
@@ -627,8 +677,18 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   if (random.next_bool()) {
     blink::Manifest::TabStrip tab_strip;
-    tab_strip.home_tab =
-        random.next_enum<blink::mojom::TabStripMemberVisibility>();
+
+    if (random.next_bool()) {
+      blink::Manifest::HomeTabParams home_tab_params;
+      if (random.next_bool()) {
+        home_tab_params.icons = CreateRandomHomeTabIcons(random);
+      }
+      tab_strip.home_tab = std::move(home_tab_params);
+    } else {
+      tab_strip.home_tab =
+          random.next_enum<blink::mojom::TabStripMemberVisibility>();
+    }
+
     if (random.next_bool()) {
       blink::Manifest::NewTabButtonParams new_tab_button_params;
       if (random.next_bool()) {

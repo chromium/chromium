@@ -4,9 +4,15 @@
 
 syntax = "proto2";
 
+import "content/browser/background_fetch/background_fetch.proto";
+
 option optimize_for = LITE_RUNTIME;
 
 package web_app.proto;
+
+message HomeTabParams {
+  repeated content.proto.ImageResource icons = 1;
+}
 
 message NewTabButtonParams {
   optional string url = 1;
@@ -28,6 +34,6 @@ message TabStrip {
 
   oneof home_tab {
     Visibility home_tab_visibility = 3;
-    // TODO(crbug.com/897314): Add HomeTabParams containing icons.
+    HomeTabParams home_tab_params = 4;
   }
 }

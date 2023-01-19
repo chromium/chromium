@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace web_app {
 
@@ -37,6 +40,19 @@ sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
       return sync_pb::WebAppIconInfo_Purpose_MONOCHROME;
     case apps::IconInfo::Purpose::kMaskable:
       return sync_pb::WebAppIconInfo_Purpose_MASKABLE;
+  }
+}
+
+content::proto::ImageResource_Purpose
+ManifestImageResourcePurposeToImageResoucePurposeProto(
+    blink::mojom::ManifestImageResource_Purpose purpose) {
+  switch (purpose) {
+    case blink::mojom::ManifestImageResource_Purpose::ANY:
+      return content::proto::ImageResource_Purpose_ANY;
+    case blink::mojom::ManifestImageResource_Purpose::MONOCHROME:
+      return content::proto::ImageResource_Purpose_MONOCHROME;
+    case blink::mojom::ManifestImageResource_Purpose::MASKABLE:
+      return content::proto::ImageResource_Purpose_MASKABLE;
   }
 }
 
@@ -80,6 +96,67 @@ absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
   return manifest_icons;
 }
 
+absl::optional<std::vector<blink::Manifest::ImageResource>>
+ParseAppImageResource(const char* container_name_for_logging,
+                      const RepeatedImageResourceProto& manifest_icons_proto) {
+  std::vector<blink::Manifest::ImageResource> manifest_icons;
+  for (const content::proto::ImageResource& image_resource_proto :
+       manifest_icons_proto) {
+    blink::Manifest::ImageResource image_resource;
+
+    if (!image_resource_proto.has_src()) {
+      DLOG(ERROR) << container_name_for_logging
+                  << " ImageResource has missing url";
+      return absl::nullopt;
+    }
+    image_resource.src = GURL(image_resource_proto.src());
+
+    if (!image_resource.src.is_valid()) {
+      DLOG(ERROR) << container_name_for_logging
+                  << " ImageResource has invalid url: "
+                  << image_resource.src.possibly_invalid_spec();
+      return absl::nullopt;
+    }
+
+    if (image_resource_proto.has_type()) {
+      image_resource.type = base::ASCIIToUTF16(image_resource_proto.type());
+    }
+
+    if (!image_resource_proto.sizes().empty()) {
+      std::vector<gfx::Size> sizes;
+      for (const auto& size_proto : image_resource_proto.sizes()) {
+        sizes.emplace_back(size_proto.width(), size_proto.height());
+      }
+      image_resource.sizes = std::move(sizes);
+    }
+
+    std::vector<blink::mojom::ManifestImageResource_Purpose> purpose;
+    if (!image_resource_proto.purpose().empty()) {
+      for (const auto& purpose_proto : image_resource_proto.purpose()) {
+        switch (purpose_proto) {
+          case content::proto::ImageResource_Purpose_ANY:
+            purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
+            break;
+          case content::proto::ImageResource_Purpose_MASKABLE:
+            purpose.push_back(
+                blink::mojom::ManifestImageResource_Purpose::MASKABLE);
+            break;
+          case content::proto::ImageResource_Purpose_MONOCHROME:
+            purpose.push_back(
+                blink::mojom::ManifestImageResource_Purpose::MONOCHROME);
+            break;
+        }
+      }
+    } else {
+      purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
+    }
+    image_resource.purpose = std::move(purpose);
+    manifest_icons.push_back(std::move(image_resource));
+  }
+
+  return manifest_icons;
+}
+
 sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
   DCHECK(!app.start_url().is_empty());
   DCHECK(app.start_url().is_valid());
@@ -118,6 +195,31 @@ sync_pb::WebAppIconInfo AppIconInfoToSyncProto(
   icon_info_proto.set_url(icon_info.url.spec());
   icon_info_proto.set_purpose(IconInfoPurposeToSyncPurpose(icon_info.purpose));
   return icon_info_proto;
+}
+
+content::proto::ImageResource AppImageResourceToProto(
+    const blink::Manifest::ImageResource& image_resource) {
+  content::proto::ImageResource image_resource_proto;
+  DCHECK(!image_resource.src.is_empty());
+
+  image_resource_proto.set_src(image_resource.src.spec());
+
+  if (!image_resource.type.empty()) {
+    image_resource_proto.set_type(base::UTF16ToASCII(image_resource.type));
+  }
+
+  for (const auto& size : image_resource.sizes) {
+    content::proto::ImageResource::Size size_proto;
+    size_proto.set_width(size.width());
+    size_proto.set_height(size.height());
+    *(image_resource_proto.add_sizes()) = size_proto;
+  }
+
+  for (const auto& purpose : image_resource.purpose) {
+    image_resource_proto.add_purpose(
+        ManifestImageResourcePurposeToImageResoucePurposeProto(purpose));
+  }
+  return image_resource_proto;
 }
 
 absl::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
