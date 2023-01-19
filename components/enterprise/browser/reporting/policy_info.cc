@@ -83,7 +83,7 @@ void UpdatePolicyInfo(em::Policy* policy_info,
   policy_info->set_level(GetLevel(policy));
   policy_info->set_scope(GetScope(policy));
   policy_info->set_source(GetSource(policy));
-  base::JSONWriter::Write(*policy.FindKey("value"),
+  base::JSONWriter::Write(*policy.GetDict().Find("value"),
                           policy_info->mutable_value());
   const std::string* error = policy.FindStringKey("error");
   std::string deprecated_error;
