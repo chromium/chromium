@@ -13,6 +13,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "services/device/public/mojom/serial.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -108,11 +109,11 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_list) {
-    const base::Value* urls_value = item.FindKey(kPrefUrlsKey);
+    const base::Value::List* urls_value = item.GetDict().FindList(kPrefUrlsKey);
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
-    for (const auto& url_value : urls_value->GetList()) {
+    for (const auto& url_value : *urls_value) {
       GURL url(url_value.GetString());
       if (!url.is_valid()) {
         continue;
@@ -125,23 +126,23 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
       continue;
     }
 
-    const base::Value* devices_value = item.FindKey(kPrefDevicesKey);
+    const base::Value::List* devices_value =
+        item.GetDict().FindList(kPrefDevicesKey);
     DCHECK(devices_value);
-    for (const auto& port_value : devices_value->GetList()) {
-      const base::Value* vendor_id_value = port_value.FindKey(kPrefVendorIdKey);
+    for (const auto& port_value : *devices_value) {
+      const absl::optional<int> vendor_id_value =
+          port_value.GetDict().FindInt(kPrefVendorIdKey);
       DCHECK(vendor_id_value);
 
-      const base::Value* product_id_value =
-          port_value.FindKey(kPrefProductIdKey);
+      const absl::optional<int> product_id_value =
+          port_value.GetDict().FindInt(kPrefProductIdKey);
       // "product_id" is optional and the policy matches all devices with the
       // given vendor ID if it is not specified.
       if (product_id_value) {
-        usb_device_policy_[{vendor_id_value->GetInt(),
-                            product_id_value->GetInt()}]
-            .insert(urls.begin(), urls.end());
+        usb_device_policy_[{*vendor_id_value, *product_id_value}].insert(
+            urls.begin(), urls.end());
       } else {
-        usb_vendor_policy_[vendor_id_value->GetInt()].insert(urls.begin(),
-                                                             urls.end());
+        usb_vendor_policy_[*vendor_id_value].insert(urls.begin(), urls.end());
       }
     }
   }
