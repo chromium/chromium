@@ -355,6 +355,10 @@ void WorkspaceLayoutManager::OnWindowBoundsChanged(
 void WorkspaceLayoutManager::OnWindowActivating(ActivationReason reason,
                                                 aura::Window* gaining_active,
                                                 aura::Window* losing_active) {
+  if (windows_.find(gaining_active) == windows_.end()) {
+    return;
+  }
+
   WindowState* window_state =
       gaining_active ? WindowState::Get(gaining_active) : nullptr;
   if (window_state && window_state->IsMinimized() &&
@@ -366,6 +370,9 @@ void WorkspaceLayoutManager::OnWindowActivating(ActivationReason reason,
 void WorkspaceLayoutManager::OnWindowActivated(ActivationReason reason,
                                                aura::Window* gained_active,
                                                aura::Window* lost_active) {
+  // This callback may be called multiple times with one activation change
+  // because we have one instance of this class for each desk.
+  // TODO(b/265746505): Make sure to avoid redundant calls.
   if (lost_active)
     WindowState::Get(lost_active)->OnActivationLost();
 
