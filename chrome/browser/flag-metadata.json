@@ -6183,7 +6183,7 @@
   {
     "name": "send-tab-to-self-signin-promo",
     "owners": ["victorvianna@google.com", "harrisonsean@google.com"],
-    "expiry_milestone": 107
+    "expiry_milestone": 115
   },
   {
     "name": "send-tab-to-self-v2",
