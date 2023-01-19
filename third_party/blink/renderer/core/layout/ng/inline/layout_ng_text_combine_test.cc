@@ -540,50 +540,6 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(*root.GetLayoutObject()));
 }
 
-// http://crbug.com/1215026
-TEST_F(LayoutNGTextCombineTest, LegacyQuote) {
-  InsertStyleElement(
-      "q { text-combine-upright: all; }"
-      "div { writing-mode: vertical-rl; }");
-  SetBodyInnerHTML("<div id=root><q>ab</q></div>");
-  auto& root = *GetElementById("root");
-
-  EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
-  +--LayoutInline Q
-  |  +--LayoutInline ::before
-  |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
-  |  +--LayoutNGTextCombine (anonymous)
-  |  |  +--LayoutText #text "ab"
-  |  +--LayoutInline ::after
-  |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutNGTextCombine (anonymous)
-  |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
-)DUMP",
-            ToSimpleLayoutTree(*root.GetLayoutObject()));
-
-  // Force legacy layout
-  root.SetStyleShouldForceLegacyLayout(true);
-  GetDocument().documentElement()->SetForceReattachLayoutTree();
-  RunDocumentLifecycle();
-
-  EXPECT_EQ(R"DUMP(
-LayoutBlockFlow DIV id="root"
-  +--LayoutInline Q
-  |  +--LayoutInline ::before
-  |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
-  |  +--LayoutTextCombine #text "ab"
-  |  +--LayoutInline ::after
-  |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
-)DUMP",
-            ToSimpleLayoutTree(*root.GetLayoutObject()))
-      << "No more LayoutNGTextCombine";
-}
-
 TEST_F(LayoutNGTextCombineTest, LayoutOverflow) {
   LoadAhem();
   InsertStyleElement(
