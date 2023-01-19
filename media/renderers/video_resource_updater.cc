@@ -1007,7 +1007,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
 #if BUILDFLAG(ENABLE_VULKAN)
       // Ensure that `ycbcr_info` is provided when necessary.
       // TODO(crbug.com/1399429): Avoid duplicating this logic.
-      if (IsYuvFormat(transfer_resource.format.resource_format()) &&
+      if ((transfer_resource.format.IsLegacyMultiplanar()) &&
           !transfer_resource.ycbcr_info) {
         VkSamplerYcbcrModelConversion ycbcr_conversion =
             (resource_color_space.GetMatrixID() ==

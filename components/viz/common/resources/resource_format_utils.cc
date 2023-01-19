@@ -531,18 +531,6 @@ bool GLSupportsFormat(ResourceFormat format) {
   }
 }
 
-bool IsYuvFormat(ResourceFormat format) {
-  switch (format) {
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-    case YUVA_420_TRIPLANAR:
-    case P010:
-      return true;
-    default:
-      return false;
-  }
-}
-
 #if BUILDFLAG(ENABLE_VULKAN)
 namespace {
 VkFormat ToVkFormatInternal(ResourceFormat format) {
