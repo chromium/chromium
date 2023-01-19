@@ -739,7 +739,7 @@ deps = {
   },
 
   'src/chrome/test/data/autofill/captured_sites': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/test/captured_sites/autofill.git' + '@' + 'ffd46b96cdf06437401fec8b68109f036b23d517',
+    'url': 'https://chrome-internal.googlesource.com/chrome/test/captured_sites/autofill.git' + '@' + 'b5c90453694ba7a4a412ce45152d4593c4d657ee',
     'condition': 'checkout_chromium_autofill_test_dependencies',
   },
 
