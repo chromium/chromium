@@ -74,7 +74,8 @@ constexpr const char kAllCategory[] = "test_all";
 bool IsCategoryEnabled(const char* name) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   bool result;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(perfetto::DynamicCategory(name), &result);
+  perfetto::DynamicCategory dynamic_category(name);
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(dynamic_category, &result);
   return result;
 #else
   return *TraceLog::GetInstance()->GetCategoryGroupEnabled(name);
