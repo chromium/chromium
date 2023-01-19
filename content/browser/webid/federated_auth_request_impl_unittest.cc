@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +27,7 @@
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
+#include "content/browser/webid/webid_utils.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -728,74 +730,22 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   void CheckConsoleMessages(
       const std::vector<FederatedAuthRequestResult>& devtools_issue_statuses) {
-    static std::unordered_map<FederatedAuthRequestResult,
-                              absl::optional<std::string>>
-        status_to_message = {
-            {FederatedAuthRequestResult::kSuccess, absl::nullopt},
-            {FederatedAuthRequestResult::kShouldEmbargo,
-             "User declined or dismissed prompt. API exponential cool down "
-             "triggered."},
-            {FederatedAuthRequestResult::kErrorDisabledInSettings,
-             "Third-party sign in was disabled in browser Site Settings."},
-            {FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound,
-             "The provider's FedCM well-known file cannot be found."},
-            {FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse,
-             "The provider's FedCM well-known file fetch resulted in an "
-             "error response code."},
-            {FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse,
-             "Provider's FedCM well-known file is invalid."},
-            {FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
-             "Provider's FedCM config file not listed in its well-known file."},
-            {FederatedAuthRequestResult::kErrorWellKnownTooBig,
-             "Provider's FedCM well-known contains too many providers."},
-            {FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound,
-             "The provider's FedCM config file cannot be found."},
-            {FederatedAuthRequestResult::kErrorFetchingConfigNoResponse,
-             "The provider's FedCM config file fetch resulted in an "
-             "error response code."},
-            {FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
-             "Provider's FedCM config file is invalid."},
-            {FederatedAuthRequestResult::kError, "Error retrieving a token."},
-            {FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
-             "The provider's accounts list fetch resulted in an error response "
-             "code."},
-            {FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
-             "Provider's accounts list is invalid. Should have received an "
-             "\"accounts\" list, where each account must "
-             "have at least \"id\", \"name\", and \"email\"."},
-            {FederatedAuthRequestResult::
-                 kErrorFetchingClientMetadataHttpNotFound,
-             "The provider's client metadata endpoint cannot be found."},
-            {FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
-             "The provider's client metadata fetch resulted in an error "
-             "response "
-             "code."},
-            {FederatedAuthRequestResult::
-                 kErrorFetchingClientMetadataInvalidResponse,
-             "Provider's client metadata is invalid."},
-            {FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-             "Provider's token is invalid."},
-            {FederatedAuthRequestResult::kErrorRpPageNotVisible,
-             "RP page is not visible."},
-            {FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
-             "Provider's accounts list is empty."},
-        };
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
 
     bool did_expect_any_messages = false;
     size_t expected_message_index = messages.size() - 1;
-    for (auto statuses_reverse_it = devtools_issue_statuses.rbegin();
-         statuses_reverse_it != devtools_issue_statuses.rend();
-         ++statuses_reverse_it) {
-      absl::optional<std::string> expected_message =
-          status_to_message[*statuses_reverse_it];
-      if (!expected_message)
+    for (const auto& expected_status :
+         base::Reversed(devtools_issue_statuses)) {
+      if (expected_status == FederatedAuthRequestResult::kSuccess) {
         continue;
+      }
 
+      std::string expected_message =
+          webid::GetConsoleErrorMessageFromResult(expected_status);
       did_expect_any_messages = true;
       ASSERT_GE(expected_message_index, 0u);
-      EXPECT_EQ(expected_message.value(), messages[expected_message_index]);
+      EXPECT_EQ(expected_message, messages[expected_message_index]);
       --expected_message_index;
     }
 

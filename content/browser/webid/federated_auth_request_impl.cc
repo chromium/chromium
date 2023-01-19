@@ -87,100 +87,6 @@ std::string ComputeUrlEncodedTokenPostData(const std::string& client_id,
   return query;
 }
 
-std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
-  switch (status) {
-    case FederatedAuthRequestResult::kShouldEmbargo: {
-      return "User declined or dismissed prompt. API exponential cool down "
-             "triggered.";
-    }
-    case FederatedAuthRequestResult::kErrorDisabledInSettings: {
-      return "Third-party sign in was disabled in browser Site Settings.";
-    }
-    case FederatedAuthRequestResult::kErrorTooManyRequests: {
-      return "Only one navigator.credentials.get request may be outstanding at "
-             "one time.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound: {
-      return "The provider's FedCM well-known file cannot be found.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse: {
-      return "The provider's FedCM well-known file fetch resulted in an "
-             "error response code.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse: {
-      return "Provider's FedCM well-known file is invalid.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty: {
-      return "Provider's FedCM well-known file has no config URLs.";
-    }
-    case FederatedAuthRequestResult::kErrorConfigNotInWellKnown: {
-      return "Provider's FedCM config file not listed in its well-known file.";
-    }
-    case FederatedAuthRequestResult::kErrorWellKnownTooBig: {
-      return "Provider's FedCM well-known file contains too many config URLs.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound: {
-      return "The provider's FedCM config file cannot be found.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse: {
-      return "The provider's FedCM config file fetch resulted in an "
-             "error response code.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse: {
-      return "Provider's FedCM config file is invalid.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound: {
-      return "The provider's client metadata endpoint cannot be found.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse: {
-      return "The provider's client metadata fetch resulted in an error "
-             "response code.";
-    }
-    case FederatedAuthRequestResult::
-        kErrorFetchingClientMetadataInvalidResponse: {
-      return "Provider's client metadata is invalid.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
-      return "The provider's accounts list endpoint cannot be found.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse: {
-      return "The provider's accounts list fetch resulted in an error response "
-             "code.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse: {
-      return "Provider's accounts list is invalid. Should have received an "
-             "\"accounts\" list, where each account must have at least \"id\", "
-             "\"name\", and \"email\".";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty: {
-      return "Provider's accounts list is empty.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound: {
-      return "The provider's id token endpoint cannot be found.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse: {
-      return "The provider's token fetch resulted in an error response "
-             "code.";
-    }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
-      return "Provider's token is invalid.";
-    }
-    case FederatedAuthRequestResult::kErrorCanceled: {
-      return "The request has been aborted.";
-    }
-    case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
-      return "RP page is not visible.";
-    }
-    case FederatedAuthRequestResult::kError: {
-      return "Error retrieving a token.";
-    }
-    case FederatedAuthRequestResult::kSuccess: {
-      DCHECK(false);
-      return "";
-    }
-  }
-}
-
 RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     FederatedAuthRequestResult result) {
   // Avoids exposing to renderer detailed error messages which may leak cross
@@ -1437,9 +1343,9 @@ void FederatedAuthRequestImpl::AddInspectorIssue(
 
 void FederatedAuthRequestImpl::AddConsoleErrorMessage(
     FederatedAuthRequestResult result) {
-  std::string message = GetConsoleErrorMessage(result);
   render_frame_host().AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, message);
+      blink::mojom::ConsoleMessageLevel::kError,
+      webid::GetConsoleErrorMessageFromResult(result));
 }
 
 void FederatedAuthRequestImpl::MaybeAddResponseCodeToConsole(

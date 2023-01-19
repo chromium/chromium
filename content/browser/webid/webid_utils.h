@@ -5,10 +5,12 @@
 #ifndef CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
 #define CONTENT_BROWSER_WEBID_WEBID_UTILS_H_
 
+#include "content/common/content_export.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink::mojom {
+enum class FederatedAuthRequestResult;
 enum class IdpSigninStatus;
 }  // namespace blink::mojom
 
@@ -34,6 +36,11 @@ absl::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
 // endpoint URL.
 bool IsEndpointUrlValid(const GURL& identity_provider_config_url,
                         const GURL& endpoint_url);
+
+// Returns a string to be used as the console error message from a
+// FederatedAuthRequestResult.
+CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
+    blink::mojom::FederatedAuthRequestResult result);
 
 }  // namespace webid
 }  // namespace content
