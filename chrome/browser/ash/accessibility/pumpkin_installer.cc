@@ -89,7 +89,7 @@ void PumpkinInstaller::OnInstalled(
 }
 
 void PumpkinInstaller::OnProgress(double progress) {
-  std::move(on_progress_).Run(progress);
+  on_progress_.Run(progress);
 }
 
 void PumpkinInstaller::OnError(const std::string& error) {
