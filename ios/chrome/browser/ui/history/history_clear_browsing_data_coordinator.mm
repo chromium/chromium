@@ -23,8 +23,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface HistoryClearBrowsingDataCoordinator () <
-    TableViewPresentationControllerDelegate>
+@interface HistoryClearBrowsingDataCoordinator ()
 
 // ViewControllers being managed by this Coordinator.
 @property(strong, nonatomic)
@@ -118,18 +117,6 @@
 - (void)clearBrowsingDataTableViewControllerWasRemoved:
     (ClearBrowsingDataTableViewController*)controller {
   DCHECK_EQ(self.clearBrowsingDataTableViewController, controller);
-  [self stopWithCompletion:nil];
-}
-
-#pragma mark - TableViewPresentationControllerDelegate
-
-- (BOOL)presentationControllerShouldDismissOnTouchOutside:
-    (TableViewPresentationController*)controller {
-  return YES;
-}
-
-- (void)presentationControllerWillDismiss:
-    (TableViewPresentationController*)controller {
   [self stopWithCompletion:nil];
 }
 
