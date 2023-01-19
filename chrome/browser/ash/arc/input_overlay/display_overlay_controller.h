@@ -171,9 +171,6 @@ class DisplayOverlayController : public ui::EventHandler,
 
   const raw_ptr<TouchInjector> touch_injector_;
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      overlay_widget_observation_{this};
-
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView> input_mapping_view_ = nullptr;
   raw_ptr<InputMenuView> input_menu_view_ = nullptr;

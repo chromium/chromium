@@ -108,7 +108,8 @@ void DisplayOverlayController::AddOverlay(DisplayMode display_mode) {
 
   auto* overlay_widget = GetOverlayWidget();
   if (overlay_widget)
-    overlay_widget_observation_.Observe(overlay_widget);
+    overlay_widget->AddObserver(this);
+
   SetDisplayMode(display_mode);
 }
 
@@ -120,7 +121,11 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
   if (shell_surface_base && shell_surface_base->HasOverlay()) {
     // Call |RemoveInputMenuView| explicitly to make sure UMA stats is updated.
     RemoveInputMenuView();
-    overlay_widget_observation_.Reset();
+
+    auto* overlay_widget = GetOverlayWidget();
+    if (overlay_widget)
+      overlay_widget->RemoveObserver(this);
+
     shell_surface_base->RemoveOverlay();
   }
 }
