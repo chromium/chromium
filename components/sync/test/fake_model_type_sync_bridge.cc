@@ -366,7 +366,8 @@ void FakeModelTypeSyncBridge::ApplyStopSyncChanges(
       std::move(delete_metadata_change_list));
 }
 
-sync_pb::EntitySpecifics FakeModelTypeSyncBridge::TrimRemoteSpecificsForCaching(
+sync_pb::EntitySpecifics
+FakeModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   if (entity_specifics.unknown_fields().empty()) {
     return sync_pb::EntitySpecifics();

@@ -117,7 +117,7 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
       const EntityData& remote_data) const override;
   void ApplyStopSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
-  sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
 
   // Stores a resolution for the next call to ResolveConflict. Note that if this

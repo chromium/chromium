@@ -198,15 +198,21 @@ class ModelTypeSyncBridge {
   // SyncableService by other means.
   virtual size_t EstimateSyncOverheadMemoryUsage() const;
 
-  // Returns a copy of |entity_specifics| where fields that do not need to be
-  // preserved in EntityMetadata cache are cleared. This allows each data type
-  // to specify which fields are supported in the current version. This usually
-  // means all known proto fields (i.e. all except unknown proto fields synced
-  // from more recent versions of the browser) but not always, since there are
-  // cases where a proto field is defined, but its implementation is not
-  // complete yet or exists behind a feature flag.
+  // Returns a copy of |entity_specifics| with fields that need to be preserved,
+  // resulting in caching them in EntityMetadata and allowing to use them on
+  // commits to the Sync server in order to prevent the data loss.
+  // This means that a data-specific bridge must override this function with the
+  // implementation that clears all supported proto fields (i.e. fields that are
+  // actively used by the implementation and fully launched).
+  // Fields that should not be marked as supported (cleared) include:
+  // * Unknown fields in the current browser version
+  // * Known fields that are just defined in the proto and not actively used
+  // (e.g. a partially-implemented functionality or a functionality guarded by a
+  // feature toggle).
+  // TODO(crbug.com/1408144): Consider changing the default to preserve unknown
+  // fields at least.
   // By default, empty EntitySpecifics is returned.
-  virtual sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
+  virtual sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const;
 
   // Needs to be informed about any model change occurring via Delete() and

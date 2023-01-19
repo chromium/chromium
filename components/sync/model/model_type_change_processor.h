@@ -130,7 +130,7 @@ class ModelTypeChangeProcessor {
   // Returns the cached version of remote entity specifics for |storage_key| if
   // available. These specifics can be fully or partially trimmed (proto fields
   // cleared) according to the bridge's logic in
-  // TrimRemoteSpecificsForCaching().
+  // TrimAllSupportedFieldsFromRemoteSpecifics().
   // By default, empty EntitySpecifics is returned if the storage key is
   // unknown, or the storage key is known but trimmed specifics is not
   // available.

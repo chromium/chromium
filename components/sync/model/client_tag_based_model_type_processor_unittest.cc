@@ -177,14 +177,14 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
     return FakeModelTypeSyncBridge::GetStorageKey(entity_data);
   }
 
-  sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override {
     if (entity_specifics.has_preference()) {
       sync_pb::EntitySpecifics trimmed_specifics = entity_specifics;
       trimmed_specifics.mutable_preference()->clear_value();
       return trimmed_specifics;
     }
-    return FakeModelTypeSyncBridge::TrimRemoteSpecificsForCaching(
+    return FakeModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
         entity_specifics);
   }
 
@@ -695,7 +695,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
       type_processor()->GetPossiblyTrimmedRemoteSpecifics(kKey1).preference();
 
   // Below verifies that
-  // TestModelTypeSyncBridge::TrimRemoteSpecificsForCaching() is honored.
+  // TestModelTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics() is
+  // honored.
   // Preserved fields.
   EXPECT_EQ(cached_preference.name(), kKey1);
   EXPECT_EQ(cached_preference.unknown_fields(), kValue2);

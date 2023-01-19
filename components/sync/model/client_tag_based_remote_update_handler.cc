@@ -186,11 +186,13 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   } else if (entity->MatchesData(data)) {
     // Remote update that is a no-op, metadata should still be updated.
     entity->RecordAcceptedRemoteUpdate(
-        update, bridge_->TrimRemoteSpecificsForCaching(data.specifics));
+        update,
+        bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data.specifics));
   } else {
     // Remote update.
     entity->RecordAcceptedRemoteUpdate(
-        update, bridge_->TrimRemoteSpecificsForCaching(data.specifics));
+        update,
+        bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data.specifics));
     entity_changes->push_back(EntityChange::CreateUpdate(
         entity->storage_key(), std::move(update.entity)));
   }
@@ -253,7 +255,7 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
       entity->RecordForcedRemoteUpdate(
           update, update.entity.is_deleted()
                       ? sync_pb::EntitySpecifics()
-                      : bridge_->TrimRemoteSpecificsForCaching(
+                      : bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
                             update.entity.specifics));
       break;
     case ConflictResolution::kUseLocal:
@@ -274,8 +276,8 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
       } else if (!entity->metadata().is_deleted()) {
         // Squash the pending commit.
         entity->RecordForcedRemoteUpdate(
-            update,
-            bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
+            update, bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+                        update.entity.specifics));
         changes->push_back(EntityChange::CreateUpdate(
             entity->storage_key(), std::move(update.entity)));
       } else {
@@ -288,8 +290,8 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
         }
         // Squash the pending commit.
         entity->RecordForcedRemoteUpdate(
-            update,
-            bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
+            update, bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+                        update.entity.specifics));
         changes->push_back(EntityChange::CreateAdd(entity->storage_key(),
                                                    std::move(update.entity)));
       }
@@ -314,7 +316,8 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
   }
   return entity_tracker_->AddRemote(
       storage_key, update,
-      bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+          update.entity.specifics));
 }
 
 }  // namespace syncer

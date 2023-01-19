@@ -211,7 +211,7 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
   // WARNING: if you are adding support for new `PasswordSpecificsData` fields,
   // you need to update the following functions accordingly:
   // `TrimPasswordSpecificsDataForCaching`
-  // `TrimRemoteSpecificsForCachingPreservesOnlyUnknownFields`
+  // `TrimAllSupportedFieldsFromRemoteSpecificsPreservesOnlyUnknownFields`
   DCHECK_EQ(0u, TrimPasswordSpecificsDataForCaching(
                     SpecificsDataFromPassword(password_form,
                                               /*base_password_data=*/{}))

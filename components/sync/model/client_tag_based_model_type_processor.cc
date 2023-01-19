@@ -392,7 +392,7 @@ void ClientTagBasedModelTypeProcessor::Put(
   // |data->specifics| is about to be committed, and therefore represents the
   // imminent server-side state in most cases.
   sync_pb::EntitySpecifics trimmed_specifics =
-      bridge_->TrimRemoteSpecificsForCaching(data->specifics);
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data->specifics);
 
   ProcessorEntity* entity =
       entity_tracker_->GetEntityForStorageKey(storage_key);
@@ -938,7 +938,8 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
 #endif  // DCHECK_IS_ON()
     ProcessorEntity* entity = entity_tracker_->AddRemote(
         storage_key, update,
-        bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
+        bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+            update.entity.specifics));
     entity_data.push_back(
         EntityChange::CreateAdd(storage_key, std::move(update.entity)));
     if (!storage_key.empty())
