@@ -305,7 +305,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckCreateShortcutNotShown();
   void CheckCreateShortcutShown();
   void CheckWindowModeIsNotVisibleInAppSettings(Site site);
-  void CheckFilesLoadedInSite(Site site, FilesOptions files_options);
   void CheckInstallIconShown();
   void CheckInstallIconNotShown();
   void CheckLaunchIconShown();
